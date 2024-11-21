@@ -207,7 +207,7 @@ export default function StopLossTakeProfitInput({
   const displayValue = priceChangePnL;
   const isPositive = priceChangePnL != null && priceChangePnL > 0;
 
-  const displayColor = isPositive ? 'text-green' : 'text-red';
+  const displayColor = isPositive ? 'text-green' : 'text-redbright';
 
   const percentages = [0.1, 0.25, 0.5, 1, 5];
   const isStopLoss = type === 'Stop Loss';
@@ -277,7 +277,7 @@ export default function StopLossTakeProfitInput({
                   rounded={false}
                   className={twMerge(
                     'flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
-                    sign === '-' ? 'text-red' : 'text-green',
+                    sign === '-' ? 'text-redbright' : 'text-green',
                   )}
                   onClick={() =>
                     adjustInputByPercentage(

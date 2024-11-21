@@ -9,7 +9,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
-import { getTokenSymbol, nativeToUi } from '@/utils';
+import { getTokenImage, getTokenSymbol, nativeToUi } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 
@@ -173,34 +173,84 @@ export default function ClosePosition({
       <div className="px-4">
         <div className="text-white text-sm mb-1 font-boldy">Position to close</div>
 
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
-          <div className={rowStyle}>
-            <div className="text-sm font-bold">Mark Price</div>
 
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
+          <div className="w-full flex justify-between">
+            <div className="flex gap-2 items-center">
+              <Image
+                src={getTokenImage(position.token)}
+                width={16}
+                height={16}
+                alt={`${getTokenSymbol(position.token.symbol)} logo`}
+              />
+              <div className="text-sm text-bold">
+                {getTokenSymbol(position.token.symbol)} Price
+              </div>
+            </div>
             <FormatNumber
               nb={markPrice}
               format="currency"
+              className="text-sm text"
               precision={position.token.displayPriceDecimalsPrecision}
-              className="text-sm font-bold"
             />
           </div>
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
+          <div className="w-full flex justify-between">
+            <div className="flex w-full justify-between items-center">
+              <span className="text-sm text-txtfade">Entry</span>
+
+              <FormatNumber
+                nb={position.price}
+                format="currency"
+                precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
+                isDecimalDimmed={true}
+                className="text-txtfade"
+              />
+            </div>
+          </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className="w-full flex justify-between">
+            <div className="flex w-full justify-between items-center">
+              <span className="text-sm text-txtfade">Liquidation</span>
+
+              <FormatNumber
+                nb={position.liquidationPrice}
+                format="currency"
+                precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
+                isDecimalDimmed={false}
+                className="text-orange"
+              />
+            </div>
+          </div>
+
+        </div>
+
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
+
           <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Size</div>
+            <div className="text-sm text-txtfade">Size</div>
 
             <FormatNumber
               nb={position.sizeUsd}
               format="currency"
-              className="text-gray-400"
+              className="text-txtfade"
             />
           </div>
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Size native</div>
+            <div className="text-sm text-txtfade">Size native</div>
 
             <FormatNumber
               nb={
@@ -208,7 +258,7 @@ export default function ClosePosition({
                   ? position.size
                   : position.sizeUsd / position.price
               }
-              className="text-gray-400"
+              className="text-txtfade"
               precision={position.token.displayAmountDecimalsPrecision}
               suffix={getTokenSymbol(position.token.symbol)}
               isDecimalDimmed={true}
@@ -217,51 +267,28 @@ export default function ClosePosition({
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Entry Price</div>
-
-            <FormatNumber
-              nb={position.price}
-              format="currency"
-              precision={position.token.displayPriceDecimalsPrecision}
-              className="text-gray-400"
-            />
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Liquidation Price</div>
-
-            <FormatNumber
-              nb={position.liquidationPrice ?? 0}
-              format="currency"
-              precision={position.token.displayPriceDecimalsPrecision}
-              className="text-gray-400"
-            />
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Initial Leverage</div>
+            <div className="text-sm text-txtfade">Initial Leverage</div>
 
             <FormatNumber
               nb={position.sizeUsd / position.collateralUsd}
               prefix="x"
-              className="text-gray-400"
+              className="text-txtfade"
+              minimumFractionDigits={2}
             />
           </div>
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Current Leverage</div>
+            <div className="text-sm text-txtfade">Current Leverage</div>
 
             <FormatNumber
               nb={position.currentLeverage}
               prefix="x"
-              className="text-gray-400"
+              className="text-txtfade"
+              minimumFractionDigits={2}
             />
           </div>
 
@@ -269,7 +296,7 @@ export default function ClosePosition({
 
           <div className={rowStyle}>
             <div className="text-sm">
-              PnL <span className="test-xs text-gray-400">(after fees)</span>
+              PnL <span className="test-xs text-txtfade">(after fees)</span>
             </div>
 
             <div className="text-sm font-mono font-bold">
@@ -349,7 +376,7 @@ export default function ClosePosition({
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
-            <div className="flex items-center text-sm text-gray-400">
+            <div className="flex items-center text-sm text-txtfade">
               Total Fees
             </div>
 
@@ -362,6 +389,9 @@ export default function ClosePosition({
           </div>
         </div>
       </div>
+
+
+      <div className="w-full h-[1px] bg-bcolor mt-4" />
 
       <Button
         className="m-4"
