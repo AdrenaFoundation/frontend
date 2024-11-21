@@ -39,11 +39,12 @@ export default function ActivityCalendar({
                             <td className="relative text-sm text-right capitalize font-boldy text-gray-600">
                                 {row.day}
                             </td>
-                            {row.stats.map((stat, index) => (
+                            {row.stats.map((stat, i) => (
                                 <td
                                     className={
                                         'p-1 table-cell bg-[#040D14] border-b border-r border-bcolor w-[30px] h-[30px] flex-none'
                                     }
+                                    key={'cell-' + i}
                                 >
                                     <Tippy
                                         content={
