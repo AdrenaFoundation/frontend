@@ -50,6 +50,8 @@ export default function BurgerMenu({
   setMaxPriorityFee,
   preferredSolanaExplorer,
   adapters,
+  showFeesInPnl,
+  setShowFeesInPnl,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
@@ -74,6 +76,8 @@ export default function BurgerMenu({
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
+  showFeesInPnl: boolean;
+  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
@@ -214,6 +218,8 @@ export default function BurgerMenu({
             setFavoriteRpc={setFavoriteRpc}
             preferredSolanaExplorer={preferredSolanaExplorer}
             isMobile
+            showFeesInPnl={showFeesInPnl}
+            setShowFeesInPnl={setShowFeesInPnl}
           />
         </div>
       </div>

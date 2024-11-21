@@ -17,7 +17,7 @@ import resetIcon from '../../../public/images/Icons/cross.svg'
 
 type SortableKeys = keyof Pick<UserProfileExtended, 'totalTradeVolumeUsd' | 'totalPnlUsd' | 'openingAverageLeverage' | 'totalFeesPaidUsd'>;
 
-export default function AllUserProfiles() {
+export default function AllUserProfiles({ showFeesInPnl }: { showFeesInPnl: boolean }) {
     const { allUserProfiles, triggerAllUserProfilesReload } = useAllUserProfiles();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -201,7 +201,7 @@ export default function AllUserProfiles() {
             <AnimatePresence>
                 {activeProfile && (
                     <Modal className="h-[80vh] overflow-y-scroll w-full" wrapperClassName="items-start w-full max-w-[820px] sm:mt-0" title="" close={() => setActiveProfile(null)}>
-                        <ViewProfileModal profile={activeProfile} />
+                        <ViewProfileModal profile={activeProfile} showFeesInPnl={showFeesInPnl} />
                     </Modal>
                 )}
             </AnimatePresence>

@@ -1,4 +1,3 @@
-import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -66,7 +65,7 @@ const jtoRewardsPlaceholder = {
     'No Division': [],
 };
 
-export default function Competition() {
+export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean }) {
     const wallet = useSelector((state) => state.walletState.wallet);
     const { allUserProfiles } = useAllUserProfiles();
     const [data, setData] = useState<TradingCompetitionLeaderboardAPI | null>(
@@ -81,14 +80,18 @@ export default function Competition() {
     const [myRank, setMyRank] = useState<number | null>(null);
     const [myVolume, setMyVolume] = useState<number | null>(null);
     const [myPnl, setMyPnl] = useState<number | null>(null);
-    const [myProvisionnalAdxRewards, setMyProvisionnalAdxRewards] = useState<number | null>(null);
-    const [myProvisionnalJtoRewards, setMyProvisionnalJtoRewards] = useState<number | null>(null);
+    const [myProvisionalAdxRewards, setMyProvisionalAdxRewards] = useState<number | null>(null);
+    const [myProvisionalJtoRewards, setMyProvisionalJtoRewards] = useState<number | null>(null);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
     const [tradersCount, setTradersCount] = useState<number | null>(null);
     const [totalVolume, setTotalVolume] = useState<number | null>(null);
 
+    const startDate = new Date('11/11/2024');
     const endDate = new Date('12/23/2024');
+    const weeksPassedSinceStartDate = Math.floor(
+        (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
+    );
 
     useEffect(() => {
         getData();
@@ -177,14 +180,14 @@ export default function Competition() {
                     )?.total_pnl ?? null,
                 );
 
-                setMyProvisionnalAdxRewards(
+                setMyProvisionalAdxRewards(
                     f?.traders.find(
                         ({ address }: { address: string }) =>
                             address === wallet.walletAddress,
                     )?.adx_reward ?? null,
                 );
 
-                setMyProvisionnalJtoRewards(
+                setMyProvisionalJtoRewards(
                     f?.traders.find(
                         ({ address }: { address: string }) =>
                             address === wallet.walletAddress,
@@ -283,7 +286,10 @@ export default function Competition() {
                 },
             );
 
-            setWeek(0);
+            // Only do once
+            if (week === 0) {
+                setWeek(weeksPassedSinceStartDate);
+            }
             setAchievements(achievements);
             setData(formattedData);
         } catch (error) {
@@ -314,6 +320,8 @@ export default function Competition() {
     const hasProfile = userProfile !== undefined;
 
     const userName = hasProfile ? userProfile?.nickname : getAbbrevWalletAddress(wallet?.walletAddress.toString() ?? 'undefined');
+
+
 
     return (
         <>
@@ -529,8 +537,14 @@ export default function Competition() {
                                 </p>
 
                                 <div className='flex text-xs gap-1'>
-                                    <RemainingTimeToDate timestamp={new Date(achievements.biggest_liquidation.week_ends[week]).getTime() / 1000} stopAtZero={true} />
-                                    <span className="text-xs font-boldy">left</span>
+                                    {Date.now() < new Date(achievements.biggest_liquidation.week_ends[week]).getTime() ? (
+                                        <>
+                                            <RemainingTimeToDate timestamp={new Date(achievements.biggest_liquidation.week_ends[week]).getTime() / 1000} stopAtZero={true} />
+                                            <span className="text-xs font-boldy">left</span>
+                                        </>
+                                    ) : (
+                                        'Week has ended'
+                                    )}
                                 </div>
                             </div>
 
@@ -540,13 +554,10 @@ export default function Competition() {
                                         className={twMerge(
                                             'rounded-lg p-1 whitespace-nowrap px-2 transition border border-transparent duration-300 cursor-pointer select-none',
                                             i === week ? 'bg-[#364250] border-white/25 ' : 'bg-third',
-                                            i !== 0 && 'cursor-not-allowed opacity-25',
+                                            i > weeksPassedSinceStartDate && 'cursor-not-allowed opacity-25',
                                         )}
                                         onClick={() => {
-                                            if (i > 0) {
-                                                // Only allow the first week to be selected for now
-                                                return;
-                                            }
+                                            if (i > weeksPassedSinceStartDate) return;
                                             setWeek(i);
                                         }}
                                         key={i}
@@ -687,31 +698,31 @@ export default function Competition() {
                             <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
                                 <span className="text-sm text-txtfade font-boldy">PnL:</span>
 
-                                    <FormatNumber
-                                        nb={myPnl ?? 0}
-                                        format="currency"
-                                        isDecimalDimmed={false}
-                                        className={twMerge(
-                                            'text-base font-boldy',
-                                            (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
-                                        )}
-                                        precision={myPnl && myPnl >= 50 ? 0 : 2}
-                                        minimumFractionDigits={myPnl && myPnl >= 50 ? 0 : 2}
-                                    />
-                                </div>
+                                <FormatNumber
+                                    nb={myPnl ?? 0}
+                                    format="currency"
+                                    isDecimalDimmed={false}
+                                    className={twMerge(
+                                        'text-base font-boldy',
+                                        (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
+                                    )}
+                                    precision={myPnl && myPnl >= 50 ? 0 : 2}
+                                    minimumFractionDigits={myPnl && myPnl >= 50 ? 0 : 2}
+                                />
+                            </div>
 
                             <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
                                 <span className="text-sm text-txtfade">Volume:</span>
 
-                                    <FormatNumber
-                                        nb={myVolume ?? 0}
-                                        format="currency"
-                                        isAbbreviate={true}
-                                        isDecimalDimmed={false}
-                                        isAbbreviateIcon={false}
-                                        className="text-base font-boldy"
-                                    />
-                                </div>
+                                <FormatNumber
+                                    nb={myVolume ?? 0}
+                                    format="currency"
+                                    isAbbreviate={true}
+                                    isDecimalDimmed={false}
+                                    isAbbreviateIcon={false}
+                                    className="text-base font-boldy"
+                                />
+                            </div>
 
                             <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
                                 <span className="text-sm text-txtfade"> Rank rewards: </span>
@@ -719,7 +730,7 @@ export default function Competition() {
                                 <div className='flex flex-row gap-3 items-center'>
                                     <div className='flex gap-2 items-center justify-center pl-8 lg:pl-0'>
                                         <FormatNumber
-                                            nb={myProvisionnalAdxRewards ?? 0}
+                                            nb={myProvisionalAdxRewards ?? 0}
                                             format="number"
                                             isDecimalDimmed={false}
                                             className="text-base font-boldy"
@@ -736,7 +747,7 @@ export default function Competition() {
 
                                     <div className='flex gap-2 items-center justify-center'>
                                         <FormatNumber
-                                            nb={myProvisionnalJtoRewards ?? 0}
+                                            nb={myProvisionalJtoRewards ?? 0}
                                             format="number"
                                             isDecimalDimmed={false}
                                             className="text-base font-boldy"
@@ -797,7 +808,7 @@ export default function Competition() {
                         title=""
                         close={() => setActiveProfile(null)}
                     >
-                        <ViewProfileModal profile={activeProfile} />
+                        <ViewProfileModal profile={activeProfile} showFeesInPnl={showFeesInPnl} />
                     </Modal>
                 )}
             </AnimatePresence>

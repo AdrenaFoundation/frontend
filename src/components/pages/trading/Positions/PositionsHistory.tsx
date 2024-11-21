@@ -11,11 +11,13 @@ function PositionsHistory({
   connected,
   walletAddress,
   showShareButton = true,
+  showFeesInPnl,
 }: {
   connected: boolean;
   className?: string;
   walletAddress?: string;
   showShareButton?: boolean;
+  showFeesInPnl: boolean;
 }) {
   const { positionsHistory } = usePositionsHistory({ walletAddress });
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,6 +53,7 @@ function PositionsHistory({
                         key={positionHistory.position_id}
                         positionHistory={positionHistory}
                         showShareButton={showShareButton}
+                        showFeesInPnl={showFeesInPnl}
                       />
                     ))}
                   </div>

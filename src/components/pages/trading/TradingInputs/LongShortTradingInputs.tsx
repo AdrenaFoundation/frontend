@@ -51,7 +51,7 @@ export default function LongShortTradingInputs({
   tokenB,
   allowedTokenA,
   allowedTokenB,
-  openedPosition: maybeZombiePosition,
+  position,
   wallet,
   connected,
   setTokenA,
@@ -64,7 +64,7 @@ export default function LongShortTradingInputs({
   tokenB: Token;
   allowedTokenA: Token[];
   allowedTokenB: Token[];
-  openedPosition: PositionExtended | null;
+  position: PositionExtended | null;
   wallet: Wallet | null;
   connected: boolean;
   setTokenA: (t: Token | null) => void;
@@ -74,7 +74,7 @@ export default function LongShortTradingInputs({
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(null);
+  const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(position);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
@@ -184,14 +184,8 @@ export default function LongShortTradingInputs({
 
   // If the position is pending cleanup and close, we should consider there is no position
   useEffect(() => {
-    if (!maybeZombiePosition) return setOpenedPosition(null);
-
-    if (maybeZombiePosition.pendingCleanupAndClose) {
-      return setOpenedPosition(null);
-    }
-
-    setOpenedPosition(maybeZombiePosition);
-  }, [maybeZombiePosition]);
+    setOpenedPosition(openedPosition);
+  }, [openedPosition]);
 
   useEffect(() => {
     calculateIncreasePositionInfo()
@@ -740,7 +734,7 @@ export default function LongShortTradingInputs({
             />
             <InfoAnnotation
               className=" inline-flex"
-              text="This value is how much total size is available to be borrowed for that market and side by all traders. It depend of the available liquidities in the pool and restrictions from the configuration."
+              text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
             />
           </div>
         </div>

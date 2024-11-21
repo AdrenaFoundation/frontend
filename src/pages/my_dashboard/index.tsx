@@ -1,38 +1,18 @@
-import { BN } from '@coral-xyz/anchor';
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import { PublicKey } from '@solana/web3.js';
-import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
-import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
-import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
-import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
-import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
-import StakesStats from '@/components/pages/user_profile/StakesStats';
+import StakingStats from '@/components/pages/user_profile/StakingStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { useSelector } from '@/store/store';
 import {
-  AdxLockPeriod,
-  AlpLockPeriod,
-  LockedStakeExtended,
   PageProps,
   VestExtended,
 } from '@/types';
-import {
-  addNotification,
-  getAdxLockedStakes,
-  getAlpLockedStakes,
-  nativeToUi,
-} from '@/utils';
 
 export default function MyDashboard({
   connected,
@@ -41,29 +21,13 @@ export default function MyDashboard({
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   readonly,
+  wallet,
 }: PageProps & {
   readonly?: boolean;
 }) {
   const [nickname, setNickname] = useState<string | null>(null);
-  const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts();
-  const wallet = useSelector((s) => s.walletState.wallet);
-  const owner: PublicKey | null = wallet
-    ? new PublicKey(wallet.walletAddress)
-    : null;
+  const { stakingAccounts } = useWalletStakingAccounts();
 
-  const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
-    useState<boolean>(false);
-  const [updateLockedStake, setUpdateLockedStake] = useState<boolean>(false);
-  const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
-    null,
-  );
-  const [lockedStakes, setLockedStakes] = useState<
-    LockedStakeExtended[] | null
-  >(null);
-  const [liquidStakedADX, setLiquidStakedADX] = useState<number | null>(null);
-  const [lockedStakedADX, setLockedStakedADX] = useState<number | null>(null);
-  const [lockedStakedALP, setLockedStakedALP] = useState<number | null>(null);
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
 
   // When the profile page loads, update the profile so it's up to date with latests
@@ -77,43 +41,6 @@ export default function MyDashboard({
     getUserVesting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected]);
-
-  useEffect(() => {
-    if (!stakingAccounts) {
-      return setLockedStakes(null);
-    }
-
-    const adxLockedStakes: LockedStakeExtended[] =
-      getAdxLockedStakes(stakingAccounts) ?? [];
-
-    const alpLockedStakes: LockedStakeExtended[] =
-      getAlpLockedStakes(stakingAccounts) ?? [];
-
-    const liquidStakedADX =
-      typeof stakingAccounts.ADX?.liquidStake.amount !== 'undefined'
-        ? nativeToUi(
-          stakingAccounts.ADX.liquidStake.amount,
-          window.adrena.client.adxToken.decimals,
-        )
-        : null;
-
-    const lockedStakedADX = adxLockedStakes.reduce((acc, stake) => {
-      return (
-        acc + nativeToUi(stake.amount, window.adrena.client.adxToken.decimals)
-      );
-    }, 0);
-
-    const lockedStakedALP = alpLockedStakes.reduce((acc, stake) => {
-      return (
-        acc + nativeToUi(stake.amount, window.adrena.client.alpToken.decimals)
-      );
-    }, 0);
-
-    setLockedStakes([...adxLockedStakes, ...alpLockedStakes]);
-    setLiquidStakedADX(liquidStakedADX);
-    setLockedStakedADX(lockedStakedADX);
-    setLockedStakedALP(lockedStakedALP);
-  }, [stakingAccounts]);
 
   const initUserProfile = async () => {
     const trimmedNickname = (nickname ?? '').trim();
@@ -142,90 +69,6 @@ export default function MyDashboard({
     }
   };
 
-  const handleLockedStakeRedeem = async (
-    lockedStake: LockedStakeExtended,
-    earlyExit = false,
-  ) => {
-    if (!owner) {
-      addNotification({
-        type: 'error',
-        title: 'Please connect your wallet',
-      });
-      return;
-    }
-
-    if (earlyExit && !finalizeLockedStakeRedeem) return;
-
-    const notification = MultiStepNotification.newForRegularTransaction(
-      'Remove Locked Stake',
-    ).fire();
-
-    const stakedTokenMint =
-      lockedStake.tokenSymbol === 'ADX'
-        ? window.adrena.client.adxToken.mint
-        : window.adrena.client.alpToken.mint;
-
-    try {
-      await window.adrena.client.removeLockedStake({
-        owner,
-        resolved: !!lockedStake.resolved,
-        id: lockedStake.id,
-        stakedTokenMint,
-        lockedStakeIndex: new BN(lockedStake.index),
-        earlyExit,
-        notification,
-      });
-
-      triggerWalletTokenBalancesReload();
-      triggerWalletStakingAccountsReload();
-
-      if (earlyExit) {
-        setLockedStake(null);
-        setFinalizeLockedStakeRedeem(false);
-      }
-    } catch (error) {
-      console.error('error', error);
-    }
-  };
-
-  const handleUpgradeLockedStake = async ({
-    lockedStake,
-    upgradedDuration: upgradeDuration,
-    additionalAmount,
-  }: {
-    lockedStake: LockedStakeExtended;
-    upgradedDuration?: AdxLockPeriod | AlpLockPeriod;
-    additionalAmount?: number;
-  }) => {
-    if (!owner) {
-      addNotification({
-        type: 'error',
-        title: 'Please connect your wallet',
-      });
-      return;
-    }
-
-    const notification = MultiStepNotification.newForRegularTransaction(
-      'Upgrade Locked Stake',
-    ).fire();
-
-    try {
-      await window.adrena.client.upgradeLockedStake({
-        lockedStake,
-        updatedDuration: upgradeDuration,
-        additionalAmount,
-        notification,
-
-      });
-
-      triggerWalletTokenBalancesReload();
-      triggerWalletStakingAccountsReload();
-      setUpdateLockedStake(false);
-    } catch (error) {
-      console.error('error', error);
-    }
-  };
-
   const getUserVesting = async () => {
     try {
       const vest = await window.adrena.client.loadUserVest();
@@ -238,157 +81,68 @@ export default function MyDashboard({
     }
   };
 
+  if (userProfile === null) {
+    return <div className="flex flex-col max-w-[55em] gap-4 p-4 w-full h-full self-center">
+      <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
+        <WalletConnection connected={connected} />
+      </div>
+    </div>;
+  }
+
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
-        <RiveAnimation
-          animation="blob-bg"
-          layout={
-            new Layout({
-              fit: Fit.FitWidth,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className={'absolute top-0 md:top-[-50px] left-0 w-[700px] h-full'}
-          imageClassName="absolute top-0 left-0 w-[700px]"
-        />
+      <div className="flex flex-col max-w-[55em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
+        <div className='bg-main z-20 border w-full min-h-full gap-4 flex flex-col rounded-xl'>
+          {userProfile === false ? (
+            <div className="flex w-full justify-center items-center">
+              <ProfileCreation
+                initUserProfile={initUserProfile}
+                nickname={nickname}
+                setNickname={setNickname}
+              />
+            </div>
+          ) : (
+            <>
+              <OwnerBlock
+                userProfile={userProfile}
+                triggerUserProfileReload={triggerUserProfileReload}
+                canUpdateNickname={!readonly}
+                className="flex w-full w-min-[30em]"
+                walletPubkey={wallet?.publicKey}
+              />
 
-        <RiveAnimation
-          animation="fred-bg"
-          layout={
-            new Layout({
-              fit: Fit.FitWidth,
-              alignment: Alignment.TopRight,
-            })
-          }
-          className={'absolute right-0 w-[1500px] h-full'}
-          imageClassName="absolute top-0 right-0 w-[400px]"
-        />
-      </div>
+              <TradingStats userProfile={userProfile} livePositionsNb={positions === null ? null : positions.length} className='gap-y-4' />
 
-      <div className="flex flex-col max-w-[55em] gap-4 p-4 w-full self-center">
-        {userProfile !== null ? (
-          <>
-            <div className="flex flex-wrap w-full gap-4">
-              {userProfile === false ? (
-                <div className="flex w-full justify-center items-center">
-                  <ProfileCreation
-                    initUserProfile={initUserProfile}
-                    nickname={nickname}
-                    setNickname={setNickname}
-                  />
-                </div>
-              ) : (
+              <div className='h-[1px] w-full bg-bcolor' />
+
+              <StakingStats stakingAccounts={stakingAccounts} className='gap-y-4' />
+
+              {userVest && (
                 <>
-                  <OwnerBlock
-                    userProfile={userProfile}
-                    triggerUserProfileReload={triggerUserProfileReload}
-                    canUpdateNickname={!readonly}
-                    className="flex w-full w-min-[30em]"
+                  <div className='h-[1px] w-full bg-bcolor' />
+
+                  <VestStats
+                    vest={userVest}
+                    getUserVesting={getUserVesting}
+                    triggerWalletTokenBalancesReload={
+                      triggerWalletTokenBalancesReload
+                    }
                   />
-                  <div className="flex flex-1 flex-col md:flex-row gap-4">
-                    <TradingStats userProfile={userProfile} />
-                  </div>
                 </>
               )}
-            </div>
 
-            {userVest && (
-              <VestStats
-                vest={userVest}
-                getUserVesting={getUserVesting}
-                triggerWalletTokenBalancesReload={
-                  triggerWalletTokenBalancesReload
-                }
+              <div className='h-[1px] w-full bg-bcolor' />
+
+              <UserRelatedAdrenaAccounts
+                className='h-auto w-full flex mt-auto'
+                userProfile={userProfile}
+                userVest={userVest}
+                positions={positions}
               />
-            )}
-
-            <PositionsStats
-              connected={connected}
-              positions={positions}
-              triggerUserProfileReload={triggerUserProfileReload}
-              title={<div className='flex gap-2'>Positions <LiveIcon /></div>}
-            />
-
-            <StakesStats
-              liquidStakedADX={liquidStakedADX}
-              lockedStakedADX={lockedStakedADX}
-              lockedStakedALP={lockedStakedALP}
-              lockedStakes={lockedStakes}
-              handleLockedStakeRedeem={handleLockedStakeRedeem}
-              handleClickOnFinalizeLockedRedeem={(
-                lockedStake: LockedStakeExtended,
-              ) => {
-                setLockedStake(lockedStake);
-                setUpdateLockedStake(false);
-                setFinalizeLockedStakeRedeem(true);
-              }}
-              handleClickOnUpdateLockedStake={(
-                lockedStake: LockedStakeExtended,
-              ) => {
-                setLockedStake(lockedStake);
-                setFinalizeLockedStakeRedeem(false);
-                setUpdateLockedStake(true);
-              }}
-            />
-
-            <UserRelatedAdrenaAccounts
-              userProfile={userProfile}
-              userVest={userVest}
-              positions={positions}
-            />
-
-            <AnimatePresence>
-              {updateLockedStake && (
-                <Modal
-                  title="Upgrade Locked Stake"
-                  close={() => {
-                    setLockedStake(null);
-                    setUpdateLockedStake(false);
-                    setFinalizeLockedStakeRedeem(false);
-                  }}
-                  className="max-w-[28em]"
-                >
-                  {lockedStake ? (
-                    <UpgradeLockedStake
-                      lockedStake={lockedStake}
-                      handleUpgradeLockedStake={handleUpgradeLockedStake}
-                    />
-                  ) : null}
-                </Modal>
-              )}
-
-              {finalizeLockedStakeRedeem && (
-                <Modal
-                  title="Early Exit"
-                  close={() => {
-                    setLockedStake(null);
-                    setUpdateLockedStake(false);
-                    setFinalizeLockedStakeRedeem(false);
-                  }}
-                  className="max-w-[25em]"
-                >
-                  {lockedStake ? (
-                    <FinalizeLockedStakeRedeem
-                      lockedStake={lockedStake}
-                      stakeTokenMintDecimals={
-                        lockedStake.tokenSymbol === 'ADX'
-                          ? window.adrena.client.adxToken.decimals
-                          : window.adrena.client.alpToken.decimals
-                      }
-                      handleLockedStakeRedeem={handleLockedStakeRedeem}
-                    />
-                  ) : null}
-                </Modal>
-              )}
-            </AnimatePresence>
-          </>
-        ) : (
-          <div className="flex h-[10em] bg-main w-full border items-center justify-center rounded-xl z-10">
-            <WalletConnection connected={connected} />
-          </div>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      </div >
     </>
   );
 }

@@ -73,7 +73,7 @@ export default function UserProfileBlock({ profile, setActiveProfile, className 
 
                 <div className="flex flex-1 flex-col">
                     <div className="flex w-full font-mono text-xxs text-txtfade">
-                        Total Volume Traded
+                        Total Open Volume
                     </div>
                     <div className="flex">
                         <FormatNumber

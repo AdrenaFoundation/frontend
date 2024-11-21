@@ -524,6 +524,8 @@ export default function EditPositionCollateral({
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className={rowStyle}>
             <div className="text-sm">Net Value</div>
             <div className="flex items-center justify-end">
@@ -556,6 +558,8 @@ export default function EditPositionCollateral({
               ) : null}
             </div>
           </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
@@ -597,7 +601,6 @@ export default function EditPositionCollateral({
               ) : null}
             </div>
           </div>
-
         </div>
       </div>
 

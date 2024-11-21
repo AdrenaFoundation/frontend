@@ -28,6 +28,7 @@ const greyColor = '#78828e';
 const whiteColor = '#ffffff';
 const orangeColor = '#f77f00';
 const blueColor = '#3a86ff';
+const purpleColor = '#9333ea';
 
 function createEntryPositionLine(
   chart: IChartWidgetApi,
@@ -51,6 +52,32 @@ function createEntryPositionLine(
     .setQuantity('$' + formatNumberShort(position.sizeUsd, 0))
     .setQuantityBackgroundColor(greyColor)
     .setQuantityBorderColor(greyColor);
+}
+
+function createBreakEvenPositionLine(
+  chart: IChartWidgetApi,
+  position: PositionExtended,
+  breakEvenPrice: number,
+): IPositionLineAdapter {
+  const color = `${purpleColor}80`;
+  const label = getLabel(
+    position.token.symbol,
+    position.side,
+    'Break Even',
+  );
+  return chart
+    .createPositionLine({})
+    .setText(label)
+    .setLineLength(3)
+    .setPrice(breakEvenPrice)
+    .setLineColor(color)
+    .setLineStyle(2)
+    .setBodyBackgroundColor(color)
+    .setBodyBorderColor(color)
+    .setBodyTextColor(whiteColor)
+    .setQuantity('') // Set quantity to an empty string
+    .setQuantityBackgroundColor('transparent') // Make background transparent
+    .setQuantityBorderColor('transparent'); // Make border transparent
 }
 
 function createLiquidationPositionLine(
@@ -78,12 +105,12 @@ function createLiquidationPositionLine(
 function getLabel(
   tokenSymbol: string,
   side: 'long' | 'short',
-  type: 'SL' | 'TP' | 'Long' | 'Short',
+  type: 'SL' | 'TP' | 'Long' | 'Short' | 'Break Even',
 ): string {
   const symbol = getTokenSymbol(tokenSymbol);
 
   // Return the label for the position line
-  if (type === 'Long' || type === 'Short') {
+  if (type === 'Long' || type === 'Short' || type === 'Break Even') {
     return `${symbol} ${type}`;
   }
 
@@ -143,9 +170,11 @@ const STORAGE_KEY_RESOLUTION = 'trading_chart_resolution';
 export default function TradingChart({
   token,
   positions,
+  showBreakEvenLine,
 }: {
   token: Token;
   positions: PositionExtended[] | null;
+  showBreakEvenLine: boolean;
 }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
 
@@ -173,6 +202,7 @@ export default function TradingChart({
     position: PublicKey;
     liquidation?: IPositionLineAdapter;
     entry: IPositionLineAdapter;
+    breakEven?: IPositionLineAdapter;
     stopLoss?: IPositionLineAdapter;
     takeProfit?: IPositionLineAdapter;
   };
@@ -208,6 +238,24 @@ export default function TradingChart({
           chart,
           position,
         );
+      }
+    }
+
+    // Break Even line
+    if (showBreakEvenLine) {
+      if (positionLine.breakEven) {
+        positionLine.breakEven.setPrice(position.breakEvenPrice);
+      } else {
+        positionLine.breakEven = createBreakEvenPositionLine(
+          chart,
+          position,
+          position.breakEvenPrice,
+        );
+      }
+    } else {
+      if (positionLine.breakEven) {
+        positionLine.breakEven.remove();
+        positionLine.breakEven = undefined;
       }
     }
 
@@ -481,12 +529,15 @@ export default function TradingChart({
           ) ?? null;
 
         // handle creation / modification / deletion for long positions
-        if (longPosition && !longPosition.pendingCleanupAndClose) {
+        if (longPosition) {
           if (newPositionLines && newPositionLines?.long) {
             modifyPositionLine(chart, longPosition, newPositionLines.long);
           } else {
             newPositionLines.long = {
               entry: createEntryPositionLine(chart, longPosition),
+              breakEven: showBreakEvenLine && longPosition.breakEvenPrice
+                ? createBreakEvenPositionLine(chart, longPosition, longPosition.breakEvenPrice)
+                : undefined,
               liquidation: longPosition.liquidationPrice
                 ? createLiquidationPositionLine(chart, longPosition)
                 : undefined,
@@ -519,7 +570,7 @@ export default function TradingChart({
         }
 
         // handle creation / modification / deletion for short positions
-        if (shortPosition && !shortPosition.pendingCleanupAndClose) {
+        if (shortPosition) {
           if (newPositionLines && newPositionLines?.short) {
             modifyPositionLine(chart, shortPosition, newPositionLines.short);
           } else {
@@ -568,6 +619,7 @@ export default function TradingChart({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     !!widget,
     widgetReady,
+    showBreakEvenLine,
   ]);
 
   return (

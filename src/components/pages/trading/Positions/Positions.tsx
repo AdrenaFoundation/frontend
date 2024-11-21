@@ -21,6 +21,7 @@ export default function Positions({
   positions,
   triggerUserProfileReload,
   isBigScreen,
+  showFeesInPnl,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -29,6 +30,7 @@ export default function Positions({
   positions: PositionExtended[] | null;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
+  showFeesInPnl: boolean;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -43,9 +45,6 @@ export default function Positions({
     useState<PositionExtended | null>(null);
 
   if (isBigScreen === null) return null;
-
-  const nonPendingCleanupAndClosePositions =
-    positions?.filter((position) => !position.pendingCleanupAndClose) || null;
 
   return (
     <>
@@ -198,11 +197,12 @@ export default function Positions({
         bodyClassName={bodyClassName}
         borderColor={borderColor}
         connected={connected}
-        positions={nonPendingCleanupAndClosePositions}
+        positions={positions}
         className={className}
         triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}
         triggerEditPositionCollateral={setPositionToEdit}
+        showFeesInPnl={showFeesInPnl}
       />
     </>
   );

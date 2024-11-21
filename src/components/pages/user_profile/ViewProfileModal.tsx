@@ -17,8 +17,10 @@ import PositionsHistory from '../trading/Positions/PositionsHistory';
 
 export default function ViewProfileModal({
     profile,
+    showFeesInPnl,
 }: {
     profile: UserProfileExtended;
+    showFeesInPnl: boolean;
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
 
@@ -67,7 +69,7 @@ export default function ViewProfileModal({
                 <>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <NumberDisplay
-                            title="Total Trade Volume"
+                            title="Total Open Volume"
                             nb={profile.totalTradeVolumeUsd}
                             format="currency"
                             className="bg-[#040D14] sm:min-w-[200px]"
@@ -222,6 +224,7 @@ export default function ViewProfileModal({
                                 <PositionBlockReadOnly
                                     key={position.pubkey.toBase58()}
                                     position={position}
+                                    showFeesInPnl={showFeesInPnl}
                                 />
                             ))}
                         </div>
@@ -238,6 +241,7 @@ export default function ViewProfileModal({
                     connected={connected}
                     walletAddress={profile.owner.toBase58()}
                     showShareButton={false}
+                    showFeesInPnl={showFeesInPnl}
                 />
             ) : null}
         </div>

@@ -4,7 +4,7 @@ import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
 import { RechartsData } from '@/types';
-import { getCustodyByMint } from '@/utils';
+import { getCustodyByMint, getGMT } from '@/utils';
 
 interface OpenInterestChartProps {
   isSmallScreen: boolean;
@@ -99,13 +99,11 @@ export default function OpenInterestChart({
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+            timeZone: 'UTC',
           });
         }
 
-        return new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        throw new Error('Invalid period');
       });
 
       const custodyInfos: TokenInfo[] = [];
@@ -202,6 +200,7 @@ export default function OpenInterestChart({
       ]}
       domain={['dataMax']}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
     />

@@ -139,6 +139,7 @@ export type PositionExtended = {
   collateralUsd: number;
   collateralAmount: number;
   price: number;
+  breakEvenPrice: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
   stopLossClosePositionPrice?: number | null;
@@ -146,8 +147,6 @@ export type PositionExtended = {
   stopLossIsSet: boolean;
   takeProfitLimitPrice?: number | null;
   takeProfitIsSet: boolean;
-  // The position is closed and still alive due to a pending cleanup and close from MrSablier
-  pendingCleanupAndClose: boolean;
 
   // Onchain data
   nativeObject: Position;
@@ -212,6 +211,7 @@ export type UserProfileExtended = {
   swapFeePaidUsd: number;
   // Aggregates
   totalPnlUsd: number;
+  // Only accounts for opens
   totalTradeVolumeUsd: number;
   totalFeesPaidUsd: number;
   openingAverageLeverage: number;

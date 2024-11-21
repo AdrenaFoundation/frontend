@@ -51,6 +51,8 @@ export default function Genesis({
   setFavoriteRpc,
   preferredSolanaExplorer,
   adapters,
+  showFeesInPnl,
+  setShowFeesInPnl,
 }: PageProps & {
   activeRpc: {
     name: string;
@@ -69,6 +71,8 @@ export default function Genesis({
   setFavoriteRpc: (favoriteRpc: string) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
+  showFeesInPnl: boolean;
+  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -615,6 +619,8 @@ export default function Genesis({
                     preferredSolanaExplorer={preferredSolanaExplorer}
                     isIcon
                     isGenesis
+                    showFeesInPnl={showFeesInPnl}
+                    setShowFeesInPnl={setShowFeesInPnl}
                   />
                   <WalletAdapter userProfile={userProfile} adapters={adapters} />
                 </div>

@@ -11,20 +11,19 @@ import AllPositions from './allPositions';
 import AllUserProfiles from './allUserProfiles';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
+import Flow from './flows';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
-export default function Monitoring(pageProps: PageProps) {
+export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesInPnl: boolean } & PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
   const [view, setView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles'
+    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows'
   >('lite');
   const [previousView, setPreviousView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles'
+    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows'
   >('lite');
-
-
 
   const searchParams = new URLSearchParams(window.location.search);
 
@@ -33,7 +32,7 @@ export default function Monitoring(pageProps: PageProps) {
       const searchParamsView = searchParams.get('view');
 
       if (
-        !['lite', 'full', 'livePositions', 'userProfiles'].includes(
+        !['lite', 'full', 'livePositions', 'userProfiles', 'flows'].includes(
           searchParamsView as string,
         )
       ) {
@@ -41,7 +40,7 @@ export default function Monitoring(pageProps: PageProps) {
       }
 
       setView(
-        searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles',
+        searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows',
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,7 +82,7 @@ export default function Monitoring(pageProps: PageProps) {
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className='flex items-center justify-evenly w-[20em] ml-auto mr-auto'
+          className='flex items-center justify-evenly w-[22em] ml-auto mr-auto'
 
         >
           <span
@@ -163,6 +162,26 @@ export default function Monitoring(pageProps: PageProps) {
           >
             User Profiles
           </span>
+
+          <span className="opacity-20 text-2xl">/</span>
+
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              view === 'flows' ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              searchParams.set('view', 'flows');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setView('flows');
+            }}
+          >
+            Flows
+          </span>
         </div>
 
         {/* {view === 'full' ? (
@@ -193,7 +212,7 @@ export default function Monitoring(pageProps: PageProps) {
           transition={{ duration: 0.3 }}
           className='min-h-[80vh]'
         >
-          <AllPositions />
+          <AllPositions showFeesInPnl={showFeesInPnl} />
         </motion.div>
       ) : null}
 
@@ -238,7 +257,21 @@ export default function Monitoring(pageProps: PageProps) {
           transition={{ duration: 0.3 }}
           className='min-h-[80vh]'
         >
-          <AllUserProfiles />{' '}
+          <AllUserProfiles showFeesInPnl={showFeesInPnl} />{' '}
+        </motion.div>
+      ) : null}
+
+      {view === 'flows' ? (
+        <motion.div
+          initial={{
+            opacity: 0,
+            translateX: -20,
+          }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ duration: 0.3 }}
+          className='min-h-[80vh]'
+        >
+          <Flow custodies={pageProps.custodies} />
         </motion.div>
       ) : null}
     </>

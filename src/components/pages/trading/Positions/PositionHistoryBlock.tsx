@@ -4,7 +4,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
@@ -123,11 +123,13 @@ export default function PositionHistoryBlock({
   borderColor,
   positionHistory,
   showShareButton = true,
+  showFeesInPnl,
 }: {
   bodyClassName?: string;
   borderColor?: string;
   positionHistory: PositionHistoryExtended;
   showShareButton?: boolean;
+  showFeesInPnl: boolean;
 }) {
   // const blockRef = useRef<HTMLDivElement>(null);
   // const isSmallSize = useResizeObserver(blockRef);
@@ -227,7 +229,11 @@ export default function PositionHistoryBlock({
 
   const renderFeesPaid = () => <div className="w-24">{feesPaid}</div>;
 
-  const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
+  useEffect(() => {
+    setShowAfterFees(showFeesInPnl);
+  }, [showFeesInPnl]);
+
+  const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl); // State to manage fee display
 
   const pnl = (
     <div className="flex flex-col items-center">
@@ -236,12 +242,12 @@ export default function PositionHistoryBlock({
         <label className="flex items-center ml-1 cursor-pointer">
           <Switch
             className="mr-0.5"
-            checked={!showAfterFees}
+            checked={showAfterFees}
             onChange={() => setShowAfterFees(!showAfterFees)}
             size="small"
           />
           <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-            {showAfterFees ? 'w/o fees' : 'w/ fees'}
+            {showAfterFees ? 'w/ fees' : 'w/o fees'}
           </span>
         </label>
       </div>
@@ -251,13 +257,13 @@ export default function PositionHistoryBlock({
           <FormatNumber
             nb={
               showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl
+                ? positionHistory.pnl
+                : positionHistory.pnl + positionHistory.fees
             }
             format="currency"
             className={`mr-0.5 opacity-90 font-bold text-sm text-${(showAfterFees
-              ? positionHistory.pnl + positionHistory.fees
-              : positionHistory.pnl) > 0
+              ? positionHistory.pnl
+              : positionHistory.pnl + positionHistory.fees) > 0
               ? 'green'
               : 'redbright'
               }`}
@@ -269,8 +275,8 @@ export default function PositionHistoryBlock({
           <FormatNumber
             nb={
               ((showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl) /
+                ? positionHistory.pnl
+                : positionHistory.pnl + positionHistory.fees) /
                 positionHistory.final_collateral_amount) *
               100
             }
@@ -280,14 +286,14 @@ export default function PositionHistoryBlock({
             precision={2}
             isDecimalDimmed={false}
             suffixClassName={`ml-0 text-${(showAfterFees
-              ? positionHistory.pnl + positionHistory.fees
-              : positionHistory.pnl) > 0
+              ? positionHistory.pnl
+              : positionHistory.pnl + positionHistory.fees) > 0
               ? 'green'
               : 'redbright'
               }`}
             className={`text-xxs opacity-90 text-${(showAfterFees
-              ? positionHistory.pnl + positionHistory.fees
-              : positionHistory.pnl) > 0
+              ? positionHistory.pnl
+              : positionHistory.pnl + positionHistory.fees) > 0
               ? 'green'
               : 'redbright'
               }`}
@@ -300,8 +306,8 @@ export default function PositionHistoryBlock({
   );
 
   const pnlValue = showAfterFees
-    ? positionHistory.pnl + positionHistory.fees
-    : positionHistory.pnl;
+    ? positionHistory.pnl
+    : positionHistory.pnl + positionHistory.fees;
 
   const percentage = positionHistory.final_collateral_amount
     ? (pnlValue / positionHistory.final_collateral_amount) * 100
@@ -407,7 +413,7 @@ export default function PositionHistoryBlock({
               variant='secondary'
               className='hidden xl:block opacity-50 hover:opacity-100'
               onClick={() => {
-              setIsOpen(true);
+                setIsOpen(true);
               }}
             />
           )}

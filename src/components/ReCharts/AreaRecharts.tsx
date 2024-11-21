@@ -28,6 +28,7 @@ export default function AreaRechart({
   tippyContent,
   subValue,
   formatY = 'currency',
+  gmt,
 }: {
   title: string;
   data: RechartsData[];
@@ -41,6 +42,7 @@ export default function AreaRechart({
   tippyContent?: ReactNode;
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
+  gmt?: number;
 }) {
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
@@ -129,7 +131,10 @@ export default function AreaRechart({
 
           <Tooltip
             content={
-              <CustomRechartsToolTip isValueOnly={labels.length === 1} />
+              <CustomRechartsToolTip
+                isValueOnly={labels.length === 1}
+                gmt={gmt}
+              />
             }
             cursor={false}
           />

@@ -1,6 +1,6 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Switch from '@/components/common/Switch/Switch';
@@ -17,10 +17,12 @@ export default function PositionBlockReadOnly({
     bodyClassName,
     borderColor,
     position,
+    showFeesInPnl,
 }: {
     bodyClassName?: string;
     borderColor?: string;
     position: PositionExtended;
+    showFeesInPnl: boolean;
 }) {
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -98,7 +100,11 @@ export default function PositionBlockReadOnly({
         </div>
     );
 
-    const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
+    useEffect(() => {
+        setShowAfterFees(showFeesInPnl);
+    }, [showFeesInPnl]);
+
+    const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl); // State to manage fee display
     const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
     const pnl = (
@@ -120,7 +126,11 @@ export default function PositionBlockReadOnly({
             {position.pnl ? (
                 <div className="flex items-center">
                     <FormatNumber
-                        nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
+                        nb={
+                            showAfterFees
+                                ? position.pnl + fees
+                                : position.pnl
+                        }
                         format="currency"
                         className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
                             ? 'green'
@@ -255,7 +265,7 @@ export default function PositionBlockReadOnly({
                             <Tippy
                                 content={
                                     <FormatNumber
-                                        nb={position.size}
+                                        nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
                                         format="number"
                                         className="text-gray-400 text-xs"
                                         precision={position.token.displayAmountDecimalsPrecision}
@@ -392,9 +402,9 @@ export default function PositionBlockReadOnly({
                     </div>
                 </div>
 
-                {(liquidable || position.pendingCleanupAndClose) && (
+                {(liquidable) && (
                     <div className="flex items-center justify-center pt-2 pb-2 border-t gap-4">
-                        {liquidable && !position.pendingCleanupAndClose && (
+                        {liquidable && (
                             <h2 className="text-red text-xs">Liquidable</h2>
                         )}
                     </div>
