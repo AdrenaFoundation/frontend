@@ -202,20 +202,23 @@ export const RANDOM_TABLE_DATA = (() => {
     },
   ] as any;
 
-  for (let i = 0; i < 98; i++) {
-    const randomNumber = Math.floor(Math.random() * 1500);
+  for (let i = 0; i < 357; i++) {
+    // fix ui fill
+    const total = Math.floor(Math.random() * 1500);
+    const size = Math.floor(Math.random() * 20);
+
     let color = 'bg-third';
 
-    if (randomNumber > 250) {
+    if (total > 250) {
       color = 'bg-[#0D4429]';
     }
-    if (randomNumber > 500) {
+    if (total > 500) {
       color = 'bg-[#016D32]';
     }
-    if (randomNumber > 750) {
+    if (total > 750) {
       color = 'bg-[#34AA49]';
     }
-    if (randomNumber > 1000) {
+    if (total > 1000) {
       color = 'bg-[#3AD353]';
     }
 
@@ -224,8 +227,9 @@ export const RANDOM_TABLE_DATA = (() => {
     ).getDay();
     if (tableData[day]) {
       tableData[day].stats.push({
-        total: randomNumber,
+        total,
         color,
+        size,
         date: new Date(
           tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
         ).toISOString(),

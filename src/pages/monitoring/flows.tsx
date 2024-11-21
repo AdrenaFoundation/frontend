@@ -8,11 +8,11 @@ import { twMerge } from 'tailwind-merge';
 import Select from '@/components/common/Select/Select';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
+import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
+import { RANDOM_TABLE_DATA } from '@/constant';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
-import ActivityOverview from '@/components/pages/monitoring/ActivityOverview';
 import { getDaysBetweenDates } from '@/utils';
-import { RANDOM_TABLE_DATA } from '@/constant';
 
 export default function Flow({
   custodies,
@@ -228,8 +228,8 @@ export default function Flow({
             ))}
           </div>
         ))}
-        <ActivityOverview
-          headers={['', 'Sep', 'Oct', 'Nov', 'Dec',]}
+        <ActivityCalendar
+          headers={['', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']}
           data={RANDOM_TABLE_DATA}
           setStartDate={setStartDate}
           setEndDate={setEndDate}
