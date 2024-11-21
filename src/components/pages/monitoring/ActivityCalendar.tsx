@@ -26,7 +26,7 @@ export default function ActivityCalendar({
                             <th
                                 key={index}
                                 className="text-sm col-span-4 text-gray-600"
-                                colSpan={index === 0 ? '' : index === 1 ? '1' : '4'}
+                                colSpan={index === 0 ? 0 : index === 1 ? 1 : 4}
                             >
                                 {header}
                             </th>
