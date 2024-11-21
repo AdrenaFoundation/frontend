@@ -51,7 +51,7 @@ export default function LongShortTradingInputs({
   tokenB,
   allowedTokenA,
   allowedTokenB,
-  position,
+  position: openedPosition,
   wallet,
   connected,
   setTokenA,
@@ -74,7 +74,6 @@ export default function LongShortTradingInputs({
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(position);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
@@ -181,11 +180,6 @@ export default function LongShortTradingInputs({
       newOverallLeverage: nativeToUi(newOverallLeverage, USD_DECIMALS),
     });
   }, [openedPosition, newPositionInfo, tokenB.decimals]);
-
-  // If the position is pending cleanup and close, we should consider there is no position
-  useEffect(() => {
-    setOpenedPosition(openedPosition);
-  }, [openedPosition]);
 
   useEffect(() => {
     calculateIncreasePositionInfo()
