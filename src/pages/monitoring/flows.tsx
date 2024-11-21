@@ -10,6 +10,9 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import FormatNumber from '@/components/Number/FormatNumber';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
+import ActivityOverview from '@/components/pages/monitoring/ActivityOverview';
+import { getDaysBetweenDates } from '@/utils';
+import { RANDOM_TABLE_DATA } from '@/constant';
 
 export default function Flow({
   custodies,
@@ -73,7 +76,7 @@ export default function Flow({
               { title: 'All Time' },
               { title: 'Last Month' },
               { title: 'Last Week' },
-              { title: 'Last Day' },
+              { title: 'Yesterday' },
               { title: 'Custom' },
             ]}
             selected={selectedRange}
@@ -110,7 +113,7 @@ export default function Flow({
 
       <div className="flex flex-wrap w-full gap-4">
         {Object.entries(groupedStats).map(([symbol, symbolStats]) => (
-          <div key={symbol} className="p-4 border rounded bg-[#050D14] flex-grow min-w-[20em]">
+          <div key={symbol} className="p-4 border rounded-lg bg-[#050D14] flex-grow min-w-[20em]">
             <h3 className="font-semibold flex items-center gap-2">
               <Image
                 src={custodies?.find((c) => c.tokenInfo.symbol.toLocaleLowerCase() === symbol.toLowerCase())?.tokenInfo.image || ''}
@@ -124,7 +127,7 @@ export default function Flow({
             {symbolStats.map((stat) => (
               <div key={stat.side} className="mt-2 flex flex-col gap-2">
                 <h4 className={`font-boldy ${stat.side === 'long' ? 'text-green' : 'text-redbright'}`}>{stat.side}</h4>
-                <div className="ml-4">
+                <div>
                   <div className="flex justify-between text-txtfade">
                     <span>Positions count:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
@@ -225,6 +228,12 @@ export default function Flow({
             ))}
           </div>
         ))}
+        <ActivityOverview
+          headers={['', 'Sep', 'Oct', 'Nov', 'Dec',]}
+          data={RANDOM_TABLE_DATA}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+        />
       </div>
     </StyledContainer >
   );

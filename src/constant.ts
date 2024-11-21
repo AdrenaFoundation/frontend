@@ -160,3 +160,69 @@ export const SOLANA_EXPLORERS_OPTIONS = {
       }`,
   },
 } as const;
+
+export const RANDOM_TABLE_DATA = (() => {
+  const tradingStartDate = new Date('2024-09-25T00:00:00Z');
+  const tableData = [
+    {
+      day: 'mon',
+      stats: [],
+    },
+    {
+      day: 'tue',
+      stats: [],
+    },
+    {
+      day: 'wed',
+      stats: [],
+    },
+    {
+      day: 'thu',
+      stats: [],
+    },
+    {
+      day: 'fri',
+      stats: [],
+    },
+    {
+      day: 'sat',
+      stats: [],
+    },
+    {
+      day: 'sun',
+      stats: [],
+    },
+  ] as any;
+
+  for (let i = 0; i < 98; i++) {
+    const randomNumber = Math.floor(Math.random() * 1500);
+    let color = 'bg-third';
+
+    if (randomNumber > 250) {
+      color = 'bg-[#0D4429]';
+    }
+    if (randomNumber > 500) {
+      color = 'bg-[#016D32]';
+    }
+    if (randomNumber > 750) {
+      color = 'bg-[#34AA49]';
+    }
+    if (randomNumber > 1000) {
+      color = 'bg-[#3AD353]';
+    }
+
+    const day = new Date(
+      tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
+    ).getDay();
+    if (tableData[day]) {
+      tableData[day].stats.push({
+        total: randomNumber,
+        color,
+        date: new Date(
+          tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+      });
+    }
+  }
+  return tableData;
+})();
