@@ -1,4 +1,6 @@
+import { Switch } from '@mui/material';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -15,8 +17,6 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
-import { Switch } from '@mui/material';
-import Tippy from '@tippyjs/react';
 
 export type Action = 'long' | 'short' | 'swap';
 
