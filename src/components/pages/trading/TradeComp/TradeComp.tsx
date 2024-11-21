@@ -89,7 +89,7 @@ export default function TradeComp({
                 )}
                 tokenA={tokenA}
                 tokenB={tokenB}
-                openedPosition={openedPosition}
+                position={openedPosition}
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 wallet={wallet}

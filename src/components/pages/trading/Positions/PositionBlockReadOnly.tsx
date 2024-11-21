@@ -402,9 +402,9 @@ export default function PositionBlockReadOnly({
                     </div>
                 </div>
 
-                {(liquidable || position.pendingCleanupAndClose) && (
+                {(liquidable) && (
                     <div className="flex items-center justify-center pt-2 pb-2 border-t gap-4">
-                        {liquidable && !position.pendingCleanupAndClose && (
+                        {liquidable && (
                             <h2 className="text-red text-xs">Liquidable</h2>
                         )}
                     </div>

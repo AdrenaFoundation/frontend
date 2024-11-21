@@ -1,4 +1,3 @@
-import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';

@@ -132,14 +132,28 @@ export default function Settings({
       <div className="w-full h-[1px] bg-bcolor my-5" />
 
       <h2>preferences</h2>
-      <div className="flex flex-row gap-2 justify-between">
-        <p className="opacity-50 w-full mt-2">Show fees in PnL</p>
-        <div className="flex flex-col gap-1">
-          <Switch
-            checked={showFeesInPnl}
-            onChange={(event) => setShowFeesInPnl(event.target.checked)}
-          />
-        </div>
+      <div className="flex flex-row mt-2 justify-between">
+        <p className="opacity-50 w-full">Show fees in PnL</p>
+        <Switch
+          checked={showFeesInPnl}
+          onChange={(event) => setShowFeesInPnl(event.target.checked)}
+          size="small"
+          sx={{
+            transform: 'scale(0.7)',
+            '& .MuiSwitch-switchBase': {
+              color: '#ccc',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked': {
+              color: '#1a1a1a',
+            },
+            '& .MuiSwitch-track': {
+              backgroundColor: '#555',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              backgroundColor: '#10e1a3',
+            },
+          }}
+        />
       </div>
     </>
   );

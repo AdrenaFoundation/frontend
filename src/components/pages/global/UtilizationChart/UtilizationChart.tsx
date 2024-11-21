@@ -172,7 +172,7 @@ export default function UtilizationChart() {
       period={period}
       gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
-      isReferenceLine
+    
       formatY="percentage"
     />
   );

@@ -31,7 +31,6 @@ export default function LineRechart({
   tippyContent,
   isSmallScreen = true,
   subValue,
-  isReferenceLine,
   formatY = 'currency',
 }: {
   title: string;
@@ -46,7 +45,6 @@ export default function LineRechart({
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
   subValue?: number;
-  isReferenceLine?: boolean;
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
 }) {
@@ -184,19 +182,6 @@ export default function LineRechart({
               />
             );
           })}
-
-          {isReferenceLine && (
-            <ReferenceLine
-              y={100}
-              stroke="white"
-              label={{
-                position: 'top',
-                value: 'Max utilization',
-                fill: 'white',
-                fontSize: 12,
-              }}
-            />
-          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
