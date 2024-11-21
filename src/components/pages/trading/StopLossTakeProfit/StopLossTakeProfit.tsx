@@ -282,6 +282,25 @@ export default function StopLossTakeProfit({
 
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between items-center">
+              <span className="text-sm opacity-50">Entry</span>
+
+              <FormatNumber
+                nb={position.price}
+                format="currency"
+                precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
+                isDecimalDimmed={true}
+                className="text-txtfade"
+              />
+            </div>
+          </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className="w-full flex justify-between">
+            <div className="flex w-full justify-between items-center">
               <span className="text-sm opacity-50">Liquidation</span>
 
               <FormatNumber
@@ -297,71 +316,32 @@ export default function StopLossTakeProfit({
             </div>
           </div>
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className="w-full flex justify-between">
-            <div className="flex w-full justify-between items-center">
-              <span className="text-sm opacity-50">Entry</span>
-
-              <FormatNumber
-                nb={position.price}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={
-                  position.token.displayPriceDecimalsPrecision
-                }
-                isDecimalDimmed={true}
-                className="text-gray-100"
-              />
-            </div>
-          </div>
         </div>
 
         <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-lg border p-3 py-2.5">
+
           <div className="flex w-full justify-between items-center">
-            <span className="text-sm opacity-50">Take Profit</span>
-            <div className={takeProfitInput !== null ? 'text-blue' : ''}>
-              <FormatNumber
-                nb={takeProfitInput}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={
-                  position.token.displayPriceDecimalsPrecision
-                }
-                className={twMerge(
-                  'text-sm text-regular',
-                  takeProfitInput !== null ? 'text-blue' : '',
-                )}
-                isDecimalDimmed={false}
-              />
-            </div>
+            <span className="text-sm text-txtfade">Net Value</span>
+            <>
+              <NetValueTooltip position={position}>
+                <span className="underline-dashed">
+                  <FormatNumber
+                    nb={positionNetValue}
+                    format="currency"
+                    className="text-sm text-regular text-txtfade"
+                    minimumFractionDigits={2}
+                  />
+                </span>
+              </NetValueTooltip>
+            </>
           </div>
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="flex w-full justify-between items-center">
-            <span className="text-sm opacity-50">Stop Loss</span>
-            <div className={stopLossInput !== null ? 'text-blue' : ''}>
-              <FormatNumber
-                nb={stopLossInput}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={
-                  position.token.displayPriceDecimalsPrecision
-                }
-                className={twMerge(
-                  'text-sm text-regular',
-                  stopLossInput !== null ? 'text-blue' : '',
-                )}
-                isDecimalDimmed={false}
-              />
+            <div className="text-sm text-txtfade">
+              PnL <span className="test-xs text-txtfade">(after fees)</span>
             </div>
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className="flex w-full justify-between items-center">
-            <span className="text-sm opacity-50">PnL</span>
             <div
               className={twMerge(
                 'font-bold text-sm',
@@ -394,19 +374,45 @@ export default function StopLossTakeProfit({
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="flex w-full justify-between items-center">
-            <span className="text-sm opacity-50">Net Value</span>
-            <>
-              <NetValueTooltip position={position}>
-                <span className="underline-dashed">
-                  <FormatNumber
-                    nb={positionNetValue}
-                    format="currency"
-                    className="text-sm text-regular"
-                  />
-                </span>
-              </NetValueTooltip>
-            </>
+            <span className="text-sm">Take Profit</span>
+            <div className={takeProfitInput !== null ? 'text-blue' : ''}>
+              <FormatNumber
+                nb={takeProfitInput}
+                format="currency"
+                precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
+                className={twMerge(
+                  'text-sm text-regular',
+                  takeProfitInput !== null ? 'text-blue' : '',
+                )}
+                isDecimalDimmed={false}
+              />
+            </div>
           </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className="flex w-full justify-between items-center">
+            <span className="text-sm">Stop Loss</span>
+            <div className={stopLossInput !== null ? 'text-blue' : ''}>
+              <FormatNumber
+                nb={stopLossInput}
+                format="currency"
+                precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
+                className={twMerge(
+                  'text-sm text-regular',
+                  stopLossInput !== null ? 'text-blue' : '',
+                )}
+                isDecimalDimmed={false}
+              />
+            </div>
+          </div>
+
         </div>
       </div>
 
