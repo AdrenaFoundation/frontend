@@ -782,8 +782,10 @@ export default function EditPositionCollateral({
         </>
       )}
 
+      <div className="w-full h-[1px] bg-bcolor my-1" />
+
       <Button
-        className="m-4"
+        className="mx-4 mt-0 mb-4"
         size="lg"
         title={executeBtnText}
         disabled={!isInputValid || belowMinLeverage || aboveMaxLeverage}

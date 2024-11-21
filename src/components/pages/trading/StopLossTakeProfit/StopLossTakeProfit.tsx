@@ -235,7 +235,7 @@ export default function StopLossTakeProfit({
   return (
     <div
       className={twMerge(
-        'flex flex-col gap-3 mt-4 h-full w-full items-center pb-6',
+        'flex flex-col gap-3 mt-4 h-full w-full items-center',
         className,
       )}
     >
@@ -432,7 +432,10 @@ export default function StopLossTakeProfit({
         setIsError={setTakeProfitError}
       />
 
-      <div className="w-full mt-4 gap-4 flex px-6 sm:px-4">
+
+      <div className="w-full h-[1px] bg-bcolor my-1" />
+
+      <div className="w-full mt-0 gap-4 flex sm:px-4 mx-4 mb-4">
         <Button
           className="font-boldy w-[10em] grow"
           size="lg"

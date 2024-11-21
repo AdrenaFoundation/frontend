@@ -390,6 +390,9 @@ export default function ClosePosition({
         </div>
       </div>
 
+
+      <div className="w-full h-[1px] bg-bcolor mt-4" />
+
       <Button
         className="m-4"
         size="lg"

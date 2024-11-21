@@ -214,11 +214,6 @@ export default function StopLossTakeProfitInput({
   const isLong = position.side === 'long';
   const isNegative = (isLong && isStopLoss) || (!isLong && !isStopLoss);
 
-  const percentages = [0.1, 0.25, 0.5, 1, 5];
-  const isStopLoss = type === 'Stop Loss';
-  const isLong = position.side === 'long';
-  const isNegative = (isLong && isStopLoss) || (!isLong && !isStopLoss);
-
   return (
     <div className="flex flex-col w-full">
       <div className="border-t border-bcolor w-full h-[1px]" />

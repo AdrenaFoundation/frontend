@@ -116,6 +116,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
     const nbDiv = (
       <p ref={ref} className={twMerge('font-mono inline-block', className)}>
         {isAbbreviate && isAbbreviateIcon && '~'}
+        {showSignBeforePrefix && sign}
         {prefix && <span className={twMerge(className, prefixClassName)}>{prefix}</span>}
         {integer}
         {decimal && (
