@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
@@ -369,7 +368,7 @@ export default function StopLossTakeProfit({
                 positionNetPnl > 0
                   ? 'text-green'
                   : positionNetPnl < 0
-                    ? 'text-red'
+                    ? 'text-redbright'
                     : 'opacity-opacity-50',
               )}
             >
@@ -384,7 +383,7 @@ export default function StopLossTakeProfit({
                   positionNetPnl > 0
                     ? 'text-green'
                     : positionNetPnl < 0
-                      ? 'text-red'
+                      ? 'text-redbright'
                       : 'opacity-opacity-50',
                 )}
                 isDecimalDimmed={false}
