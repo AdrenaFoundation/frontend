@@ -73,7 +73,7 @@ export default function Flow({
               { title: 'All Time' },
               { title: 'Last Month' },
               { title: 'Last Week' },
-              { title: 'Yesterday' },
+              { title: 'Last Day' },
               { title: 'Custom' },
             ]}
             selected={selectedRange}
