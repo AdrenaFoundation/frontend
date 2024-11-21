@@ -15,6 +15,8 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
+import { Switch } from '@mui/material';
+import Tippy from '@tippyjs/react';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -75,6 +77,8 @@ export default function Trade({
 
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
+
+  const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(false);
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
 
@@ -268,7 +272,6 @@ export default function Trade({
           ) : null}
 
           <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
-            {/* Display trading chart for appropriate token */}
             {tokenA && tokenB ? (
               <TradingChart
                 token={
@@ -279,8 +282,37 @@ export default function Trade({
                       : tokenA
                 }
                 positions={positions}
+                showBreakEvenLine={showBreakEvenLine}
               />
             ) : null}
+          </div>
+
+          <div className="flex items-center justify-end p-0.5 bg-secondary text-white mb-1">
+            <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+              <p className="opacity-50 text-xs underline-dashed cursor-help">
+                Show Break Even line
+              </p>
+            </Tippy>
+            <Switch
+              checked={showBreakEvenLine}
+              onChange={(event) => setShowBreakEvenLine(event.target.checked)}
+              size="small"
+              sx={{
+                transform: 'scale(0.7)',
+                '& .MuiSwitch-switchBase': {
+                  color: '#ccc',
+                },
+                '& .MuiSwitch-switchBase.Mui-checked': {
+                  color: '#1a1a1a',
+                },
+                '& .MuiSwitch-track': {
+                  backgroundColor: '#555',
+                },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                  backgroundColor: '#10e1a3',
+                },
+              }}
+            />
           </div>
         </div>
 
