@@ -9,6 +9,8 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
+import TradingChartHeaderStats from './TradingChartHeaderStats';
+
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
   return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
 }
@@ -27,39 +29,6 @@ export default function TradingChartHeader({
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
-  const stats = useDailyStats();
-  const [previousTokenPrice, setPreviousTokenPrice] = useState<number | null>(
-    null,
-  );
-  const [tokenColor, setTokenColor] = useState<
-    'text-white' | 'text-green' | 'text-red'
-  >('text-white');
-
-  if (selectedTokenPrice !== null) {
-    if (previousTokenPrice !== null) {
-      // if streamingTokenPrices is higher than previous value, set color to green
-      // if streamingTokenPrices is smaller than previous value, set color to red
-      const newTokenColor =
-        selectedTokenPrice > previousTokenPrice
-          ? 'text-green'
-          : selectedTokenPrice < previousTokenPrice
-          ? 'text-red'
-          : tokenColor;
-      // make sure we're only updating the local state if the new color is different.
-      if (newTokenColor !== tokenColor) {
-        setTokenColor(newTokenColor);
-      }
-    }
-
-    if (selectedTokenPrice !== previousTokenPrice) {
-      setPreviousTokenPrice(selectedTokenPrice);
-    }
-  }
-
-  const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
-  const dailyVolume = stats?.[selected.symbol]?.dailyVolume ?? null;
-  const lastDayHigh = stats?.[selected.symbol]?.lastDayHigh ?? null;
-  const lastDayLow = stats?.[selected.symbol]?.lastDayLow ?? null;
 
   return (
     <>
@@ -102,8 +71,8 @@ export default function TradingChartHeader({
             align="left"
           />
         </div>
-
-        <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
+        <TradingChartHeaderStats selected={selected} />
+        {/* <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
           <FormatNumber
             nb={selectedTokenPrice}
             format="currency"
@@ -178,7 +147,7 @@ export default function TradingChartHeader({
               </span>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );

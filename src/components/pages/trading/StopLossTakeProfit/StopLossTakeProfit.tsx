@@ -435,9 +435,9 @@ export default function StopLossTakeProfit({
 
       <div className="w-full h-[1px] bg-bcolor my-1" />
 
-      <div className="w-full mt-0 gap-4 flex sm:px-4 mx-4 mb-4">
+      <div className="w-full mt-0 gap-4 flex flex-col sm:flex-row px-6 mx-4 mb-4">
         <Button
-          className="font-boldy w-[10em] grow"
+          className="font-boldy w-full"
           size="lg"
           title="Cancel"
           variant="outline"
@@ -445,7 +445,7 @@ export default function StopLossTakeProfit({
         />
 
         <Button
-          className="font-boldy w-[10em] grow"
+          className="font-boldy w-full"
           size="lg"
           title="Confirm"
           disabled={stopLossError || takeProfitError}

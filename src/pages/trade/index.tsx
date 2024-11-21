@@ -13,6 +13,7 @@ import PositionsHistory from '@/components/pages/trading/Positions/PositionsHist
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
+import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
@@ -489,9 +490,14 @@ export default function Trade({
                   activePositionModal.slice(1)
                   } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col p-2 sm:p-4 overflow-auto h-[100%]"
+                className="flex flex-col overflow-y-auto"
               >
-                <div className="flex w-full">
+                {tokenB &&
+                  <TradingChartMini
+                    token={tokenB}
+                  />}
+                <div className='bg-bcolor w-full h-[1px] my-3' />
+                <div className="flex w-full px-4">
                   <TradeComp
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
