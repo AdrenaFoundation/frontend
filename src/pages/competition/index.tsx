@@ -804,8 +804,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                 {activeProfile && (
                     <Modal
                         className="h-[80vh] overflow-y-scroll w-full"
-                        wrapperClassName="items-start w-full max-w-[820px] sm:mt-0"
-                        title=""
+                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
                         close={() => setActiveProfile(null)}
                     >
                         <ViewProfileModal profile={activeProfile} showFeesInPnl={showFeesInPnl} />

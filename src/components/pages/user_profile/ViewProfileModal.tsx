@@ -1,15 +1,11 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import arrowIcon from '@/../public/images/Icons/arrow-sm-45.svg';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
-import { getAbbrevWalletAddress, getAccountExplorer } from '@/utils';
 
 import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
 import PositionBlockReadOnly from '../trading/Positions/PositionBlockReadOnly';
