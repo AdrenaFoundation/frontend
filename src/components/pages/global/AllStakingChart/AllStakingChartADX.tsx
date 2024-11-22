@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { ResponsiveContainer, Treemap } from 'recharts';
 
 import Loader from '@/components/Loader/Loader';
-
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
 
 const colors = {
@@ -26,7 +25,6 @@ const CustomizedContent: React.FC<{
   rank: number;
   name: string;
   duration: string | null;
-  stakingPubkey: PublicKey;
   stakedAmount: number;
 }> = ({
   depth,
@@ -38,11 +36,8 @@ const CustomizedContent: React.FC<{
   index,
   color,
   name,
-  stakingPubkey,
   stakedAmount,
 }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
     let num: string = stakedAmount.toString();
 
     if (stakedAmount > 999_999_999) {
@@ -65,7 +60,6 @@ const CustomizedContent: React.FC<{
             stroke: "#fff",
             strokeWidth: depth === 1 ? 5 : 1,
             strokeOpacity: 1,
-            opacity: isHovered ? 1 : 0.9,
           }}
         />
 
@@ -167,7 +161,7 @@ export default function AllStakingChartADX({
           dataKey="size"
           isAnimationActive={false}
           // Note: Needs to provide keys for typescript to be happy, even though Treemap is filling up the keys
-          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} duration={null} stakingPubkey={PublicKey.default} stakedAmount={0} />}>
+          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} duration={null} stakedAmount={0} />}>
         </Treemap>
       </ResponsiveContainer>
     </div >

@@ -1,17 +1,14 @@
 import React from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import { useSelector } from '@/store/store';
-
-import { useAllStakingStats } from '@/hooks/useAllStakingStats';
+import FormatNumber from '@/components/Number/FormatNumber';
 import AllStakingChartADX from '@/components/pages/global/AllStakingChart/AllStakingChartADX';
 import AllStakingChartALP from '@/components/pages/global/AllStakingChart/AllStakingChartALP';
-import FormatNumber from '@/components/Number/FormatNumber';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import { useAllStakingStats } from '@/hooks/useAllStakingStats';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 
 export default function AllStaking() {
-    const wallet = useSelector((state) => state.walletState.wallet);
     const { allStakingStats } = useAllStakingStats();
     const totalSupplyADX = useADXTotalSupply();
     const totalSupplyALP = useALPTotalSupply();
