@@ -381,6 +381,7 @@ export default function Trade({
                   History
                 </span>
               </div>
+
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
                   <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />

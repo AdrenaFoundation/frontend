@@ -42,7 +42,7 @@ export const calculatePnLandLiquidationPrice = (
 export default function usePositions(): PositionExtended[] | null {
   const wallet = useSelector((s) => s.walletState.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
-  const tokenPrices = useSelector((s) => s.tokenPrices);
+  const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
 
   // Do initial load of positions then start streaming
   const initialSetup = useCallback(async () => {
@@ -101,7 +101,7 @@ export default function usePositions(): PositionExtended[] | null {
               return;
             }
 
-            calculatePnLandLiquidationPrice(position, tokenPrices);
+            calculatePnLandLiquidationPrice(position, streamingTokenPrices);
 
             setPositions((prevPositions) => [
               ...(prevPositions?.filter(
@@ -120,13 +120,13 @@ export default function usePositions(): PositionExtended[] | null {
   }, [initialSetup]);
 
   useEffect(() => {
-    if (!positions || !tokenPrices) return;
+    if (!positions || !streamingTokenPrices) return;
 
     positions.forEach((position) => {
-      calculatePnLandLiquidationPrice(position, tokenPrices);
+      calculatePnLandLiquidationPrice(position, streamingTokenPrices);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenPrices, positions]);
+  }, [streamingTokenPrices, positions]);
 
   return positions;
 }
