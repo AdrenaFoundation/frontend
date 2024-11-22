@@ -38,7 +38,7 @@ import {
 } from '@/utils';
 
 import logo from '../../public/images/logo.svg';
-import store, { useDispatch } from '../store/store';
+import store, { useDispatch, useSelector } from '../store/store';
 
 function Loader(): JSX.Element {
   return (
@@ -181,15 +181,15 @@ function AppComponent({
   const wallet = useWallet(adapters);
   const positions = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
+  const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
 
   useWatchTokenPrices();
 
-  // Fetch token balances for the connected wallet, on initial mount of the app.
+  // Fetch token balances for the connected wallet:
+  // on initial mount of the app & on account change.
   useEffect(() => {
     dispatch(fetchWalletTokenBalances());
-    // dispatch is stable, never changes, doesn't need to be included in hook dependencies.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [walletAddress, dispatch]);
 
   const [cookies, setCookie] = useCookies([
     'terms-and-conditions-acceptance',
