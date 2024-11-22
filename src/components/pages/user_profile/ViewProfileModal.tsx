@@ -11,11 +11,10 @@ import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress, getAccountExplorer } from '@/utils';
 
-import StatsDisplay from '../monitoring/Data/StatsDisplay';
 import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
 import PositionBlockReadOnly from '../trading/Positions/PositionBlockReadOnly';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
-import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
+import OwnerBlock from './OwnerBlock';
 
 export default function ViewProfileModal({
     profile,
@@ -40,22 +39,18 @@ export default function ViewProfileModal({
 
     const totalPnlColorClass =
         profile.totalPnlUsd < 0 ? 'text-red' : 'text-green';
-    return (
-        <div className="flex flex-col gap-5 p-3 sm:p-5 w-full">
-            <div>
-                <h2 className="capitalize font-boldy">{profile.nickname}</h2>
-                <Link
-                    href={getAccountExplorer(profile.pubkey)}
-                    target="_blank"
-                    className="flex flex-row gap-1 items-center opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                >
-                    <p className="font-mono">
-                        {getAbbrevWalletAddress(profile.pubkey.toBase58())}
-                    </p>
 
-                    <Image src={arrowIcon} alt="arrow" width={5} height={5} />
-                </Link>
-            </div>
+    return (
+        <div className="flex flex-col gap-5 pl-3 pr-3 pb-3 pt-[6em] w-full">
+            <OwnerBlock
+                userProfile={profile}
+                triggerUserProfileReload={() => {
+                    //
+                }}
+                canUpdateNickname={false}
+                className="flex w-full w-min-[30em]"
+                walletPubkey={profile.owner}
+            />
 
             <TabSelect
                 tabs={[
