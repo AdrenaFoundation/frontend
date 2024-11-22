@@ -4157,11 +4157,12 @@ export class AdrenaClient {
   }
 
   public async loadAllStaking(): Promise<UserStakingExtended[] | null> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
-    const allStaking = await this.adrenaProgram.account.userStaking.all();
+    const allStaking =
+      await this.readonlyAdrenaProgram.account.userStaking.all();
 
     if (!allStaking) return null;
 
