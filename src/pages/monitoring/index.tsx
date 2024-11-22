@@ -33,7 +33,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       const searchParamsView = searchParams.get('view');
 
       if (
-        !['lite', 'full', 'livePositions', 'userProfiles', 'flows'].includes(
+        !['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows'].includes(
           searchParamsView as string,
         )
       ) {
@@ -41,7 +41,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       }
 
       setView(
-        searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows',
+        searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows',
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
