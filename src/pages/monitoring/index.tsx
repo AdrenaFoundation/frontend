@@ -8,11 +8,11 @@ import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
 import AllPositions from './allPositions';
+import AllStaking from './allStaking';
 import AllUserProfiles from './allUserProfiles';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
 import Flow from './flows';
-import AllStaking from './allStaking';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
