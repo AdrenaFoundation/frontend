@@ -391,17 +391,17 @@ export default function ClosePosition({
       </div>
 
 
-      <div className="w-full h-[1px] bg-bcolor mt-4" />
-
-      <Button
-        className="m-4"
-        size="lg"
-        variant="primary"
-        title={
-          <span className="text-main text-lg font-boldy">Close Position</span>
-        }
-        onClick={() => handleExecute()}
-      />
+      <div className='w-full p-4 border-t mt-4'>
+        <Button
+          className='w-full'
+          size="lg"
+          variant="primary"
+          title={
+            <span className="text-main text-lg font-boldy">Close Position</span>
+          }
+          onClick={() => handleExecute()}
+        />
+      </div>
     </div>
   );
 }

@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import { useEffect } from 'react';
 
-import FormatNumber from '@/components/Number/FormatNumber';
 import { Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import TradingChartHeaderStats from '../TradingChartHeader/TradingChartHeaderStats';
 
 export default function TradingChartMini({ token }: { token: Token }) {
+
     useEffect(() => {
         const cleanUpWidget = () => {
             const container = document.getElementById(

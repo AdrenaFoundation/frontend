@@ -433,9 +433,8 @@ export default function StopLossTakeProfit({
       />
 
 
-      <div className="w-full h-[1px] bg-bcolor my-1" />
 
-      <div className="w-full mt-0 gap-4 flex flex-col sm:flex-row px-6 mx-4 mb-4">
+      <div className="w-full mt-0 gap-4 flex flex-col sm:flex-row p-4 border-t">
         <Button
           className="font-boldy w-full"
           size="lg"
