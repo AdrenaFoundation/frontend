@@ -72,8 +72,6 @@ export function useAllStakingStats(): {
                     });
                 });
 
-                console.log('allStakingStats', allStakingStats);
-
                 setAllStakingStats(allStakingStats);
             } catch (e) {
                 console.log('Error loading user profiles', e);

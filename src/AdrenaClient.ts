@@ -4157,7 +4157,7 @@ export class AdrenaClient {
   }
 
   public async loadAllStaking(): Promise<UserStakingExtended[] | null> {
-    if (!this.readonlyAdrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram) {
       throw new Error('adrena program not ready');
     }
 
