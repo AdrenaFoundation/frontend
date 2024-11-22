@@ -1,19 +1,16 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import React, { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-import arrowIcon from '@/../public/images/Icons/arrow-sm-45.svg';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
-import { getAbbrevWalletAddress, getAccountExplorer } from '@/utils';
 
-import StatsDisplay from '../monitoring/Data/StatsDisplay';
 import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
 import PositionBlockReadOnly from '../trading/Positions/PositionBlockReadOnly';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
+import OwnerBlock from './OwnerBlock';
 
 export default function ViewProfileModal({
     profile,
@@ -38,22 +35,18 @@ export default function ViewProfileModal({
 
     const totalPnlColorClass =
         profile.totalPnlUsd < 0 ? 'text-red' : 'text-green';
-    return (
-        <div className="flex flex-col gap-5 p-3 sm:p-5 w-full">
-            <div>
-                <h2 className="capitalize font-boldy">{profile.nickname}</h2>
-                <Link
-                    href={getAccountExplorer(profile.pubkey)}
-                    target="_blank"
-                    className="flex flex-row gap-1 items-center opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                >
-                    <p className="font-mono">
-                        {getAbbrevWalletAddress(profile.pubkey.toBase58())}
-                    </p>
 
-                    <Image src={arrowIcon} alt="arrow" width={5} height={5} />
-                </Link>
-            </div>
+    return (
+        <div className="flex flex-col gap-5 pl-3 pr-3 pb-3 pt-[6em] w-full">
+            <OwnerBlock
+                userProfile={profile}
+                triggerUserProfileReload={() => {
+                    //
+                }}
+                canUpdateNickname={false}
+                className="flex w-full w-min-[30em]"
+                walletPubkey={profile.owner}
+            />
 
             <TabSelect
                 tabs={[
@@ -65,154 +58,73 @@ export default function ViewProfileModal({
                 titleClassName="text-xs sm:text-sm"
                 onClick={(title) => setSelectedTab(title)}
             />
+
             {selectedTab === 'Overview' ? (
                 <>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <NumberDisplay
-                            title="Total Open Volume"
+                            title="Open Volume"
                             nb={profile.totalTradeVolumeUsd}
                             format="currency"
-                            className="bg-[#040D14] sm:min-w-[200px]"
-                        />
-                        <NumberDisplay
-                            title="Total PnL"
-                            nb={profile.totalPnlUsd}
-                            format="currency"
-                            className={'bg-[#040D14] sm:min-w-[200px]'}
-                            bodyClassName={totalPnlColorClass}
+                            className='border-0 min-w-[9em] p-1'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                            bodyClassName='text-base'
                             isDecimalDimmed={false}
                         />
+
+                        <NumberDisplay
+                            title="PnL"
+                            nb={profile.totalPnlUsd}
+                            format="currency"
+                            className='border-0 min-w-[9em] p-1'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                            bodyClassName={twMerge(
+                                'text-base',
+                                totalPnlColorClass,
+                            )}
+                            isDecimalDimmed={false}
+                        />
+
+                        <NumberDisplay
+                            title="Total fees paid"
+                            nb={profile.totalFeesPaidUsd}
+                            format="currency"
+                            className='border-0 min-w-[9em] p-1'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                            bodyClassName="text-red text-base"
+                            isDecimalDimmed={false}
+                        />
+
                         <NumberDisplay
                             title="Opening Average Leverage"
                             nb={profile.openingAverageLeverage}
                             format="number"
                             suffix=" x"
                             isDecimalDimmed={false}
-                            className="bg-[#040D14] sm:min-w-[200px]"
-                            bodyClassName={leverageColorClass}
+                            className='border-0 min-w-[9em] p-1'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                            bodyClassName={twMerge('text-base', leverageColorClass)}
                         />
+
                         <NumberDisplay
                             title="Long/Short Ratio"
                             nb={
                                 (profile.longStats.openedPositionCount /
                                     (profile.longStats.openedPositionCount +
-                                        profile.shortStats.openedPositionCount)) *
-                                100
+                                        profile.shortStats.openedPositionCount)) * 100
                             }
                             format="percentage"
-                            className="bg-[#040D14] sm:min-w-[200px]"
-                            isDecimalDimmed={false}
-                        />
-                        <NumberDisplay
-                            title="Total fees paid"
-                            nb={profile.totalFeesPaidUsd}
-                            format="currency"
-                            className="bg-[#040D14] sm:min-w-[200px]"
-                            bodyClassName="text-red"
+                            className='border-0 min-w-[9em] p-1'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                            bodyClassName={twMerge('text-base', leverageColorClass)}
                             isDecimalDimmed={false}
                         />
                     </div>
-                    <StatsDisplay
-                        title="Long Positions"
-                        stats={[
-                            {
-                                name: 'Total trades',
-                                value: profile.longStats.openedPositionCount,
-                                format: 'number',
-                                precision: 0,
-                            },
-                            {
-                                name: 'Liquidation Count',
-                                value: profile.longStats.liquidatedPositionCount,
-                                format: 'number',
-                            },
-                            {
-                                name: 'Opening Average Leverage',
-                                value: profile.longStats.openingAverageLeverage,
-                                format: 'number',
-                                suffix: ' x',
-                                bodyClassName: getLeverageColorClass(
-                                    profile.longStats.openingAverageLeverage,
-                                ),
-                                isDecimalDimmed: false,
-                            },
-                            {
-                                name: 'Total Profits',
-                                value: profile.longStats.profitsUsd,
-                                format: 'currency',
-                                bodyClassName: 'text-green',
-                                isDecimalDimmed: false,
-                            },
-                            {
-                                name: 'Total Fees Paid',
-                                value: profile.longStats.feePaidUsd,
-                                format: 'currency',
-                                precision: 2,
-                                bodyClassName: 'text-red',
-                                isDecimalDimmed: false,
-                            },
-                            {
-                                name: 'Total Losses',
-                                value: profile.longStats.lossesUsd,
-                                format: 'currency',
-                                bodyClassName: 'text-red',
-                                isDecimalDimmed: false,
-                            },
-                        ]}
-                        isLive
-                    />
-
-                    <StatsDisplay
-                        title="Short Positions"
-                        stats={[
-                            {
-                                name: 'Total trades',
-                                value: profile.shortStats.openedPositionCount,
-                                format: 'number',
-                                precision: 0,
-                            },
-                            {
-                                name: 'Liquidation Count',
-                                value: profile.shortStats.liquidatedPositionCount,
-                                format: 'number',
-                            },
-                            {
-                                name: 'Opening Average Leverage',
-                                value: profile.shortStats.openingAverageLeverage,
-                                format: 'number',
-                                suffix: ' x',
-                                bodyClassName: getLeverageColorClass(
-                                    profile.shortStats.openingAverageLeverage,
-                                ),
-                                isDecimalDimmed: false,
-                            },
-                            {
-                                name: 'Total Profits',
-                                value: profile.shortStats.profitsUsd,
-                                format: 'currency',
-                                precision: profile.shortStats.profitsUsd > 1000 ? 0 : 2,
-                                bodyClassName: 'text-green',
-                                isDecimalDimmed: false,
-                            },
-                            {
-                                name: 'Total Fees Paid',
-                                value: profile.shortStats.feePaidUsd,
-                                format: 'currency',
-                                precision: profile.shortStats.feePaidUsd > 1000 ? 0 : 2,
-                                bodyClassName: 'text-red',
-                                isDecimalDimmed: false,
-                            },
-                            {
-                                name: 'Total Losses',
-                                value: profile.shortStats.lossesUsd,
-                                format: 'currency',
-                                precision: profile.shortStats.lossesUsd > 1000 ? 0 : 2,
-                                bodyClassName: 'text-red',
-                                isDecimalDimmed: false,
-                            },
-                        ]}
-                        isLive
-                    />
                 </>
             ) : null}
 
