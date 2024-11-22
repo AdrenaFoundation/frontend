@@ -12,6 +12,7 @@ import AllUserProfiles from './allUserProfiles';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
 import Flow from './flows';
+import AllStaking from './allStaking';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
@@ -19,10 +20,10 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
   const poolInfo = usePoolInfo(pageProps.custodies);
 
   const [view, setView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows'
+    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows'
   >('lite');
   const [previousView, setPreviousView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows'
+    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows'
   >('lite');
 
   const searchParams = new URLSearchParams(window.location.search);
@@ -49,10 +50,6 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
   useEffect(() => {
     setPreviousView(view);
   }, [view]);
-
-
-
-
 
   return (
     <>
@@ -82,8 +79,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className='flex items-center justify-evenly w-[22em] ml-auto mr-auto'
-
+          className='flex items-center justify-evenly w-[28em] ml-auto mr-auto'
         >
           <span
             className={twMerge(
@@ -161,6 +157,26 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
             }}
           >
             User Profiles
+          </span>
+
+          <span className="opacity-20 text-2xl">/</span>
+
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              view === 'allStaking' ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              searchParams.set('view', 'allStaking');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setView('allStaking');
+            }}
+          >
+            Staking
           </span>
 
           <span className="opacity-20 text-2xl">/</span>
@@ -258,6 +274,20 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           className='min-h-[80vh]'
         >
           <AllUserProfiles showFeesInPnl={showFeesInPnl} />{' '}
+        </motion.div>
+      ) : null}
+
+      {view === 'allStaking' ? (
+        <motion.div
+          initial={{
+            opacity: 0,
+            translateX: -20,
+          }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ duration: 0.3 }}
+          className='min-h-[80vh]'
+        >
+          <AllStaking />
         </motion.div>
       ) : null}
 

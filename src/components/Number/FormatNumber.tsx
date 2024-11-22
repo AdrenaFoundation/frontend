@@ -112,7 +112,6 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
     const integer = num.split('.')[0];
     const decimal = num.split('.')[1];
 
-
     const nbDiv = (
       <p ref={ref} className={twMerge('font-mono inline-block', className)}>
         {isAbbreviate && isAbbreviateIcon && '~'}

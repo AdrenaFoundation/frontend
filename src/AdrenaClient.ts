@@ -4156,6 +4156,21 @@ export class AdrenaClient {
     );
   }
 
+  public async loadAllStaking(): Promise<UserStakingExtended[] | null> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const allStaking = await this.adrenaProgram.account.userStaking.all();
+
+    if (!allStaking) return null;
+
+    return allStaking.map((staking) => ({
+      pubkey: staking.publicKey,
+      ...staking.account,
+    }));
+  }
+
   public async loadAllUserProfiles(): Promise<UserProfileExtended[]> {
     const userProfiles =
       (await this.readonlyAdrenaProgram.account.userProfile.all()) as ProgramAccount<UserProfile>[];
