@@ -6,10 +6,10 @@ import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
 
 const colors = {
-  "90": "#809CFF",
-  "180": "#4A6FE0",
-  "360": "#2744B3",
-  "540": "#130AAA"
+  "90": "#52C4FF",
+  "180": "#7A9EFF",
+  "360": "#A575FF",
+  "540": "#E091FA"
 } as const;
 
 const CustomizedContent: React.FC<{
