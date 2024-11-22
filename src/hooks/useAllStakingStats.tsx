@@ -6,6 +6,7 @@ import { nativeToUi } from '@/utils';
 export type AllStakingStats = {
     [staking_type in ('ADX' | 'ALP')]: {
         liquid: number;
+        totalLocked: number;
         locked: {
             [lockedDurationInDays: string]: {
                 total: number;
@@ -35,10 +36,12 @@ export function useAllStakingStats(): {
                 const allStakingStats: AllStakingStats = {
                     ADX: {
                         liquid: 0,
+                        totalLocked: 0,
                         locked: {},
                     },
                     ALP: {
                         liquid: 0,
+                        totalLocked: 0,
                         locked: {},
                     },
                 };
@@ -61,8 +64,11 @@ export function useAllStakingStats(): {
                             total: 0,
                         };
                         allStakingStats[stakingType].locked[lockedDurationInDays][staking.pubkey.toBase58()] = allStakingStats[stakingType].locked[lockedDurationInDays][staking.pubkey.toBase58()] || 0;
-                        allStakingStats[stakingType].locked[lockedDurationInDays].total += nativeToUi(lockedStake.amount, stakingDecimals);
-                        allStakingStats[stakingType].locked[lockedDurationInDays][staking.pubkey.toBase58()] += nativeToUi(lockedStake.amount, stakingDecimals);
+                        const amount = nativeToUi(lockedStake.amount, stakingDecimals);
+
+                        allStakingStats[stakingType].locked[lockedDurationInDays].total += amount;
+                        allStakingStats[stakingType].totalLocked += amount;
+                        allStakingStats[stakingType].locked[lockedDurationInDays][staking.pubkey.toBase58()] += amount;
                     });
                 });
 

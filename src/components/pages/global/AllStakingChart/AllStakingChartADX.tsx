@@ -1,12 +1,17 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 import { ResponsiveContainer, Treemap } from 'recharts';
-import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
-import { PositionExtended } from '@/types';
 
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
+
+const colors = {
+  "90": "#E03434",
+  "180": "#802020",
+  "360": "#FF8989",
+  "540": "#B24444",
+} as const;
 
 const CustomizedContent: React.FC<{
   root: unknown;
@@ -117,12 +122,12 @@ export default function AllStakingChartADX({
       ...Object.entries(allStakingStats.ADX.locked).sort((a, b) => Number(b[0]) - Number(a[0])).map(([duration, lockedPerDuration], i) => ({
         name: `${duration}d ADX-${lockedPerDuration.total}-${i}`,
         duration: `${duration}d`,
-        color: `${window.adrena.client.adxToken.color}AF`,
+        color: `transparent`,
         children: Object.entries(lockedPerDuration).filter(([name]) => name !== 'total').sort((a, b) => b[1] - a[1]).map(([stakingPubkey, amount], j) => ({
           name: stakingPubkey + 'ADX' + duration + 'd' + amount + 'j' + j,
           stakingPubkey: PublicKey.default,
           size: amount,
-          color: `${window.adrena.client.adxToken.color}AF`,
+          color: `${(colors as any)[duration] ?? '#ff0000'}AF`,
           stakedAmount: Math.floor(amount),
         })),
       })),
@@ -130,7 +135,7 @@ export default function AllStakingChartADX({
       {
         name: 'Liquid ADX',
         duration: 'Liquid Total',
-        color: `${window.adrena.client.adxToken.color}AF`,
+        color: `transparent`,
         children: [
           {
             name: 'Liquid ADX',

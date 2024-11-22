@@ -1,12 +1,17 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 import { ResponsiveContainer, Treemap } from 'recharts';
-import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
-import { PositionExtended } from '@/types';
 
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
+
+const colors = {
+  "90": "#1C1FB8",
+  "180": "#0B046A",
+  "360": "#4A5FE0",
+  "540": "#020440"
+} as const;
 
 const CustomizedContent: React.FC<{
   root: unknown;
@@ -116,12 +121,12 @@ export default function AllStakingChartALP({
     setData(Object.entries(allStakingStats.ALP.locked).sort((a, b) => Number(b[0]) - Number(a[0])).map(([duration, lockedPerDuration], i) => ({
       name: `${duration}d ALP-${lockedPerDuration.total}-${i}`,
       duration: `${duration}d`,
-      color: 'blue',
+      color: 'transparent',
       children: Object.entries(lockedPerDuration).filter(([name]) => name !== 'total').sort((a, b) => b[1] - a[1]).map(([stakingPubkey, amount], j) => ({
         name: stakingPubkey + 'ALP' + duration + 'd' + amount + 'j' + j,
         stakingPubkey: PublicKey.default,
         size: amount,
-        color: `${window.adrena.client.alpToken.color}A0`,
+        color: `${(colors as any)[duration] ?? '#ff0000'}AF`,
         stakedAmount: Math.floor(amount),
       })),
     })));

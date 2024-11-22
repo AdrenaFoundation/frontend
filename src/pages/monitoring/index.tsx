@@ -79,7 +79,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className='flex items-center justify-evenly w-[28em] ml-auto mr-auto'
+          className='flex flex-col sm:flex-row items-center justify-evenly w-[20.8em] sm:w-[28em] ml-auto mr-auto'
         >
           <span
             className={twMerge(
@@ -99,7 +99,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
             Lite
           </span>
 
-          <span className="opacity-20 text-2xl">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
           <span
             className={twMerge(
@@ -119,7 +119,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
             Full
           </span>
 
-          <span className="opacity-20 text-2xl">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
           <span
             className={twMerge(
@@ -139,7 +139,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
             Live Positions
           </span>
 
-          <span className="opacity-20 text-2xl">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
           <span
             className={twMerge(
@@ -159,7 +159,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
             User Profiles
           </span>
 
-          <span className="opacity-20 text-2xl">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
           <span
             className={twMerge(
@@ -179,7 +179,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
             Staking
           </span>
 
-          <span className="opacity-20 text-2xl">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
           <span
             className={twMerge(
