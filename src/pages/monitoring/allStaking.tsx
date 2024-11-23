@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import React from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -19,36 +20,46 @@ export default function AllStaking() {
                 <div className='flex flex-col items-center justify-center gap-1'>
                     <h2 className='flex'>STAKED ADX</h2>
 
-                    {allStakingStats && totalSupplyADX ? <div className='flex items-center gap-2'>
-                        <FormatNumber
-                            nb={allStakingStats.ADX.totalLocked + allStakingStats.ADX.liquid}
-                            isAbbreviate={true}
-                            isAbbreviateIcon={false}
-                            className='text-txtfade text-base'
-                            isDecimalDimmed={false}
-                        />
+                    {allStakingStats && totalSupplyADX ?
+                        <Tippy
+                            content={
+                                <div className="text-sm flex">
+                                    Total staked ADX / Total supply ADX
+                                </div>
+                            }
+                            placement="auto"
+                        >
+                            <div className='flex items-center gap-2'>
+                                <FormatNumber
+                                    nb={allStakingStats.ADX.totalLocked + allStakingStats.ADX.liquid}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
+                                    className='text-txtfade text-base'
+                                    isDecimalDimmed={false}
+                                />
 
-                        <span className='text-txtfade text-base font-mono'>{"/"}</span>
+                                <span className='text-txtfade text-base font-mono'>{"/"}</span>
 
-                        <FormatNumber
-                            nb={totalSupplyADX}
-                            isAbbreviate={true}
-                            isAbbreviateIcon={false}
-                            className='text-txtfade text-base'
-                            isDecimalDimmed={false}
-                        />
+                                <FormatNumber
+                                    nb={totalSupplyADX}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
+                                    className='text-txtfade text-base'
+                                    isDecimalDimmed={false}
+                                />
 
-                        <div className='flex'>
-                            <span className='text-txtfade text-base font-mono'>{"("}</span>
-                            <FormatNumber
-                                nb={(allStakingStats.ADX.totalLocked + allStakingStats.ADX.liquid) * 100 / totalSupplyADX}
-                                className='text-txtfade text-base'
-                                isDecimalDimmed={false}
-                                format='percentage'
-                            />
-                            <span className='text-txtfade text-base font-mono'>{")"}</span>
-                        </div>
-                    </div> : null}
+                                <div className='flex'>
+                                    <span className='text-txtfade text-base font-mono'>{"("}</span>
+                                    <FormatNumber
+                                        nb={(allStakingStats.ADX.totalLocked + allStakingStats.ADX.liquid) * 100 / totalSupplyADX}
+                                        className='text-txtfade text-base'
+                                        isDecimalDimmed={false}
+                                        format='percentage'
+                                    />
+                                    <span className='text-txtfade text-base font-mono'>{")"}</span>
+                                </div>
+                            </div>
+                        </Tippy> : null}
                 </div>
 
                 <div className='flex w-full min-h-[15em] h-[15em] grow'>
@@ -58,36 +69,46 @@ export default function AllStaking() {
                 <div className='flex flex-col items-center justify-center gap-1'>
                     <h2 className='flex'>STAKED ALP</h2>
 
-                    {allStakingStats && totalSupplyALP ? <div className='flex items-center gap-2'>
-                        <FormatNumber
-                            nb={allStakingStats.ALP.totalLocked}
-                            isAbbreviate={true}
-                            isAbbreviateIcon={false}
-                            className='text-txtfade text-base'
-                            isDecimalDimmed={false}
-                        />
+                    {allStakingStats && totalSupplyALP ?
+                        <Tippy
+                            content={
+                                <div className="text-sm flex">
+                                    Total staked ALP / Total supply ALP
+                                </div>
+                            }
+                            placement="auto"
+                        >
+                            <div className='flex items-center gap-2'>
+                                <FormatNumber
+                                    nb={allStakingStats.ALP.totalLocked}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
+                                    className='text-txtfade text-base'
+                                    isDecimalDimmed={false}
+                                />
 
-                        <span className='text-txtfade text-base font-mono'>{"/"}</span>
+                                <span className='text-txtfade text-base font-mono'>{"/"}</span>
 
-                        <FormatNumber
-                            nb={totalSupplyALP}
-                            isAbbreviate={true}
-                            isAbbreviateIcon={false}
-                            className='text-txtfade text-base'
-                            isDecimalDimmed={false}
-                        />
+                                <FormatNumber
+                                    nb={totalSupplyALP}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
+                                    className='text-txtfade text-base'
+                                    isDecimalDimmed={false}
+                                />
 
-                        <div className='flex'>
-                            <span className='text-txtfade text-base font-mono'>{"("}</span>
-                            <FormatNumber
-                                nb={allStakingStats.ALP.totalLocked * 100 / totalSupplyALP}
-                                className='text-txtfade text-base'
-                                isDecimalDimmed={false}
-                                format='percentage'
-                            />
-                            <span className='text-txtfade text-base font-mono'>{")"}</span>
-                        </div>
-                    </div> : null}
+                                <div className='flex'>
+                                    <span className='text-txtfade text-base font-mono'>{"("}</span>
+                                    <FormatNumber
+                                        nb={allStakingStats.ALP.totalLocked * 100 / totalSupplyALP}
+                                        className='text-txtfade text-base'
+                                        isDecimalDimmed={false}
+                                        format='percentage'
+                                    />
+                                    <span className='text-txtfade text-base font-mono'>{")"}</span>
+                                </div>
+                            </div>
+                        </Tippy> : null}
                 </div>
                 <div className='flex w-full min-h-[15em] h-[15em] grow'>
                     <AllStakingChartALP allStakingStats={allStakingStats} />
