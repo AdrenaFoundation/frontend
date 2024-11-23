@@ -11,6 +11,7 @@ import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import FeesChart from '@/components/pages/global/Fees/FeesChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
+import StakingChart from '@/components/pages/global/Staking/StakingChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
 import DataApiClient from '@/DataApiClient';
@@ -166,6 +167,7 @@ export default function BasicMonitoring({
         </div>
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <StakingChart />
           <ALPPriceChart />
         </div>
 
