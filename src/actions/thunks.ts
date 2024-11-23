@@ -11,7 +11,7 @@ import { setWalletTokenBalances } from './walletBalances';
 
 export const fetchWalletTokenBalances =
   () => async (dispatch: Dispatch, getState: () => RootState) => {
-    const connection = window.adrena.client.connection;
+    const connection = window.adrena.mainConnection;
     const walletPublicKey = selectWalletPublicKey(getState());
 
     if (!walletPublicKey || !connection) {
