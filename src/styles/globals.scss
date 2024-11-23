@@ -3,6 +3,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scale for larger screens (both width and height need to be large) */
+@media screen and (min-width: 2080px) and (min-height: 1080px) {
+  html {
+    font-size: 1.2em; /* Scale up when both width and height are large */
+  }
+}
+
+/* Special case: Ultrawide screens (large width, small height) */
+@media screen and (min-width: 2080px) and (max-height: 1079px) {
+  html {
+    font-size: 1em; /* Keep base font size for ultrawide, small height */
+  }
+}
+
+/* Special case: Extreme ultrawide screens (e.g., G9 with 5120x1440) */
+@media screen and (min-width: 5120px) and (max-height: 1440px) {
+  html {
+    font-size: 1em; /* Prevent scaling on extreme ultrawide screens */
+  }
+}
+
+/* Larger scaling for truly massive screens */
+@media screen and (min-width: 3840px) and (min-height: 2160px) {
+  html {
+    font-size: 1.4em; /* Scale up for true 4K+ monitors */
+  }
+}
+
 :root {
   --color-light: #f5f5f5;
   --color-dark: #080a0d;

@@ -200,7 +200,7 @@ export default function AllUserProfiles({ showFeesInPnl }: { showFeesInPnl: bool
             </div>
             <AnimatePresence>
                 {activeProfile && (
-                    <Modal className="h-[80vh] overflow-y-scroll w-full" wrapperClassName="items-start w-full max-w-[820px] sm:mt-0" title="" close={() => setActiveProfile(null)}>
+                    <Modal className="h-[80vh] overflow-y-scroll w-full" wrapperClassName="items-start w-full max-w-[55em] sm:mt-0" title="" close={() => setActiveProfile(null)}>
                         <ViewProfileModal profile={activeProfile} showFeesInPnl={showFeesInPnl} />
                     </Modal>
                 )}

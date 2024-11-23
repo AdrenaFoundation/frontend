@@ -695,7 +695,7 @@ export default function Stake({
           imageClassName="absolute w-full max-w-[500px] bottom-0 right-0 scale-y-[-1]"
         />
       </div>
-      <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[1300px] m-auto">
+      <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[80em] m-auto">
         <>
           <div className="flex-1">
             <StakeApr token={'ALP'} className='mb-2' />
