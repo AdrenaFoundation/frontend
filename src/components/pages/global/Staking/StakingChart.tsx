@@ -9,6 +9,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
+import { useSelector } from '@/store/store';
 import { formatPercentage } from '@/utils';
 
 const adxColor = '#f96a6a';
@@ -18,6 +19,9 @@ export default function StakingChart() {
   const { allStakingStats } = useAllStakingStats();
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
+
+  const tokenPriceALP = useSelector((s) => s.tokenPrices.ALP);
+  const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
   const [chartData, setChartData] = useState<{
     name: string;
@@ -122,44 +126,76 @@ export default function StakingChart() {
               payload,
               label,
             }: TooltipProps<ValueType, NameType>) => (
-              <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
-                {label && <p className="text-lg mb-2 font-mono">{label}</p>}
+              <div className="bg-third p-3 border border-white rounded-lg min-w-[20m]">
+                {label && <p className="text-lg mb-2 font-mono">
+                  {label}
+                  {payload && tokenPriceADX && tokenPriceALP ? <span className='text-xl ml-1 text-txtfade'>({
+                    <FormatNumber
+                      nb={payload.reduce((tmp, x) => tmp + (x.payload.ADXAmount * tokenPriceADX + x.payload.ALPAmount * tokenPriceALP), 0)}
+                      precision={0}
+                      isDecimalDimmed={false}
+                      className={twMerge("text-lg text-txtfade")}
+                      format={"currency"}
+                      prefix='$'
+                      isAbbreviate={true}
+                      isAbbreviateIcon={false}
+                    />
+                  })</span> : null}
+                </p>}
 
-                {payload && payload.map((item) => (
-                  <div
-                    key={item.dataKey}
-                    className="text-sm font-mono flex justify-between items-center"
-                  >
-                    <div className='flex'>
-                      <span className='text-lg font-boldy' style={{ color: item.color }}>{item.dataKey}</span>
+                <div className='flex w-full justify-between items-center'>
+                  {payload && payload.map((item) => (
+                    <div
+                      key={item.dataKey}
+                      className="text-sm flex-col font-mono flex justify-center items-center"
+                    >
+                      <div className='flex'>
+                        <span className='text-lg font-boldy' style={{ color: item.color }}>{item.dataKey}</span>
+                      </div>
+
+                      <div className='flex flex-col items-center'>
+                        <span
+                          className={twMerge('font-mono')}
+                        >
+                          {formatPercentage(Number(item.value), 2)}
+                        </span>
+
+                        <span
+                          className={twMerge('font-mono')}
+                          style={{ color: item.color }}
+                        >
+                          <FormatNumber
+                            nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0)}
+                            precision={0}
+                            isDecimalDimmed={false}
+                            className={twMerge("text-sm", `text-[${item.color}]`)}
+                            format={"number"}
+                            isAbbreviate={true}
+                            isAbbreviateIcon={false}
+                          />
+                        </span>
+
+                        {tokenPriceALP ? <>
+                          <span
+                            className={twMerge('font-mono')}
+                            style={{ color: item.color }}
+                          >
+                            <FormatNumber
+                              nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0) * tokenPriceALP}
+                              precision={0}
+                              isDecimalDimmed={false}
+                              className={twMerge("text-sm", `text-[${item.color}]`)}
+                              format={"currency"}
+                              prefix='$'
+                              isAbbreviate={true}
+                              isAbbreviateIcon={false}
+                            />
+                          </span>
+                        </> : null}
+                      </div>
                     </div>
-
-                    <div className='flex gap-2'>
-                      <span
-                        className={twMerge('font-mono')}
-                      >
-                        {formatPercentage(Number(item.value), 2)}
-                      </span>
-
-                      <span>{'/'}</span>
-
-                      <span
-                        className={twMerge('font-mono')}
-                        style={{ color: item.color }}
-                      >
-                        <FormatNumber
-                          nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0)}
-                          precision={0}
-                          isDecimalDimmed={false}
-                          className={twMerge("text-sm", `text-[${item.color}]`)}
-                          format={"number"}
-                          isAbbreviate={true}
-                          isAbbreviateIcon={false}
-                        />
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>)
             }
             cursor={false}
