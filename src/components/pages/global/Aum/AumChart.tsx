@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import AreaRechart from '@/components/ReCharts/AreaRecharts';
