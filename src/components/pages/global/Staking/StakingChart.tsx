@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from 'recharts';
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { DataKey } from 'recharts/types/util/types';
@@ -9,8 +9,8 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
-import { formatPercentage } from '@/utils';
 import { useSelector } from '@/store/store';
+import { formatPercentage } from '@/utils';
 
 const adxColor = '#f96a6a';
 const alpColor = '#2a85df';
