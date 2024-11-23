@@ -126,12 +126,13 @@ export default function StakingChart() {
               payload,
               label,
             }: TooltipProps<ValueType, NameType>) => (
-              <div className="bg-third p-3 border border-white rounded-lg min-w-[20m]">
+              <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
                 {label && <p className="text-lg mb-2 font-mono">
                   {label}
+
                   {payload && tokenPriceADX && tokenPriceALP ? <span className='text-xl ml-1 text-txtfade'>({
                     <FormatNumber
-                      nb={payload.reduce((tmp, x) => tmp + (x.payload.ADXAmount * tokenPriceADX + x.payload.ALPAmount * tokenPriceALP), 0)}
+                      nb={payload.reduce((tmp, x) => tmp + (x.payload[`${x.dataKey}Amount`] * (x.dataKey === 'ADX' ? tokenPriceADX : tokenPriceALP)), 0)}
                       precision={0}
                       isDecimalDimmed={false}
                       className={twMerge("text-lg text-txtfade")}
@@ -175,13 +176,13 @@ export default function StakingChart() {
                           />
                         </span>
 
-                        {tokenPriceALP ? <>
+                        {tokenPriceALP && tokenPriceADX ? <>
                           <span
                             className={twMerge('font-mono')}
                             style={{ color: item.color }}
                           >
                             <FormatNumber
-                              nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0) * tokenPriceALP}
+                              nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0) * (item.dataKey === "ADX" ? tokenPriceADX : tokenPriceALP)}
                               precision={0}
                               isDecimalDimmed={false}
                               className={twMerge("text-sm", `text-[${item.color}]`)}
