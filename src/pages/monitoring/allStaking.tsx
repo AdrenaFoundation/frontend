@@ -28,7 +28,7 @@ export default function AllStaking() {
                             isDecimalDimmed={false}
                         />
 
-                        <span className='text-txtfade text-base font-mono'>{"STAKED /"}</span>
+                        <span className='text-txtfade text-base font-mono'>{"/"}</span>
 
                         <FormatNumber
                             nb={totalSupplyADX}
@@ -38,7 +38,16 @@ export default function AllStaking() {
                             isDecimalDimmed={false}
                         />
 
-                        <span className='text-txtfade text-base font-mono'>TOTAL SUPPLY</span>
+                        <div className='flex'>
+                            <span className='text-txtfade text-base font-mono'>{"("}</span>
+                            <FormatNumber
+                                nb={(allStakingStats.ADX.totalLocked + allStakingStats.ADX.liquid) * 100 / totalSupplyADX}
+                                className='text-txtfade text-base'
+                                isDecimalDimmed={false}
+                                format='percentage'
+                            />
+                            <span className='text-txtfade text-base font-mono'>{")"}</span>
+                        </div>
                     </div> : null}
                 </div>
 
@@ -58,7 +67,7 @@ export default function AllStaking() {
                             isDecimalDimmed={false}
                         />
 
-                        <span className='text-txtfade text-base font-mono'>{"STAKED /"}</span>
+                        <span className='text-txtfade text-base font-mono'>{"/"}</span>
 
                         <FormatNumber
                             nb={totalSupplyALP}
@@ -68,7 +77,16 @@ export default function AllStaking() {
                             isDecimalDimmed={false}
                         />
 
-                        <span className='text-txtfade text-base font-mono'>TOTAL SUPPLY</span>
+                        <div className='flex'>
+                            <span className='text-txtfade text-base font-mono'>{"("}</span>
+                            <FormatNumber
+                                nb={allStakingStats.ALP.totalLocked * 100 / totalSupplyALP}
+                                className='text-txtfade text-base'
+                                isDecimalDimmed={false}
+                                format='percentage'
+                            />
+                            <span className='text-txtfade text-base font-mono'>{")"}</span>
+                        </div>
                     </div> : null}
                 </div>
                 <div className='flex w-full min-h-[15em] h-[15em] grow'>

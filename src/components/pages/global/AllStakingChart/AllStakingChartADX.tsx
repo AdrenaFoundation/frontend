@@ -6,10 +6,10 @@ import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
 
 const colors = {
-  "90": "#FEFA01",
-  "180": "#FECB00",
-  "360": "#FE8301",
-  "540": "#FD3600"
+  "90": "#FFC4C4",  // Light pastel red
+  "180": "#E28787", // Soft coral
+  "360": "#CC5252", // Bold red
+  "540": "#A82E2E"  // Deep ruby
 } as const;
 
 const CustomizedContent: React.FC<{
@@ -135,7 +135,7 @@ export default function AllStakingChartADX({
             name: 'Liquid ADX',
             stakingPubkey: PublicKey.default,
             size: allStakingStats.ADX.liquid,
-            color: `#F9F68FAF`,
+            color: `#FFBB8FAF`,
             stakedAmount: Math.floor(allStakingStats.ADX.liquid),
           },
         ],
