@@ -128,8 +128,7 @@ export default function StakingChart() {
                 {payload && payload.map((item) => (
                   <div
                     key={item.dataKey}
-                    className="text-sm font-mono flex justify-between"
-                    style={{ color: item.color }}
+                    className="text-sm font-mono flex justify-between items-center"
                   >
                     <div className='flex'>
                       <span className='text-lg font-boldy' style={{ color: item.color }}>{item.dataKey}</span>
@@ -138,7 +137,6 @@ export default function StakingChart() {
                     <div className='flex gap-2'>
                       <span
                         className={twMerge('font-mono')}
-                        style={{ color: item.color }}
                       >
                         {formatPercentage(Number(item.value), 2)}
                       </span>
@@ -153,7 +151,7 @@ export default function StakingChart() {
                           nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0)}
                           precision={0}
                           isDecimalDimmed={false}
-                          className={twMerge("text-sm")}
+                          className={twMerge("text-sm", `text-[${item.color}]`)}
                           format={"number"}
                           isAbbreviate={true}
                           isAbbreviateIcon={false}
