@@ -1,9 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 import { ResponsiveContainer, Treemap } from 'recharts';
+import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
+import { getAccountExplorer } from '@/utils';
 
 const colors = {
   "90": "#FFC4C4",  // Light pastel red
@@ -12,7 +14,7 @@ const colors = {
   "540": "#A82E2E"  // Deep ruby
 } as const;
 
-const CustomizedContent: React.FC<{
+export const CustomizedContent: React.FC<{
   root: unknown;
   depth: number;
   x: number;
@@ -26,6 +28,7 @@ const CustomizedContent: React.FC<{
   name: string;
   duration: string | null;
   stakedAmount: number;
+  userStakingPubkey: PublicKey;
 }> = ({
   depth,
   duration,
@@ -37,7 +40,10 @@ const CustomizedContent: React.FC<{
   color,
   name,
   stakedAmount,
+  userStakingPubkey,
 }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
     let num: string = stakedAmount.toString();
 
     if (stakedAmount > 999_999_999) {
@@ -49,16 +55,28 @@ const CustomizedContent: React.FC<{
     }
 
     return (
-      <g key={`node-${index}-${depth}-${name}`} className='relative'>
+      <g key={`node-${index}-${depth}-${name}`} className='relative'
+        onMouseEnter={() => {
+          setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
+      >
         <rect
+          className={twMerge(userStakingPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
           x={x}
           y={y}
           width={width}
           height={height}
+          onClick={() => {
+            window.open(getAccountExplorer(userStakingPubkey), '_blank');
+          }}
           style={{
             fill: color,
             stroke: "#fff",
             strokeWidth: depth === 1 ? 5 : 1,
+            opacity: isHovered && userStakingPubkey.toBase58() !== PublicKey.default.toBase58() ? 1 : 0.7,
             strokeOpacity: 1,
           }}
         />
@@ -66,11 +84,15 @@ const CustomizedContent: React.FC<{
         {
           depth === 2 && width > 40 && height > 30 && stakedAmount !== null ? (
             <text
+              className={twMerge(userStakingPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
               x={x + width / 2}
               y={y + height / 2 + 7}
               textAnchor="middle"
               fill="#fff"
               fontSize={width > 50 ? 10 : width > 40 ? 8 : 6}
+              onClick={() => {
+                window.open(getAccountExplorer(userStakingPubkey), '_blank');
+              }}
             >
               {num}
             </text>
@@ -99,7 +121,7 @@ export default function AllStakingChartADX({
     color: string;
     children: {
       name: string;
-      stakingPubkey: PublicKey;
+      userStakingPubkey: PublicKey;
       size: number;
       color: string;
       stakedAmount: number;
@@ -119,8 +141,9 @@ export default function AllStakingChartADX({
         color: `transparent`,
         children: Object.entries(lockedPerDuration).filter(([name]) => name !== 'total').sort((a, b) => b[1] - a[1]).map(([stakingPubkey, amount], j) => ({
           name: stakingPubkey + 'ADX' + duration + 'd' + amount + 'j' + j,
-          stakingPubkey: PublicKey.default,
+          userStakingPubkey: new PublicKey(stakingPubkey),
           size: amount,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           color: `${(colors as any)[duration] ?? '#ff0000'}AF`,
           stakedAmount: Math.floor(amount),
         })),
@@ -133,7 +156,7 @@ export default function AllStakingChartADX({
         children: [
           {
             name: 'Liquid ADX',
-            stakingPubkey: PublicKey.default,
+            userStakingPubkey: PublicKey.default,
             size: allStakingStats.ADX.liquid,
             color: `#FFBB8FAF`,
             stakedAmount: Math.floor(allStakingStats.ADX.liquid),
@@ -161,7 +184,7 @@ export default function AllStakingChartADX({
           dataKey="size"
           isAnimationActive={false}
           // Note: Needs to provide keys for typescript to be happy, even though Treemap is filling up the keys
-          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} duration={null} stakedAmount={0} />}>
+          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} userStakingPubkey={PublicKey.default} color={''} rank={0} name={''} duration={null} stakedAmount={0} />}>
         </Treemap>
       </ResponsiveContainer>
     </div >

@@ -5,88 +5,14 @@ import { ResponsiveContainer, Treemap } from 'recharts';
 import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
 
+import { CustomizedContent } from './AllStakingChartADX';
+
 const colors = {
   "90": "#52C4FF",
   "180": "#7A9EFF",
   "360": "#A575FF",
   "540": "#E091FA"
 } as const;
-
-const CustomizedContent: React.FC<{
-  root: unknown;
-  depth: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  index: number;
-  payload: unknown;
-  color: string;
-  rank: number;
-  name: string;
-  duration: string | null;
-  stakedAmount: number;
-}> = ({
-  depth,
-  duration,
-  x,
-  y,
-  width,
-  height,
-  index,
-  color,
-  name,
-  stakedAmount,
-}) => {
-    let num: string = stakedAmount.toString();
-
-    if (stakedAmount > 999_999_999) {
-      num = (stakedAmount / 1_000_000_000).toFixed(2) + 'B';
-    } else if (stakedAmount > 999_999) {
-      num = (stakedAmount / 1_000_000).toFixed(2) + 'M';
-    } else if (stakedAmount > 999) {
-      num = (stakedAmount / 1_000).toFixed(2) + 'K';
-    }
-
-    return (
-      <g key={`node-${index}-${depth}-${name}`} className='relative'>
-        <rect
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          style={{
-            fill: color,
-            stroke: "#fff",
-            strokeWidth: depth === 1 ? 5 : 1,
-            strokeOpacity: 1,
-          }}
-        />
-
-        {
-          depth === 2 && width > 40 && height > 30 && stakedAmount !== null ? (
-            <text
-              x={x + width / 2}
-              y={y + height / 2 + 7}
-              textAnchor="middle"
-              fill="#fff"
-              fontSize={width > 50 ? 10 : width > 40 ? 8 : 6}
-            >
-              {num}
-            </text>
-          ) : null
-        }
-
-        {
-          duration ? (
-            <text x={x + 6} y={y + 16} fill="#fff" fontSize={12} fillOpacity={1}>
-              {duration}
-            </text>
-          ) : null
-        }
-      </g >
-    );
-  };
 
 export default function AllStakingChartALP({
   allStakingStats,
@@ -99,7 +25,7 @@ export default function AllStakingChartALP({
     color: string;
     children: {
       name: string;
-      stakingPubkey: PublicKey;
+      userStakingPubkey: PublicKey;
       size: number;
       color: string;
       stakedAmount: number;
@@ -118,8 +44,9 @@ export default function AllStakingChartALP({
       color: 'transparent',
       children: Object.entries(lockedPerDuration).filter(([name]) => name !== 'total').sort((a, b) => b[1] - a[1]).map(([stakingPubkey, amount], j) => ({
         name: stakingPubkey + 'ALP' + duration + 'd' + amount + 'j' + j,
-        stakingPubkey: PublicKey.default,
+        userStakingPubkey: new PublicKey(stakingPubkey),
         size: amount,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         color: `${(colors as any)[duration] ?? '#ff0000'}AF`,
         stakedAmount: Math.floor(amount),
       })),
@@ -144,7 +71,7 @@ export default function AllStakingChartALP({
           dataKey="size"
           isAnimationActive={false}
           // Note: Needs to provide keys for typescript to be happy, even though Treemap is filling up the keys
-          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} duration={null} stakedAmount={0} />}>
+          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} duration={null} stakedAmount={0} userStakingPubkey={PublicKey.default} />}>
         </Treemap>
       </ResponsiveContainer>
     </div >
