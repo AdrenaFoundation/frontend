@@ -95,6 +95,9 @@ export default function LeverageSlider({
               borderColor: 'white',
               opacity: 1,
               borderWidth: '3px',
+              height: '1.125em',
+              width: '1.125em',
+              marginTop: '-0.5em',
             }}
             activeDotStyle={{
               backgroundColor: 'white',
