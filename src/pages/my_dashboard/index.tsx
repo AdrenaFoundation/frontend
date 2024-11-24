@@ -9,6 +9,7 @@ import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
+import { useDispatch } from '@/store/store';
 import {
   PageProps,
   VestExtended,
@@ -19,7 +20,6 @@ export default function MyDashboard({
   positions,
   userProfile,
   triggerUserProfileReload,
-  triggerWalletTokenBalancesReload,
   readonly,
   wallet,
 }: PageProps & {
@@ -124,9 +124,6 @@ export default function MyDashboard({
                   <VestStats
                     vest={userVest}
                     getUserVesting={getUserVesting}
-                    triggerWalletTokenBalancesReload={
-                      triggerWalletTokenBalancesReload
-                    }
                   />
                 </>
               )}

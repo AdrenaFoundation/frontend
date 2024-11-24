@@ -4,6 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
@@ -21,7 +22,7 @@ import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import {
   AdxLockPeriod,
   AlpLockPeriod,
@@ -61,8 +62,8 @@ export const LIQUID_STAKE_LOCK_DURATION = 0;
 
 export default function Stake({
   connected,
-  triggerWalletTokenBalancesReload,
 }: PageProps) {
+  const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const {
@@ -213,7 +214,7 @@ export default function Stake({
 
       setAmount(null);
       setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
       setActiveStakingToken(null);
     } catch (error) {
@@ -245,7 +246,7 @@ export default function Stake({
         notification,
       });
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
       setActiveRedeemLiquidADX(false);
     } catch (error) {
@@ -282,7 +283,7 @@ export default function Stake({
         notification,
       });
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
       setUpgradeLockedStake(false);
     } catch (error) {
@@ -325,7 +326,7 @@ export default function Stake({
         notification,
       });
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
       if (earlyExit) {
         setLockedStake(null);
@@ -385,7 +386,7 @@ export default function Stake({
         source: 'optimistic',
       } as unknown as ClaimHistoryExtended;
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
       // Reset rewards in the ui until next fetch
       if (tokenSymbol === 'ADX') {
         adxRewards.pendingUsdcRewards = 0;

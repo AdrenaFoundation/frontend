@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -19,11 +20,9 @@ let loadingCounterMainData = 0;
 export default function ALPSwapSell({
     className,
     connected,
-    triggerWalletTokenBalancesReload,
 }: {
     className?: string;
     connected: boolean;
-    triggerWalletTokenBalancesReload: () => void;
 }) {
     const dispatch = useDispatch();
     const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -67,13 +66,13 @@ export default function ALPSwapSell({
                 notification,
             });
 
-            triggerWalletTokenBalancesReload();
+            dispatch(fetchWalletTokenBalances());
             setAlpInput(null);
         } catch (error) {
             console.log('error', error);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [alpInput, collateralInput, collateralToken.decimals, collateralToken.mint, connected, triggerWalletTokenBalancesReload, wallet && wallet.walletAddress]);
+    }, [alpInput, collateralInput, collateralToken.decimals, collateralToken.mint, connected, wallet && wallet.walletAddress]);
 
     const estimateRemoveLiquidityAndFee = useCallback(async () => {
         // Because we fire one request every time the user change the input, needs to keep only the last one

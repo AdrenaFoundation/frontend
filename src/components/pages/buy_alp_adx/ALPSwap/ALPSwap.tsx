@@ -7,14 +7,14 @@ import ALPSwapSell from './ALPSwapSell';
 
 export default function ALPSwap({
   className,
-  triggerWalletTokenBalancesReload,
   connected,
 }: {
   className?: string;
-  triggerWalletTokenBalancesReload: () => void;
   connected: boolean;
 }) {
-  const [selectedAction, setSelectedAction] = useState<'buy' | 'sell' | null>('buy');
+  const [selectedAction, setSelectedAction] = useState<'buy' | 'sell' | null>(
+    'buy',
+  );
 
   return (
     <div className={className}>
@@ -29,7 +29,11 @@ export default function ALPSwap({
         }}
       />
 
-      {selectedAction === 'buy' ? <ALPSwapBuy connected={connected} triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload} /> : <ALPSwapSell connected={connected} triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload} />}
+      {selectedAction === 'buy' ? (
+        <ALPSwapBuy connected={connected} />
+      ) : (
+        <ALPSwapSell connected={connected} />
+      )}
     </div>
   );
 }
