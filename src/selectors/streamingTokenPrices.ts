@@ -9,8 +9,6 @@ import type { TokenSymbol } from '@/types';
  * This state is updated extremely often, any react component or hook
  * consumer will also be rendered extremely often.
  * Prefer subscribing to specific token prices using `selectStreamingTokenPrice`.
- * @param state
- * @returns TokenPricesState | null
  */
 export const selectStreamingTokenPrices = (state: RootState) =>
   state.streamingTokenPrices ?? null;

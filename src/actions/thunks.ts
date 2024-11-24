@@ -109,16 +109,16 @@ export const calculatePnLandLiquidationPrice = (
 };
 
 export const fetchUserPositions =
-  () => async (dispatch: Dispatch, getState: () => RootState) => {
+  () =>
+  async (
+    dispatch: Dispatch,
+    getState: () => RootState,
+  ): Promise<Array<PositionExtended> | null> => {
     const connection = window.adrena.client.connection;
     const walletPublicKey = selectWalletPublicKey(getState());
     const possibleUserPositions = selectPossibleUserPositions(getState());
 
-    if (
-      !connection ||
-      !walletPublicKey ||
-      !Array.isArray(possibleUserPositions)
-    ) {
+    if (!connection || !walletPublicKey || !possibleUserPositions) {
       return null;
     }
 
@@ -159,11 +159,7 @@ export const subscribeToUserPositions =
     const walletPublicKey = selectWalletPublicKey(getState());
     const possibleUserPositions = selectPossibleUserPositions(getState());
 
-    if (
-      !connection ||
-      !walletPublicKey ||
-      !Array.isArray(possibleUserPositions)
-    ) {
+    if (!connection || !walletPublicKey || !possibleUserPositions) {
       return;
     }
 
