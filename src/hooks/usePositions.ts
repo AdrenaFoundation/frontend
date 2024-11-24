@@ -4,11 +4,12 @@ import {
   calculatePnLandLiquidationPrice,
   fetchAndSubscribeToFullUserPositions,
 } from '@/actions/thunks';
-import { TokenPricesState } from '@/reducers/streamingTokenPricesReducer';
+import type { TokenPricesState } from '@/reducers/streamingTokenPricesReducer';
 import { selectStreamingTokenPricesForTokensStr } from '@/selectors/streamingTokenPrices';
 import { selectWalletAddress } from '@/selectors/wallet';
-import { RootState, useDispatch, useSelector } from '@/store/store';
+import { type RootState, useDispatch, useSelector } from '@/store/store';
 import type { PositionExtended } from '@/types';
+import { getTokenSymbol } from '@/utils';
 
 export default function usePositions() {
   const dispatch = useDispatch();
@@ -25,7 +26,7 @@ export default function usePositions() {
       ? Array.from(
           new Set(
             ...positions.flatMap((position) => [
-              position.token.symbol,
+              getTokenSymbol(position.token.symbol),
               position.collateralToken.symbol,
             ]),
           ),
