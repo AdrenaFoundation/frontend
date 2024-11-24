@@ -283,12 +283,11 @@ export default function Stake({
         notification,
       });
 
-      dispatch(fetchWalletTokenBalances());
-      triggerWalletStakingAccountsReload();
       setUpgradeLockedStake(false);
     } catch (error) {
       console.error('error', error);
-      triggerWalletTokenBalancesReload();
+    } finally {
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
     }
   };
@@ -326,15 +325,14 @@ export default function Stake({
         notification,
       });
 
-      dispatch(fetchWalletTokenBalances());
-      triggerWalletStakingAccountsReload();
       if (earlyExit) {
         setLockedStake(null);
         setFinalizeLockedStakeRedeem(false);
       }
     } catch (error) {
       console.error('error', error);
-      triggerWalletTokenBalancesReload();
+    } finally {
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
     }
   };
@@ -386,7 +384,6 @@ export default function Stake({
         source: 'optimistic',
       } as unknown as ClaimHistoryExtended;
 
-      dispatch(fetchWalletTokenBalances());
       // Reset rewards in the ui until next fetch
       if (tokenSymbol === 'ADX') {
         adxRewards.pendingUsdcRewards = 0;
@@ -399,7 +396,6 @@ export default function Stake({
         alpRewards.pendingGenesisAdxRewards = 0;
         fetchAlpRewards();
       }
-      triggerWalletStakingAccountsReload();
 
       if (tokenSymbol === 'ADX') {
         setOptimisticClaimAdx([optimisticClaim]);
@@ -408,7 +404,8 @@ export default function Stake({
       }
     } catch (error) {
       console.error('error', error);
-      triggerWalletTokenBalancesReload();
+    } finally {
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
     }
   };
