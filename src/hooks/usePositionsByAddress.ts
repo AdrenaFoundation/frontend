@@ -1,11 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
+import { calculatePnLandLiquidationPrice } from '@/actions/thunks';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 
-import { calculatePnLandLiquidationPrice } from './usePositions';
-
+// FIXME: Update to adopt similar implementation than `usePositions`.
 export default function usePositionsByAddress({
   walletAddress,
 }: {

@@ -8,8 +8,8 @@ import StakingStats from '@/components/pages/user_profile/StakingStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import usePositions from '@/hooks/usePositions';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { useDispatch } from '@/store/store';
 import {
   PageProps,
   VestExtended,
@@ -17,7 +17,6 @@ import {
 
 export default function MyDashboard({
   connected,
-  positions,
   userProfile,
   triggerUserProfileReload,
   readonly,
@@ -41,6 +40,9 @@ export default function MyDashboard({
     getUserVesting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected]);
+
+    // FIXME: Only call this hook in a single place & as-close as possible to consumers.
+    const positions = usePositions();
 
   const initUserProfile = async () => {
     const trimmedNickname = (nickname ?? '').trim();

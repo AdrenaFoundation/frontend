@@ -2,7 +2,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -12,6 +12,7 @@ import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { selectStreamingTokenPrice } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -21,7 +22,7 @@ import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
 
-export default function PositionBlock({
+function PositionBlock({
   bodyClassName,
   borderColor,
   position,
@@ -38,7 +39,10 @@ export default function PositionBlock({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   showFeesInPnl: boolean;
 }) {
-  const tokenPrices = useSelector((s) => s.tokenPrices);
+  // Only subscribe to the price for the token of this position.
+  const positionTokenPrice = useSelector((s) =>
+    selectStreamingTokenPrice(s, getTokenSymbol(position.token.symbol)),
+  );
 
   const blockRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -56,7 +60,7 @@ export default function PositionBlock({
     }
 
     const interval = setInterval(() => {
-      console.log('interval')
+      console.log('interval');
       const openedDuration = Date.now() - openedTime;
       const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
 
@@ -74,21 +78,19 @@ export default function PositionBlock({
   }, [position.nativeObject.openTime.toNumber()]);
 
   const liquidable = (() => {
-    const tokenPrice = tokenPrices[getTokenSymbol(position.token.symbol)];
-
     if (
-      tokenPrice === null ||
-      typeof position.liquidationPrice === 'undefined' ||
+      positionTokenPrice === null ||
+      position.liquidationPrice === undefined ||
       position.liquidationPrice === null
     )
       return;
 
-    if (position.side === 'long') return tokenPrice < position.liquidationPrice;
+    if (position.side === 'long')
+      return positionTokenPrice < position.liquidationPrice;
 
     // Short
-    return tokenPrice > position.liquidationPrice;
+    return positionTokenPrice > position.liquidationPrice;
   })();
-
 
   const isSmallSize = useBetterMediaQuery('(max-width: 800px)');
   const positionName = (
@@ -168,16 +170,23 @@ export default function PositionBlock({
           <FormatNumber
             nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
             format="currency"
-            className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-              ? 'green'
-              : 'redbright'
-              }`}
+            className={`mr-0.5 font-bold text-${
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
+                ? 'green'
+                : 'redbright'
+            }`}
             isDecimalDimmed={false}
           />
 
-          <span className={twMerge((showAfterFees ? position.pnl : position.pnl - fees) > 0
-            ? 'text-green'
-            : 'text-redbright')}>{"("}</span>
+          <span
+            className={twMerge(
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
+                ? 'text-green'
+                : 'text-redbright',
+            )}
+          >
+            {'('}
+          </span>
 
           <FormatNumber
             nb={
@@ -188,15 +197,22 @@ export default function PositionBlock({
             format="percentage"
             precision={2}
             isDecimalDimmed={false}
-            className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-              ? 'green'
-              : 'redbright'
-              }`}
+            className={`text-xs text-${
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
+                ? 'green'
+                : 'redbright'
+            }`}
           />
 
-          <span className={twMerge((showAfterFees ? position.pnl : position.pnl - fees) > 0
-            ? 'text-green'
-            : 'text-redbright')}>{")"}</span>
+          <span
+            className={twMerge(
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
+                ? 'text-green'
+                : 'text-redbright',
+            )}
+          >
+            {')'}
+          </span>
 
           <label className="flex items-center ml-2 cursor-pointer">
             <label className="flex items-center ml-1 cursor-pointer">
@@ -222,8 +238,9 @@ export default function PositionBlock({
   const netValue = (
     <div className="flex flex-col items-center">
       <div
-        className={`flex w-full font-mono text-xxs text-txtfade ${isSmallSize ? 'justify-center' : 'justify-end'
-          } items-center`}
+        className={`flex w-full font-mono text-xxs text-txtfade ${
+          isSmallSize ? 'justify-center' : 'justify-end'
+        } items-center`}
       >
         Net value
       </div>
@@ -307,7 +324,11 @@ export default function PositionBlock({
               <Tippy
                 content={
                   <FormatNumber
-                    nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+                    nb={
+                      position.side === 'long'
+                        ? position.size
+                        : position.sizeUsd / position.price
+                    }
                     format="number"
                     className="text-gray-400 text-xs"
                     precision={position.token.displayAmountDecimalsPrecision}
@@ -379,7 +400,7 @@ export default function PositionBlock({
 
             <div className="flex">
               <FormatNumber
-                nb={tokenPrices[getTokenSymbol(position.token.symbol)]}
+                nb={positionTokenPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
                 className="text-gray-400 text-xs bold"
@@ -420,8 +441,8 @@ export default function PositionBlock({
               tabIndex={0}
             >
               {position.takeProfitIsSet &&
-                position.takeProfitLimitPrice &&
-                position.takeProfitLimitPrice > 0 ? (
+              position.takeProfitLimitPrice &&
+              position.takeProfitLimitPrice > 0 ? (
                 <FormatNumber
                   nb={position.takeProfitLimitPrice}
                   format="currency"
@@ -445,8 +466,8 @@ export default function PositionBlock({
               tabIndex={0}
             >
               {position.stopLossIsSet &&
-                position.stopLossLimitPrice &&
-                position.stopLossLimitPrice > 0 ? (
+              position.stopLossLimitPrice &&
+              position.stopLossLimitPrice > 0 ? (
                 <FormatNumber
                   nb={position.stopLossLimitPrice}
                   format="currency"
@@ -487,7 +508,11 @@ export default function PositionBlock({
           <Button
             size="xs"
             className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-            title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
+            title={
+              closableIn === 0 || closableIn === null
+                ? 'Close'
+                : `Close (${Math.floor(closableIn / 1000)}s)`
+            }
             rounded={false}
             disabled={closableIn !== 0}
             onClick={() => {
@@ -519,10 +544,10 @@ export default function PositionBlock({
             wrapperClassName="h-[70vh]">
             <div className="absolute top-0 w-[300px]">
               {(() => {
-                const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
-                const pnlUsd = position.pnl
-                  ? position.pnl - fees
-                  : null;
+                const fees = -(
+                  (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0)
+                );
+                const pnlUsd = position.pnl ? position.pnl - fees : null;
 
                 if (!pnlUsd || pnlUsd < 0) return;
 
@@ -536,3 +561,15 @@ export default function PositionBlock({
     </>
   );
 }
+
+// Memoize this component to avoid unnecessary re-renders caused by
+// a re-render of the parent component(s).
+// This is a quite expensive component to re-render, it's sensible to memoize it
+// because we're avoiding unnecessary work within a critical path of the app,
+// which is subect to a lot of re-renders by nature: a trading view must be reactive.
+// More optimizations are possible within this component, but this is the best low-hanging fruit
+// yielding the most benefits for minimal effort.
+// Note this is a good candidate for memoization because:
+// - the parent component re-renders often (trading view > positions block > position bloc)
+// - https://react.dev/reference/react/memo
+export default memo(PositionBlock);

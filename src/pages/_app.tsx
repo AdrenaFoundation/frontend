@@ -20,7 +20,6 @@ import initConfig from '@/config/init';
 import { SOLANA_EXPLORERS_OPTIONS } from '@/constant';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
-import usePositions from '@/hooks/usePositions';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
@@ -179,7 +178,6 @@ function AppComponent({
   const custodies = useCustodies(mainPool);
   const adapters = useWalletAdapters();
   const wallet = useWallet(adapters);
-  const positions = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
   const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
 
@@ -365,7 +363,6 @@ function AppComponent({
           mainPool={mainPool}
           custodies={custodies}
           wallet={wallet}
-          positions={positions}
           connected={connected}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}

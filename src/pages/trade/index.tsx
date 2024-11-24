@@ -16,6 +16,7 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
@@ -59,7 +60,6 @@ function pickDefaultToken(positions: PositionExtended[] | null): Token {
 }
 
 export default function Trade({
-  positions,
   wallet,
   connected,
   triggerUserProfileReload,
@@ -90,6 +90,9 @@ export default function Trade({
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
   const [history, setHistory] = useState<boolean>(false);
+
+  // FIXME: Only call this hook in a single place & as-close as possible to consumers.
+  const positions = usePositions();
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -188,7 +191,10 @@ export default function Trade({
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
     ) {
       // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
-      const candidate = selectedAction === 'long' ? tokenB ?? pickDefaultToken(positions) : tokenACandidate[0];
+      const candidate =
+        selectedAction === 'long'
+          ? tokenB ?? pickDefaultToken(positions)
+          : tokenACandidate[0];
 
       if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
         setTokenA(candidate);
@@ -204,19 +210,29 @@ export default function Trade({
     isInitialized,
   ]);
 
-  // Check for opened position
-  useEffect(() => {
-    if (!tokenB) return;
-    if (!positions) return setOpenedPosition(null);
+  if (positions === null && openedPosition !== null) {
+    setOpenedPosition(null);
+  }
 
+  if (
+    tokenB !== null &&
+    positions !== null &&
+    (!openedPosition ||
+      getTokenSymbol(openedPosition?.token.symbol) !==
+        getTokenSymbol(tokenB.name))
+  ) {
     const relatedPosition = positions.find(
       (position) =>
-        position.token.mint.equals(tokenB.mint) &&
-        position.side === selectedAction,
+        getTokenSymbol(position.token.symbol) ===
+          getTokenSymbol(tokenB.symbol) && position.side === selectedAction,
     );
 
-    setOpenedPosition(relatedPosition ?? null);
-  }, [positions, selectedAction, tokenB]);
+    if (relatedPosition) {
+      setOpenedPosition(relatedPosition);
+    } else if (openedPosition !== null) {
+      setOpenedPosition(null);
+    }
+  }
 
   useEffect(() => {
     if (activePositionModal) {
@@ -278,8 +294,8 @@ export default function Trade({
                   selectedAction === 'short' || selectedAction === 'long'
                     ? tokenB
                     : tokenA.isStable
-                      ? tokenB
-                      : tokenA
+                    ? tokenB
+                    : tokenA
                 }
                 positions={positions}
                 showBreakEvenLine={showBreakEvenLine}
@@ -342,7 +358,10 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="flex flex-col w-full p-4">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col w-full p-4">
@@ -383,7 +402,10 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="mt-1 w-full p-4">
@@ -481,9 +503,10 @@ export default function Trade({
           <AnimatePresence>
             {activePositionModal && (
               <Modal
-                title={`${activePositionModal.charAt(0).toUpperCase() +
+                title={`${
+                  activePositionModal.charAt(0).toUpperCase() +
                   activePositionModal.slice(1)
-                  } Position`}
+                } Position`}
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto"
               >

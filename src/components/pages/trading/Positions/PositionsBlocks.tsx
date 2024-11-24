@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -6,7 +7,7 @@ import { PositionExtended } from '@/types';
 
 import PositionBlock from './PositionBlock';
 
-export default function PositionsBlocks({
+function PositionsBlocks({
   connected,
   className,
   positions,
@@ -90,3 +91,5 @@ export default function PositionsBlocks({
     </>
   );
 }
+
+export default memo(PositionsBlocks);
