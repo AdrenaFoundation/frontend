@@ -1000,7 +1000,7 @@ export default function LongShortTradingInputs({
                       className="flex-col mt-3"
                     >
                       <FormatNumber
-                        nb={custody && tokenB && custody.borrowFee}
+                        nb={side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee}
                         precision={RATE_DECIMALS}
                         minimumFractionDigits={4}
                         suffix="%/hr"
