@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { AdxLockPeriod, AlpLockPeriod, LockedStakeExtended } from '@/types';
+import { LockedStakeExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import chevronDownIcon from '../../../../public/images/chevron-down.svg';
@@ -22,7 +22,6 @@ export default function LockedStakesDuration({
   handleRedeem,
   handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
-  handleClickOnStakeMore,
 }: {
   lockedStakes: LockedStakeExtended[];
   className?: string;
@@ -32,7 +31,6 @@ export default function LockedStakesDuration({
     earlyExit: boolean,
   ) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
-  handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
 }) {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
   const [showWeights, setShowWeight] = useState<boolean>(false);
@@ -273,28 +271,31 @@ export default function LockedStakesDuration({
 
           <div className='flex w-full'>
             {!lockedStakes[0].isGenesis && (
-              <Button
-                variant="outline"
-                size="xs"
-                className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
-                title="Quick Upgrade"
-                onClick={() => {
-                  handleClickOnUpdateLockedStake(
-                    lockedStakes.reduce((last, lockedStake) => last.endTime.toNumber() > lockedStake.endTime.toNumber() ? last : lockedStake),
-                  )
-                }}
-              />
+              <Tippy
+                disabled={lockedStakes.some(lockedStake => lockedStake.qualifiedForRewardsInResolvedRoundCount > 0)}
+                content={
+                  <div className="flex flex-col justify-around items-center">
+                    No locked stake eligible. To upgrade a locked stake, it must have been locked for at least one round, generated rewards, and had those rewards claimed. This process can take up to 12 hours.
+                  </div>
+                }
+                placement="auto"
+              >
+                <div className='flex grow'>
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+                    title="Quick Upgrade"
+                    disabled={lockedStakes.every(lockedStake => lockedStake.qualifiedForRewardsInResolvedRoundCount === 0)}
+                    onClick={() => {
+                      handleClickOnUpdateLockedStake(
+                        lockedStakes.reduce((last, lockedStake) => last.endTime.toNumber() > lockedStake.endTime.toNumber() ? last : lockedStake),
+                      )
+                    }}
+                  />
+                </div>
+              </Tippy>
             )}
-
-            {/* <Button
-              variant="outline"
-              size="xs"
-              title={`New ${lockDuration.toNumber() / 3600 / 24}d Stake`}
-              className="rounded-none py-2 border-b-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
-              onClick={() => {
-                handleClickOnStakeMore((lockedStakes[0].lockDuration.toNumber() / 3600 / 24) as AlpLockPeriod | AdxLockPeriod)
-              }}
-            /> */}
           </div>
         </div> : <div className='flex w-full'>
           <Button
@@ -307,27 +308,29 @@ export default function LockedStakesDuration({
             }}
           />
 
-          {!lockedStakes[0].isGenesis && (
-            <Button
-              variant="outline"
-              size="xs"
-              className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
-              title="Upgrade"
-              onClick={() => {
-                handleClickOnUpdateLockedStake(lockedStakes[0])
-              }}
-            />
-          )}
-
-          {/* <Button
-            variant="outline"
-            size="xs"
-            title={`New ${lockDuration.toNumber() / 3600 / 24}d Stake`}
-            className="rounded-none py-2 border-b-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
-            onClick={() => {
-              handleClickOnStakeMore((lockedStakes[0].lockDuration.toNumber() / 3600 / 24) as AlpLockPeriod | AdxLockPeriod)
-            }}
-          /> */}
+          {!lockedStakes[0].isGenesis ? (
+            <Tippy
+              disabled={lockedStakes[0].qualifiedForRewardsInResolvedRoundCount !== 0}
+              content={
+                <div className="flex flex-col justify-around items-center">
+                  To upgrade a locked stake, it must have been locked for at least one round, generated rewards, and had those rewards claimed. This process can take up to 12 hours.
+                </div>
+              }
+              placement="auto"
+            >
+              <div className='flex grow'>
+                <Button
+                  variant="outline"
+                  size="xs"
+                  disabled={lockedStakes[0].qualifiedForRewardsInResolvedRoundCount === 0}
+                  className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+                  title="Upgrade"
+                  onClick={() => {
+                    handleClickOnUpdateLockedStake(lockedStakes[0])
+                  }}
+                />
+              </div>
+            </Tippy>) : null}
         </div>
       }
     </div >

@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -88,17 +89,29 @@ export default function LockedStake({
             }}
           />
 
-          {!lockedStake.isGenesis && (
-            <Button
-              variant="outline"
-              size="xs"
-              title="Upgrade"
-              className="py-2 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-6"
-              onClick={() => {
-                handleClickOnUpdateLockedStake(lockedStake)
-              }}
-            />
-          )}
+          {!lockedStake.isGenesis ? (
+            <Tippy
+              disabled={lockedStake.qualifiedForRewardsInResolvedRoundCount !== 0}
+              content={
+                <div className="flex flex-col justify-around items-center">
+                  To upgrade a locked stake, it must have been locked for at least one round, generated rewards, and had those rewards claimed. This process can take up to 12 hours.
+                </div>
+              }
+              placement="auto"
+            >
+              <div className='flex grow'>
+                <Button
+                  variant="outline"
+                  size="xs"
+                  disabled={lockedStake.qualifiedForRewardsInResolvedRoundCount === 0}
+                  className="py-2 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-6"
+                  title="Upgrade"
+                  onClick={() => {
+                    handleClickOnUpdateLockedStake(lockedStake)
+                  }}
+                />
+              </div>
+            </Tippy>) : null}
         </>}
       </div>
     </div>
