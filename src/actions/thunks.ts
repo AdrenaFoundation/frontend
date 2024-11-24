@@ -195,7 +195,6 @@ export const subscribeToUserPositions =
 
           // Position got deleted
           if (!accountInfo.data.length) {
-            removeSubscription(subscriptionId);
             onPositionDeleted(userPosition);
             return;
           }
@@ -216,10 +215,9 @@ export const subscribeToUserPositions =
             onPositionUpdated(extendedPosition);
           } catch (err) {
             console.error(
-              'Unexpected error decoding / extending user position, removing subscription',
+              'Unexpected error decoding / extending user position',
               err,
             );
-            removeSubscription(subscriptionId);
           }
         },
       );
