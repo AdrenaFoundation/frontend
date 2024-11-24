@@ -134,7 +134,14 @@ export const fetchUserPositions =
         tokenPrices = selectTokenPrices(getState());
       }
       for (const position of positions) {
-        calculatePnLandLiquidationPrice(position, tokenPrices);
+        try {
+          calculatePnLandLiquidationPrice(position, tokenPrices);
+        } catch (err) {
+          console.error(
+            'Unexpected error calculating PnL / liquidation price',
+            err,
+          );
+        }
       }
 
       return positions;
@@ -240,8 +247,15 @@ export const fetchAndSubscribeToFullUserPositions =
           if (!tokenPrices) {
             tokenPrices = selectTokenPrices(getState());
           }
-          // PositionExtended objects are augmented in place.
-          calculatePnLandLiquidationPrice(position, tokenPrices);
+          try {
+            // PositionExtended objects are augmented in place.
+            calculatePnLandLiquidationPrice(position, tokenPrices);
+          } catch (err) {
+            console.error(
+              'Unexpected error calculating PnL / liquidation price',
+              err,
+            );
+          }
           onPositionUpdated(position);
         },
         onPositionDeleted,
