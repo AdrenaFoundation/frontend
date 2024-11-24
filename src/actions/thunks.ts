@@ -103,8 +103,8 @@ export const calculatePnLandLiquidationPrice = (
     position,
   });
 
-  if (liquidationPrice) {
-    return;
+  if (liquidationPrice !== null) {
+    position.liquidationPrice = liquidationPrice;
   }
 };
 
