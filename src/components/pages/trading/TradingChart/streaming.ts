@@ -4,7 +4,10 @@ import {
 } from '@pythnetwork/client';
 import { PublicKey } from '@solana/web3.js';
 
-import { setStreamingTokenPrice } from '@/actions/streamingTokenPrices';
+import {
+  setStreamingTokenPrice,
+  stopStreamingTokenPrices,
+} from '@/actions/streamingTokenPrices';
 import { PYTH_CONNECTION } from '@/pages/_app';
 import store from '@/store/store';
 
@@ -199,5 +202,6 @@ export function unsubscribeFromStream(subscriberUID: string) {
     console.log('[Chart] No one subscribed to the streaming. Stopping...');
     pythConnection.stop();
     pythConnectionStarted = false;
+    store.dispatch(stopStreamingTokenPrices());
   }
 }

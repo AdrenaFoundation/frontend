@@ -5,8 +5,7 @@ import type { AccountInfo, PublicKey } from '@solana/web3.js';
 import { SOL_DECIMALS } from '@/constant';
 import type { TokenPricesState } from '@/reducers/streamingTokenPricesReducer';
 import { selectPossibleUserPositions } from '@/selectors/positions';
-import { selectStreamingTokenPrices } from '@/selectors/streamingTokenPrices';
-import { selectTokenPrices } from '@/selectors/tokenPrices';
+import { selectStreamingTokenPricesFallback } from '@/selectors/streamingTokenPrices';
 import { selectWalletPublicKey } from '@/selectors/wallet';
 import type { Dispatch, RootState } from '@/store/store';
 import type { PositionExtended, TokenSymbol } from '@/types';
@@ -128,11 +127,7 @@ export const fetchUserPositions =
         possibleUserPositions,
       );
 
-      let tokenPrices = selectStreamingTokenPrices(getState());
-      // Fallback if Pyth price streaming is not active, ie: profile/dashboard page.
-      if (!tokenPrices) {
-        tokenPrices = selectTokenPrices(getState());
-      }
+      const tokenPrices = selectStreamingTokenPricesFallback(getState());
       for (const position of positions) {
         try {
           calculatePnLandLiquidationPrice(position, tokenPrices);
@@ -240,11 +235,7 @@ export const fetchAndSubscribeToFullUserPositions =
     const unsubscribe = dispatch(
       subscribeToUserPositions({
         onPositionUpdated: function augmentPositionWithPnL(position) {
-          let tokenPrices = selectStreamingTokenPrices(getState());
-          // Fallback if Pyth price streaming is not active, ie: profile/dashboard page.
-          if (!tokenPrices) {
-            tokenPrices = selectTokenPrices(getState());
-          }
+          const tokenPrices = selectStreamingTokenPricesFallback(getState());
           try {
             // PositionExtended objects are augmented in place.
             calculatePnLandLiquidationPrice(position, tokenPrices);
