@@ -253,6 +253,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             return {
                                 connected: trader.address === wallet?.walletAddress,
                                 username,
+                                address: trader.address,
                                 rank: trader.rank_in_division,
                                 volume: trader.total_volume,
                                 pnl: trader.total_pnl,
@@ -267,21 +268,21 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                 {},
             );
 
-            achievements.biggest_liquidation.addresses =
+            achievements.biggest_liquidation.usernames =
                 achievements.biggest_liquidation.addresses.map((address: string) => {
                     return (
                         allUserProfiles.find(
                             (profile) => profile.owner.toBase58() === address,
-                        )?.nickname ?? address
+                        )?.nickname ?? null
                     );
                 });
 
-            achievements.top_degen.addresses = achievements.top_degen.addresses.map(
+            achievements.top_degen.usernames = achievements.top_degen.addresses.map(
                 (address: string) => {
                     return (
                         allUserProfiles.find(
                             (profile) => profile.owner.toBase58() === address,
-                        )?.nickname ?? address
+                        )?.nickname ?? null
                     );
                 },
             );
@@ -305,8 +306,8 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
         );
     }
 
-    const handleProfileView = (nickname: string) => {
-        const profile = allUserProfiles.find((p) => p.nickname === nickname);
+    const handleProfileView = (address: string) => {
+        const profile = allUserProfiles.find((p) => p.owner.toBase58() === address);
 
         if (profile) {
             setActiveProfile(profile);
@@ -574,6 +575,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             {
                                 title: 'Top Liquidation',
                                 trader: achievements.biggest_liquidation.addresses[week],
+                                username: achievements.biggest_liquidation.usernames[week],
                                 result:
                                     achievements.biggest_liquidation.liquidation_amounts[week],
                                 type: 'reward',
@@ -586,6 +588,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             {
                                 title: 'Fees Raffle',
                                 trader: achievements.fees_tickets.addresses[week],
+                                username: null,
                                 totalTickets: achievements.fees_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.fees ?? null,
                                 type: 'ticket',
@@ -598,6 +601,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             {
                                 title: 'Leverage Monster',
                                 trader: achievements.top_degen.addresses[week],
+                                username: achievements.top_degen.usernames[week],
                                 result: achievements.top_degen.pnl_amounts[week],
                                 type: 'reward',
                                 reward: 10000,
@@ -609,6 +613,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             {
                                 title: 'SOL Volume Raffle',
                                 trader: achievements.jitosol_tickets.addresses[week],
+                                username: null,
                                 totalTickets: achievements.jitosol_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.jito ?? null,
                                 type: 'ticket',
