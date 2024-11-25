@@ -14,6 +14,7 @@ import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/Realized
 import StakingChart from '@/components/pages/global/Staking/StakingChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
+import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
 import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PoolInfo } from '@/hooks/usePoolInfo';
@@ -169,6 +170,10 @@ export default function BasicMonitoring({
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <StakingChart />
           <ALPPriceChart />
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <VolumeBarChart isSmallScreen={false} />
         </div>
 
       </StyledContainer>
