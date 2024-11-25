@@ -31,6 +31,7 @@ export default function StakedBarRechart({
   subValue,
   formatY = 'currency',
   gmt,
+  total,
 }: {
   title: string;
   data: RechartsData[];
@@ -46,20 +47,24 @@ export default function StakedBarRechart({
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
   gmt?: number;
+  total?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
   >([]);
 
   const formatYAxis = (tickItem: number) => {
-    if (formatY === 'percentage') {
-      return formatPercentage(tickItem, 0);
+    let num = String(tickItem);
+
+    if (tickItem > 999_999_999) {
+      num = (tickItem / 1_000_000_000).toFixed(2) + 'B';
+    } else if (tickItem > 999_999) {
+      num = (tickItem / 1_000_000).toFixed(2) + 'M';
+    } else if (tickItem > 999) {
+      num = (tickItem / 1_000).toFixed(2) + 'K';
     }
 
-    if (formatY === 'currency') {
-      return formatPriceInfo(tickItem, 0);
-    }
-    return formatNumberShort(tickItem);
+    return `$${num}`;
   };
 
   return (
@@ -143,7 +148,7 @@ export default function StakedBarRechart({
               <CustomRechartsToolTip
                 isValueOnly={labels.length === 1}
                 format={formatY}
-                total={true}
+                total={total}
                 gmt={gmt}
               />
             }
@@ -177,7 +182,7 @@ export default function StakedBarRechart({
                 type="monotone"
                 stackId="staked"
                 dataKey={hiddenLabels.includes(name) ? name + ' ' : name} // Add space to remove the line but keep the legend
-                stroke={hiddenLabels.includes(name) ? `${color}80` : color} // 50% opacity for hidden labels
+                stroke={hiddenLabels.includes(name) ? `${color} 80` : color} // 50% opacity for hidden labels
                 fill={color}
                 key={name}
               />

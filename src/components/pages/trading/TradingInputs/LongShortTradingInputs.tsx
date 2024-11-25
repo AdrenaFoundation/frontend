@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
@@ -56,7 +57,6 @@ export default function LongShortTradingInputs({
   connected,
   setTokenA,
   setTokenB,
-  triggerWalletTokenBalancesReload,
 }: {
   side: 'short' | 'long';
   className?: string;
@@ -69,7 +69,6 @@ export default function LongShortTradingInputs({
   connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
-  triggerWalletTokenBalancesReload: () => void;
 }) {
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -270,7 +269,7 @@ export default function LongShortTradingInputs({
           notification,
         }));
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
 
       setInputA(null);
       setErrorMessage(null);
@@ -1001,7 +1000,7 @@ export default function LongShortTradingInputs({
                       className="flex-col mt-3"
                     >
                       <FormatNumber
-                        nb={custody && tokenB && custody.borrowFee}
+                        nb={side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee}
                         precision={RATE_DECIMALS}
                         minimumFractionDigits={4}
                         suffix="%/hr"

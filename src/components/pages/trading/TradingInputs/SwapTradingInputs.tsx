@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -39,7 +40,6 @@ export default function SwapTradingInputs({
   connected,
   setTokenA,
   setTokenB,
-  triggerWalletTokenBalancesReload,
 }: {
   className?: string;
   tokenA: Token;
@@ -50,7 +50,6 @@ export default function SwapTradingInputs({
   connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
-  triggerWalletTokenBalancesReload: () => void;
 }) {
   const dispatch = useDispatch();
 
@@ -233,7 +232,7 @@ export default function SwapTradingInputs({
         notification,
       });
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
     } catch (error) {
       console.log('error', error);
     }

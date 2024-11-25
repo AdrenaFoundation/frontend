@@ -2,16 +2,16 @@ import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
+import { fetchWalletTokenBalances } from '@/actions/thunks';
+import { useDispatch } from '@/store/store';
 import { addNotification } from '@/utils';
 
 import refreshIcon from '../../../public/images/refresh.png';
 
 export default function RefreshButton({ className }: { className?: string }) {
-  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
-
+  const dispatch = useDispatch();
   const handleReload = () => {
-    triggerWalletTokenBalancesReload();
+    dispatch(fetchWalletTokenBalances());
     addNotification({
       title: 'Wallet balances refreshed',
       type: 'success',

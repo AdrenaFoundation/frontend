@@ -6,6 +6,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -23,7 +24,7 @@ import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { GenesisLock, PageProps, SolanaExplorerOptions, WalletAdapterExtended } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
@@ -39,7 +40,6 @@ import xIcon from '../../../public/images/x-black-bg.png';
 export default function Genesis({
   connected,
   userProfile,
-  triggerWalletTokenBalancesReload,
   activeRpc,
   rpcInfos,
   autoRpcMode,
@@ -97,6 +97,7 @@ export default function Genesis({
   const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
     null,
   );
+  const dispatch = useDispatch();
   const from = new Date();
 
   const campaignEndDate = genesis
@@ -264,7 +265,7 @@ export default function Genesis({
         notification,
       });
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
       triggerWalletStakingAccountsReload();
       setFundsAmount(null);
       setIsSuccess(true);

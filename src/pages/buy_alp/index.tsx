@@ -16,7 +16,6 @@ import infoIcon from '../../../public/images/Icons/info.svg';
 
 export default function Buy({
   connected,
-  triggerWalletTokenBalancesReload,
   mainPool,
 }: PageProps) {
   const aumUsd = useAssetsUnderManagement();
@@ -102,7 +101,6 @@ export default function Buy({
 
         <StyledContainer className="max-w-[400px] lg:max-w-[25em] mb-auto">
           <ALPSwap
-            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             connected={connected}
           />
         </StyledContainer>

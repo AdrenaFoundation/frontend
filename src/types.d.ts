@@ -67,7 +67,6 @@ export type PageProps = {
   triggerUserProfileReload: () => void;
   custodies: CustodyExtended[] | null;
   wallet: Wallet | null;
-  triggerWalletTokenBalancesReload: () => void;
   positions: PositionExtended[] | null;
   connected: boolean;
   activeRpc: {
@@ -473,12 +472,12 @@ export type ClaimHistoryExtended = {
 type AchievementsBase = {
   week_starts: string[];
   week_ends: string[];
-  addresses: (string | null)[];
 };
 
 export type TradingCompetitionAchievementsAPI = {
   biggest_liquidation: AchievementsBase & {
     addresses: (string | null)[];
+    usernames: (string | null)[];
     week_starts: string[];
     week_ends: string[];
     liquidation_amounts: (number | null)[];
@@ -487,12 +486,14 @@ export type TradingCompetitionAchievementsAPI = {
     week_starts: string[][];
     week_ends: string[][];
     addresses: (string | null)[][];
+    usernames: (string | null)[][];
     tickets_count: (number | null)[][];
     total_tickets: (number | null)[];
   };
   top_degen: AchievementsBase & {
     pnl_amounts: (number | null)[];
     addresses: (string | null)[];
+    usernames: (string | null)[];
     week_starts: string[];
     week_ends: string[];
   };
@@ -500,6 +501,7 @@ export type TradingCompetitionAchievementsAPI = {
     week_starts: string[][];
     week_ends: string[][];
     addresses: (string | null)[][];
+    usernames: (string | null)[][];
     tickets_count: (number | null)[][];
     total_tickets: (number | null)[];
   };
@@ -509,6 +511,7 @@ export type TradingCompetitionLeaderboardAPI = {
   [key in 'Leviathan' | 'Abomination' | 'Mutant' | 'Spawn' | 'No Division']: {
     rank: number;
     username: string;
+    address: string;
     connected: boolean;
     volume: number;
     pnl: number;
