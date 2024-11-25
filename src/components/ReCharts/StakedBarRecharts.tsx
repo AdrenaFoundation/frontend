@@ -54,7 +54,7 @@ export default function StakedBarRechart({
   >([]);
 
   const formatYAxis = (tickItem: number) => {
-    let num: string = String(tickItem);
+    let num = String(tickItem);
 
     if (tickItem > 999_999_999) {
       num = (tickItem / 1_000_000_000).toFixed(2) + 'B';
