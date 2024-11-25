@@ -4,11 +4,11 @@ import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
 import { RechartsData } from '@/types';
 
-interface FeesChartProps {
+interface VolumeChartProps {
   isSmallScreen: boolean;
 }
 
-export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
+export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('1M');
   const periodRef = useRef(period);
@@ -42,7 +42,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       const [{ data }, { data: latestPoolInfoSnapshot }] = await Promise.all([
 
         fetch(
-          `https://datapi.adrena.xyz/poolinfodaily?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
+          `https://datapi.adrena.xyz/poolinfodaily?cumulative_trading_volume_usd=true&start_date=${(() => {
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - dataPeriod);
 
@@ -52,18 +52,14 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
         // Get the latest pool info snapshot
         fetch(
-          `https://datapi.adrena.xyz/poolinfo?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&sort=DESC&limit=1`,
+          `https://datapi.adrena.xyz/poolinfo?cumulative_trading_volume_usd=true&sort=DESC&limit=1`,
         ).then((res) => res.json()),
       ]);
 
       console.log('latestPoolInfoSnapshot', latestPoolInfoSnapshot)
 
       const {
-        cumulative_swap_fee_usd,
-        cumulative_liquidity_fee_usd,
-        cumulative_close_position_fee_usd,
-        cumulative_liquidation_fee_usd,
-        cumulative_borrow_fee_usd,
+        cumulative_trading_volume_usd,
         snapshot_timestamp,
       } = data;
 
@@ -89,13 +85,16 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
         (time: string, i: number) => ({
           time,
-          'Swap Fees': cumulative_swap_fee_usd[i + 1] - cumulative_swap_fee_usd[i],
-          'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i + 1] - cumulative_liquidity_fee_usd[i],
-          'Open/Close Fees': cumulative_close_position_fee_usd[i + 1] - cumulative_close_position_fee_usd[i],
-          'Liquidation Fees': cumulative_liquidation_fee_usd[i + 1] - cumulative_liquidation_fee_usd[i],
-          'Borrow Fees': cumulative_borrow_fee_usd[i + 1] - cumulative_borrow_fee_usd[i],
+          'Volume': cumulative_trading_volume_usd[i + 1] - cumulative_trading_volume_usd[i],
         }),
       );
+
+      formattedData.forEach((data) => {
+        console.log('data', data)
+        if (data.time === '11/16') {
+          data.Volume = 0;
+        }
+      });
 
       // Push a data coming from last data point (last day) to now
       formattedData.push({
@@ -104,11 +103,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
           minute: 'numeric',
           timeZone: 'UTC',
         }),
-        'Swap Fees': latestPoolInfoSnapshot.cumulative_swap_fee_usd[0] - cumulative_swap_fee_usd[cumulative_swap_fee_usd.length - 1],
-        'Mint/Redeem ALP Fees': latestPoolInfoSnapshot.cumulative_liquidity_fee_usd[0] - cumulative_liquidity_fee_usd[cumulative_liquidity_fee_usd.length - 1],
-        'Open/Close Fees': latestPoolInfoSnapshot.cumulative_close_position_fee_usd[0] - cumulative_close_position_fee_usd[cumulative_close_position_fee_usd.length - 1],
-        'Liquidation Fees': latestPoolInfoSnapshot.cumulative_liquidation_fee_usd[0] - cumulative_liquidation_fee_usd[cumulative_liquidation_fee_usd.length - 1],
-        'Borrow Fees': latestPoolInfoSnapshot.cumulative_borrow_fee_usd[0] - cumulative_borrow_fee_usd[cumulative_borrow_fee_usd.length - 1],
+        'Volume': latestPoolInfoSnapshot.cumulative_trading_volume_usd[0] - cumulative_trading_volume_usd[cumulative_trading_volume_usd.length - 1],
       })
 
       setChartData(formattedData);
@@ -127,37 +122,21 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
   return (
     <StakedBarRechart
-      title={'Fees'}
+      title={'Volume'}
       data={chartData}
       labels={[
         {
-          name: 'Swap Fees',
+          name: 'Volume',
           color: '#cec161',
-        },
-        {
-          name: 'Mint/Redeem ALP Fees',
-          color: '#5460cb',
-        },
-        {
-          name: 'Open/Close Fees',
-          color: '#7ccbd7',
-        },
-        {
-          name: 'Liquidation Fees',
-          color: '#BE84CC',
-        },
-        {
-          name: 'Borrow Fees',
-          color: '#84bd82',
         },
       ]}
       period={period}
       setPeriod={setPeriod}
       gmt={0}
       domain={[0, 'auto']}
-      tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
+      tippyContent=""
       isSmallScreen={isSmallScreen}
-      total={true}
+      total={false}
     />
   );
 }
