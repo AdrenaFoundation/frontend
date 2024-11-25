@@ -12,6 +12,7 @@ import backpackLogo from '../../public/images/backpack.png';
 import coinbaseLogo from '../../public/images/coinbase.png';
 import phantomLogo from '../../public/images/phantom.svg';
 import solflareLogo from '../../public/images/solflare.png';
+import squadxLogo from '../../public/images/squadx-logo.png';
 import walletconnectLogo from '../../public/images/walletconnect.png';
 
 export const WALLET_ICONS = {
@@ -20,14 +21,16 @@ export const WALLET_ICONS = {
     Solflare: solflareLogo,
     WalletConnect: walletconnectLogo,
     'Coinbase Wallet': coinbaseLogo,
-} as const satisfies Record<WalletAdapterName, ImageRef>;
+    SquadsX: squadxLogo,
+} as const satisfies Partial<Record<WalletAdapterName, ImageRef>>;
 
 const SUPPORTED_WALLETS = [
     'Phantom',
     'Coinbase Wallet',
     'Solflare',
     'WalletConnect',
-    'Backpack'
+    'Backpack',
+    'SquadsX',
 ] as const;
 
 // Handpicked list of supported wallets
@@ -39,6 +42,7 @@ export const WALLET_COLORS = {
     Solflare: '#fda518',
     WalletConnect: '#0798fe',
     'Coinbase Wallet': '#072b79',
+    SquadsX: '#000000',
 } as const satisfies Record<WalletAdapterName, string>;
 
 export default function useWalletAdapters(): WalletAdapterExtended[] {
@@ -71,7 +75,7 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
         (adapter as WalletAdapterExtended).color = WALLET_COLORS[adapter.name as WalletAdapterName] ?? '#444444';
         (adapter as WalletAdapterExtended).iconOverride = WALLET_ICONS[adapter.name as WalletAdapterName];
         (adapter as WalletAdapterExtended).recommended = adapter.name === 'Phantom';
-        (adapter as WalletAdapterExtended).beta = adapter.name === 'WalletConnect';
+        (adapter as WalletAdapterExtended).beta = adapter.name === 'WalletConnect' || adapter.name === 'SquadsX';
 
         return adapter as WalletAdapterExtended;
     }), [adapters]);
