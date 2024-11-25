@@ -13,7 +13,8 @@ import { getAbbrevWalletAddress } from '@/utils';
 export type TicketData = {
     totalTickets: number | null;
     connectedWalletTickets: number | null;
-    trader: string | null;
+    trader: (string | null)[];
+    username: string | null;
     type: 'ticket';
     reward: number | null;
     rewardToken: 'ADX' | 'JITO';
@@ -25,6 +26,7 @@ export type RewardData = {
     trader: string | null;
     result: number | null;
     type: 'reward';
+    username: string | null;
     reward: number | null;
     rewardToken: 'ADX' | 'JITO';
     rewardImage: ImageRef;
@@ -50,8 +52,9 @@ export default function WeeklyReward({
         { title: 'Leverage Monster' } & RewardData,
         { title: 'SOL Volume Raffle' } & TicketData,
     ];
-    handleProfileView: (nickname: string) => void;
+    handleProfileView: (address: string) => void;
 }) {
+
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {rewards.map((award) => {
@@ -115,9 +118,9 @@ export default function WeeklyReward({
                                     // There is a winner
                                     <div className='flex items-center justify-center h-[3em] opacity-75'>
                                         {award.trader
-                                            ? isValidPublicKey(award.trader)
+                                            ? !award.username
                                                 ? <p className={twMerge('text-xs font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
-                                                : <p className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.trader as string)}>{award.trader}</p>
+                                                : <p className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.username as string)}>{award.username}</p>
                                             : <p className='text-xs font-boldy'>-</p>}
                                     </div>
                             }
@@ -180,9 +183,9 @@ export default function WeeklyReward({
 
                     <div className='flex items-center justify-center opacity-75 w-full'>
                         {award.trader
-                            ? isValidPublicKey(award.trader)
+                            ? !award.username
                                 ? <p className={twMerge('text-base font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
-                                : <p className={twMerge('text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.trader as string)}>{award.trader}</p>
+                                : <p className={twMerge('text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.trader as string)}>{award.username.length > 16 ? `${award.username.substring(0, 16)}...` : award.username}</p>
                             : <p className='text-xs font-boldy'>-</p>}
                     </div>
 
