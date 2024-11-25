@@ -44,7 +44,8 @@ export default function WalletSelectionModal({
                   'Coinbase Wallet': 'w-[6em] left-6 top-6',
                   Solflare: 'w-[8em] left-8 top-10',
                   'Backpack': 'w-[5em] left-2 top-6',
-                  'WalletConnect': 'w-[7em] left-8 top-2'
+                  'WalletConnect': 'w-[7em] left-8 top-2',
+                  SquadsX: 'w-[6em] left-4 top-10',
                 } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
                 onClick={() => {
                   dispatch(connectWalletAction(adapter));
@@ -124,7 +125,7 @@ const WalletBlock = ({
 
           {beta ?
             <div className={twMerge(
-              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
+              'flex text-[0.55em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
             )}>
               Beta
             </div> : null}
