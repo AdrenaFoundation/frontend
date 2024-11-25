@@ -683,7 +683,6 @@ export default function StakeOverview({
             handleClickOnUpdateLockedStake={
               handleClickOnUpdateLockedStake
             }
-            handleClickOnStakeMore={handleClickOnStakeMore}
           />
         </div>
 

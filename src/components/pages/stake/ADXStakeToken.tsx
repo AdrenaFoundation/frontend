@@ -36,7 +36,7 @@ export default function ADXStakeToken({
   }));
 
   return (
-    <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
+    <div className="flex flex-col rounded-lg w-full sm:min-w-[25em] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">
         <div className="mt-4">
           <div className="flex flex-row justify-between mb-1">

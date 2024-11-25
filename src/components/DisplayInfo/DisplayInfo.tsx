@@ -18,7 +18,7 @@ export default function DisplayInfo({
   return (
     <div className={twMerge("bg-blue/30 p-2 border-dashed border-blue rounded flex relative w-full text-sm", displayIcon ? 'pl-10' : '', className)}>
       {displayIcon ? <Image
-        className="opacity-60 absolute left-3 top-[1.5em]"
+        className="opacity-60 absolute left-3 top-auto bottom-auto"
         src={infoIcon}
         height={16}
         width={16}
