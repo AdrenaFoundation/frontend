@@ -14,6 +14,7 @@ import {
 } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
+import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import competitionIcon from '../../../public/images/competition.svg';
 import logo from '../../../public/images/logo.svg';
@@ -82,20 +83,29 @@ export default function Header({
 
   return (
     <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b border-b-bcolor bg-secondary z-50">
-      <div className="flex flex-row items-center gap-6">
+      <div className="flex flex-row items-center gap-3 lg:gap-4 xl:gap-6">
         <Link className="font-bold uppercase relative" href="/">
-          {
-            <Image
-              src={logo}
-              className={twMerge(
-                'shrink-0 relative',
-                window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
-              )}
-              alt="logo"
-              width={100}
-              height={25}
-            />
-          }
+          <Image
+            src={logo}
+            className={twMerge(
+              'shrink-0 relative hidden lg:block',
+              window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
+            )}
+            alt="logo"
+            width={100}
+            height={25}
+          />
+
+          <Image
+            src={adxLogo}
+            className={twMerge(
+              'shrink-0 relative lg:hidden',
+              window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
+            )}
+            alt="logo"
+            width={25}
+            height={25}
+          />
 
           {window.adrena.cluster === 'devnet' ? (
             <span className="absolute font-special text-blue-500 bottom-[-1.4em] right-0 text-xs">
@@ -103,10 +113,6 @@ export default function Header({
             </span>
           ) : null}
         </Link>
-
-        {/* {window.adrena.cluster === 'devnet'
-          ? PageLink('/faucet_devnet', 'Faucet')
-          : null} */}
 
         {PAGES.map((page) => {
           return (
@@ -157,7 +163,7 @@ export default function Header({
         <Link
           href="/buy_alp"
           className={twMerge(
-            'ml-2 items-center justify-center flex hover:opacity-100',
+            'ml-2 flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
             pathname !== '/buy_alp' && 'opacity-50',
           )}
         >
@@ -181,7 +187,7 @@ export default function Header({
         <Link
           href="/buy_adx"
           className={twMerge(
-            'ml-2 items-center justify-center flex hover:opacity-100',
+            'ml-2 flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
             pathname !== '/buy_adx' && 'opacity-50',
           )}
         >

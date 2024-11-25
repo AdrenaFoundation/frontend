@@ -433,7 +433,8 @@ export default function PositionHistoryBlock({
 
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Share PnL" close={() => setIsOpen(false)}>
+          <Modal title="Share PnL" close={() => setIsOpen(false)} className="overflow-y-auto"
+            wrapperClassName="h-[70vh]">
             <div className="absolute top-0 w-[300px]">
               {(() => {
                 const fees = -(
