@@ -92,6 +92,10 @@ export function formatNumber(
   // If price is below decimals precision, display up to 6 decimals (override by minimumFractionDigits)
   if (Math.abs(nb) < 10 ** -precision) precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
 
+  if (precision < minimumFractionDigits) {
+    precision = minimumFractionDigits;
+  }
+
   return Number(nb.toFixed(precision)).toLocaleString(undefined, {
     minimumFractionDigits,
     maximumFractionDigits: precision,
