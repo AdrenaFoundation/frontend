@@ -36,10 +36,10 @@ export const selectStreamingTokenPricesFallback = createSelector(
  * This state is updated extremely often, any react component or hook
  * consumer will also be rendered extremely often.
  */
-export const selectStreamingTokenPrice = (
+export const selectStreamingTokenPriceFallback = (
   state: RootState,
   token: TokenSymbol,
-) => state.streamingTokenPrices?.[token] ?? null;
+) => selectStreamingTokenPricesFallback(state)?.[token] ?? null;
 
 /**
  * /!\ Use with caution!

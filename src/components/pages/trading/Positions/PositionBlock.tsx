@@ -12,7 +12,7 @@ import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { selectStreamingTokenPrice } from '@/selectors/streamingTokenPrices';
+import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -22,6 +22,7 @@ import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
 
+// FIXME: Factorize with PositionBlockReadOnly
 function PositionBlock({
   bodyClassName,
   borderColor,
@@ -40,8 +41,8 @@ function PositionBlock({
   showFeesInPnl: boolean;
 }) {
   // Only subscribe to the price for the token of this position.
-  const positionTokenPrice = useSelector((s) =>
-    selectStreamingTokenPrice(s, getTokenSymbol(position.token.symbol)),
+  const tradeTokenPrice = useSelector((s) =>
+    selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol)),
   );
 
   const blockRef = useRef<HTMLDivElement>(null);
@@ -79,17 +80,19 @@ function PositionBlock({
 
   const liquidable = (() => {
     if (
-      positionTokenPrice === null ||
+      tradeTokenPrice === null ||
       position.liquidationPrice === undefined ||
       position.liquidationPrice === null
-    )
+    ) {
       return;
+    }
 
-    if (position.side === 'long')
-      return positionTokenPrice < position.liquidationPrice;
+    if (position.side === 'long') {
+      return tradeTokenPrice < position.liquidationPrice;
+    }
 
     // Short
-    return positionTokenPrice > position.liquidationPrice;
+    return tradeTokenPrice > position.liquidationPrice;
   })();
 
   const isSmallSize = useBetterMediaQuery('(max-width: 800px)');
@@ -400,7 +403,7 @@ function PositionBlock({
 
             <div className="flex">
               <FormatNumber
-                nb={positionTokenPrice}
+                nb={tradeTokenPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
                 className="text-gray-400 text-xs bold"
@@ -540,8 +543,12 @@ function PositionBlock({
 
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Share PnL" close={() => setIsOpen(false)} className="overflow-y-auto"
-            wrapperClassName="h-[70vh]">
+          <Modal
+            title="Share PnL"
+            close={() => setIsOpen(false)}
+            className="overflow-y-auto"
+            wrapperClassName="h-[70vh]"
+          >
             <div className="absolute top-0 w-[300px]">
               {(() => {
                 const fees = -(
