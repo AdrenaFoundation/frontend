@@ -210,30 +210,6 @@ export default function Trade({
     isInitialized,
   ]);
 
-  if (positions === null && openedPosition !== null) {
-    setOpenedPosition(null);
-  }
-
-  if (
-    tokenB !== null &&
-    positions !== null &&
-    (!openedPosition ||
-      getTokenSymbol(openedPosition?.token.symbol) !==
-        getTokenSymbol(tokenB.name))
-  ) {
-    const relatedPosition = positions.find(
-      (position) =>
-        getTokenSymbol(position.token.symbol) ===
-          getTokenSymbol(tokenB.symbol) && position.side === selectedAction,
-    );
-
-    if (relatedPosition) {
-      setOpenedPosition(relatedPosition);
-    } else if (openedPosition !== null) {
-      setOpenedPosition(null);
-    }
-  }
-
   useEffect(() => {
     if (activePositionModal) {
       document.body.classList.add('overflow-hidden');
@@ -241,6 +217,44 @@ export default function Trade({
       document.body.classList.remove('overflow-hidden');
     }
   }, [activePositionModal]);
+
+  // A local opened position is set, but positions aren't loaded:
+  // - positions are being loaded or no user wallet is connected
+  const clearOpenedPosition = positions === null && openedPosition !== null;
+  if (clearOpenedPosition) {
+    setOpenedPosition(null);
+    return null;
+  }
+
+  // Positions are loaded, we check for a potential local opened position update.
+  const checkForOpenedPositionUpdate = tokenB !== null && positions !== null;
+  if (checkForOpenedPositionUpdate) {
+    const noOpenedPosition = !openedPosition;
+
+    const openedPositionDoesNoMatch =
+      openedPosition !== null &&
+      (getTokenSymbol(openedPosition.token.symbol) !==
+        getTokenSymbol(tokenB.name) ||
+        openedPosition.side !== selectedAction);
+
+    const relatedPosition = positions.find(
+      (position) =>
+        getTokenSymbol(position.token.symbol) ===
+          getTokenSymbol(tokenB.symbol) && position.side === selectedAction,
+    );
+
+    if (openedPositionDoesNoMatch) {
+      if (relatedPosition && relatedPosition !== openedPosition) {
+        setOpenedPosition(relatedPosition ?? null);
+        return null;
+      }
+    }
+
+    if (noOpenedPosition && relatedPosition) {
+      setOpenedPosition(relatedPosition);
+      return null;
+    }
+  }
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[100px] sm:pb-4">
@@ -510,11 +524,8 @@ export default function Trade({
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto"
               >
-                {tokenB &&
-                  <TradingChartMini
-                    token={tokenB}
-                  />}
-                <div className='bg-bcolor w-full h-[1px] my-3' />
+                {tokenB && <TradingChartMini token={tokenB} />}
+                <div className="bg-bcolor w-full h-[1px] my-3" />
                 <div className="flex w-full px-4">
                   <TradeComp
                     selectedAction={selectedAction}
