@@ -25,7 +25,7 @@ export default function usePositions() {
     positions && positions.length > 0
       ? Array.from(
           new Set(
-            ...positions.flatMap((position) => [
+            positions.flatMap((position) => [
               getTokenSymbol(position.token.symbol),
               position.collateralToken.symbol,
             ]),
