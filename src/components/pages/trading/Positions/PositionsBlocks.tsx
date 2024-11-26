@@ -30,7 +30,7 @@ function PositionsBlocks({
   if (positions === null && !connected) {
     return (
       <div className="flex overflow-hidden bg-main/90 w-full border rounded-lg mt-4 h-[15em] items-center justify-center">
-        <WalletConnection connected={connected} />
+        <WalletConnection connected={false} />
       </div>
     );
   }
@@ -53,7 +53,7 @@ function PositionsBlocks({
         </>
       ) : null}
 
-      {positions && !positions.length ? (
+      {positions !== null && !positions.length ? (
         <>
           {window.location.pathname === '/trade' ? (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
@@ -69,7 +69,7 @@ function PositionsBlocks({
         </>
       ) : null}
 
-      {positions && positions.length ? (
+      {positions !== null && positions.length > 0 ? (
         <div
           className={twMerge(
             'flex flex-col bg-first w-full h-full gap-3',
