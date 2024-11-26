@@ -113,7 +113,7 @@ export const fetchUserPositions =
     dispatch: Dispatch,
     getState: () => RootState,
   ): Promise<Array<PositionExtended> | null> => {
-    const connection = window.adrena.client.connection;
+    const connection = window.adrena.client.readonlyConnection;
     const walletPublicKey = selectWalletPublicKey(getState());
     const possibleUserPositions = selectPossibleUserPositions(getState());
 
