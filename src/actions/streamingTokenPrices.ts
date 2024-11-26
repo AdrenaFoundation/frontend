@@ -2,7 +2,7 @@ export const SET_STREAMING_TOKEN_PRICE_ACTION_TYPE =
   'setStreamingTokenPrice' as const;
 
 export const STOP_STREAMING_TOKEN_PRICES_ACTION_TYPE =
-  'setStreamingTokenPrice' as const;
+  'stopStreamingTokenPrice' as const;
 
 export const setStreamingTokenPrice = (
   tokenSymbol: string,

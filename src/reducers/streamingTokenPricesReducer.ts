@@ -18,7 +18,7 @@ const actionTypeGuard = <A extends AnyAction>(
   type:
     | typeof SET_STREAMING_TOKEN_PRICE_ACTION_TYPE
     | typeof STOP_STREAMING_TOKEN_PRICES_ACTION_TYPE,
-): x is A => type in x;
+): x is A => x.type === type;
 
 export default function streamingTokenPricesReducer(
   state = initialState,
