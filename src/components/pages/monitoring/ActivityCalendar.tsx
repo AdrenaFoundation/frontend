@@ -94,12 +94,12 @@ export default function ActivityCalendar({
                                                 />
                                             </div>
                                         }
+                                        key={'cell-' + i}
                                     >
                                         <td
                                             className={
                                                 'bg-[#040D14] hover:bg-third border-b-2 border-r-2 border-[#061018] cursor-pointer group table-cell p-[3px] w-[15px] h-[15px]lg:w-[20px] lg:h-[20px] transition duration-300'
                                             }
-                                            key={'cell-' + i}
                                             onClick={() => {
                                                 const startDate = new Date(stat.date);
                                                 const endDate = startDate.setHours(
@@ -110,7 +110,6 @@ export default function ActivityCalendar({
                                             }}
                                         >
                                             <div
-                                                key={i}
                                                 className={twMerge(
                                                     'rounded-full border border-transparent group-hover:border-white/50 transition duration-300 flex-none m-auto',
                                                     stat.color,
