@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
+
 import DataApiClient from '@/DataApiClient';
 import { GetPositionStatsReturnType } from '@/types';
-import { useEffect, useState } from 'react';
 
 export default function usePositionStats() {
     const [data, setData] = useState<GetPositionStatsReturnType<{ showPositionActivity: true }> | null>(null);

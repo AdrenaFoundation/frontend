@@ -106,7 +106,7 @@ export default function Flow({
       } | null)[]
     >;
 
-    let highestVolume = [];
+    const highestVolume = [];
     for (let i = 0; i < 365; i++) {
       const date = new Date(
         tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
