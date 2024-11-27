@@ -1,9 +1,10 @@
-import FormatNumber from '@/components/Number/FormatNumber';
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import clandarIcon from '@/../public/images/Icons/calendar.svg'
-import Image from 'next/image';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function ActivityCalendar({
     headers,
