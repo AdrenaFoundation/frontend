@@ -659,3 +659,64 @@ export type TradingViewChartSavedDrawing = Record<
     options: CreateShapeOptions<object>;
   }[]
 >;
+export interface PositionActivityRawAPi {
+  entry_date: Date;
+  count_positions: number;
+  total_pnl: number;
+  average_pnl: number;
+  min_pnl: number;
+  max_pnl: number;
+  total_volume: number;
+  average_volume: number;
+  min_volume: number;
+  max_volume: number;
+}
+
+export type PositionStatsRawApi = {
+  side: 'long' | 'short';
+  symbol: string;
+  count_positions: number;
+  total_pnl: number;
+  average_pnl: number;
+  min_pnl: number;
+  max_pnl: number;
+  total_volume: number;
+  average_volume: number;
+  min_volume: number;
+  max_volume: number;
+};
+
+export type GetPositionStatsReturnType<
+  T extends { showPositionActivity?: boolean },
+> = {
+  startDate: string;
+  endDate: string;
+  positionStats: {
+    side: string;
+    symbol: string;
+    countPositions: number;
+    totalPnl: number;
+    averagePnl: number;
+    minPnl: number;
+    maxPnl: number;
+    totalVolume: number;
+    averageVolume: number;
+    minVolume: number;
+    maxVolume: number;
+  }[];
+} & (T['showPositionActivity'] extends true
+  ? {
+      positionActivity: {
+        entryDate: string;
+        countPositions: number;
+        totalPnl: number;
+        averagePnl: number;
+        minPnl: number;
+        maxPnl: number;
+        totalVolume: number;
+        averageVolume: number;
+        minVolume: number;
+        maxVolume: number;
+      }[];
+    }
+  : object);
