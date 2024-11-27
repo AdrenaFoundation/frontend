@@ -78,7 +78,6 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
         return set;
       }, new Set()));
 
-      console.log('days', days)
 
       // Get fees for that day, taking last 
 
@@ -90,7 +89,6 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       );
 
       formattedData.forEach((data) => {
-        console.log('data', data)
         if (data.time === '11/16') {
           data.Volume = 0;
         }

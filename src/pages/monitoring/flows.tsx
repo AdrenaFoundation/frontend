@@ -9,7 +9,6 @@ import Select from '@/components/common/Select/Select';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
-import { RANDOM_TABLE_DATA } from '@/constant';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
 import { getDaysBetweenDates } from '@/utils';
@@ -19,12 +18,129 @@ export default function Flow({
 }: {
   custodies: CustodyExtended[] | null;
 }) {
-  const { data, loading, startDate, setStartDate, endDate, setEndDate } = usePositionStats();
+  const { data, loading, startDate, setStartDate, endDate, setEndDate } =
+    usePositionStats();
   const [selectedRange, setSelectedRange] = useState('Last Day');
 
   if (loading) return <div>Loading...</div>;
 
-  const stats = Array.isArray(data) ? data : [];
+  if (!data) return <div>No data</div>;
+
+  const stats = data.positionStats;
+
+  const getColor = (value: number, avg: number) => {
+    if (value < 0) return 'bg-red';
+    if (value > 0 && value < avg) return 'bg-orange';
+    return 'bg-green';
+  };
+
+  const formattedActivity = data.positionActivity.reduce(
+    (acc, activity) => ({
+      ...acc,
+      [activity.entryDate]: {
+        countPositions: activity.countPositions,
+        totalPnl: activity.totalPnl,
+        averagePnl: activity.averagePnl,
+        maxPnl: activity.maxPnl,
+        minPnl: activity.minPnl,
+        totalVolume: activity.totalVolume,
+        maxVolume: activity.maxVolume,
+        minVolume: activity.minVolume,
+        averageVolume: activity.averageVolume,
+      },
+    }),
+    {} as Record<
+      string,
+      Omit<(typeof data.positionActivity)[number], 'entryDate'>
+    >,
+  );
+
+  const tradingStartDate = new Date('2024-01-01T00:00:00Z');
+
+  const normalize = (
+    value: number,
+    minRange: number,
+    maxRange: number,
+    minValue: number,
+    maxValue: number,
+  ) => {
+    if (value < minValue || value > maxValue) {
+      return 2;
+    }
+    return (
+      minRange +
+      ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
+    );
+  };
+
+  const averagePnl =
+    data.positionActivity.reduce(
+      (acc, activity) => acc + activity.totalPnl,
+      0,
+    ) / data.positionActivity.length;
+  const maxTotalVolume = Math.max(
+    ...data.positionActivity.map((activity) => activity.totalVolume),
+  );
+  const minTotalVolume = Math.min(
+    ...data.positionActivity.map((activity) => activity.totalVolume),
+  );
+
+  const activityCalendarData = (() => {
+    const tableData = {
+      mon: [],
+      tue: [],
+      wed: [],
+      thu: [],
+      fri: [],
+      sat: [],
+      sun: [],
+    } as Record<
+      string,
+      ({
+        total: number;
+        color: string;
+        size: number;
+        date: Date;
+        pnl: number;
+        volume: number;
+      } | null)[]
+    >;
+
+    let highestVolume = [];
+    for (let i = 0; i < 365; i++) {
+      const date = new Date(
+        tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
+      ).toISOString();
+
+      const currentDay = new Date(
+        tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
+      ).toLocaleDateString('en-US', {
+        weekday: 'short',
+      });
+
+      if (!formattedActivity[date]) {
+        tableData[currentDay.toLowerCase()].push(null);
+      } else {
+        highestVolume.push(formattedActivity[date].totalVolume);
+
+        tableData[currentDay.toLowerCase()].push({
+          total: formattedActivity[date].countPositions,
+          color: getColor(formattedActivity[date].totalPnl, averagePnl),
+          date: new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000),
+          pnl: formattedActivity[date].totalPnl,
+          volume: formattedActivity[date].totalVolume,
+          size: normalize(
+            formattedActivity[date].totalVolume,
+            1,
+            20,
+            minTotalVolume,
+            maxTotalVolume,
+          ),
+        });
+      }
+    }
+    return tableData;
+  })();
 
   // Group stats by symbol
   const groupedStats = stats.reduce((acc, stat) => {
@@ -113,10 +229,19 @@ export default function Flow({
 
       <div className="flex flex-wrap w-full gap-4">
         {Object.entries(groupedStats).map(([symbol, symbolStats]) => (
-          <div key={symbol} className="p-4 border rounded-lg bg-[#050D14] flex-grow min-w-[20em]">
+          <div
+            key={symbol}
+            className="p-4 border rounded-lg bg-[#050D14] flex-grow min-w-[20em]"
+          >
             <h3 className="font-semibold flex items-center gap-2">
               <Image
-                src={custodies?.find((c) => c.tokenInfo.symbol.toLocaleLowerCase() === symbol.toLowerCase())?.tokenInfo.image || ''}
+                src={
+                  custodies?.find(
+                    (c) =>
+                      c.tokenInfo.symbol.toLocaleLowerCase() ===
+                      symbol.toLowerCase(),
+                  )?.tokenInfo.image || ''
+                }
                 alt="token icon"
                 width="24"
                 height="24"
@@ -126,27 +251,37 @@ export default function Flow({
 
             {symbolStats.map((stat) => (
               <div key={stat.side} className="mt-2 flex flex-col gap-2">
-                <h4 className={`font-boldy ${stat.side === 'long' ? 'text-green' : 'text-redbright'}`}>{stat.side}</h4>
+                <h4
+                  className={`font-boldy ${stat.side === 'long' ? 'text-green' : 'text-redbright'
+                    }`}
+                >
+                  {stat.side}
+                </h4>
                 <div>
                   <div className="flex justify-between text-txtfade">
                     <span>Positions count:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.count_positions}
+                      nb={stat.countPositions}
                       precision={0}
                       minimumFractionDigits={0}
                     />
                   </div>
                   <div className="flex justify-between text-txtfade">
-                    <span className="text-txtfade">Total PnL over the period:</span>
+                    <span className="text-txtfade">
+                      Total PnL over the period:
+                    </span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.total_pnl}
+                      nb={stat.totalPnl}
                       precision={2}
                       minimumFractionDigits={2}
                       prefix="$"
                       showSignBeforePrefix={true}
-                      className={twMerge("opacity-80", stat.total_pnl < 0 ? 'text-redbright' : 'text-green')}
+                      className={twMerge(
+                        'opacity-80',
+                        stat.totalPnl < 0 ? 'text-redbright' : 'text-green',
+                      )}
                       isDecimalDimmed={false}
                     />
                   </div>
@@ -154,12 +289,15 @@ export default function Flow({
                     <span className="text-txtfade">Worst PnL:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.min_pnl}
+                      nb={stat.minPnl}
                       precision={2}
                       minimumFractionDigits={2}
                       prefix="$"
                       showSignBeforePrefix={true}
-                      className={twMerge("opacity-80", stat.min_pnl < 0 ? 'text-redbright' : 'text-green')}
+                      className={twMerge(
+                        'opacity-80',
+                        stat.minPnl < 0 ? 'text-redbright' : 'text-green',
+                      )}
                       isDecimalDimmed={false}
                     />
                   </div>
@@ -167,12 +305,15 @@ export default function Flow({
                     <span className="text-txtfade">Best PnL:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.max_pnl}
+                      nb={stat.maxPnl}
                       precision={2}
                       minimumFractionDigits={2}
                       prefix="$"
                       showSignBeforePrefix={true}
-                      className={twMerge("opacity-80", stat.max_pnl < 0 ? 'text-redbright' : 'text-green')}
+                      className={twMerge(
+                        'opacity-80',
+                        stat.maxPnl < 0 ? 'text-redbright' : 'text-green',
+                      )}
                       isDecimalDimmed={false}
                     />
                   </div>
@@ -180,7 +321,7 @@ export default function Flow({
                     <span>Total Trade Volume:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.total_volume}
+                      nb={stat.totalVolume}
                       precision={2}
                       minimumFractionDigits={2}
                       prefix="$"
@@ -192,7 +333,7 @@ export default function Flow({
                     <span className="text-txtfade">Smallest Trade Size:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.min_volume}
+                      nb={stat.minVolume}
                       precision={2}
                       minimumFractionDigits={2}
                       prefix="$"
@@ -204,7 +345,7 @@ export default function Flow({
                     <span className="text-txtfade">Biggest Trade Size:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.max_volume}
+                      nb={stat.maxVolume}
                       precision={2}
                       minimumFractionDigits={2}
                       prefix="$"
@@ -216,7 +357,7 @@ export default function Flow({
                     <span>Average Trade Size:</span>
                     <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
                     <FormatNumber
-                      nb={stat.average_volume}
+                      nb={stat.averageVolume}
                       precision={2}
                       minimumFractionDigits={2}
                       prefix="$"
@@ -228,13 +369,15 @@ export default function Flow({
             ))}
           </div>
         ))}
-        <ActivityCalendar
-          headers={['', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']}
-          data={RANDOM_TABLE_DATA}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-        />
       </div>
-    </StyledContainer >
+      <ActivityCalendar
+        headers={Array.from({ length: 12 }, (_, i) =>
+          new Date(0, i).toLocaleString('default', { month: 'short' }),
+        )}
+        data={activityCalendarData}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+      />
+    </StyledContainer>
   );
 }
