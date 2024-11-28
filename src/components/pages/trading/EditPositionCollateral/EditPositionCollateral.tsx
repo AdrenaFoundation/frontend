@@ -782,15 +782,16 @@ export default function EditPositionCollateral({
         </>
       )}
 
-      <div className="w-full h-[1px] bg-bcolor my-1" />
 
-      <Button
-        className="mx-4 mt-0 mb-4"
-        size="lg"
-        title={executeBtnText}
-        disabled={!isInputValid || belowMinLeverage || aboveMaxLeverage}
-        onClick={() => handleExecute()}
-      />
+      <div className='p-4 border-t w-full'>
+        <Button
+          className="w-full"
+          size="lg"
+          title={executeBtnText}
+          disabled={!isInputValid || belowMinLeverage || aboveMaxLeverage}
+          onClick={() => handleExecute()}
+        />
+      </div>
     </div>
   );
 }

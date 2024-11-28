@@ -65,6 +65,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+            hour: 'numeric',
             timeZone: 'UTC',
           });
         }
@@ -127,7 +128,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
           .map((x) => ({
             name: x,
             color: (() => {
-              if (x.includes('90')) return '#99cc99'; // Light green 
+              if (x.includes('90')) return '#99cc99'; // Light green
               if (x.includes('180')) return '#ffd966'; // Light yellow
               if (x.includes('360')) return '#ff9999'; // Light red
               if (x.includes('540')) return '#ccccff'; // Light purple

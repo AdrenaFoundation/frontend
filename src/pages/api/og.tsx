@@ -22,7 +22,7 @@ export default async function handler(request: NextRequest) {
     const collateralUsd = Number(searchParams.get('collateral'));
     const price = Number(searchParams.get('price'));
     const mark = Number(searchParams.get('mark'));
-    const isPnlUsd = Boolean(searchParams.get('isPnlUsd'));
+    const isPnlUsd = searchParams.get('isPnlUsd') === 'true';
     const pnlUsd = Number(searchParams.get('pnlUsd'));
     const openedOn = new Date(
         Number(searchParams.get('opened')),
@@ -72,6 +72,11 @@ export default async function handler(request: NextRequest) {
         minimumFractionDigits: symbol === 'BONK' ? 8 : 2,
     });
 
+    const formattedPnl = isPnlUsd ? new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    }).format(pnlUsd) : `${pnlPercentage.toFixed(2)}%`;
+
     return new ImageResponse(
         (
             <div tw="relative flex flex-col items-start p-[50px] w-full h-full bg-[#061018] overflow-hidden">
@@ -117,7 +122,7 @@ export default async function handler(request: NextRequest) {
                         pnlPercentage < 0 ? 'text-[#c9243a]' : 'text-[#07956b]',
                     )}
                 >
-                    {isPnlUsd ? `$${pnlUsd.toFixed(2)}` : `${pnlPercentage.toFixed(2)}%`}
+                    {formattedPnl}
                 </p>
                 <ul tw="flex flex-row mt-[10px] mt-[120px]">
                     <li tw="flex flex-col">

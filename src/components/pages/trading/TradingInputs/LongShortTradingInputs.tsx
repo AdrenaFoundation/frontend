@@ -897,7 +897,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
+                      nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
                       format="number"
                       className="text-lg"
                     />
@@ -914,11 +914,11 @@ export default function LongShortTradingInputs({
                 </div>
               ) : (
                 <div className="flex w-full justify-evenly items-center">
-                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+                  <div className="w-0 h-4 bg-gray-800 rounded-xl" />
 
                   <div className="h-full w-[1px] bg-gray-800" />
 
-                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+                  <div className="w-0 h-4 bg-gray-800 rounded-xl" />
                 </div>
               )}
             </StyledSubSubContainer>

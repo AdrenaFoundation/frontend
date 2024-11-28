@@ -283,7 +283,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) {}
+  ) { }
 
   public setPriorityFeeOption(option: PriorityFeeOption) {
     this.priorityFeeOption = option;
@@ -485,16 +485,16 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-              name: string;
-              color: string;
-              symbol: string;
-              image: ImageRef;
-              coingeckoId: string;
-              decimals: number;
-              displayAmountDecimalsPrecision: number;
-              displayPriceDecimalsPrecision: number;
-              pythPriceUpdateV2: PublicKey;
-            }
+            name: string;
+            color: string;
+            symbol: string;
+            image: ImageRef;
+            coingeckoId: string;
+            decimals: number;
+            displayAmountDecimalsPrecision: number;
+            displayPriceDecimalsPrecision: number;
+            pythPriceUpdateV2: PublicKey;
+          }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -915,6 +915,18 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
+    const preInstructions: TransactionInstruction[] = [];
+
+    if (!(await isAccountInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: mint,
+          owner,
+        }),
+      );
+    }
+
     return this.adrenaProgram.methods
       .removeLiquidity({
         lpAmountIn,
@@ -943,7 +955,8 @@ export class AdrenaClient {
         protocolFeeRecipient: this.cortex.protocolFeeRecipient,
         adrenaProgram: this.adrenaProgram.programId,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts());
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .preInstructions(preInstructions);
   }
 
   public async removeLiquidity({
@@ -1751,13 +1764,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-            swappedTokenDecimals: tokenB.decimals,
-            swappedTokenPrice: tokenBPrice,
-          }
+          swappedTokenDecimals: tokenB.decimals,
+          swappedTokenPrice: tokenBPrice,
+        }
         : {
-            swappedTokenDecimals: usdcToken.decimals,
-            swappedTokenPrice: usdcTokenPrice,
-          };
+          swappedTokenDecimals: usdcToken.decimals,
+          swappedTokenPrice: usdcTokenPrice,
+        };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1886,9 +1899,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-      position,
-      collateralAmount: addedCollateral,
-    })
+        position,
+        collateralAmount: addedCollateral,
+      })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2637,11 +2650,11 @@ export class AdrenaClient {
         lockedStakeId: lockedStake.id,
         amount: additionalAmount
           ? uiToNative(
-              additionalAmount,
-              lockedStake.tokenSymbol === 'ALP'
-                ? this.alpToken.decimals
-                : this.adxToken.decimals,
-            )
+            additionalAmount,
+            lockedStake.tokenSymbol === 'ALP'
+              ? this.alpToken.decimals
+              : this.adxToken.decimals,
+          )
           : null,
         lockedDays: updatedDuration ?? null,
       })
@@ -3835,13 +3848,13 @@ export class AdrenaClient {
         )
           ? new BN(0)
           : uiToNative(
-              collateralTokenPriceUi *
-                nativeToUi(
-                  position.nativeObject.lockedAmount,
-                  collateralCustody.tokenInfo.decimals,
-                ),
-              USD_DECIMALS,
-            );
+            collateralTokenPriceUi *
+            nativeToUi(
+              position.nativeObject.lockedAmount,
+              collateralCustody.tokenInfo.decimals,
+            ),
+            USD_DECIMALS,
+          );
 
         return {
           profitUsd: nativeToUi(
@@ -4134,9 +4147,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               positionAccount.stopLossIsSet === 1
                 ? nativeToUi(
-                    positionAccount.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
+                  positionAccount.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
                 : null,
             stopLossLimitPrice:
               positionAccount.stopLossIsSet === 1
@@ -4194,15 +4207,15 @@ export class AdrenaClient {
         const shortOpeningSizeUsd = userProfile.account.shortStats
           .openingSizeUsd
           ? nativeToUi(
-              userProfile.account.shortStats.openingSizeUsd,
-              USD_DECIMALS,
-            )
+            userProfile.account.shortStats.openingSizeUsd,
+            USD_DECIMALS,
+          )
           : 0;
         const longOpeningSizeUsd = userProfile.account.longStats.openingSizeUsd
           ? nativeToUi(
-              userProfile.account.longStats.openingSizeUsd,
-              USD_DECIMALS,
-            )
+            userProfile.account.longStats.openingSizeUsd,
+            USD_DECIMALS,
+          )
           : 0;
 
         const shortProfitsUsd = userProfile.account.shortStats.profitsUsd
@@ -4884,8 +4897,7 @@ export class AdrenaClient {
     notification?.setTxHash(txSignatureBase58);
     notification?.currentStepSucceeded();
     console.log(
-      `tx: https://explorer.solana.com/tx/${txSignatureBase58}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txSignatureBase58}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 
@@ -4917,8 +4929,7 @@ export class AdrenaClient {
 
         if (!confirmedTx) {
           console.log(
-            `Tx not confirmed after ${
-              TX_RETRY_INTERVAL * txSendAttempts++
+            `Tx not confirmed after ${TX_RETRY_INTERVAL * txSendAttempts++
             }ms, resending (${txSendAttempts} / ${MAX_TX_SEND_ATTEMPTS})`,
           );
 
@@ -5125,8 +5136,7 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 

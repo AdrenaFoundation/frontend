@@ -66,7 +66,7 @@ export default function RootLayout({
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
-  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
