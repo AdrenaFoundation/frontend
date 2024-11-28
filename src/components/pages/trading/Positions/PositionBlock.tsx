@@ -516,7 +516,7 @@ export default function PositionBlock({
       <AnimatePresence>
         {isOpen && (
           <Modal title="Share PnL" close={() => setIsOpen(false)} className="overflow-y-auto"
-            wrapperClassName="h-[70vh]">
+            wrapperClassName="h-[76vh]">
             <div className="absolute top-0 w-[300px]">
               {(() => {
                 const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));

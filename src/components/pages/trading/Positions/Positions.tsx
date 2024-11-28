@@ -178,7 +178,7 @@ export default function Positions({
             title="Share PnL"
             close={() => setShareClosePosition(null)}
             className="overflow-y-auto"
-            wrapperClassName="h-[70vh]"
+            wrapperClassName="h-[76vh]"
           >
             <div className="absolute top-0 w-[300px]">
               {(() => {
