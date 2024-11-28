@@ -32,7 +32,7 @@ import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
-import { getMeanPrioritizationFeeByPercentile } from './grpf';
+import { getMeanPrioritizationFeeByPercentile } from './priorityFee';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AdrenaProgram,
@@ -4733,7 +4733,6 @@ export class AdrenaClient {
         this.connection,
         {
           percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-          fallback: true,
         },
       );
     } catch (err) {
@@ -4992,7 +4991,6 @@ export class AdrenaClient {
         this.connection,
         {
           percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-          fallback: true,
         },
       );
     } catch (err) {
