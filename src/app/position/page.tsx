@@ -60,5 +60,5 @@ export async function generateMetadata(
 }
 
 export default function Page() {
-  return '<Redirect />;'
+  return <Redirect />;
 }
