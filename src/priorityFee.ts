@@ -33,20 +33,41 @@ export async function getMeanPrioritizationFeeByPercentile(
   const rpcRequest = (connection as any)._rpcRequest;
 
   const recentMeanPrioritizationFees = connection.rpcEndpoint.includes('helius')
-    ? await getHeliusMeanPriorityFeeEstimate(config, rpcRequest)
+    ? fallbackDefaultFee(config) // Helius fees doesn't work properly yet, uses fallback instead of getHeliusMeanPriorityFeeEstimate for now
     : await getTritonMeanPriorityFeeEstimate(config, rpcRequest);
+
+  // NOTE:In case an user sets a custom RPC endpoint, we can't guarantee the fees will be available, we would use fallback fees in that case
 
   if (typeof recentMeanPrioritizationFees !== 'number') {
     console.log(
       'Error fetching prioritization fees',
       recentMeanPrioritizationFees,
     );
-    throw new Error('Error fetching prioritization fees');
+
+    console.log('[Priority Fee] Falling back to default fee');
+
+    return fallbackDefaultFee(config);
   }
 
-  console.log('>>>> MEAN FEE:', recentMeanPrioritizationFees);
+  console.log('[Priority Fee] Mean fee:', recentMeanPrioritizationFees);
 
   return recentMeanPrioritizationFees;
+}
+
+function fallbackDefaultFee(
+  config: GetRecentPrioritizationFeesByPercentileConfig,
+): number {
+  if (config.percentile === PrioritizationFeeLevels.MEDIUM) return 50000;
+  if (config.percentile === PrioritizationFeeLevels.HIGH) return 100000;
+  if (config.percentile === PrioritizationFeeLevels.ULTRA) return 1000000;
+
+  if (config.percentile < 2500) return 10000;
+  if (config.percentile < 3500) return 20000;
+  if (config.percentile < 5000) return 50000;
+  if (config.percentile < 9000) return 100000;
+  if (config.percentile <= 10000) return 1000000;
+
+  return 100000;
 }
 
 // HELIUS
