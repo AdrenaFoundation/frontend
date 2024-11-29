@@ -39,14 +39,11 @@ export async function getMeanPrioritizationFeeByPercentile(
   // NOTE:In case an user sets a custom RPC endpoint, we can't guarantee the fees will be available, we would use fallback fees in that case
 
   if (typeof recentMeanPrioritizationFees !== 'number') {
-    console.log(
-      'Error fetching prioritization fees',
-      recentMeanPrioritizationFees,
-    );
+    const fee = fallbackDefaultFee(config);
 
-    console.log('[Priority Fee] Falling back to default fee');
+    console.log('[Priority Fee] Falling back to default fee:', fee);
 
-    return fallbackDefaultFee(config);
+    return fee;
   }
 
   console.log('[Priority Fee] Mean fee:', recentMeanPrioritizationFees);
@@ -69,16 +66,6 @@ function fallbackDefaultFee(
 
   return 100000;
 }
-
-// HELIUS
-// >>>> MEAN FEE: 1
-// >>>> MEAN FEE: 6666666
-// >>>> MEAN FEE: 100000
-
-// TRITON
-// >>>> MEAN FEE: 41284
-// >>>> MEAN FEE: 925148
-// >>>> MEAN FEE: 9750
 
 function transformPercentileToPriorityLevel(
   v: PrioritizationFeeLevels | number,
@@ -154,14 +141,7 @@ async function getTritonMeanPriorityFeeEstimate(
 ): Promise<number | unknown> {
   const response = await rpcRequest('getRecentPrioritizationFees', [
     [
-      '268w1MgvA8USQQG8DkZEHYLDSbDnWCU12LfLYj3USARn',
-      '3xe8ammDt4RbJT7fBrKbMDXE673rHwnYjCWq2SdgwXcC',
-      '4bQRutgDJs6vuh6ZcWaPVXiQaBzbHketjbCDjL4oRN34',
-      'C7PiLKkDHq4q3w7n8BehcyCVYVAfH1jGEKLS3xRVxrab',
-      'Dhz8Ta79hgyUbaRcu7qHMnqMfY47kQHfHt2s42D9dC4e',
-      'F7nPdipyafrTYB8irFFPkjhLmefweaAfUB15nMtq41Tr',
-      'GZ9XfWwgTRhkma2Y91Q9r1XKotNXYjBnKKabj19rhT71',
-      '13gDzEXCdocbj8iAiqrScGo47NiSuYENGsRqi3SEAwet',
+      /* Accounts */
     ],
     { percentile: config.percentile },
   ]);
