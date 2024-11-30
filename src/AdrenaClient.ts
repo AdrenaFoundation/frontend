@@ -4923,9 +4923,10 @@ export class AdrenaClient {
           confirmTxRet.value.confirmations > 10
         ) {
           txIsConfirmed = true;
+          console.log('Tx confirmed after', Date.now() - d, 'ms');
         } else {
           console.log(
-            `Tx not confirmed after resending #${txSendAttempts++})`,
+            `Tx not confirmed after resending #${txSendAttempts++}`,
             (confirmTxRet && confirmTxRet.value && confirmTxRet.value.err) ??
               null,
           );
