@@ -33,6 +33,7 @@ export default function ClosePosition({
   setShareClosePosition: (position: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const [showMore, setShowMore] = useState(false);
 
   const [exitPriceAndFee, setExitPriceAndFee] =
     useState<ExitPriceAndFee | null>(null);
@@ -214,85 +215,94 @@ export default function ClosePosition({
             </div>
           </div>
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="w-full flex justify-between">
-            <div className="flex w-full justify-between items-center">
-              <span className="text-sm text-txtfade">Liquidation</span>
+            {showMore ? <>
+              <div className="w-full h-[1px] bg-bcolor my-1" />
 
-              <FormatNumber
-                nb={position.liquidationPrice}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={
-                  position.token.displayPriceDecimalsPrecision
-                }
-                isDecimalDimmed={false}
-                className="text-orange"
-              />
-            </div>
+              <div className="flex w-full justify-between items-center">
+                <span className="text-sm text-txtfade">Liquidation</span>
+
+                <FormatNumber
+                  nb={position.liquidationPrice}
+                  format="currency"
+                  precision={position.token.displayPriceDecimalsPrecision}
+                  minimumFractionDigits={
+                    position.token.displayPriceDecimalsPrecision
+                  }
+                  isDecimalDimmed={false}
+                  className="text-orange"
+                />
+              </div>
+            </> : null}
           </div>
 
         </div>
 
         <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
+          {showMore ? <>
+            <div className={rowStyle}>
+              <div className="text-sm text-txtfade">Size</div>
 
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Size</div>
+              <FormatNumber
+                nb={position.sizeUsd}
+                format="currency"
+                className="text-txtfade"
+              />
+            </div>
 
-            <FormatNumber
-              nb={position.sizeUsd}
-              format="currency"
-              className="text-txtfade"
-            />
-          </div>
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+          </> : null}
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+          {showMore ? <>
+            <div className={rowStyle}>
+              <div className="text-sm text-txtfade">Size native</div>
 
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Size native</div>
+              <FormatNumber
+                nb={
+                  position.side === 'long'
+                    ? position.size
+                    : position.sizeUsd / position.price
+                }
+                className="text-txtfade"
+                precision={position.token.displayAmountDecimalsPrecision}
+                suffix={getTokenSymbol(position.token.symbol)}
+                isDecimalDimmed={true}
+              />
+            </div>
 
-            <FormatNumber
-              nb={
-                position.side === 'long'
-                  ? position.size
-                  : position.sizeUsd / position.price
-              }
-              className="text-txtfade"
-              precision={position.token.displayAmountDecimalsPrecision}
-              suffix={getTokenSymbol(position.token.symbol)}
-              isDecimalDimmed={true}
-            />
-          </div>
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+          </> : null}
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+          {showMore ? <>
+            <div className={rowStyle}>
+              <div className="text-sm text-txtfade">Initial Leverage</div>
 
+              <FormatNumber
+                nb={position.sizeUsd / position.collateralUsd}
+                prefix="x"
+                className="text-txtfade"
+                minimumFractionDigits={2}
+              />
+            </div>
 
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Initial Leverage</div>
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+          </> : null}
 
-            <FormatNumber
-              nb={position.sizeUsd / position.collateralUsd}
-              prefix="x"
-              className="text-txtfade"
-              minimumFractionDigits={2}
-            />
-          </div>
+          {showMore ? <>
+            <div className={rowStyle}>
+              <div className="text-sm text-txtfade">Current Leverage</div>
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+              <FormatNumber
+                nb={position.currentLeverage}
+                prefix="x"
+                className="text-txtfade"
+                minimumFractionDigits={2}
+              />
+            </div>
 
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Current Leverage</div>
-
-            <FormatNumber
-              nb={position.currentLeverage}
-              prefix="x"
-              className="text-txtfade"
-              minimumFractionDigits={2}
-            />
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+          </> : null}
 
           <div className={rowStyle}>
             <div className="text-sm">
@@ -315,65 +325,69 @@ export default function ClosePosition({
 
       <div className='p-4 pb-0'>
         <div className="text-white text-sm mb-1 font-boldy">
-          Fees Breakdown
+          Fees
         </div>
 
         <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
-          <div className={rowStyle}>
-            <div className="flex items-center text-sm text-txtfade">
-              Exit Fees
-              <Tippy
-                content={
-                  <p className="font-medium">
-                    Open fees are 0 bps, while close fees are 16 bps. This average
-                    to 8bps entry and close fees, but allow for opening exactly
-                    the requested position size.
-                  </p>
-                }
-                placement="auto"
-              >
-                <Image
-                  src={infoIcon}
-                  width={12}
-                  height={12}
-                  alt="info icon"
-                  className="ml-1"
-                />
-              </Tippy>
+          {showMore ? <>
+            <div className={rowStyle}>
+              <div className="flex items-center text-sm text-txtfade">
+                Exit Fees
+                <Tippy
+                  content={
+                    <p className="font-medium">
+                      Open fees are 0 bps, while close fees are 16 bps. This average
+                      to 8bps entry and close fees, but allow for opening exactly
+                      the requested position size.
+                    </p>
+                  }
+                  placement="auto"
+                >
+                  <Image
+                    src={infoIcon}
+                    width={12}
+                    height={12}
+                    alt="info icon"
+                    className="ml-1"
+                  />
+                </Tippy>
+              </div>
+
+              <FormatNumber nb={position.exitFeeUsd} format="currency" />
             </div>
 
-            <FormatNumber nb={position.exitFeeUsd} format="currency" />
-          </div>
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+          </> : null}
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+          {showMore ? <>
+            <div className={rowStyle}>
+              <div className="flex items-center text-sm text-txtfade">
+                Borrow Fees
+                <Tippy
+                  content={
+                    <p className="font-medium">
+                      Total of fees accruing continuously while the leveraged
+                      position is open, to pay interest rate on the borrowed assets
+                      from the Liquidity Pool.
+                    </p>
+                  }
+                  placement="auto"
+                >
+                  <Image
+                    src={infoIcon}
+                    width={12}
+                    height={12}
+                    alt="info icon"
+                    className="ml-1"
+                  />
+                </Tippy>
+              </div>
 
-          <div className={rowStyle}>
-            <div className="flex items-center text-sm text-txtfade">
-              Borrow Fees
-              <Tippy
-                content={
-                  <p className="font-medium">
-                    Total of fees accruing continuously while the leveraged
-                    position is open, to pay interest rate on the borrowed assets
-                    from the Liquidity Pool.
-                  </p>
-                }
-                placement="auto"
-              >
-                <Image
-                  src={infoIcon}
-                  width={12}
-                  height={12}
-                  alt="info icon"
-                  className="ml-1"
-                />
-              </Tippy>
+              <FormatNumber nb={position.borrowFeeUsd} format="currency" />
             </div>
 
-            <FormatNumber nb={position.borrowFeeUsd} format="currency" />
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+          </> : null}
 
           <div className={rowStyle}>
             <div className="flex items-center text-sm text-txtfade">
@@ -390,6 +404,9 @@ export default function ClosePosition({
         </div>
       </div>
 
+      <div className='ml-auto mr-4 mt-2 text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1' onClick={(e) => {
+        setShowMore(!showMore)
+      }}>{showMore ? 'hide' : 'show'} details</div>
 
       <div className='w-full p-4 border-t mt-4'>
         <Button
