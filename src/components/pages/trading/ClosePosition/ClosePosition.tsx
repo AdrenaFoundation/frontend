@@ -37,7 +37,7 @@ export default function ClosePosition({
   const [exitPriceAndFee, setExitPriceAndFee] =
     useState<ExitPriceAndFee | null>(null);
 
-  const markPrice: number | null = tokenPrices[position.token.symbol];
+  const markPrice: number | null = tokenPrices[getTokenSymbol(position.token.symbol)];
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
