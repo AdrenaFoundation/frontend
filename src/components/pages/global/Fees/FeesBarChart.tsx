@@ -56,8 +56,6 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         ).then((res) => res.json()),
       ]);
 
-      console.log('latestPoolInfoSnapshot', latestPoolInfoSnapshot)
-
       const {
         cumulative_swap_fee_usd,
         cumulative_liquidity_fee_usd,
@@ -81,8 +79,6 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
         return set;
       }, new Set()));
-
-      console.log('days', days)
 
       // Get fees for that day, taking last 
 

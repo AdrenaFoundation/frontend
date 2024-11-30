@@ -287,7 +287,7 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="flex items-center justify-end p-0.5 bg-secondary text-white mb-1">
+          <div className="flex items-center justify-end p-0.5 bg-secondary text-white">
             <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
               <p className="opacity-50 text-xs underline-dashed cursor-help">
                 Show Break Even line

@@ -127,7 +127,7 @@ export default function StakingChart() {
               label,
             }: TooltipProps<ValueType, NameType>) => (
               <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
-                {label && <p className="text-lg mb-2 font-mono">
+                {label && <div className="text-lg mb-2 font-mono">
                   {label}
 
                   {payload && tokenPriceADX && tokenPriceALP ? <span className='text-xl ml-1 text-txtfade'>({
@@ -142,7 +142,7 @@ export default function StakingChart() {
                       isAbbreviateIcon={false}
                     />
                   })</span> : null}
-                </p>}
+                </div>}
 
                 <div className='flex w-full justify-between items-center'>
                   {payload && payload.map((item) => (
