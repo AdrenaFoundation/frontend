@@ -32,7 +32,7 @@ import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
-import { getMeanPrioritizationFeeByPercentile } from './grpf';
+import { getMeanPrioritizationFeeByPercentile } from './priorityFee';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AdrenaProgram,
@@ -4736,9 +4736,27 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    /////////////////////// PRIORITY FEES ///////////////////////
     let priorityFeeMicroLamports: number =
       DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    let latestBlockHash: {
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    };
+
+    try {
+      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+    } catch (err) {
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+
+    transaction.recentBlockhash = latestBlockHash.blockhash;
+    transaction.feePayer = wallet.publicKey;
 
     try {
       // Refresh priority fees before proceeding
@@ -4746,8 +4764,13 @@ export class AdrenaClient {
         this.connection,
         {
           percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-          fallback: true,
         },
+        bs58.encode(
+          transaction.serialize({
+            requireAllSignatures: false,
+            verifySignatures: false,
+          }),
+        ),
       );
     } catch (err) {
       console.log('Error fetching priority fee', err);
@@ -4767,26 +4790,6 @@ export class AdrenaClient {
         units: 1000000, // Use a lot of units to avoid any issues during next simulation
       }),
     );
-
-    /////////////////////// TRANSACTION ///////////////////////
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-
-    let latestBlockHash: {
-      blockhash: Blockhash;
-      lastValidBlockHeight: number;
-    };
-
-    try {
-      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
-    } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
-
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    transaction.recentBlockhash = latestBlockHash.blockhash;
-    transaction.feePayer = wallet.publicKey;
 
     // Simulate the transaction
     let computeUnitUsed: number | null | undefined = null;
@@ -5003,7 +5006,6 @@ export class AdrenaClient {
         this.connection,
         {
           percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-          fallback: true,
         },
       );
     } catch (err) {

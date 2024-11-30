@@ -68,7 +68,7 @@ export default function App(props: AppProps) {
     'not-started' | 'starting' | 'done'
   >('not-started');
   // FIXME: RPC selection shouldn't be hook / effect-based.
-  // A default RPC should be picked by the server durring ssr.
+  // A default RPC should be picked by the server during ssr.
   const {
     activeRpc,
     rpcInfos,
@@ -85,7 +85,7 @@ export default function App(props: AppProps) {
 
   const preferredSolanaExplorer: SolanaExplorerOptions =
     cookies?.solanaExplorer &&
-    SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
+      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
       ? cookies?.solanaExplorer
       : 'Solana Explorer';
 
