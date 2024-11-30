@@ -77,7 +77,7 @@ export default function Positions({
             }
             close={() => setPositionToClose(null)}
             className="flex flex-col items-center w-full overflow-y-auto"
-            wrapperClassName="h-[84vh] sm:h-auto"
+            wrapperClassName="h-[80vh] sm:h-auto"
           >
             <ClosePosition
               position={positionToClose}
