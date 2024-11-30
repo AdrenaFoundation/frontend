@@ -56,8 +56,6 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
         ).then((res) => res.json()),
       ]);
 
-      console.log('latestPoolInfoSnapshot', latestPoolInfoSnapshot)
-
       const {
         cumulative_trading_volume_usd,
         snapshot_timestamp,
@@ -78,8 +76,6 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
         return set;
       }, new Set()));
 
-      console.log('days', days)
-
       // Get fees for that day, taking last 
 
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
@@ -90,7 +86,6 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       );
 
       formattedData.forEach((data) => {
-        console.log('data', data)
         if (data.time === '11/16') {
           data.Volume = 0;
         }
