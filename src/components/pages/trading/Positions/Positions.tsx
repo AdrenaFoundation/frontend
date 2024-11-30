@@ -77,7 +77,7 @@ export default function Positions({
             }
             close={() => setPositionToClose(null)}
             className="flex flex-col items-center w-full overflow-y-auto"
-            wrapperClassName="h-[76vh]"
+            wrapperClassName="h-[80vh] sm:h-auto"
           >
             <ClosePosition
               position={positionToClose}
@@ -118,8 +118,8 @@ export default function Positions({
               </div>
             }
             close={() => setPositionToEdit(null)}
-            className="flex flex-col items-center overflow-y-auto"
-            wrapperClassName="h-[72vh]"
+            className="flex flex-col items-center overflow-y-auto h-full"
+            wrapperClassName="h-[89vh] sm:h-[45em] sm:max-h-[89vh]"
           >
             <EditPositionCollateral
               position={positionToEdit}
@@ -159,7 +159,7 @@ export default function Positions({
             }
             close={() => setPositionToStopLossTakeProfit(null)}
             className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center overflow-y-auto"
-            wrapperClassName="sm:mt-0 h-[86vh]"
+            wrapperClassName="sm:mt-0 h-[88vh] sm:h-auto"
           >
             <StopLossTakeProfit
               position={positionToStopLossTakeProfit}
@@ -178,7 +178,7 @@ export default function Positions({
             title="Share PnL"
             close={() => setShareClosePosition(null)}
             className="overflow-y-auto"
-            wrapperClassName="h-[76vh]"
+            wrapperClassName="h-[80vh]"
           >
             <div className="absolute top-0 w-[300px]">
               {(() => {

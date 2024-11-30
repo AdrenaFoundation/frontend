@@ -1000,7 +1000,8 @@ export default function LongShortTradingInputs({
                       className="flex-col mt-3"
                     >
                       <FormatNumber
-                        nb={side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee}
+                        // Multiply by 100 to be displayed as %
+                        nb={((side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee) ?? 0) * 100}
                         precision={RATE_DECIMALS}
                         minimumFractionDigits={4}
                         suffix="%/hr"
