@@ -808,7 +808,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
             <AnimatePresence>
                 {activeProfile && (
                     <Modal
-                        className="h-[85vh] overflow-y-auto max-h-[85vh] w-full"
+                        className="h-[85vh] sm:h-[40em] overflow-y-auto max-h-[85vh] w-full"
                         wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
                         close={() => setActiveProfile(null)}
                     >
