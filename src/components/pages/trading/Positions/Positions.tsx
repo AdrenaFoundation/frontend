@@ -159,7 +159,7 @@ export default function Positions({
             }
             close={() => setPositionToStopLossTakeProfit(null)}
             className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center overflow-y-auto"
-            wrapperClassName="sm:mt-0 h-[86vh]"
+            wrapperClassName="sm:mt-0 h-[88vh] sm:h-auto"
           >
             <StopLossTakeProfit
               position={positionToStopLossTakeProfit}
