@@ -118,8 +118,8 @@ export default function Positions({
               </div>
             }
             close={() => setPositionToEdit(null)}
-            className="flex flex-col items-center overflow-y-auto"
-            wrapperClassName="h-[72vh]"
+            className="flex flex-col items-center overflow-y-auto h-full"
+            wrapperClassName="h-[89vh] sm:h-[74vh]"
           >
             <EditPositionCollateral
               position={positionToEdit}
