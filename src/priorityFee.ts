@@ -29,11 +29,16 @@ interface RpcResponse {
 export async function getMeanPrioritizationFeeByPercentile(
   connection: Connection,
   config: GetRecentPrioritizationFeesByPercentileConfig,
+  serializedTransaction?: string,
 ): Promise<number> {
   const rpcRequest = (connection as any)._rpcRequest;
 
   const recentMeanPrioritizationFees = connection.rpcEndpoint.includes('helius')
-    ? fallbackDefaultFee(config) // Helius fees doesn't work properly yet, uses fallback instead of getHeliusMeanPriorityFeeEstimate for now
+    ? await getHeliusMeanPriorityFeeEstimate(
+        config,
+        rpcRequest,
+        serializedTransaction,
+      )
     : await getTritonMeanPriorityFeeEstimate(config, rpcRequest);
 
   // NOTE:In case an user sets a custom RPC endpoint, we can't guarantee the fees will be available, we would use fallback fees in that case
@@ -99,16 +104,18 @@ async function getHeliusMeanPriorityFeeEstimate(
   rpcRequest: (
     method: string,
     args: {
-      accountKeys: string[];
+      transaction?: string;
       options: {
         priorityLevel: HeliusPriorityLevel;
+        serializedTransaction?: string;
       };
     }[],
   ) => Promise<RpcResponse>,
+  serializedTransaction?: string,
 ): Promise<number | unknown> {
   const response = await rpcRequest('getPriorityFeeEstimate', [
     {
-      accountKeys: [],
+      transaction: serializedTransaction,
       options: {
         priorityLevel: transformPercentileToPriorityLevel(config.percentile),
       },

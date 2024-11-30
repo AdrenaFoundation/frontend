@@ -4723,9 +4723,27 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    /////////////////////// PRIORITY FEES ///////////////////////
     let priorityFeeMicroLamports: number =
       DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    let latestBlockHash: {
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    };
+
+    try {
+      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+    } catch (err) {
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+
+    transaction.recentBlockhash = latestBlockHash.blockhash;
+    transaction.feePayer = wallet.publicKey;
 
     try {
       // Refresh priority fees before proceeding
@@ -4734,6 +4752,12 @@ export class AdrenaClient {
         {
           percentile: PercentilePriorityFeeList[this.priorityFeeOption],
         },
+        bs58.encode(
+          transaction.serialize({
+            requireAllSignatures: false,
+            verifySignatures: false,
+          }),
+        ),
       );
     } catch (err) {
       console.log('Error fetching priority fee', err);
@@ -4753,26 +4777,6 @@ export class AdrenaClient {
         units: 1000000, // Use a lot of units to avoid any issues during next simulation
       }),
     );
-
-    /////////////////////// TRANSACTION ///////////////////////
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-
-    let latestBlockHash: {
-      blockhash: Blockhash;
-      lastValidBlockHeight: number;
-    };
-
-    try {
-      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
-    } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
-
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    transaction.recentBlockhash = latestBlockHash.blockhash;
-    transaction.feePayer = wallet.publicKey;
 
     // Simulate the transaction
     let computeUnitUsed: number | null | undefined = null;

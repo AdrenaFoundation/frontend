@@ -114,6 +114,11 @@ export default function useRpc(config: IConfiguration | null): {
   useEffect(() => {
     if (!config) return;
 
+    // If no favorite, set the first RPC of the list as favorite
+    if (!cookies.favoriteRpc || cookies.favoriteRpc === 'null') {
+      setCookies('favoriteRpc', config.rpcOptions[0].name);
+    }
+
     setRpcConnections(
       config.rpcOptions.map((rpc) => {
         try {
