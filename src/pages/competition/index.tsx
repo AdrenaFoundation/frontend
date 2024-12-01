@@ -57,6 +57,12 @@ const adxRewardsPlaceholder = {
     'No Division': [],
 };
 
+const weeklyRewardsVideos = [
+    "https://www.youtube.com/watch?v=JCZLr6_hmg8", // Week 1
+    "https://www.youtube.com/watch?v=kNyWL-OBmmA", // Week 2
+    // ... insert new videos when you have
+];
+
 const jtoRewardsPlaceholder = {
     Leviathan: [3200, 2400, 1600, 400, 400, 400, 400, 400, 400, 400],
     Abomination: [1600, 1200, 800, 200, 200, 200, 200, 200, 200, 200],
@@ -73,7 +79,6 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     );
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
-    const [week, setWeek] = useState(0);
     const [myDivision, setMyDivision] = useState<
         keyof TradingCompetitionLeaderboardAPI | null
     >(null);
@@ -92,6 +97,8 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     const weeksPassedSinceStartDate = Math.floor(
         (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
     );
+
+    const [week, setWeek] = useState(weeksPassedSinceStartDate);
 
     useEffect(() => {
         getData();
@@ -287,10 +294,6 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                 },
             );
 
-            // Only do once
-            if (week === 0) {
-                setWeek(weeksPassedSinceStartDate);
-            }
             setAchievements(achievements);
             setData(formattedData);
         } catch (error) {
@@ -321,8 +324,6 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     const hasProfile = userProfile !== undefined;
 
     const userName = hasProfile ? userProfile?.nickname : getAbbrevWalletAddress(wallet?.walletAddress.toString() ?? 'undefined');
-
-
 
     return (
         <>
@@ -571,6 +572,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                     </div>
 
                     <WeeklyReward
+                        raffleVideo={weeklyRewardsVideos[week]}
                         rewards={[
                             {
                                 title: 'Top Liquidation',

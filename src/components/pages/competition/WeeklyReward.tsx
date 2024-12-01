@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import diceImage from '@/../public/images/dice.svg';
 import firstImage from '@/../public/images/first-place.svg';
 import ticketImage from '@/../public/images/tickets.png';
+import youtubeImage from '@/../public/images/youtube.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ImageRef } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
@@ -33,19 +34,12 @@ export type RewardData = {
     description: string;
 };
 
-const isValidPublicKey = (key: string) => {
-    try {
-        new PublicKey(key);
-        return true;
-    } catch (e) {
-        return false;
-    }
-};
-
 export default function WeeklyReward({
+    raffleVideo,
     rewards,
     handleProfileView,
 }: {
+    raffleVideo?: string;
     rewards: [
         { title: 'Top Liquidation' } & RewardData,
         { title: 'Fees Raffle' } & TicketData,
@@ -73,6 +67,15 @@ export default function WeeklyReward({
                             }}></div>
 
                         <div className='flex flex-col gap-2 items-center justify-between p-3 z-20'>
+                            {raffleVideo ? <Image
+                                src={youtubeImage}
+                                alt="Youtube logo"
+                                className='h-6 opacity-80 hover:opacity-100 absolute top-4 right-4 cursor-pointer'
+                                width={40}
+                                height={20}
+                                onClick={() => window.open(raffleVideo, '_blank')}
+                            /> : null}
+
                             <div className='flex flex-col items-center gap-2'>
                                 <Image
                                     src={diceImage}
