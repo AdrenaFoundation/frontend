@@ -45,7 +45,6 @@ export default function EditPositionCollateral({
   const [input, setInput] = useState<number | null>(null);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [showMore, setShowMore] = useState(false);
 
   const [liquidationPrice, setLiquidationPrice] = useState<number | null>(
     position.liquidationPrice ?? null,
@@ -370,118 +369,105 @@ export default function EditPositionCollateral({
             />
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          {showMore ? <>
-            <div className="w-full h-[1px] bg-bcolor my-1" />
+          <div className={rowStyle}>
+            <div className="text-sm text-txtfade">Entry</div>
 
-            <div className={rowStyle}>
-              <div className="text-sm text-txtfade">Entry</div>
+            <FormatNumber
+              nb={position.price}
+              format="currency"
+              precision={position.token.displayPriceDecimalsPrecision}
+              className="text-txtfade"
+              minimumFractionDigits={2}
+            />
+          </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className={rowStyle}>
+            <div className="text-sm text-txtfade">Liquidation</div>
+            <div className="flex items-center justify-end">
               <FormatNumber
-                nb={position.price}
+                nb={position.liquidationPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                className="text-txtfade"
+                className={`${input ? 'text-xs' : 'text-sm'} text-orange`}
+                isDecimalDimmed={false}
                 minimumFractionDigits={2}
               />
-            </div>
-          </> : null}
 
+              {input ? (
+                <>
+                  {rightArrowElement}
 
-          {showMore ? <>
-            <div className="w-full h-[1px] bg-bcolor my-1" />
-
-            <div className={rowStyle}>
-              <div className="text-sm text-txtfade">Liquidation</div>
-              <div className="flex items-center justify-end">
-                <FormatNumber
-                  nb={position.liquidationPrice}
-                  format="currency"
-                  precision={position.token.displayPriceDecimalsPrecision}
-                  className={`${input ? 'text-xs' : 'text-sm'} text-orange`}
-                  isDecimalDimmed={false}
-                  minimumFractionDigits={2}
-                />
-
-                {input ? (
-                  <>
-                    {rightArrowElement}
-
-                    <div className="flex flex-col">
-                      <div className="flex flex-col items-end text-sm">
-                        {updatedInfos ? (
-                          <FormatNumber
-                            nb={liquidationPrice}
-                            format="currency"
-                            precision={
-                              position.token.displayPriceDecimalsPrecision
-                            }
-                            className={`text-orange`}
-                            isDecimalDimmed={false}
-                          />
-                        ) : (
-                          '-'
-                        )}
-                      </div>
+                  <div className="flex flex-col">
+                    <div className="flex flex-col items-end text-sm">
+                      {updatedInfos ? (
+                        <FormatNumber
+                          nb={liquidationPrice}
+                          format="currency"
+                          precision={
+                            position.token.displayPriceDecimalsPrecision
+                          }
+                          className={`text-orange`}
+                          isDecimalDimmed={false}
+                        />
+                      ) : (
+                        '-'
+                      )}
                     </div>
-                  </>
-                ) : null}
-              </div>
+                  </div>
+                </>
+              ) : null}
             </div>
-          </> : null}
+          </div>
         </div>
       </div>
 
       <div className="px-4 mt-2">
         <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
+          <div className={rowStyle}>
+            <div className="text-sm text-txtfade">Size</div>
 
-          {showMore ? <>
-            <div className={rowStyle}>
-              <div className="text-sm text-txtfade">Size</div>
+            <FormatNumber
+              nb={position.sizeUsd}
+              format="currency"
+              className="text-txtfade"
+              minimumFractionDigits={2}
+            />
+          </div>
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
-              <FormatNumber
-                nb={position.sizeUsd}
-                format="currency"
-                className="text-txtfade"
-                minimumFractionDigits={2}
-              />
-            </div>
-            <div className="w-full h-[1px] bg-bcolor my-1" />
-          </> : null}
+          <div className={rowStyle}>
+            <div className="text-sm text-txtfade">Size native</div>
 
-          {showMore ? <>
-            <div className={rowStyle}>
-              <div className="text-sm text-txtfade">Size native</div>
+            <FormatNumber
+              nb={
+                position.side === 'long'
+                  ? position.size
+                  : position.sizeUsd / position.price
+              }
+              className="text-txtfade"
+              precision={position.token.displayAmountDecimalsPrecision}
+              suffix={getTokenSymbol(position.token.symbol)}
+              isDecimalDimmed={true}
+              minimumFractionDigits={2}
+            />
+          </div>
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
-              <FormatNumber
-                nb={
-                  position.side === 'long'
-                    ? position.size
-                    : position.sizeUsd / position.price
-                }
-                className="text-txtfade"
-                precision={position.token.displayAmountDecimalsPrecision}
-                suffix={getTokenSymbol(position.token.symbol)}
-                isDecimalDimmed={true}
-                minimumFractionDigits={2}
-              />
-            </div>
-            <div className="w-full h-[1px] bg-bcolor my-1" />
-          </> : null}
+          <div className={rowStyle}>
+            <div className="text-sm text-txtfade">Initial Leverage</div>
 
-          {showMore ? <>
-            <div className={rowStyle}>
-              <div className="text-sm text-txtfade">Initial Leverage</div>
-
-              <FormatNumber
-                nb={position.sizeUsd / position.collateralUsd}
-                prefix="x"
-                className="text-txtfade"
-                minimumFractionDigits={2}
-              />
-            </div>
-            <div className="w-full h-[1px] bg-bcolor my-1" />
-          </> : null}
+            <FormatNumber
+              nb={position.sizeUsd / position.collateralUsd}
+              prefix="x"
+              className="text-txtfade"
+              minimumFractionDigits={2}
+            />
+          </div>
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
             <div className="text-sm">
@@ -607,10 +593,6 @@ export default function EditPositionCollateral({
         </div>
       </div>
 
-      <div className='ml-auto mr-4 text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1' onClick={(e) => {
-        setShowMore(!showMore)
-      }}>{showMore ? 'hide' : 'show'} details</div>
-
       <TabSelect
         wrapperClassName="h-12 flex items-center mt-auto"
         selected={selectedAction}
@@ -625,7 +607,7 @@ export default function EditPositionCollateral({
         }}
       />
 
-      <div className='flex flex-col gap-2'>
+      <div className="flex flex-col gap-2">
         {selectedAction === 'deposit' ? (
           <>
             {belowMinLeverage && (
@@ -771,7 +753,9 @@ export default function EditPositionCollateral({
                       variant="secondary"
                       rounded={false}
                       className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
-                      onClick={() => setInput(calculateCollateralPercentage(percent))}
+                      onClick={() =>
+                        setInput(calculateCollateralPercentage(percent))
+                      }
                     ></Button>
                   );
                 })}
@@ -791,7 +775,7 @@ export default function EditPositionCollateral({
         )}
       </div>
 
-      <div className='p-4 border-t w-full'>
+      <div className="p-4 border-t w-full">
         <Button
           className="w-full"
           size="lg"
