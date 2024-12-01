@@ -215,10 +215,11 @@ export default function ClosePosition({
             </div>
           </div>
 
+          {showMore ? <div className="w-full h-[1px] bg-bcolor my-1" /> : null}
 
           <div className="w-full flex justify-between">
             {showMore ? <>
-              <div className="w-full h-[1px] bg-bcolor my-1" />
+
 
               <div className="flex w-full justify-between items-center">
                 <span className="text-sm text-txtfade">Liquidation</span>

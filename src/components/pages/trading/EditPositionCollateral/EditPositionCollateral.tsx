@@ -625,7 +625,7 @@ export default function EditPositionCollateral({
         }}
       />
 
-      <div className='flex flex-col gap-2 h-[12em]'>
+      <div className='flex flex-col gap-2'>
         {selectedAction === 'deposit' ? (
           <>
             {belowMinLeverage && (
