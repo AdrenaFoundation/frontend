@@ -3,6 +3,8 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { SUPPORTED_RESOLUTIONS } from '@/constant';
+import { useChartDrawing } from '@/hooks/useChartDrawing';
+import { useSelector } from '@/store/store';
 import { PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
 
@@ -14,8 +16,6 @@ import {
   SupportedLineTools,
 } from '../../../../../public/charting_library/charting_library';
 import datafeed from './datafeed';
-import { useChartDrawing } from '@/hooks/useChartDrawing';
-import { useSelector } from '@/store/store';
 
 let tvScriptLoadingPromise: Promise<unknown>;
 

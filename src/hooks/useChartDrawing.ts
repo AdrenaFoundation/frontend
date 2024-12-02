@@ -1,12 +1,5 @@
-import { PositionExtended, TokenSymbol } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  EntityId,
-  IChartingLibraryWidget,
-  PricedPoint,
-  SupportedLineTools,
-} from '../../public/charting_library/charting_library';
-import { formatNumberShort, getTokenSymbol } from '@/utils';
+
 import {
   blueColor,
   greenColor,
@@ -14,6 +7,15 @@ import {
   purpleColor,
   redColor,
 } from '@/constant';
+import { PositionExtended, TokenSymbol } from '@/types';
+import { formatNumberShort, getTokenSymbol } from '@/utils';
+
+import {
+  EntityId,
+  IChartingLibraryWidget,
+  PricedPoint,
+  SupportedLineTools,
+} from '../../public/charting_library/charting_library';
 
 export function useChartDrawing({
   widget,
