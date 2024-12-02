@@ -13,6 +13,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^6.1.6",
+    "@phantom/wallet-sdk": "^0.0.10",
     "@pythnetwork/client": "^2.22.0",
     "@pythnetwork/pyth-solana-receiver": "^0.8.1",
     "@reduxjs/toolkit": "^1.9.3",
