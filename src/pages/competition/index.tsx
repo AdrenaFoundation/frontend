@@ -73,6 +73,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     );
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
+    const [eligibleJitosolAirdropWallets, setEligibleJitosolAirdropWallets] = useState<string[]>([]);
     const [week, setWeek] = useState(0);
     const [myDivision, setMyDivision] = useState<
         keyof TradingCompetitionLeaderboardAPI | null
@@ -136,10 +137,12 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     const getData = async () => {
         try {
             const response = await fetch(
-                'https://datapi.adrena.xyz/awakening?season=preseason&show_achievements=true&show_trader_divisions=true',
+                'https://datapi.adrena.xyz/v2/awakening?season=preseason&show_eligible_jitosol_wallets=true&show_achievements=true&show_trader_divisions=true',
             );
             const { data } = await response.json();
-            const { trader_divisions = [], achievements = [] } = data;
+            const { trader_divisions = [], achievements = [], eligible_jitosol_wallets = [] } = data;
+
+            setEligibleJitosolAirdropWallets(eligible_jitosol_wallets);
 
             if (!trader_divisions || !achievements) {
                 return;
@@ -461,57 +464,87 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             </div>
                         </div>
 
-                        <div className='flex gap-4 flex-row flex-wrap sm:flex-nowrap'>
-                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-                                <h4 className="font-boldy text-base p-2 flex gap-2">Traders <LiveIcon className='absolute right-2' /></h4>
 
-                                <div className='h-[1px] bg-bcolor w-full' />
+                        <div className='flex gap-4 flex-col flex-wrap sm:flex-nowrap'>
+                            <div className='flex gap-4 flex-row flex-wrap sm:flex-nowrap'>
+                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                    <h4 className="font-boldy text-base p-2 flex gap-2">Traders <LiveIcon className='absolute right-2' /></h4>
 
-                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
-                                    <FormatNumber
-                                        nb={tradersCount}
-                                        format="number"
-                                        className={'text-3xl font-boldy'}
-                                    />
-                                </div>
-                            </div>
+                                    <div className='h-[1px] bg-bcolor w-full' />
 
-                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-                                <h4 className="font-boldy text-base p-2 flex gap-2">Volume <LiveIcon className='absolute right-2' /></h4>
-
-                                <div className='h-[1px] bg-bcolor w-full' />
-
-                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
-                                    <FormatNumber
-                                        nb={totalVolume}
-                                        format="currency"
-                                        isDecimalDimmed={false}
-                                        isAbbreviate={true}
-                                        className={'text-3xl font-boldy'}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
-                                <h4 className="font-boldy text-base p-2">Total Rewards</h4>
-
-                                <div className='h-[1px] bg-bcolor w-full' />
-
-                                <div className='flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2'>
-                                    <div className="flex gap-2 items-center justify-center w-full">
-                                        <Image
-                                            src={window.adrena.client.adxToken.image}
-                                            alt="adx logo"
-                                            width={18}
-                                            height={18}
+                                    <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                        <FormatNumber
+                                            nb={tradersCount}
+                                            format="number"
+                                            className={'text-3xl font-boldy'}
                                         />
-                                        <div className="text-lg font-boldy w-[6.2em]">2.27M ADX</div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                    <h4 className="font-boldy text-base p-2 flex gap-2">Volume <LiveIcon className='absolute right-2' /></h4>
+
+                                    <div className='h-[1px] bg-bcolor w-full' />
+
+                                    <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                        <FormatNumber
+                                            nb={totalVolume}
+                                            format="currency"
+                                            isDecimalDimmed={false}
+                                            isAbbreviate={true}
+                                            className={'text-3xl font-boldy'}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
+                                    <h4 className="font-boldy text-base p-2">Total Rewards</h4>
+
+                                    <div className='h-[1px] bg-bcolor w-full' />
+
+                                    <div className='flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2'>
+                                        <div className="flex gap-2 items-center justify-center w-full">
+                                            <Image
+                                                src={window.adrena.client.adxToken.image}
+                                                alt="adx logo"
+                                                width={18}
+                                                height={18}
+                                            />
+                                            <div className="text-lg font-boldy w-[6.2em]">2.27M ADX</div>
+                                        </div>
+
+                                        <div className="flex gap-2 items-center justify-center w-full">
+                                            <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+
+                                            <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow h-[7.5em]">
+                                <div className="flex items-center p-2">
+                                    <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
+                                    <div className="font-boldy text-base ml-1">Airdrop</div>
+                                    <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
+                                    <Image src={jitoLogo2} alt="JTOlogo" width={24} height={24} />
+                                    <span className="text-sm text-txtfade font-boldy">)</span>
+                                    {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') && (
+                                        <span className="ml-2 font-boldy text-green">You qualify!</span>
+                                    )}
+                                </div>
+
+                                <div className="h-[1px] bg-bcolor w-full" />
+
+                                <div className="flex flex-col gap-2 mb-2 items-center">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-txtfade">Recipients</span>
+                                        <span className="text-sm font-boldy">{eligibleJitosolAirdropWallets.length} / 600</span>
                                     </div>
 
-                                    <div className="flex gap-2 items-center justify-center w-full">
-                                        <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
-
-                                        <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-txtfade">Reward per recipient</span>
+                                        <span className="text-sm font-boldy">{Math.round(6000 / eligibleJitosolAirdropWallets.length)} JTO</span>
                                     </div>
                                 </div>
                             </div>
