@@ -128,8 +128,8 @@ export default function PositionBlockReadOnly({
                     <FormatNumber
                         nb={
                             showAfterFees
-                                ? position.pnl + fees
-                                : position.pnl
+                                ? position.pnl
+                                : position.pnl - fees
                         }
                         format="currency"
                         className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
