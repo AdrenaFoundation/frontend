@@ -229,27 +229,23 @@ export default function Trade({
   // Positions are loaded, we check for a potential local opened position update.
   const checkForOpenedPositionUpdate = tokenB !== null && positions !== null;
   if (checkForOpenedPositionUpdate) {
-    const noOpenedPosition = !openedPosition;
-
-    const openedPositionDoesNoMatch =
-      openedPosition !== null &&
-      (getTokenSymbol(openedPosition.token.symbol) !==
-        getTokenSymbol(tokenB.name) ||
-        openedPosition.side !== selectedAction);
-
     const relatedPosition = positions.find(
       (position) =>
         getTokenSymbol(position.token.symbol) ===
           getTokenSymbol(tokenB.symbol) && position.side === selectedAction,
     );
 
-    if (openedPositionDoesNoMatch) {
-      if (relatedPosition && relatedPosition !== openedPosition) {
-        setOpenedPosition(relatedPosition ?? null);
-        return null;
-      }
+    // - The opened position has been deleted
+    // - The opened position does not match the token pair + action
+    // - The opened position prices have been updated
+    //    - FIXME: we'd like to avoid updating for this case but
+    //             we need to change the state structures for that.
+    if (openedPosition !== null && relatedPosition !== openedPosition) {
+      setOpenedPosition(relatedPosition ?? null);
+      return null;
     }
 
+    const noOpenedPosition = !openedPosition;
     if (noOpenedPosition && relatedPosition) {
       setOpenedPosition(relatedPosition);
       return null;

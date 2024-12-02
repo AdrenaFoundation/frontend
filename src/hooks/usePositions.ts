@@ -50,26 +50,32 @@ export default function usePositions() {
       fetchAndSubscribeToFullUserPositions(
         function onPositionUpdated(position) {
           setPositions((prevPositions) => {
-            // A position was updated though we haven't yet stored any position
-            // in the state, it should not happen, let's just ignore.
+            // A position was updated though we haven't yet fetched / stored
+            // any position in the state, it should not happen, let's just ignore.
             if (prevPositions === null) return null;
 
             // Update the positions state, with the updated position
             // **at the same index** as previously.
-            return prevPositions.reduce((acc, prevPosition) => {
-              if (!prevPosition.pubkey.equals(position.pubkey)) {
-                acc.push(prevPosition);
-              } else {
-                acc.push(position);
-              }
-              return acc;
-            }, [] as Array<PositionExtended>);
+
+            const newPositions = [...prevPositions];
+            const positionIdx = prevPositions.findIndex((prevPosition) =>
+              prevPosition.pubkey.equals(position.pubkey),
+            );
+
+            if (positionIdx > -1) {
+              newPositions[positionIdx] = position;
+            } else {
+              // New positions go first
+              newPositions.unshift(position);
+            }
+
+            return newPositions;
           });
         },
         function onPositionDeleted(userPosition) {
           setPositions((prevPositions) => {
-            // A position was deleted though we haven't yet stored any position
-            // in the state, it should not happen, let's just ignore.
+            // A position was deleted though we haven't yet fetched / stored
+            // any position in the state, it should not happen, let's just ignore.
             if (prevPositions === null) return null;
 
             // Update the positions state, filter-out the deleted position.

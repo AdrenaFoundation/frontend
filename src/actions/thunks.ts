@@ -97,7 +97,6 @@ export const calculatePnLandLiquidationPrice = (
   position.currentLeverage =
     position.sizeUsd / (position.collateralUsd + position.pnl);
 
-  // Calculate liquidation price
   const liquidationPrice = window.adrena.client.calculateLiquidationPrice({
     position,
   });
@@ -157,7 +156,7 @@ export const subscribeToUserPositions =
     onPositionDeleted: (userPosition: PublicKey) => unknown;
   }) =>
   (dispatch: Dispatch, getState: () => RootState) => {
-    const connection = window.adrena.client.connection;
+    const connection = window.adrena.client.readonlyConnection;
     const walletPublicKey = selectWalletPublicKey(getState());
     const possibleUserPositions = selectPossibleUserPositions(getState());
 
@@ -217,6 +216,7 @@ export const subscribeToUserPositions =
         },
       );
       subscriptions.set(subscriptionId, possibleUserPosition);
+      subscribed = true;
     }
 
     return unsubscribe;
