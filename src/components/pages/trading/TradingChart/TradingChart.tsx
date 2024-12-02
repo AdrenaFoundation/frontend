@@ -89,16 +89,6 @@ export default function TradingChart({
           ],
 
           custom_css_url: '/tradingview.css',
-          overrides: {
-            'paneProperties.background': '#171B26',
-            'paneProperties.backgroundType': 'solid',
-            'paneProperties.legendProperties.showStudyArguments': false,
-            'paneProperties.legendProperties.showStudyTitles': false,
-            'paneProperties.legendProperties.showStudyValues': false,
-            'paneProperties.legendProperties.showSeriesTitle': false,
-            'paneProperties.legendProperties.showBarChange': false,
-            'paneProperties.legendProperties.showSeriesOHLC': true,
-          },
           theme: 'dark',
           interval: SUPPORTED_RESOLUTIONS.includes(
             savedResolution as ResolutionString,
