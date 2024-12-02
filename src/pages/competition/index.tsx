@@ -522,21 +522,23 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow h-[7.5em]">
-                                <div className="flex items-center p-2">
-                                    <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
-                                    <div className="font-boldy text-base ml-1">Airdrop</div>
-                                    <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
-                                    <Image src={jitoLogo2} alt="JTOlogo" width={24} height={24} />
-                                    <span className="text-sm text-txtfade font-boldy">)</span>
-                                    {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') && (
-                                        <span className="ml-2 font-boldy text-green">You qualify!</span>
-                                    )}
+                            <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow h-[7.5em]">
+                                <div className='flex flex-col w-full items-center h-auto grow-0'>
+                                    <div className="flex items-center p-2">
+                                        <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
+                                        <div className="font-boldy text-base ml-1">Airdrop</div>
+                                        <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
+                                        <Image src={jitoLogo2} alt="JTOlogo" width={24} height={24} />
+                                        <span className="text-sm text-txtfade font-boldy">)</span>
+                                        {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') && (
+                                            <span className="ml-2 font-boldy text-green">You qualify!</span>
+                                        )}
+                                    </div>
+
+                                    <div className="h-[1px] bg-bcolor w-full" />
                                 </div>
 
-                                <div className="h-[1px] bg-bcolor w-full" />
-
-                                <div className="flex flex-col gap-2 mb-2 items-center">
+                                <div className="flex flex-col gap-2 items-center justify-center h-full pb-2">
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm text-txtfade">Recipients</span>
                                         <span className="text-sm font-boldy">{eligibleJitosolAirdropWallets.length} / 600</span>
