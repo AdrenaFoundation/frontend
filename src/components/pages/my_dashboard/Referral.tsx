@@ -23,7 +23,6 @@ export default function Referral({
             Create a profile to access referral link
         </div>
     }
-    // text-[3em] md:text-[4em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%] tracking-[-3px]
 
     const link = `https://app.adrena.xyz/trade?referral=${userProfile.owner.toBase58()}`;
 
