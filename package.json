@@ -27,7 +27,7 @@
     "@solana/wallet-adapter-walletconnect": "^0.1.16",
     "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
     "@solana/wallet-standard-wallet-adapter-react": "^1.1.2",
-    "@solana/web3.js": "1.95.5",
+    "@solana/web3.js": "1.95.3",
     "@switchboard-xyz/on-demand": "^1.2.51",
     "@switchboard-xyz/solana.js": "^3.2.5",
     "@tippyjs/react": "^4.2.6",
