@@ -42,23 +42,29 @@ export function useChartDrawing({
       localStorage.getItem('chart_drawings') ?? '{}',
     );
 
-    const currentShapes = chart.getAllShapes();
-    const currentShapesIds = currentShapes.map((shape) => shape.id);
-
     try {
+      chart.getAllShapes().map((line) => {
+        if (
+          !(
+            activePositionLineIDs.current.includes(line.id) ||
+            breakEvenLinesID.current.includes(line.id)
+          )
+        ) {
+          chart.removeEntity(line.id);
+        }
+      });
+
       if (parsedChartShapes[symbol]) {
         parsedChartShapes[symbol].forEach((shape: any) => {
-          if (!currentShapesIds.includes(shape.id)) {
-            chart.createMultipointShape(shape.points, {
-              zOrder: 'top',
-              shape: shape.name,
-              showInObjectsTree: true,
-              overrides: {
-                ...shape.options,
-              },
-              text: shape.options.text,
-            });
-          }
+          chart.createMultipointShape(shape.points, {
+            zOrder: 'top',
+            shape: shape.name,
+            showInObjectsTree: true,
+            overrides: {
+              ...shape.options,
+            },
+            text: shape.options.text,
+          });
         });
       }
     } catch (error) {
