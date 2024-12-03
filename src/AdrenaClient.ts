@@ -13,7 +13,6 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
   RpcResponseAndContext,
-  SignatureResult,
   SignatureStatus,
   SimulatedTransactionResponse,
   SystemProgram,
@@ -23,7 +22,6 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from '@solana/web3.js';
-import { track } from '@vercel/analytics';
 
 import { Adrena } from '@/target/adrena';
 import AdrenaJson from '@/target/adrena.json';
@@ -994,6 +992,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     userProfile,
+    referrer,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1002,6 +1001,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     userProfile?: PublicKey;
+    referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1053,6 +1053,7 @@ export class AdrenaClient {
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
+        referrer: referrer ?? null,
       })
       .accountsStrict({
         owner,
@@ -1095,6 +1096,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     userProfile,
+    referrer,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1103,6 +1105,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     userProfile?: PublicKey;
+    referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1170,6 +1173,7 @@ export class AdrenaClient {
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
+        referrer: referrer ?? null,
       })
       .accountsStrict({
         owner,
@@ -1636,6 +1640,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    referrer,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1644,6 +1649,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    referrer?: PublicKey | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1677,6 +1683,7 @@ export class AdrenaClient {
         collateralAmount,
         leverage,
         userProfile: userProfile ? userProfile.pubkey : undefined,
+        referrer,
       }).instruction();
 
     const transaction = new Transaction();
@@ -1815,6 +1822,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    referrer,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1823,6 +1831,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    referrer?: PublicKey | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1854,6 +1863,7 @@ export class AdrenaClient {
         collateralAmount,
         leverage,
         userProfile: userProfile ? userProfile.pubkey : undefined,
+        referrer,
       }).instruction();
 
     const transaction = new Transaction();

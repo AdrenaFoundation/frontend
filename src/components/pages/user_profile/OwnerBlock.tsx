@@ -14,6 +14,7 @@ import editIcon from '../../../../public/images/edit-icon.png';
 import pfp from '../../../../public/images/monster-pfp.png';
 import pfw from '../../../../public/images/pfw.png';
 import walletIcon from '../../../../public/images/wallet-icon.svg';
+import Referral from '../my_dashboard/Referral';
 
 export default function OwnerBloc({
   userProfile,
@@ -158,6 +159,11 @@ export default function OwnerBloc({
           </div>
         )}
       </div>
+
+      <Referral
+        className='h-auto w-auto flex absolute left-0 bottom-0 z-20'
+        userProfile={userProfile}
+      />
 
       <DateInfo
         className="text-sm absolute bottom-2 right-4 z-20 font-boldy"

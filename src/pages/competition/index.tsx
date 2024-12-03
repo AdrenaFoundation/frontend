@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -34,7 +35,6 @@ import {
 import { getAbbrevWalletAddress } from '@/utils';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
-import Tippy from '@tippyjs/react';
 
 const division = [
     'Leviathan',
