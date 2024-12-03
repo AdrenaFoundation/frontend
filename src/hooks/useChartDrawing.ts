@@ -37,7 +37,7 @@ export function useChartDrawing({
       .split('.')[1]
       .split('/')[0] as TokenSymbol;
     const parsedChartShapes = JSON.parse(
-      localStorage.getItem('chart_shapes') ?? '{}',
+      localStorage.getItem('chart_drawings') ?? '{}',
     );
 
     const currentShapes = widget.activeChart().getAllShapes();
