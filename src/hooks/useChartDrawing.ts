@@ -43,7 +43,7 @@ export function useChartDrawing({
     );
 
     try {
-      chart.getAllShapes().map((line) => {
+      chart.getAllShapes().forEach((line) => {
         if (
           !(
             activePositionLineIDs.current.includes(line.id) ||
