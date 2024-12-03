@@ -465,6 +465,14 @@ export function parseTransactionError(
   return new AdrenaTransactionError(null, errStr);
 }
 
+export function tryPubkey(p: string): PublicKey | null {
+  try {
+    return new PublicKey(p);
+  } catch {
+    return null;
+  }
+}
+
 export async function isAccountInitialized(
   connection: Connection,
   address: PublicKey,
