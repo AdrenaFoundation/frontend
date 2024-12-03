@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { use, useCallback, useEffect } from 'react';
 
 import {
   blueColor,
@@ -8,13 +8,11 @@ import {
   redColor,
 } from '@/constant';
 import { PositionExtended, TokenSymbol } from '@/types';
-import { formatNumberShort, getTokenSymbol } from '@/utils';
+import { formatPriceInfo, getTokenSymbol } from '@/utils';
 
 import {
   EntityId,
   IChartingLibraryWidget,
-  PricedPoint,
-  SupportedLineTools,
 } from '../../public/charting_library/charting_library';
 
 export function useChartDrawing({
@@ -22,33 +20,36 @@ export function useChartDrawing({
   widgetReady,
   positions,
   showBreakEvenLine,
+  activePositionLineIDs,
+  breakEvenLinesID,
+  toggleSizeUsdInChart,
 }: {
   widget: IChartingLibraryWidget | null;
   widgetReady: boolean | null;
   positions: PositionExtended[] | null;
   showBreakEvenLine: boolean;
+  activePositionLineIDs: React.MutableRefObject<EntityId[]>;
+  breakEvenLinesID: React.MutableRefObject<EntityId[]>;
+  toggleSizeUsdInChart: boolean;
 }) {
-  useEffect(() => {
-    if (!widgetReady || !widget) return;
+  const chart = widget && widgetReady ? widget.activeChart() : null;
 
-    const symbol = widget
-      .activeChart()
-      .symbol()
-      .split('.')[1]
-      .split('/')[0] as TokenSymbol;
+  useEffect(() => {
+    if (!widgetReady || !chart) return;
+
+    const symbol = chart.symbol().split('.')[1].split('/')[0] as TokenSymbol;
     const parsedChartShapes = JSON.parse(
       localStorage.getItem('chart_drawings') ?? '{}',
     );
 
-    const currentShapes = widget.activeChart().getAllShapes();
+    const currentShapes = chart.getAllShapes();
     const currentShapesIds = currentShapes.map((shape) => shape.id);
 
     try {
       if (parsedChartShapes[symbol]) {
-        console.log('drawings', parsedChartShapes[symbol]);
         parsedChartShapes[symbol].forEach((shape: any) => {
           if (!currentShapesIds.includes(shape.id)) {
-            widget.activeChart().createMultipointShape(shape.points, {
+            chart.createMultipointShape(shape.points, {
               zOrder: 'top',
               shape: shape.name,
               showInObjectsTree: true,
@@ -68,33 +69,34 @@ export function useChartDrawing({
         JSON.stringify({ ...parsedChartShapes, [symbol]: [] }),
       );
     }
-  }, [widgetReady, widget]);
+  }, [widgetReady, chart]);
 
   // handles position lines
   useEffect(() => {
-    if (!widgetReady || !widget || !positions) return;
-    widget
-      .activeChart()
-      .getAllShapes()
-      .filter((shape) => shape.name === 'horizontal_line')
-      .forEach((line) => {
-        const shape = widget
-          .activeChart()
-          .getShapeById(line.id)
-          .getProperties();
+    if (!widgetReady || !chart) return;
 
-        // TODO: revisit and refactor
-        if (shape.text.includes('long') || shape.text.includes('short')) {
-          widget.activeChart().removeEntity(line.id);
-        }
-      });
+    chart.getAllShapes().forEach((shape) => {
+      if (
+        shape.name === 'horizontal_line' &&
+        activePositionLineIDs.current.includes(shape.id)
+      ) {
+        chart.removeEntity(shape.id);
+
+        activePositionLineIDs.current = activePositionLineIDs.current.filter(
+          (id) => id !== shape.id,
+        );
+      }
+    });
+
+    if (!positions) return;
 
     positions.forEach((position) => {
       addHorizontalLine({
-        id: `${position.token.symbol}-${position.side}` as EntityId,
-        text: `${getTokenSymbol(position.token.symbol)} ${
-          position.side
-        }: $${formatNumberShort(position.sizeUsd, 0)}`,
+        text: `${position.side}${
+          toggleSizeUsdInChart
+            ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+            : ''
+        }`,
         price: position.price,
         time: new Date(Number(position.nativeObject.openTime) * 1000),
         color: position.side === 'long' ? greenColor : redColor,
@@ -104,11 +106,11 @@ export function useChartDrawing({
 
       if (position?.liquidationPrice) {
         addHorizontalLine({
-          id: `liq-${position.token.symbol}-${position.side}` as EntityId,
-          text: `${position.side} – liq: $${formatNumberShort(
-            position.sizeUsd,
-            0,
-          )}`,
+          text: `${position.side} – liq${
+            toggleSizeUsdInChart
+              ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+              : ''
+          }`,
           price: position.liquidationPrice,
           time: new Date(Number(position.nativeObject.openTime) * 1000),
           color: orangeColor,
@@ -123,11 +125,11 @@ export function useChartDrawing({
         position.takeProfitLimitPrice > 0
       ) {
         addHorizontalLine({
-          id: `tp-${position.token.symbol}-${position.side}` as EntityId,
-          text: `${position.side} – TP: $${formatNumberShort(
-            position.sizeUsd,
-            0,
-          )}`,
+          text: `${position.side} – TP${
+            toggleSizeUsdInChart
+              ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+              : ''
+          }`,
           price: position.takeProfitLimitPrice,
           time: new Date(Number(position.nativeObject.openTime) * 1000),
           color: blueColor,
@@ -142,11 +144,11 @@ export function useChartDrawing({
         position.stopLossLimitPrice > 0
       ) {
         addHorizontalLine({
-          id: `sl-${position.token.symbol}-${position.side}` as EntityId,
-          text: `${position.side} – SL: $${formatNumberShort(
-            position.sizeUsd,
-            0,
-          )}`,
+          text: `${position.side} – SL${
+            toggleSizeUsdInChart
+              ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+              : ''
+          }`,
           price: position.stopLossLimitPrice,
           time: new Date(Number(position.nativeObject.openTime) * 1000),
           color: blueColor,
@@ -155,19 +157,16 @@ export function useChartDrawing({
         });
       }
     });
-  }, [widgetReady, positions]);
+  }, [chart, widgetReady, positions, toggleSizeUsdInChart]);
 
   // handle break even lines
   useEffect(() => {
-    if (!widgetReady || !widget || !positions) return;
+    if (!widgetReady || !chart || !positions) return;
 
     positions.forEach((position) => {
       if (showBreakEvenLine) {
         addHorizontalLine({
-          id: `be-${position.token.symbol}-${position.side}` as EntityId,
-          text: `${getTokenSymbol(position.token.symbol)} ${getTokenSymbol(
-            position.side,
-          )} – break even`,
+          text: `${getTokenSymbol(position.side)} – break even`,
           price: position.breakEvenPrice,
           time: new Date(Number(position.nativeObject.openTime) * 1000),
           color: `${purpleColor}80`,
@@ -175,27 +174,24 @@ export function useChartDrawing({
           linewidth: 1,
         });
       } else {
-        widget
-          .activeChart()
-          .getAllShapes()
-          .filter((shape) => shape.name === 'horizontal_line')
-          .forEach((line) => {
-            const currentText = widget
-              .activeChart()
-              .getShapeById(line.id)
-              .getProperties().text;
+        chart.getAllShapes().forEach((shape) => {
+          if (
+            shape.name === 'horizontal_line' &&
+            breakEvenLinesID.current.includes(shape.id)
+          ) {
+            chart.removeEntity(shape.id);
 
-            if (currentText.includes('break even')) {
-              widget.activeChart().removeEntity(line.id);
-            }
-          });
+            breakEvenLinesID.current = breakEvenLinesID.current.filter(
+              (id) => id !== shape.id,
+            );
+          }
+        });
       }
     });
-  }, [widgetReady, positions, showBreakEvenLine]);
+  }, [chart, widgetReady, positions, showBreakEvenLine]);
 
   const addHorizontalLine = useCallback(
     ({
-      id, // TODO: unique id for the position lines
       price,
       text,
       color,
@@ -203,7 +199,6 @@ export function useChartDrawing({
       linestyle = 0,
       linewidth = 1,
     }: {
-      id: EntityId;
       price: number;
       text: string;
       color: string;
@@ -211,9 +206,9 @@ export function useChartDrawing({
       linestyle?: number;
       linewidth?: number;
     }) => {
-      if (!widget || !widgetReady) return;
+      if (!chart || !widgetReady) return;
 
-      widget.activeChart().createShape(
+      const lineID = chart.createShape(
         {
           time: new Date(time).getTime(),
           price,
@@ -237,8 +232,17 @@ export function useChartDrawing({
           },
           text,
         },
-      );
+      ) as EntityId;
+
+      if (text.includes('break even')) {
+        breakEvenLinesID.current = [...breakEvenLinesID.current, lineID];
+      } else {
+        activePositionLineIDs.current = [
+          ...activePositionLineIDs.current,
+          lineID,
+        ];
+      }
     },
-    [widget, widgetReady],
+    [chart, widgetReady],
   );
 }

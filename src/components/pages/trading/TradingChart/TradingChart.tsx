@@ -27,22 +27,29 @@ export default function TradingChart({
   token,
   positions,
   showBreakEvenLine,
+  toggleSizeUsdInChart,
 }: {
   token: Token;
   positions: PositionExtended[] | null;
   showBreakEvenLine: boolean;
+  toggleSizeUsdInChart: boolean;
 }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
 
   const [widget, setWidget] = useState<Widget | null>(null);
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const activePositionLineIDs = useRef<EntityId[]>([]);
+  const breakEvenLinesID = useRef<EntityId[]>([]);
 
   useChartDrawing({
     widget,
     widgetReady,
     positions,
     showBreakEvenLine,
+    activePositionLineIDs,
+    breakEvenLinesID,
+    toggleSizeUsdInChart,
   });
 
   // Retrieve saved resolution or default to 'H'
@@ -67,7 +74,15 @@ export default function TradingChart({
             foregroundColor: '#171B26',
           },
           favorites: {
-            intervals: ['1', '5', '15', '1h', '4h', 'D'] as ResolutionString[],
+            intervals: [
+              '1',
+              '3',
+              '5',
+              '15',
+              '1h',
+              '4h',
+              'D',
+            ] as ResolutionString[],
             chartTypes: ['Candles'],
           },
           disabled_features: [
@@ -87,7 +102,6 @@ export default function TradingChart({
             'header_fullscreen_button',
             'header_settings',
           ],
-
           custom_css_url: '/tradingview.css',
           theme: 'dark',
           interval: SUPPORTED_RESOLUTIONS.includes(
@@ -145,12 +159,11 @@ export default function TradingChart({
                   .activeChart()
                   .getShapeById(line.id)
                   .getProperties();
-
                 if (
                   !(
-                    shape?.text?.includes('long') ||
-                    shape?.text?.includes('short')
-                  ) // TODO: revisit and refactor
+                    activePositionLineIDs.current.includes(line.id) ||
+                    breakEvenLinesID.current.includes(line.id)
+                  )
                 ) {
                   return {
                     id: line.id as EntityId,

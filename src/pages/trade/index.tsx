@@ -79,6 +79,8 @@ export default function Trade({
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
   const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(false);
+  const [toggleSizeUsdInChart, setToggleSizeUsdInChart] =
+    useState<boolean>(false);
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
 
@@ -188,7 +190,10 @@ export default function Trade({
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
     ) {
       // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
-      const candidate = selectedAction === 'long' ? tokenB ?? pickDefaultToken(positions) : tokenACandidate[0];
+      const candidate =
+        selectedAction === 'long'
+          ? tokenB ?? pickDefaultToken(positions)
+          : tokenACandidate[0];
 
       if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
         setTokenA(candidate);
@@ -255,7 +260,7 @@ export default function Trade({
       </div>
 
       <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border rounded-lg overflow-hidden">
+        <div className="flex flex-col w-full border rounded-lg overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -283,36 +288,67 @@ export default function Trade({
                 }
                 positions={positions}
                 showBreakEvenLine={showBreakEvenLine}
+                toggleSizeUsdInChart={toggleSizeUsdInChart}
               />
             ) : null}
           </div>
 
-          <div className="flex items-center justify-end p-0.5 bg-secondary text-white">
-            <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+          <div className='flex flex-row gap-3 items-center justify-end'>
+            <div className="flex items-center p-0.5 text-white">
+              <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+                <p className="opacity-50 text-xs underline-dashed cursor-help">
+                  Show Break Even line
+                </p>
+              </Tippy>
+              <Switch
+                checked={showBreakEvenLine}
+                onChange={(event) => setShowBreakEvenLine(event.target.checked)}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
+
+            <div className="flex items-center p-0.5 text-white">
               <p className="opacity-50 text-xs underline-dashed cursor-help">
-                Show Break Even line
+                Show size in chart
               </p>
-            </Tippy>
-            <Switch
-              checked={showBreakEvenLine}
-              onChange={(event) => setShowBreakEvenLine(event.target.checked)}
-              size="small"
-              sx={{
-                transform: 'scale(0.7)',
-                '& .MuiSwitch-switchBase': {
-                  color: '#ccc',
-                },
-                '& .MuiSwitch-switchBase.Mui-checked': {
-                  color: '#1a1a1a',
-                },
-                '& .MuiSwitch-track': {
-                  backgroundColor: '#555',
-                },
-                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                  backgroundColor: '#10e1a3',
-                },
-              }}
-            />
+              <Switch
+                checked={toggleSizeUsdInChart}
+                onChange={(event) =>
+                  setToggleSizeUsdInChart(event.target.checked)
+                }
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -342,7 +378,10 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="flex flex-col w-full p-4">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col w-full p-4">
@@ -383,7 +422,10 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="mt-1 w-full p-4">
@@ -487,11 +529,8 @@ export default function Trade({
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto"
               >
-                {tokenB &&
-                  <TradingChartMini
-                    token={tokenB}
-                  />}
-                <div className='bg-bcolor w-full h-[1px] my-3' />
+                {tokenB && <TradingChartMini token={tokenB} />}
+                <div className="bg-bcolor w-full h-[1px] my-3" />
                 <div className="flex w-full px-4">
                   <TradeComp
                     selectedAction={selectedAction}
