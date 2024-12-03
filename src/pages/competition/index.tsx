@@ -34,6 +34,7 @@ import {
 import { getAbbrevWalletAddress } from '@/utils';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
+import Tippy from '@tippyjs/react';
 
 const division = [
     'Leviathan',
@@ -530,8 +531,20 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                         <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
                                         <Image src={jitoLogo2} alt="JTOlogo" width={24} height={24} />
                                         <span className="text-sm text-txtfade font-boldy">)</span>
-                                        {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') && (
+                                        {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') ? (
                                             <span className="ml-2 font-boldy text-green">You qualify!</span>
+                                        ) : (
+                                            <Tippy
+                                                content={
+                                                    <p className="font-medium">
+                                                        To qualify your wallet must have been one of the recipient of the JTO airdrop, and you must have made at least one $10k size trade.
+                                                        The first 600 participants will qualify, if less they will split the rewards.
+                                                    </p>
+                                                }
+                                                placement="auto"
+                                            >
+                                                <span className="ml-2  text-sm text-txtfade underline decoration-dotted">Who qualifies?</span>
+                                            </Tippy>
                                         )}
                                     </div>
 
