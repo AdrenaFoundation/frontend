@@ -19,12 +19,14 @@ import CustomRechartsToolTip from '../../../CustomRechartsToolTip/CustomRecharts
 export default function LineRechartCohorts({
   data,
   labels,
+  format,
 }: {
   data: RechartsData[];
   labels: {
     name: string;
     color?: string;
   }[];
+  format: 'currency' | 'number';
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -35,8 +37,6 @@ export default function LineRechartCohorts({
   };
 
   return (
-
-
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
@@ -49,6 +49,7 @@ export default function LineRechartCohorts({
           content={
             <CustomRechartsToolTip
               isValueOnly={labels.length === 1}
+              format={format}
             />
           }
           cursor={false}

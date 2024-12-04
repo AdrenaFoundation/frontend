@@ -138,6 +138,7 @@ export default function UsersCohortsChart() {
     <LineRechartCohorts
       data={chartData}
       labels={cohortsInfo ?? []}
+      format={type === 'volumes' ? 'currency' : 'number'}
     />
   </div>;
 }
