@@ -137,7 +137,7 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
     };
 
     return (
-        <div className="flex flex-col gap-2 p-2">
+        <div>
             <StyledContainer className="p-4">
                 <div className="flex flex-col gap-3">
                     <div className='flex gap-3 flex-col md:flex-row flex-wrap'>

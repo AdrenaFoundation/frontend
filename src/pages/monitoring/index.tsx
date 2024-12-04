@@ -19,33 +19,36 @@ import Flow from './flows';
 export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesInPnl: boolean } & PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
+  type MonitorViews = 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows';
+
   const [view, setView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows'
+    MonitorViews
   >('lite');
   const [previousView, setPreviousView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows'
+    MonitorViews
   >('lite');
+
+  const viewComponents: Record<MonitorViews, React.ReactElement> = {
+    lite: <BasicMonitoring {...pageProps} poolInfo={poolInfo} />,
+    full: <DetailedMonitoring {...pageProps} poolInfo={poolInfo} />,
+    livePositions: <AllPositions showFeesInPnl={showFeesInPnl} />,
+    userProfiles: <AllUserProfiles showFeesInPnl={showFeesInPnl} />,
+    allStaking: <AllStaking />,
+    flows: <Flow custodies={pageProps.custodies} />,
+  };
 
   const searchParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
-    if (searchParams.has('view')) {
-      const searchParamsView = searchParams.get('view');
-
-      if (
-        !['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows'].includes(
-          searchParamsView as string,
-        )
-      ) {
-        return;
-      }
-
-      setView(
-        searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows',
-      );
+    let searchParamsView = searchParams.get('view');
+    // Default is lite.
+    if (!searchParamsView) {
+      searchParamsView = 'lite'
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows'].includes(searchParamsView)) {
+      setView(searchParamsView as MonitorViews);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setPreviousView(view);
@@ -81,123 +84,27 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
         <div
           className='flex flex-col sm:flex-row items-center justify-evenly w-[20.8em] sm:w-[28em] ml-auto mr-auto'
         >
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'lite' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'lite');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('lite');
-            }}
-          >
-            Lite
-          </span>
+          {HeaderLink('lite', 'Lite')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'full' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'full');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('full');
-            }}
-          >
-            Full
-          </span>
+          {HeaderLink('full', 'Full')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'livePositions' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'livePositions');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('livePositions');
-            }}
-          >
-            Live Positions
-          </span>
+          {HeaderLink('livePositions', 'Live Positions')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'userProfiles' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'userProfiles');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('userProfiles');
-            }}
-          >
-            User Profiles
-          </span>
+          {HeaderLink('userProfiles', 'User Profiles')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'allStaking' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'allStaking');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('allStaking');
-            }}
-          >
-            Staking
-          </span>
+          {HeaderLink('allStaking', "Staking")}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'flows' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'flows');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('flows');
-            }}
-          >
-            Flows
-          </span>
+          {HeaderLink('flows', 'Flows')}
         </div>
 
         {/* {view === 'full' ? (
@@ -219,91 +126,83 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       </div>
 
       {view === 'livePositions' ? (
-        <motion.div
-          initial={{
-            opacity: 0,
-            translateX: previousView === 'userProfiles' ? 20 : -20,
-          }}
-          animate={{ opacity: 1, translateX: 0 }}
-          transition={{ duration: 0.3 }}
-          className='min-h-[80vh]'
-        >
-          <AllPositions showFeesInPnl={showFeesInPnl} />
-        </motion.div>
+        MonitoringDisplay(
+          view,
+          previousView === 'userProfiles' ? 20 : -20
+        )
       ) : null}
 
       {view === 'full' ? (
-        <motion.div
-          initial={{
-            opacity: 0,
-            translateX: previousView === 'livePositions' ? 20 : -20,
-          }}
-          animate={{ opacity: 1, translateX: 0 }}
-          transition={{ duration: 0.3 }}
-          className='min-h-[80vh] z-10'
-        >
-          <DetailedMonitoring
-            {...pageProps}
-            poolInfo={poolInfo}
-          />
-        </motion.div>
+        MonitoringDisplay(
+          view,
+          previousView !== 'lite' ? 20 : -20,
+          true
+        )
       ) : null}
 
       {view === 'lite' ? (
-        <motion.div
-          initial={{
-            opacity: 0,
-            translateX: previousView !== 'lite' ? 20 : -20,
-          }}
-          animate={{ opacity: 1, translateX: 0 }}
-          transition={{ duration: 0.3 }}
-          className='min-h-[80vh]'
-        >
-          <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
-        </motion.div>
+        MonitoringDisplay(
+          view,
+          previousView !== 'lite' ? 20 : -20
+        )
       ) : null}
 
       {view === 'userProfiles' ? (
-        <motion.div
-          initial={{
-            opacity: 0,
-            translateX: -20,
-          }}
-          animate={{ opacity: 1, translateX: 0 }}
-          transition={{ duration: 0.3 }}
-          className='min-h-[80vh]'
-        >
-          <AllUserProfiles showFeesInPnl={showFeesInPnl} />{' '}
-        </motion.div>
+        MonitoringDisplay(
+          view,
+          -20
+        )
       ) : null}
 
       {view === 'allStaking' ? (
-        <motion.div
-          initial={{
-            opacity: 0,
-            translateX: -20,
-          }}
-          animate={{ opacity: 1, translateX: 0 }}
-          transition={{ duration: 0.3 }}
-          className='min-h-[80vh]'
-        >
-          <AllStaking />
-        </motion.div>
+        MonitoringDisplay(
+          view,
+          -20
+        )
       ) : null}
 
       {view === 'flows' ? (
-        <motion.div
-          initial={{
-            opacity: 0,
-            translateX: -20,
-          }}
-          animate={{ opacity: 1, translateX: 0 }}
-          transition={{ duration: 0.3 }}
-          className='min-h-[80vh]'
-        >
-          <Flow custodies={pageProps.custodies} />
-        </motion.div>
+        MonitoringDisplay(
+          view,
+          -20
+        )
       ) : null}
     </>
   );
+
+  function MonitoringDisplay(view: MonitorViews, translateX: number, isFull: boolean = false) {
+    return <motion.div
+      initial={{
+        opacity: 0,
+        translateX: translateX,
+      }}
+      animate={{ opacity: 1, translateX: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`min-h-[80vh] ${isFull ? "z-10" : ""}`}
+    >
+      <div className='p-2'>
+        {viewComponents[view]}
+      </div>
+    </motion.div>;
+  }
+
+  function HeaderLink(searchParam: MonitorViews, name: string) {
+    return <span
+      className={twMerge(
+        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+        view === searchParam ? 'opacity-100' : ''
+      )}
+      onClick={() => {
+        searchParams.set('view', searchParam);
+        window.history.replaceState(
+          null,
+          '',
+          `${window.location.pathname}?${searchParams.toString()}`
+        );
+        setView(searchParam);
+      }}
+    >
+      {name}
+    </span>;
+  }
 }

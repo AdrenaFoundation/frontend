@@ -66,7 +66,7 @@ export default function BasicMonitoring({
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-2">
       {mainPool && (
         <StyledContainer className="p-0">
           <div className="flex flex-wrap justify-between">

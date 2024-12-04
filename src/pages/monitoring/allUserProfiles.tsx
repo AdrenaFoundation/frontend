@@ -100,7 +100,7 @@ export default function AllUserProfiles({ showFeesInPnl }: { showFeesInPnl: bool
 
     return (
         <>
-            <div className="flex flex-col gap-2 p-2">
+            <div>
                 <StyledContainer className="p-4">
                     <div className="flex flex-col gap-3">
                         <Filter
