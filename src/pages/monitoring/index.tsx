@@ -84,27 +84,27 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
         <div
           className='flex flex-col sm:flex-row items-center justify-evenly w-[20.8em] sm:w-[28em] ml-auto mr-auto'
         >
-          {HeaderLink('lite', 'Lite')}
+          {MonitoringHeaderLink('lite', 'Lite')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {HeaderLink('full', 'Full')}
+          {MonitoringHeaderLink('full', 'Full')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {HeaderLink('livePositions', 'Live Positions')}
+          {MonitoringHeaderLink('livePositions', 'Live Positions')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {HeaderLink('userProfiles', 'User Profiles')}
+          {MonitoringHeaderLink('userProfiles', 'User Profiles')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {HeaderLink('allStaking', "Staking")}
+          {MonitoringHeaderLink('allStaking', "Staking")}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {HeaderLink('flows', 'Flows')}
+          {MonitoringHeaderLink('flows', 'Flows')}
         </div>
 
         {/* {view === 'full' ? (
@@ -186,7 +186,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     </motion.div>;
   }
 
-  function HeaderLink(searchParam: MonitorViews, name: string) {
+  function MonitoringHeaderLink(searchParam: MonitorViews, name: string) {
     return <span
       className={twMerge(
         'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
