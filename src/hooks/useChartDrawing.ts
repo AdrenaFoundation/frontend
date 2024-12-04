@@ -7,7 +7,11 @@ import {
   purpleColor,
   redColor,
 } from '@/constant';
-import { PositionExtended, TokenSymbol } from '@/types';
+import {
+  PositionExtended,
+  TokenSymbol,
+  TradingViewChartSavedDrawing,
+} from '@/types';
 import { formatPriceInfo, getTokenSymbol } from '@/utils';
 
 import {
@@ -40,7 +44,7 @@ export function useChartDrawing({
     const symbol = chart.symbol().split('.')[1].split('/')[0] as TokenSymbol;
     const parsedChartShapes = JSON.parse(
       localStorage.getItem('chart_drawings') ?? '{}',
-    );
+    ) as TradingViewChartSavedDrawing;
 
     try {
       chart.getAllShapes().forEach((line) => {
@@ -55,7 +59,7 @@ export function useChartDrawing({
       });
 
       if (parsedChartShapes[symbol]) {
-        parsedChartShapes[symbol].forEach((shape: any) => {
+        parsedChartShapes[symbol].forEach((shape) => {
           chart.createMultipointShape(shape.points, {
             zOrder: 'top',
             shape: shape.name,
