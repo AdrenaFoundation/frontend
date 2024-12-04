@@ -115,12 +115,12 @@ export default function Flow({
             {Object.entries(groupedStats).map(([symbol, symbolStats]) => (
               <div key={symbol} className="p-4 border rounded bg-[#050D14] flex-grow min-w-[20em]">
                 <h3 className="font-semibold flex items-center gap-2">
-                  {/* <Image
-                src={custodies?.find((c) => c.tokenInfo.symbol.toLocaleLowerCase() === symbol.toLowerCase())?.tokenInfo.image || ''}
-                alt="token icon"
-                width="24"
-                height="24"
-              /> */}
+                  <Image
+                    src={custodies?.find((c) => c.tokenInfo.symbol.toLocaleLowerCase() === symbol.toLowerCase())?.tokenInfo.image || ''}
+                    alt="token icon"
+                    width="24"
+                    height="24"
+                  />
                   {symbol}
                 </h3>
 
