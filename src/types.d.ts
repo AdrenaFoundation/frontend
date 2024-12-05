@@ -519,3 +519,15 @@ export type TradingCompetitionLeaderboardAPI = {
     jtoRewards: number;
   }[];
 };
+
+export type TradingViewChartSavedDrawing = Record<
+  TokenSymbol,
+  {
+    name: Exclude<
+      SupportedLineTools,
+      'cursor' | 'dot' | 'arrow_cursor' | 'eraser' | 'measure' | 'zoom'
+    >;
+    points: { time: number; price: number }[];
+    options: CreateShapeOptions<object>;
+  }[]
+>;

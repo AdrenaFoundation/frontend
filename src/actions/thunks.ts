@@ -40,8 +40,8 @@ export const fetchWalletTokenBalances =
             ]);
 
             return (
-              wsolBalance?.value.uiAmount ??
-              0 + nativeToUi(new BN(solBalance), SOL_DECIMALS)
+              (wsolBalance?.value.uiAmount ?? 0) +
+              nativeToUi(new BN(solBalance), SOL_DECIMALS)
             );
           } catch {
             // Error loading info
