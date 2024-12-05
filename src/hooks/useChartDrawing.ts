@@ -182,6 +182,7 @@ export function useChartDrawing({
           color: `${purpleColor}80`,
           linestyle: 2,
           linewidth: 1,
+          horzLabelsAlign: 'left',
         });
       } else {
         chart.getAllShapes().forEach((shape) => {
@@ -208,6 +209,7 @@ export function useChartDrawing({
       time,
       linestyle = 0,
       linewidth = 1,
+      horzLabelsAlign = 'right',
     }: {
       price: number;
       text: string;
@@ -215,6 +217,7 @@ export function useChartDrawing({
       time: Date;
       linestyle?: number;
       linewidth?: number;
+      horzLabelsAlign?: 'left' | 'middle ' | 'right';
     }) => {
       if (!chart || !widgetReady) return;
 
@@ -233,7 +236,7 @@ export function useChartDrawing({
             linewidth,
             bold: true,
             linecolor: color,
-            horzLabelsAlign: 'right',
+            horzLabelsAlign,
             vertLabelsAlign: 'bottom',
             showLabel: true,
             fontsize: 10,

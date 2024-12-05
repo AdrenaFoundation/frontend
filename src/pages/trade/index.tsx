@@ -4,6 +4,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -78,9 +79,17 @@ export default function Trade({
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
-  const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(false);
-  const [toggleSizeUsdInChart, setToggleSizeUsdInChart] =
-    useState<boolean>(false);
+  const [cookies, setCookie] = useCookies([
+    'showBreakEvenLine',
+    'toggleSizeUsdInChart',
+  ]);
+
+  const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(
+    cookies?.showBreakEvenLine === 'true',
+  );
+  const [toggleSizeUsdInChart, setToggleSizeUsdInChart] = useState<boolean>(
+    cookies?.toggleSizeUsdInChart === 'true',
+  );
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
 
@@ -293,7 +302,7 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className='flex flex-row gap-3 items-center justify-end'>
+          <div className="flex flex-row gap-3 items-center justify-end">
             <div className="flex items-center p-0.5 text-white">
               <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
                 <p className="opacity-50 text-xs underline-dashed cursor-help">
@@ -302,7 +311,10 @@ export default function Trade({
               </Tippy>
               <Switch
                 checked={showBreakEvenLine}
-                onChange={(event) => setShowBreakEvenLine(event.target.checked)}
+                onChange={() => {
+                  setCookie('showBreakEvenLine', !showBreakEvenLine);
+                  setShowBreakEvenLine(!showBreakEvenLine);
+                }}
                 size="small"
                 sx={{
                   transform: 'scale(0.7)',
@@ -328,9 +340,10 @@ export default function Trade({
               </p>
               <Switch
                 checked={toggleSizeUsdInChart}
-                onChange={(event) =>
-                  setToggleSizeUsdInChart(event.target.checked)
-                }
+                onChange={() => {
+                  setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
+                  setToggleSizeUsdInChart(!toggleSizeUsdInChart);
+                }}
                 size="small"
                 sx={{
                   transform: 'scale(0.7)',
