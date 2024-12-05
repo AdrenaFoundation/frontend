@@ -84,6 +84,7 @@ export function useChartDrawing({
   // handles position lines
   useEffect(() => {
     if (!widgetReady || !chart) return;
+    const symbol = chart.symbol().split('.')[1].split('/')[0] as TokenSymbol;
 
     chart.getAllShapes().forEach((shape) => {
       if (
@@ -100,81 +101,109 @@ export function useChartDrawing({
 
     if (!positions) return;
 
-    positions.forEach((position) => {
-      addHorizontalLine({
-        text: `${position.side}${
-          toggleSizeUsdInChart
-            ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
-            : ''
-        }`,
-        price: position.price,
-        time: new Date(Number(position.nativeObject.openTime) * 1000),
-        color: position.side === 'long' ? greenColor : redColor,
-        linestyle: 0,
-        linewidth: 2,
+    setTimeout(() => {
+      positions.forEach((position) => {
+        if (
+          getTokenSymbol(position.token.symbol).toLowerCase() !==
+          symbol.toLowerCase()
+        )
+          return;
+
+        addHorizontalLine({
+          text: `${position.side}${
+            toggleSizeUsdInChart
+              ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+              : ''
+          }`,
+          price: position.price,
+          time: new Date(Number(position.nativeObject.openTime) * 1000),
+          color: position.side === 'long' ? greenColor : redColor,
+          linestyle: 0,
+          linewidth: 2,
+        });
+
+        if (position?.liquidationPrice) {
+          addHorizontalLine({
+            text: `${position.side} – liq${
+              toggleSizeUsdInChart
+                ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+                : ''
+            }`,
+            price: position.liquidationPrice,
+            time: new Date(Number(position.nativeObject.openTime) * 1000),
+            color: orangeColor,
+            linestyle: 1,
+            linewidth: 1,
+          });
+        }
+
+        if (
+          position.takeProfitIsSet &&
+          position?.takeProfitLimitPrice &&
+          position.takeProfitLimitPrice > 0
+        ) {
+          addHorizontalLine({
+            text: `${position.side} – TP${
+              toggleSizeUsdInChart
+                ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+                : ''
+            }`,
+            price: position.takeProfitLimitPrice,
+            time: new Date(Number(position.nativeObject.openTime) * 1000),
+            color: blueColor,
+            linestyle: 1,
+            linewidth: 1,
+          });
+        }
+
+        if (
+          position.stopLossIsSet &&
+          position?.stopLossLimitPrice &&
+          position.stopLossLimitPrice > 0
+        ) {
+          addHorizontalLine({
+            text: `${position.side} – SL${
+              toggleSizeUsdInChart
+                ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
+                : ''
+            }`,
+            price: position.stopLossLimitPrice,
+            time: new Date(Number(position.nativeObject.openTime) * 1000),
+            color: blueColor,
+            linestyle: 1,
+            linewidth: 1,
+          });
+        }
       });
-
-      if (position?.liquidationPrice) {
-        addHorizontalLine({
-          text: `${position.side} – liq${
-            toggleSizeUsdInChart
-              ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
-              : ''
-          }`,
-          price: position.liquidationPrice,
-          time: new Date(Number(position.nativeObject.openTime) * 1000),
-          color: orangeColor,
-          linestyle: 1,
-          linewidth: 1,
-        });
-      }
-
-      if (
-        position.takeProfitIsSet &&
-        position?.takeProfitLimitPrice &&
-        position.takeProfitLimitPrice > 0
-      ) {
-        addHorizontalLine({
-          text: `${position.side} – TP${
-            toggleSizeUsdInChart
-              ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
-              : ''
-          }`,
-          price: position.takeProfitLimitPrice,
-          time: new Date(Number(position.nativeObject.openTime) * 1000),
-          color: blueColor,
-          linestyle: 1,
-          linewidth: 1,
-        });
-      }
-
-      if (
-        position.stopLossIsSet &&
-        position?.stopLossLimitPrice &&
-        position.stopLossLimitPrice > 0
-      ) {
-        addHorizontalLine({
-          text: `${position.side} – SL${
-            toggleSizeUsdInChart
-              ? `: ${formatPriceInfo(position.sizeUsd, 0)}`
-              : ''
-          }`,
-          price: position.stopLossLimitPrice,
-          time: new Date(Number(position.nativeObject.openTime) * 1000),
-          color: blueColor,
-          linestyle: 1,
-          linewidth: 1,
-        });
-      }
-    });
-  }, [chart, widgetReady, positions, toggleSizeUsdInChart]);
+    }, 100);
+  }, [chart, widgetReady, positions?.length, toggleSizeUsdInChart]);
 
   // handle break even lines
   useEffect(() => {
     if (!widgetReady || !chart || !positions) return;
+    const symbol = chart.symbol().split('.')[1].split('/')[0] as TokenSymbol;
 
-    positions.forEach((position) => {
-      if (showBreakEvenLine) {
+    chart.getAllShapes().forEach((shape) => {
+      if (
+        shape.name === 'horizontal_line' &&
+        breakEvenLinesID.current.includes(shape.id)
+      ) {
+        chart.removeEntity(shape.id);
+
+        breakEvenLinesID.current = breakEvenLinesID.current.filter(
+          (id) => id !== shape.id,
+        );
+      }
+    });
+
+    if (showBreakEvenLine) {
+      positions.forEach((position) => {
+        if (
+          getTokenSymbol(position.token.symbol).toLowerCase() !==
+          symbol.toLowerCase()
+        )
+          return;
+
         addHorizontalLine({
           text: `${getTokenSymbol(position.side)} – break even`,
           price: position.breakEvenPrice,
@@ -184,21 +213,8 @@ export function useChartDrawing({
           linewidth: 1,
           horzLabelsAlign: 'left',
         });
-      } else {
-        chart.getAllShapes().forEach((shape) => {
-          if (
-            shape.name === 'horizontal_line' &&
-            breakEvenLinesID.current.includes(shape.id)
-          ) {
-            chart.removeEntity(shape.id);
-
-            breakEvenLinesID.current = breakEvenLinesID.current.filter(
-              (id) => id !== shape.id,
-            );
-          }
-        });
-      }
-    });
+      });
+    }
   }, [chart, widgetReady, positions, showBreakEvenLine]);
 
   const addHorizontalLine = useCallback(
