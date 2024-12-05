@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { AxisDomain, DataKey } from 'recharts/types/util/types';
+import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
@@ -28,6 +28,7 @@ export default function LineRechart({
   setPeriod,
   gmt,
   domain,
+  scale = 'linear',
   tippyContent,
   isSmallScreen = true,
   subValue,
@@ -40,9 +41,10 @@ export default function LineRechart({
     name: string;
     color?: string;
   }[];
-  period: string | null;
-  setPeriod: (v: string | null) => void;
+  period?: string | null;
+  setPeriod?: (v: string | null) => void;
   domain?: AxisDomain;
+  scale?: ScaleType;
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
   subValue?: number;
@@ -62,7 +64,7 @@ export default function LineRechart({
     if (formatY === 'currency') {
       return formatPriceInfo(tickItem, 0);
     }
-    return formatNumberShort(tickItem);
+    return formatNumberShort(tickItem, 0);
   };
 
   return (
@@ -90,7 +92,7 @@ export default function LineRechart({
           )}
         </div>
 
-        <div className="flex gap-2 text-sm">
+        {setPeriod ? <div className="flex gap-2 text-sm">
           <div
             className={twMerge(
               'cursor-pointer',
@@ -129,7 +131,7 @@ export default function LineRechart({
           >
             <div className="text-txtfade cursor-not-allowed">1Y</div>
           </Tippy>
-        </div>
+        </div> : null}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -138,7 +140,7 @@ export default function LineRechart({
 
           <XAxis dataKey="time" fontSize="12" />
 
-          <YAxis domain={domain} tickFormatter={formatYAxis} fontSize="11" />
+          <YAxis domain={domain} tickFormatter={formatYAxis} fontSize="11" scale={scale} />
 
           <Tooltip
             content={
