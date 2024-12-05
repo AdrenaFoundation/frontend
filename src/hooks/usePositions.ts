@@ -1,5 +1,5 @@
 import { AccountInfo, PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { use, useCallback, useEffect, useState } from 'react';
 
 import { TokenPricesState } from '@/reducers/tokenPricesReducer';
 import { useSelector } from '@/store/store';
@@ -43,11 +43,10 @@ export default function usePositions(): PositionExtended[] | null {
   const wallet = useSelector((s) => s.walletState.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const connection = window.adrena.client.connection;
 
   // Do initial load of positions then start streaming
   const initialSetup = useCallback(async () => {
-    const connection = window.adrena.client.connection;
-
     if (!wallet || !connection) return;
 
     // Load positions
@@ -118,6 +117,14 @@ export default function usePositions(): PositionExtended[] | null {
   useEffect(() => {
     initialSetup();
   }, [initialSetup]);
+
+  // Reset positions when connection closes
+  useEffect(() => {
+    if (!connection) {
+      setPositions(null);
+      return;
+    }
+  }, [connection]);
 
   useEffect(() => {
     if (!positions || !tokenPrices) return;
