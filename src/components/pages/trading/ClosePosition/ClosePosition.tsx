@@ -120,11 +120,11 @@ export default function ClosePosition({
 
   const [showFees, setShowFees] = useState(false);
 
-  console.log(position);
   return (
     <div
       className={twMerge('flex flex-col h-full w-full sm:w-[22em]', className)}
     >
+
       <div className="px-4 pt-4 pb-2">
         <div className="text-white text-sm mb-1 font-boldy">
           Position to close
@@ -134,23 +134,13 @@ export default function ClosePosition({
           <div className="w-full flex justify-between">
             <div className="flex gap-2 items-center">
               <Image
-                src={
-                  position.side === 'short'
-                    ? position.token.image
-                    : getTokenImage(position.token)
-                }
+                src={getTokenImage(position.token)}
                 width={16}
                 height={16}
-                alt={`${position.side === 'short'
-                    ? position.token.symbol
-                    : getTokenSymbol(position.token.symbol)
-                  } logo`}
+                alt={`${getTokenSymbol(position.token.symbol)} logo`}
               />
               <div className="text-sm text-bold">
-                {position.side === 'short'
-                  ? position.token.symbol
-                  : getTokenSymbol(position.token.symbol)}{' '}
-                Price
+                {getTokenSymbol(position.token.symbol)} Price
               </div>
             </div>
             <FormatNumber
@@ -289,6 +279,7 @@ export default function ClosePosition({
           </button>
         </div>
 
+
         {showFees && (
           <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-2">
             <div className={rowStyle}>
@@ -298,8 +289,8 @@ export default function ClosePosition({
                   content={
                     <p className="font-medium">
                       Open fees are 0 bps, while close fees are 16 bps. This
-                      average to 8bps entry and close fees, but allow for
-                      opening exactly the requested position size.
+                      average to 8bps entry and close fees, but allow for opening
+                      exactly the requested position size.
                     </p>
                   }
                   placement="auto"
@@ -370,11 +361,7 @@ export default function ClosePosition({
         <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3 py-2.5">
           <div className="flex flex-row gap-3 items-center">
             <Image
-              src={
-                position.side === 'short'
-                  ? getTokenImage(position.collateralToken)
-                  : tokenImage
-              }
+              src={position.side === 'short' ? getTokenImage(position.collateralToken) : tokenImage}
               width={24}
               height={24}
               alt="close token image"
