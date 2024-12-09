@@ -2,6 +2,7 @@ import { Switch } from '@mui/material';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
@@ -16,11 +17,11 @@ import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import adrenaWorldBg from '../../../public/images/adrena-world-bg.png';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
-import Image from 'next/image';
+
+import adrenaWorldBg from '../../../public/images/adrena-world-bg.png';
 
 export type Action = 'long' | 'short' | 'swap';
 
