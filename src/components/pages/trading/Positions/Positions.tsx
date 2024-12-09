@@ -55,9 +55,9 @@ export default function Positions({
               <div className="ml-2 flex flex-row gap-2 items-center">
                 <h2 className="font-boldy">Close</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToClose.side === 'long'
-                    ? 'text-green bg-green/20'
-                    : 'text-red bg-red/20'
+                  className={`text-base bg-third m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToClose.side === 'long'
+                    ? 'text-green'
+                    : 'text-red'
                     }`}
                 >
                   {positionToClose.side}
@@ -94,11 +94,11 @@ export default function Positions({
           <Modal
             customTitle={
               <div className="ml-2 flex flex-row gap-2 items-center">
-                <h2 className="font-boldy">Edit</h2>
+                <h2 className="font-boldy capitalize">Edit</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToEdit.side === 'long'
-                    ? 'text-green bg-green/20'
-                    : 'text-red bg-red/20'
+                  className={`text-base bg-third m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToEdit.side === 'long'
+                    ? 'text-green'
+                    : 'text-red'
                     }`}
                 >
                   {positionToEdit.side}
@@ -135,9 +135,9 @@ export default function Positions({
               <div className="ml-2 flex flex-row gap-2 items-center">
                 <h2 className="font-boldy">TP/SL</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToStopLossTakeProfit.side === 'long'
-                    ? 'text-green bg-green/20'
-                    : 'text-red bg-red/20'
+                  className={`text-base bg-third m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToStopLossTakeProfit.side === 'long'
+                    ? 'text-green'
+                    : 'text-red'
                     }`}
                 >
                   {positionToStopLossTakeProfit.side}

@@ -347,7 +347,7 @@ export default function EditPositionCollateral({
       className={twMerge('flex flex-col gap-2 h-full w-[24em] pt-4', className)}
     >
       <div className="px-4">
-        <div className="flex flex-col p-3 py-2.5 border bg-mainDark rounded-lg">
+        <div className="flex flex-col rounded-lg">
           <div className="w-full flex justify-between mt-">
             <div className="flex items-center">
               <Image
@@ -426,7 +426,7 @@ export default function EditPositionCollateral({
       </div>
 
       <div className="px-4 mt-2">
-        <div className="flex flex-col border p-3 py-2.5 bg-mainDark rounded-lg">
+        <div className="flex flex-col rounded-lg">
           <div className={rowStyle}>
             <div className="text-sm text-txtfade">Size</div>
 
@@ -593,19 +593,20 @@ export default function EditPositionCollateral({
         </div>
       </div>
 
-      <TabSelect
-        wrapperClassName="h-12 flex items-center mt-auto"
-        selected={selectedAction}
-        tabs={[
-          { title: 'deposit', activeColor: 'border-b-gray-700' },
-          { title: 'withdraw', activeColor: 'border-b-gray-700' },
-        ]}
-        onClick={(title) => {
-          // Reset input when changing selected action
-          setInput(null);
-          setSelectedAction(title);
-        }}
-      />
+      <div className='px-4 mt-3'>
+        <TabSelect
+          selected={selectedAction}
+          tabs={[
+            { title: 'deposit', activeColor: 'border-b-gray-700' },
+            { title: 'withdraw', activeColor: 'border-b-gray-700' },
+          ]}
+          onClick={(title) => {
+            // Reset input when changing selected action
+            setInput(null);
+            setSelectedAction(title);
+          }}
+        />
+      </div>
 
       <div className="flex flex-col gap-2">
         {selectedAction === 'deposit' ? (
