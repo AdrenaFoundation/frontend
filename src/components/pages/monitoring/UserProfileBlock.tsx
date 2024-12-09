@@ -24,7 +24,7 @@ export default function UserProfileBlock({ profile, setActiveProfile, className 
     const longShortRatio = profile.longStats.openedPositionCount / (profile.longStats.openedPositionCount + profile.shortStats.openedPositionCount) * 100;
 
     return (
-        <div className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden p-3 ${className}`}>
+        <div className={`w-full flex flex-col border rounded-lg bg-mainDark overflow-hidden p-3 ${className}`}>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row gap-6 justify-between items-center">
                 <div className="flex flex-1 flex-col items-start" onClick={
                     () => setActiveProfile(profile)

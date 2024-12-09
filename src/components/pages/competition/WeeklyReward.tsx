@@ -60,7 +60,7 @@ export default function WeeklyReward({
             {rewards.map((award) => {
                 if (award.type === 'ticket') {
                     return <div
-                        className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl grow relative"
+                        className="flex flex-col items-center justify-between bg-mainDark rounded-lg shadow-xl grow relative"
                         key={award.title}
                     >
                         <div
@@ -125,7 +125,7 @@ export default function WeeklyReward({
                                     </div>
                             }
 
-                            <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
+                            <div className="flex flex-row gap-2 items-center justify-center bg-third rounded-lg p-2 px-3 sm:px-8">
                                 <Image
                                     src={window.adrena.client.adxToken.image}
                                     alt="adx logo"
@@ -146,7 +146,7 @@ export default function WeeklyReward({
                 }
 
                 return <div
-                    className="flex flex-col gap-2 items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl p-3 flex-1"
+                    className="flex flex-col gap-2 items-center justify-between bg-mainDark rounded-lg shadow-xl p-3 flex-1"
                     key={award.title}
                 >
                     <div className='flex flex-col items-center gap-2'>
@@ -189,7 +189,7 @@ export default function WeeklyReward({
                             : <p className='text-xs font-boldy'>-</p>}
                     </div>
 
-                    <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
+                    <div className="flex flex-row gap-2 items-center justify-center bg-third border rounded-lg p-2 px-3 sm:px-8">
                         <Image
                             src={window.adrena.client.adxToken.image}
                             alt="adx logo"

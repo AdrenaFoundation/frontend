@@ -257,7 +257,7 @@ export default function StopLossTakeProfit({
           </a>
         </div>
 
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
+        <div className="flex flex-col border p-3 py-2.5 bg-mainDark rounded-lg my-3">
           <div className="w-full flex justify-between">
             <div className="flex gap-2 items-center">
               <Image
@@ -318,7 +318,7 @@ export default function StopLossTakeProfit({
 
         </div>
 
-        <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-lg border p-3 py-2.5">
+        <div className="flex-col items-center justify-center text-sm w-full bg-mainDark rounded-lg border p-3 py-2.5">
 
           <div className="flex w-full justify-between items-center">
             <span className="text-sm text-txtfade">Net Value</span>

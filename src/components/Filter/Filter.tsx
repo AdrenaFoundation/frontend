@@ -16,7 +16,7 @@ export default function Filter({
     iconClassName?: string;
 }) {
     return (
-        <ul className="flex flex-row gap-2 items-center border border-bcolor rounded-lg p-2 bg-secondary flex-1">
+        <ul className="flex flex-row gap-2 items-center border border-bcolor rounded-lg p-2 bg-main flex-1">
             {options.map((option) => (
                 <li
                     className={twMerge(

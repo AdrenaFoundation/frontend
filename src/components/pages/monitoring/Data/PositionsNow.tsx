@@ -13,7 +13,7 @@ export default function PositionsNow({
   titleClassName?: string;
 }) {
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-mainDark border rounded-lg flex-1 shadow-xl">
       <div className="flex flex-row gap-2 w-full border-b p-3">
         <p className={titleClassName}>Positions Live</p>
 

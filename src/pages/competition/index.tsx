@@ -330,7 +330,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
 
     return (
         <>
-            <div className="flex flex-col gap-6 pb-20 relative overflow-hidden bg-[#070E18]">
+            <div className="flex flex-col gap-6 pb-20 relative overflow-hidden bg-main">
                 <div className="bg-[#FF35382A] bottom-[-17%] absolute h-[20%] w-full blur-3xl backdrop-opacity-10 rounded-full"></div>
 
                 <div className="relative">
@@ -468,7 +468,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
 
                         <div className='flex gap-4 flex-col flex-wrap sm:flex-nowrap'>
                             <div className='flex gap-4 flex-row flex-wrap sm:flex-nowrap'>
-                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                <div className="flex flex-col items-center justify-between bg-mainDark rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
                                     <h4 className="font-boldy text-base p-2 flex gap-2">Traders <LiveIcon className='absolute right-2' /></h4>
 
                                     <div className='h-[1px] bg-bcolor w-full' />
@@ -482,7 +482,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                <div className="flex flex-col items-center justify-between bg-mainDark rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
                                     <h4 className="font-boldy text-base p-2 flex gap-2">Volume <LiveIcon className='absolute right-2' /></h4>
 
                                     <div className='h-[1px] bg-bcolor w-full' />
@@ -498,7 +498,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
+                                <div className="flex flex-col items-center justify-between bg-mainDark rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
                                     <h4 className="font-boldy text-base p-2">Total Rewards</h4>
 
                                     <div className='h-[1px] bg-bcolor w-full' />
@@ -523,7 +523,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow h-[7.5em]">
+                            <div className="flex flex-col items-center bg-mainDark rounded-lg shadow-xl relative gap-1 grow h-[7.5em]">
                                 <div className='flex flex-col w-full items-center h-auto grow-0'>
                                     <div className="flex items-center p-2">
                                         <Image src={jitoLogo} alt="jito logo" width={24} height={24} />

@@ -99,7 +99,7 @@ export default function Modal({
 
         <motion.div
           className={twMerge(
-            'min-w-20 min-h-20 z-[102] rounded-lg border bg-secondary  overflow-hidden flex flex-col items-center',
+            'min-w-20 min-h-20 z-[102] rounded-lg border bg-main  overflow-hidden flex flex-col items-center',
             !isMobile ? '-mt-[8%] mx-4' : 'mt-auto rounded-b-none w-full',
             wrapperClassName,
           )}
@@ -112,7 +112,7 @@ export default function Modal({
         >
           <div
             className={twMerge(
-              'h-16 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
+              'h-16 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-main',
             )}
             onPointerDown={isMobile ? startDrag : undefined}
             style={{ touchAction: 'none' }}
@@ -150,7 +150,7 @@ export default function Modal({
           </div>
 
           <div className={twMerge('relative', className)}>{children} <div
-            className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-secondary z-20"
+            className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-main z-20"
           /></div>
 
         </motion.div>

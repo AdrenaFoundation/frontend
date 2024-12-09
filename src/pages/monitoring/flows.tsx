@@ -88,7 +88,7 @@ export default function Flow({
                     setStartDate(date.toISOString());
                   }
                 }}
-                className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+                className="w-full sm:w-auto px-2 py-1 bg-mainDark rounded border border-gray-600"
                 minDate={new Date('2023-09-25')}
                 maxDate={new Date()}
               />
@@ -99,7 +99,7 @@ export default function Flow({
                     setEndDate(date.toISOString());
                   }
                 }}
-                className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+                className="w-full sm:w-auto px-2 py-1 bg-mainDark rounded border border-gray-600"
                 minDate={new Date('2023-09-25')}
                 maxDate={new Date()}
               />
@@ -110,7 +110,7 @@ export default function Flow({
 
       <div className="flex flex-wrap w-full gap-4">
         {Object.entries(groupedStats).map(([symbol, symbolStats]) => (
-          <div key={symbol} className="p-4 border rounded bg-[#050D14] flex-grow min-w-[20em]">
+          <div key={symbol} className="p-4 border rounded bg-mainDark flex-grow min-w-[20em]">
             <h3 className="font-semibold flex items-center gap-2">
               <Image
                 src={custodies?.find((c) => c.tokenInfo.symbol.toLocaleLowerCase() === symbol.toLowerCase())?.tokenInfo.image || ''}

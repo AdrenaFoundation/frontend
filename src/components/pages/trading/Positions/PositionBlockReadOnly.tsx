@@ -213,7 +213,7 @@ export default function PositionBlockReadOnly({
         <>
             <div
                 className={twMerge(
-                    'min-w-[250px] w-full flex flex-col border rounded-lg bg-[#050D14]',
+                    'min-w-[250px] w-full flex flex-col border rounded-lg bg-mainDark',
                     bodyClassName,
                     borderColor,
                 )}

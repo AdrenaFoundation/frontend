@@ -374,7 +374,7 @@ export default function Genesis({
             className="w-[300px] translate-y-1"
           />
         </div>
-        <div className="relative items-center border rounded-lg w-full p-2 shadow-2xl bg-[#050D14]">
+        <div className="relative items-center border rounded-lg w-full p-2 shadow-2xl bg-mainDark">
           <div className="flex flex-col md:flex-row gap-2 m-auto z-20">
             <div className="sm:hidden h-full bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
               <Image src={logo} alt="Adrena logo" width={60} />

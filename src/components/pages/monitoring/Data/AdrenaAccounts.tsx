@@ -38,7 +38,7 @@ export default function AdrenaAccounts({
     window.adrena.client.getStakingLmRewardTokenVaultPda(lpStakingPda);
 
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-mainDark border rounded-lg flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>Adrena Accounts</p>
         <p className="text-base opacity-50">

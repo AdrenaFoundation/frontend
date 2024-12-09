@@ -4,13 +4,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        main: '#060D16',
-        secondary: '#061018',
-        third: '#151e29',
-        inputcolor: '#1e2c3c',
+        main: '#121114',
+        mainDark: '#18181C',
+        secondary: '#111113',
+        third: '#23252E',
+        inputcolor: '#18181C',
         black: '#000000',
         highlight: '#fffffff5',
-        bcolor: '#15202C',
+        bcolor: '#1D1C23',
 
         // text
         txtfade: '#858789',

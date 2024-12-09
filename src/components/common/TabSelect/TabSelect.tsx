@@ -6,9 +6,9 @@ export default function TabSelect<T extends string | number>({
   initialSelectedIndex,
   onClick,
   tabs,
-  wrapperClassName,
   className,
   titleClassName,
+  wrapperClassName,
 }: {
   selected?: T;
   initialSelectedIndex?: number;
@@ -23,6 +23,12 @@ export default function TabSelect<T extends string | number>({
   wrapperClassName?: string;
   titleClassName?: string;
 }) {
+  const [activeElement, setActiveElement] = useState({
+    width: 0,
+    height: 0,
+    x: 0,
+  });
+
   const [activeTab, setActiveTab] = useState<null | number>(
     selected !== undefined ? initialSelectedIndex ?? 0 : null,
   );
@@ -30,42 +36,44 @@ export default function TabSelect<T extends string | number>({
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
 
   useEffect(() => {
-    if (typeof selected !== 'undefined') {
-      setActiveTab(tabs.findIndex((tab) => tab.title === selected));
+    if (activeTab !== null && refs[activeTab].current) {
+      setActiveElement({
+        width: refs[activeTab].current?.offsetWidth ?? 0,
+        height: refs[activeTab].current?.offsetHeight ?? 0,
+        x: refs[activeTab].current?.offsetLeft ?? 0,
+      });
     }
-  }, [selected, tabs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   return (
-    <div
-      className={twMerge(
-        'relative flex flex-row justify-between w-full pb-1 mb-1',
-        wrapperClassName,
-      )}
-    >
-      {tabs.map(({ title, activeColor, disabled }, index) => (
+    <div className="relative flex flex-row gap-3 justify-between w-full border border-bcolor rounded-full p-1 mb-3 bg-third">
+      <div
+        className="absolute h-full bg-white rounded-full cursor-pointer"
+        style={{
+          width: activeElement.width,
+          height: activeElement.height,
+          transform: `translatex(${activeElement.x - 3}px)`,
+          transition: 'all 0.3s var(--bezier-smooth)',
+        }}
+      />
+      {tabs.map(({ title }, index) => (
         <div
           className={twMerge(
-            'ext-center p-1 w-full cursor-pointer z-10',
-            className,
+            'text-sm text-center p-1 w-full rounded-lg cursor-pointer capitalize z-10 font-boldy select-none',
+            className && className,
             activeTab !== null && index === activeTab
-              ? activeColor
-                ? `opacity-100 border-b-[0.3em] ${activeColor}`
-                : 'opacity-100 border-b-[0.3em] border-highlight'
-              : 'opacity-50 border-b-[1px]',
-            disabled && 'opacity-25 cursor-not-allowed',
+              ? 'opacity-100 text-black'
+              : 'opacity-50',
           )}
           ref={refs[index]}
           key={title}
           onClick={() => {
-            if (disabled) return;
-
             onClick(title, index);
             setActiveTab(index);
           }}
         >
-          <h5 className={twMerge('text-center uppercase select-none', titleClassName)}>
-            {title}
-          </h5>
+          {title}
         </div>
       ))}
     </div>

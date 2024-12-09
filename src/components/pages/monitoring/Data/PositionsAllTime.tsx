@@ -9,7 +9,7 @@ export default function PositionsAllTime({
   titleClassName?: string;
 }) {
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-mainDark border rounded-lg flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>Positions All Time</p>
       </div>

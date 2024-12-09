@@ -10,7 +10,7 @@ export default function AUM({ connected }: { connected: boolean }) {
       nb={aumUsd}
       format="currency"
       precision={0}
-      className="bg-[#050D14]"
+      className="bg-mainDark"
       subtitle={!connected ? 'Expect up to a 5-minute delay in the data' : ''}
     />
   );

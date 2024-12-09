@@ -1,0 +1,73 @@
+import { createRef, useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+
+export default function TabSelect<T extends string | number>({
+  selected,
+  initialSelectedIndex,
+  onClick,
+  tabs,
+  wrapperClassName,
+  className,
+  titleClassName,
+}: {
+  selected?: T;
+  initialSelectedIndex?: number;
+  tabs: {
+    title: T;
+    icon?: string;
+    activeColor?: string;
+    disabled?: boolean;
+  }[];
+  onClick: (title: T, index: number) => void;
+  className?: string;
+  wrapperClassName?: string;
+  titleClassName?: string;
+}) {
+  const [activeTab, setActiveTab] = useState<null | number>(
+    selected !== undefined ? initialSelectedIndex ?? 0 : null,
+  );
+
+  const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
+
+  useEffect(() => {
+    if (typeof selected !== 'undefined') {
+      setActiveTab(tabs.findIndex((tab) => tab.title === selected));
+    }
+  }, [selected, tabs]);
+
+  return (
+    <div
+      className={twMerge(
+        'relative flex flex-row justify-between w-full pb-1 mb-1',
+        wrapperClassName,
+      )}
+    >
+      {tabs.map(({ title, activeColor, disabled }, index) => (
+        <div
+          className={twMerge(
+            'ext-center p-1 w-full cursor-pointer z-10',
+            className,
+            activeTab !== null && index === activeTab
+              ? activeColor
+                ? `opacity-100 border-b-[0.3em] ${activeColor}`
+                : 'opacity-100 border-b-[0.3em] border-highlight'
+              : 'opacity-50 border-b-[1px]',
+            disabled && 'opacity-25 cursor-not-allowed',
+          )}
+          ref={refs[index]}
+          key={title}
+          onClick={() => {
+            if (disabled) return;
+
+            onClick(title, index);
+            setActiveTab(index);
+          }}
+        >
+          <h5 className={twMerge('text-center uppercase select-none', titleClassName)}>
+            {title}
+          </h5>
+        </div>
+      ))}
+    </div>
+  );
+}

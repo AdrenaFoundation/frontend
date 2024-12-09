@@ -79,7 +79,7 @@ export default function LeaderboardTable({
                     paginationClassName='scale-[80%] p-0'
                     nbItemPerPage={nbItemPerPage}
                     nbItemPerPageWhenBreakpoint={3}
-                    rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
+                    rowClassName="bg-mainDark hover:bg-third py-0 items-center"
                     rowTitleWidth="0%"
                     isFirstColumnId
                     data={(data[division] ?? []).map((d, i) => {

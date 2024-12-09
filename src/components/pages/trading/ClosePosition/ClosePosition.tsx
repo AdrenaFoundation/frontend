@@ -130,7 +130,7 @@ export default function ClosePosition({
           Position to close
         </div>
 
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
+        <div className="flex flex-col border p-3 py-2.5 bg-mainDark rounded-lg my-3">
           <div className="w-full flex justify-between">
             <div className="flex gap-2 items-center">
               <Image
@@ -190,7 +190,7 @@ export default function ClosePosition({
           </div>
         </div>
 
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
+        <div className="flex flex-col border p-3 py-2.5 bg-mainDark rounded-lg">
           <div className={rowStyle}>
             <div className="text-sm text-txtfade">Size</div>
 
@@ -281,7 +281,7 @@ export default function ClosePosition({
 
 
         {showFees && (
-          <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-2">
+          <div className="flex flex-col border p-3 py-2.5 bg-mainDark rounded-lg mt-2">
             <div className={rowStyle}>
               <div className="flex items-center text-sm text-txtfade">
                 Exit Fees
@@ -358,7 +358,7 @@ export default function ClosePosition({
 
       <div className="px-4 pt-2">
         <p className="mb-2 font-boldy">Receive</p>
-        <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3 py-2.5">
+        <div className="flex border bg-mainDark w-full justify-between items-center rounded-lg p-3 py-2.5">
           <div className="flex flex-row gap-3 items-center">
             <Image
               src={tokenImage}

@@ -115,7 +115,7 @@ export default function DetailedMonitoring({
   }));
 
   return (
-    <div className="border bg-secondary rounded-lg overflow-hidden m-2">
+    <div className="border bg-main/90 backdrop-blur-md rounded-lg overflow-hidden m-2">
       <TabSelect
         wrapperClassName="hidden md:flex gap-6 border-b p-3 pb-0 select-none mb-3"
         titleClassName="whitespace-nowrap text-sm"
@@ -131,7 +131,7 @@ export default function DetailedMonitoring({
 
       <Menu
         trigger={
-          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-lg cursor-pointer text-lg font-boldy select-none">
+          <div className="flex flex-row justify-between bg-main/90 backdrop-blur-md border w-full p-3 rounded-lg cursor-pointer text-lg font-boldy select-none">
             {selectedTab}
 
             <Image
@@ -143,7 +143,7 @@ export default function DetailedMonitoring({
           </div>
         }
         className="block md:hidden mx-5 mt-5"
-        openMenuClassName="w-full bg-secondary shadow-lg"
+        openMenuClassName="w-full bg-main/90 backdrop-blur-md shadow-lg"
       >
         <MenuItems className="">
           {tabs.map((tab) => (
@@ -177,7 +177,7 @@ export default function DetailedMonitoring({
               title="ADX CIRCULATING SUPPLY"
               nb={adxTotalSupply}
               precision={0}
-              className='bg-[#050D14]'
+              className='bg-mainDark'
             />
           ) : null}
 
@@ -190,7 +190,7 @@ export default function DetailedMonitoring({
               )}
               precision={0}
               suffix=' ADX'
-              className='bg-[#050D14]'
+              className='bg-mainDark'
             />
           ) : null}
 
@@ -200,7 +200,7 @@ export default function DetailedMonitoring({
               nb={mainPool.totalFeeCollected}
               format="currency"
               precision={0}
-              className='bg-[#050D14]'
+              className='bg-mainDark'
             />
           ) : null}
         </div>

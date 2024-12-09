@@ -30,7 +30,7 @@ export default function StyledContainer({
   return (
     <div
       className={twMerge(
-        'flex flex-col bg-secondary w-full border rounded-lg p-3 z-20 relative',
+        'flex flex-col bg-main w-full border rounded-lg p-3 z-20 relative',
         className,
       )}
     >
