@@ -64,13 +64,15 @@ export default function Positions({
                 </p>
                 <div className="flex flex-row gap-1 items-center">
                   <Image
-                    src={getTokenImage(positionToClose.token)}
+                    src={positionToClose.side === 'short' ? positionToClose.token.image : getTokenImage(positionToClose.token)}
                     alt={positionToClose.token.symbol}
                     width={16}
                     height={16}
                   />
                   <p className="text-base">
-                    {getTokenSymbol(positionToClose.token.symbol)}
+                    {
+                      positionToClose.side === 'short' ? positionToClose.token.symbol : getTokenSymbol(positionToClose.token.symbol)
+                    }
                   </p>
                 </div>
               </div>
