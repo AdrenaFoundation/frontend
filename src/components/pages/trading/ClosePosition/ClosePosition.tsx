@@ -361,7 +361,7 @@ export default function ClosePosition({
         <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3 py-2.5">
           <div className="flex flex-row gap-3 items-center">
             <Image
-              src={tokenImage}
+              src={position.side === 'short' ? getTokenImage(position.collateralToken) : tokenImage}
               width={24}
               height={24}
               alt="close token image"
