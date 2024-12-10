@@ -12,9 +12,11 @@ import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
+import InputNumber from '@/components/common/InputNumber/InputNumber';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Select from '@/components/common/Select/Select';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import Switch from '@/components/common/Switch/Switch';
 import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
@@ -76,9 +78,12 @@ export default function LongShortTradingInputs({
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [isLimitOrder, setIsLimitOrder] = useState(false);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
+
+  const [limitOrderPrice, setLimitOrderPrice] = useState<number | null>(null);
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -191,6 +196,10 @@ export default function LongShortTradingInputs({
   useEffect(() => {
     calculateIncreasePositionInfo()
   }, [calculateIncreasePositionInfo]);
+
+  const handleSetLimitOrder = async (): Promise<void> => {
+    //
+  };
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
@@ -617,7 +626,95 @@ export default function LongShortTradingInputs({
         </div>
       </div>
 
-      <div className="flex flex-col mt-2 sm:mt-4 transition-opacity duration-500">
+      <h5 className="flex items-center ml-4 mt-4">Execute at</h5>
+
+      <div className='w-full h-10 flex mt-2 justify-between gap-1'>
+        <div className={twMerge('w-1/2 h-full flex items-center bg-bcolor border rounded justify-center text-sm cursor-pointer font-boldy', !isLimitOrder ? ' text-[#f3f3f4]' : 'text-txtfade')}
+          onClick={() => {
+            setIsLimitOrder(false);
+            setLimitOrderPrice(null);
+          }}
+        >Current Price</div>
+
+        <div className={twMerge('w-1/2 h-full flex flex-col items-center bg-bcolor border rounded justify-center text-sm cursor-pointer font-boldy', isLimitOrder ? ' text-[#f3f3f4]' : 'text-txtfade')}
+          onClick={() => {
+            setIsLimitOrder(true);
+            setLimitOrderPrice(null);
+          }}
+        >
+          Specific Price
+
+          <div className='text-xxs text-txtfade'>Limit order</div>
+        </div>
+      </div>
+
+      {/* <div
+        className="font-boldy text-xs  flex flex-row justify-end gap-3 pl-3 pr-3 pt-3"
+      >
+        <div className="border rounded-xl border-white pl-2 pr-2 bg-white text-black cursor-pointer opacity-60 hover:opacity-100"
+          onClick={() => {
+            setIsLimitOrder(!isLimitOrder);
+            setLimitOrderPrice(null);
+          }}
+        >Set as {!isLimitOrder ? 'Limit Order' : 'Regular Position'}</div>
+      </div> */}
+
+      {/* onChange={() => {
+              setIsLimitOrder(!isLimitOrder);
+              setLimitOrderPrice(null);
+            }} */}
+
+      {isLimitOrder ?
+        <>
+          <h5 className="flex items-center ml-4 mt-4">Trigger Price</h5>
+
+          <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative">
+            <div className='pl-4 mt-[0.1em]'>{limitOrderPrice !== null ? '$' : null}</div>
+
+            <InputNumber
+              value={limitOrderPrice === null ? undefined : limitOrderPrice}
+              placeholder="i.e $100"
+              className="font-mono border-0 outline-none bg-transparent h-8"
+              onChange={setLimitOrderPrice}
+              inputFontSize="1em"
+            />
+
+            {limitOrderPrice !== null && (
+              <div
+                className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
+                onClick={() => setLimitOrderPrice(null)}
+              >
+                clear
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-row mt-3 gap-1">
+            {[0.1, 0.25, 0.5, 1, 5].map((percent, i) => {
+              return (
+                <Button
+                  key={i}
+                  title={`${side === 'long' ? '-' : '+'}${percent}%`}
+                  variant="secondary"
+                  rounded={false}
+                  className={twMerge(
+                    'flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
+                    side === 'short' ? 'text-green' : 'text-redbright',
+                  )}
+                  onClick={() => {
+                    if (!tokenPriceBTrade) return;
+
+                    const p = side === 'long' ? -percent : percent;
+
+                    setLimitOrderPrice(Number((tokenPriceBTrade + (tokenPriceBTrade * p / 100)).toFixed(2)));
+                  }}
+                />
+              );
+            })}
+          </div>
+        </> : null}
+
+      {!isLimitOrder ? <div className="flex flex-col transition-opacity duration-500 mt-4">
         <h5 className="flex items-center ml-4">Size</h5>
 
         <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
@@ -1030,7 +1127,16 @@ export default function LongShortTradingInputs({
             </PositionFeesTooltip>
           </>
         )}
-      </div>
+      </div> : <Button
+        className={twMerge(
+          'w-full justify-center mt-4',
+          side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+        )}
+        size="lg"
+        title="Add Limit Order"
+        disabled={limitOrderPrice === null}
+        onClick={handleSetLimitOrder}
+      />}
     </div >
   );
 }
