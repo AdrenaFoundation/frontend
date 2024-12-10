@@ -16,7 +16,6 @@ import InputNumber from '@/components/common/InputNumber/InputNumber';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Select from '@/components/common/Select/Select';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import Switch from '@/components/common/Switch/Switch';
 import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
@@ -45,9 +44,25 @@ import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionFeesTooltip from './PositionFeesTooltip';
 
+const triggerPricePresets = [0.1, 0.25, 0.5, 1, 5] as const;
+
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
 let loadingCounter = 0;
+
+function calculateLimitOrderPrice({
+  tokenPriceBTrade,
+  percent,
+  side,
+}: {
+  tokenPriceBTrade: number;
+  percent: number;
+  side: 'long' | 'short';
+}): number {
+  const p = side === 'long' ? -percent : percent;
+
+  return Number((tokenPriceBTrade + (tokenPriceBTrade * p / 100)).toFixed(2));
+}
 
 export default function LongShortTradingInputs({
   side,
@@ -197,8 +212,40 @@ export default function LongShortTradingInputs({
     calculateIncreasePositionInfo()
   }, [calculateIncreasePositionInfo]);
 
-  const handleSetLimitOrder = async (): Promise<void> => {
-    //
+  const handleAddLimitOrder = async (): Promise<void> => {
+    if (!connected || !dispatch || !wallet || inputA === null || limitOrderPrice === null) {
+      dispatch(openCloseConnectionModalAction(true));
+      return;
+    }
+
+    const notification = MultiStepNotification.newForRegularTransaction(
+      side + ' Add Limit Order',
+    ).fire();
+
+    try {
+      await window.adrena.client.addLimitOrder({
+        triggerPrice: limitOrderPrice,
+        limitPrice: limitOrderPrice,
+        side,
+        collateralAmount: uiToNative(inputA, tokenA.decimals),
+        leverage: uiLeverageToNative(leverage),
+        notification,
+        mint: tokenB.mint,
+        collateralMint: tokenA.mint,
+      });
+
+      dispatch(fetchWalletTokenBalances());
+
+      setInputA(null);
+      setErrorMessage(null);
+      setInputB(null);
+      setPriceA(null);
+      setPriceB(null);
+      setNewPositionInfo(null);
+      setIncreasePositionInfo(null);
+    } catch (error) {
+      console.log('Error', error);
+    }
   };
 
   const handleExecuteButton = async (): Promise<void> => {
@@ -639,7 +686,15 @@ export default function LongShortTradingInputs({
         <div className={twMerge('w-1/2 h-full flex flex-col items-center bg-bcolor border rounded justify-center text-sm cursor-pointer font-boldy', isLimitOrder ? ' text-[#f3f3f4]' : 'text-txtfade')}
           onClick={() => {
             setIsLimitOrder(true);
-            setLimitOrderPrice(null);
+
+            if (!tokenPriceBTrade) return;
+
+            // Default limit order price of 1%
+            setLimitOrderPrice(calculateLimitOrderPrice({
+              tokenPriceBTrade,
+              percent: 1,
+              side,
+            }));
           }}
         >
           Specific Price
@@ -648,40 +703,28 @@ export default function LongShortTradingInputs({
         </div>
       </div>
 
-      {/* <div
-        className="font-boldy text-xs  flex flex-row justify-end gap-3 pl-3 pr-3 pt-3"
-      >
-        <div className="border rounded-xl border-white pl-2 pr-2 bg-white text-black cursor-pointer opacity-60 hover:opacity-100"
-          onClick={() => {
-            setIsLimitOrder(!isLimitOrder);
-            setLimitOrderPrice(null);
-          }}
-        >Set as {!isLimitOrder ? 'Limit Order' : 'Regular Position'}</div>
-      </div> */}
-
-      {/* onChange={() => {
-              setIsLimitOrder(!isLimitOrder);
-              setLimitOrderPrice(null);
-            }} */}
-
       {isLimitOrder ?
         <>
-          <h5 className="flex items-center ml-4 mt-4">Trigger Price</h5>
+          <div className='ml-4 mt-4 flex'>
+            <h5 className="flex">Trigger Price</h5>
 
-          <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative">
-            <div className='pl-4 mt-[0.1em]'>{limitOrderPrice !== null ? '$' : null}</div>
+            <div></div>
+          </div>
+
+          <div className="flex items-center border-l border-t border-r rounded-tl-lg rounded-tr-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative">
+            <div className='pl-4 mt-[0.1em] text-[1.4em]'>{limitOrderPrice !== null ? '$' : null}</div>
 
             <InputNumber
               value={limitOrderPrice === null ? undefined : limitOrderPrice}
-              placeholder="i.e $100"
+              placeholder="$100"
               className="font-mono border-0 outline-none bg-transparent h-8"
               onChange={setLimitOrderPrice}
-              inputFontSize="1em"
+              inputFontSize="1.4em"
             />
 
             {limitOrderPrice !== null && (
               <div
-                className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
+                className="absolute right-4 cursor-pointer text-txtfade hover:text-white"
                 onClick={() => setLimitOrderPrice(null)}
               >
                 clear
@@ -689,8 +732,8 @@ export default function LongShortTradingInputs({
             )}
           </div>
 
-          <div className="flex flex-row mt-3 gap-1">
-            {[0.1, 0.25, 0.5, 1, 5].map((percent, i) => {
+          <div className="flex flex-row bg-inputcolor rounded-bl-lg rounded-br-lg h-7">
+            {triggerPricePresets.map((percent, i) => {
               return (
                 <Button
                   key={i}
@@ -698,19 +741,36 @@ export default function LongShortTradingInputs({
                   variant="secondary"
                   rounded={false}
                   className={twMerge(
-                    'flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
-                    side === 'short' ? 'text-green' : 'text-redbright',
+                    'flex-1 opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor h-full font-bold',
+                    i === 0 ? 'rounded-bl-[0.7em]' : '',
+                    i === triggerPricePresets.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',
+                    side === "long" ? 'text-redbright' : 'text-green',
                   )}
                   onClick={() => {
                     if (!tokenPriceBTrade) return;
 
-                    const p = side === 'long' ? -percent : percent;
-
-                    setLimitOrderPrice(Number((tokenPriceBTrade + (tokenPriceBTrade * p / 100)).toFixed(2)));
+                    setLimitOrderPrice(calculateLimitOrderPrice({
+                      tokenPriceBTrade,
+                      percent,
+                      side,
+                    }));
                   }}
                 />
               );
             })}
+          </div>
+
+          <div className='flex items-center mt-3 ml-4 gap-1'>
+            <div className='text-xs font-boldy relative bottom-[0.2em] text-txtfade'>Trigger price must be {side === 'long' ? 'below' : 'above'}</div>
+
+            <div className='flex relative bottom-[0.15em]'>
+              <FormatNumber
+                nb={tokenPriceBTrade}
+                format="currency"
+                className="text-xs"
+                isDecimalDimmed={false}
+              />
+            </div>
           </div>
         </> : null}
 
@@ -1135,7 +1195,7 @@ export default function LongShortTradingInputs({
         size="lg"
         title="Add Limit Order"
         disabled={limitOrderPrice === null}
-        onClick={handleSetLimitOrder}
+        onClick={handleAddLimitOrder}
       />}
     </div >
   );

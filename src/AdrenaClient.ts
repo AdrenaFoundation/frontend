@@ -2,6 +2,7 @@ import { BN, ProgramAccount } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createAssociatedTokenAccountInstruction,
   TOKEN_PROGRAM_ID,
@@ -191,6 +192,32 @@ export class AdrenaClient {
   public getGenesisLockPda = () => {
     return PublicKey.findProgramAddressSync(
       [Buffer.from('genesis_lock'), this.mainPool.pubkey.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getLimitOrderBookPda = (wallet: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('limit_order_book'),
+        wallet.toBuffer(),
+        this.mainPool.pubkey.toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getCollateralEscrowPda = (
+    wallet: PublicKey,
+    collateralMint: PublicKey,
+  ) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('escrow_account'),
+        wallet.toBuffer(),
+        this.mainPool.pubkey.toBuffer(),
+        collateralMint.toBuffer(),
+      ],
       AdrenaClient.programId,
     )[0];
   };
@@ -3165,6 +3192,122 @@ export class AdrenaClient {
     const genesisLockPda = this.getGenesisLockPda();
 
     return this.readonlyAdrenaProgram.account.genesisLock.fetch(genesisLockPda);
+  }
+
+  public async cancelLimitOrder({
+    id,
+    notification,
+    collateralMint,
+  }: {
+    id: number;
+    notification?: MultiStepNotification;
+    collateralMint: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+    const receivingAccount = findATAAddressSync(owner, collateralMint);
+    const transferAuthority = AdrenaClient.transferAuthorityAddress;
+    const cortex = AdrenaClient.cortexPda;
+    const pool = this.mainPool.pubkey;
+    const collateralCustody = this.getCustodyByMint(collateralMint);
+
+    const limitOrderBook = this.getLimitOrderBookPda(owner);
+    const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
+
+    const transaction = await this.adrenaProgram.methods
+      .cancelLimitOrder({
+        id: new BN(id),
+      })
+      .accountsStrict({
+        owner,
+        receivingAccount,
+        transferAuthority,
+        cortex,
+        pool,
+        limitOrderBook,
+        collateralEscrow,
+        collateralCustodyMint: collateralCustody.mint,
+        collateralCustody: collateralCustody.pubkey,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+  }
+
+  public async addLimitOrder({
+    triggerPrice,
+    limitPrice,
+    side,
+    collateralAmount,
+    leverage,
+    notification,
+    mint,
+    collateralMint,
+  }: {
+    triggerPrice: number;
+    limitPrice: number;
+    side: 'long' | 'short';
+    collateralAmount: BN;
+    leverage: number;
+    notification?: MultiStepNotification;
+    mint: PublicKey;
+    collateralMint: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+    const fundingAccount = findATAAddressSync(owner, collateralMint);
+    const transferAuthority = AdrenaClient.transferAuthorityAddress;
+    const cortex = AdrenaClient.cortexPda;
+    const pool = this.mainPool.pubkey;
+    const custody = this.getCustodyByMint(mint);
+    const collateralCustody = this.getCustodyByMint(collateralMint);
+
+    const limitOrderBook = this.getLimitOrderBookPda(owner);
+    const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
+
+    const transaction = await this.adrenaProgram.methods
+      .addLimitOrder({
+        triggerPrice: uiToNative(triggerPrice, PRICE_DECIMALS),
+        limitPrice: uiToNative(limitPrice, PRICE_DECIMALS),
+        side: side === 'long' ? 1 : 2,
+        amount: collateralAmount,
+        leverage,
+      })
+      .accountsStrict({
+        owner,
+        fundingAccount,
+        transferAuthority,
+        cortex,
+        pool,
+        limitOrderBook,
+        collateralEscrow,
+        collateralCustodyMint: collateralCustody.mint,
+        custody: custody.pubkey,
+        collateralCustody: collateralCustody.pubkey,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
   }
 
   public async addGenesisLiquidity({
