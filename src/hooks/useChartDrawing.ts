@@ -176,7 +176,7 @@ export function useChartDrawing({
         }
       });
     }, 100);
-  }, [chart, widgetReady, positions?.length, toggleSizeUsdInChart]);
+  }, [chart, widgetReady, positions, toggleSizeUsdInChart]);
 
   // handle break even lines
   useEffect(() => {

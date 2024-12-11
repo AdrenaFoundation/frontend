@@ -13,7 +13,7 @@ import { AxisDomain } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
-import { formatNumberShort, formatPercentage, formatPriceInfo } from '@/utils';
+import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
@@ -50,9 +50,10 @@ export default function AreaRechart({
     }
 
     if (formatY === 'currency') {
-      return formatPriceInfo(tickItem, title === 'ALP Price' ? 4 : 0);
+      return formatGraphCurrency({ tickItem, maxDecimals: 2, maxDecimalsIfToken: 4 });
     }
-    return formatNumberShort(tickItem);
+
+    return formatNumberShort(tickItem, 0);
   };
 
   return (
