@@ -460,6 +460,11 @@ export function parseTransactionError(
       return 'BlockhashNotFound';
     }
 
+    // Not enough SOL to pay for the transaction
+    if (safeJSONStringify(err).includes('InsufficientFundsForRent')) {
+      return 'Not enough SOL to pay for transaction fees and rent';
+    }
+
     try {
       Sentry.captureException(err);
     } catch {
