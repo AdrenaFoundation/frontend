@@ -160,3 +160,22 @@ export const SOLANA_EXPLORERS_OPTIONS = {
       }`,
   },
 } as const;
+
+export const normalize = (
+  value: number,
+  minRange: number,
+  maxRange: number,
+  minValue: number,
+  maxValue: number,
+) => {
+  if (maxValue === minValue) {
+    return maxRange;
+  }
+  if (value < minValue || value > maxValue) {
+    return 0;
+  }
+  return (
+    minRange +
+    ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
+  );
+};
