@@ -1,4 +1,4 @@
-import { use, useCallback, useEffect } from 'react';
+import { use, useCallback, useEffect, useMemo } from 'react';
 
 import {
   blueColor,
@@ -82,32 +82,43 @@ export function useChartDrawing({
   }, [widgetReady, chart]);
 
   // handles position lines
-  useEffect(() => {
-    if (!widgetReady || !chart) return;
-    const symbol = chart.symbol().split('.')[1].split('/')[0] as TokenSymbol;
+  useEffect(
+    () => {
+      console.log('Position changed!');
 
-    chart.getAllShapes().forEach((shape) => {
-      if (
-        shape.name === 'horizontal_line' &&
-        activePositionLineIDs.current.includes(shape.id)
-      ) {
-        chart.removeEntity(shape.id);
-
-        activePositionLineIDs.current = activePositionLineIDs.current.filter(
-          (id) => id !== shape.id,
-        );
+      if (!widgetReady || !chart) {
+        console.log('RET A');
+        return;
       }
-    });
 
-    if (!positions) return;
+      const symbol = chart.symbol().split('.')[1].split('/')[0] as TokenSymbol;
 
-    setTimeout(() => {
+      chart.getAllShapes().forEach((shape) => {
+        if (
+          shape.name === 'horizontal_line' &&
+          activePositionLineIDs.current.includes(shape.id)
+        ) {
+          chart.removeEntity(shape.id);
+
+          activePositionLineIDs.current = activePositionLineIDs.current.filter(
+            (id) => id !== shape.id,
+          );
+        }
+      });
+
+      if (!positions) {
+        console.log('RET B');
+        return;
+      }
+
       positions.forEach((position) => {
         if (
           getTokenSymbol(position.token.symbol).toLowerCase() !==
           symbol.toLowerCase()
-        )
+        ) {
+          console.log('RET C');
           return;
+        }
 
         addHorizontalLine({
           text: `${position.side}${
@@ -123,6 +134,7 @@ export function useChartDrawing({
         });
 
         if (position?.liquidationPrice) {
+          console.log('LIQUIDATION HERE');
           addHorizontalLine({
             text: `${position.side} – liq${
               toggleSizeUsdInChart
@@ -135,6 +147,8 @@ export function useChartDrawing({
             linestyle: 1,
             linewidth: 1,
           });
+        } else {
+          console.log('LIQUIDATION NOT HERE');
         }
 
         if (
@@ -175,8 +189,18 @@ export function useChartDrawing({
           });
         }
       });
-    }, 100);
-  }, [chart, widgetReady, positions, toggleSizeUsdInChart]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      chart,
+      widgetReady,
+      positions,
+      // TRICKS: use this to trigger useEffect when positions change as React use shallow copy to detect changes in objects
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      positions?.map((x) => x.liquidationPrice ?? 'null').join(',') ?? null,
+      toggleSizeUsdInChart,
+    ],
+  );
 
   // handle break even lines
   useEffect(() => {
