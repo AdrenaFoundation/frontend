@@ -84,12 +84,7 @@ export function useChartDrawing({
   // handles position lines
   useEffect(
     () => {
-      console.log('Position changed!');
-
-      if (!widgetReady || !chart) {
-        console.log('RET A');
-        return;
-      }
+      if (!widgetReady || !chart) return;
 
       const symbol = chart.symbol().split('.')[1].split('/')[0] as TokenSymbol;
 
@@ -106,17 +101,13 @@ export function useChartDrawing({
         }
       });
 
-      if (!positions) {
-        console.log('RET B');
-        return;
-      }
+      if (!positions) return;
 
       positions.forEach((position) => {
         if (
           getTokenSymbol(position.token.symbol).toLowerCase() !==
           symbol.toLowerCase()
         ) {
-          console.log('RET C');
           return;
         }
 
@@ -134,7 +125,6 @@ export function useChartDrawing({
         });
 
         if (position?.liquidationPrice) {
-          console.log('LIQUIDATION HERE');
           addHorizontalLine({
             text: `${position.side} – liq${
               toggleSizeUsdInChart
@@ -147,8 +137,6 @@ export function useChartDrawing({
             linestyle: 1,
             linewidth: 1,
           });
-        } else {
-          console.log('LIQUIDATION NOT HERE');
         }
 
         if (
