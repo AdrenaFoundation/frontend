@@ -45,12 +45,13 @@ import TradingInput from '../TradingInput/TradingInput';
 import PositionFeesTooltip from './PositionFeesTooltip';
 
 const triggerPricePresets = [0.1, 0.25, 0.5, 1, 5] as const;
+const limitOrderSlippagePresets = [0.1, 0.25, 0.5, 1, 5, null] as const;
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
 let loadingCounter = 0;
 
-function calculateLimitOrderPrice({
+function calculateLimitOrderTriggerPrice({
   tokenPriceBTrade,
   percent,
   side,
@@ -98,7 +99,8 @@ export default function LongShortTradingInputs({
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
 
-  const [limitOrderPrice, setLimitOrderPrice] = useState<number | null>(null);
+  const [limitOrderTriggerPrice, setLimitOrderTriggerPrice] = useState<number | null>(null);
+  const [limitOrderSlippage, setLimitOrderSlippage] = useState<number | null>(null);
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -213,7 +215,7 @@ export default function LongShortTradingInputs({
   }, [calculateIncreasePositionInfo]);
 
   const handleAddLimitOrder = async (): Promise<void> => {
-    if (!connected || !dispatch || !wallet || inputA === null || limitOrderPrice === null) {
+    if (!connected || !dispatch || !wallet || inputA === null || limitOrderTriggerPrice === null) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
@@ -224,8 +226,8 @@ export default function LongShortTradingInputs({
 
     try {
       await window.adrena.client.addLimitOrder({
-        triggerPrice: limitOrderPrice,
-        limitPrice: limitOrderPrice,
+        triggerPrice: limitOrderTriggerPrice,
+        limitPrice: limitOrderTriggerPrice,
         side,
         collateralAmount: uiToNative(inputA, tokenA.decimals),
         leverage: uiLeverageToNative(leverage),
@@ -679,7 +681,7 @@ export default function LongShortTradingInputs({
         <div className={twMerge('w-1/2 h-full flex items-center bg-bcolor border rounded justify-center text-sm cursor-pointer font-boldy', !isLimitOrder ? ' text-[#f3f3f4]' : 'text-txtfade')}
           onClick={() => {
             setIsLimitOrder(false);
-            setLimitOrderPrice(null);
+            setLimitOrderTriggerPrice(null);
           }}
         >Current Price</div>
 
@@ -690,7 +692,7 @@ export default function LongShortTradingInputs({
             if (!tokenPriceBTrade) return;
 
             // Default limit order price of 1%
-            setLimitOrderPrice(calculateLimitOrderPrice({
+            setLimitOrderTriggerPrice(calculateLimitOrderTriggerPrice({
               tokenPriceBTrade,
               percent: 1,
               side,
@@ -705,27 +707,23 @@ export default function LongShortTradingInputs({
 
       {isLimitOrder ?
         <>
-          <div className='ml-4 mt-4 flex'>
-            <h5 className="flex">Trigger Price</h5>
-
-            <div></div>
-          </div>
+          <h5 className='ml-4 mt-4 flex'>Open Position after reaching</h5>
 
           <div className="flex items-center border-l border-t border-r rounded-tl-lg rounded-tr-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative">
-            <div className='pl-4 mt-[0.1em] text-[1.4em]'>{limitOrderPrice !== null ? '$' : null}</div>
+            <div className='pl-4 mt-[0.1em] text-[1.4em]'>{limitOrderTriggerPrice !== null ? '$' : null}</div>
 
             <InputNumber
-              value={limitOrderPrice === null ? undefined : limitOrderPrice}
+              value={limitOrderTriggerPrice === null ? undefined : limitOrderTriggerPrice}
               placeholder="$100"
               className="font-mono border-0 outline-none bg-transparent h-8"
-              onChange={setLimitOrderPrice}
+              onChange={setLimitOrderTriggerPrice}
               inputFontSize="1.4em"
             />
 
-            {limitOrderPrice !== null && (
+            {limitOrderTriggerPrice !== null && (
               <div
                 className="absolute right-4 cursor-pointer text-txtfade hover:text-white"
-                onClick={() => setLimitOrderPrice(null)}
+                onClick={() => setLimitOrderTriggerPrice(null)}
               >
                 clear
               </div>
@@ -749,7 +747,7 @@ export default function LongShortTradingInputs({
                   onClick={() => {
                     if (!tokenPriceBTrade) return;
 
-                    setLimitOrderPrice(calculateLimitOrderPrice({
+                    setLimitOrderTriggerPrice(calculateLimitOrderTriggerPrice({
                       tokenPriceBTrade,
                       percent,
                       side,
@@ -771,6 +769,28 @@ export default function LongShortTradingInputs({
                 isDecimalDimmed={false}
               />
             </div>
+          </div>
+
+          <h5 className='ml-4 mt-4 flex'>Slippage</h5>
+
+          <div className="flex flex-row rounded-bl-lg rounded-br-lg h-7 gap-2 mt-3 pl-6 pr-6">
+            {limitOrderSlippagePresets.map((percent, i) => {
+              return (
+                <Button
+                  key={i}
+                  title={percent === null ? 'none' : `${percent}%`}
+                  variant="secondary"
+                  rounded={false}
+                  className={twMerge(
+                    'flex-1 hover:opacity-100 flex-grow text-xs h-full font-bold border-b-2 border-transparent',
+                    limitOrderSlippage === percent ? 'border-b-white' : '',
+                  )}
+                  onClick={() => {
+                    setLimitOrderSlippage(percent);
+                  }}
+                />
+              );
+            })}
           </div>
         </> : null}
 
@@ -1194,7 +1214,7 @@ export default function LongShortTradingInputs({
         )}
         size="lg"
         title="Add Limit Order"
-        disabled={limitOrderPrice === null}
+        disabled={limitOrderTriggerPrice === null || inputA === null}
         onClick={handleAddLimitOrder}
       />}
     </div >
