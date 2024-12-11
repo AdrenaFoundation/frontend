@@ -51,6 +51,20 @@ const limitOrderSlippagePresets = [0.1, 0.25, 0.5, 1, 5, null] as const;
 // always ignore outdated information
 let loadingCounter = 0;
 
+function percentageCalculation({
+  side,
+  percent,
+  price,
+}: {
+  side: 'long' | 'short';
+  percent: number;
+  price: number;
+}): number {
+  const p = side === 'long' ? -percent : percent;
+
+  return Number((price + (price * p / 100)).toFixed(2));
+}
+
 function calculateLimitOrderTriggerPrice({
   tokenPriceBTrade,
   percent,
@@ -60,9 +74,27 @@ function calculateLimitOrderTriggerPrice({
   percent: number;
   side: 'long' | 'short';
 }): number {
-  const p = side === 'long' ? -percent : percent;
+  return percentageCalculation({
+    side,
+    percent,
+    price: tokenPriceBTrade,
+  });
+}
 
-  return Number((tokenPriceBTrade + (tokenPriceBTrade * p / 100)).toFixed(2));
+function calculateLimitOrderLimitPrice({
+  limitOrderTriggerPrice,
+  percent,
+  side,
+}: {
+  limitOrderTriggerPrice: number;
+  percent: number;
+  side: 'long' | 'short';
+}) {
+  return percentageCalculation({
+    side,
+    percent,
+    price: limitOrderTriggerPrice,
+  });
 }
 
 export default function LongShortTradingInputs({
@@ -227,7 +259,11 @@ export default function LongShortTradingInputs({
     try {
       await window.adrena.client.addLimitOrder({
         triggerPrice: limitOrderTriggerPrice,
-        limitPrice: limitOrderTriggerPrice,
+        limitPrice: limitOrderSlippage === null ? limitOrderTriggerPrice : calculateLimitOrderLimitPrice({
+          limitOrderTriggerPrice,
+          percent: limitOrderSlippage,
+          side,
+        }),
         side,
         collateralAmount: uiToNative(inputA, tokenA.decimals),
         leverage: uiLeverageToNative(leverage),
@@ -709,7 +745,7 @@ export default function LongShortTradingInputs({
         <>
           <h5 className='ml-4 mt-4 flex'>Open Position after reaching</h5>
 
-          <div className="flex items-center border-l border-t border-r rounded-tl-lg rounded-tr-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative">
+          <div className="flex items-center border-l border-t border-r rounded-tl-lg rounded-tr-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative gap-[0.1em]">
             <div className='pl-4 mt-[0.1em] text-[1.4em]'>{limitOrderTriggerPrice !== null ? '$' : null}</div>
 
             <InputNumber
@@ -782,7 +818,7 @@ export default function LongShortTradingInputs({
                   variant="secondary"
                   rounded={false}
                   className={twMerge(
-                    'flex-1 hover:opacity-100 flex-grow text-xs h-full font-bold border-b-2 border-transparent',
+                    'flex-1 hover:border-b-[#ffffffA0] flex-grow text-xs h-full font-bold border-b-2 border-transparent',
                     limitOrderSlippage === percent ? 'border-b-white' : '',
                   )}
                   onClick={() => {
