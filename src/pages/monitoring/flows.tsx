@@ -7,12 +7,12 @@ import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import Filter from '@/components/Filter/Filter';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
-import { normalize } from '@/constant';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
+import { normalize } from '@/constant';
+import Filter from '@/components/Filter/Filter';
 
 export default function Flow({
   custodies,
