@@ -68,8 +68,9 @@ export default function TermsAndConditionsModal({
             }}
           />
 
-          <div className="flex ml-2 grow">
+          <div className="flex ml-2 grow text-base sm:text-lg">
             <div>I accept the</div>
+
             <Link
               href="https://docs.adrena.xyz/technical-documentation/terms-and-conditions"
               target="_blank"
@@ -97,8 +98,9 @@ export default function TermsAndConditionsModal({
             }}
           />
 
-          <div className="flex ml-2 grow">
+          <div className="flex ml-2 grow text-base sm:text-lg">
             <div>I accept the</div>
+
             <Link
               href="https://docs.adrena.xyz/technical-documentation/token-terms-and-conditions"
               target="_blank"
