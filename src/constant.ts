@@ -169,72 +169,21 @@ export const orangeColor = '#f77f00';
 export const blueColor = '#3a86ff';
 export const purpleColor = '#9333ea';
 
-export const RANDOM_TABLE_DATA = (() => {
-  const tradingStartDate = new Date('2024-09-25T00:00:00Z');
-  const tableData = [
-    {
-      day: 'mon',
-      stats: [],
-    },
-    {
-      day: 'tue',
-      stats: [],
-    },
-    {
-      day: 'wed',
-      stats: [],
-    },
-    {
-      day: 'thu',
-      stats: [],
-    },
-    {
-      day: 'fri',
-      stats: [],
-    },
-    {
-      day: 'sat',
-      stats: [],
-    },
-    {
-      day: 'sun',
-      stats: [],
-    },
-  ] as any;
-
-  for (let i = 0; i < 357; i++) {
-    // fix ui fill
-    const total = Math.floor(Math.random() * 1500);
-    const size = Math.floor(Math.random() * 20);
-
-    let color = 'bg-third';
-
-    if (total > 250) {
-      color = 'bg-[#0D4429]';
-    }
-    if (total > 500) {
-      color = 'bg-[#016D32]';
-    }
-    if (total > 750) {
-      color = 'bg-[#34AA49]';
-    }
-    if (total > 1000) {
-      color = 'bg-[#3AD353]';
-    }
-
-    const day = new Date(
-      tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
-    ).getDay();
-    if (tableData[day]) {
-      tableData[day].stats.push({
-        total,
-        color,
-        size,
-        date: new Date(
-          tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-      });
-    }
+export const normalize = (
+  value: number,
+  minRange: number,
+  maxRange: number,
+  minValue: number,
+  maxValue: number,
+) => {
+  if (maxValue === minValue) {
+    return maxRange;
   }
-  return tableData;
-})();
+  if (value < minValue || value > maxValue) {
+    return 0;
+  }
+  return (
+    minRange +
+    ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
+  );
+};
