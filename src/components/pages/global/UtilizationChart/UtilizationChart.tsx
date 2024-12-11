@@ -172,7 +172,7 @@ export default function UtilizationChart() {
       period={period}
       gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
-      isReferenceLine
+      isReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
       formatY="percentage"
     />
   );

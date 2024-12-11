@@ -1,7 +1,10 @@
+import { Switch } from '@mui/material';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -11,6 +14,7 @@ import PositionsHistory from '@/components/pages/trading/Positions/PositionsHist
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
+import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
@@ -60,7 +64,6 @@ export default function Trade({
   wallet,
   connected,
   triggerUserProfileReload,
-  triggerWalletTokenBalancesReload,
   activeRpc,
   adapters,
   showFeesInPnl,
@@ -75,6 +78,18 @@ export default function Trade({
 
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
+
+  const [cookies, setCookie] = useCookies([
+    'showBreakEvenLine',
+    'toggleSizeUsdInChart',
+  ]);
+
+  const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(
+    cookies?.showBreakEvenLine === 'true',
+  );
+  const [toggleSizeUsdInChart, setToggleSizeUsdInChart] = useState<boolean>(
+    cookies?.toggleSizeUsdInChart === 'true',
+  );
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
 
@@ -184,7 +199,10 @@ export default function Trade({
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
     ) {
       // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
-      const candidate = selectedAction === 'long' ? tokenB ?? pickDefaultToken(positions) : tokenACandidate[0];
+      const candidate =
+        selectedAction === 'long'
+          ? tokenB ?? pickDefaultToken(positions)
+          : tokenACandidate[0];
 
       if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
         setTokenA(candidate);
@@ -251,7 +269,7 @@ export default function Trade({
       </div>
 
       <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border rounded-lg overflow-hidden">
+        <div className="flex flex-col w-full border rounded-lg overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -268,7 +286,6 @@ export default function Trade({
           ) : null}
 
           <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
-            {/* Display trading chart for appropriate token */}
             {tokenA && tokenB ? (
               <TradingChart
                 token={
@@ -279,8 +296,72 @@ export default function Trade({
                       : tokenA
                 }
                 positions={positions}
+                showBreakEvenLine={showBreakEvenLine}
+                toggleSizeUsdInChart={toggleSizeUsdInChart}
               />
             ) : null}
+          </div>
+
+          <div className="flex flex-row gap-3 items-center justify-end">
+            <div className="flex items-center p-0.5 text-white">
+              <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+                <p className="opacity-50 text-xs underline-dashed cursor-help">
+                  Show Break Even line
+                </p>
+              </Tippy>
+              <Switch
+                checked={showBreakEvenLine}
+                onChange={() => {
+                  setCookie('showBreakEvenLine', !showBreakEvenLine);
+                  setShowBreakEvenLine(!showBreakEvenLine);
+                }}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
+
+            <div className="flex items-center p-0.5 text-white">
+              <p className="opacity-50 text-xs underline-dashed cursor-help">
+                Show size in chart
+              </p>
+              <Switch
+                checked={toggleSizeUsdInChart}
+                onChange={() => {
+                  setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
+                  setToggleSizeUsdInChart(!toggleSizeUsdInChart);
+                }}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -310,7 +391,10 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="flex flex-col w-full p-4">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col w-full p-4">
@@ -351,7 +435,10 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="mt-1 w-full p-4">
@@ -376,9 +463,6 @@ export default function Trade({
                 openedPosition={openedPosition}
                 wallet={wallet}
                 connected={connected}
-                triggerWalletTokenBalancesReload={
-                  triggerWalletTokenBalancesReload
-                }
                 isBigScreen={isBigScreen}
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
@@ -402,7 +486,6 @@ export default function Trade({
             openedPosition={openedPosition}
             wallet={wallet}
             connected={connected}
-            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
@@ -457,9 +540,11 @@ export default function Trade({
                   activePositionModal.slice(1)
                   } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col p-2 sm:p-4 overflow-auto h-[100%]"
+                className="flex flex-col overflow-y-auto"
               >
-                <div className="flex w-full">
+                {tokenB && <TradingChartMini token={tokenB} />}
+                <div className="bg-bcolor w-full h-[1px] my-3" />
+                <div className="flex w-full px-4">
                   <TradeComp
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
@@ -471,9 +556,6 @@ export default function Trade({
                     className="p-0 m-0"
                     wallet={wallet}
                     connected={connected}
-                    triggerWalletTokenBalancesReload={
-                      triggerWalletTokenBalancesReload
-                    }
                     activeRpc={activeRpc}
                     terminalId="integrated-terminal-3"
                     adapters={adapters}

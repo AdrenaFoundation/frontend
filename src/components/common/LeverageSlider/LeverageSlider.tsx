@@ -24,28 +24,28 @@ export default function LeverageSlider({
   const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
     useState<boolean>(false);
   const marks = [3, 5, 10, 25, 50, 100];
-  
-const handleBlur = () => {
-  if (isLeverageInputEmpty || value === undefined || value === null) {
-    // If the input is empty, reset to the minimum value
-    onChange(1.1);
-    setIsLeverageInputEmpty(false);
-  } else {
-    let adjustedValue = value;
 
-    // Ensure the value respects min and max constraints
-    if (adjustedValue < 1.1) {
-      adjustedValue = 1.1;
-    } else if (adjustedValue > 100) {
-      adjustedValue = 100;
+  const handleBlur = () => {
+    if (isLeverageInputEmpty || value === undefined || value === null) {
+      // If the input is empty, reset to the minimum value
+      onChange(1.1);
+      setIsLeverageInputEmpty(false);
+    } else {
+      let adjustedValue = value;
+
+      // Ensure the value respects min and max constraints
+      if (adjustedValue < 1.1) {
+        adjustedValue = 1.1;
+      } else if (adjustedValue > 100) {
+        adjustedValue = 100;
+      }
+
+      // Limit decimals to 1
+      adjustedValue = Math.round(adjustedValue * 10) / 10;
+
+      onChange(adjustedValue);
     }
-
-    // Limit decimals to 1
-    adjustedValue = Math.round(adjustedValue * 10) / 10;
-
-    onChange(adjustedValue);
-  }
-};
+  };
 
   return (
     <div className={twMerge('flex flex-col overflow-hidden', className)}>
@@ -95,6 +95,9 @@ const handleBlur = () => {
               borderColor: 'white',
               opacity: 1,
               borderWidth: '3px',
+              height: '1.125em',
+              width: '1.125em',
+              marginTop: '-0.5em',
             }}
             activeDotStyle={{
               backgroundColor: 'white',
@@ -121,7 +124,7 @@ const handleBlur = () => {
             variant="secondary"
             rounded={false}
             className={twMerge(
-              'w-[6em] opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor h-full',
+              'flex-1 opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor h-full',
               // Put 0.7 e.m instead of lg because conflicts in the border handling by browser
               index === 0 ? 'rounded-bl-[0.7em]' : '',
               index === marks.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',

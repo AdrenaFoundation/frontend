@@ -14,7 +14,9 @@ export type TicketData = {
     totalTickets: number | null;
     connectedWalletTickets: number | null;
     allTraders: (string | null)[];
-    trader: string | null;
+    // trader: string | null; //TODO: Check difference with fact that is a table in dev now
+    trader: (string | null)[];
+    username: string | null;
     type: 'ticket';
     reward: number | null;
     rewardToken: 'ADX' | 'JITO';
@@ -26,6 +28,7 @@ export type RewardData = {
     trader: string | null;
     result: number | null;
     type: 'reward';
+    username: string | null;
     reward: number | null;
     rewardToken: 'ADX' | 'JITO';
     rewardImage: ImageRef;
@@ -43,8 +46,9 @@ export default function WeeklyReward({
         { title: 'Leverage Monster' } & RewardData,
         { title: 'SOL Volume Raffle' } & TicketData,
     ];
-    handleProfileView: (nickname: string) => void;
+    handleProfileView: (address: string) => void;
 }) {
+
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {rewards.map((award) => (
@@ -110,13 +114,30 @@ export default function WeeklyReward({
                                         <Image
                                             src={ticketImage}
                                             alt="ticket image"
-                                            className="w-10 h-8"
+                                            /*className="w-10 h-8"
                                         />
                                     </>
                                 )}
                             </div>
-                        )}
+                        )}*/ //resolve conflict between this old code and new below
+                                            className="w-10 h-8" />
+                                    </div> :
+                                    // There is a winner
+                                    <div className='flex items-center justify-center h-[3em] opacity-75'>
+                                        {award.trader
+                                            ? !award.username
+                                                ? <p className={twMerge('text-xs font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
+                                                : <p className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.username as string)}>{award.username}</p>
+                                            : <p className='text-xs font-boldy'>-</p>}
+                                    </div>
+                            }
 
+                            <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
+                                <Image
+                                    src={window.adrena.client.adxToken.image}
+                                    alt="adx logo"
+                                    className="w-3 h-3 sm:w-5 sm:h-5"
+                                />
                         {award.type === 'reward' && award.result && (
                             <div className="flex flex-col items-center">
                                 <FormatNumber
@@ -170,7 +191,25 @@ export default function WeeklyReward({
                                 suffix={` ${award.rewardToken}`}
                             />
                         </div>
+                        ) : (
+                            '-'
+                        )}
+                    </div>
 
+                    <div className='flex items-center justify-center opacity-75 w-full'>
+                        {award.trader
+                            ? !award.username
+                                ? <p className={twMerge('text-base font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
+                                : <p className={twMerge('text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.trader as string)}>{award.username.length > 16 ? `${award.username.substring(0, 16)}...` : award.username}</p>
+                            : <p className='text-xs font-boldy'>-</p>}
+                    </div>
+
+                    <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
+                        <Image
+                            src={window.adrena.client.adxToken.image}
+                            alt="adx logo"
+                            className="w-3 h-3 sm:w-5 sm:h-5"
+                        />
                         <p className="opacity-50 text-center">{award.description}</p>
                     </div>
                 </div>

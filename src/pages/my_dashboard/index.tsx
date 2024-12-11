@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import Referral from '@/components/pages/my_dashboard/Referral';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
@@ -19,7 +20,6 @@ export default function MyDashboard({
   positions,
   userProfile,
   triggerUserProfileReload,
-  triggerWalletTokenBalancesReload,
   readonly,
   wallet,
 }: PageProps & {
@@ -124,9 +124,6 @@ export default function MyDashboard({
                   <VestStats
                     vest={userVest}
                     getUserVesting={getUserVesting}
-                    triggerWalletTokenBalancesReload={
-                      triggerWalletTokenBalancesReload
-                    }
                   />
                 </>
               )}

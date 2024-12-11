@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -47,7 +48,7 @@ export default function LockedStake({
   return (
     <div key={lockedStake.id.toString()} className={twMerge('flex flex-col p-2 w-full', className)}>
       <div className='flex w-full items-center gap-4 pb-4 sm:pb-2 sm:pl-2 sm:pr-2 flex-col sm:flex-row'>
-        <div className='font-boldy text-xs border w-full sm:rounded-xl sm:w-6 h-6 items-center justify-center bg-[#1e272e] flex text-txtfade'>#{lockedStake.index}</div>
+        <div className='font-boldy text-xs border w-full sm:rounded-xl sm:w-16 h-6 items-center justify-center bg-[#1e272e] flex text-txtfade'>Stake #{lockedStake.index}</div>
 
         <div className='ml-0 flex gap-0 items-center'>
           <div className='flex gap-1'>
@@ -82,23 +83,35 @@ export default function LockedStake({
             variant="outline"
             size="xs"
             title="Early Exit"
-            className="py-2 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+            className="py-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-6"
             onClick={() => {
               handleClickOnFinalizeLockedRedeem(lockedStake, true)
             }}
           />
 
-          {!lockedStake.isGenesis && (
-            <Button
-              variant="outline"
-              size="xs"
-              title="Upgrade"
-              className="py-2 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
-              onClick={() => {
-                handleClickOnUpdateLockedStake(lockedStake)
-              }}
-            />
-          )}
+          {!lockedStake.isGenesis ? (
+            <Tippy
+              disabled={lockedStake.qualifiedForRewardsInResolvedRoundCount !== 0}
+              content={
+                <div className="flex flex-col justify-around items-center">
+                  To upgrade a locked stake, it must have been locked for at least one round, generated rewards, and had those rewards claimed. This process can take up to 12 hours.
+                </div>
+              }
+              placement="auto"
+            >
+              <div className='flex grow'>
+                <Button
+                  variant="outline"
+                  size="xs"
+                  disabled={lockedStake.qualifiedForRewardsInResolvedRoundCount === 0}
+                  className="py-2 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-6"
+                  title="Upgrade"
+                  onClick={() => {
+                    handleClickOnUpdateLockedStake(lockedStake)
+                  }}
+                />
+              </div>
+            </Tippy>) : null}
         </>}
       </div>
     </div>

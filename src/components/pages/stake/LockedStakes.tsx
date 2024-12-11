@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 
-import { LockedStakeExtended } from '@/types';
+import { AdxLockPeriod, AlpLockPeriod, LockedStakeExtended } from '@/types';
 
 import LockedStakesDuration from './LockedStakesDuration';
 

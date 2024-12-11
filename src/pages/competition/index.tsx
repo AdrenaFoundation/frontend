@@ -58,9 +58,12 @@ export default function Competition({
 
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
-
     const [allAchievements, setAllAchievements] = useState<
         LeaderboardReturnTypeAPI<{ showAchievements: true }>['achievements'] | null
+    const [eligibleJitosolAirdropWallets, setEligibleJitosolAirdropWallets] = useState<string[]>([]);
+    const [week, setWeek] = useState(0);
+    const [myDivision, setMyDivision] = useState<
+        keyof TradingCompetitionLeaderboardAPI | null
     >(null);
     const weeksPassedSinceStartDate = Math.floor(
         (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
@@ -141,11 +144,21 @@ export default function Competition({
 
     const getData = async () => {
         try {
+            // add eligible jitosol wallets : https://datapi.adrena.xyz/v2/awakening?season=preseason&show_eligible_jitosol_wallets=true&show_achievements=true&show_trader_divisions=true
             const data = await DataApiClient.getTradingCompetitionLeaderboard({
                 season: 'preseason',
                 showAchievements: true,
                 showTraderDivisions: true,
             });
+            
+            /*
+            const response = await fetch(
+                'https://datapi.adrena.xyz/v2/awakening?season=preseason&show_eligible_jitosol_wallets=true&show_achievements=true&show_trader_divisions=true',
+            );
+            const { data } = await response.json();
+            const { trader_divisions = [], achievements = [], eligible_jitosol_wallets = [] } = data;
+            setEligibleJitosolAirdropWallets(eligible_jitosol_wallets);
+            */
 
             if (!data) {
                 return;
@@ -256,25 +269,57 @@ export default function Competition({
                             badge: 'Iron',
                         });
                     }
+                }
+            });
+
+            const formattedData = trader_divisions.reduce(
+                (acc: TradingCompetitionLeaderboardAPI, { division, traders }: any) => {
+                    acc[division as keyof TradingCompetitionLeaderboardAPI] = traders.map(
+                        (trader: any) => {
+                            let username = trader.address;
+
+                            if (allUserProfiles && allUserProfiles.length > 0) {
+                                const user = allUserProfiles.find(
+                                    (profile) => profile.owner.toBase58() === trader.address,
+                                );
+
+                                if (user) {
+                                    username = user.nickname;
+                                }
+                            }
+
+                            return {
+                                connected: trader.address === wallet?.walletAddress,
+                                username,
+                                address: trader.address,
+                                rank: trader.rank_in_division,
+                                volume: trader.total_volume,
+                                pnl: trader.total_pnl,
+                                adxRewards: trader.adx_reward,
+                                jtoRewards: trader.jto_reward ?? 0,
+                            };
+                        },
+                    );
 
                     return acc;
                 }, {} as TradingCompetitionLeaderboardAPI);
 
-            achievements.biggestLiquidation.addresses =
-                achievements.biggestLiquidation.addresses.map((address) => {
+
+            achievements.biggest_liquidation.usernames =
+                achievements.biggest_liquidation.addresses.map((address: string) => {
                     return (
                         allUserProfiles.find(
                             (profile) => profile.owner.toBase58() === address,
-                        )?.nickname ?? address
+                        )?.nickname ?? null
                     );
                 });
 
-            achievements.topDegen.addresses = achievements.topDegen.addresses.map(
-                (address) => {
+            achievements.top_degen.usernames = achievements.top_degen.addresses.map(
+                (address: string) => {
                     return (
                         allUserProfiles.find(
                             (profile) => profile.owner.toBase58() === address,
-                        )?.nickname ?? address
+                        )?.nickname ?? null
                     );
                 },
             );
@@ -297,8 +342,8 @@ export default function Competition({
         );
     }
 
-    const handleProfileView = (nickname: string) => {
-        const profile = allUserProfiles.find((p) => p.nickname === nickname);
+    const handleProfileView = (address: string) => {
+        const profile = allUserProfiles.find((p) => p.owner.toBase58() === address);
 
         if (profile) {
             setActiveProfile(profile);
@@ -468,8 +513,24 @@ export default function Competition({
                                         format="number"
                                         className={'text-3xl font-boldy'}
                                     />
+                          <!-- TODO: from dev, compare and check what do we want
+                        <div className='flex gap-4 flex-col flex-wrap sm:flex-nowrap'>
+                            <div className='flex gap-4 flex-row flex-wrap sm:flex-nowrap'>
+                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                    <h4 className="font-boldy text-base p-2 flex gap-2">Traders <LiveIcon className='absolute right-2' /></h4>
+
+                                    <div className='h-[1px] bg-bcolor w-full' />
+
+                                    <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                        <FormatNumber
+                                            nb={tradersCount}
+                                            format="number"
+                                            className={'text-3xl font-boldy'}
+                                        />
+                                    </div>
+                                   -->
                                 </div>
-                            </div>
+
 
                             <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
                                 <h4 className="font-boldy text-base p-2 flex gap-2">
@@ -486,11 +547,28 @@ export default function Competition({
                                         isAbbreviate={true}
                                         className={'text-3xl font-boldy'}
                                     />
-                                </div>
-                            </div>
 
-                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
-                                <h4 className="font-boldy text-base p-2">Total Rewards</h4>
+<!-- TODO: from dev, compare and check what do we want
+                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                    <h4 className="font-boldy text-base p-2 flex gap-2">Volume <LiveIcon className='absolute right-2' /></h4>
+
+                                    <div className='h-[1px] bg-bcolor w-full' />
+
+                                    <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                        <FormatNumber
+                                            nb={totalVolume}
+                                            format="currency"
+                                            isDecimalDimmed={false}
+                                            isAbbreviate={true}
+                                            className={'text-3xl font-boldy'}
+                                        />
+                                    </div>
+-->
+
+                                </div>
+
+                                <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
+                                    <h4 className="font-boldy text-base p-2">Total Rewards</h4>
 
                                 <div className="h-[1px] bg-bcolor w-full" />
 
@@ -518,6 +596,47 @@ export default function Competition({
                                         <div className="text-lg font-boldy w-[6.2em]">
                                             25,000 JTO
                                         </div>
+                                    </div>
+                                  </div>
+                            </div>
+
+                            <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow h-[7.5em]">
+                                <div className='flex flex-col w-full items-center h-auto grow-0'>
+                                    <div className="flex items-center p-2">
+                                        <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
+                                        <div className="font-boldy text-base ml-1">Airdrop</div>
+                                        <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
+                                        <Image src={jitoLogo2} alt="JTOlogo" width={24} height={24} />
+                                        <span className="text-sm text-txtfade font-boldy">)</span>
+                                        {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') ? (
+                                            <span className="ml-2 font-boldy text-green">You qualify!</span>
+                                        ) : (
+                                            <Tippy
+                                                content={
+                                                    <p className="font-medium">
+                                                        To qualify your wallet must have been one of the recipient of the JTO airdrop, and you must have made at least one $10k size trade.
+                                                        The first 600 participants will qualify, if less they will split the rewards.
+                                                    </p>
+                                                }
+                                                placement="auto"
+                                            >
+                                                <span className="ml-2  text-sm text-txtfade underline decoration-dotted">Who qualifies?</span>
+                                            </Tippy>
+                                        )}
+                                    </div>
+
+                                    <div className="h-[1px] bg-bcolor w-full" />
+                                </div>
+
+                                <div className="flex flex-col gap-2 items-center justify-center h-full pb-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-txtfade">Recipients</span>
+                                        <span className="text-sm font-boldy">{eligibleJitosolAirdropWallets.length} / 600</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-txtfade">Reward per recipient</span>
+                                        <span className="text-sm font-boldy">{Math.round(6000 / eligibleJitosolAirdropWallets.length)} JTO</span>
                                     </div>
                                 </div>
                             </div>
@@ -586,8 +705,13 @@ export default function Competition({
                         rewards={[
                             {
                                 title: 'Top Liquidation',
-                                trader: achievements.biggestLiquidation.addresses,
-                                result: achievements.biggestLiquidation.liquidationAmounts,
+                                // TODO: check from dev
+                                // trader: achievements.biggestLiquidation.addresses,
+                                // result: achievements.biggestLiquidation.liquidationAmounts,
+                                trader: achievements.biggest_liquidation.addresses[week],
+                                username: achievements.biggest_liquidation.usernames[week],
+                                result:
+                                    achievements.biggest_liquidation.liquidation_amounts[week],
                                 type: 'reward',
                                 reward: 10000,
                                 rewardToken: 'ADX',
@@ -600,6 +724,9 @@ export default function Competition({
                                 allTraders: achievements.feesTickets.addresses,
                                 trader: null,
                                 totalTickets: achievements.feesTickets.totalTickets,
+                                trader: achievements.fees_tickets.addresses[week],
+                                username: null,
+                                totalTickets: achievements.fees_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.fees ?? null,
                                 type: 'ticket',
                                 reward: 10000,
@@ -610,8 +737,13 @@ export default function Competition({
                             },
                             {
                                 title: 'Leverage Monster',
-                                trader: achievements.topDegen.addresses,
-                                result: achievements.topDegen.pnlAmounts,
+                                // TODO: check refacto
+                                // trader: achievements.topDegen.addresses,
+                                // result: achievements.topDegen.pnlAmounts,
+                                trader: achievements.top_degen.addresses[week],
+                                username: achievements.top_degen.usernames[week],
+                                result: achievements.top_degen.pnl_amounts[week],
+
                                 type: 'reward',
                                 reward: 10000,
                                 rewardToken: 'ADX',
@@ -622,8 +754,12 @@ export default function Competition({
                             {
                                 title: 'SOL Volume Raffle',
                                 allTraders: achievements.jitosolTickets.addresses,
-                                trader: null,
-                                totalTickets: achievements.jitosolTickets.totalTickets,
+                                // TODO: check refacto
+                                // trader: null,
+                                // totalTickets: achievements.jitosolTickets.totalTickets,
+                                trader: achievements.jitosol_tickets.addresses[week],
+                                username: null,
+                                totalTickets: achievements.jitosol_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.jito ?? null,
                                 type: 'ticket',
                                 reward: 30000,
@@ -829,9 +965,8 @@ export default function Competition({
             <AnimatePresence>
                 {activeProfile && (
                     <Modal
-                        className="h-[80vh] overflow-y-scroll w-full"
-                        wrapperClassName="items-start w-full max-w-[820px] sm:mt-0"
-                        title=""
+                        className="h-[85vh] sm:h-[40em] overflow-y-auto max-h-[85vh] w-full"
+                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
                         close={() => setActiveProfile(null)}
                     >
                         <ViewProfileModal

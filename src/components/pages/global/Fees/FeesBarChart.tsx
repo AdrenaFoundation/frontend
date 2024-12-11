@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
 import { RechartsData } from '@/types';
-import { getGMT } from '@/utils';
 
 interface FeesChartProps {
   isSmallScreen: boolean;
@@ -57,8 +56,6 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         ).then((res) => res.json()),
       ]);
 
-      console.log('latestPoolInfoSnapshot', latestPoolInfoSnapshot)
-
       const {
         cumulative_swap_fee_usd,
         cumulative_liquidity_fee_usd,
@@ -82,8 +79,6 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
         return set;
       }, new Set()));
-
-      console.log('days', days)
 
       // Get fees for that day, taking last 
 
@@ -158,6 +153,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       domain={[0, 'auto']}
       tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
       isSmallScreen={isSmallScreen}
+      total={true}
     />
   );
 }

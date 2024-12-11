@@ -17,7 +17,7 @@ interface PositionStats {
 export default function usePositionStats() {
     const [data, setData] = useState<PositionStats[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [startDate, setStartDate] = useState<string>('2024-10-25T00:00:00Z');
+    const [startDate, setStartDate] = useState<string>(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()); // last day default
     const [endDate, setEndDate] = useState<string>(new Date().toISOString());
 
     useEffect(() => {

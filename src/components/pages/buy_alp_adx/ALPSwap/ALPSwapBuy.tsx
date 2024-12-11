@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -25,11 +26,9 @@ let loadingCounterAlternativeData = 0;
 export default function ALPSwapBuy({
     className,
     connected,
-    triggerWalletTokenBalancesReload,
 }: {
     className?: string;
     connected: boolean;
-    triggerWalletTokenBalancesReload: () => void;
 }) {
     const dispatch = useDispatch();
     const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -85,13 +84,13 @@ export default function ALPSwapBuy({
                 notification,
             });
 
-            triggerWalletTokenBalancesReload();
+            dispatch(fetchWalletTokenBalances());
             setCollateralInput(null);
         } catch (error) {
             console.log('error', error);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [alpInput, collateralInput, collateralToken.decimals, collateralToken.mint, connected, triggerWalletTokenBalancesReload, wallet && wallet.walletAddress]);
+    }, [alpInput, collateralInput, collateralToken.decimals, collateralToken.mint, connected, wallet && wallet.walletAddress]);
 
     const estimateAddLiquidityAndFeeForAlternativeRoutes = useCallback(async () => {
         // Because we fire one request every time the user change the input, needs to keep only the last one

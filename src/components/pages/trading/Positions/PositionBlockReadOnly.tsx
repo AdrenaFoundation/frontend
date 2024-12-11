@@ -126,7 +126,11 @@ export default function PositionBlockReadOnly({
             {position.pnl ? (
                 <div className="flex items-center">
                     <FormatNumber
-                        nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
+                        nb={
+                            showAfterFees
+                                ? position.pnl
+                                : position.pnl - fees
+                        }
                         format="currency"
                         className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
                             ? 'green'
@@ -261,7 +265,7 @@ export default function PositionBlockReadOnly({
                             <Tippy
                                 content={
                                     <FormatNumber
-                                        nb={position.size}
+                                        nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
                                         format="number"
                                         className="text-gray-400 text-xs"
                                         precision={position.token.displayAmountDecimalsPrecision}
@@ -398,9 +402,9 @@ export default function PositionBlockReadOnly({
                     </div>
                 </div>
 
-                {(liquidable || position.pendingCleanupAndClose) && (
+                {(liquidable) && (
                     <div className="flex items-center justify-center pt-2 pb-2 border-t gap-4">
-                        {liquidable && !position.pendingCleanupAndClose && (
+                        {liquidable && (
                             <h2 className="text-red text-xs">Liquidable</h2>
                         )}
                     </div>

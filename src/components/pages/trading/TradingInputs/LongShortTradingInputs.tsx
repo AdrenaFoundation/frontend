@@ -4,9 +4,11 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
@@ -28,6 +30,7 @@ import {
   getTokenImage,
   getTokenSymbol,
   nativeToUi,
+  tryPubkey,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
@@ -51,12 +54,11 @@ export default function LongShortTradingInputs({
   tokenB,
   allowedTokenA,
   allowedTokenB,
-  openedPosition: maybeZombiePosition,
+  position: openedPosition,
   wallet,
   connected,
   setTokenA,
   setTokenB,
-  triggerWalletTokenBalancesReload,
 }: {
   side: 'short' | 'long';
   className?: string;
@@ -64,17 +66,16 @@ export default function LongShortTradingInputs({
   tokenB: Token;
   allowedTokenA: Token[];
   allowedTokenB: Token[];
-  openedPosition: PositionExtended | null;
+  position: PositionExtended | null;
   wallet: Wallet | null;
   connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
-  triggerWalletTokenBalancesReload: () => void;
 }) {
+  const { query } = useRouter();
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(null);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
@@ -94,6 +95,11 @@ export default function LongShortTradingInputs({
 
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
+
+  const referrer = useMemo(() => {
+    console.log('Referral', query.referral);
+    return query.referral ? tryPubkey(query.referral as string) : null;
+  }, [query.referral]);
 
   const [custody, setCustody] = useState<CustodyExtended | null>(null);
 
@@ -182,17 +188,6 @@ export default function LongShortTradingInputs({
     });
   }, [openedPosition, newPositionInfo, tokenB.decimals]);
 
-  // If the position is pending cleanup and close, we should consider there is no position
-  useEffect(() => {
-    if (!maybeZombiePosition) return setOpenedPosition(null);
-
-    if (maybeZombiePosition.pendingCleanupAndClose) {
-      return setOpenedPosition(null);
-    }
-
-    setOpenedPosition(maybeZombiePosition);
-  }, [maybeZombiePosition]);
-
   useEffect(() => {
     calculateIncreasePositionInfo()
   }, [calculateIncreasePositionInfo]);
@@ -271,6 +266,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          referrer,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -280,9 +276,10 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          referrer,
         }));
 
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
 
       setInputA(null);
       setErrorMessage(null);
@@ -510,6 +507,7 @@ export default function LongShortTradingInputs({
     }
 
     return setErrorMessage(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
 
   const handleInputAChange = (v: number | null) => {
@@ -740,7 +738,7 @@ export default function LongShortTradingInputs({
             />
             <InfoAnnotation
               className=" inline-flex"
-              text="This value is how much total size is available to be borrowed for that market and side by all traders. It depend of the available liquidities in the pool and restrictions from the configuration."
+              text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
             />
           </div>
         </div>
@@ -910,7 +908,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
+                      nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
                       format="number"
                       className="text-lg"
                     />
@@ -927,11 +925,11 @@ export default function LongShortTradingInputs({
                 </div>
               ) : (
                 <div className="flex w-full justify-evenly items-center">
-                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+                  <div className="w-0 h-4 bg-gray-800 rounded-xl" />
 
                   <div className="h-full w-[1px] bg-gray-800" />
 
-                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+                  <div className="w-0 h-4 bg-gray-800 rounded-xl" />
                 </div>
               )}
             </StyledSubSubContainer>
@@ -1013,7 +1011,8 @@ export default function LongShortTradingInputs({
                       className="flex-col mt-3"
                     >
                       <FormatNumber
-                        nb={custody && tokenB && custody.borrowFee}
+                        // Multiply by 100 to be displayed as %
+                        nb={((side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee) ?? 0) * 100}
                         precision={RATE_DECIMALS}
                         minimumFractionDigits={4}
                         suffix="%/hr"

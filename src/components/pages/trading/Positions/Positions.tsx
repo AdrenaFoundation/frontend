@@ -1,10 +1,11 @@
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
 import { PositionExtended } from '@/types';
-import { getTokenSymbol } from '@/utils';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
@@ -45,28 +46,37 @@ export default function Positions({
 
   if (isBigScreen === null) return null;
 
-  const nonPendingCleanupAndClosePositions =
-    positions?.filter((position) => !position.pendingCleanupAndClose) || null;
-
   return (
     <>
       <AnimatePresence>
         {positionToClose && (
           <Modal
-            title={
-              <>
-                Close
-                <span
-                  className={`text-[1em] uppercase font-special opacity-80 ${positionToClose.side === 'long' ? 'text-green' : 'text-red'
-                    }  ml-1 mr-1`}
+            customTitle={
+              <div className="ml-2 flex flex-row gap-2 items-center">
+                <h2 className="font-boldy">Close</h2>
+                <p
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToClose.side === 'long'
+                    ? 'text-green bg-green/20'
+                    : 'text-red bg-red/20'
+                    }`}
                 >
                   {positionToClose.side}
-                </span>
-                {getTokenSymbol(positionToClose.token.symbol)}
-              </>
+                </p>
+                <div className="flex flex-row gap-1 items-center">
+                  <Image
+                    src={getTokenImage(positionToClose.token)}
+                    alt={positionToClose.token.symbol}
+                    width={16}
+                    height={16}
+                  />
+                  <p className="text-base">
+                    {getTokenSymbol(positionToClose.token.symbol)}
+                  </p>
+                </div>
+              </div>
             }
             close={() => setPositionToClose(null)}
-            className="flex flex-col items-center w-full"
+            className="flex flex-col items-center w-full overflow-y-auto"
           >
             <ClosePosition
               position={positionToClose}
@@ -82,20 +92,32 @@ export default function Positions({
 
         {positionToEdit && (
           <Modal
-            title={
-              <>
-                Edit
-                <span
-                  className={`text-[1em] uppercase font-special opacity-80 ${positionToEdit.side === 'long' ? 'text-green' : 'text-red'
-                    } ml-1 mr-1`}
+            customTitle={
+              <div className="ml-2 flex flex-row gap-2 items-center">
+                <h2 className="font-boldy">Edit</h2>
+                <p
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToEdit.side === 'long'
+                    ? 'text-green bg-green/20'
+                    : 'text-red bg-red/20'
+                    }`}
                 >
                   {positionToEdit.side}
-                </span>
-                {getTokenSymbol(positionToEdit.token.symbol)}
-              </>
+                </p>
+                <div className="flex flex-row gap-1 items-center">
+                  <Image
+                    src={getTokenImage(positionToEdit.token)}
+                    alt={positionToEdit.token.symbol}
+                    width={16}
+                    height={16}
+                  />
+                  <p className="text-base">
+                    {getTokenSymbol(positionToEdit.token.symbol)}
+                  </p>
+                </div>
+              </div>
             }
             close={() => setPositionToEdit(null)}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center overflow-y-auto h-full"
           >
             <EditPositionCollateral
               position={positionToEdit}
@@ -109,22 +131,33 @@ export default function Positions({
 
         {positionToStopLossTakeProfit && (
           <Modal
-            title={
-              <>
-                TP/SL
-                <span
-                  className={`text-[1em] uppercase font-special opacity-80 ${positionToStopLossTakeProfit.side === 'long'
-                    ? 'text-green'
-                    : 'text-red'
-                    } ml-1 mr-1`}
+            customTitle={
+              <div className="ml-2 flex flex-row gap-2 items-center">
+                <h2 className="font-boldy">TP/SL</h2>
+                <p
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToStopLossTakeProfit.side === 'long'
+                    ? 'text-green bg-green/20'
+                    : 'text-red bg-red/20'
+                    }`}
                 >
                   {positionToStopLossTakeProfit.side}
-                </span>
-                {getTokenSymbol(positionToStopLossTakeProfit.token.symbol)}
-              </>
+                </p>
+                <div className="flex flex-row gap-1 items-center">
+                  <Image
+                    src={getTokenImage(positionToStopLossTakeProfit.token)}
+                    alt={positionToStopLossTakeProfit.token.symbol}
+                    width={16}
+                    height={16}
+                  />
+                  <p className="text-base">
+                    {getTokenSymbol(positionToStopLossTakeProfit.token.symbol)}
+                  </p>
+                </div>
+              </div>
             }
             close={() => setPositionToStopLossTakeProfit(null)}
-            className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center"
+            className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center overflow-y-auto"
+
           >
             <StopLossTakeProfit
               position={positionToStopLossTakeProfit}
@@ -139,7 +172,11 @@ export default function Positions({
 
       <AnimatePresence>
         {shareClosePosition && (
-          <Modal title="Share PnL" close={() => setShareClosePosition(null)}>
+          <Modal
+            title="Share PnL"
+            close={() => setShareClosePosition(null)}
+            className="overflow-y-auto"
+          >
             <div className="absolute top-0 w-[300px]">
               {(() => {
                 const fees = -(
@@ -164,7 +201,7 @@ export default function Positions({
         bodyClassName={bodyClassName}
         borderColor={borderColor}
         connected={connected}
-        positions={nonPendingCleanupAndClosePositions}
+        positions={positions}
         className={className}
         triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}

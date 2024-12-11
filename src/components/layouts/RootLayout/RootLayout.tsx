@@ -66,7 +66,7 @@ export default function RootLayout({
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
-  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
@@ -147,7 +147,7 @@ export default function RootLayout({
       <ViewsWarning />
 
       <div className="w-full grow flex justify-center">
-        <div className="w-full flex flex-col sm:pb-0 max-w-[1500px]">
+        <div className="w-full flex flex-col sm:pb-0 max-w-[120em]">
           {children}
         </div>
       </div>

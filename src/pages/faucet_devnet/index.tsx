@@ -9,11 +9,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { devnetFaucetBankWallet } from '@/constant';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import {
   addFailedTxNotification,
@@ -27,8 +28,8 @@ import {
 
 export default function FaucetDevnet({
   wallet,
-  triggerWalletTokenBalancesReload,
 }: PageProps) {
+  const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [pendingTx, setPendingTx] = useState<boolean>(false);
@@ -87,7 +88,7 @@ export default function FaucetDevnet({
       );
 
       setPendingTx(false);
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
 
       return addSuccessTxNotification({
         title: 'Successful Transaction',

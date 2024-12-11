@@ -14,7 +14,7 @@ import { AxisDomain, DataKey } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
-import { formatNumberShort, formatPercentage, formatPriceInfo } from '@/utils';
+import { formatGraphCurrency } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
@@ -31,6 +31,7 @@ export default function StakedBarRechart({
   subValue,
   formatY = 'currency',
   gmt,
+  total,
 }: {
   title: string;
   data: RechartsData[];
@@ -46,20 +47,14 @@ export default function StakedBarRechart({
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
   gmt?: number;
+  total?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
   >([]);
 
   const formatYAxis = (tickItem: number) => {
-    if (formatY === 'percentage') {
-      return formatPercentage(tickItem, 0);
-    }
-
-    if (formatY === 'currency') {
-      return formatPriceInfo(tickItem, 0);
-    }
-    return formatNumberShort(tickItem);
+    return formatGraphCurrency({ tickItem, maxDecimals: 0 });
   };
 
   return (
@@ -143,7 +138,7 @@ export default function StakedBarRechart({
               <CustomRechartsToolTip
                 isValueOnly={labels.length === 1}
                 format={formatY}
-                total={true}
+                total={total}
                 gmt={gmt}
               />
             }
@@ -177,7 +172,7 @@ export default function StakedBarRechart({
                 type="monotone"
                 stackId="staked"
                 dataKey={hiddenLabels.includes(name) ? name + ' ' : name} // Add space to remove the line but keep the legend
-                stroke={hiddenLabels.includes(name) ? `${color}80` : color} // 50% opacity for hidden labels
+                stroke={hiddenLabels.includes(name) ? `${color} 80` : color} // 50% opacity for hidden labels
                 fill={color}
                 key={name}
               />

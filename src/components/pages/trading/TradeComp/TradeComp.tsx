@@ -21,7 +21,6 @@ export default function TradeComp({
   setTokenA,
   setTokenB,
   openedPosition,
-  triggerWalletTokenBalancesReload,
   className,
   isBigScreen,
   activeRpc,
@@ -37,7 +36,6 @@ export default function TradeComp({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   openedPosition: PositionExtended | null;
-  triggerWalletTokenBalancesReload: () => void;
   className?: string;
   isBigScreen?: boolean | null;
   activeRpc: {
@@ -59,7 +57,7 @@ export default function TradeComp({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full bg-main/90 flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg ',
+        'sm:flex w-full sm:bg-main/90 flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg',
         isBigScreen ? 'mt-0 w-[30em]' : 'mt-4',
         className,
       )}
@@ -89,14 +87,11 @@ export default function TradeComp({
                 )}
                 tokenA={tokenA}
                 tokenB={tokenB}
-                openedPosition={openedPosition}
+                position={openedPosition}
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 wallet={wallet}
                 connected={connected}
-                triggerWalletTokenBalancesReload={
-                  triggerWalletTokenBalancesReload
-                }
               />
             ) : (
               <>
@@ -118,9 +113,6 @@ export default function TradeComp({
                     setTokenB={setTokenB}
                     wallet={wallet}
                     connected={connected}
-                    triggerWalletTokenBalancesReload={
-                      triggerWalletTokenBalancesReload
-                    }
                   />
                 )}
 

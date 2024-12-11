@@ -101,7 +101,6 @@ export default function DetailedMonitoring({
   const tabs = [
     'All',
     'ADX tokenomics',
-    'Automation',
     'Pool',
     'Fees',
     'Staking',

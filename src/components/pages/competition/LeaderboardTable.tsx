@@ -28,7 +28,7 @@ export default function LeaderboardTable({
     className?: string;
     nbItemPerPage?: number;
     myDivision: boolean;
-    handleProfileView: (nickname: string) => void;
+    handleProfileView: (address: string) => void;
 }) {
     return (
         <div className={className}>
@@ -102,7 +102,7 @@ export default function LeaderboardTable({
                                 d.username
                                     ? isValidPublicKey(d.username)
                                         ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-yellow-600' : '')}>{getAbbrevWalletAddress(d.username)}</p>
-                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.username)}>
+                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.address)}>
                                             {d.username.length > 16 ? `${d.username.substring(0, 16)}...` : d.username}
                                         </p>
                                     : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>

@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
@@ -162,7 +161,9 @@ export default function StopLossTakeProfit({
         position.stopLossLimitPrice > 0;
 
       const slippageMultiplier = position.side === 'long' ? 0.99 : 1.01;
-      const adjustedStopLossPrice = stopLossInput ? stopLossInput * slippageMultiplier : null;
+      const adjustedStopLossPrice = stopLossInput
+        ? stopLossInput * slippageMultiplier
+        : null;
 
       // Create Stop loss if not set or if it changed
       if (
@@ -182,7 +183,10 @@ export default function StopLossTakeProfit({
             ))({
               position,
               stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
-              closePositionPrice: new BN((adjustedStopLossPrice ? adjustedStopLossPrice : stopLossInput) * 10 ** PRICE_DECIMALS),
+              closePositionPrice: new BN(
+                (adjustedStopLossPrice ? adjustedStopLossPrice : stopLossInput) *
+                10 ** PRICE_DECIMALS,
+              ),
             }),
         );
       }
@@ -212,7 +216,10 @@ export default function StopLossTakeProfit({
       MultiStepNotification.newForRegularTransaction('TP/SL').fire();
 
     try {
-      await window.adrena.client.signAndExecuteTxAlternative({ transaction, notification });
+      await window.adrena.client.signAndExecuteTxAlternative({
+        transaction,
+        notification,
+      });
 
       triggerUserProfileReload();
 
@@ -228,12 +235,12 @@ export default function StopLossTakeProfit({
   return (
     <div
       className={twMerge(
-        'flex flex-col gap-3 mt-4 h-full w-full items-center pb-6',
+        'flex flex-col gap-3 mt-4 h-full w-full items-center',
         className,
       )}
     >
-      <div className="w-[90%] ml-auto mr-auto">
-        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-sm mb-2">
+      <div className="px-6 sm:px-4">
+        <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-sm">
           <Image
             className="opacity-60 absolute left-3 top-auto bottom-auto"
             src={infoIcon}
@@ -241,22 +248,27 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          <a href="https://docs.adrena.xyz/technical-documentation/mrsablier-and-mrsablierstaking-open-source-keepers" target="_blank" rel="noopener noreferrer">
-            SL/TP are executed by our open source keeper MrSablier. Learn more
+          <a
+            href="https://docs.adrena.xyz/technical-documentation/mrsablier-and-mrsablierstaking-open-source-keepers"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            SL/TP Automation by our open source keeper MrSablier
           </a>
         </div>
 
-        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg mb-2">
-          <div className="w-full flex justify-between mt-2">
-            <div className="flex items-center">
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
+          <div className="w-full flex justify-between">
+            <div className="flex gap-2 items-center">
               <Image
                 src={getTokenImage(position.token)}
-                width={20}
-                height={20}
+                width={16}
+                height={16}
                 alt={`${getTokenSymbol(position.token.symbol)} logo`}
-                className="mr-2"
               />
-              <div className="text-sm text-bold">{getTokenSymbol(position.token.symbol)} Price</div>
+              <div className="text-sm text-bold">
+                {getTokenSymbol(position.token.symbol)} Price
+              </div>
             </div>
             <FormatNumber
               nb={markPrice}
@@ -266,85 +278,78 @@ export default function StopLossTakeProfit({
             />
           </div>
 
-          <div className="w-full flex justify-between mt-2">
-            <div className="flex w-full justify-between">
-              <span className="text-sm text-gray-600">Liquidation Price</span>
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className="w-full flex justify-between">
+            <div className="flex w-full justify-between items-center">
+              <span className="text-sm opacity-50">Entry</span>
+
+              <FormatNumber
+                nb={position.price}
+                format="currency"
+                precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
+                isDecimalDimmed={true}
+                className="text-txtfade"
+              />
+            </div>
+          </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className="w-full flex justify-between">
+            <div className="flex w-full justify-between items-center">
+              <span className="text-sm opacity-50">Liquidation</span>
 
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
                 isDecimalDimmed={false}
                 className="text-orange"
               />
             </div>
           </div>
 
-          <div className="w-full flex justify-between">
-            <div className="flex w-full justify-between">
-              <span className="text-sm text-gray-600">Entry Price</span>
-
-              <FormatNumber
-                nb={position.price}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
-                isDecimalDimmed={true}
-                className="text-gray-100"
-              />
-            </div>
-          </div>
-
         </div>
 
-        <StyledSubSubContainer className="flex-col items-center justify-center text-sm w-full p-4">
+        <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-lg border p-3 py-2.5">
 
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Take Profit</span>
-            <div className={takeProfitInput !== null ? 'text-blue' : ''}>
-
-              <FormatNumber
-                nb={takeProfitInput}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
-                className={twMerge(
-                  'text-sm text-regular',
-                  takeProfitInput !== null ? 'text-blue' : '',
-                )}
-                isDecimalDimmed={false}
-              />
-            </div>
+          <div className="flex w-full justify-between items-center">
+            <span className="text-sm text-txtfade">Net Value</span>
+            <>
+              <NetValueTooltip position={position}>
+                <span className="underline-dashed">
+                  <FormatNumber
+                    nb={positionNetValue}
+                    format="currency"
+                    className="text-sm text-regular text-txtfade"
+                    minimumFractionDigits={2}
+                  />
+                </span>
+              </NetValueTooltip>
+            </>
           </div>
 
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Stop Loss</span>
-            <div className={stopLossInput !== null ? 'text-blue' : ''}>
-              <FormatNumber
-                nb={stopLossInput}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
-                className={twMerge(
-                  'text-sm text-regular',
-                  stopLossInput !== null ? 'text-blue' : '',
-                )}
-                isDecimalDimmed={false}
-              />
-            </div>
-          </div>
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">PnL</span>
+          <div className="flex w-full justify-between items-center">
+            <div className="text-sm text-txtfade">
+              PnL <span className="test-xs text-txtfade">(after fees)</span>
+            </div>
             <div
               className={twMerge(
                 'font-bold text-sm',
                 positionNetPnl > 0
                   ? 'text-green'
                   : positionNetPnl < 0
-                    ? 'text-red'
-                    : 'text-gray-400',
+                    ? 'text-redbright'
+                    : 'opacity-opacity-50',
               )}
             >
               {positionNetPnl > 0 ? '+' : positionNetPnl < 0 ? '−' : ''}
@@ -358,29 +363,14 @@ export default function StopLossTakeProfit({
                   positionNetPnl > 0
                     ? 'text-green'
                     : positionNetPnl < 0
-                      ? 'text-red'
-                      : 'text-gray-400',
+                      ? 'text-redbright'
+                      : 'opacity-opacity-50',
                 )}
                 isDecimalDimmed={false}
               />
             </div>
           </div>
-
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Net Value</span>
-            <>
-              <NetValueTooltip position={position}>
-                <span className="underline-dashed">
-                  <FormatNumber
-                    nb={positionNetValue}
-                    format="currency"
-                    className="text-sm text-regular"
-                  />
-                </span>
-              </NetValueTooltip>
-            </>
-          </div>
-        </StyledSubSubContainer>
+        </div>
       </div>
 
       <StopLossTakeProfitInput
@@ -399,9 +389,11 @@ export default function StopLossTakeProfit({
         setIsError={setTakeProfitError}
       />
 
-      <div className="w-full mt-4 gap-4 flex pl-6 pr-6">
+
+
+      <div className="w-full mt-0 gap-4 flex flex-col sm:flex-row p-4 border-t">
         <Button
-          className="font-boldy text-xs w-[10em] grow"
+          className="font-boldy w-full"
           size="lg"
           title="Cancel"
           variant="outline"
@@ -409,13 +401,13 @@ export default function StopLossTakeProfit({
         />
 
         <Button
-          className="font-boldy text-xs w-[10em] grow"
+          className="font-boldy w-full"
           size="lg"
           title="Confirm"
           disabled={stopLossError || takeProfitError}
           onClick={() => applyConfiguration()}
         />
       </div>
-    </div >
+    </div>
   );
 }

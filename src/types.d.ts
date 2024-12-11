@@ -67,7 +67,6 @@ export type PageProps = {
   triggerUserProfileReload: () => void;
   custodies: CustodyExtended[] | null;
   wallet: Wallet | null;
-  triggerWalletTokenBalancesReload: () => void;
   positions: PositionExtended[] | null;
   connected: boolean;
   activeRpc: {
@@ -139,6 +138,7 @@ export type PositionExtended = {
   collateralUsd: number;
   collateralAmount: number;
   price: number;
+  breakEvenPrice: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
   stopLossClosePositionPrice?: number | null;
@@ -146,8 +146,6 @@ export type PositionExtended = {
   stopLossIsSet: boolean;
   takeProfitLimitPrice?: number | null;
   takeProfitIsSet: boolean;
-  // The position is closed and still alive due to a pending cleanup and close from MrSablier
-  pendingCleanupAndClose: boolean;
 
   // Onchain data
   nativeObject: Position;
@@ -472,10 +470,14 @@ export type ClaimHistoryExtended = {
 };
 
 type AchievementsBase = {
-  weekStarts: string;
-  weekEnds: string;
+  // TODO: Check refacto
+  // weekStarts: string;
+  // weekEnds: string;
+  week_starts: string[];
+  week_ends: string[];
 };
 
+// TODO: Check refacto
 export type TradingCompetitionAchievementsAPI = {
   biggestLiquidation: AchievementsBase & {
     addresses: string | null;
@@ -489,11 +491,34 @@ export type TradingCompetitionAchievementsAPI = {
   topDegen: AchievementsBase & {
     pnlAmounts: number | null;
     addresses: string | null;
+    usernames: (string | null)[];
+    week_starts: string[];
+    week_ends: string[];
+    liquidation_amounts: (number | null)[];
+  };
+  fees_tickets: AchievementsBase & {
+    week_starts: string[][];
+    week_ends: string[][];
+    addresses: (string | null)[][];
+    usernames: (string | null)[][];
+    tickets_count: (number | null)[][];
+    total_tickets: (number | null)[];
   };
   jitosolTickets: AchievementsBase & {
     addresses: (string | null)[];
     ticketsCount: (number | null)[];
     totalTickets: number | null;
+    usernames: (string | null)[];
+    week_starts: string[];
+    week_ends: string[];
+  };
+  jitosol_tickets: AchievementsBase & {
+    week_starts: string[][];
+    week_ends: string[][];
+    addresses: (string | null)[][];
+    usernames: (string | null)[][];
+    tickets_count: (number | null)[][];
+    total_tickets: (number | null)[];
   };
 };
 
@@ -504,6 +529,7 @@ export type TradingCompetitionLeaderboardAPI = {
     connected?: boolean;
     volume: number | null;
     pnl: number | null;
+    address: string;
     adxRewards: number;
     jtoRewards: number;
     badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
@@ -607,3 +633,16 @@ export type LeaderboardReturnTypeAPI<
         }[];
       }
     : object);
+
+export type TradingViewChartSavedDrawing = Record<
+  TokenSymbol,
+  {
+    name: Exclude<
+      SupportedLineTools,
+      'cursor' | 'dot' | 'arrow_cursor' | 'eraser' | 'measure' | 'zoom'
+    >;
+    points: { time: number; price: number }[];
+    options: CreateShapeOptions<object>;
+  }[]
+>;
+
