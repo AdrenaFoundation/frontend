@@ -41,7 +41,7 @@ export default function ActivityCalendar({
         return null;
     }
 
-    const namesOfMonthsInData = data.reduce((acc, curr) => {
+    const monthsInActivityData = data.reduce((acc, curr) => {
         if (curr === null) {
             return acc;
         }
@@ -54,7 +54,7 @@ export default function ActivityCalendar({
         return acc;
     }, [] as string[]);
 
-    const totalDaysInMonths = data.reduce((acc, curr) => {
+    const daysCountByMonth = data.reduce((acc, curr) => {
         if (curr === null) {
             return acc;
         }
@@ -68,10 +68,10 @@ export default function ActivityCalendar({
             <div className="flex items-center justify-between gap-3 mt-2">
                 <div className="hide-scrollbar overflow-auto">
                     <div className="relative flex flex-row mt-4">
-                        {namesOfMonthsInData.map((month, i) => {
-                            const initSize = totalDaysInMonths[i] / 7;
+                        {monthsInActivityData.map((month, i) => {
+                            const initSize = daysCountByMonth[i] / 7;
                             const blockMargin = 4;
-                            const blockSize = 16;
+                            const blockSize = 20;
                             const nbOfBlocksToSkip = initSize * (blockSize + blockMargin);
 
                             return (
@@ -91,7 +91,7 @@ export default function ActivityCalendar({
                                 return (
                                     <div
                                         key={i}
-                                        className="bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14]  size-4 transition duration-300"
+                                        className="bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14]  size-5 transition duration-300"
                                     />
                                 );
                             }
@@ -189,7 +189,7 @@ export default function ActivityCalendar({
                                 >
                                     <div
                                         className={twMerge(
-                                            'flex items-center justify-center bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14] cursor-pointer group size-4 transition duration-300',
+                                            'flex items-center justify-center bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14] cursor-pointer group size-5 transition duration-300',
                                         )}
                                         onClick={() => {
                                             const startDate = new Date(date);
