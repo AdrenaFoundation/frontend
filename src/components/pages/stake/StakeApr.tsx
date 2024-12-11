@@ -9,16 +9,13 @@ import DataApiClient from '@/DataApiClient';
 import chevronDown from '../../../../public/images/chevron-down.svg';
 
 function NumberDisplayBoilerplate({
-  key,
   title,
   nb,
 }: {
-  key?: string | number;
   title?: string;
   nb: number | null;
 }) {
   return <NumberDisplay
-    key={key}
     title={title}
     nb={nb}
     format="percentage"

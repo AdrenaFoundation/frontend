@@ -66,11 +66,14 @@ export default function Tokenomics({
 
       <ResponsiveContainer width="80%" height="80%" className="m-auto">
         <PieChart
+          width={200}
+          height={200}
         >
           <Tooltip
             content={<CustomRechartsToolTip format="percentage" isPieChart />}
             cursor={false}
           />
+
           <Pie
             dataKey="value"
             nameKey="label"
@@ -81,11 +84,10 @@ export default function Tokenomics({
             labelLine={false}
           >
             {formattedData.map(({ color }, index) => (
-              <>
-                <Cell key={index} fill={color} />
-              </>
+              <Cell key={index} fill={color} />
             ))}
           </Pie>
+
           <Legend
             verticalAlign="top"
             align="center"
