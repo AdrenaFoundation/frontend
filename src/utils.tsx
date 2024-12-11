@@ -138,6 +138,30 @@ export function formatPriceInfo(
   )}`;
 }
 
+export function formatGraphCurrency({ tickItem, maxDecimals = 0, maxDecimalsIfToken = 4 }: { tickItem: number, maxDecimals?: number, maxDecimalsIfToken?: number }): string {
+  if (tickItem === 0) return '$0';
+
+  const absValue = Math.abs(tickItem);
+  const isNegative = tickItem < 0;
+
+  let num;
+  if (absValue > 999_999_999) {
+    num = (absValue / 1_000_000_000).toFixed(maxDecimals) + 'B';
+  } else if (absValue > 999_999) {
+    num = (absValue / 1_000_000).toFixed(maxDecimals) + 'M';
+  } else if (absValue > 999) {
+    num = (absValue / 1_000).toFixed(maxDecimals) + 'K';
+  } else if (absValue < 100) {
+    num = absValue.toFixed(maxDecimalsIfToken);
+  } else if (absValue <= 999) {
+    num = absValue.toFixed(2);
+  } else {
+    num = String(absValue);
+  }
+
+  return isNegative ? `-$${num}` : `$${num}`;
+}
+
 export function formatNumberShort(
   nb: number | string,
   maxDecimals = 2,

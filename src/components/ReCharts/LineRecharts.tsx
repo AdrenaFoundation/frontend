@@ -15,7 +15,7 @@ import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
-import { formatNumberShort, formatPercentage, formatPriceInfo } from '@/utils';
+import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
@@ -62,8 +62,9 @@ export default function LineRechart({
     }
 
     if (formatY === 'currency') {
-      return formatPriceInfo(tickItem, 0);
+      return formatGraphCurrency({ tickItem, maxDecimals: 0, maxDecimalsIfToken: 4 });
     }
+
     return formatNumberShort(tickItem, 0);
   };
 
