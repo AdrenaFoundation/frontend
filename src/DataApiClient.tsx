@@ -1,4 +1,4 @@
-import { LeaderboardReturnTypeAPI, TraderDivisionRawAPI } from './types';
+import { LeaderboardReturnTypeAPI, RankedRewards, TraderDivisionRawAPI } from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -78,12 +78,14 @@ export default class DataApiClient {
             showGlobalStats?: boolean;
             showAchievements?: boolean;
             showTraderDivisions?: boolean;
+            showEligibleJitosolWallets?: boolean;
         },
     >({
         season,
         showGlobalStats,
         showAchievements,
         showTraderDivisions,
+        showEligibleJitosolWallets,
     }: {
         season: 'preseason' | 'season1' | 'season2' | 'season3' | 'season4';
     } & T): Promise<LeaderboardReturnTypeAPI<T> | null> {
@@ -93,12 +95,24 @@ export default class DataApiClient {
                     showAchievements,
                 )}&show_trader_divisions=${Boolean(
                     showTraderDivisions,
-                )}&show_global_stats=${Boolean(showGlobalStats)}`,
+                )}&show_global_stats=${Boolean(
+                    showGlobalStats,
+                )}&show_eligible_jitosol_wallets=${Boolean(
+                    showEligibleJitosolWallets,
+                )}`,
             ).then((res) => res.json());
+
+
+            const rankedRewards: RankedRewards[] = result.data.ranked_divisions.map((division: string, index: number) => ({
+                division,
+                adxRewards: result.data.ranked_adx_rewards[index] as number[],
+                jtoRewards: result.data.ranked_jto_rewards[index] as number[],
+            }));
 
             const data = {
                 startDate: result.data.start_date,
                 endDate: result.data.end_date,
+                rankedRewards,
                 ...(showGlobalStats && {
                     globalStats: {
                         totalTraders: result.data.global_stats.total_traders,
@@ -129,6 +143,8 @@ export default class DataApiClient {
                             liquidationAmounts:
                                 result.data.achievements.biggest_liquidation
                                     .liquidation_amounts,
+                            reward: result.data.achievements.biggest_liquidation.reward,
+                            rewardToken: result.data.achievements.biggest_liquidation.reward_token,
                         },
                         feesTickets: {
                             weekStarts: result.data.achievements.fees_tickets.week_starts,
@@ -136,12 +152,16 @@ export default class DataApiClient {
                             addresses: result.data.achievements.fees_tickets.addresses,
                             ticketsCount: result.data.achievements.fees_tickets.tickets_count,
                             totalTickets: result.data.achievements.fees_tickets.total_tickets,
+                            reward: result.data.achievements.fees_tickets.reward,
+                            rewardToken: result.data.achievements.fees_tickets.reward_token,
                         },
                         topDegen: {
                             weekStarts: result.data.achievements.top_degen.week_starts,
                             weekEnds: result.data.achievements.top_degen.week_ends,
                             addresses: result.data.achievements.top_degen.addresses,
                             pnlAmounts: result.data.achievements.top_degen.pnl_amounts,
+                            reward: result.data.achievements.top_degen.reward,
+                            rewardToken: result.data.achievements.top_degen.reward_token,
                         },
                         jitosolTickets: {
                             weekStarts: result.data.achievements.jitosol_tickets.week_starts,
@@ -151,6 +171,8 @@ export default class DataApiClient {
                                 result.data.achievements.jitosol_tickets.tickets_count,
                             totalTickets:
                                 result.data.achievements.jitosol_tickets.total_tickets,
+                            reward: result.data.achievements.jitosol_tickets.reward,
+                            rewardToken: result.data.achievements.jitosol_tickets.reward_token,
                         },
                     },
                 }),
@@ -169,6 +191,9 @@ export default class DataApiClient {
                             })),
                         }),
                     ),
+                }),
+                ...(showEligibleJitosolWallets && {
+                    eligibleJitosolWallets: result.data.eligible_jitosol_wallets,
                 }),
             } as LeaderboardReturnTypeAPI<T>;
 

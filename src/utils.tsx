@@ -871,3 +871,6 @@ export const isValidPublicKey = (key: string) => {
   }
 };
 
+export const calculateWeeksPassed = (startDate: Date): number => {
+  return Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
+};

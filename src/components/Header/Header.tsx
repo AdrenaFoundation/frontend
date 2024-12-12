@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
-import DataApiClient from '@/DataApiClient';
 import { useSelector } from '@/store/store';
 import {
   PriorityFeeOption,
@@ -82,22 +81,8 @@ export default function Header({
 
   const clusterSwitchEnabled = false;
 
-  const getData = async () => {
-    try {
-      const data = await DataApiClient.getTradingCompetitionLeaderboard({
-        season: 'preseason',
-        showTraderDivisions: true,
-        showGlobalStats: true,
-
-      });
-
-      console.log(data);
-    } catch (error) {
-
-    }
-  }
   return (
-    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b border-b-bcolor bg-secondary z-50" onClick={() => getData()}>
+    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b border-b-bcolor bg-secondary z-50">
       <div className="flex flex-row items-center gap-3 lg:gap-4 xl:gap-6">
         <Link className="font-bold uppercase relative" href="/">
           <Image
