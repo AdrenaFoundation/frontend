@@ -4,7 +4,10 @@ import {
 } from '@pythnetwork/client';
 import { PublicKey } from '@solana/web3.js';
 
-import { setStreamingTokenPrice } from '@/actions/streamingTokenPrices';
+import {
+  setStreamingTokenPrice,
+  stopStreamingTokenPrices,
+} from '@/actions/streamingTokenPrices';
 import { PYTH_CONNECTION } from '@/pages/_app';
 import store from '@/store/store';
 
@@ -53,10 +56,10 @@ function startStreaming() {
   pythConnectionStarted = true;
 
   pythConnection.feedIds = [
-    // new PublicKey('Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr'), // WBTC
+    new PublicKey('Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr'), // WBTC
     new PublicKey('GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU'), // BTC
     new PublicKey('H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG'), // SOL
-    // new PublicKey('7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk'), // JITOSOL
+    new PublicKey('7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk'), // JITOSOL
     new PublicKey('Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD'), // USDC
     new PublicKey('8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN'), // BONK
   ];
@@ -66,7 +69,20 @@ function startStreaming() {
     // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
     const subscriptionItem = channelToSubscription.get(product.symbol);
 
-    if (!subscriptionItem || !price.price) {
+    if (!price.price) {
+      return;
+    }
+
+    console.log('PRICE CHANGE', price.price, product.symbol, subscriptionItem);
+
+    store.dispatch(
+      setStreamingTokenPrice(
+        getTokenSymbolFromPythStreamingFormat(product.symbol),
+        price.price,
+      ),
+    );
+
+    if (!subscriptionItem) {
       return;
     }
 
@@ -93,13 +109,6 @@ function startStreaming() {
         close: price.price,
       };
     }
-
-    store.dispatch(
-      setStreamingTokenPrice(
-        getTokenSymbolFromPythStreamingFormat(product.symbol),
-        price.price,
-      ),
-    );
 
     subscriptionItem.lastDailyBar = bar;
 
@@ -197,5 +206,6 @@ export function unsubscribeFromStream(subscriberUID: string) {
     console.log('[Chart] No one subscribed to the streaming. Stopping...');
     pythConnection.stop();
     pythConnectionStarted = false;
+    store.dispatch(stopStreamingTokenPrices());
   }
 }

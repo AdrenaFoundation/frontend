@@ -1,139 +1,125 @@
-import { AccountInfo, PublicKey } from '@solana/web3.js';
-import { use, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { TokenPricesState } from '@/reducers/tokenPricesReducer';
-import { useSelector } from '@/store/store';
-import { PositionExtended } from '@/types';
+import {
+  calculatePnLandLiquidationPrice,
+  fetchAndSubscribeToFullUserPositions,
+} from '@/actions/thunks';
+import type { TokenPricesState } from '@/reducers/streamingTokenPricesReducer';
+import { selectStreamingTokenPricesForTokensStr } from '@/selectors/streamingTokenPrices';
+import { selectWalletAddress } from '@/selectors/wallet';
+import { type RootState, useDispatch, useSelector } from '@/store/store';
+import type { PositionExtended } from '@/types';
+import { getTokenSymbol } from '@/utils';
 
-export const calculatePnLandLiquidationPrice = (
-  position: PositionExtended,
-  tokenPrices: TokenPricesState,
-) => {
-  // Calculate PnL
-  const pnl = window.adrena.client.calculatePositionPnL({
-    position,
-    tokenPrices,
-  });
+export default function usePositions() {
+  const dispatch = useDispatch();
+  const walletAddress = useSelector(selectWalletAddress);
+  const [positions, setPositions] = useState<Array<PositionExtended> | null>(
+    null,
+  );
+  // Extract the tokens relevant to the user's positions
+  // so we can subscribe to the price updates of just those.
+  // Output a string like "BTC,USDC" to obtain a stable value of primitive type
+  // easier to memoize.
+  const positionsTokenSymbolsStr =
+    positions && positions.length > 0
+      ? Array.from(
+          new Set(
+            positions.flatMap((position) => [
+              getTokenSymbol(position.token.symbol),
+              position.collateralToken.symbol,
+            ]),
+          ),
+        )
+          .sort()
+          .join(',')
+      : null;
 
-  if (pnl === null) {
-    return null;
-  }
+  const positionsTokenPricesSelector = useCallback(
+    (s: RootState) =>
+      positionsTokenSymbolsStr &&
+      selectStreamingTokenPricesForTokensStr(s, positionsTokenSymbolsStr),
+    [positionsTokenSymbolsStr],
+  );
 
-  const { profitUsd, lossUsd, borrowFeeUsd } = pnl;
+  // Subscribe to the price updates of only the tokens relevant to the user's positions.
+  const positionsTokenPrices = useSelector(positionsTokenPricesSelector);
 
-  position.profitUsd = profitUsd;
-  position.lossUsd = lossUsd;
-  position.borrowFeeUsd = borrowFeeUsd;
-  position.pnl = profitUsd + -lossUsd;
-  position.pnlMinusFees = position.pnl + borrowFeeUsd + position.exitFeeUsd;
-  position.currentLeverage =
-    position.sizeUsd / (position.collateralUsd + position.pnl);
+  useEffect(() => {
+    const [positionsPromise, unsubscribe] = dispatch(
+      fetchAndSubscribeToFullUserPositions(
+        function onPositionUpdated(position) {
+          setPositions((prevPositions) => {
+            // A position was updated though we haven't yet fetched / stored
+            // any position in the state, it should not happen, let's just ignore.
+            if (prevPositions === null) return null;
 
-  // Calculate liquidation price
-  const liquidationPrice = window.adrena.client.calculateLiquidationPrice({
-    position,
-  });
+            // Update the positions state, with the updated position
+            // **at the same index** as previously.
 
-  if (liquidationPrice !== null) {
-    position.liquidationPrice = liquidationPrice;
-  }
-};
-
-export default function usePositions(): PositionExtended[] | null {
-  const wallet = useSelector((s) => s.walletState.wallet);
-  const [positions, setPositions] = useState<PositionExtended[] | null>(null);
-  const tokenPrices = useSelector((s) => s.tokenPrices);
-  const connection = window.adrena.client.connection;
-
-  // Do initial load of positions then start streaming
-  const initialSetup = useCallback(async () => {
-    if (!wallet || !connection) return;
-
-    // Load positions
-    try {
-      const freshPositions = await window.adrena.client.loadUserPositions(
-        new PublicKey(wallet.walletAddress),
-      );
-
-      console.log('Loaded positions', freshPositions);
-
-      setPositions(freshPositions);
-    } catch (e) {
-      console.log('Error loading positions', e, String(e));
-      return;
-    }
-
-    // Subscribe to all possible position addresses for the user
-    window.adrena.client
-      .getPossiblePositionAddresses(new PublicKey(wallet.walletAddress))
-      .map((address) =>
-        connection.onAccountChange(
-          address,
-          (accountInfo: AccountInfo<Buffer>) => {
-            console.log(
-              'Position account changed',
-              address.toBase58(),
-              accountInfo,
+            const newPositions = [...prevPositions];
+            const positionIdx = prevPositions.findIndex((prevPosition) =>
+              prevPosition.pubkey.equals(position.pubkey),
             );
 
-            // Position got deleted
-            if (accountInfo.data.length === 0) {
-              setPositions(
-                (prevPositions) =>
-                  prevPositions?.filter(
-                    (p) => p.pubkey.toBase58() !== address.toBase58(),
-                  ) ?? [],
-              );
-              return;
+            if (positionIdx > -1) {
+              newPositions[positionIdx] = position;
+            } else {
+              // New positions go first
+              newPositions.unshift(position);
             }
 
-            const position = window.adrena.client.extendPosition(
-              window.adrena.client
-                .getReadonlyAdrenaProgram()
-                .coder.accounts.decode('position', accountInfo.data),
-              address,
+            return newPositions;
+          });
+        },
+        function onPositionDeleted(userPosition) {
+          setPositions((prevPositions) => {
+            // A position was deleted though we haven't yet fetched / stored
+            // any position in the state, it should not happen, let's just ignore.
+            if (prevPositions === null) return null;
+
+            // Update the positions state, filter-out the deleted position.
+            return prevPositions.filter(
+              (prevPosition) => !prevPosition.pubkey.equals(userPosition),
             );
+          });
+        },
+      ),
+    );
 
-            // Error loading position
-            if (!position) {
-              console.error('Error loading position', address.toBase58());
-              return;
-            }
+    positionsPromise.then(setPositions);
 
-            calculatePnLandLiquidationPrice(position, tokenPrices);
+    // The unsubscribe function is possibly undefined:
+    // if no subscriptions were made.
+    return () => unsubscribe?.();
 
-            setPositions((prevPositions) => [
-              ...(prevPositions?.filter(
-                (p) => p.pubkey.toBase58() !== address.toBase58(),
-              ) ?? []),
-              position,
-            ]);
-          },
-        ),
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, !!window.adrena.client.connection]);
+    // We must only run this effect once for a given component tree.
+    // To reflect that, we could turn this hook into a Context Provider.
+    // But the optimal solution would be to store the positions in the Redux state.
+  }, [dispatch, walletAddress]);
 
   useEffect(() => {
-    initialSetup();
-  }, [initialSetup]);
+    if (!positionsTokenPrices) return;
 
-  // Reset positions when connection closes
-  useEffect(() => {
-    if (!connection) {
-      setPositions(null);
-      return;
-    }
-  }, [connection]);
+    setPositions((prevPositions) => {
+      // One of the tokens' price of a position was updated though
+      // we haven't yet stored any position, it should not happen, let's just ignore.
+      if (prevPositions === null) return null;
 
-  useEffect(() => {
-    if (!positions || !tokenPrices) return;
+      // Update each positions' PnL & liquidation price based on new prices.
+      return prevPositions.map((position) => {
+        // PositionExtended objects are augmented in place.
+        calculatePnLandLiquidationPrice(
+          position,
+          positionsTokenPrices as TokenPricesState,
+        );
 
-    positions.forEach((position) => {
-      calculatePnLandLiquidationPrice(position, tokenPrices);
+        // Trick immutability principles & update the state with a shallow-copy
+        // of the position to make the update visible to the outside.
+        return { ...position };
+      });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenPrices, positions]);
+  }, [positionsTokenPrices]);
 
   return positions;
 }

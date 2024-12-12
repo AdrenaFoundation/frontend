@@ -19,6 +19,8 @@ import {
   IChartingLibraryWidget,
 } from '../../public/charting_library/charting_library';
 
+let i = 0;
+
 export function useChartDrawing({
   widget,
   widgetReady,
@@ -37,6 +39,78 @@ export function useChartDrawing({
   toggleSizeUsdInChart: boolean;
 }) {
   const chart = widget && widgetReady ? widget.activeChart() : null;
+
+  const addHorizontalLine = useCallback(
+    ({
+      price,
+      text,
+      color,
+      time,
+      linestyle = 0,
+      linewidth = 1,
+      horzLabelsAlign = 'right',
+    }: {
+      price: number;
+      text: string;
+      color: string;
+      time: Date;
+      linestyle?: number;
+      linewidth?: number;
+      horzLabelsAlign?: 'left' | 'middle ' | 'right';
+    }) => {
+      if (!chart || !widgetReady) return;
+
+      console.log(
+        '>>> TRY TO CREATE A SHAPE',
+        price,
+        new Date(time).getTime(),
+        'text: ' + text,
+      );
+      try {
+        const lineID = chart.createShape(
+          {
+            time: new Date(time).getTime(),
+            price,
+          },
+          {
+            zOrder: 'top',
+            shape: 'horizontal_line',
+            lock: true,
+            disableSelection: true,
+            overrides: {
+              linestyle,
+              linewidth,
+              bold: true,
+              linecolor: color,
+              horzLabelsAlign,
+              vertLabelsAlign: 'bottom',
+              showLabel: true,
+              fontsize: 10,
+              textcolor: color,
+              showInObjectsTree: true,
+            },
+            text,
+          },
+        ) as EntityId;
+
+        i++;
+
+        console.log('>>> CREATED LINE', lineID);
+
+        if (text.includes('break even')) {
+          breakEvenLinesID.current = [...breakEvenLinesID.current, lineID];
+        } else {
+          activePositionLineIDs.current = [
+            ...activePositionLineIDs.current,
+            lineID,
+          ];
+        }
+      } catch (e) {
+        console.log('ERROR CREATING LINE AT NUMBER', e, i);
+      }
+    },
+    [activePositionLineIDs, breakEvenLinesID, chart, widgetReady],
+  );
 
   useEffect(() => {
     if (!widgetReady || !chart) return;
@@ -79,7 +153,7 @@ export function useChartDrawing({
         JSON.stringify({ ...parsedChartShapes, [symbol]: [] }),
       );
     }
-  }, [widgetReady, chart]);
+  }, [widgetReady, chart, activePositionLineIDs, breakEvenLinesID]);
 
   // handles position lines
   useEffect(
@@ -227,63 +301,12 @@ export function useChartDrawing({
         });
       });
     }
-  }, [chart, widgetReady, positions, showBreakEvenLine]);
-
-  const addHorizontalLine = useCallback(
-    ({
-      price,
-      text,
-      color,
-      time,
-      linestyle = 0,
-      linewidth = 1,
-      horzLabelsAlign = 'right',
-    }: {
-      price: number;
-      text: string;
-      color: string;
-      time: Date;
-      linestyle?: number;
-      linewidth?: number;
-      horzLabelsAlign?: 'left' | 'middle ' | 'right';
-    }) => {
-      if (!chart || !widgetReady) return;
-
-      const lineID = chart.createShape(
-        {
-          time: new Date(time).getTime(),
-          price,
-        },
-        {
-          zOrder: 'top',
-          shape: 'horizontal_line',
-          lock: true,
-          disableSelection: true,
-          overrides: {
-            linestyle,
-            linewidth,
-            bold: true,
-            linecolor: color,
-            horzLabelsAlign,
-            vertLabelsAlign: 'bottom',
-            showLabel: true,
-            fontsize: 10,
-            textcolor: color,
-            showInObjectsTree: true,
-          },
-          text,
-        },
-      ) as EntityId;
-
-      if (text.includes('break even')) {
-        breakEvenLinesID.current = [...breakEvenLinesID.current, lineID];
-      } else {
-        activePositionLineIDs.current = [
-          ...activePositionLineIDs.current,
-          lineID,
-        ];
-      }
-    },
-    [chart, widgetReady],
-  );
+  }, [
+    chart,
+    widgetReady,
+    positions,
+    showBreakEvenLine,
+    breakEvenLinesID,
+    addHorizontalLine,
+  ]);
 }
