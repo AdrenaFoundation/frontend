@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../public/images/adx.svg';
@@ -45,26 +45,6 @@ const COMPETITION_DESCRIPTION = [
     'Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC.',
     'Volume is determined by Open/Increase and Close positions. It\'s accounted for when the position closes (close or liquidation).',
 ] as const;
-
-type State = {
-    activeProfile: UserProfileExtended | null;
-    week: number;
-};
-
-type Action =
-    | { type: 'SET_ACTIVE_PROFILE'; payload: UserProfileExtended | null }
-    | { type: 'SET_WEEK'; payload: number };
-
-function reducer(state: State, action: Action): State {
-    switch (action.type) {
-        case 'SET_ACTIVE_PROFILE':
-            return { ...state, activeProfile: action.payload };
-        case 'SET_WEEK':
-            return { ...state, week: action.payload };
-        default:
-            return state;
-    }
-}
 
 const CompetitionBanner = memo(({
     endDate,
@@ -284,12 +264,12 @@ CompetitionLeaderboard.displayName = 'CompetitionLeaderboard';
 const WeekSelector = memo(({
     currentWeek,
     maxWeek,
-    onWeekChange,
+    setWeek,
     weekDates
 }: {
     currentWeek: number;
     maxWeek: number;
-    onWeekChange: (week: number) => void;
+    setWeek: (week: number) => void;
     weekDates: {
         start: string;
         end: string;
@@ -325,7 +305,7 @@ const WeekSelector = memo(({
                     )}
                     onClick={() => {
                         if (i > maxWeek) return;
-                        onWeekChange(i);
+                        setWeek(i);
                     }}
                 >
                     <p className="text-xxs sm:text-sm">Week {i + 1}</p>
@@ -506,57 +486,49 @@ const ProfileBanner = memo(({
 ProfileBanner.displayName = 'ProfileBanner';
 
 export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean }) {
-    const [state, dispatch] = useReducer(reducer, {
-        activeProfile: null,
-        week: 0
-    });
+    // states
+    const [week, setWeek] = useState<number>(0);
+    const [profile, setProfile] = useState<UserProfileExtended | null>(null);
 
+    // hooks
     const wallet = useSelector((state) => state.walletState.wallet);
     const { allUserProfiles } = useAllUserProfiles();
     const awakeningData = useAwakeningV2({ wallet, allUserProfiles });
 
-    const achievementsData = useMemo(() => ({
-        achievements: awakeningData?.achievements,
-        weeksPassedSinceStartDate: awakeningData?.weeksPassedSinceStartDate ?? 0,
-        weekDates: {
-            start: awakeningData?.achievements?.biggestLiquidation?.weekStarts[state.week] ?? '',
-            end: awakeningData?.achievements?.biggestLiquidation?.weekEnds[state.week] ?? ''
-        }
-    }), [awakeningData, state.week]);
-
-    const handleWeekChange = useCallback((newWeek: number) => {
-        requestAnimationFrame(() => dispatch({ type: 'SET_WEEK', payload: newWeek }));
-    }, []);
-
+    // effects
     useEffect(() => {
-        if (awakeningData?.weeksPassedSinceStartDate !== undefined) {
-            dispatch({ type: 'SET_WEEK', payload: awakeningData.weeksPassedSinceStartDate });
+        if (typeof awakeningData?.weeksPassedSinceStartDate !== 'undefined') {
+            setWeek(awakeningData.weeksPassedSinceStartDate);
         }
     }, [awakeningData?.weeksPassedSinceStartDate]);
 
-    const userProfile = useMemo(() =>
-        allUserProfiles.find((p) => p.owner.toBase58() === wallet?.walletAddress),
-        [allUserProfiles, wallet?.walletAddress]
-    );
+    // variables
+    const achievementsData = {
+        achievements: awakeningData?.achievements,
+        weeksPassedSinceStartDate: awakeningData?.weeksPassedSinceStartDate ?? 0,
+        weekDates: {
+            start: awakeningData?.achievements?.biggestLiquidation?.weekStarts[week] ?? '',
+            end: awakeningData?.achievements?.biggestLiquidation?.weekEnds[week] ?? ''
+        }
+    };
 
-    const weekDates = useMemo(() => ({
-        start: awakeningData?.achievements?.biggestLiquidation?.weekStarts[state.week] ?? '',
-        end: awakeningData?.achievements?.biggestLiquidation?.weekEnds[state.week] ?? ''
-    }), [awakeningData?.achievements, state.week]);
+    const userProfile = allUserProfiles.find((p) => p.owner.toBase58() === wallet?.walletAddress);
 
-    const userName = useMemo(() =>
-        userProfile
-            ? userProfile.nickname
-            : getAbbrevWalletAddress(wallet?.walletAddress ?? 'undefined'),
-        [userProfile, wallet?.walletAddress]
-    );
+    const weekDates = {
+        start: awakeningData?.achievements?.biggestLiquidation?.weekStarts[week] ?? '',
+        end: awakeningData?.achievements?.biggestLiquidation?.weekEnds[week] ?? ''
+    };
+
+    const userName = userProfile
+        ? userProfile.nickname
+        : getAbbrevWalletAddress(wallet?.walletAddress ?? 'undefined');
 
     const hasProfile = userProfile !== undefined;
 
     const handleProfileView = useCallback((address: string) => {
         const profile = allUserProfiles.find((p) => p.owner.toBase58() === address);
         if (profile) {
-            dispatch({ type: 'SET_ACTIVE_PROFILE', payload: profile });
+            setProfile(profile);
         }
     }, [allUserProfiles]);
 
@@ -597,9 +569,9 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                         <h1 className="font-boldy flex-none capitalize">Weekly Rewards</h1>
 
                         <WeekSelector
-                            currentWeek={state.week}
+                            currentWeek={week}
                             maxWeek={weeksPassedSinceStartDate ?? 0}
-                            onWeekChange={handleWeekChange}
+                            setWeek={setWeek}
                             weekDates={weekDates}
                         />
                     </div>
@@ -607,7 +579,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                     {achievementsData.achievements && (
                         <WeeklyReward
                             allAchievements={achievementsData.achievements}
-                            week={state.week}
+                            week={week}
                             wallet={wallet}
                             handleProfileView={handleProfileView}
                         />
@@ -659,13 +631,13 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                 </div>
             </div>
             <AnimatePresence>
-                {state.activeProfile && (
+                {profile && (
                     <Modal
                         className="h-[85vh] sm:h-[40em] overflow-y-auto max-h-[85vh] w-full"
                         wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
-                        close={() => dispatch({ type: 'SET_ACTIVE_PROFILE', payload: null })}
+                        close={() => setProfile(null)}
                     >
-                        <ViewProfileModal profile={state.activeProfile} showFeesInPnl={showFeesInPnl} />
+                        <ViewProfileModal profile={profile} showFeesInPnl={showFeesInPnl} />
                     </Modal>
                 )}
             </AnimatePresence>

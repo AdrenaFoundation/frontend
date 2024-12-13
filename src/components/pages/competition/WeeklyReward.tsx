@@ -11,7 +11,6 @@ import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { LeaderboardReturnTypeAPI } from '@/types';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 
-
 type Award = {
     title: string;
     trader: string | null;
