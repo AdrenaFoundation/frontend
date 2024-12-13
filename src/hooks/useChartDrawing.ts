@@ -338,7 +338,6 @@ export function useChartDrawing({
     ) as TradingViewChartSavedDrawing;
 
     try {
-      // Remove everything that is not a position line
       if (parsedChartShapes[symbol]) {
         parsedChartShapes[symbol].forEach((shape) => {
           chart.createMultipointShape(shape.points, {
