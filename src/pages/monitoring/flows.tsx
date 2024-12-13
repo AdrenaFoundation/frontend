@@ -1,7 +1,7 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
 import Image from 'next/image';
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,161 +11,28 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
-import { normalize } from '@/constant';
-import Filter from '@/components/Filter/Filter';
 
 export default function Flow({
   custodies,
 }: {
   custodies: CustodyExtended[] | null;
 }) {
-  const { data, loading, startDate, setStartDate, endDate, setEndDate } =
-    usePositionStats();
-  const [selectedRange, setSelectedRange] = useState('Last Day');
-  const [bubbleSizeBy, setBubbleSizeBy] = useState('Volume');
-
-  const tradingStartDate = new Date('2024-01-01T00:00:00Z');
-
-  const stats = data?.positionStats;
-  const activity = data?.positionActivity;
-
-  const getColor = (value: number, avg: number) => {
-    if (value < 0) return '#AC2E41';
-    if (value > 0 && value < avg) return '#BD773F';
-    return '#18AC81';
-  };
-
-  const activityCalendarData = useMemo(() => {
-    if (!activity) return null;
-
-    const activityKeys: Record<string, keyof (typeof activity)[number]> = {
-      'open size': 'totalExitSize',
-      'position count': 'exitCount',
-      pnl: 'totalExitPnl',
-      volume: 'totalVolume',
-      'increase size': 'totalIncreaseSize',
-      fees: 'totalExitFees',
-    };
-
-    const formattedActivityKeys: Record<
-      string,
-      keyof (typeof formattedActivity)[number]
-    > = {
-      'open size': 'totalSize',
-      'position count': 'totalPositions',
-      pnl: 'totalPnl',
-      volume: 'totalVolume',
-      'increase size': 'totalIncreaseSize',
-      fees: 'totalFees',
-    };
-
-    const formattedActivity = activity.reduce(
-      (acc, activity) => ({
-        ...acc,
-        [activity.dateDay]: {
-          totalSize: activity.totalExitSize,
-          totalPositions: activity.exitCount,
-          totalPnl: activity.totalExitPnl,
-          totalVolume: activity.totalVolume,
-          totalIncreaseSize: activity.totalIncreaseSize,
-          totalFees: activity.totalExitFees,
-        },
-      }),
-      {} as Record<
-        string,
-        {
-          totalSize: number;
-          totalPositions: number;
-          totalPnl: number;
-          totalVolume: number;
-          totalIncreaseSize: number;
-          totalFees: number;
-        }
-      >,
-    );
-
-    const averagePnl =
-      activity.reduce((acc, activity) => acc + activity.totalExitPnl, 0) /
-      activity.length;
-
-    const maxTotal = (key: keyof typeof activity) =>
-      Math.max(
-        ...activity.map(
-          (activity) => activity[key as keyof typeof activity] as number,
-        ),
-      );
-
-    const minTotal = (key: keyof typeof activity) =>
-      Math.min(
-        ...activity.map(
-          (activity) => activity[key as keyof typeof activity] as number,
-        ),
-      );
-
-    const tableData = [];
-
-    const highestVolume = [];
-    for (let i = 0; i < 365; i++) {
-      const date = new Date(
-        tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
-      ).toISOString();
-
-      if (!formattedActivity[date]) {
-        tableData.push({
-          date: new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000),
-          stats: null,
-        });
-      } else {
-        highestVolume.push(formattedActivity[date].totalVolume);
-
-        tableData.push({
-          date: new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000),
-          stats: {
-            color: getColor(formattedActivity[date].totalPnl, averagePnl),
-            totalPositions: formattedActivity[date].totalPositions,
-            pnl: formattedActivity[date].totalPnl,
-            increaseSize: formattedActivity[date].totalIncreaseSize,
-            totalFees: formattedActivity[date].totalFees,
-            volume: formattedActivity[date].totalVolume,
-            size: formattedActivity[date].totalSize,
-            bubbleSize: normalize(
-              formattedActivity[date][
-              formattedActivityKeys[
-              bubbleSizeBy.toLowerCase() as keyof typeof activityKeys
-              ]
-              ],
-              3,
-              15,
-              minTotal(
-                activityKeys[
-                bubbleSizeBy.toLowerCase()
-                ] as keyof typeof activity,
-              ),
-              maxTotal(
-                activityKeys[
-                bubbleSizeBy.toLowerCase()
-                ] as keyof typeof activity,
-              ),
-            ),
-          },
-        });
-      }
-    }
-    return tableData;
-  }, [activity, bubbleSizeBy, endDate, startDate]);
-
-  // Group stats by symbol
-  const groupedStats = stats?.reduce((acc, stat) => {
-    if (!acc[stat.symbol]) {
-      acc[stat.symbol] = [];
-    }
-    acc[stat.symbol].push(stat);
-    return acc;
-  }, {} as Record<string, typeof stats>);
+  const {
+    groupedStats,
+    activityCalendarData,
+    bubbleBy,
+    setBubbleBy,
+    loading,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+  } = usePositionStats();
+  const [selectedRange, setSelectedRange] = useState('All Time');
 
   if (loading) return <div>Loading...</div>;
 
-  if (!data) return <div>No data</div>;
+  if (!groupedStats || !activityCalendarData) return <div>No data</div>;
 
   return (
     <StyledContainer className="rounded-lg overflow-hidden p-5 mt-2">
@@ -245,8 +112,8 @@ export default function Flow({
         data={activityCalendarData}
         setStartDate={setStartDate}
         setEndDate={setEndDate}
-        bubbleSizeBy={bubbleSizeBy}
-        setBubbleSizeBy={setBubbleSizeBy}
+        bubbleBy={bubbleBy}
+        setBubbleBy={setBubbleBy}
         setSelectedRange={setSelectedRange}
       />
 
@@ -394,7 +261,6 @@ export default function Flow({
             </div>
           ))}
       </div>
-
     </StyledContainer>
   );
 }
