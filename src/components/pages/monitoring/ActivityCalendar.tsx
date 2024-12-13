@@ -39,10 +39,6 @@ export default function ActivityCalendar({
     setSelectedRange?: (range: string) => void;
     wrapperClassName?: string;
 }) {
-    if (!data) {
-        return null;
-    }
-
     const scrollableDivRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -50,6 +46,11 @@ export default function ActivityCalendar({
             scrollableDivRef.current.scrollLeft = scrollableDivRef.current.scrollWidth;
         }
     }, []);
+
+    if (!data) {
+        return null;
+    }
+
 
     const monthsInActivityData = data.reduce((acc, curr) => {
         if (curr === null) {
@@ -72,8 +73,6 @@ export default function ActivityCalendar({
         acc[month] = (acc[month] || 0) + 1;
         return acc;
     }, [] as number[]);
-
-    console;
 
     return (
         <div className={twMerge("bg-[#040D14] border rounded-lg p-3", wrapperClassName)}>
