@@ -94,12 +94,14 @@ export default class DataApiClient {
         side,
         startDate,
         endDate,
+        walletAddress,
     }: {
         showPositionActivity: boolean;
         symbol?: Token['symbol'];
         side?: 'long' | 'short';
         startDate?: Date;
         endDate?: Date;
+        walletAddress?: string;
     } & T): Promise<GetPositionStatsReturnType<T> | null> {
         try {
             const result = await fetch(
@@ -107,7 +109,7 @@ export default class DataApiClient {
                 }${side ? `&side=${side}` : ''}${startDate ? `&start_date=${encodeURIComponent(startDate.toISOString())}` : ''
                 }${endDate ? `&end_date=${encodeURIComponent(endDate.toISOString())}` : ''
                 }&show_position_activity=${showPositionActivity ? showPositionActivity : false
-                }`,
+                }${walletAddress ? `&wallet_address=${walletAddress}` : ''}`,
             ).then((res) => res.json());
 
             const formattedData = {

@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import clandarIcon from '@/../public/images/Icons/calendar.svg';
@@ -12,9 +12,10 @@ export default function ActivityCalendar({
     data,
     setStartDate,
     setEndDate,
-    bubbleSizeBy,
-    setBubbleSizeBy,
+    bubbleBy,
+    setBubbleBy,
     setSelectedRange,
+    wrapperClassName,
 }: {
     data:
     | {
@@ -31,15 +32,24 @@ export default function ActivityCalendar({
         } | null;
     }[]
     | null;
-    setEndDate: any;
-    setStartDate: any;
-    bubbleSizeBy: string;
-    setBubbleSizeBy: (bubbleSizeBy: string) => void;
-    setSelectedRange: (range: string) => void;
+    setEndDate?: (date: string) => void;
+    setStartDate?: (date: string) => void;
+    bubbleBy: string;
+    setBubbleBy: (bubbleBy: string) => void;
+    setSelectedRange?: (range: string) => void;
+    wrapperClassName?: string;
 }) {
     if (!data) {
         return null;
     }
+
+    const scrollableDivRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (scrollableDivRef.current) {
+            scrollableDivRef.current.scrollLeft = scrollableDivRef.current.scrollWidth;
+        }
+    }, []);
 
     const monthsInActivityData = data.reduce((acc, curr) => {
         if (curr === null) {
@@ -63,21 +73,33 @@ export default function ActivityCalendar({
         return acc;
     }, [] as number[]);
 
+    console;
+
     return (
-        <div className="bg-[#040D14] border rounded-lg p-3">
-            <div className="flex items-center justify-between gap-3 mt-2">
-                <div className="hide-scrollbar overflow-auto">
+        <div className={twMerge("bg-[#040D14] border rounded-lg p-3", wrapperClassName)}>
+            <Filter
+                options={[
+                    { name: 'Pnl' },
+                    { name: 'Volume' },
+                    { name: 'Position Count' },
+                ]}
+                activeFilter={bubbleBy}
+                setFilter={setBubbleBy}
+                className="flex-col sm:flex-row bg-transparent border-transparent p-0"
+            />
+            <div className=" gap-3 mt-4 flex items-center justify-center">
+                <div className="hide-scrollbar overflow-auto" ref={scrollableDivRef}>
                     <div className="relative flex flex-row mt-4">
                         {monthsInActivityData.map((month, i) => {
                             const initSize = daysCountByMonth[i] / 7;
                             const blockMargin = 4;
-                            const blockSize = 20;
+                            const blockSize = 16;
                             const nbOfBlocksToSkip = initSize * (blockSize + blockMargin);
 
                             return (
                                 <div
                                     key={i}
-                                    className="absolute -top-5 text-sm col-span-4 text-gray-600 z-10"
+                                    className="absolute -top-5 text-sm text-gray-600 z-10"
                                     style={{ left: i * nbOfBlocksToSkip }}
                                 >
                                     {month}
@@ -91,7 +113,7 @@ export default function ActivityCalendar({
                                 return (
                                     <div
                                         key={i}
-                                        className="bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14]  size-5 transition duration-300"
+                                        className="bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14]  size-4 transition duration-300"
                                     />
                                 );
                             }
@@ -120,7 +142,7 @@ export default function ActivityCalendar({
                                                 prefix="positions: "
                                                 prefixClassName={twMerge(
                                                     'font-mono opacity-50',
-                                                    bubbleSizeBy === 'Position Count'
+                                                    bubbleBy === 'Position Count'
                                                         ? 'text-[#F1C40F] opacity-100'
                                                         : '',
                                                 )}
@@ -132,7 +154,7 @@ export default function ActivityCalendar({
                                                 format="currency"
                                                 prefixClassName={twMerge(
                                                     'font-mono opacity-50',
-                                                    bubbleSizeBy === 'Pnl'
+                                                    bubbleBy === 'Pnl'
                                                         ? 'text-[#F1C40F] opacity-100'
                                                         : '',
                                                 )}
@@ -143,7 +165,7 @@ export default function ActivityCalendar({
                                                 format="currency"
                                                 prefixClassName={twMerge(
                                                     'font-mono opacity-50',
-                                                    bubbleSizeBy === 'Open Size'
+                                                    bubbleBy === 'Open Size'
                                                         ? 'text-[#F1C40F] opacity-100'
                                                         : '',
                                                 )}
@@ -155,7 +177,7 @@ export default function ActivityCalendar({
                                                 format="currency"
                                                 prefixClassName={twMerge(
                                                     'font-mono opacity-50',
-                                                    bubbleSizeBy === 'Volume'
+                                                    bubbleBy === 'Volume'
                                                         ? 'text-[#F1C40F] opacity-100'
                                                         : '',
                                                 )}
@@ -167,7 +189,7 @@ export default function ActivityCalendar({
                                                 format="currency"
                                                 prefixClassName={twMerge(
                                                     'font-mono opacity-50',
-                                                    bubbleSizeBy === 'Increase size'
+                                                    bubbleBy === 'Increase size'
                                                         ? 'text-[#F1C40F] opacity-100'
                                                         : '',
                                                 )}
@@ -178,7 +200,7 @@ export default function ActivityCalendar({
                                                 format="currency"
                                                 prefixClassName={twMerge(
                                                     'font-mono opacity-50',
-                                                    bubbleSizeBy === 'Fees'
+                                                    bubbleBy === 'Fees'
                                                         ? 'text-[#F1C40F] opacity-100'
                                                         : '',
                                                 )}
@@ -189,16 +211,16 @@ export default function ActivityCalendar({
                                 >
                                     <div
                                         className={twMerge(
-                                            'flex items-center justify-center bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14] cursor-pointer group size-5 transition duration-300',
+                                            'flex items-center justify-center bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14] cursor-pointer group size-4 transition duration-300',
                                         )}
                                         onClick={() => {
                                             const startDate = new Date(date);
                                             const endDate = startDate.setHours(
                                                 startDate.getHours() + 24,
                                             );
-                                            setSelectedRange('Custom');
-                                            setStartDate(new Date(date).toISOString());
-                                            setEndDate(new Date(endDate).toISOString());
+                                            setSelectedRange?.('Custom');
+                                            setStartDate?.(new Date(date).toISOString());
+                                            setEndDate?.(new Date(endDate).toISOString());
                                         }}
                                     >
                                         <motion.div
@@ -215,21 +237,11 @@ export default function ActivityCalendar({
                         })}
                     </div>
                 </div>
-                <Filter
-                    options={[
-                        { name: 'Pnl' },
-                        { name: 'Volume' },
-                        { name: 'Position Count' },
-                    ]}
-                    activeFilter={bubbleSizeBy}
-                    setFilter={setBubbleSizeBy}
-                    className="flex-col bg-transparent border-transparent"
-                />
             </div>
 
-            <div className="flex flex-row justify-between gap-[3.5rem]">
+            <div className="flex flex-col sm:flex-row sm:justify-between">
                 <div className="flex flex-row gap-2 items-center justify-center mt-3">
-                    <p className="font-mono text-gray-500">{bubbleSizeBy}: </p>
+                    <p className="font-mono text-gray-500">{bubbleBy}: </p>
                     <div className="flex flex-row items-center gap-1">
                         {[
                             'bg-gray-500',
