@@ -382,7 +382,7 @@ export function useChartDrawing({
       }
 
       // Remove all break even lines
-      if (showBreakEvenLine) {
+      if (!showBreakEvenLine) {
         updatedPositionChartLines = positionChartLines.filter((line) => {
           if (line.type === 'breakEven') {
             chart.removeEntity(line.id);
