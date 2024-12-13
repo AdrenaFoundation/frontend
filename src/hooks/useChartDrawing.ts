@@ -36,8 +36,6 @@ export type PositionChartLine = {
   value: number;
 };
 
-let i = 0;
-
 function drawHorizontalLine({
   chart,
   price,

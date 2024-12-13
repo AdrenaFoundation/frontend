@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-
-import { calculatePnLandLiquidationPrice } from './usePositions';
+import { calculatePnLandLiquidationPrice } from '@/actions/thunks';
 
 let lastDealtTrickReload = 0;
 let lastCall = 0;
