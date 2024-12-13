@@ -17,6 +17,7 @@ export default function usePositions() {
   const [positions, setPositions] = useState<Array<PositionExtended> | null>(
     null,
   );
+
   // Extract the tokens relevant to the user's positions
   // so we can subscribe to the price updates of just those.
   // Output a string like "BTC,USDC" to obtain a stable value of primitive type

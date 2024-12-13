@@ -73,8 +73,6 @@ function startStreaming() {
       return;
     }
 
-    console.log('PRICE CHANGE', price.price, product.symbol, subscriptionItem);
-
     store.dispatch(
       setStreamingTokenPrice(
         getTokenSymbolFromPythStreamingFormat(product.symbol),
