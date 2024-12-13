@@ -328,6 +328,14 @@ export function useChartDrawing({
 
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
+  useEffect(() => {
+    // Means chart got reset
+    if (!widgetReady) {
+      setPositionChartLines([]);
+      positionLinesIdsRef.current = [];
+    }
+  }, [widgetReady]);
+
   // Redraw what was saved in local storage
   useEffect(() => {
     if (!chart) return;
@@ -359,6 +367,8 @@ export function useChartDrawing({
         JSON.stringify({ ...parsedChartShapes, [symbol]: [] }),
       );
     }
+
+    console.log('CHART CHANGED');
   }, [chart]);
 
   useEffect(() => {
