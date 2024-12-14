@@ -33,8 +33,8 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
     const [sortConfigs, setSortConfigs] = useState<{
         [key: string]: 'asc' | 'desc';
     }>({
-        pnl: 'desc',
-        size: 'desc',
+        pnl: 'asc',
+        size: 'asc',
         age: 'desc',
     });
     const [sortOrder, setSortOrder] = useState<string[]>(['pnl', 'size', 'age']);

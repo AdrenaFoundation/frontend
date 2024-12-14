@@ -67,7 +67,6 @@ export type PageProps = {
   triggerUserProfileReload: () => void;
   custodies: CustodyExtended[] | null;
   wallet: Wallet | null;
-  positions: PositionExtended[] | null;
   connected: boolean;
   activeRpc: {
     name: string;
@@ -585,3 +584,16 @@ export type GetPositionStatsReturnType<
       }[];
     }
   : object);
+
+export type TradingViewChartSavedDrawing = Record<
+  TokenSymbol,
+  {
+    name: Exclude<
+      SupportedLineTools,
+      'cursor' | 'dot' | 'arrow_cursor' | 'eraser' | 'measure' | 'zoom'
+    >;
+    points: { time: number; price: number }[];
+    options: CreateShapeOptions<object>;
+  }[]
+>;
+

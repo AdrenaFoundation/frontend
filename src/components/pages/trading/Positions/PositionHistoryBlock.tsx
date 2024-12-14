@@ -434,7 +434,7 @@ export default function PositionHistoryBlock({
       <AnimatePresence>
         {isOpen && (
           <Modal title="Share PnL" close={() => setIsOpen(false)} className="overflow-y-auto"
-            wrapperClassName="h-[70vh]">
+            wrapperClassName="h-[80vh] sm:h-auto">
             <div className="absolute top-0 w-[300px]">
               {(() => {
                 const fees = -(
@@ -455,7 +455,12 @@ export default function PositionHistoryBlock({
               token: positionHistory.token,
               side: positionHistory.side,
               price: positionHistory.entry_price,
-              fees: positionHistory.exit_fees + positionHistory.borrow_fees,
+              fees: -(
+                (positionHistory.exit_fees ?? 0) +
+                (positionHistory.borrow_fees ?? 0)
+              ),
+              exitFeeUsd: positionHistory.exit_fees,
+              borrowFeeUsd: positionHistory.borrow_fees,
               collateralUsd: positionHistory.entry_collateral_amount,
               sizeUsd: positionHistory.entry_collateral_amount * positionHistory.entry_leverage,
               exitPrice: positionHistory.exit_price,

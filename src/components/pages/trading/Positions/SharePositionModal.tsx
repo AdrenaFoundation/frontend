@@ -30,10 +30,10 @@ export default function SharePositionModal({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [isPnlUsd, setIsPnlUsd] = useState(false);
+  const [isPnlWFees, setIsPnlWFees] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [option, setOption] = useState(0);
-
   const OPTIONS = [
     {
       id: 0,
@@ -60,10 +60,12 @@ export default function SharePositionModal({
   const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnlPercentage = position.pnl
-    ? ((position.pnl - fees) / position.collateralUsd) * 100
+    ? ((position.pnl - (!isPnlWFees ? fees : 0)) / position.collateralUsd) * 100
     : undefined;
 
-  const pnlUsd = position.pnl ? position.pnl - fees : undefined;
+  const pnlUsd = position.pnl
+    ? position.pnl - (!isPnlWFees ? fees : 0)
+    : undefined;
 
   const openedOn = new Date(
     Number(position.nativeObject.openTime) * 1000,
@@ -164,12 +166,14 @@ export default function SharePositionModal({
               {position?.exitPrice ? 'Exit Price' : 'Mark Price'}
             </span>
             <span className="font-archivo text-sm sm:text-lg">
-              {position?.exitPrice ? formatPriceInfo(
-                position.exitPrice,
-                position.token.displayPriceDecimalsPrecision,
-              ) : formatPriceInfo(
-                tokenPrices[getTokenSymbol(position.token.symbol)],
-              )}
+              {position?.exitPrice
+                ? formatPriceInfo(
+                  position.exitPrice,
+                  position.token.displayPriceDecimalsPrecision,
+                )
+                : formatPriceInfo(
+                  tokenPrices[getTokenSymbol(position.token.symbol)],
+                )}
             </span>
           </li>
           <li className="flex flex-col gap-1">
@@ -248,7 +252,7 @@ export default function SharePositionModal({
         ))}
       </div>
 
-      <div className="mt-3">
+      <div className="flex flex-col gap-3 mt-3">
         <div
           className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
           onClick={() => setIsPnlUsd(!isPnlUsd)}
@@ -258,6 +262,23 @@ export default function SharePositionModal({
             <Switch
               className="mr-0.5"
               checked={isPnlUsd}
+              onChange={() => {
+                // Handle the click on the level above
+              }}
+              size="large"
+            />
+          </label>
+        </div>
+
+        <div
+          className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
+          onClick={() => setIsPnlWFees(!isPnlWFees)}
+        >
+          <p className="font-boldy text-base">Display PnL with fees</p>
+          <label className="flex items-center ml-1 cursor-pointer">
+            <Switch
+              className="mr-0.5"
+              checked={isPnlWFees}
               onChange={() => {
                 // Handle the click on the level above
               }}

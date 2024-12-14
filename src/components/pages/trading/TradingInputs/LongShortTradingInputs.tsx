@@ -4,7 +4,8 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -29,6 +30,7 @@ import {
   getTokenImage,
   getTokenSymbol,
   nativeToUi,
+  tryPubkey,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
@@ -70,6 +72,7 @@ export default function LongShortTradingInputs({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
 }) {
+  const { query } = useRouter();
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -92,6 +95,11 @@ export default function LongShortTradingInputs({
 
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
+
+  const referrer = useMemo(() => {
+    console.log('Referral', query.referral);
+    return query.referral ? tryPubkey(query.referral as string) : null;
+  }, [query.referral]);
 
   const [custody, setCustody] = useState<CustodyExtended | null>(null);
 
@@ -258,6 +266,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          referrer,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -267,6 +276,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          referrer,
         }));
 
       dispatch(fetchWalletTokenBalances());
@@ -497,6 +507,7 @@ export default function LongShortTradingInputs({
     }
 
     return setErrorMessage(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
 
   const handleInputAChange = (v: number | null) => {
@@ -897,7 +908,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
+                      nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
                       format="number"
                       className="text-lg"
                     />
@@ -1000,7 +1011,8 @@ export default function LongShortTradingInputs({
                       className="flex-col mt-3"
                     >
                       <FormatNumber
-                        nb={side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee}
+                        // Multiply by 100 to be displayed as %
+                        nb={((side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee) ?? 0) * 100}
                         precision={RATE_DECIMALS}
                         minimumFractionDigits={4}
                         suffix="%/hr"

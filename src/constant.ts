@@ -161,6 +161,7 @@ export const SOLANA_EXPLORERS_OPTIONS = {
   },
 } as const;
 
+
 export const normalize = (
   value: number,
   minRange: number,
@@ -179,3 +180,12 @@ export const normalize = (
     ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
   );
 };
+
+export const greenColor = '#07956be6';
+export const redColor = '#F23645';
+export const greyColor = '#78828e';
+export const whiteColor = '#ffffff';
+export const orangeColor = '#f77f00';
+export const blueColor = '#3a86ff';
+export const purpleColor = '#9333ea';
+

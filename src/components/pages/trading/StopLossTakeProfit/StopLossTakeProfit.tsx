@@ -370,49 +370,6 @@ export default function StopLossTakeProfit({
               />
             </div>
           </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className="flex w-full justify-between items-center">
-            <span className="text-sm">Take Profit</span>
-            <div className={takeProfitInput !== null ? 'text-blue' : ''}>
-              <FormatNumber
-                nb={takeProfitInput}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={
-                  position.token.displayPriceDecimalsPrecision
-                }
-                className={twMerge(
-                  'text-sm text-regular',
-                  takeProfitInput !== null ? 'text-blue' : '',
-                )}
-                isDecimalDimmed={false}
-              />
-            </div>
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className="flex w-full justify-between items-center">
-            <span className="text-sm">Stop Loss</span>
-            <div className={stopLossInput !== null ? 'text-blue' : ''}>
-              <FormatNumber
-                nb={stopLossInput}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={
-                  position.token.displayPriceDecimalsPrecision
-                }
-                className={twMerge(
-                  'text-sm text-regular',
-                  stopLossInput !== null ? 'text-blue' : '',
-                )}
-                isDecimalDimmed={false}
-              />
-            </div>
-          </div>
-
         </div>
       </div>
 

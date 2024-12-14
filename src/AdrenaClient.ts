@@ -13,7 +13,7 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
   RpcResponseAndContext,
-  SignatureResult,
+  SignatureStatus,
   SimulatedTransactionResponse,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
@@ -22,7 +22,6 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from '@solana/web3.js';
-import { track } from '@vercel/analytics';
 
 import { Adrena } from '@/target/adrena';
 import AdrenaJson from '@/target/adrena.json';
@@ -32,7 +31,7 @@ import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
-import { getMeanPrioritizationFeeByPercentile } from './grpf';
+import { getMeanPrioritizationFeeByPercentile } from './priorityFee';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AdrenaProgram,
@@ -75,6 +74,7 @@ import {
   nativeToUi,
   parseTransactionError,
   PercentilePriorityFeeList,
+  sleep,
   u128SplitToBN,
   uiToNative,
 } from './utils';
@@ -992,6 +992,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     userProfile,
+    referrer,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1000,6 +1001,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     userProfile?: PublicKey;
+    referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1051,6 +1053,7 @@ export class AdrenaClient {
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
+        referrer: referrer ?? null,
       })
       .accountsStrict({
         owner,
@@ -1093,6 +1096,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     userProfile,
+    referrer,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1101,6 +1105,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     userProfile?: PublicKey;
+    referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1168,6 +1173,7 @@ export class AdrenaClient {
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
+        referrer: referrer ?? null,
       })
       .accountsStrict({
         owner,
@@ -1634,6 +1640,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    referrer,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1642,6 +1649,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    referrer?: PublicKey | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1675,6 +1683,7 @@ export class AdrenaClient {
         collateralAmount,
         leverage,
         userProfile: userProfile ? userProfile.pubkey : undefined,
+        referrer,
       }).instruction();
 
     const transaction = new Transaction();
@@ -1813,6 +1822,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    referrer,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1821,6 +1831,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    referrer?: PublicKey | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1852,6 +1863,7 @@ export class AdrenaClient {
         collateralAmount,
         leverage,
         userProfile: userProfile ? userProfile.pubkey : undefined,
+        referrer,
       }).instruction();
 
     const transaction = new Transaction();
@@ -4036,12 +4048,16 @@ export class AdrenaClient {
 
   // Positions PDA can be found by deriving each mints supported by the pool for 2 sides
   // DO NOT LOAD PNL OR LIQUIDATION PRICE
-  public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
-    const possiblePositionAddresses = this.getPossiblePositionAddresses(user);
+  public async loadUserPositions(
+    user: PublicKey,
+    positionAddresses?: Array<PublicKey>,
+  ): Promise<PositionExtended[]> {
+    const actualPositionAddresses =
+      positionAddresses || this.getPossiblePositionAddresses(user);
 
     const positions =
       (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
-        possiblePositionAddresses,
+        actualPositionAddresses,
         'recent',
       )) as (Position | null)[];
 
@@ -4054,14 +4070,15 @@ export class AdrenaClient {
 
         const positionExtended = this.extendPosition(
           position,
-          possiblePositionAddresses[index],
+          actualPositionAddresses[index],
         );
 
-        if (!positionExtended) {
+        if (positionExtended) {
+          acc.push(positionExtended);
           return acc;
         }
 
-        return [...acc, positionExtended];
+        return acc;
       },
       [] as PositionExtended[],
     );
@@ -4723,9 +4740,27 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    /////////////////////// PRIORITY FEES ///////////////////////
     let priorityFeeMicroLamports: number =
       DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    let latestBlockHash: {
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    };
+
+    try {
+      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+    } catch (err) {
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+
+    transaction.recentBlockhash = latestBlockHash.blockhash;
+    transaction.feePayer = wallet.publicKey;
 
     try {
       // Refresh priority fees before proceeding
@@ -4733,8 +4768,13 @@ export class AdrenaClient {
         this.connection,
         {
           percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-          fallback: true,
         },
+        bs58.encode(
+          transaction.serialize({
+            requireAllSignatures: false,
+            verifySignatures: false,
+          }),
+        ),
       );
     } catch (err) {
       console.log('Error fetching priority fee', err);
@@ -4754,26 +4794,6 @@ export class AdrenaClient {
         units: 1000000, // Use a lot of units to avoid any issues during next simulation
       }),
     );
-
-    /////////////////////// TRANSACTION ///////////////////////
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-
-    let latestBlockHash: {
-      blockhash: Blockhash;
-      lastValidBlockHeight: number;
-    };
-
-    try {
-      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
-    } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
-
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    transaction.recentBlockhash = latestBlockHash.blockhash;
-    transaction.feePayer = wallet.publicKey;
 
     // Simulate the transaction
     let computeUnitUsed: number | null | undefined = null;
@@ -4890,36 +4910,40 @@ export class AdrenaClient {
     );
 
     /////////////////////// Confirm the transaction (and retry if needed) ///////////////////////
-    let confirmedTx: RpcResponseAndContext<SignatureResult> | null = null;
-    const TX_RETRY_INTERVAL = 2000;
-    const MAX_TX_SEND_ATTEMPTS = 12;
+    let txIsConfirmed = false;
+    let confirmTxRet: RpcResponseAndContext<SignatureStatus | null> | null =
+      null;
+    const MAX_TIMEOUT = 30000; // Stop after sometime
+    const MIN_LOOP_TIME = 500;
     let txSendAttempts = 1;
 
     try {
-      while (!confirmedTx && txSendAttempts <= MAX_TX_SEND_ATTEMPTS) {
-        confirmedTx = (await Promise.race([
-          this.connection.confirmTransaction(
-            {
-              signature: txSignatureBase58,
-              blockhash: latestBlockHash.blockhash,
-              lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-            },
-            'processed',
-          ),
-          new Promise((resolve) =>
-            setTimeout(() => resolve(null), TX_RETRY_INTERVAL),
-          ),
-        ])) as unknown as RpcResponseAndContext<SignatureResult> | null;
+      const start = Date.now();
 
-        if (confirmedTx) {
-          break;
-        }
+      while (!txIsConfirmed && Date.now() - start < MAX_TIMEOUT) {
+        const d = Date.now();
 
-        if (!confirmedTx) {
+        // Check the block height is still value
+        confirmTxRet = await this.connection
+          .getSignatureStatus(txSignatureBase58)
+          .catch((e) => {
+            console.log('GET SIGNATURE STATUS ERROR', e);
+            return null;
+          });
+
+        if (
+          confirmTxRet &&
+          confirmTxRet.value &&
+          confirmTxRet.value.confirmations &&
+          confirmTxRet.value.confirmations > 10
+        ) {
+          txIsConfirmed = true;
+          console.log('Tx confirmed after', Date.now() - d, 'ms');
+        } else {
           console.log(
-            `Tx not confirmed after ${
-              TX_RETRY_INTERVAL * txSendAttempts++
-            }ms, resending (${txSendAttempts} / ${MAX_TX_SEND_ATTEMPTS})`,
+            `Tx not confirmed after resending #${txSendAttempts++}`,
+            (confirmTxRet && confirmTxRet.value && confirmTxRet.value.err) ??
+              null,
           );
 
           await this.connection.sendRawTransaction(
@@ -4929,27 +4953,41 @@ export class AdrenaClient {
               maxRetries: 0,
             },
           );
+
+          const loopTime = Date.now() - d;
+
+          if (loopTime < MIN_LOOP_TIME) {
+            await sleep(MIN_LOOP_TIME - loopTime);
+          }
         }
       }
 
-      if (confirmedTx) {
-        if (confirmedTx.value.err) {
-          const adrenaError = parseTransactionError(
-            this.adrenaProgram,
-            confirmedTx.value.err,
-          );
-          adrenaError.setTxHash(txSignatureBase58);
+      if (
+        !txIsConfirmed ||
+        !confirmTxRet ||
+        (confirmTxRet &&
+          ((confirmTxRet.value && confirmTxRet.value.err) ||
+            !confirmTxRet.value))
+      ) {
+        const adrenaError = parseTransactionError(
+          this.adrenaProgram,
+          confirmTxRet && confirmTxRet.value
+            ? confirmTxRet.value.err
+            : 'Transaction not confirmed',
+        );
+        adrenaError.setTxHash(txSignatureBase58);
 
-          console.log('Transaction failed', adrenaError);
-          // Confirm the transaction errored
-          notification?.currentStepErrored(adrenaError);
-          throw adrenaError;
-        }
+        console.log('Transaction failed', adrenaError);
 
-        notification?.setTxHash(txSignatureBase58);
-        notification?.currentStepSucceeded();
-        return txSignatureBase58;
+        // Confirm the transaction errored
+        notification?.currentStepErrored(adrenaError);
+        throw adrenaError;
       }
+
+      notification?.setTxHash(txSignatureBase58);
+      notification?.currentStepSucceeded();
+
+      return txSignatureBase58;
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txSignatureBase58);
@@ -4957,223 +4995,6 @@ export class AdrenaClient {
 
       throw adrenaError;
     }
-
-    // Transaction not confirmed
-    const adrenaError = new AdrenaTransactionError(
-      null,
-      'Transaction not confirmed',
-    );
-
-    adrenaError.setTxHash(txSignatureBase58);
-
-    notification?.currentStepErrored(adrenaError);
-
-    throw adrenaError;
-  }
-
-  public async signAndExecuteTx({
-    transaction,
-    notification,
-  }: {
-    transaction: Transaction;
-    notification?: MultiStepNotification;
-  }): Promise<string> {
-    if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
-    }
-
-    // Default value
-    let priorityFeeMicroLamports: number =
-      DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
-
-    try {
-      // Refresh priority fees before proceeding
-      priorityFeeMicroLamports = await getMeanPrioritizationFeeByPercentile(
-        this.connection,
-        {
-          percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-          fallback: true,
-        },
-      );
-    } catch (err) {
-      console.log('Error fetching priority fee', err);
-    }
-
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-
-    let signedTransaction: Transaction;
-
-    let serializedTransaction: Buffer;
-
-    try {
-      const latestBlockHash = await this.connection.getLatestBlockhash(
-        'confirmed',
-      );
-
-      console.log(
-        'Apply',
-        priorityFeeMicroLamports,
-        'micro lamport priority fee to transaction',
-      );
-
-      transaction.instructions.unshift(
-        ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: priorityFeeMicroLamports,
-        }),
-        ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1000000, // Use a lot of units to avoid any issues during simulation
-        }),
-      );
-
-      transaction.recentBlockhash = latestBlockHash.blockhash;
-      transaction.feePayer = wallet.publicKey;
-
-      const computeUnitUsed = await this.simulateAndGetComputedUnits({
-        payer: wallet.publicKey,
-        transaction: transaction,
-        recentBlockhash: latestBlockHash.blockhash,
-      });
-
-      console.log('computeUnitUsed', computeUnitUsed);
-
-      if (
-        this.maxPriorityFee !== null &&
-        computeUnitUsed !== null &&
-        computeUnitUsed > 0
-      ) {
-        const maxPriorityFeeLamports = this.maxPriorityFee * LAMPORTS_PER_SOL;
-        const totalPriorityFee =
-          (priorityFeeMicroLamports * computeUnitUsed) / 1_000_000;
-
-        if (totalPriorityFee > maxPriorityFeeLamports) {
-          const adjustedMicroLamports = Math.floor(
-            (maxPriorityFeeLamports * 1_000_000) / computeUnitUsed,
-          );
-
-          console.log(
-            `Adjusting priority fee to ${adjustedMicroLamports} microLamports per CU to stay within max priority fee`,
-          );
-
-          transaction.instructions[0] =
-            ComputeBudgetProgram.setComputeUnitPrice({
-              microLamports: adjustedMicroLamports,
-            });
-        }
-      }
-
-      if (computeUnitUsed !== null) {
-        transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-          units: computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
-        });
-      }
-
-      // Prepare the transaction succeeded
-      notification?.currentStepSucceeded();
-
-      const start = Date.now();
-
-      signedTransaction = await wallet.signTransaction(transaction);
-
-      serializedTransaction = signedTransaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      });
-
-      const end = Date.now();
-
-      track('transaction_duration', {
-        computeUnitUsed,
-        duration: `${end - start}ms`,
-        maxPriorityFee: this.maxPriorityFee,
-        transactionSize: serializedTransaction.length,
-      });
-    } catch (err) {
-      console.log('sign error:', err);
-
-      const adrenaError = new AdrenaTransactionError(
-        null,
-        'User rejected the request',
-      );
-
-      // Sign the transaction failed
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    // VersionedTransaction are not handled by anchor client yet, will be released in 0.27.0
-    // https://github.com/coral-xyz/anchor/blob/master/CHANGELOG.md
-    let txHash: string;
-
-    // Sign the transaction succeeded
-    notification?.currentStepSucceeded();
-
-    try {
-      txHash = await this.connection.sendRawTransaction(serializedTransaction, {
-        skipPreflight: true,
-        maxRetries: 0,
-      });
-    } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
-
-      // Execute the transaction errored
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    // Execute the transaction succeeded
-    notification?.setTxHash(txHash);
-    notification?.currentStepSucceeded();
-
-    console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
-      }`,
-    );
-
-    let result: RpcResponseAndContext<SignatureResult> | null = null;
-
-    // use finalized to get the latest blockhash accepted by the leader
-    const latestBlockHash = await this.connection.getLatestBlockhash(
-      'confirmed',
-    );
-
-    try {
-      const d = Date.now();
-      result = await this.connection.confirmTransaction(
-        {
-          blockhash: latestBlockHash.blockhash,
-          lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-          signature: txHash,
-        },
-        'processed',
-      );
-
-      console.log('confirmTransaction took', Date.now() - d, 'to confirm tx');
-    } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
-      adrenaError.setTxHash(txHash);
-
-      // Confirm the transaction errored
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    if (result.value.err) {
-      const adrenaError = parseTransactionError(
-        this.adrenaProgram,
-        result.value.err,
-      );
-      adrenaError.setTxHash(txHash);
-
-      // Confirm the transaction errored
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    // Confirm the transaction succeeded
-    notification?.currentStepSucceeded();
-
-    return txHash;
   }
 
   public findCustodyAddress(mint: PublicKey): PublicKey {

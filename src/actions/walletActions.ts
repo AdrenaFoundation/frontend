@@ -39,8 +39,6 @@ export const openCloseConnectionModalAction =
 
 export const autoConnectWalletAction =
   (adapter: Adapter) => async (dispatch: Dispatch<ConnectWalletAction>) => {
-    console.log('>>>> AUTO CONNECT ADAPTER:', adapter.name);
-
     const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
         type: 'connect',

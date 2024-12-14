@@ -19,7 +19,6 @@ export default function useUserProfile(): {
 
   const fetchUserProfile = useCallback(async () => {
     if (!wallet) {
-      console.log('USER PROFILE NULL');
       setUserProfile(null);
       return;
     }

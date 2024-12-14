@@ -422,13 +422,11 @@ export default function EditPositionCollateral({
               ) : null}
             </div>
           </div>
-
         </div>
       </div>
 
       <div className="px-4 mt-2">
         <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
-
           <div className={rowStyle}>
             <div className="text-sm text-txtfade">Size</div>
 
@@ -439,7 +437,6 @@ export default function EditPositionCollateral({
               minimumFractionDigits={2}
             />
           </div>
-
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
@@ -458,9 +455,7 @@ export default function EditPositionCollateral({
               minimumFractionDigits={2}
             />
           </div>
-
           <div className="w-full h-[1px] bg-bcolor my-1" />
-
 
           <div className={rowStyle}>
             <div className="text-sm text-txtfade">Initial Leverage</div>
@@ -472,11 +467,10 @@ export default function EditPositionCollateral({
               minimumFractionDigits={2}
             />
           </div>
-
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
-            <div className="text-sm text-txtfade">
+            <div className="text-sm">
               PnL <span className="test-xs text-txtfade">(after fees)</span>
             </div>
 
@@ -491,7 +485,6 @@ export default function EditPositionCollateral({
               />
             </div>
           </div>
-
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
@@ -521,8 +514,6 @@ export default function EditPositionCollateral({
               ) : null}
             </div>
           </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
@@ -558,8 +549,6 @@ export default function EditPositionCollateral({
               ) : null}
             </div>
           </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
@@ -605,7 +594,7 @@ export default function EditPositionCollateral({
       </div>
 
       <TabSelect
-        wrapperClassName="h-12 flex items-center"
+        wrapperClassName="h-12 flex items-center mt-auto"
         selected={selectedAction}
         tabs={[
           { title: 'deposit', activeColor: 'border-b-gray-700' },
@@ -618,102 +607,83 @@ export default function EditPositionCollateral({
         }}
       />
 
-      {selectedAction === 'deposit' ? (
-        <>
-          {belowMinLeverage && (
-            <div className="flex flex-col text-sm ml-4 mr-4">
-              <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
-                <Image
-                  className="opacity-100 absolute left-3 top-auto bottom-auto"
-                  src={warningIcon}
-                  height={20}
-                  width={20}
-                  alt="Warning icon"
-                />
-                This action would take the leverage below the minimum of 1.1x.
-                Please adjust your input.
-              </div>
-            </div>
-          )}
-
-          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
-            <TradingInput
-              className="text-sm"
-              inputClassName="border-0 bg-third"
-              value={input}
-              selectedToken={
-                position.side === 'long'
-                  ? position.token
-                  : position.collateralToken
-              }
-              tokenList={[]}
-              onTokenSelect={() => {
-                // One token only
-              }}
-              onChange={setInput}
-            />
-          </div>
-
-          {
-            /* Display wallet balance */
-            (() => {
-              if (!walletTokenBalances) return null;
-
-              const balance =
-                walletTokenBalances[position.collateralToken.symbol];
-              if (balance === null) return null;
-
-              return (
-                <div
-                  className="flex flex-row items-center ml-auto mr-4 cursor-pointer"
-                  onClick={() => setInput(walletBalance)}
-                >
+      <div className="flex flex-col gap-2">
+        {selectedAction === 'deposit' ? (
+          <>
+            {belowMinLeverage && (
+              <div className="flex flex-col text-sm ml-4 mr-4">
+                <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
                   <Image
-                    className="mr-1 opacity-60 relative"
-                    src={walletImg}
-                    height={17}
-                    width={17}
-                    alt="Wallet icon"
+                    className="opacity-100 absolute left-3 top-auto bottom-auto"
+                    src={warningIcon}
+                    height={20}
+                    width={20}
+                    alt="Warning icon"
                   />
-                  <FormatNumber
-                    nb={balance}
-                    precision={
-                      position.collateralToken.displayAmountDecimalsPrecision
-                    }
-                    className="text-txtfade"
-                    isDecimalDimmed={false}
-                    suffix={position.collateralToken.symbol}
-                  />
-
-                  <RefreshButton className="ml-1" />
+                  This action would take the leverage below the minimum of 1.1x.
+                  Please adjust your input.
                 </div>
-              );
-            })()
-          }
-        </>
-      ) : (
-        <>
-          {/* Withdraw collateral info */}
-          <div className="flex flex-col text-sm ml-4 mr-4">
-            <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
-              <Image
-                className="opacity-60 absolute left-3 top-auto bottom-auto"
-                src={infoIcon}
-                height={16}
-                width={16}
-                alt="Info icon"
-              />
-              <span className="text-sm">
-                Withdrawn collateral will be received in{' '}
-                {position.collateralToken.symbol}
-              </span>
-            </div>
-          </div>
+              </div>
+            )}
 
-          {/* Check for max leverage*/}
-          {maxInitialLeverage &&
-            position.currentLeverage &&
-            position.currentLeverage >= maxInitialLeverage ? (
+            <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
+              <TradingInput
+                className="text-sm"
+                inputClassName="border-0 bg-third"
+                value={input}
+                selectedToken={
+                  position.side === 'long'
+                    ? position.token
+                    : position.collateralToken
+                }
+                tokenList={[]}
+                onTokenSelect={() => {
+                  // One token only
+                }}
+                onChange={setInput}
+              />
+            </div>
+
+            {
+              /* Display wallet balance */
+              (() => {
+                if (!walletTokenBalances) return null;
+
+                const balance =
+                  walletTokenBalances[position.collateralToken.symbol];
+                if (balance === null) return null;
+
+                return (
+                  <div
+                    className="flex flex-row items-center ml-auto mr-4 cursor-pointer"
+                    onClick={() => setInput(walletBalance)}
+                  >
+                    <Image
+                      className="mr-1 opacity-60 relative"
+                      src={walletImg}
+                      height={17}
+                      width={17}
+                      alt="Wallet icon"
+                    />
+                    <FormatNumber
+                      nb={balance}
+                      precision={
+                        position.collateralToken.displayAmountDecimalsPrecision
+                      }
+                      className="text-txtfade"
+                      isDecimalDimmed={false}
+                      suffix={position.collateralToken.symbol}
+                    />
+
+                    <RefreshButton className="ml-1" />
+                  </div>
+                );
+              })()
+            }
+          </>
+        ) : (
+          <>
+            {/* Withdraw collateral info */}
             <div className="flex flex-col text-sm ml-4 mr-4">
               <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
                 <Image
@@ -724,66 +694,88 @@ export default function EditPositionCollateral({
                   alt="Info icon"
                 />
                 <span className="text-sm">
-                  Your position is above the maximum leverage of{' '}
-                  {maxInitialLeverage}x, you cannot withdraw more collateral.
+                  Withdrawn collateral will be received in{' '}
+                  {position.collateralToken.symbol}
                 </span>
               </div>
             </div>
-          ) : null}
 
-          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
-            <TradingInput
-              className="text-sm"
-              inputClassName="border-0 bg-third"
-              value={input}
-              selectedToken={
-                {
-                  symbol: 'USD',
-                } as Token
-              }
-              tokenList={[]}
-              onTokenSelect={() => {
-                // One token only
-              }}
-              onChange={setInput}
-              disabled={
-                position.currentLeverage !== null &&
-                position.currentLeverage <= 1.1
-              }
-            />
-          </div>
+            {/* Check for max leverage*/}
+            {maxInitialLeverage &&
+              position.currentLeverage &&
+              position.currentLeverage >= maxInitialLeverage ? (
+              <div className="flex flex-col text-sm ml-4 mr-4">
+                <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+                  <Image
+                    className="opacity-60 absolute left-3 top-auto bottom-auto"
+                    src={infoIcon}
+                    height={16}
+                    width={16}
+                    alt="Info icon"
+                  />
+                  <span className="text-sm">
+                    Your position is above the maximum leverage of{' '}
+                    {maxInitialLeverage}x, you cannot withdraw more collateral.
+                  </span>
+                </div>
+              </div>
+            ) : null}
 
-          {!aboveMaxLeverage && !belowMinLeverage && (
-            <div className="flex flex-row gap-3 px-4">
-              {[25, 50, 75].map((percent, i) => {
-                return (
-                  <Button
-                    key={i}
-                    title={`${percent}%`}
-                    variant="secondary"
-                    rounded={false}
-                    className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
-                    onClick={() => setInput(calculateCollateralPercentage(25))}
-                  ></Button>
-                );
-              })}
+            <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
+              <TradingInput
+                className="text-sm"
+                inputClassName="border-0 bg-third"
+                value={input}
+                selectedToken={
+                  {
+                    symbol: 'USD',
+                  } as Token
+                }
+                tokenList={[]}
+                onTokenSelect={() => {
+                  // One token only
+                }}
+                onChange={setInput}
+                disabled={
+                  position.currentLeverage !== null &&
+                  position.currentLeverage <= 1.1
+                }
+              />
             </div>
-          )}
 
-          <div className="text-sm text-txtfade ml-auto mr-4">
-            <FormatNumber
-              nb={Math.min(positionNetValue, position.collateralUsd)}
-              format="currency"
-              className="inline text-sm text-txtfade"
-              isDecimalDimmed={false}
-            />{' '}
-            of collateral in the position
-          </div>
-        </>
-      )}
+            {!aboveMaxLeverage && !belowMinLeverage && (
+              <div className="flex flex-row gap-3 px-4">
+                {[25, 50, 75].map((percent, i) => {
+                  return (
+                    <Button
+                      key={i}
+                      title={`${percent}%`}
+                      variant="secondary"
+                      rounded={false}
+                      className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
+                      onClick={() =>
+                        setInput(calculateCollateralPercentage(percent))
+                      }
+                    ></Button>
+                  );
+                })}
+              </div>
+            )}
 
+            <div className="text-sm text-txtfade ml-auto mr-4 gap-1 flex items-center mt-1">
+              <FormatNumber
+                nb={Math.min(positionNetValue, position.collateralUsd)}
+                format="currency"
+                className="inline text-xs text-txtfade"
+                isDecimalDimmed={false}
+              />
+              of collateral in the position
+            </div>
+          </>
+        )}
+      </div>
 
-      <div className='p-4 border-t w-full'>
+      <div className="p-4 border-t w-full">
         <Button
           className="w-full"
           size="lg"

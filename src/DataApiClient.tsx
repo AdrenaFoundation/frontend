@@ -15,8 +15,6 @@ export default class DataApiClient {
             `https://datapi.adrena.xyz/poolinfo?lm_apr_rolling_seven_day=true&lp_apr_rolling_seven_day=true&sort=DESC&limit=1`,
         ).then((res) => res.json());
 
-        console.log(result.data);
-
         return {
             lm_apr_rolling_seven_day: result.data.lm_apr_rolling_seven_day[0],
             lp_apr_rolling_seven_day: result.data.lp_apr_rolling_seven_day[0],
@@ -48,8 +46,6 @@ export default class DataApiClient {
             })()}&end_date=${new Date().toISOString()}&get_average=true`,
         ).then((res) => res.json());
 
-        console.log(result.data);
-
         return result.data;
     }
 
@@ -78,8 +74,6 @@ export default class DataApiClient {
                 return startDate.toISOString();
             })()}&end_date=${new Date().toISOString()}`,
         ).then((res) => res.json());
-
-        console.log(result.data);
 
         return result.data;
     }

@@ -37,7 +37,8 @@ export default function ClosePosition({
   const [exitPriceAndFee, setExitPriceAndFee] =
     useState<ExitPriceAndFee | null>(null);
 
-  const markPrice: number | null = tokenPrices[position.token.symbol];
+  const markPrice: number | null =
+    tokenPrices[getTokenSymbol(position.token.symbol)];
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
@@ -117,62 +118,17 @@ export default function ClosePosition({
     await doFullClose();
   };
 
+  const [showFees, setShowFees] = useState(false);
+
   return (
     <div
       className={twMerge('flex flex-col h-full w-full sm:w-[22em]', className)}
     >
-      <div className="p-4">
-        <p className="mb-2 font-boldy">Receive</p>
-        <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3 py-2.5">
-          <div className="flex flex-row gap-3 items-center">
-            <Image
-              src={tokenImage}
-              width={24}
-              height={24}
-              alt="close token image"
-            />
-            <div className="flex flex-col mr-4">
-              <div>
-                <FormatNumber
-                  nb={
-                    exitPriceAndFee &&
-                    nativeToUi(
-                      exitPriceAndFee.amountOut,
-                      position.collateralToken.decimals,
-                    )
-                  }
-                  precision={4}
-                  className="text-lg inline-block"
-                  isDecimalDimmed={false}
-                  isAbbreviate={position.collateralToken.symbol === 'BONK'}
-                />
 
-                <span className="text-lg ml-1 font-semibold">
-                  {position.collateralToken.symbol}
-                </span>
-              </div>
-
-              <FormatNumber
-                nb={
-                  exitPriceAndFee &&
-                  collateralMarkPrice &&
-                  nativeToUi(
-                    exitPriceAndFee.amountOut,
-                    position.collateralToken.decimals,
-                  ) * collateralMarkPrice
-                }
-                format="currency"
-                className="text-txtfade text-sm"
-                isDecimalDimmed={false}
-              />
-            </div>
-          </div>
+      <div className="px-4 pt-4 pb-2">
+        <div className="text-white text-sm mb-1 font-boldy">
+          Position to close
         </div>
-      </div>
-
-      <div className="px-4">
-        <div className="text-white text-sm mb-1 font-boldy">Position to close</div>
-
 
         <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
           <div className="w-full flex justify-between">
@@ -232,11 +188,9 @@ export default function ClosePosition({
               />
             </div>
           </div>
-
         </div>
 
         <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
-
           <div className={rowStyle}>
             <div className="text-sm text-txtfade">Size</div>
 
@@ -266,7 +220,6 @@ export default function ClosePosition({
           </div>
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
-
 
           <div className={rowStyle}>
             <div className="text-sm text-txtfade">Initial Leverage</div>
@@ -313,87 +266,161 @@ export default function ClosePosition({
         </div>
       </div>
 
-      <div className='p-4 pb-0'>
-        <div className="text-white text-sm mb-1 font-boldy">
-          Fees Breakdown
+      <div className="w-full h-[1px] bg-bcolor my-1" />
+
+      <div className="px-4 pt-2 pb-2">
+        <div className="flex justify-between items-center">
+          <div className="text-white text-sm font-boldy">Fees</div>
+          <button
+            className="text-txtfade text-xs underline pr-2"
+            onClick={() => setShowFees(!showFees)}
+          >
+            {showFees ? 'Show Less' : 'Show More'}
+          </button>
         </div>
 
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
-          <div className={rowStyle}>
-            <div className="flex items-center text-sm text-txtfade">
-              Exit Fees
-              <Tippy
-                content={
-                  <p className="font-medium">
-                    Open fees are 0 bps, while close fees are 16 bps. This average
-                    to 8bps entry and close fees, but allow for opening exactly
-                    the requested position size.
-                  </p>
-                }
-                placement="auto"
-              >
-                <Image
-                  src={infoIcon}
-                  width={12}
-                  height={12}
-                  alt="info icon"
-                  className="ml-1"
-                />
-              </Tippy>
+
+        {showFees && (
+          <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-2">
+            <div className={rowStyle}>
+              <div className="flex items-center text-sm text-txtfade">
+                Exit Fees
+                <Tippy
+                  content={
+                    <p className="font-medium">
+                      Open fees are 0 bps, while close fees are 16 bps. This
+                      average to 8bps entry and close fees, but allow for opening
+                      exactly the requested position size.
+                    </p>
+                  }
+                  placement="auto"
+                >
+                  <Image
+                    src={infoIcon}
+                    width={12}
+                    height={12}
+                    alt="info icon"
+                    className="ml-1"
+                  />
+                </Tippy>
+              </div>
+
+              <FormatNumber nb={position.exitFeeUsd} format="currency" />
             </div>
 
-            <FormatNumber nb={position.exitFeeUsd} format="currency" />
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+
+            <div className={rowStyle}>
+              <div className="flex items-center text-sm text-txtfade">
+                Borrow Fees
+                <Tippy
+                  content={
+                    <p className="font-medium">
+                      Total of fees accruing continuously while the leveraged
+                      position is open, to pay interest rate on the borrowed
+                      assets from the Liquidity Pool.
+                    </p>
+                  }
+                  placement="auto"
+                >
+                  <Image
+                    src={infoIcon}
+                    width={12}
+                    height={12}
+                    alt="info icon"
+                    className="ml-1"
+                  />
+                </Tippy>
+              </div>
+
+              <FormatNumber nb={position.borrowFeeUsd} format="currency" />
+            </div>
+
+            <div className="w-full h-[1px] bg-bcolor my-1" />
+
+            <div className={rowStyle}>
+              <div className="flex items-center text-sm text-txtfade">
+                Total Fees
+              </div>
+
+              <FormatNumber
+                nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
+                format="currency"
+                className="text-redbright font-bold"
+                isDecimalDimmed={false}
+              />
+            </div>
+
+            <div className={rowStyle}>
+              <div className="flex items-center text-sm text-txtfade">
+                Unrealized Fees
+              </div>
+
+              <FormatNumber
+                nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
+                format="currency"
+                className="text-redbright font-bold"
+                isDecimalDimmed={false}
+              />
+            </div>
           </div>
+        )}
+      </div>
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+      <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className={rowStyle}>
-            <div className="flex items-center text-sm text-txtfade">
-              Borrow Fees
-              <Tippy
-                content={
-                  <p className="font-medium">
-                    Total of fees accruing continuously while the leveraged
-                    position is open, to pay interest rate on the borrowed assets
-                    from the Liquidity Pool.
-                  </p>
-                }
-                placement="auto"
-              >
-                <Image
-                  src={infoIcon}
-                  width={12}
-                  height={12}
-                  alt="info icon"
-                  className="ml-1"
-                />
-              </Tippy>
-            </div>
-
-            <FormatNumber nb={position.borrowFeeUsd} format="currency" />
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className={rowStyle}>
-            <div className="flex items-center text-sm text-txtfade">
-              Total Fees
-            </div>
-
-            <FormatNumber
-              nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
-              format="currency"
-              className="text-redbright font-bold"
-              isDecimalDimmed={false}
+      <div className="px-4 pt-2">
+        <p className="mb-2 font-boldy">Receive</p>
+        <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3 py-2.5">
+          <div className="flex flex-row gap-3 items-center">
+            <Image
+              src={position.side === 'short' ? getTokenImage(position.collateralToken) : tokenImage}
+              width={24}
+              height={24}
+              alt="close token image"
             />
+            <div className="flex flex-col mr-4">
+              <div>
+                <FormatNumber
+                  nb={
+                    exitPriceAndFee &&
+                    nativeToUi(
+                      exitPriceAndFee.amountOut,
+                      position.collateralToken.decimals,
+                    )
+                  }
+                  precision={4}
+                  className="text-lg inline-block"
+                  isDecimalDimmed={false}
+                  isAbbreviate={position.collateralToken.symbol === 'BONK'}
+                />
+
+                <span className="text-lg ml-1 font-semibold">
+                  {position.collateralToken.symbol}
+                </span>
+              </div>
+
+              <FormatNumber
+                nb={
+                  exitPriceAndFee &&
+                  collateralMarkPrice &&
+                  nativeToUi(
+                    exitPriceAndFee.amountOut,
+                    position.collateralToken.decimals,
+                  ) * collateralMarkPrice
+                }
+                format="currency"
+                className="text-txtfade text-sm"
+                isDecimalDimmed={false}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-
-      <div className='w-full p-4 border-t mt-4'>
+      <div className="w-full p-4 border-t mt-4">
         <Button
-          className='w-full'
+          className="w-full"
           size="lg"
           variant="primary"
           title={
