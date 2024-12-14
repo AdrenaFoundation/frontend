@@ -73,8 +73,8 @@ export default function UnlockStakingChart({
   }
 
   return (
-    <div className='flex flex-col w-full h-full items-center relative sm:pt-8'>
-      <div className='flex flex-col sm:absolute sm:-top-10 sm:right-14 pb-2 sm:pb-0'>
+    <div className='flex flex-col w-full h-full items-center relative md:pt-8'>
+      <div className='flex justify-between gap-2 md:gap-0 md:justify-start pl-6 pr-6 pt-3 pb-6 md:pt-0 md:pl-0 md:pr-0 w-full md:w-auto md:flex-col md:absolute md:-top-10 md:right-2 md:pb-0'>
         <div className='flex gap-2'>
           <div className='text-sm text-txtfade'>by</div>
           <div className={twMerge('text-sm cursor-pointer hover:opacity-100', timingMode === 'days' ? 'opacity-90' : 'opacity-50')} onClick={() => setTimingMode('days')}>Days</div>
