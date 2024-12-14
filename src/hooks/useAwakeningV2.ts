@@ -11,6 +11,39 @@ import { calculateWeeksPassed } from '@/utils';
 
 import { WalletAdapterName } from './useWalletAdapters';
 
+const RAFFLE_WINNERS = [
+  {
+    week: 0,
+    feesWinner: 'B3NyyoWNzyzvpWv1G6a9gZJMjD1sTQBdZojBaH18mNjY',
+    jitoWinner: 'CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6',
+  },
+  {
+    week: 1,
+    feesWinner: 'BRGTWBZH9aGyQjn2Q89nxQ9KEkGdbXHjgPyf7vRCYN6F',
+    jitoWinner: 'C6EWezRe8Pz6HqNeVPQ9yFifLuyA7QDa1XsQcvDPJsaT',
+  },
+  {
+    week: 2,
+    feesWinner: 'CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6',
+    jitoWinner: 'B3NyyoWNzyzvpWv1G6a9gZJMjD1sTQBdZojBaH18mNjY',
+  },
+  {
+    week: 3,
+    feesWinner: '6ALGMay8AmcywGAX72ho7JbSucD7zeh4hwMVyXDb9zgy',
+    jitoWinner: 'CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6',
+  },
+  {
+    week: 4,
+    feesWinner: null,
+    jitoWinner: null,
+  },
+  {
+    week: 5,
+    feesWinner: null,
+    jitoWinner: null,
+  },
+];
+
 const findUserData = (
   divisions: {
     division: string;
@@ -101,9 +134,11 @@ const processAchievements = (
   getUserName: (address: string | null) => string | null,
 ) => {
   if (!achievements) return null;
-  const { biggestLiquidation, topDegen, ...rest } = achievements;
 
-  if (biggestLiquidation && topDegen) {
+  const { biggestLiquidation, topDegen, feesTickets, jitosolTickets } =
+    achievements;
+
+  if (biggestLiquidation && topDegen && feesTickets && jitosolTickets) {
     return {
       biggestLiquidation: {
         ...biggestLiquidation,
@@ -113,10 +148,22 @@ const processAchievements = (
         ...topDegen,
         addresses: topDegen.addresses.map(getUserName),
       },
-      ...rest,
+      feesTickets: {
+        ...feesTickets,
+        winner: feesTickets.weekStarts.map((_, index) =>
+          getUserName(RAFFLE_WINNERS[index]?.feesWinner ?? null),
+        ),
+      },
+      jitosolTickets: {
+        ...jitosolTickets,
+        winner: jitosolTickets.weekStarts.map((_, index) =>
+          getUserName(RAFFLE_WINNERS[index]?.jitoWinner ?? null),
+        ),
+      },
     };
   }
-  return achievements;
+
+  return null;
 };
 
 export default function useAwakeningV2({

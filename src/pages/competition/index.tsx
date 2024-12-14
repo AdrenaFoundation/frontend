@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { memo, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../public/images/adx.svg';
@@ -525,8 +525,8 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
 
     const hasProfile = userProfile !== undefined;
 
-    const handleProfileView = useCallback((address: string) => {
-        const profile = allUserProfiles.find((p) => p.owner.toBase58() === address);
+    const handleProfileView = useCallback((username: string) => {
+        const profile = allUserProfiles.find((p) => p.nickname === username);
         if (profile) {
             setProfile(profile);
         }
@@ -578,7 +578,9 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
 
                     {achievementsData.achievements && (
                         <WeeklyReward
-                            allAchievements={achievementsData.achievements}
+                            allAchievements={{
+                                ...achievementsData.achievements
+                            }}
                             week={week}
                             wallet={wallet}
                             handleProfileView={handleProfileView}

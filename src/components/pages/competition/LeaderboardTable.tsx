@@ -27,7 +27,7 @@ export default function LeaderboardTable({
     className?: string;
     nbItemPerPage?: number;
     myDivision: boolean;
-    handleProfileView: (address: string) => void;
+    handleProfileView: (username: string) => void;
 }) {
     return (
         <div className={className}>

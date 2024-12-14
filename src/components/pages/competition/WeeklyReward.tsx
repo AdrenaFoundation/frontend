@@ -28,13 +28,20 @@ type Award = {
 type WeeklyRewardProps = {
     allAchievements: LeaderboardReturnTypeAPI<{
         showAchievements: true;
-    }>['achievements'];
+    }>['achievements'] & {
+        feesTickets: {
+            winner: (string | null)[];
+        };
+        jitosolTickets: {
+            winner: (string | null)[];
+        };
+    };
     week: number;
     wallet: {
         adapterName: WalletAdapterName;
         walletAddress: string;
     } | null;
-    handleProfileView: (address: string) => void;
+    handleProfileView: (username: string) => void;
 };
 
 const TicketBackground = memo(() => (
@@ -69,29 +76,50 @@ const AwardHeader = memo(({ title, type }: { title: string; type: 'reward' | 'ti
 ));
 AwardHeader.displayName = 'AwardHeader';
 
-const TicketCount = memo(({ connectedWalletTickets, totalTickets }: { connectedWalletTickets: number | null; totalTickets: number }) => (
+const TicketCount = memo(({ connectedWalletTickets, totalTickets, trader, handleProfileView }: { connectedWalletTickets: number | null; totalTickets: number; trader: string | null; handleProfileView: (address: string) => void }) => (
     <div className="flex items-center justify-center h-[3em]">
-        <div className="mb-0 gap-1 items-center justify-center flex ml-4">
-            <FormatNumber
-                nb={connectedWalletTickets}
-                className="text-lg text-center font-boldy"
-                isAbbreviate={true}
-                isAbbreviateIcon={false}
-            />
-            <span>/</span>
-            <FormatNumber
-                nb={totalTickets}
-                className="text-lg text-center font-boldy"
-                isAbbreviate={true}
-                isAbbreviateIcon={false}
-                isDecimalDimmed={false}
-            />
-        </div>
-        <Image
-            src={ticketImage}
-            alt="ticket image"
-            className="w-10 h-8"
-        />
+        {trader === null || trader === '' ? (
+            <>
+                <div className="mb-0 gap-1 items-center justify-center flex ml-4">
+                    <FormatNumber
+                        nb={connectedWalletTickets}
+                        className="text-lg text-center font-boldy"
+                        isAbbreviate={true}
+                        isAbbreviateIcon={false}
+                    />
+                    <span>/</span>
+                    <FormatNumber
+                        nb={totalTickets}
+                        className="text-lg text-center font-boldy"
+                        isAbbreviate={true}
+                        isAbbreviateIcon={false}
+                        isDecimalDimmed={false}
+                    />
+                </div>
+                <Image
+                    src={ticketImage}
+                    alt="ticket image"
+                    className="w-10 h-8"
+                />
+            </>
+        ) : (
+            <div className="flex items-center justify-center opacity-75 w-full">
+                {isValidPublicKey(trader) ? (
+                    <p className={twMerge('text-base font-boldy opacity-50')}>
+                        {getAbbrevWalletAddress(trader)}
+                    </p>
+                ) : (
+                    <p
+                        className={twMerge(
+                            'text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer',
+                        )}
+                        onClick={() => handleProfileView(trader as string)}
+                    >
+                        {trader}
+                    </p>
+                )}
+            </div>
+        )}
     </div>
 ));
 TicketCount.displayName = 'TicketCount';
@@ -107,41 +135,42 @@ const RewardCard = memo(({ award, handleProfileView }: { award: Award; handlePro
 
             <AwardHeader title={award.title} type={award.type} />
 
-            {award.type === 'ticket' && award.trader === null && award.totalTickets && (
+            {award.type === 'ticket' && award.totalTickets && (
                 <TicketCount
                     connectedWalletTickets={award.connectedWalletTickets ?? null}
                     totalTickets={award.totalTickets}
+                    trader={award.trader}
+                    handleProfileView={handleProfileView}
                 />
             )}
 
-            {award.type === 'reward' && award.result && (
-                <div className="flex flex-col items-center">
-                    <FormatNumber
-                        nb={Number(award.result)}
-                        format={'currency'}
-                        className={Number(award.result) >= 0 ? 'text-green font-bold' : 'text-red font-bold'}
-                        isDecimalDimmed={false}
-                    />
-                </div>
-            )}
-
-            {award.trader && (
-                <div className="flex items-center justify-center opacity-75 w-full">
-                    {isValidPublicKey(award.trader) ? (
-                        <p className={twMerge('text-base font-boldy opacity-50')}>
-                            {getAbbrevWalletAddress(award.trader)}
-                        </p>
-                    ) : (
-                        <p
-                            className={twMerge(
-                                'text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer',
-                            )}
-                            onClick={() => handleProfileView(award.trader as string)}
-                        >
-                            {award.trader}
-                        </p>
-                    )}
-                </div>
+            {award.type === 'reward' && award.result && award.trader && (
+                <>
+                    <div className="flex flex-col items-center">
+                        <FormatNumber
+                            nb={Number(award.result)}
+                            format={'currency'}
+                            className={Number(award.result) >= 0 ? 'text-green font-bold' : 'text-red font-bold'}
+                            isDecimalDimmed={false}
+                        />
+                    </div>
+                    <div className="flex items-center justify-center opacity-75 w-full">
+                        {isValidPublicKey(award.trader) ? (
+                            <p className={twMerge('text-base font-boldy opacity-50')}>
+                                {getAbbrevWalletAddress(award.trader)}
+                            </p>
+                        ) : (
+                            <p
+                                className={twMerge(
+                                    'text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer',
+                                )}
+                                onClick={() => handleProfileView(award.trader as string)}
+                            >
+                                {award.trader}
+                            </p>
+                        )}
+                    </div>
+                </>
             )}
 
             <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
@@ -206,7 +235,7 @@ export default function WeeklyReward({
         {
             title: 'Fees Raffle',
             allTraders: allAchievements.feesTickets.addresses[week],
-            trader: null,
+            trader: (allAchievements.feesTickets.winner ?? [])[week] ?? null,
             totalTickets: allAchievements.feesTickets.totalTickets[week],
             connectedWalletTickets: connectedWalletTickets.fees,
             type: 'ticket' as const,
@@ -230,7 +259,7 @@ export default function WeeklyReward({
         {
             title: 'SOL Volume Raffle',
             allTraders: allAchievements.jitosolTickets.addresses[week],
-            trader: null,
+            trader: (allAchievements.jitosolTickets.winner ?? [])[week] ?? null,
             totalTickets: allAchievements.jitosolTickets.totalTickets[week],
             connectedWalletTickets: connectedWalletTickets.jito,
             type: 'ticket' as const,
