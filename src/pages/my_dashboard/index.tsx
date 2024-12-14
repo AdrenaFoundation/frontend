@@ -10,9 +10,8 @@ import StakingStats from '@/components/pages/user_profile/StakingStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
-
-import usePositionStats from '@/hooks/usePositionStats';
 import usePositions from '@/hooks/usePositions';
+import usePositionStats from '@/hooks/usePositionStats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { PageProps, VestExtended } from '@/types';
 
