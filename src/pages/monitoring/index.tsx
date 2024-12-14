@@ -28,6 +28,15 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     MonitorViews
   >('lite');
 
+  const monitorViewsNames: Record<MonitorViews, string> = {
+    lite: 'Lite',
+    full: 'Full',
+    livePositions: 'Live Positions',
+    userProfiles: 'User Profiles',
+    allStaking: 'Staking',
+    flows: 'Flows',
+  };
+
   const viewComponents: Record<MonitorViews, React.ReactElement> = {
     lite: <BasicMonitoring {...pageProps} poolInfo={poolInfo} />,
     full: <DetailedMonitoring {...pageProps} poolInfo={poolInfo} />,
@@ -40,11 +49,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
   const searchParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
-    let searchParamsView = searchParams.get('view');
-    // Default is lite.
-    if (!searchParamsView) {
-      searchParamsView = 'lite'
-    }
+    let searchParamsView = searchParams.get('view') ?? 'lite'
     if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows'].includes(searchParamsView)) {
       setView(searchParamsView as MonitorViews);
     }
@@ -84,27 +89,27 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
         <div
           className='flex flex-col sm:flex-row items-center justify-evenly w-[20.8em] sm:w-[28em] ml-auto mr-auto'
         >
-          {MonitoringHeaderLink('lite', 'Lite')}
+          {MonitoringHeaderLink('lite')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {MonitoringHeaderLink('full', 'Full')}
+          {MonitoringHeaderLink('full')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {MonitoringHeaderLink('livePositions', 'Live Positions')}
+          {MonitoringHeaderLink('livePositions')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {MonitoringHeaderLink('userProfiles', 'User Profiles')}
+          {MonitoringHeaderLink('userProfiles')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {MonitoringHeaderLink('allStaking', "Staking")}
+          {MonitoringHeaderLink('allStaking')}
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          {MonitoringHeaderLink('flows', 'Flows')}
+          {MonitoringHeaderLink('flows')}
         </div>
 
         {/* {view === 'full' ? (
@@ -135,8 +140,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       {view === 'full' ? (
         MonitoringDisplay(
           view,
-          previousView !== 'lite' ? 20 : -20,
-          true
+          previousView !== 'lite' ? 20 : -20
         )
       ) : null}
 
@@ -170,7 +174,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     </>
   );
 
-  function MonitoringDisplay(view: MonitorViews, translateX: number, isFull: boolean = false) {
+  function MonitoringDisplay(view: MonitorViews, translateX: number) {
     return <motion.div
       initial={{
         opacity: 0,
@@ -178,7 +182,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       }}
       animate={{ opacity: 1, translateX: 0 }}
       transition={{ duration: 0.3 }}
-      className={`min-h-[80vh] ${isFull ? "z-10" : ""}`}
+      className='min-h-[80vh] z-10'
     >
       <div className='p-2'>
         {viewComponents[view]}
@@ -186,7 +190,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     </motion.div>;
   }
 
-  function MonitoringHeaderLink(searchParam: MonitorViews, name: string) {
+  function MonitoringHeaderLink(searchParam: MonitorViews) {
     return <span
       className={twMerge(
         'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
@@ -202,7 +206,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
         setView(searchParam);
       }}
     >
-      {name}
+      {monitorViewsNames[searchParam]}
     </span>;
   }
 }
