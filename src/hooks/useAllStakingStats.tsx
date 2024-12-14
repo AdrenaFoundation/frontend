@@ -18,9 +18,12 @@ export type AllStakingStats = {
     };
 
     byRemainingTime: {
-        stake: string;
-        endTime: number;
-    }[]
+        [staking_type in ('ADX' | 'ALP')]: {
+            stake: string;
+            endTime: number;
+            tokenAmount: number;
+        }[]
+    },
 };
 
 export function useAllStakingStats(): {
@@ -53,7 +56,10 @@ export function useAllStakingStats(): {
                             locked: {},
                         },
                     },
-                    byRemainingTime: [],
+                    byRemainingTime: {
+                        ADX: [],
+                        ALP: [],
+                    },
                 };
 
                 allStaking.forEach((staking: UserStakingExtended) => {
@@ -68,9 +74,10 @@ export function useAllStakingStats(): {
                                 return;
                             }
 
-                            allStakingStats.byRemainingTime.push({
+                            allStakingStats.byRemainingTime[stakingType].push({
                                 stake: staking.pubkey.toBase58(),
                                 endTime: lockedStake.endTime.toNumber(),
+                                tokenAmount: nativeToUi(lockedStake.amount, stakingDecimals),
                             });
                         });
                     }

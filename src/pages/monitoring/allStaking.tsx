@@ -116,11 +116,19 @@ export default function AllStaking() {
                     <AllStakingChartALP allStakingStats={allStakingStats} />
                 </div>
 
-                <div className='flex flex-col items-center justify-center gap-1 w-full'>
-                    <h2 className='flex'>STAKING REMAINING TIME</h2>
+                <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
+                    <h2 className='flex'>ADX STAKING REMAINING TIME</h2>
 
                     <div className='w-full flex h-[20em]'>
-                        <UnlockStakingChart allStakingStats={allStakingStats} />
+                        <UnlockStakingChart allStakingStats={allStakingStats} stakingType="ADX" />
+                    </div>
+                </div>
+
+                <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
+                    <h2 className='flex'>ALP STAKING REMAINING TIME</h2>
+
+                    <div className='w-full flex h-[20em]'>
+                        <UnlockStakingChart allStakingStats={allStakingStats} stakingType="ALP" />
                     </div>
                 </div>
             </StyledContainer >

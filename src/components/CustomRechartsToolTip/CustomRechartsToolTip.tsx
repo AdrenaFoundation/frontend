@@ -12,6 +12,8 @@ export default function CustomRechartsToolTip({
   active,
   payload,
   label,
+  labelSuffix,
+  labelPrefix,
   isValueOnly,
   format = 'currency',
   suffix = '',
@@ -23,6 +25,8 @@ export default function CustomRechartsToolTip({
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
+  labelPrefix?: string;
+  labelSuffix?: string;
   suffix?: string;
   isPieChart?: boolean;
   precision?: number;
@@ -33,7 +37,7 @@ export default function CustomRechartsToolTip({
   if (active && payload && payload.length) {
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
-        {label && <p className="text-lg mb-2 font-mono">{label} {typeof gmt !== 'undefined' ? `${gmt < 0 ? `GMT${gmt}` : gmt > 0 ? `GMT+${gmt}` : "UTC"}` : null}</p>}
+        {label && <p className="text-lg mb-2 font-mono">{labelPrefix}{label} {typeof gmt !== 'undefined' ? `${gmt < 0 ? `GMT${gmt}` : gmt > 0 ? `GMT+${gmt}` : "UTC"}` : null} {labelSuffix}</p>}
 
         {total ? <div
           key="total"
