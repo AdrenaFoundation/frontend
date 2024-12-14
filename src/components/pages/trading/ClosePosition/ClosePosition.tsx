@@ -350,6 +350,19 @@ export default function ClosePosition({
                 isDecimalDimmed={false}
               />
             </div>
+
+            <div className={rowStyle}>
+              <div className="flex items-center text-sm text-txtfade">
+                Unrealized Fees
+              </div>
+
+              <FormatNumber
+                nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
+                format="currency"
+                className="text-redbright font-bold"
+                isDecimalDimmed={false}
+              />
+            </div>
           </div>
         )}
       </div>
