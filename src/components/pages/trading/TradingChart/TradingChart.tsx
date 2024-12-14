@@ -174,6 +174,12 @@ export default function TradingChart({
                   return null;
                 }
 
+                if (
+                  shape.options.text.includes('long') ||
+                  shape.options.text.includes('short')
+                )
+                  return null;
+
                 // Save user drawn line
                 return {
                   id: line.id as EntityId,
