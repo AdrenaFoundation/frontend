@@ -41,10 +41,11 @@ export default function ActivityCalendar({
     wrapperClassName?: string;
     isUserActivity?: boolean;
 }) {
+    const isMobile = useBetterMediaQuery('(max-width: 640px)');
+
     if (!data) {
         return null;
     }
-    const isMobile = useBetterMediaQuery('(max-width: 640px)');
 
     if (isMobile) {
         data = data.slice(80);
