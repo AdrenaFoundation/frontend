@@ -1,12 +1,12 @@
 import Tippy from '@tippyjs/react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import clandarIcon from '@/../public/images/Icons/calendar.svg';
-import Filter from '@/components/Filter/Filter';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 export default function ActivityCalendar({
     data,
@@ -16,6 +16,7 @@ export default function ActivityCalendar({
     setBubbleBy,
     setSelectedRange,
     wrapperClassName,
+    isUserActivity = false,
 }: {
     data:
     | {
@@ -38,19 +39,16 @@ export default function ActivityCalendar({
     setBubbleBy: (bubbleBy: string) => void;
     setSelectedRange?: (range: string) => void;
     wrapperClassName?: string;
+    isUserActivity?: boolean;
 }) {
-    const scrollableDivRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (scrollableDivRef.current) {
-            scrollableDivRef.current.scrollLeft = scrollableDivRef.current.scrollWidth;
-        }
-    }, []);
-
     if (!data) {
         return null;
     }
+    const isMobile = useBetterMediaQuery('(max-width: 640px)');
 
+    if (isMobile) {
+        data = data.slice(80);
+    }
 
     const monthsInActivityData = data.reduce((acc, curr) => {
         if (curr === null) {
@@ -59,42 +57,48 @@ export default function ActivityCalendar({
         const month = new Date(curr.date).toLocaleString('default', {
             month: 'short',
         });
-        if (!acc.includes(month)) {
-            acc.push(month);
-        }
-        return acc;
-    }, [] as string[]);
 
-    const daysCountByMonth = data.reduce((acc, curr) => {
-        if (curr === null) {
-            return acc;
-        }
-        const month = new Date(curr.date).getMonth();
         acc[month] = (acc[month] || 0) + 1;
+
         return acc;
-    }, [] as number[]);
+    }, {} as { [key: string]: number });
+
 
     return (
-        <div className={twMerge("bg-[#040D14] border rounded-lg p-3", wrapperClassName)}>
-            <Filter
-                options={[
-                    { name: 'Pnl' },
-                    { name: 'Volume' },
-                    { name: 'Position Count' },
-                ]}
-                activeFilter={bubbleBy}
-                setFilter={setBubbleBy}
-                className="flex-col sm:flex-row bg-transparent border-transparent p-0"
-            />
+        <div
+            className={twMerge(
+                'bg-[#040D14] border rounded-lg p-3',
+                wrapperClassName,
+            )}
+        >
+            <div className="flex flex-row justify-between items-center mb-3">
+                <p className="font-boldy">Daily trading activity</p>
+
+                <div className="flex flex-row gap-3">
+                    <p className="opacity-25">by:</p>
+                    {['Pnl', 'Volume', 'Position Count'].map((filter, i) => (
+                        <p
+                            className={twMerge(
+                                'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300',
+                                bubbleBy === filter && 'opacity-100 underline',
+                            )}
+                            onClick={() => setBubbleBy(filter)}
+                            key={i}
+                        >
+                            {filter}
+                        </p>
+                    ))}
+                </div>
+            </div>
             <div className=" gap-3 mt-4 flex items-center justify-center">
-                <div className="hide-scrollbar overflow-auto" ref={scrollableDivRef}>
+                <div className="hide-scrollbar overflow-auto">
                     <div className="relative flex flex-row mt-4">
-                        {monthsInActivityData.map((month, i) => {
-                            const initSize = daysCountByMonth[i] / 7;
+                        {Object.keys(monthsInActivityData).map((month, i) => {
+                            const initSize = monthsInActivityData[month] / 7;
                             const blockMargin = 4;
                             const blockSize = 16;
                             const nbOfBlocksToSkip = initSize * (blockSize + blockMargin);
-
+                            console.log(initSize, nbOfBlocksToSkip);
                             return (
                                 <div
                                     key={i}
@@ -110,10 +114,23 @@ export default function ActivityCalendar({
                         {data.map(({ date, stats }, i) => {
                             if (stats === null) {
                                 return (
-                                    <div
+                                    <Tippy
+                                        content={
+                                            <p className="text-xs font-boldy">
+                                                {new Date(date).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                })}
+                                            </p>
+                                        }
                                         key={i}
-                                        className="bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14]  size-4 transition duration-300"
-                                    />
+                                    >
+                                        <div
+                                            key={i}
+                                            className="bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14]  size-4 transition duration-300"
+                                        />
+                                    </Tippy>
                                 );
                             }
                             return (
@@ -213,6 +230,8 @@ export default function ActivityCalendar({
                                             'flex items-center justify-center bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14] cursor-pointer group size-4 transition duration-300',
                                         )}
                                         onClick={() => {
+                                            if (isUserActivity) return;
+
                                             const startDate = new Date(date);
                                             const endDate = startDate.setHours(
                                                 startDate.getHours() + 24,
@@ -222,14 +241,17 @@ export default function ActivityCalendar({
                                             setEndDate?.(new Date(endDate).toISOString());
                                         }}
                                     >
-                                        <motion.div
-                                            className="m-auto rounded-full flex-none"
-                                            animate={{
-                                                width: stats.bubbleSize,
-                                                height: stats.bubbleSize,
-                                                backgroundColor: stats.color,
-                                            }}
-                                        />
+                                        <svg height="100%" width="100%">
+                                            <motion.circle
+                                                cx="50%"
+                                                cy="50%"
+                                                animate={{
+                                                    r: stats.bubbleSize / 2,
+                                                }}
+                                                fill={stats.color}
+                                                className="inline-block"
+                                            ></motion.circle>
+                                        </svg>
                                     </div>
                                 </Tippy>
                             );
