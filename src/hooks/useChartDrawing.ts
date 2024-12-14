@@ -20,6 +20,7 @@ import {
   IChartingLibraryWidget,
   IChartWidgetApi,
 } from '../../public/charting_library/charting_library';
+import { set } from 'date-fns';
 
 export type LineType =
   | 'liquidation'
@@ -324,6 +325,8 @@ export function useChartDrawing({
     PositionChartLine[]
   >([]);
 
+  const [trickReload, setTrickReload] = useState<number>(0);
+
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
   useEffect(() => {
@@ -458,7 +461,19 @@ export function useChartDrawing({
       drawingErrorCallback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chart, positions, toggleSizeUsdInChart, showBreakEvenLine]);
+  }, [chart, positions, trickReload, showBreakEvenLine]);
+
+  useEffect(() => {
+    if (!chart) return;
+
+    // Delete all lines to be redrawn
+    deleteDetachedPositionLines(chart, positionChartLines, []);
+
+    positionLinesIdsRef.current = [];
+    setPositionChartLines([]);
+
+    setTrickReload((prev) => prev + 1);
+  }, [toggleSizeUsdInChart]);
 
   return positionChartLines;
 }
