@@ -4,9 +4,8 @@ import { twMerge } from 'tailwind-merge';
 import Loader from '@/components/Loader/Loader';
 import { SUPPORTED_RESOLUTIONS } from '@/constant';
 import { useChartDrawing } from '@/hooks/useChartDrawing';
-import { useSelector } from '@/store/store';
 import { PositionExtended, Token, TokenSymbol } from '@/types';
-import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
+import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
   EntityId,
@@ -39,17 +38,26 @@ export default function TradingChart({
   const [widget, setWidget] = useState<Widget | null>(null);
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const activePositionLineIDs = useRef<EntityId[]>([]);
-  const breakEvenLinesID = useRef<EntityId[]>([]);
+  const [loadingCounter, setIsLoadingCounter] = useState<number>(0);
+  const positionLinesIdsRef = useRef<EntityId[]>([]);
 
   useChartDrawing({
     widget,
     widgetReady,
     positions,
     showBreakEvenLine,
-    activePositionLineIDs,
-    breakEvenLinesID,
     toggleSizeUsdInChart,
+    positionLinesIdsRef,
+    drawingErrorCallback: () => {
+      console.log('ERROR DRAWING ON CHART, RELOAD WIDGET');
+
+      setWidgetReady(false);
+      setWidget(null);
+      setIsLoading(true);
+
+      // Force refresh the widget
+      setIsLoadingCounter((i) => i + 1);
+    },
   });
 
   // Retrieve saved resolution or default to 'H'
@@ -159,19 +167,19 @@ export default function TradingChart({
                   .activeChart()
                   .getShapeById(line.id)
                   .getProperties();
-                if (
-                  !(
-                    activePositionLineIDs.current.includes(line.id) ||
-                    breakEvenLinesID.current.includes(line.id)
-                  )
-                ) {
-                  return {
-                    id: line.id as EntityId,
-                    points,
-                    name: line.name as SupportedLineTools,
-                    options: shape,
-                  };
+
+                // Do not save a line we drew ourselves
+                if (positionLinesIdsRef.current.includes(line.id)) {
+                  return null;
                 }
+
+                // Save user drawn line
+                return {
+                  id: line.id as EntityId,
+                  points,
+                  name: line.name as SupportedLineTools,
+                  options: shape,
+                };
               })
               .filter((line) => line);
 
@@ -221,9 +229,9 @@ export default function TradingChart({
       onLoadScriptRef.current = null;
     };
 
-    // Only trigger it onces when the chart load
+    // Only trigger it onces when the chart load or when there is an error
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadingCounter]);
 
   // When the token changes, we need to change the symbol of the widget so we only reload the chart
   useEffect(() => {

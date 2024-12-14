@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import Referral from '@/components/pages/my_dashboard/Referral';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
@@ -9,6 +8,7 @@ import StakingStats from '@/components/pages/user_profile/StakingStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import usePositions from '@/hooks/usePositions';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import {
   PageProps,
@@ -17,7 +17,6 @@ import {
 
 export default function MyDashboard({
   connected,
-  positions,
   userProfile,
   triggerUserProfileReload,
   readonly,
@@ -27,6 +26,8 @@ export default function MyDashboard({
 }) {
   const [nickname, setNickname] = useState<string | null>(null);
   const { stakingAccounts } = useWalletStakingAccounts();
+  // FIXME: Only call this hook in a single place & as-close as possible to consumers.
+  const positions = usePositions();
 
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
 
