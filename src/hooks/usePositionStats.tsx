@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { normalize } from '@/constant';
 import DataApiClient from '@/DataApiClient';
-import { GetPositionStatsReturnType } from '@/types';
 import { useSelector } from '@/store/store';
+import { GetPositionStatsReturnType } from '@/types';
 import { getDaysBetweenDates } from '@/utils';
 
-export default function usePositionStats(isByWalletAddress: boolean = false) {
+export default function usePositionStats(isByWalletAddress = false) {
     const [data, setData] = useState<GetPositionStatsReturnType<{
         showPositionActivity: true;
     }> | null>(null);
