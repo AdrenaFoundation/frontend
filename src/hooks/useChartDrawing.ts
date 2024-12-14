@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import {
@@ -20,7 +19,6 @@ import {
   IChartingLibraryWidget,
   IChartWidgetApi,
 } from '../../public/charting_library/charting_library';
-import { set } from 'date-fns';
 
 export type LineType =
   | 'liquidation'
