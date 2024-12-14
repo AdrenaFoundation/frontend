@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bar, BarChart, Brush, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
@@ -20,19 +20,6 @@ export default function UnlockStakingChart({
     count: number;
     volume: number;
   }[] | null>(null);
-
-  const colors = ({
-    ALP: {
-      bar: '#256281',
-      brushFill: '#060d16',
-      brushStroke: "#2196f3"
-    },
-    ADX: {
-      bar: "#a82e2e",
-      brushFill: "#ffb8b8",
-      brushStroke: "#cc3636"
-    },
-  } as const)[stakingType];
 
   useEffect(() => {
     if (!allStakingStats) {
@@ -115,8 +102,7 @@ export default function UnlockStakingChart({
             />
           } cursor={false} />
 
-          <Bar dataKey={infoMode} fill={colors.bar} />
-          <Brush dataKey="period" height={20} stroke={colors.brushStroke} fill={colors.brushFill} />
+          <Bar dataKey={infoMode} fill={stakingType === "ALP" ? '#256281' : "#a82e2e"} />
         </BarChart>
       </ResponsiveContainer>
     </div >
