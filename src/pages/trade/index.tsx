@@ -17,6 +17,7 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
@@ -60,7 +61,6 @@ function pickDefaultToken(positions: PositionExtended[] | null): Token {
 }
 
 export default function Trade({
-  positions,
   wallet,
   connected,
   triggerUserProfileReload,
@@ -70,6 +70,9 @@ export default function Trade({
 }: PageProps & {
   showFeesInPnl: boolean;
 }) {
+  // FIXME: Only call this hook in a single place & as-close as possible to consumers.
+  const positions = usePositions();
+
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );

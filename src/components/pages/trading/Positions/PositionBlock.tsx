@@ -2,7 +2,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -12,6 +12,7 @@ import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -21,7 +22,7 @@ import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
 
-export default function PositionBlock({
+export function PositionBlock({
   bodyClassName,
   borderColor,
   position,
@@ -38,7 +39,10 @@ export default function PositionBlock({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   showFeesInPnl: boolean;
 }) {
-  const tokenPrices = useSelector((s) => s.tokenPrices);
+  // Only subscribe to the price for the token of this position.
+  const tradeTokenPrice = useSelector((s) =>
+    selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol)),
+  );
 
   const blockRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -74,19 +78,17 @@ export default function PositionBlock({
   }, [position.nativeObject.openTime.toNumber()]);
 
   const liquidable = (() => {
-    const tokenPrice = tokenPrices[getTokenSymbol(position.token.symbol)];
-
     if (
-      tokenPrice === null ||
-      typeof position.liquidationPrice === 'undefined' ||
-      position.liquidationPrice === null
+      tradeTokenPrice === null ||
+      position.liquidationPrice === null ||
+      typeof position.liquidationPrice === 'undefined'
     )
       return;
 
-    if (position.side === 'long') return tokenPrice < position.liquidationPrice;
+    if (position.side === 'long') return tradeTokenPrice < position.liquidationPrice;
 
     // Short
-    return tokenPrice > position.liquidationPrice;
+    return tradeTokenPrice > position.liquidationPrice;
   })();
 
 
@@ -379,7 +381,7 @@ export default function PositionBlock({
 
             <div className="flex">
               <FormatNumber
-                nb={tokenPrices[getTokenSymbol(position.token.symbol)]}
+                nb={tradeTokenPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
                 className="text-gray-400 text-xs bold"
@@ -536,3 +538,15 @@ export default function PositionBlock({
     </>
   );
 }
+
+// Memoize this component to avoid unnecessary re-renders caused by
+// a re-render of the parent component(s).
+// This is a quite expensive component to re-render, it's sensible to memoize it
+// because we're avoiding unnecessary work within a critical path of the app,
+// which is subect to a lot of re-renders by nature: a trading view must be reactive.
+// More optimizations are possible within this component, but this is the best low-hanging fruit
+// yielding the most benefits for minimal effort.
+// Note this is a good candidate for memoization because:
+// - the parent component re-renders often (trading view > positions block > position bloc)
+// - https://react.dev/reference/react/memo
+export default memo(PositionBlock);

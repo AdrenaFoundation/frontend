@@ -4048,12 +4048,16 @@ export class AdrenaClient {
 
   // Positions PDA can be found by deriving each mints supported by the pool for 2 sides
   // DO NOT LOAD PNL OR LIQUIDATION PRICE
-  public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
-    const possiblePositionAddresses = this.getPossiblePositionAddresses(user);
+  public async loadUserPositions(
+    user: PublicKey,
+    positionAddresses?: Array<PublicKey>,
+  ): Promise<PositionExtended[]> {
+    const actualPositionAddresses =
+      positionAddresses || this.getPossiblePositionAddresses(user);
 
     const positions =
       (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
-        possiblePositionAddresses,
+        actualPositionAddresses,
         'recent',
       )) as (Position | null)[];
 
@@ -4066,14 +4070,15 @@ export class AdrenaClient {
 
         const positionExtended = this.extendPosition(
           position,
-          possiblePositionAddresses[index],
+          actualPositionAddresses[index],
         );
 
-        if (!positionExtended) {
+        if (positionExtended) {
+          acc.push(positionExtended);
           return acc;
         }
 
-        return [...acc, positionExtended];
+        return acc;
       },
       [] as PositionExtended[],
     );

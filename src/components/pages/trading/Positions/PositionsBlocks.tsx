@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -6,7 +7,7 @@ import { PositionExtended } from '@/types';
 
 import PositionBlock from './PositionBlock';
 
-export default function PositionsBlocks({
+export function PositionsBlocks({
   connected,
   className,
   positions,
@@ -52,7 +53,7 @@ export default function PositionsBlocks({
         </>
       ) : null}
 
-      {positions && !positions.length ? (
+      {positions !== null && !positions.length ? (
         <>
           {window.location.pathname === '/trade' ? (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
@@ -68,7 +69,7 @@ export default function PositionsBlocks({
         </>
       ) : null}
 
-      {positions && positions.length ? (
+      {positions !== null && positions.length ? (
         <div
           className={twMerge(
             'flex flex-col bg-first w-full h-full gap-3',
@@ -90,3 +91,5 @@ export default function PositionsBlocks({
     </>
   );
 }
+
+export default memo(PositionsBlocks);

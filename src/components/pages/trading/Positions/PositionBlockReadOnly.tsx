@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -24,24 +25,25 @@ export default function PositionBlockReadOnly({
     position: PositionExtended;
     showFeesInPnl: boolean;
 }) {
-    const tokenPrices = useSelector((s) => s.tokenPrices);
+    // Only subscribe to the price for the token of this position.
+    const tradeTokenPrice = useSelector((s) =>
+        selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol)),
+    );
 
     const blockRef = useRef<HTMLDivElement>(null);
 
     const liquidable = (() => {
-        const tokenPrice = tokenPrices[getTokenSymbol(position.token.symbol)];
-
         if (
-            tokenPrice === null ||
+            tradeTokenPrice === null ||
             typeof position.liquidationPrice === 'undefined' ||
             position.liquidationPrice === null
         )
             return;
 
-        if (position.side === 'long') return tokenPrice < position.liquidationPrice;
+        if (position.side === 'long') return tradeTokenPrice < position.liquidationPrice;
 
         // Short
-        return tokenPrice > position.liquidationPrice;
+        return tradeTokenPrice > position.liquidationPrice;
     })();
 
     const isSmallSize = useBetterMediaQuery('(max-width: 700px)');
@@ -334,7 +336,7 @@ export default function PositionBlockReadOnly({
                         </div>
                         <div className="flex">
                             <FormatNumber
-                                nb={tokenPrices[getTokenSymbol(position.token.symbol)]}
+                                nb={tradeTokenPrice}
                                 format="currency"
                                 precision={position.token.displayPriceDecimalsPrecision}
                                 className="text-gray-400 text-xs bold"

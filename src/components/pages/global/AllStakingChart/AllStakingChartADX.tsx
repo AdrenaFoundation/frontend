@@ -135,7 +135,7 @@ export default function AllStakingChartADX({
     }
 
     setData([
-      ...Object.entries(allStakingStats.ADX.locked).sort((a, b) => Number(b[0]) - Number(a[0])).map(([duration, lockedPerDuration], i) => ({
+      ...Object.entries(allStakingStats.byDurationByAmount.ADX.locked).sort((a, b) => Number(b[0]) - Number(a[0])).map(([duration, lockedPerDuration], i) => ({
         name: `${duration}d ADX-${lockedPerDuration.total}-${i}`,
         duration: `${duration}d`,
         color: `transparent`,
@@ -157,9 +157,9 @@ export default function AllStakingChartADX({
           {
             name: 'Liquid ADX',
             userStakingPubkey: PublicKey.default,
-            size: allStakingStats.ADX.liquid,
+            size: allStakingStats.byDurationByAmount.ADX.liquid,
             color: `#FFBB8FAF`,
-            stakedAmount: Math.floor(allStakingStats.ADX.liquid),
+            stakedAmount: Math.floor(allStakingStats.byDurationByAmount.ADX.liquid),
           },
         ],
       },
