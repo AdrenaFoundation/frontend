@@ -3,11 +3,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { normalize } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { GetPositionStatsReturnType } from '@/types';
+import { useSelector } from '@/store/store';
+import { getDaysBetweenDates } from '@/utils';
 
-export default function usePositionStats(walletAddress?: string) {
+export default function usePositionStats(isByWalletAddress: boolean = false) {
     const [data, setData] = useState<GetPositionStatsReturnType<{
         showPositionActivity: true;
     }> | null>(null);
+
+    const walletAddress = useSelector(
+        (state) => state.walletState.wallet,
+    )?.walletAddress;
+
     const [loading, setLoading] = useState<boolean>(true);
     const [startDate, setStartDate] = useState<string>(
         new Date('2024-09-25T00:00:00Z').toISOString(),
@@ -16,37 +23,37 @@ export default function usePositionStats(walletAddress?: string) {
     const [endDate, setEndDate] = useState<string>(new Date().toISOString());
     const [bubbleBy, setBubbleBy] = useState('Volume');
 
-    const tradingStartDate = new Date('2024-01-01T00:00:00Z');
-
     useEffect(() => {
-        async function fetchData() {
-            const result = await DataApiClient.getPositionStats({
-                showPositionActivity: true,
-                startDate: new Date(startDate),
-                endDate: new Date(endDate),
-                walletAddress,
-            });
+        fetchData();
+    }, [startDate, endDate, walletAddress]);
 
-            if (result) {
-                setData(result);
-            }
+    const fetchData = async () => {
+        if (!walletAddress && isByWalletAddress) return;
 
-            setLoading(false);
+        const result = await DataApiClient.getPositionStats({
+            showPositionActivity: true,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            walletAddress: !isByWalletAddress ? undefined : walletAddress,
+        });
+
+        if (result) {
+            setData(result);
         }
 
-        fetchData();
-    }, [walletAddress, startDate, endDate]);
-
-    const getColor = (value: number, avg: number) => {
-        if (value < 0) return '#AC2E41';
-        if (value > 0 && value < avg) return '#BD773F';
-        return '#18AC81';
+        setLoading(false);
     };
 
     const activityCalendarData = useMemo(() => {
         const activity = data?.positionActivity;
 
         if (!activity) return null;
+
+        const getColor = (value: number, avg: number) => {
+            if (value < 0) return '#AC2E41';
+            if (value > 0 && value < avg) return '#BD773F';
+            return '#18AC81';
+        };
 
         const activityKeys: Record<string, keyof (typeof activity)[number]> = {
             'open size': 'totalExitSize',
@@ -113,9 +120,19 @@ export default function usePositionStats(walletAddress?: string) {
             );
 
         const tableData = [];
+        const currentDate = new Date();
+        const tradingStartDate = new Date(
+            new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth() - 5,
+                2,
+            ).setUTCHours(0, 0, 0, 0),
+        );
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 2);
 
-        const highestVolume = [];
-        for (let i = 0; i < 365; i++) {
+        const daysBetween = getDaysBetweenDates(tradingStartDate, endOfMonth);
+
+        for (let i = 0; i < daysBetween; i++) {
             const date = new Date(
                 tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
             ).toISOString();
@@ -126,8 +143,6 @@ export default function usePositionStats(walletAddress?: string) {
                     stats: null,
                 });
             } else {
-                highestVolume.push(formattedActivity[date].totalVolume);
-
                 tableData.push({
                     date: new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000),
                     stats: {
@@ -157,8 +172,9 @@ export default function usePositionStats(walletAddress?: string) {
                 });
             }
         }
+
         return tableData;
-    }, [data, bubbleBy, endDate, startDate]);
+    }, [data, bubbleBy, endDate, startDate, walletAddress]);
 
     // Group stats by symbol
     const groupedStats = useMemo(() => {
@@ -173,7 +189,7 @@ export default function usePositionStats(walletAddress?: string) {
             acc[stat.symbol].push(stat);
             return acc;
         }, {} as Record<string, typeof stats>);
-    }, [data, startDate, endDate]);
+    }, [data, startDate, endDate, walletAddress]);
 
     return {
         loading,

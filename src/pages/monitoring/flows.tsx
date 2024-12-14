@@ -28,11 +28,13 @@ export default function Flow({
     endDate,
     setEndDate,
   } = usePositionStats();
+
   const [selectedRange, setSelectedRange] = useState('All Time');
 
   if (loading) return <div>Loading...</div>;
 
   if (!groupedStats || !activityCalendarData) return <div>No data</div>;
+
 
   return (
     <StyledContainer className="rounded-lg overflow-hidden p-5 mt-2">

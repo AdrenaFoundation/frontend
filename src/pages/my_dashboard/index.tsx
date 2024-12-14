@@ -33,6 +33,7 @@ export default function MyDashboard({
   const positions = usePositions();
 
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
+
   const {
     activityCalendarData,
     bubbleBy,
@@ -40,7 +41,7 @@ export default function MyDashboard({
     loading,
     setStartDate,
     setEndDate,
-  } = usePositionStats(wallet?.publicKey.toBase58());
+  } = usePositionStats(true);
 
   // When the profile page loads, update the profile so it's up to date with latests
   // user actions
@@ -132,21 +133,19 @@ export default function MyDashboard({
 
               <div className="h-[1px] w-full bg-bcolor" />
 
-              <div className='p-3'>
-                <h3 className='mb-3 text-center'>Trading Stats</h3>
-                {!loading ? (
-                  <ActivityCalendar
-                    data={activityCalendarData}
-                    setStartDate={setStartDate}
-                    setEndDate={setEndDate}
-                    bubbleBy={bubbleBy}
-                    setBubbleBy={setBubbleBy}
-                    wrapperClassName="bg-transparent border-transparent p-0"
-                  />
-                ) : (
-                  <Loader />
-                )}
-              </div>
+              {!loading && connected ? (
+                <ActivityCalendar
+                  data={activityCalendarData}
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                  bubbleBy={bubbleBy}
+                  setBubbleBy={setBubbleBy}
+                  wrapperClassName="bg-transparent border-transparent"
+                  isUserActivity
+                />
+              ) : (
+                <Loader />
+              )}
               <div className="h-[1px] w-full bg-bcolor" />
 
               <StakingStats
