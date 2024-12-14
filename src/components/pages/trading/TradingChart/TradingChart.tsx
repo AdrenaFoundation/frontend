@@ -42,6 +42,7 @@ export default function TradingChart({
   const positionLinesIdsRef = useRef<EntityId[]>([]);
 
   useChartDrawing({
+    tokenSymbol: token.symbol,
     widget,
     widgetReady,
     positions,
@@ -173,6 +174,12 @@ export default function TradingChart({
                   return null;
                 }
 
+                if (
+                  shape.options.text.includes('long') ||
+                  shape.options.text.includes('short')
+                )
+                  return null;
+
                 // Save user drawn line
                 return {
                   id: line.id as EntityId,
@@ -182,6 +189,8 @@ export default function TradingChart({
                 };
               })
               .filter((line) => line);
+
+            console.log('SAVE', userDrawings)
 
             localStorage.setItem(
               'chart_drawings',

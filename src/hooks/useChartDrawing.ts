@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import {
@@ -302,6 +301,7 @@ function handlePositionBreakEvenLine(params: {
 }
 
 export function useChartDrawing({
+  tokenSymbol,
   widget,
   widgetReady,
   positions,
@@ -312,6 +312,7 @@ export function useChartDrawing({
   // called every time a drawing fails
   drawingErrorCallback,
 }: {
+  tokenSymbol: TokenSymbol;
   widget: IChartingLibraryWidget | null;
   widgetReady: boolean | null;
   positions: PositionExtended[] | null;
@@ -323,6 +324,8 @@ export function useChartDrawing({
   const [positionChartLines, setPositionChartLines] = useState<
     PositionChartLine[]
   >([]);
+
+  const [trickReload, setTrickReload] = useState<number>(0);
 
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
@@ -346,6 +349,12 @@ export function useChartDrawing({
     try {
       if (parsedChartShapes[symbol]) {
         parsedChartShapes[symbol].forEach((shape) => {
+          if (
+            shape.options.text.includes('long') ||
+            shape.options.text.includes('short')
+          )
+            return;
+
           chart.createMultipointShape(shape.points, {
             zOrder: 'top',
             shape: shape.name,
@@ -365,8 +374,6 @@ export function useChartDrawing({
         JSON.stringify({ ...parsedChartShapes, [symbol]: [] }),
       );
     }
-
-    console.log('CHART CHANGED');
   }, [chart]);
 
   useEffect(() => {
@@ -458,7 +465,21 @@ export function useChartDrawing({
       drawingErrorCallback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chart, positions, toggleSizeUsdInChart, showBreakEvenLine]);
+  }, [chart, positions, trickReload, showBreakEvenLine]);
+
+  useEffect(() => {
+    if (!chart) return;
+
+    // Delete all lines to be redrawn
+    deleteDetachedPositionLines(chart, positionChartLines, []);
+
+    positionLinesIdsRef.current = [];
+    setPositionChartLines([]);
+
+    setTrickReload((prev) => prev + 1);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toggleSizeUsdInChart, tokenSymbol]);
 
   return positionChartLines;
 }
