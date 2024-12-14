@@ -5,6 +5,11 @@ import { twMerge } from 'tailwind-merge';
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
+import { formatNumberShort } from '@/utils';
+
+const formatYAxis = (tickItem: number) => {
+  return formatNumberShort(tickItem, 0);
+};
 
 export default function UnlockStakingChart({
   allStakingStats,
@@ -88,7 +93,7 @@ export default function UnlockStakingChart({
         >
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
-          <YAxis dataKey={infoMode} fontSize={11} />
+          <YAxis dataKey={infoMode} fontSize={11} tickFormatter={formatYAxis} />
           <XAxis dataKey='period' fontSize={11} />
 
           <Tooltip content={
