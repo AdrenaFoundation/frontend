@@ -470,8 +470,6 @@ export function useChartDrawing({
   useEffect(() => {
     if (!chart) return;
 
-    console.log('CLEAR ALL');
-
     // Delete all lines to be redrawn
     deleteDetachedPositionLines(chart, positionChartLines, []);
 
@@ -479,6 +477,7 @@ export function useChartDrawing({
     setPositionChartLines([]);
 
     setTrickReload((prev) => prev + 1);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toggleSizeUsdInChart, tokenSymbol]);
 
