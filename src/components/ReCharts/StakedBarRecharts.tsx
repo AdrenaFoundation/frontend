@@ -14,7 +14,7 @@ import { AxisDomain, DataKey } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
-import { formatNumberShort, formatPercentage, formatPriceInfo } from '@/utils';
+import { formatGraphCurrency } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
@@ -54,17 +54,7 @@ export default function StakedBarRechart({
   >([]);
 
   const formatYAxis = (tickItem: number) => {
-    let num = String(tickItem);
-
-    if (tickItem > 999_999_999) {
-      num = (tickItem / 1_000_000_000).toFixed(2) + 'B';
-    } else if (tickItem > 999_999) {
-      num = (tickItem / 1_000_000).toFixed(2) + 'M';
-    } else if (tickItem > 999) {
-      num = (tickItem / 1_000).toFixed(2) + 'K';
-    }
-
-    return `$${num}`;
+    return formatGraphCurrency({ tickItem, maxDecimals: 0 });
   };
 
   return (

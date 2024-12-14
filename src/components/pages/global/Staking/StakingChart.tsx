@@ -50,21 +50,21 @@ export default function StakingChart() {
     }[] = [
         {
           name: 'liquid',
-          ADX: (adxTotalSupply - allStakingStats.ADX.liquid - allStakingStats.ADX.totalLocked) * 100 / adxTotalSupply,
-          ADXAmount: adxTotalSupply - allStakingStats.ADX.liquid - allStakingStats.ADX.totalLocked,
-          ALP: (alpTotalSupply - allStakingStats.ALP.totalLocked) * 100 / alpTotalSupply,
-          ALPAmount: alpTotalSupply - allStakingStats.ALP.totalLocked,
+          ADX: (adxTotalSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked) * 100 / adxTotalSupply,
+          ADXAmount: adxTotalSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked,
+          ALP: (alpTotalSupply - allStakingStats.byDurationByAmount.ALP.totalLocked) * 100 / alpTotalSupply,
+          ALPAmount: alpTotalSupply - allStakingStats.byDurationByAmount.ALP.totalLocked,
         },
         {
           name: '0d',
-          ADX: allStakingStats.ADX.liquid * 100 / adxTotalSupply,
-          ADXAmount: allStakingStats.ADX.liquid,
+          ADX: allStakingStats.byDurationByAmount.ADX.liquid * 100 / adxTotalSupply,
+          ADXAmount: allStakingStats.byDurationByAmount.ADX.liquid,
           ALP: 0,
           ALPAmount: 0
         },
       ];
 
-    Object.entries(allStakingStats.ADX.locked).forEach(([lockedDuration, lockedAmount]) => {
+    Object.entries(allStakingStats.byDurationByAmount.ADX.locked).forEach(([lockedDuration, lockedAmount]) => {
       data.push({
         name: lockedDuration + 'd',
         ADX: lockedAmount.total * 100 / adxTotalSupply,
@@ -74,7 +74,7 @@ export default function StakingChart() {
       });
     });
 
-    Object.entries(allStakingStats.ALP.locked).forEach(([lockedDuration, lockedAmount]) => {
+    Object.entries(allStakingStats.byDurationByAmount.ALP.locked).forEach(([lockedDuration, lockedAmount]) => {
       const existingData = data.find((d) => d.name === lockedDuration + 'd',);
 
       if (existingData) {
