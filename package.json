@@ -17,7 +17,7 @@
     "@pythnetwork/pyth-solana-receiver": "=0.8.1",
     "@reduxjs/toolkit": "=1.9.3",
     "@rive-app/react-canvas": "=4.14.4",
-    "@sentry/nextjs": "=7.105.0",
+    "@sentry/nextjs": "=7.120.2",
     "@solana/spl-token": "=0.3.7",
     "@solana/wallet-adapter-base": "=0.9.23",
     "@solana/wallet-adapter-coinbase": "=0.1.19",
@@ -34,8 +34,8 @@
     "@vercel/analytics": "=1.3.1",
     "@vercel/og": "=0.6.3",
     "@vercel/speed-insights": "=1.0.14",
-    "@walletconnect/types": "=2.17.1",
     "@wallet-standard/app": "=1.1.0",
+    "@walletconnect/types": "=2.17.1",
     "big.js": "=6.2.2",
     "bignumber.js": "=9.1.2",
     "date-fns": "=3.6.0",
@@ -45,7 +45,7 @@
     "next-seo": "=6.6.0",
     "rc-slider": "=10.1.1",
     "react": "=18.3.1",
-    "react-cookie": "=4.1.1",
+    "react-cookie": "=7.2.2",
     "react-datepicker": "=7.5.0",
     "react-dom": "=18.3.1",
     "react-redux": "=8.0.5",
@@ -70,22 +70,28 @@
     "eslint-config-prettier": "=8.8.0",
     "eslint-plugin-simple-import-sort": "=10.0.0",
     "husky": "=8.0.3",
-    "postcss": "=8.4.21",
+    "postcss": "=8.4.49",
     "prettier": "=2.8.7",
     "sass": "=1.59.3",
     "typescript": "=5.6.3"
   },
   "resolutions": {
     "@walletconnect/types": "=2.17.1",
-    "@walletconnect/safe-json": "=1.0.2"
+    "@walletconnect/safe-json": "=1.0.2",
+    "elliptic": "=6.6.1",
+    "@ethersproject/signing-key": "=5.7.0",
+    "@ethersproject/transactions": "=5.7.0",
+    "@ethersproject/hash": "=5.7.0"
   },
   "overrides": {
-    "jito-ts": {
-      "@solana/web3.js": "$@solana/web3.js"
-    },
-    "react-lottie": {
-      "npm": ">=10.0.0"
-    }
+    "elliptic": "=6.6.1",
+    "@ethersproject/signing-key": "=5.7.0",
+    "@ethersproject/transactions": "=5.7.0",
+    "@ethersproject/hash": "=5.7.0",
+    "@solana/web3.js": "$@solana/web3.js"
+  },
+  "react-lottie": {
+    "npm": ">=10.0.0"
   },
   "engines": {
     "node": "=20.18.0",
