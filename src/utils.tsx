@@ -16,8 +16,6 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { BigNumber } from 'bignumber.js';
-import { Context } from 'chartjs-plugin-datalabels';
-import { Font } from 'chartjs-plugin-datalabels/types/options';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
@@ -723,19 +721,6 @@ export function parseFullSymbol(fullSymbol: string) {
     exchange: match[1],
     fromSymbol: match[2],
     toSymbol: match[3],
-  };
-}
-
-/* Chart js datalabels plugin utils, may export in different file if many come along */
-
-export function getDatasetBackgroundColor(context: Context) {
-  return (context.dataset.backgroundColor as string) ?? '';
-}
-
-export function getFontSizeWeight(context: Context): Font {
-  return {
-    size: context.chart.width < 512 ? 8 : 14,
-    weight: 'bold',
   };
 }
 
