@@ -301,6 +301,7 @@ function handlePositionBreakEvenLine(params: {
 }
 
 export function useChartDrawing({
+  tokenSymbol,
   widget,
   widgetReady,
   positions,
@@ -311,6 +312,7 @@ export function useChartDrawing({
   // called every time a drawing fails
   drawingErrorCallback,
 }: {
+  tokenSymbol: TokenSymbol;
   widget: IChartingLibraryWidget | null;
   widgetReady: boolean | null;
   positions: PositionExtended[] | null;
@@ -347,6 +349,12 @@ export function useChartDrawing({
     try {
       if (parsedChartShapes[symbol]) {
         parsedChartShapes[symbol].forEach((shape) => {
+          if (
+            shape.options.text.includes('long') ||
+            shape.options.text.includes('short')
+          )
+            return;
+
           chart.createMultipointShape(shape.points, {
             zOrder: 'top',
             shape: shape.name,
@@ -366,8 +374,6 @@ export function useChartDrawing({
         JSON.stringify({ ...parsedChartShapes, [symbol]: [] }),
       );
     }
-
-    console.log('CHART CHANGED');
   }, [chart]);
 
   useEffect(() => {
@@ -464,6 +470,8 @@ export function useChartDrawing({
   useEffect(() => {
     if (!chart) return;
 
+    console.log('CLEAR ALL');
+
     // Delete all lines to be redrawn
     deleteDetachedPositionLines(chart, positionChartLines, []);
 
@@ -471,7 +479,8 @@ export function useChartDrawing({
     setPositionChartLines([]);
 
     setTrickReload((prev) => prev + 1);
-  }, [toggleSizeUsdInChart]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toggleSizeUsdInChart, tokenSymbol]);
 
   return positionChartLines;
 }
