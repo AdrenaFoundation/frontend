@@ -307,8 +307,6 @@ export function useChartDrawing({
   positions,
   showBreakEvenLine,
   toggleSizeUsdInChart,
-  // array to keep up to date so we know which line chart is related to positions
-  positionLinesIdsRef,
   // called every time a drawing fails
   drawingErrorCallback,
 }: {
@@ -318,7 +316,6 @@ export function useChartDrawing({
   positions: PositionExtended[] | null;
   showBreakEvenLine: boolean;
   toggleSizeUsdInChart: boolean;
-  positionLinesIdsRef: React.MutableRefObject<EntityId[]>;
   drawingErrorCallback: () => void;
 }): PositionChartLine[] {
   const [positionChartLines, setPositionChartLines] = useState<
@@ -333,7 +330,6 @@ export function useChartDrawing({
     // Means chart got reset
     if (!widgetReady) {
       setPositionChartLines([]);
-      positionLinesIdsRef.current = [];
     }
   }, [widgetReady]);
 
@@ -390,7 +386,6 @@ export function useChartDrawing({
       );
 
       if (!positions) {
-        positionLinesIdsRef.current = [];
         setPositionChartLines(updatedPositionChartLines);
         return;
       }
@@ -458,8 +453,6 @@ export function useChartDrawing({
           });
       });
 
-      positionLinesIdsRef.current = updatedPositionChartLines.map((l) => l.id);
-
       setPositionChartLines(updatedPositionChartLines);
     } catch (e) {
       drawingErrorCallback();
@@ -473,7 +466,6 @@ export function useChartDrawing({
     // Delete all lines to be redrawn
     deleteDetachedPositionLines(chart, positionChartLines, []);
 
-    positionLinesIdsRef.current = [];
     setPositionChartLines([]);
 
     setTrickReload((prev) => prev + 1);

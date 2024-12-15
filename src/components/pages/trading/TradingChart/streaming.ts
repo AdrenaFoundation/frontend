@@ -23,10 +23,10 @@ const channelToSubscription = new Map<
   {
     subscriberUID: string;
     resolution: ResolutionString;
-    lastDailyBar: Bar;
     handlers: {
       id: string;
       callback: SubscribeBarsCallback;
+      lastBar: Bar;
     }[];
   }
 >();
@@ -84,34 +84,37 @@ function startStreaming() {
       return;
     }
 
-    const lastDailyBar = subscriptionItem.lastDailyBar;
-    const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
+    subscriptionItem.handlers.forEach((handler) => {
+      if (!price.price) return;
 
-    let bar: Bar;
+      const lastBar = handler.lastBar;
+      const nextBarTime = getNextDailyBarTime(lastBar.time);
 
-    const tradeTime = Number(price.timestamp.toString()) * 1000; // Multiplying by 1000 to get milliseconds
+      let bar: Bar;
 
-    if (tradeTime >= nextDailyBarTime) {
-      bar = {
-        time: nextDailyBarTime,
-        open: price.price,
-        high: price.price,
-        low: price.price,
-        close: price.price,
-      };
-    } else {
-      bar = {
-        ...lastDailyBar,
-        high: Math.max(lastDailyBar.high, price.price),
-        low: Math.min(lastDailyBar.low, price.price),
-        close: price.price,
-      };
-    }
+      const tradeTime = Number(price.timestamp.toString()) * 1000; // Multiplying by 1000 to get milliseconds
 
-    subscriptionItem.lastDailyBar = bar;
+      if (tradeTime >= nextBarTime) {
+        bar = {
+          time: nextBarTime,
+          open: price.price,
+          high: price.price,
+          low: price.price,
+          close: price.price,
+        };
+      } else {
+        bar = {
+          ...lastBar,
+          high: Math.max(lastBar.high, price.price),
+          low: Math.min(lastBar.low, price.price),
+          close: price.price,
+        };
+      }
 
-    // Send data to every subscriber of that symbol
-    subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
+      handler.lastBar = bar;
+
+      handler.callback(bar);
+    });
 
     channelToSubscription.set(product.symbol, subscriptionItem);
   });
@@ -126,12 +129,14 @@ export function subscribeOnStream(
   onRealtimeCallback: SubscribeBarsCallback,
   subscriberUID: string,
   onResetCacheNeededCallback: () => void,
-  lastDailyBar: Bar,
+  lastBar: Bar,
 ) {
   const channelString = symbolInfo.ticker;
   const handler = {
     id: subscriberUID,
     callback: onRealtimeCallback,
+    paused: false,
+    lastBar,
   };
 
   if (!channelString) return;
@@ -144,7 +149,6 @@ export function subscribeOnStream(
     subscriptionItem = {
       subscriberUID,
       resolution,
-      lastDailyBar,
       handlers: [handler],
     };
   }
