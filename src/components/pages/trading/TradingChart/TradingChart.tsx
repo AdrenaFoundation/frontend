@@ -143,7 +143,7 @@ export default function TradingChart({
             'mainSeriesProperties.priceLineColor': '#FFFF05',
           });
 
-          // FWI: this event is triggered before positionLines array is updated in the react state
+          // Note: this event is triggered before positionLines array is updated in the react state
           // So we can't check in the event if the positionLines matches our own drawing or the user's drawing
           // For now, will use the name of the draws to filter out ours drawing (liquidation, entry, break even etc.)
           widget.subscribe('drawing_event', () => {
@@ -188,8 +188,6 @@ export default function TradingChart({
               })
               .filter((line) => line);
 
-            console.log('SAVE', userDrawings);
-
             localStorage.setItem(
               'chart_drawings',
               JSON.stringify({
@@ -208,6 +206,7 @@ export default function TradingChart({
                 localStorage.setItem(STORAGE_KEY_RESOLUTION, '1D');
                 return;
               }
+
               localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
             });
         });
