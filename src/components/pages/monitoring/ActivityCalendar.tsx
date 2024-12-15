@@ -64,7 +64,6 @@ export default function ActivityCalendar({
         return acc;
     }, {} as { [key: string]: number });
 
-
     return (
         <div
             className={twMerge(
@@ -72,7 +71,7 @@ export default function ActivityCalendar({
                 wrapperClassName,
             )}
         >
-            <div className="flex flex-row justify-between items-center mb-3">
+            <div className="flex flex-row justify-between items-center mb-10">
                 <p className="font-boldy">Daily trading activity</p>
 
                 <div className="flex flex-row gap-3">
@@ -91,7 +90,7 @@ export default function ActivityCalendar({
                     ))}
                 </div>
             </div>
-            <div className=" gap-3 mt-4 flex items-center justify-center">
+            <div className="gap-3 mt-4 flex flex-col items-center justify-center">
                 <div className="hide-scrollbar overflow-auto">
                     <div className="relative flex flex-row mt-4">
                         {Object.keys(monthsInActivityData).map((month, i) => {
@@ -257,40 +256,45 @@ export default function ActivityCalendar({
                             );
                         })}
                     </div>
-                </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row sm:justify-between">
-                <div className="flex flex-row gap-2 items-center justify-center mt-3">
-                    <p className="font-mono text-gray-500">{bubbleBy}: </p>
-                    <div className="flex flex-row items-center gap-1">
-                        {[
-                            'bg-gray-500',
-                            'bg-gray-500',
-                            'bg-gray-500',
-                            'bg-gray-500',
-                            'bg-gray-500',
-                        ].map((bg, i) => (
-                            <div
-                                key={i}
-                                className={twMerge('h-2 w-2 rounded-full', bg)}
-                                style={{
-                                    width: `${i + 5}px`,
-                                    height: `${i + 5}px`,
-                                }}
-                            ></div>
-                        ))}
-                    </div>
-                </div>
+                    <div className="flex flex-col sm:flex-row sm:justify-between">
+                        <div className="flex flex-row gap-2 items-center justify-center mt-3">
+                            <p className="font-mono text-gray-500">{bubbleBy}: </p>
+                            <div className="flex flex-row items-center gap-1">
+                                {[
+                                    'bg-gray-500',
+                                    'bg-gray-500',
+                                    'bg-gray-500',
+                                    'bg-gray-500',
+                                    'bg-gray-500',
+                                ].map((bg, i) => (
+                                    <div
+                                        key={i}
+                                        className={twMerge('h-2 w-2 rounded-full', bg)}
+                                        style={{
+                                            width: `${i + 5}px`,
+                                            height: `${i + 5}px`,
+                                        }}
+                                    ></div>
+                                ))}
+                            </div>
+                        </div>
 
-                <div className="flex flex-row gap-2 items-center justify-center mt-3">
-                    <p className="font-mono text-gray-500">pnl: less </p>
-                    <div className="flex flex-row items-center gap-1">
-                        {['bg-[#AB2E42]', 'bg-[#BD773E]', 'bg-[#17AC81]'].map((bg, i) => (
-                            <div key={i} className={twMerge('h-2 w-2 rounded-sm', bg)}></div>
-                        ))}
+                        <div className="flex flex-row gap-2 items-center justify-center mt-3">
+                            <p className="font-mono text-gray-500">pnl: less </p>
+                            <div className="flex flex-row items-center gap-1">
+                                {['bg-[#AB2E42]', 'bg-[#BD773E]', 'bg-[#17AC81]'].map(
+                                    (bg, i) => (
+                                        <div
+                                            key={i}
+                                            className={twMerge('h-2 w-2 rounded-sm', bg)}
+                                        ></div>
+                                    ),
+                                )}
+                            </div>
+                            <p className="font-mono text-gray-500">more</p>
+                        </div>
                     </div>
-                    <p className="font-mono text-gray-500">more</p>
                 </div>
             </div>
         </div>
