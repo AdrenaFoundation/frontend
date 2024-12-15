@@ -47,8 +47,6 @@ export default function UsersCohortsChart() {
         cohorts: CohortData;
       };
 
-      console.log('cohorts', cohorts);
-
       setApiData(cohorts);
     } catch (e) {
       console.error(e);

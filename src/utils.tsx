@@ -1,6 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
 import { sha256 } from '@noble/hashes/sha256';
-import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
@@ -461,12 +460,6 @@ export function parseTransactionError(
     // Not enough SOL to pay for the transaction
     if (safeJSONStringify(err).includes('InsufficientFundsForRent')) {
       return 'Not enough SOL to pay for transaction fees and rent';
-    }
-
-    try {
-      Sentry.captureException(err);
-    } catch {
-      // ignore
     }
 
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
