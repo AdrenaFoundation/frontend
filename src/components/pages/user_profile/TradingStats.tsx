@@ -23,10 +23,6 @@ export default function TradingStats({
     userProfile.longStats.feePaidUsd +
     userProfile.shortStats.feePaidUsd;
 
-  console.log('STATS', {
-    userProfile
-  })
-
   return (
     <div className={twMerge("flex-wrap flex-row w-full flex", className)}>
       <NumberDisplay
