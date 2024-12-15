@@ -77,7 +77,7 @@ export default function ActivityCalendar({
 
                 <div className="flex flex-row gap-3">
                     <p className="opacity-25">by:</p>
-                    {['Pnl', 'Volume', 'Position Count'].map((filter, i) => (
+                    {['pnl', 'volume', 'position count'].map((filter, i) => (
                         <p
                             className={twMerge(
                                 'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300',
@@ -99,7 +99,6 @@ export default function ActivityCalendar({
                             const blockMargin = 4;
                             const blockSize = 16;
                             const nbOfBlocksToSkip = initSize * (blockSize + blockMargin);
-                            console.log(initSize, nbOfBlocksToSkip);
                             return (
                                 <div
                                     key={i}

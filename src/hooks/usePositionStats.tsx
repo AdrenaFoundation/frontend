@@ -21,7 +21,7 @@ export default function usePositionStats(isByWalletAddress = false) {
     ); // all time by default
 
     const [endDate, setEndDate] = useState<string>(new Date().toISOString());
-    const [bubbleBy, setBubbleBy] = useState('Volume');
+    const [bubbleBy, setBubbleBy] = useState('volume');
 
     useEffect(() => {
         fetchData();
