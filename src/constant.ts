@@ -120,7 +120,9 @@ export const SOLANA_EXPLORERS_OPTIONS = {
     url: 'https://solanabeach.io',
     // TODO: support devnet
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solanabeach.io/address/${address}`,
+      cluster === 'devnet'
+        ? `https://explorer.solana.com/address/${address}?cluster=devnet` // redirection vers Solana Explorer pour devnet
+        : `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
       `https://solanabeach.io/transaction/${tx}${
         cluster === 'devnet' ? '?cluster=devnet' : ''

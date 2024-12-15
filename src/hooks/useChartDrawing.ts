@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import {
@@ -332,7 +331,9 @@ export function useChartDrawing({
       setPositionChartLines([]);
       positionLinesIdsRef.current = [];
     }
-  }, [widgetReady]);
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [widgetReady]);
 
   // Redraw what was saved in local storage
   useEffect(() => {
@@ -454,7 +455,7 @@ export function useChartDrawing({
       positionLinesIdsRef.current = updatedPositionChartLines.map((l) => l.id);
 
       setPositionChartLines(updatedPositionChartLines);
-    } catch (e) {
+    } catch {
       drawingErrorCallback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

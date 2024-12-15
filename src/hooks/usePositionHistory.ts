@@ -97,7 +97,9 @@ export default function usePositionsHistory({
       console.log('Error loading positions history', e, String(e));
       throw e;
     }
-  }, [wallet]);
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [wallet]);
 
   useEffect(() => {
     loadPositionsHistory();

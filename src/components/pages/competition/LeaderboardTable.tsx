@@ -18,7 +18,7 @@ const isValidPublicKey = (key: string) => {
     try {
         new PublicKey(key);
         return true;
-    } catch (e) {
+    } catch {
         return false;
     }
 };

@@ -31,6 +31,7 @@ export async function getMeanPrioritizationFeeByPercentile(
   config: GetRecentPrioritizationFeesByPercentileConfig,
   serializedTransaction?: string,
 ): Promise<number> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rpcRequest = (connection as any)._rpcRequest;
 
   const recentMeanPrioritizationFees = connection.rpcEndpoint.includes('helius')

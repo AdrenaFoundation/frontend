@@ -34,7 +34,7 @@ export default function WalletAdapter({
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
-  const connectedAdapter = useMemo(() => wallet && adapters.find(x => x.name === wallet.adapterName), [wallet]);
+  const connectedAdapter = useMemo(() => wallet && adapters.find(x => x.name === wallet.adapterName), [wallet, adapters]);
 
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
@@ -96,7 +96,7 @@ export default function WalletAdapter({
     return () => {
       adapter.removeAllListeners('connect');
     };
-  }, [dispatch, connectedWalletAdapterName]);
+  }, [dispatch, connectedWalletAdapterName, adapters]);
 
   return (
     <div className="relative">

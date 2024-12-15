@@ -73,14 +73,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         });
       });
 
-      // Get the days
-      const days = Array.from(timeStamp.reduce((set: Set<string>, timestamp: string) => {
-        set.add(timestamp.split(",")[0]);
-
-        return set;
-      }, new Set()));
-
-      // Get fees for that day, taking last 
+      // Get fees for that day, taking last
 
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
         (time: string, i: number) => ({

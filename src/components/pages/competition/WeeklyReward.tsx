@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -31,15 +30,6 @@ export type RewardData = {
     rewardToken: 'ADX' | 'JITO';
     rewardImage: ImageRef;
     description: string;
-};
-
-const isValidPublicKey = (key: string) => {
-    try {
-        new PublicKey(key);
-        return true;
-    } catch (e) {
-        return false;
-    }
 };
 
 export default function WeeklyReward({
