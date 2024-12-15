@@ -50,6 +50,7 @@ export default function LineRechartCohorts({
             <CustomRechartsToolTip
               isValueOnly={labels.length === 1}
               format={format}
+              total={true}
             />
           }
           cursor={false}
