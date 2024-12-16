@@ -9,14 +9,16 @@ export default function Filter({
     activeFilter,
     setFilter,
     iconClassName,
+    className,
 }: {
     options: { name: string; icon?: ImageRef }[];
     activeFilter: string;
     setFilter: (filter: string) => void;
     iconClassName?: string;
+    className?: string;
 }) {
     return (
-        <ul className="flex flex-row gap-2 items-center border border-bcolor rounded-lg p-2 bg-secondary flex-1">
+        <ul className={twMerge("flex flex-row gap-2 items-center border border-bcolor rounded-lg p-2 bg-secondary flex-1", className)}>
             {options.map((option) => (
                 <li
                     className={twMerge(

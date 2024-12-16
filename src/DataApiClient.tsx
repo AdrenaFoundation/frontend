@@ -1,4 +1,4 @@
-import { LeaderboardReturnTypeAPI, RankedRewards, TraderDivisionRawAPI } from './types';
+import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, TraderDivisionRawAPI } from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -200,6 +200,79 @@ export default class DataApiClient {
             return data;
         } catch (e) {
             console.error(e);
+            return null;
+        }
+    }
+
+    public static async getPositionStats<
+        T extends {
+            showPositionActivity?: boolean;
+        },
+    >({
+        showPositionActivity,
+        symbol,
+        side,
+        startDate,
+        endDate,
+        walletAddress,
+    }: {
+        showPositionActivity: boolean;
+        symbol?: Token['symbol'];
+        side?: 'long' | 'short';
+        startDate?: Date;
+        endDate?: Date;
+        walletAddress?: string;
+    } & T): Promise<GetPositionStatsReturnType<T> | null> {
+        try {
+            const result = await fetch(
+                `https://datapi.adrena.xyz/position-stats?${symbol ? `symbol=${symbol}` : ''
+                }${side ? `&side=${side}` : ''}${startDate ? `&start_date=${encodeURIComponent(startDate.toISOString())}` : ''
+                }${endDate ? `&end_date=${encodeURIComponent(endDate.toISOString())}` : ''
+                }&show_position_activity=${showPositionActivity ? showPositionActivity : false
+                }${walletAddress ? `&wallet_address=${walletAddress}` : ''}`,
+            ).then((res) => res.json());
+
+            const formattedData = {
+                startDate: result.data.start_date,
+                endDate: result.data.end_date,
+                positionStats: result.data.position_stats.map(
+                    (positionStats: PositionStatsRawApi) => ({
+                        symbol: positionStats.symbol,
+                        side: positionStats.side,
+                        countPositions: positionStats.count_positions,
+                        totalPnl: positionStats.total_pnl,
+                        averagePnl: positionStats.average_pnl,
+                        maxPnl: positionStats.max_pnl,
+                        minPnl: positionStats.min_pnl,
+                        totalVolume: positionStats.total_volume,
+                        maxVolume: positionStats.max_volume,
+                        minVolume: positionStats.min_volume,
+                        averageVolume: positionStats.average_volume,
+                    }),
+                ),
+                ...(showPositionActivity && {
+                    positionActivity: result.data.position_activity.map(
+                        (positionActivity: PositionActivityRawAPi) => ({
+                            dateDay: positionActivity.date_day,
+                            totalEntrySize: positionActivity.total_entry_size,
+                            totalExitSize: positionActivity.total_exit_size,
+                            entryCount: positionActivity.entry_count,
+                            exitCount: positionActivity.exit_count,
+                            totalEntryPnl: positionActivity.total_entry_pnl,
+                            totalExitPnl: positionActivity.total_exit_pnl,
+                            totalVolume: positionActivity.total_volume,
+                            totalIncreaseSize: positionActivity.total_increase_size,
+                            increaseCount: positionActivity.increase_count,
+                            totalFees: positionActivity.total_fees,
+                            totalExitFees: positionActivity.total_exit_fees,
+                        }),
+                    ),
+                }),
+            } as GetPositionStatsReturnType<T>;
+
+            return formattedData;
+        } catch (error) {
+            console.error(error);
             return null;
         }
     }
