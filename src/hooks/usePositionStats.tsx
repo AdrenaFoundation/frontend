@@ -108,14 +108,14 @@ export default function usePositionStats(isByWalletAddress = false) {
         const maxTotal = (key: keyof typeof activity) =>
             Math.max(
                 ...activity.map(
-                    (activity) => activity[key as keyof typeof activity] as number,
+                    (activity) => Math.abs(activity[key as keyof typeof activity] as number),
                 ),
             );
 
         const minTotal = (key: keyof typeof activity) =>
             Math.min(
                 ...activity.map(
-                    (activity) => activity[key as keyof typeof activity] as number,
+                    (activity) => Math.abs(activity[key as keyof typeof activity] as number),
                 ),
             );
 
@@ -128,7 +128,11 @@ export default function usePositionStats(isByWalletAddress = false) {
                 2,
             ).setUTCHours(0, 0, 0, 0),
         );
-        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 2);
+        const endOfMonth = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() + 1,
+            2,
+        );
 
         const daysBetween = getDaysBetweenDates(tradingStartDate, endOfMonth);
 
@@ -154,11 +158,13 @@ export default function usePositionStats(isByWalletAddress = false) {
                         volume: formattedActivity[date].totalVolume,
                         size: formattedActivity[date].totalSize,
                         bubbleSize: normalize(
-                            formattedActivity[date][
-                            formattedActivityKeys[
-                            bubbleBy.toLowerCase() as keyof typeof activityKeys
-                            ]
-                            ],
+                            Math.abs(
+                                formattedActivity[date][
+                                formattedActivityKeys[
+                                bubbleBy.toLowerCase() as keyof typeof activityKeys
+                                ]
+                                ],
+                            ),
                             3,
                             12,
                             minTotal(
