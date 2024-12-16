@@ -353,7 +353,8 @@ export function addFailedTxNotification({
       );
     }
 
-    console.log('error with cause:', (error as Error)?.cause);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // console.log('error with cause:', (error as any)?.cause);
 
     const errStr =
       typeof error === 'object' ? safeJSONStringify(error) : String(error);
@@ -844,7 +845,7 @@ export const isValidPublicKey = (key: string) => {
   try {
     new PublicKey(key);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
