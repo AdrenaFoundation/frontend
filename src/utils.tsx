@@ -84,7 +84,7 @@ export function findATAAddressSync(
 }
 
 // Transfer 12/25 into 25 December
-export function formatToWeekOf(dateString: string, weeksAgo: number = 0): string {
+export function formatToWeekOf(dateString: string, weeksAgo = 0): string {
   // Parse the date string (MM/DD format) as UTC in the current year
   const [month, day] = dateString.split("/").map(Number);
   const currentYear = new Date().getFullYear();
