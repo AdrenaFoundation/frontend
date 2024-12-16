@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { RechartsData } from '@/types';
+import { getLastSundayUTC } from '@/utils';
 
 import LineRechartCohorts from './LineRechartCohorts';
 
@@ -40,7 +41,7 @@ export default function UsersCohortsChart() {
 
   const getCohortsApiData = async () => {
     try {
-      const res = await fetch('https://datapi.adrena.xyz/cohorts');
+      const res = await fetch(`https://datapi.adrena.xyz/cohorts?end_date=${getLastSundayUTC().toISOString()}`);
 
       const { data } = await res.json();
       const { cohorts } = data as {
@@ -123,8 +124,9 @@ export default function UsersCohortsChart() {
 
   return <div className="flex flex-col h-full w-full max-h-[18em]">
     <div className="flex mb-3 justify-between items-center">
-      <div className="flex flex-row gap-3 items-center">
+      <div className="flex gap-x-3 items-center">
         <h2 className="">User Retention</h2>
+        <div className="text-sm text-txtfade hidden sm:block">Week minus one</div>
       </div>
 
       <div className="flex gap-3 items-center">
