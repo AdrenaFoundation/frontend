@@ -3,9 +3,9 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { RechartsData } from '@/types';
+import { getLastSundayUTC } from '@/utils';
 
 import LineRechartCohorts from './LineRechartCohorts';
-import { getLastSundayUTC } from '@/utils';
 
 type CohortData = {
   cohort_id: string;
