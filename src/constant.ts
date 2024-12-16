@@ -169,3 +169,21 @@ export const orangeColor = '#f77f00';
 export const blueColor = '#3a86ff';
 export const purpleColor = '#9333ea';
 
+export const normalize = (
+  value: number,
+  minRange: number,
+  maxRange: number,
+  minValue: number,
+  maxValue: number,
+) => {
+  if (maxValue === minValue) {
+    return maxRange;
+  }
+  if (value < minValue || value > maxValue) {
+    return 0;
+  }
+  return (
+    minRange +
+    ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
+  );
+};

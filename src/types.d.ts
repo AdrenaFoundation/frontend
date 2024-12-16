@@ -659,3 +659,68 @@ export type TradingViewChartSavedDrawing = Record<
     options: CreateShapeOptions<object>;
   }[]
 >;
+export interface PositionActivityRawAPi {
+  date_day: Date;
+  total_entry_size: number;
+  total_exit_size: number;
+  entry_count: number;
+  exit_count: number;
+  total_entry_pnl: number;
+  total_exit_pnl: number;
+  total_volume: number;
+  total_increase_size: number;
+  increase_count: number;
+  total_fees: number;
+  total_exit_fees: number;
+}
+
+export type PositionStatsRawApi = {
+  side: 'long' | 'short';
+  symbol: string;
+  count_positions: number;
+  total_pnl: number;
+  average_pnl: number;
+  min_pnl: number;
+  max_pnl: number;
+  total_volume: number;
+  average_volume: number;
+  min_volume: number;
+  max_volume: number;
+};
+
+export type GetPositionStatsReturnType<
+  T extends { showPositionActivity?: boolean },
+> = {
+  startDate: string;
+  endDate: string;
+  positionStats: {
+    side: string;
+    symbol: string;
+    countPositions: number;
+    totalPnl: number;
+    averagePnl: number;
+    minPnl: number;
+    maxPnl: number;
+    totalVolume: number;
+    averageVolume: number;
+    minVolume: number;
+    maxVolume: number;
+  }[];
+} & (T['showPositionActivity'] extends true
+  ? {
+      positionActivity: {
+        dateDay: string;
+        totalEntrySize: number;
+        totalExitSize: number;
+        entryCount: number;
+        exitCount: number;
+        totalEntryPnl: number;
+        totalExitPnl: number;
+        totalVolume: number;
+        totalIncreaseSize: number;
+        increaseCount: number;
+        totalFees: number;
+        totalExitFees: number;
+      }[];
+    }
+  : object);
