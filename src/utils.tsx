@@ -83,6 +83,40 @@ export function findATAAddressSync(
   )[0];
 }
 
+// Transfer 12/25 into 25 December
+export function formatToWeekOf(dateString: string, weeksAgo: number = 0): string {
+  // Parse the date string (MM/DD format) as UTC in the current year
+  const [month, day] = dateString.split("/").map(Number);
+  const currentYear = new Date().getFullYear();
+
+  // Create the initial date
+  const date = new Date(Date.UTC(currentYear, month - 1, day));
+
+  // Subtract weeks (7 days per week) if weeksAgo is provided
+  date.setUTCDate(date.getUTCDate() - weeksAgo * 7);
+
+  // Format the updated date
+  const dayOfMonth = date.getUTCDate();
+  const monthName = date.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
+
+  return `${dayOfMonth} ${monthName}`;
+}
+
+export function getLastSundayUTC(): Date {
+  const now = new Date();
+  const dayOfWeek = now.getUTCDay(); // 0 = Sunday
+  const diffToSunday = dayOfWeek === 0 ? 0 : dayOfWeek; // Days since the last Sunday
+
+  const lastSunday = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - diffToSunday, // Go back to last Sunday
+    23, 59, 59 // Set time to 23:59:59
+  ));
+
+  return lastSunday;
+};
+
 export function formatNumber(
   nb: number,
   precision: number,
