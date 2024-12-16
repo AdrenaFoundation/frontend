@@ -2886,7 +2886,7 @@ export class AdrenaClient {
 
     builder.preInstructions([
       ComputeBudgetProgram.setComputeUnitLimit({
-        units: 1000000, // Use a lot of units to avoid any issues during simulation
+        units: 1400000, // Use a lot of units to avoid any issues during simulation
       }),
     ]);
 
@@ -4791,7 +4791,7 @@ export class AdrenaClient {
         microLamports: priorityFeeMicroLamports,
       }),
       ComputeBudgetProgram.setComputeUnitLimit({
-        units: 1000000, // Use a lot of units to avoid any issues during next simulation
+        units: 1400000, // Use a lot of units to avoid any issues during next simulation
       }),
     );
 

@@ -170,3 +170,4 @@ export const whiteColor = '#ffffff';
 export const orangeColor = '#f77f00';
 export const blueColor = '#3a86ff';
 export const purpleColor = '#9333ea';
+

@@ -301,27 +301,28 @@ function handlePositionBreakEvenLine(params: {
 }
 
 export function useChartDrawing({
+  tokenSymbol,
   widget,
   widgetReady,
   positions,
   showBreakEvenLine,
   toggleSizeUsdInChart,
-  // array to keep up to date so we know which line chart is related to positions
-  positionLinesIdsRef,
   // called every time a drawing fails
   drawingErrorCallback,
 }: {
+  tokenSymbol: TokenSymbol;
   widget: IChartingLibraryWidget | null;
   widgetReady: boolean | null;
   positions: PositionExtended[] | null;
   showBreakEvenLine: boolean;
   toggleSizeUsdInChart: boolean;
-  positionLinesIdsRef: React.MutableRefObject<EntityId[]>;
   drawingErrorCallback: () => void;
 }): PositionChartLine[] {
   const [positionChartLines, setPositionChartLines] = useState<
     PositionChartLine[]
   >([]);
+
+  const [trickReload, setTrickReload] = useState<number>(0);
 
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
@@ -329,7 +330,6 @@ export function useChartDrawing({
     // Means chart got reset
     if (!widgetReady) {
       setPositionChartLines([]);
-      positionLinesIdsRef.current = [];
     }
   },
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -347,6 +347,12 @@ export function useChartDrawing({
     try {
       if (parsedChartShapes[symbol]) {
         parsedChartShapes[symbol].forEach((shape) => {
+          if (
+            shape.options.text.includes('long') ||
+            shape.options.text.includes('short')
+          )
+            return;
+
           chart.createMultipointShape(shape.points, {
             zOrder: 'top',
             shape: shape.name,
@@ -366,8 +372,6 @@ export function useChartDrawing({
         JSON.stringify({ ...parsedChartShapes, [symbol]: [] }),
       );
     }
-
-    console.log('CHART CHANGED');
   }, [chart]);
 
   useEffect(() => {
@@ -384,7 +388,6 @@ export function useChartDrawing({
       );
 
       if (!positions) {
-        positionLinesIdsRef.current = [];
         setPositionChartLines(updatedPositionChartLines);
         return;
       }
@@ -452,14 +455,25 @@ export function useChartDrawing({
           });
       });
 
-      positionLinesIdsRef.current = updatedPositionChartLines.map((l) => l.id);
-
       setPositionChartLines(updatedPositionChartLines);
     } catch {
       drawingErrorCallback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chart, positions, toggleSizeUsdInChart, showBreakEvenLine]);
+  }, [chart, positions, trickReload, showBreakEvenLine]);
+
+  useEffect(() => {
+    if (!chart) return;
+
+    // Delete all lines to be redrawn
+    deleteDetachedPositionLines(chart, positionChartLines, []);
+
+    setPositionChartLines([]);
+
+    setTrickReload((prev) => prev + 1);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toggleSizeUsdInChart, tokenSymbol]);
 
   return positionChartLines;
 }

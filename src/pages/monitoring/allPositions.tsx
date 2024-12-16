@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Filter from '@/components/Filter/Filter';
@@ -136,8 +137,77 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
         triggerAllPositionsReload();
     };
 
+    const unrealizedPnl = useMemo(() => {
+        return allPositions.reduce((pnl, position) => {
+            return pnl + (position.pnl ?? 0);
+        }, 0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allPositions.map(x => x.pnl ?? 0).join(',')]);
+
+    const unrealizedBorrowFee = useMemo(() => {
+        return allPositions.reduce((total, position) => {
+            return total + (position.borrowFeeUsd ?? 0);
+        }, 0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allPositions.map(x => x.borrowFeeUsd ?? 0).join(',')]);
+
+    const unrealizedCloseFee = useMemo(() => {
+        return allPositions.reduce((total, position) => {
+            return total + (position.exitFeeUsd ?? 0);
+        }, 0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allPositions.map(x => x.exitFeeUsd ?? 0).join(',')]);
+
     return (
         <div className="flex flex-col gap-2 p-2">
+            <StyledContainer className="p-0">
+                <div className="flex flex-wrap justify-between">
+                    <NumberDisplay
+                        title="POSITION COUNT"
+                        nb={allPositions.length}
+                        format="number"
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+
+                    <NumberDisplay
+                        title="UNREALIZED PNL"
+                        nb={unrealizedPnl}
+                        format="currency"
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+
+                    <NumberDisplay
+                        title="UNREALIZED BORROW FEES"
+                        nb={unrealizedBorrowFee}
+                        format="currency"
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+
+                    <NumberDisplay
+                        title="UNREALIZED CLOSE FEES"
+                        nb={unrealizedCloseFee}
+                        format="currency"
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+                </div>
+            </StyledContainer>
+
             <StyledContainer className="p-4">
                 <div className="flex flex-col gap-3">
                     <div className='flex gap-3 flex-col md:flex-row flex-wrap'>

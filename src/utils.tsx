@@ -839,3 +839,16 @@ export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor((diffTime % (1000 * 60)) / 1000);
 }
+
+export const isValidPublicKey = (key: string) => {
+  try {
+    new PublicKey(key);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const calculateWeeksPassed = (startDate: Date): number => {
+  return Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
+};
