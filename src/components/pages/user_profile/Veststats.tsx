@@ -71,10 +71,10 @@ export default function VestStats({
   const data = [
     { name: 'Claimed ADX', value: claimedAmount },
     { name: 'Unclaimed ADX', value: claimableAmount },
-    { name: 'Total Vested ADX', value: amount }
+    { name: 'Total Vested ADX', value: amount },
   ];
 
-  const COLORS = ['#9F8CAE', '#5C576B', '#192128'];
+  const COLORS = ['#9F8CAE', '#5C576B', '#15202C'];
 
   const claimVest = async () => {
     try {
@@ -166,15 +166,17 @@ export default function VestStats({
           <PieChart width={300} height={300}>
             <Pie
               data={data}
-              cx={150}
-              cy={150}
+              cx="50%"
+              cy="50%"
               innerRadius={60}
               outerRadius={80}
-              paddingAngle={5}
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
               ))}
             </Pie>
             <Legend
@@ -182,6 +184,9 @@ export default function VestStats({
               align="center"
               iconSize={5}
               iconType="circle"
+              formatter={(value: string) => {
+                return <span className="opacity-50">{value}</span>;
+              }}
             />
           </PieChart>
         </div>
