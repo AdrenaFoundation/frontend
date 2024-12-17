@@ -624,8 +624,12 @@ export class AdrenaClient {
         0,
       ),
       nbOpenShortPositions: custodies.reduce(
-        (total, custody) =>
-          total + custody.nativeObject.shortPositions.openPositions.toNumber(),
+        (total, custody) => {
+          // Do not double count
+          if (custody.isStable) return total;
+
+          return total + custody.nativeObject.shortPositions.openPositions.toNumber();
+        },
         0,
       ),
       custodies: custodiesAddresses,
