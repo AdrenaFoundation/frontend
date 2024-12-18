@@ -169,7 +169,9 @@ export default function BorrowRateChart() {
       period={period}
       gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
-      formatY="high_detail_percentage"
+      formatY="percentage"
+      precision={4}
+      precisionTooltip={6}
       scale="sqrt"
     />
   );

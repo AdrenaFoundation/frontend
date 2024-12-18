@@ -25,7 +25,7 @@ export default function CustomRechartsToolTip({
   labelCustomization,
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
-  format?: 'currency' | 'percentage' | 'number' | 'high_detail_percentage';
+  format?: 'currency' | 'percentage' | 'number';
   labelPrefix?: string;
   labelSuffix?: string;
   suffix?: string;
@@ -65,9 +65,7 @@ export default function CustomRechartsToolTip({
                 ? formatPriceInfo(Number(v), precision, precision)
                 : format === 'percentage'
                   ? formatPercentage(Number(v), precision)
-                  : format === 'high_detail_percentage'
-                    ? formatPercentage(Number(v), 4)
-                    : formatNumber(Number(v), precision)
+                  : formatNumber(Number(v), precision)
             })()}
 
             {suffix}
@@ -96,9 +94,7 @@ export default function CustomRechartsToolTip({
                 ? formatPriceInfo(Number(item.value), precision, precision)
                 : format === 'percentage'
                   ? formatPercentage(Number(item.value), precision)
-                  : format === 'high_detail_percentage'
-                    ? formatPercentage(Number(item.value), 6)
-                    : formatNumber(Number(item.value), precision)}
+                  : formatNumber(Number(item.value), precision)}
 
               {suffix}
             </span>
