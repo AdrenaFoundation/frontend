@@ -25,6 +25,7 @@ export default function usePositionStats(isByWalletAddress = false) {
 
     useEffect(() => {
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [startDate, endDate, walletAddress]);
 
     const fetchData = async () => {
@@ -180,6 +181,7 @@ export default function usePositionStats(isByWalletAddress = false) {
         }
 
         return tableData;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, bubbleBy, endDate, startDate, walletAddress]);
 
     // Group stats by symbol
@@ -195,6 +197,7 @@ export default function usePositionStats(isByWalletAddress = false) {
             acc[stat.symbol].push(stat);
             return acc;
         }, {} as Record<string, typeof stats>);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, startDate, endDate, walletAddress]);
 
     return {
