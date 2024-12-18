@@ -48,6 +48,7 @@ export type RiveImage = any;
 
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Jupiter: any;
     riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;

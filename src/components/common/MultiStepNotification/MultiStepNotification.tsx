@@ -278,10 +278,10 @@ export default class MultiStepNotification {
       draggable: false,
       icon: false,
       closeButton: false,
-      bodyStyle: {
+      /* bodyStyle: {
         margin: 0,
         padding: 0,
-      },
+      }, */
       style: {
         width: '20em',
         marginLeft: 0,

@@ -128,6 +128,7 @@ export default function useRpc(config: IConfiguration | null): {
         }
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config]);
 
   // Measure latency of RPCs
@@ -148,7 +149,7 @@ export default function useRpc(config: IConfiguration | null): {
           if (!(await connection.getVersion())) return null;
 
           return Date.now() - start;
-        } catch (error) {
+        } catch {
           return null;
         }
       }),
