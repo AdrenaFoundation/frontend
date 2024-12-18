@@ -15,6 +15,7 @@ import StakingChart from '@/components/pages/global/Staking/StakingChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UsersCohortsChart from '@/components/pages/global/UsersCohorts/UsersCohortsChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
+import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChart';
 import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
 import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -176,6 +177,10 @@ export default function BasicMonitoring({
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <VolumeBarChart isSmallScreen={false} />
           <UsersCohortsChart />
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <BorrowRateChart />
         </div>
 
       </StyledContainer>

@@ -49,7 +49,7 @@ export default function LineRechart({
   isSmallScreen?: boolean;
   subValue?: number;
   gmt?: number;
-  formatY?: 'percentage' | 'currency' | 'number';
+  formatY?: 'percentage' | 'currency' | 'number' | 'high_detail_percentage';
   isReferenceLine?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
@@ -57,6 +57,10 @@ export default function LineRechart({
   >([]);
 
   const formatYAxis = (tickItem: number) => {
+    if (formatY === 'high_detail_percentage') {
+      return Math.abs(tickItem) === 0 ? '0%' : formatPercentage(tickItem, 4);
+    }
+
     if (formatY === 'percentage') {
       return formatPercentage(tickItem, 0);
     }
