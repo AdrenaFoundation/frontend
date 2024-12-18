@@ -155,7 +155,7 @@ export default function BorrowRateChart() {
 
   return (
     <LineRechart
-      title="Borrow Rate"
+      title="hourly Borrow Rate"
       data={infos.formattedData}
       labels={Object.keys(infos.formattedData[0])
         .filter((key) => key !== 'time')
@@ -170,6 +170,7 @@ export default function BorrowRateChart() {
       gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       formatY="high_detail_percentage"
+      scale="sqrt"
     />
   );
 }
