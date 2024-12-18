@@ -33,6 +33,8 @@ export default function LineRechart({
   isSmallScreen = true,
   subValue,
   formatY = 'currency',
+  precision = 0,
+  precisionTooltip = 2,
   isReferenceLine,
 }: {
   title: string;
@@ -45,6 +47,8 @@ export default function LineRechart({
   setPeriod?: (v: string | null) => void;
   domain?: AxisDomain;
   scale?: ScaleType;
+  precision?: number;
+  precisionTooltip?: number;
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
   subValue?: number;
@@ -58,14 +62,14 @@ export default function LineRechart({
 
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
-      return formatPercentage(tickItem, 0);
+      return Math.abs(tickItem) === 0 ? '0%' : formatPercentage(tickItem, precision);
     }
 
     if (formatY === 'currency') {
       return formatGraphCurrency({ tickItem, maxDecimals: 0, maxDecimalsIfToken: 4 });
     }
 
-    return formatNumberShort(tickItem, 0);
+    return formatNumberShort(tickItem, precision);
   };
 
   return (
@@ -149,6 +153,7 @@ export default function LineRechart({
                 isValueOnly={labels.length === 1}
                 format={formatY}
                 gmt={gmt}
+                precision={precisionTooltip}
               />
             }
             cursor={false}
