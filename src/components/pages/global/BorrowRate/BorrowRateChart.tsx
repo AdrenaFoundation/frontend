@@ -80,9 +80,8 @@ export default function BorrowRateChart() {
 
         if (!custodyInfos) continue;
 
-        borrowRateValues.forEach((borrowRateValue: string, i: number) => {
-          const borrowRateNb = parseFloat(borrowRateValue);
-          custodyInfos.values.push(borrowRateNb);
+        borrowRateValues.forEach((borrowRateValue: string) => {
+          custodyInfos.values.push(parseFloat(borrowRateValue));
         });
       }
 
