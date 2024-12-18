@@ -197,20 +197,22 @@ export default function Stake({
     ).fire();
 
     try {
-      lockPeriod === 0
-        ? await window.adrena.client.addLiquidStake({
+      if (lockPeriod === 0) {
+        await window.adrena.client.addLiquidStake({
           owner,
           amount,
           stakedTokenMint,
           notification,
-        })
-        : await window.adrena.client.addLockedStake({
+        });
+      } else {
+        await window.adrena.client.addLockedStake({
           owner,
           amount,
           lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
           stakedTokenMint,
           notification,
         });
+      }
 
       setAmount(null);
       setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);

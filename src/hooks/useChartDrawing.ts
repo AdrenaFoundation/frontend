@@ -331,7 +331,9 @@ export function useChartDrawing({
     if (!widgetReady) {
       setPositionChartLines([]);
     }
-  }, [widgetReady]);
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [widgetReady]);
 
   // Redraw what was saved in local storage
   useEffect(() => {
@@ -454,7 +456,7 @@ export function useChartDrawing({
       });
 
       setPositionChartLines(updatedPositionChartLines);
-    } catch (e) {
+    } catch {
       drawingErrorCallback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

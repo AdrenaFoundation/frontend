@@ -1,6 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
 import { sha256 } from '@noble/hashes/sha256';
-import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
@@ -16,8 +15,6 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { BigNumber } from 'bignumber.js';
-import { Context } from 'chartjs-plugin-datalabels';
-import { Font } from 'chartjs-plugin-datalabels/types/options';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
@@ -357,7 +354,7 @@ export function addSuccessTxNotification({
 export function safeJSONStringify(obj: unknown, space = 2): string {
   try {
     return JSON.stringify(obj, null, space);
-  } catch (e) {
+  } catch {
     return String(obj);
   }
 }
@@ -390,7 +387,8 @@ export function addFailedTxNotification({
       );
     }
 
-    console.log('error with cause:', (error as Error)?.cause);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // console.log('error with cause:', (error as any)?.cause);
 
     const errStr =
       typeof error === 'object' ? safeJSONStringify(error) : String(error);
@@ -497,12 +495,6 @@ export function parseTransactionError(
     // Not enough SOL to pay for the transaction
     if (safeJSONStringify(err).includes('InsufficientFundsForRent')) {
       return 'Not enough SOL to pay for transaction fees and rent';
-    }
-
-    try {
-      Sentry.captureException(err);
-    } catch {
-      // ignore
     }
 
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
@@ -760,19 +752,6 @@ export function parseFullSymbol(fullSymbol: string) {
   };
 }
 
-/* Chart js datalabels plugin utils, may export in different file if many come along */
-
-export function getDatasetBackgroundColor(context: Context) {
-  return (context.dataset.backgroundColor as string) ?? '';
-}
-
-export function getFontSizeWeight(context: Context): Font {
-  return {
-    size: context.chart.width < 512 ? 8 : 14,
-    weight: 'bold',
-  };
-}
-
 export const verifyRpcConnection = async (rpc: string) => {
   if (!rpc) return false;
   try {
@@ -900,7 +879,7 @@ export const isValidPublicKey = (key: string) => {
   try {
     new PublicKey(key);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
