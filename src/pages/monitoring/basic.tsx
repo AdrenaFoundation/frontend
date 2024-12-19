@@ -15,6 +15,8 @@ import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
 import DataApiClient from '@/DataApiClient';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
+import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
+import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 
 export default function BasicMonitoring({
   mainPool,
@@ -141,12 +143,12 @@ export default function BasicMonitoring({
       <StyledContainer className="flex gap-6">
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <AumChart />
-          <ALPPriceChart />
+          <VolumeBarChart isSmallScreen={false} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <UtilizationChart />
-          <CompositionChart />
+          <FeesBarChart isSmallScreen={isSmallScreen} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
@@ -155,13 +157,18 @@ export default function BasicMonitoring({
         </div>
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <FeesBarChart isSmallScreen={isSmallScreen} />
-          <FeesChart isSmallScreen={isSmallScreen} />
+          <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+          <RealizedPnlChart isSmallScreen={isSmallScreen} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <VolumeBarChart isSmallScreen={false} />
+          <FeesChart isSmallScreen={isSmallScreen} />
           <UsersCohortsChart />
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <CompositionChart />
+          <ALPPriceChart />
         </div>
 
       </StyledContainer>
