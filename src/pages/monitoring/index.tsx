@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
@@ -18,13 +19,14 @@ import Flow from './flows';
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesInPnl: boolean } & PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
+  const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
 
   const [view, setView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows'
-  >('lite');
+    'overview' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'full'
+  >('overview');
   const [previousView, setPreviousView] = useState<
-    'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows'
-  >('lite');
+    'overview' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'full'
+  >('overview');
 
   const searchParams = new URLSearchParams(window.location.search);
 
@@ -33,7 +35,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       const searchParamsView = searchParams.get('view');
 
       if (
-        !['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows'].includes(
+        !['overview', 'livePositions', 'allStaking', 'flows', 'userProfiles', 'full'].includes(
           searchParamsView as string,
         )
       ) {
@@ -41,7 +43,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       }
 
       setView(
-        searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows',
+        searchParamsView as 'overview' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'full',
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,39 +86,19 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           <span
             className={twMerge(
               'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'lite' ? 'opacity-100' : '',
+              view === 'overview' ? 'opacity-100' : '',
             )}
             onClick={() => {
-              searchParams.set('view', 'lite');
+              searchParams.set('view', 'overview');
               window.history.replaceState(
                 null,
                 '',
                 `${window.location.pathname}?${searchParams.toString()}`,
               );
-              setView('lite');
+              setView('overview');
             }}
           >
-            Lite
-          </span>
-
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
-
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'full' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'full');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('full');
-            }}
-          >
-            Full
+            Overview
           </span>
 
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
@@ -144,6 +126,47 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           <span
             className={twMerge(
               'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              view === 'allStaking' ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              searchParams.set('view', 'allStaking');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setView('allStaking');
+            }}
+          >
+            Staking
+          </span>
+
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
+
+
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              view === 'flows' ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              searchParams.set('view', 'flows');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setView('flows');
+            }}
+          >
+            Flows
+          </span>
+
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
+
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
               view === 'userProfiles' ? 'opacity-100' : '',
             )}
             onClick={() => {
@@ -164,40 +187,22 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           <span
             className={twMerge(
               'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'allStaking' ? 'opacity-100' : '',
+              view === 'full' ? 'opacity-100' : '',
             )}
             onClick={() => {
-              searchParams.set('view', 'allStaking');
+              searchParams.set('view', 'full');
               window.history.replaceState(
                 null,
                 '',
                 `${window.location.pathname}?${searchParams.toString()}`,
               );
-              setView('allStaking');
+              setView('full');
             }}
           >
-            Staking
+            Full
           </span>
 
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
-          <span
-            className={twMerge(
-              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              view === 'flows' ? 'opacity-100' : '',
-            )}
-            onClick={() => {
-              searchParams.set('view', 'flows');
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}?${searchParams.toString()}`,
-              );
-              setView('flows');
-            }}
-          >
-            Flows
-          </span>
         </div>
 
         {/* {view === 'full' ? (
@@ -228,7 +233,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           transition={{ duration: 0.3 }}
           className='min-h-[80vh]'
         >
-          <AllPositions showFeesInPnl={showFeesInPnl} />
+          <AllPositions showFeesInPnl={showFeesInPnl} isSmallScreen={isSmallScreen} />
         </motion.div>
       ) : null}
 
@@ -249,17 +254,17 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
         </motion.div>
       ) : null}
 
-      {view === 'lite' ? (
+      {view === 'overview' ? (
         <motion.div
           initial={{
             opacity: 0,
-            translateX: previousView !== 'lite' ? 20 : -20,
+            translateX: previousView !== 'overview' ? 20 : -20,
           }}
           animate={{ opacity: 1, translateX: 0 }}
           transition={{ duration: 0.3 }}
           className='min-h-[80vh]'
         >
-          <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
+          <BasicMonitoring {...pageProps} poolInfo={poolInfo} isSmallScreen={isSmallScreen} />
         </motion.div>
       ) : null}
 
@@ -287,7 +292,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           transition={{ duration: 0.3 }}
           className='min-h-[80vh]'
         >
-          <AllStaking />
+          <AllStaking isSmallScreen={isSmallScreen} />
         </motion.div>
       ) : null}
 
