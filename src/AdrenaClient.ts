@@ -63,6 +63,7 @@ import {
   Vest,
   VestExtended,
   VestRegistry,
+  WalletAdapterExtended,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -78,10 +79,6 @@ import {
   u128SplitToBN,
   uiToNative,
 } from './utils';
-
-interface WalletWithIcon extends Wallet {
-  iconOverride?: { src: string };
-}
 
 export class AdrenaClient {
   public static programId = new PublicKey(
@@ -4750,7 +4747,7 @@ export class AdrenaClient {
     let priorityFeeMicroLamports: number =
       DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet as (Wallet & WalletAdapterExtended);
 
     let latestBlockHash: {
       blockhash: Blockhash;
@@ -4857,14 +4854,15 @@ export class AdrenaClient {
 
     // Adjust compute unit limit
     if (computeUnitUsed !== undefined) {
-      const isSolflareByIcon = (
-        wallet as WalletWithIcon
-      ).iconOverride?.src?.includes('solflare');
+      let computeUnitToUse = computeUnitUsed * 1.05; // Add 5% of compute unit to avoid any issues in between simulation and actual execution
+
+      // Solflare add two instructions to the end of the transaction, which cost compute units. Needs to take it into account
+      if (wallet.walletName === 'Solflare') {
+        computeUnitToUse += 12000;
+      }
 
       transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-        units: isSolflareByIcon
-          ? computeUnitUsed * 1.15 // Add an extra 15% since solflare wallet eats more units
-          : computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
+        units: computeUnitToUse,
       });
     }
 

@@ -11,6 +11,7 @@ import { Adrena } from '@/target/adrena';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
+import type { WalletAdapterName } from './hooks/useWalletAdapters';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -58,6 +59,7 @@ declare global {
 export type WalletAdapterExtended = Adapter & {
   color: string;
   beta: boolean;
+  walletName: WalletAdapterName;
   recommended: boolean;
   iconOverride?: ImageRef;
 };
