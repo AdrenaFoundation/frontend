@@ -37,7 +37,7 @@ export default function Flow({
   if (!groupedStats || !activityCalendarData) return <div>No data</div>;
 
   return (
-    <StyledContainer className="rounded-lg overflow-hidden p-5 mt-2">
+    <StyledContainer className="rounded-lg overflow-hidden p-5">
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-secondary border border-gray-600 rounded p-2 text-sm items-center">
         <Select
           onSelect={(value) => {
