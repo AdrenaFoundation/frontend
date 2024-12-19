@@ -176,7 +176,7 @@ export default function AllUserProfiles({
                             ]}
                             switchOptions={[
                                 {
-                                    label: 'Hide zero trade volume',
+                                    label: 'Hide profiles w/o trades',
                                     checked: hideZeroTradeVolume,
                                     handleChange: setHideZeroTradeVolume,
                                 },
