@@ -51,7 +51,7 @@ export default function FilterSidebar({
         optionItems: { label: string; icon?: ImageRef }[];
     }[];
     sortOptions?: {
-        handleChange: React.Dispatch<React.SetStateAction<any>>;
+        handleChange: React.Dispatch<React.SetStateAction<string>>;
         optionItems: { label: string; icon?: ImageRef; order: 'asc' | 'desc' }[];
         disabled?: boolean;
     };
@@ -108,7 +108,6 @@ export default function FilterSidebar({
                                     return (
                                         <Checkbox
                                             key={opt.label}
-                                            id={opt.label}
                                             label={opt.label}
                                             checked={
                                                 filterOption.activeOption !== null &&
@@ -128,7 +127,6 @@ export default function FilterSidebar({
                                     return (
                                         <Radio
                                             key={opt.label}
-                                            id={opt.label}
                                             name={filterOption.name}
                                             label={opt.label}
                                             checked={filterOption.activeOption === opt.label}
@@ -275,7 +273,6 @@ export default function FilterSidebar({
 }
 
 interface CheckboxProps {
-    id: string;
     label: string;
     checked: boolean;
     onClick: React.Dispatch<React.SetStateAction<string[] | null>>;
@@ -283,7 +280,6 @@ interface CheckboxProps {
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
-    id,
     label,
     checked,
     onClick,
@@ -333,7 +329,6 @@ const Checkbox: React.FC<CheckboxProps> = ({
 };
 
 interface RadioProps {
-    id: string;
     name: string;
     label: string;
     checked: boolean;
@@ -342,7 +337,6 @@ interface RadioProps {
 }
 
 const Radio: React.FC<RadioProps> = ({
-    id,
     name,
     label,
     checked,

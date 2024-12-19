@@ -276,7 +276,7 @@ export default function AllPositions({
                             },
                         ]}
                         sortOptions={{
-                            handleChange: toggleSortOrder,
+                            handleChange: toggleSortOrder as React.Dispatch<React.SetStateAction<string>>,
                             optionItems: [
                                 { label: 'pnl', order: sortConfigs.pnl },
                                 { label: 'size', order: sortConfigs.size },

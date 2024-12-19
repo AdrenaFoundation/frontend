@@ -5,8 +5,6 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import Switch from '@/components/common/Switch/Switch';
-import Filter from '@/components/Filter/Filter';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
 import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
@@ -69,11 +67,11 @@ export default function AllUserProfiles({
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
-    const resetFilters = () => {
-        setOwnerFilter('');
-        setPnlFilter('all');
-        setCurrentPage(1);
-    };
+    // const resetFilters = () => {
+    //     setOwnerFilter('');
+    //     setPnlFilter('all');
+    //     setCurrentPage(1);
+    // };
 
     useEffect(() => {
         const filteredProfiles = allUserProfiles.filter((profile) => {
@@ -182,7 +180,7 @@ export default function AllUserProfiles({
                                 },
                             ]}
                             sortOptions={{
-                                handleChange: toggleSortOrder,
+                                handleChange: toggleSortOrder as React.Dispatch<React.SetStateAction<string>>,
                                 optionItems: [
                                     { label: 'pnl', order: sortConfigs.totalPnlUsd },
                                     {
