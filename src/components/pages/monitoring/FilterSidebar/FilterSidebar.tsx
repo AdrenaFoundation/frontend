@@ -44,7 +44,9 @@ export default function FilterSidebar({
         // TODO: fix type
         type: 'checkbox' | 'radio' | 'input';
         name: string;
-        handleChange: React.Dispatch<React.SetStateAction<string>> | React.Dispatch<React.SetStateAction<string[] | null>>;
+        handleChange:
+        | React.Dispatch<React.SetStateAction<string>>
+        | React.Dispatch<React.SetStateAction<string[] | null>>;
         activeOption: string[] | string | null;
         optionItems: { label: string; icon?: ImageRef }[];
     }[];
@@ -60,7 +62,10 @@ export default function FilterSidebar({
     const SwitchOptions = switchOptions ? (
         <div className="p-4 bg-[#040D14] border rounded-lg flex flex-col gap-3 ">
             {switchOptions.map((opt) => (
-                <label className="flex items-center justify-between ml-1 cursor-pointer">
+                <label
+                    className="flex items-center justify-between ml-1 cursor-pointer"
+                    key={opt.label}
+                >
                     <span className="mx-1 text-txtfade whitespace-nowrap text-center text-sm">
                         {opt.label}
                     </span>
@@ -110,7 +115,11 @@ export default function FilterSidebar({
                                                 filterOption.activeOption.includes(opt.label)
                                             }
                                             img={opt.icon}
-                                            onClick={filterOption.handleChange as React.Dispatch<React.SetStateAction<string[] | null>>}
+                                            onClick={
+                                                filterOption.handleChange as React.Dispatch<
+                                                    React.SetStateAction<string[] | null>
+                                                >
+                                            }
                                         />
                                     );
                                 }
@@ -124,7 +133,11 @@ export default function FilterSidebar({
                                             label={opt.label}
                                             checked={filterOption.activeOption === opt.label}
                                             img={opt.icon}
-                                            onClick={filterOption.handleChange as React.Dispatch<React.SetStateAction<string>>}
+                                            onClick={
+                                                filterOption.handleChange as React.Dispatch<
+                                                    React.SetStateAction<string>
+                                                >
+                                            }
                                         />
                                     );
                                 }
