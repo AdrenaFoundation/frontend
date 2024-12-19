@@ -71,15 +71,15 @@ export default function ActivityCalendar({
                 wrapperClassName,
             )}
         >
-            <div className="flex flex-row justify-between items-center mb-10">
-                <p className="font-boldy">Daily trading activity</p>
+            <div className="flex flex-col sm:flex-row mb-6 justify-between items-center">
+                <p className="font-boldy text-lg">Trading activity</p>
 
                 <div className="flex flex-row gap-3">
-                    <p className="opacity-25">by:</p>
+                    <p className='opacity-25'>by: </p>
                     {['pnl', 'volume', 'position count'].map((filter, i) => (
                         <p
                             className={twMerge(
-                                'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300',
+                                'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300 font-mono',
                                 bubbleBy === filter && 'opacity-100 underline',
                             )}
                             onClick={() => setBubbleBy(filter)}
@@ -101,7 +101,7 @@ export default function ActivityCalendar({
                             return (
                                 <div
                                     key={i}
-                                    className="absolute -top-5 text-sm text-gray-600 z-10"
+                                    className="absolute -top-5 text-sm font-boldy opacity-50 z-10"
                                     style={{ left: i * nbOfBlocksToSkip }}
                                 >
                                     {month}
@@ -127,7 +127,7 @@ export default function ActivityCalendar({
                                     >
                                         <div
                                             key={i}
-                                            className="bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14]  size-4 transition duration-300"
+                                            className="bg-third hover:bg-secondary rounded-sm  size-4 transition duration-300"
                                         />
                                     </Tippy>
                                 );
@@ -226,7 +226,7 @@ export default function ActivityCalendar({
                                 >
                                     <div
                                         className={twMerge(
-                                            'flex items-center justify-center bg-third hover:bg-secondary border-b-2 border-r-2 border-[#040D14] cursor-pointer group size-4 transition duration-300',
+                                            'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer group size-4 transition duration-300',
                                         )}
                                         onClick={() => {
                                             if (isUserActivity) return;
@@ -257,42 +257,15 @@ export default function ActivityCalendar({
                         })}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:justify-between">
-                        <div className="flex flex-row gap-2 items-center justify-center mt-3">
-                            <p className="font-mono text-gray-500">{bubbleBy}: </p>
-                            <div className="flex flex-row items-center gap-1">
-                                {[
-                                    'bg-gray-500',
-                                    'bg-gray-500',
-                                    'bg-gray-500',
-                                    'bg-gray-500',
-                                    'bg-gray-500',
-                                ].map((bg, i) => (
-                                    <div
-                                        key={i}
-                                        className={twMerge('h-2 w-2 rounded-full', bg)}
-                                        style={{
-                                            width: `${i + 5}px`,
-                                            height: `${i + 5}px`,
-                                        }}
-                                    ></div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row gap-2 items-center justify-center mt-3">
-                            <p className="font-mono text-gray-500">pnl: less </p>
-                            <div className="flex flex-row items-center gap-1">
-                                {['bg-[#AB2E42]', 'bg-[#BD773E]', 'bg-[#17AC81]'].map(
-                                    (bg, i) => (
-                                        <div
-                                            key={i}
-                                            className={twMerge('h-2 w-2 rounded-sm', bg)}
-                                        ></div>
-                                    ),
-                                )}
-                            </div>
-                            <p className="font-mono text-gray-500">more</p>
+                    <div className="flex flex-row gap-2 items-center justify-center mt-3">
+                        <p className="font-mono text-gray-500">pnl</p>
+                        <div className="flex flex-row items-center gap-1">
+                            {['bg-[#AB2E42]', 'bg-[#BD773E]', 'bg-[#17AC81]'].map((bg, i) => (
+                                <div
+                                    key={i}
+                                    className={twMerge('h-2 w-2 rounded-sm', bg)}
+                                ></div>
+                            ))}
                         </div>
                     </div>
                 </div>
