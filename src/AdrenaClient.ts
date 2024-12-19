@@ -1,4 +1,4 @@
-import { BN, ProgramAccount } from '@coral-xyz/anchor';
+import { BN, ProgramAccount, Wallet } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -78,6 +78,10 @@ import {
   u128SplitToBN,
   uiToNative,
 } from './utils';
+
+interface WalletWithIcon extends Wallet {
+  iconOverride?: { src: string };
+}
 
 export class AdrenaClient {
   public static programId = new PublicKey(
@@ -623,15 +627,14 @@ export class AdrenaClient {
           total + custody.nativeObject.longPositions.openPositions.toNumber(),
         0,
       ),
-      nbOpenShortPositions: custodies.reduce(
-        (total, custody) => {
-          // Do not double count
-          if (custody.isStable) return total;
+      nbOpenShortPositions: custodies.reduce((total, custody) => {
+        // Do not double count
+        if (custody.isStable) return total;
 
-          return total + custody.nativeObject.shortPositions.openPositions.toNumber();
-        },
-        0,
-      ),
+        return (
+          total + custody.nativeObject.shortPositions.openPositions.toNumber()
+        );
+      }, 0),
       custodies: custodiesAddresses,
       //
       nativeObject: mainPool,
@@ -4852,10 +4855,18 @@ export class AdrenaClient {
       }
     }
 
+    console.log(wallet);
+
     // Adjust compute unit limit
     if (computeUnitUsed !== undefined) {
+      const isSolflareByIcon = (
+        wallet as WalletWithIcon
+      ).iconOverride?.src?.includes('solflare');
+
       transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-        units: computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
+        units: isSolflareByIcon
+          ? computeUnitUsed * 1.15 // Add an extra 15% since solflare wallet eats more units
+          : computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
       });
     }
 
