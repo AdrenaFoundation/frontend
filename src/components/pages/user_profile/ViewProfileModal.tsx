@@ -50,9 +50,9 @@ export default function ViewProfileModal({
 
             <TabSelect
                 tabs={[
-                    { label: 'Overview' },
-                    { label: 'Active Positions' },
-                    { label: 'Positions History' },
+                    { title: 'Overview' },
+                    { title: 'Active Positions' },
+                    { title: 'Positions History' },
                 ]}
                 selected={selectedTab}
                 titleClassName="text-xs sm:text-sm"
