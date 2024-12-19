@@ -4855,8 +4855,6 @@ export class AdrenaClient {
       }
     }
 
-    console.log(wallet);
-
     // Adjust compute unit limit
     if (computeUnitUsed !== undefined) {
       const isSolflareByIcon = (
