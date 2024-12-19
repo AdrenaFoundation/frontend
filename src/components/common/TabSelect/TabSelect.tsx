@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { createRef, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -42,10 +43,10 @@ export default function TabSelect<T extends string | number>({
         wrapperClassName,
       )}
     >
-      {tabs.map(({ title, activeColor, disabled }, index) => (
+      {tabs.map(({ title: title, activeColor, disabled }, index) => (
         <div
           className={twMerge(
-            'ext-center p-1 w-full cursor-pointer z-10',
+            'p-1 w-full cursor-pointer z-10',
             className,
             activeTab !== null && index === activeTab
               ? activeColor
@@ -53,6 +54,7 @@ export default function TabSelect<T extends string | number>({
                 : 'opacity-100 border-b-[0.3em] border-highlight'
               : 'opacity-50 border-b-[1px]',
             disabled && 'opacity-25 cursor-not-allowed',
+            tabs[index].icon && 'flex flex-row gap-1 items-center justify-center ',
           )}
           ref={refs[index]}
           key={title}
@@ -63,7 +65,20 @@ export default function TabSelect<T extends string | number>({
             setActiveTab(index);
           }}
         >
-          <h5 className={twMerge('text-center uppercase select-none', titleClassName)}>
+          {tabs[index].icon && (
+            <Image
+              src={tabs[index].icon}
+              alt={title as string}
+              width={12}
+              height={12}
+            />
+          )}
+          <h5
+            className={twMerge(
+              'text-center uppercase select-none',
+              titleClassName,
+            )}
+          >
             {title}
           </h5>
         </div>

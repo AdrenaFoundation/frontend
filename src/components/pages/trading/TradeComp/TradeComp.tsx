@@ -66,9 +66,9 @@ export default function TradeComp({
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-b-green text-green' },
-            { title: 'short', activeColor: 'border-b-red text-red' },
-            { title: 'swap', activeColor: 'border-white' },
+            { label: 'long', activeColor: 'border-b-green text-green' },
+            { label: 'short', activeColor: 'border-b-red text-red' },
+            { label: 'swap', activeColor: 'border-white' },
           ]}
           onClick={(title) => {
             setSelectedAction(title);

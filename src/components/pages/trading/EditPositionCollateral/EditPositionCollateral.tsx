@@ -597,8 +597,8 @@ export default function EditPositionCollateral({
         wrapperClassName="h-12 flex items-center mt-auto"
         selected={selectedAction}
         tabs={[
-          { title: 'deposit', activeColor: 'border-b-gray-700' },
-          { title: 'withdraw', activeColor: 'border-b-gray-700' },
+          { label: 'deposit', activeColor: 'border-b-gray-700' },
+          { label: 'withdraw', activeColor: 'border-b-gray-700' },
         ]}
         onClick={(title) => {
           // Reset input when changing selected action

@@ -253,6 +253,23 @@ input[type='radio']:checked {
   box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
 
+input[type='checkbox'] {
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  font: inherit;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--color-bcolor);
+  border-radius: 4px;
+  transition: 0.3s var(--bezier-spring);
+}
+
+input[type='checkbox']:checked {
+  background-color: var(--color-light);
+  border: 1px solid var(--color-light);
+}
+
 .fade-in {
   animation: fadeIn 0.3s var(--bezier-smooth);
 }
