@@ -9,14 +9,14 @@ import CompositionChart from '@/components/pages/global/Composition/CompositionC
 import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import FeesChart from '@/components/pages/global/Fees/FeesChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
+import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
+import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UsersCohortsChart from '@/components/pages/global/UsersCohorts/UsersCohortsChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
 import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
 import DataApiClient from '@/DataApiClient';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
-import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
-import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 
 export default function BasicMonitoring({
   mainPool,
