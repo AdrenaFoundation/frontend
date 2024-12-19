@@ -120,7 +120,9 @@ export const SOLANA_EXPLORERS_OPTIONS = {
     url: 'https://solanabeach.io',
     // TODO: support devnet
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solanabeach.io/address/${address}`,
+      cluster === 'devnet'
+        ? `https://explorer.solana.com/address/${address}?cluster=devnet` // redirection vers Solana Explorer pour devnet
+        : `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
       `https://solanabeach.io/transaction/${tx}${
         cluster === 'devnet' ? '?cluster=devnet' : ''
@@ -168,3 +170,22 @@ export const whiteColor = '#ffffff';
 export const orangeColor = '#f77f00';
 export const blueColor = '#3a86ff';
 export const purpleColor = '#9333ea';
+
+export const normalize = (
+  value: number,
+  minRange: number,
+  maxRange: number,
+  minValue: number,
+  maxValue: number,
+) => {
+  if (maxValue === minValue) {
+    return maxRange;
+  }
+  if (value < minValue || value > maxValue) {
+    return 0;
+  }
+  return (
+    minRange +
+    ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
+  );
+};

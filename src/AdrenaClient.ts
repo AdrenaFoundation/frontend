@@ -1,4 +1,4 @@
-import { BN, ProgramAccount } from '@coral-xyz/anchor';
+import { BN, ProgramAccount, Wallet } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -63,6 +63,7 @@ import {
   Vest,
   VestExtended,
   VestRegistry,
+  WalletAdapterExtended,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -623,11 +624,14 @@ export class AdrenaClient {
           total + custody.nativeObject.longPositions.openPositions.toNumber(),
         0,
       ),
-      nbOpenShortPositions: custodies.reduce(
-        (total, custody) =>
-          total + custody.nativeObject.shortPositions.openPositions.toNumber(),
-        0,
-      ),
+      nbOpenShortPositions: custodies.reduce((total, custody) => {
+        // Do not double count
+        if (custody.isStable) return total;
+
+        return (
+          total + custody.nativeObject.shortPositions.openPositions.toNumber()
+        );
+      }, 0),
       custodies: custodiesAddresses,
       //
       nativeObject: mainPool,
@@ -2886,7 +2890,7 @@ export class AdrenaClient {
 
     builder.preInstructions([
       ComputeBudgetProgram.setComputeUnitLimit({
-        units: 1000000, // Use a lot of units to avoid any issues during simulation
+        units: 1400000, // Use a lot of units to avoid any issues during simulation
       }),
     ]);
 
@@ -4743,7 +4747,7 @@ export class AdrenaClient {
     let priorityFeeMicroLamports: number =
       DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet as (Wallet & WalletAdapterExtended);
 
     let latestBlockHash: {
       blockhash: Blockhash;
@@ -4791,7 +4795,7 @@ export class AdrenaClient {
         microLamports: priorityFeeMicroLamports,
       }),
       ComputeBudgetProgram.setComputeUnitLimit({
-        units: 1000000, // Use a lot of units to avoid any issues during next simulation
+        units: 1400000, // Use a lot of units to avoid any issues during next simulation
       }),
     );
 
@@ -4850,8 +4854,15 @@ export class AdrenaClient {
 
     // Adjust compute unit limit
     if (computeUnitUsed !== undefined) {
+      let computeUnitToUse = computeUnitUsed * 1.05; // Add 5% of compute unit to avoid any issues in between simulation and actual execution
+
+      // Solflare add two instructions to the end of the transaction, which cost compute units. Needs to take it into account
+      if (wallet.walletName === 'Solflare') {
+        computeUnitToUse += 12000;
+      }
+
       transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-        units: computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
+        units: computeUnitToUse,
       });
     }
 

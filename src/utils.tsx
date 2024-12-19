@@ -1,6 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
 import { sha256 } from '@noble/hashes/sha256';
-import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
@@ -16,8 +15,6 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { BigNumber } from 'bignumber.js';
-import { Context } from 'chartjs-plugin-datalabels';
-import { Font } from 'chartjs-plugin-datalabels/types/options';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
@@ -82,6 +79,40 @@ export function findATAAddressSync(
     ASSOCIATED_TOKEN_PROGRAM_ID,
   )[0];
 }
+
+// Transfer 12/25 into 25 December
+export function formatToWeekOf(dateString: string, weeksAgo = 0): string {
+  // Parse the date string (MM/DD format) as UTC in the current year
+  const [month, day] = dateString.split("/").map(Number);
+  const currentYear = new Date().getFullYear();
+
+  // Create the initial date
+  const date = new Date(Date.UTC(currentYear, month - 1, day));
+
+  // Subtract weeks (7 days per week) if weeksAgo is provided
+  date.setUTCDate(date.getUTCDate() - weeksAgo * 7);
+
+  // Format the updated date
+  const dayOfMonth = date.getUTCDate();
+  const monthName = date.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
+
+  return `${dayOfMonth} ${monthName}`;
+}
+
+export function getLastSundayUTC(): Date {
+  const now = new Date();
+  const dayOfWeek = now.getUTCDay(); // 0 = Sunday
+  const diffToSunday = dayOfWeek === 0 ? 0 : dayOfWeek; // Days since the last Sunday
+
+  const lastSunday = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - diffToSunday, // Go back to last Sunday
+    23, 59, 59 // Set time to 23:59:59
+  ));
+
+  return lastSunday;
+};
 
 export function formatNumber(
   nb: number,
@@ -323,7 +354,7 @@ export function addSuccessTxNotification({
 export function safeJSONStringify(obj: unknown, space = 2): string {
   try {
     return JSON.stringify(obj, null, space);
-  } catch (e) {
+  } catch {
     return String(obj);
   }
 }
@@ -356,7 +387,8 @@ export function addFailedTxNotification({
       );
     }
 
-    console.log('error with cause:', (error as Error)?.cause);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // console.log('error with cause:', (error as any)?.cause);
 
     const errStr =
       typeof error === 'object' ? safeJSONStringify(error) : String(error);
@@ -463,12 +495,6 @@ export function parseTransactionError(
     // Not enough SOL to pay for the transaction
     if (safeJSONStringify(err).includes('InsufficientFundsForRent')) {
       return 'Not enough SOL to pay for transaction fees and rent';
-    }
-
-    try {
-      Sentry.captureException(err);
-    } catch {
-      // ignore
     }
 
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
@@ -726,19 +752,6 @@ export function parseFullSymbol(fullSymbol: string) {
   };
 }
 
-/* Chart js datalabels plugin utils, may export in different file if many come along */
-
-export function getDatasetBackgroundColor(context: Context) {
-  return (context.dataset.backgroundColor as string) ?? '';
-}
-
-export function getFontSizeWeight(context: Context): Font {
-  return {
-    size: context.chart.width < 512 ? 8 : 14,
-    weight: 'bold',
-  };
-}
-
 export const verifyRpcConnection = async (rpc: string) => {
   if (!rpc) return false;
   try {
@@ -861,3 +874,16 @@ export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor((diffTime % (1000 * 60)) / 1000);
 }
+
+export const isValidPublicKey = (key: string) => {
+  try {
+    new PublicKey(key);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const calculateWeeksPassed = (startDate: Date): number => {
+  return Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
+};

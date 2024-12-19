@@ -11,6 +11,7 @@ import { Adrena } from '@/target/adrena';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
+import type { WalletAdapterName } from './hooks/useWalletAdapters';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -48,6 +49,7 @@ export type RiveImage = any;
 
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Jupiter: any;
     riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;
@@ -57,6 +59,7 @@ declare global {
 export type WalletAdapterExtended = Adapter & {
   color: string;
   beta: boolean;
+  walletName: WalletAdapterName;
   recommended: boolean;
   iconOverride?: ImageRef;
 };
@@ -469,54 +472,183 @@ export type ClaimHistoryExtended = {
 };
 
 type AchievementsBase = {
-  week_starts: string[];
-  week_ends: string[];
+  weekStarts: string;
+  weekEnds: string;
 };
 
 export type TradingCompetitionAchievementsAPI = {
-  biggest_liquidation: AchievementsBase & {
+  biggestLiquidation: AchievementsBase & {
+    addresses: string | null;
+    liquidationAmounts: number | null;
+    reward: number | null;
+    rewardToken: string | null;
+  };
+  feesTickets: AchievementsBase & {
     addresses: (string | null)[];
+    ticketsCount: (number | null)[];
+    totalTickets: number | null;
+    reward: number | null;
+    rewardToken: string | null;
+  };
+  topDegen: AchievementsBase & {
+    pnlAmounts: number | null;
+    addresses: string | null;
     usernames: (string | null)[];
-    week_starts: string[];
-    week_ends: string[];
-    liquidation_amounts: (number | null)[];
+    liquidationAmounts: (number | null)[];
+    reward: number | null;
+    rewardToken: string | null;
   };
-  fees_tickets: AchievementsBase & {
-    week_starts: string[][];
-    week_ends: string[][];
-    addresses: (string | null)[][];
-    usernames: (string | null)[][];
-    tickets_count: (number | null)[][];
-    total_tickets: (number | null)[];
-  };
-  top_degen: AchievementsBase & {
-    pnl_amounts: (number | null)[];
+  jitosolTickets: AchievementsBase & {
     addresses: (string | null)[];
+    ticketsCount: (number | null)[];
+    totalTickets: number | null;
     usernames: (string | null)[];
-    week_starts: string[];
-    week_ends: string[];
-  };
-  jitosol_tickets: AchievementsBase & {
-    week_starts: string[][];
-    week_ends: string[][];
-    addresses: (string | null)[][];
-    usernames: (string | null)[][];
-    tickets_count: (number | null)[][];
-    total_tickets: (number | null)[];
+    reward: number | null;
+    rewardToken: string | null;
   };
 };
 
 export type TradingCompetitionLeaderboardAPI = {
-  [key in 'Leviathan' | 'Abomination' | 'Mutant' | 'Spawn' | 'No Division']: {
+  [key: string]: {
     rank: number;
     username: string;
-    address: string;
-    connected: boolean;
-    volume: number;
-    pnl: number;
+    connected?: boolean;
+    volume: number | null;
+    pnl: number | null;
     adxRewards: number;
     jtoRewards: number;
+    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
   }[];
+};
+
+export type TraderDivisionRawAPI = {
+  division: string;
+  traders: {
+    address: string;
+    total_volume: number;
+    total_pnl: number;
+    rank_in_division: number;
+    adx_reward: number;
+    jto_reward: number;
+    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
+  }[];
+};
+
+export type ConnectedWalletTickets = {
+  fees: number | null;
+  jito: number | null;
+} | null;
+
+export type LeaderboardReturnTypeAPI<
+  T extends {
+    showGlobalStats?: boolean;
+    showAchievements?: boolean;
+    showTraderDivisions?: boolean;
+    showEligibleJitosolWallets?: boolean;
+  },
+> = {
+  startDate: string;
+  endDate: string;
+  rankedRewards: RankedRewards[];
+} & (T['showGlobalStats'] extends true
+  ? {
+      globalStats: {
+        totalTraders: number;
+        totalVolume: number | null;
+        totalLiquidations: number;
+        totalClosed: number;
+        totalFees: number;
+        totalPnl: number | null;
+        totalTrades: number;
+        weekStarts: string[];
+        weekEnds: string[];
+        weeklyTraders: (string | null)[];
+        weeklyVolume: (string | null)[];
+        weeklyLiquidations: (string | null)[];
+        weeklyClosed: (string | null)[];
+        weeklyFees: (string | null)[];
+        weeklyPnl: (string | null)[];
+        weeklyTrades: (string | null)[];
+      };
+    }
+  : object) &
+  (T['showAchievements'] extends true
+    ? {
+        achievements: {
+          biggestLiquidation: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: (string | null)[];
+            liquidationAmounts: (string | null)[];
+            reward: number | null;
+            rewardToken: string | null;
+          };
+          feesTickets: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: [string | null][];
+            ticketsCount: [number][];
+            totalTickets: number[];
+            reward: number | null;
+            rewardToken: string | null;
+          };
+          topDegen: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: (string | null)[];
+            pnlAmounts: (string | null)[];
+            reward: number | null;
+            rewardToken: string | null;
+          };
+          jitosolTickets: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: [string | null][];
+            ticketsCount: [number][];
+            totalTickets: number[];
+            reward: number | null;
+            rewardToken: string | null;
+          };
+        };
+      }
+    : object) &
+  (T['showTraderDivisions'] extends true
+    ? {
+        traderDivisions: {
+          division: string;
+          traders: {
+            address: string;
+            totalVolume: number | null;
+            totalPnl: number | null;
+            rankInDivision: number;
+            adxReward: number;
+            jtoReward: number;
+            badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
+          }[];
+        }[];
+      }
+    : object) &
+  (T['showEligibleJitosolWallets'] extends true
+    ? {
+        eligibleJitosolWallets: string[];
+      }
+    : object);
+
+export type RankedRewards = {
+  division: string;
+  adxRewards: number[];
+  jtoRewards: number[];
+};
+
+export type UserStats = {
+  username: string | null;
+  division: keyof TradingCompetitionLeaderboardAPI;
+  volume: number;
+  pnl: number;
+  rank: number;
+  adxRewards: number;
+  jtoRewards: number;
+  badge: string;
 };
 
 export type TradingViewChartSavedDrawing = Record<
@@ -530,3 +662,68 @@ export type TradingViewChartSavedDrawing = Record<
     options: CreateShapeOptions<object>;
   }[]
 >;
+export interface PositionActivityRawAPi {
+  date_day: Date;
+  total_entry_size: number;
+  total_exit_size: number;
+  entry_count: number;
+  exit_count: number;
+  total_entry_pnl: number;
+  total_exit_pnl: number;
+  total_volume: number;
+  total_increase_size: number;
+  increase_count: number;
+  total_fees: number;
+  total_exit_fees: number;
+}
+
+export type PositionStatsRawApi = {
+  side: 'long' | 'short';
+  symbol: string;
+  count_positions: number;
+  total_pnl: number;
+  average_pnl: number;
+  min_pnl: number;
+  max_pnl: number;
+  total_volume: number;
+  average_volume: number;
+  min_volume: number;
+  max_volume: number;
+};
+
+export type GetPositionStatsReturnType<
+  T extends { showPositionActivity?: boolean },
+> = {
+  startDate: string;
+  endDate: string;
+  positionStats: {
+    side: string;
+    symbol: string;
+    countPositions: number;
+    totalPnl: number;
+    averagePnl: number;
+    minPnl: number;
+    maxPnl: number;
+    totalVolume: number;
+    averageVolume: number;
+    minVolume: number;
+    maxVolume: number;
+  }[];
+} & (T['showPositionActivity'] extends true
+  ? {
+      positionActivity: {
+        dateDay: string;
+        totalEntrySize: number;
+        totalExitSize: number;
+        entryCount: number;
+        exitCount: number;
+        totalEntryPnl: number;
+        totalExitPnl: number;
+        totalVolume: number;
+        totalIncreaseSize: number;
+        increaseCount: number;
+        totalFees: number;
+        totalExitFees: number;
+      }[];
+    }
+  : object);

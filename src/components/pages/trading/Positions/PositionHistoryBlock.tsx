@@ -309,26 +309,6 @@ export default function PositionHistoryBlock({
     ? positionHistory.pnl
     : positionHistory.pnl + positionHistory.fees;
 
-  const percentage = positionHistory.final_collateral_amount
-    ? (pnlValue / positionHistory.final_collateral_amount) * 100
-    : null;
-
-  {
-    percentage !== null ? (
-      <FormatNumber
-        nb={percentage}
-        format="percentage"
-        prefix="("
-        suffix=")"
-        suffixClassName='ml-0 text-txtfade'
-        precision={2}
-        isDecimalDimmed={false}
-        className={`text-xxs opacity-90 text-${pnlValue > 0 ? 'green' : 'redbright'
-          }`}
-      />
-    ) : null;
-  }
-
   const feesPaid = (
     <div className="flex flex-col items-center">
       <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">

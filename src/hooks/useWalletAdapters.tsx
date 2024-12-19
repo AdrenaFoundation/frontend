@@ -70,12 +70,15 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
 
     // Remove the adapters that has been added automatically but that we don't want to use
     return useMemo(() => adapters.filter(adapter => {
-        return SUPPORTED_WALLETS.includes(adapter.name as unknown as WalletAdapterName);
+        return SUPPORTED_WALLETS.includes(adapter.name as WalletAdapterName);
     }).map((adapter) => {
-        (adapter as WalletAdapterExtended).color = WALLET_COLORS[adapter.name as WalletAdapterName] ?? '#444444';
-        (adapter as WalletAdapterExtended).iconOverride = WALLET_ICONS[adapter.name as WalletAdapterName];
+        const name = adapter.name as WalletAdapterName;
+
+        (adapter as WalletAdapterExtended).color = WALLET_COLORS[name] ?? '#444444';
+        (adapter as WalletAdapterExtended).iconOverride = WALLET_ICONS[name];
         (adapter as WalletAdapterExtended).recommended = adapter.name === 'Phantom';
         (adapter as WalletAdapterExtended).beta = adapter.name === 'WalletConnect' || adapter.name === 'SquadsX';
+        (adapter as WalletAdapterExtended).walletName = name;
 
         return adapter as WalletAdapterExtended;
     }), [adapters]);

@@ -39,7 +39,6 @@ export default function TradingChart({
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadingCounter, setIsLoadingCounter] = useState<number>(0);
-  const positionLinesIdsRef = useRef<EntityId[]>([]);
 
   useChartDrawing({
     tokenSymbol: token.symbol,
@@ -48,7 +47,6 @@ export default function TradingChart({
     positions,
     showBreakEvenLine,
     toggleSizeUsdInChart,
-    positionLinesIdsRef,
     drawingErrorCallback: () => {
       console.log('ERROR DRAWING ON CHART, RELOAD WIDGET');
 
@@ -145,6 +143,9 @@ export default function TradingChart({
             'mainSeriesProperties.priceLineColor': '#FFFF05',
           });
 
+          // Note: this event is triggered before positionLines array is updated in the react state
+          // So we can't check in the event if the positionLines matches our own drawing or the user's drawing
+          // For now, will use the name of the draws to filter out ours drawing (liquidation, entry, break even etc.)
           widget.subscribe('drawing_event', () => {
             const symbol = widget
               .activeChart()
@@ -169,16 +170,13 @@ export default function TradingChart({
                   .getShapeById(line.id)
                   .getProperties();
 
-                // Do not save a line we drew ourselves
-                if (positionLinesIdsRef.current.includes(line.id)) {
-                  return null;
-                }
-
+                // Uses text to filter out our drawings
                 if (
                   shape.options.text.includes('long') ||
                   shape.options.text.includes('short')
-                )
+                ) {
                   return null;
+                }
 
                 // Save user drawn line
                 return {
@@ -189,8 +187,6 @@ export default function TradingChart({
                 };
               })
               .filter((line) => line);
-
-            console.log('SAVE', userDrawings)
 
             localStorage.setItem(
               'chart_drawings',
@@ -210,6 +206,7 @@ export default function TradingChart({
                 localStorage.setItem(STORAGE_KEY_RESOLUTION, '1D');
                 return;
               }
+
               localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
             });
         });
@@ -261,7 +258,7 @@ export default function TradingChart({
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary select-none">
-      <Loader className={twMerge('mt-[20%]', isLoading ? '' : 'hidden')} />
+      <Loader className={twMerge('mt-[20%] ml-auto mr-auto', isLoading ? '' : 'hidden')} />
       <div
         id="wrapper-trading-chart"
         className={twMerge(

@@ -38,7 +38,7 @@ export default function StakeLanding({
     if (!connected) {
       return dispatch(openCloseConnectionModalAction(true));
     }
-    token === 'ADX' ? handleClickOnStakeMoreADX() : handleClickOnStakeMoreALP();
+    return token === 'ADX' ? handleClickOnStakeMoreADX() : handleClickOnStakeMoreALP();
   };
 
   // exclude 0 days

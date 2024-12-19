@@ -6,6 +6,7 @@ import ALPPriceChart from '@/components/pages/global/ALPPrice/ALPPriceChart';
 import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
 import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 import AumChart from '@/components/pages/global/Aum/AumChart';
+import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
 import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import FeesChart from '@/components/pages/global/Fees/FeesChart';
@@ -176,6 +177,10 @@ export default function BasicMonitoring({
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <VolumeBarChart isSmallScreen={false} />
           <UsersCohortsChart />
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <BorrowRateChart />
         </div>
 
       </StyledContainer>
