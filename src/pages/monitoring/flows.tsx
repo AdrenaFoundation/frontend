@@ -11,7 +11,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
-import Loader from '@/components/Loader/Loader';
 
 export default function Flow({
   custodies,
@@ -127,7 +126,7 @@ export default function Flow({
               className="p-4 border rounded-lg bg-[#050D14] flex-1"
             >
               <h3 className="font-semibold flex items-center gap-2">
-                {/* <Image
+                <Image
                   src={
                     custodies?.find(
                       (c) =>
@@ -138,7 +137,7 @@ export default function Flow({
                   alt="token icon"
                   width="24"
                   height="24"
-                /> */}
+                />
                 {symbol}
               </h3>
 
