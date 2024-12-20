@@ -217,7 +217,7 @@ export default function FilterSidebar({
                         variant="outline"
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         leftIcon={collapseIcon}
-                        className="p-0 border-bcolor  border-none ml-auto flex-none -scale-x-[1] m-auto"
+                        className="p-0 border-bcolor  border-none ml-auto flex-none -scale-x-[1] m-auto mt-2"
                         iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
                     />
                 </div>
