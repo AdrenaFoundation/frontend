@@ -192,17 +192,20 @@ export function formatGraphCurrency({ tickItem, maxDecimals = 0, maxDecimalsIfTo
 
   let num;
   if (absValue > 999_999_999) {
-    num = (absValue / 1_000_000_000).toFixed(maxDecimals) + 'B';
+    const billions = absValue / 1_000_000_000;
+    num = (billions % 1 === 0 ? Math.floor(billions) : billions.toFixed(2)) + 'B';
   } else if (absValue > 999_999) {
-    num = (absValue / 1_000_000).toFixed(maxDecimals) + 'M';
+    const millions = absValue / 1_000_000;
+    num = (millions % 1 === 0 ? Math.floor(millions) : millions.toFixed(2)) + 'M';
   } else if (absValue > 999) {
-    num = (absValue / 1_000).toFixed(maxDecimals) + 'K';
+    const thousands = absValue / 1_000;
+    num = (thousands % 1 === 0 ? Math.floor(thousands) : thousands.toFixed(maxDecimals)) + 'K';
   } else if (absValue < 100) {
-    num = absValue.toFixed(maxDecimalsIfToken);
+    num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(maxDecimalsIfToken);
   } else if (absValue <= 999) {
-    num = absValue.toFixed(2);
+    num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(2);
   } else {
-    num = String(absValue);
+    num = String(Math.floor(absValue));
   }
 
   return isNegative ? `-$${num}` : `$${num}`;
