@@ -194,14 +194,33 @@ export default function FilterSidebar({
     return (
         <div className="p-4 pb-0 md:pb-4 md:border-r">
             {!isCollapsed && (
-                <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    leftIcon={collapseIcon}
-                    className="p-0 border-bcolor  border-none ml-auto hidden md:flex flex-none -scale-x-[1]"
-                    iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
-                />
+                <div className="hidden md:flex flex-col gap-0">
+                    {views && (
+                        <div className="flex flex-row gap-3 border-b pb-2">
+                            {views.map((view) => (
+                                <Image
+                                    key={view.title}
+                                    src={view.icon ?? filterIcon}
+                                    alt="view icon"
+                                    onClick={() => handleViewChange?.(view.title)}
+                                    className={twMerge(
+                                        'opacity-25 hover:opacity-100 transition-opacity duration-300 cursor-pointer',
+                                        activeView === view.title && 'opacity-100',
+                                    )}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        leftIcon={collapseIcon}
+                        className="p-0 border-bcolor  border-none ml-auto flex-none -scale-x-[1] m-auto"
+                        iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+                    />
+                </div>
             )}
 
             {isCollapsed && (
