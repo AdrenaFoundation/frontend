@@ -46,7 +46,7 @@ export default function PositionBlockReadOnly({
         return tradeTokenPrice > position.liquidationPrice;
     })();
 
-    const isSmallSize = useBetterMediaQuery('(max-width: 700px)');
+    const isSmallSize = useBetterMediaQuery('(max-width: 900px)');
 
     const positionName = (
         <div

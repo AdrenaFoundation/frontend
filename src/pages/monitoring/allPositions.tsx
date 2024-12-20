@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import chartIcon from '@/../public/images/Icons/chart-icon.svg';
+import listIcon from '@/../public/images/Icons/list-ul.svg';
 import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import Filter from '@/components/Filter/Filter';
 import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
+import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import { useSelector } from '@/store/store';
@@ -16,18 +18,21 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
 
-export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean }) {
+export default function AllPositions({
+    showFeesInPnl,
+}: {
+    showFeesInPnl: boolean;
+}) {
     const wallet = useSelector((state) => state.walletState.wallet);
 
     const connected = !!wallet;
 
-    const { allPositions, triggerAllPositionsReload } =
-        useAllPositions({
-            connected,
-        });
+    const { allPositions, triggerAllPositionsReload } = useAllPositions({
+        connected,
+    });
     const [currentPage, setCurrentPage] = useState(1);
     const [sideFilter, setSideFilter] = useState('all');
-    const [mintFilter, setMintFilter] = useState('all');
+    const [mintFilter, setMintFilter] = useState<string[] | null>(null);
     const [ownerFilter, setOwnerFilter] = useState('');
     const [pnlFilter, setPnlFilter] = useState('all');
     const itemsPerPage = 7;
@@ -36,9 +41,13 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
     }>({
         pnl: 'asc',
         size: 'asc',
-        age: 'desc',
+        leverage: 'desc',
     });
-    const [sortOrder, setSortOrder] = useState<string[]>(['pnl', 'size', 'age']);
+    const [sortOrder, setSortOrder] = useState<string[]>([
+        'pnl',
+        'size',
+        'leverage',
+    ]);
 
     const [sortedPositions, setSortedPositions] = useState<PositionExtended[]>(
         [],
@@ -47,14 +56,14 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
         PositionExtended[]
     >([]);
 
-    const [view, setView] = useState<'list' | 'chart'>('list');
+    const [view, setView] = useState<string>('List view');
 
     useEffect(() => {
         const filteredPositions = allPositions.filter((position) => {
             const matchesSide = sideFilter === 'all' || position.side === sideFilter;
             const matchesMint =
-                mintFilter === 'all' ||
-                getTokenSymbol(position.token.symbol) === mintFilter;
+                mintFilter === null ||
+                mintFilter.includes(getTokenSymbol(position.token.symbol));
             const matchesUser =
                 ownerFilter === '' ||
                 position.owner
@@ -115,7 +124,9 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
     }, [currentPage, sortedPositions]);
 
     const toggleSortOrder = (criteria: string) => {
-        setSortConfigs((prevConfigs) => ({
+        const prevConfigs = { ...sortConfigs };
+
+        setSortConfigs(() => ({
             ...prevConfigs,
             [criteria]: prevConfigs[criteria] === 'desc' ? 'asc' : 'desc',
         }));
@@ -127,7 +138,7 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
 
     const resetFilters = () => {
         setSideFilter('all');
-        setMintFilter('all');
+        setMintFilter(null);
         setOwnerFilter('');
         setPnlFilter('all');
         setCurrentPage(1);
@@ -142,21 +153,21 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
             return pnl + (position.pnl ?? 0);
         }, 0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allPositions.map(x => x.pnl ?? 0).join(',')]);
+    }, [allPositions.map((x) => x.pnl ?? 0).join(',')]);
 
     const unrealizedBorrowFee = useMemo(() => {
         return allPositions.reduce((total, position) => {
             return total + (position.borrowFeeUsd ?? 0);
         }, 0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allPositions.map(x => x.borrowFeeUsd ?? 0).join(',')]);
+    }, [allPositions.map((x) => x.borrowFeeUsd ?? 0).join(',')]);
 
     const unrealizedCloseFee = useMemo(() => {
         return allPositions.reduce((total, position) => {
             return total + (position.exitFeeUsd ?? 0);
         }, 0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allPositions.map(x => x.exitFeeUsd ?? 0).join(',')]);
+    }, [allPositions.map((x) => x.exitFeeUsd ?? 0).join(',')]);
 
     return (
         <div>
@@ -167,10 +178,10 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
                         nb={allPositions.length}
                         format="number"
                         precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        className="border-0 min-w-[12em]"
+                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                        headerClassName="pb-2"
+                        titleClassName="text-[0.7em] sm:text-[0.7em]"
                     />
 
                     <NumberDisplay
@@ -178,10 +189,10 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
                         nb={unrealizedPnl}
                         format="currency"
                         precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        className="border-0 min-w-[12em]"
+                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                        headerClassName="pb-2"
+                        titleClassName="text-[0.7em] sm:text-[0.7em]"
                     />
 
                     <NumberDisplay
@@ -189,10 +200,10 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
                         nb={unrealizedBorrowFee}
                         format="currency"
                         precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        className="border-0 min-w-[12em]"
+                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                        headerClassName="pb-2"
+                        titleClassName="text-[0.7em] sm:text-[0.7em]"
                     />
 
                     <NumberDisplay
@@ -200,137 +211,186 @@ export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean
                         nb={unrealizedCloseFee}
                         format="currency"
                         precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        className="border-0 min-w-[12em]"
+                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                        headerClassName="pb-2"
+                        titleClassName="text-[0.7em] sm:text-[0.7em]"
                     />
                 </div>
             </StyledContainer>
 
-            <StyledContainer className="p-4">
-                <div className="flex flex-col gap-3">
-                    <div className='flex gap-3 flex-col md:flex-row flex-wrap'>
-                        <div className='flex text-base cursor-pointer items-center min-w-[10em] p-1 rounded grow justify-evenly border'>
-                            <div className={twMerge('hover:opacity-100', view === 'list' ? 'opacity-100 underline' : 'opacity-50')}
-                                onClick={() => setView('list')}>
-                                List
+            <StyledContainer className="p-0">
+                <div className="flex flex-col md:flex-row md:gap-3">
+                    <FilterSidebar
+                        views={[
+                            {
+                                title: 'List view',
+                                icon: listIcon,
+                            },
+                            {
+                                title: 'Chart view',
+                                icon: chartIcon,
+                            },
+                        ]}
+                        activeView={view}
+                        handleViewChange={setView}
+                        search={{
+                            placeholder: 'Filter by owner (pubkey)',
+                            value: ownerFilter,
+                            handleChange: setOwnerFilter,
+                        }}
+                        filterOptions={[
+                            {
+                                type: 'radio',
+                                name: 'Side',
+                                activeOption: sideFilter,
+                                handleChange: setSideFilter,
+                                optionItems: [
+                                    { label: 'all' },
+                                    { label: 'long' },
+                                    { label: 'short' },
+                                ],
+                            },
+                            {
+                                type: 'checkbox',
+                                name: 'Mint',
+                                activeOption: mintFilter,
+                                handleChange: setMintFilter,
+                                optionItems: window.adrena.client.tokens
+                                    .filter((token) => token.symbol !== 'USDC')
+                                    .map((token) => ({
+                                        label: getTokenSymbol(token.symbol),
+                                        icon: getTokenImage(token),
+                                    })),
+                            },
+                            {
+                                type: 'radio',
+                                name: 'PnL',
+                                activeOption: pnlFilter,
+                                handleChange: setPnlFilter,
+                                optionItems: [
+                                    { label: 'all' },
+                                    { label: 'profit' },
+                                    { label: 'loss' },
+                                ],
+                            },
+                        ]}
+                        sortOptions={{
+                            handleChange: toggleSortOrder as React.Dispatch<React.SetStateAction<string>>,
+                            optionItems: [
+                                { label: 'pnl', order: sortConfigs.pnl },
+                                { label: 'size', order: sortConfigs.size },
+                                { label: 'leverage', order: sortConfigs.leverage },
+                            ],
+                            disabled: view === 'Chart view',
+                        }}
+                    />
+                    <div className="flex flex-col gap-3 w-full p-4">
+                        {view === 'Chart view' ? (
+                            <div className="flex w-full min-h-[34em] h-[34em] grow">
+                                <AllPositionsChart
+                                    allPositions={sortedPositions}
+                                    showFeesInPnl={showFeesInPnl}
+                                />
                             </div>
-                            <div className={twMerge('hover:opacity-100', view === 'chart' ? 'opacity-100 underline' : 'opacity-50')}
-                                onClick={() => setView('chart')}>
-                                Chart
-                            </div>
-                        </div>
+                        ) : null}
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 justify-between gap-3 grow">
-                            <Filter
-                                options={[{ name: 'all' }, { name: 'long' }, { name: 'short' }]}
-                                activeFilter={sideFilter}
-                                setFilter={setSideFilter}
-                            />
+                        {view === 'List view' ? (
+                            <>
+                                <div className="flex flex-wrap justify-between gap-2">
+                                    <div className="flex flex-row justify-between w-full mb-2">
+                                        <div className="flex flex-row gap-3 flex-wrap">
+                                            {mintFilter?.map((mint) => (
+                                                <Button
+                                                    variant="outline"
+                                                    title={mint}
+                                                    className="border border-bcolor"
+                                                    rightIcon={resetIcon}
+                                                    key={mint}
+                                                    onClick={() =>
+                                                        setMintFilter((prev) => {
+                                                            if (prev === null || prev.length === 1)
+                                                                return null;
+                                                            return prev.filter((item) => item !== mint);
+                                                        })
+                                                    }
+                                                />
+                                            ))}
 
-                            <Filter
-                                options={[{ name: 'all' }].concat(
-                                    window.adrena.client.tokens
-                                        .filter((token) => token.symbol !== 'USDC')
-                                        .map((token) => ({
-                                            name: getTokenSymbol(token.symbol),
-                                            icon: getTokenImage(token),
-                                        })),
-                                )}
-                                activeFilter={mintFilter}
-                                setFilter={setMintFilter}
-                            />
-
-                            <Filter
-                                options={[{ name: 'all' }, { name: 'profit' }, { name: 'loss' }]}
-                                activeFilter={pnlFilter}
-                                setFilter={setPnlFilter}
-                            />
-                        </div>
-                    </div>
-
-                    {view === 'chart' ? <div className='flex w-full min-h-[34em] h-[34em] grow'>
-                        <AllPositionsChart allPositions={sortedPositions} showFeesInPnl={showFeesInPnl} />
-                    </div> : null}
-
-                    {view === 'list' ? <><div className='flex flex-col'>
-                        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-                            <input
-                                type="pubkey"
-                                placeholder="Filter by owner (pubkey)"
-                                value={ownerFilter}
-                                onChange={(e) => setOwnerFilter(e.target.value)}
-                                className="bg-gray-800 text-white border border-gray-700 rounded p-1 px-2 w-full sm:max-w-[20em] text-sm"
-                            />
-
-                            <div className="flex flex-row gap-3 items-center justify-between w-full sm:w-auto">
-                                <div
-                                    className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-0.5 px-4 border border-bcolor`}
-                                >
-                                    {['pnl', 'size', 'leverage'].map((criteria) => (
-                                        <React.Fragment key={criteria}>
-                                            <button
-                                                className="px-2 py-1 rounded-full transition-colors flex items-center"
-                                                onClick={() => toggleSortOrder(criteria)}
-                                            >
-                                                {criteria.charAt(0).toUpperCase() + criteria.slice(1)}
-                                                <span className="ml-1 text-txtfade text-[14px]">
-                                                    {sortConfigs[criteria] === 'asc' ? '↑' : '↓'}
-                                                </span>
-                                            </button>
-                                            {criteria !== 'leverage' && (
-                                                <div className="w-px h-4 bg-bcolor mx-[1px]"></div>
+                                            {sideFilter !== 'all' && (
+                                                <Button
+                                                    variant="outline"
+                                                    title={sideFilter}
+                                                    className={twMerge(
+                                                        'border border-bcolor',
+                                                        sideFilter === 'long' && 'text-green',
+                                                        sideFilter === 'short' && 'text-red',
+                                                    )}
+                                                    rightIcon={resetIcon}
+                                                    onClick={() => setSideFilter('all')}
+                                                />
                                             )}
-                                        </React.Fragment>
-                                    ))}
-                                </div>
 
-                                <div className="flex items-center justify-center gap-2">
-                                    <div className="flex items-center gap-2">
+                                            {pnlFilter !== 'all' && (
+                                                <Button
+                                                    variant="outline"
+                                                    title={pnlFilter}
+                                                    className={twMerge(
+                                                        'border border-bcolor',
+                                                        pnlFilter === 'profit' && 'text-green',
+                                                        pnlFilter === 'loss' && 'text-red',
+                                                    )}
+                                                    rightIcon={resetIcon}
+                                                    onClick={() => setPnlFilter('all')}
+                                                />
+                                            )}
+
+                                            {mintFilter?.length ||
+                                                sideFilter !== 'all' ||
+                                                pnlFilter !== 'all' ? (
+                                                <Button
+                                                    variant="text"
+                                                    title="clear all"
+                                                    className="p-0"
+                                                    onClick={resetFilters}
+                                                />
+                                            ) : null}
+                                        </div>
+
                                         <Button
-                                            onClick={resetFilters}
-                                            variant="outline"
-                                            className="w-[30px] h-[30px] p-0 border border-bcolor"
-                                            icon={resetIcon}
-                                        />
-                                        <Button
-                                            onClick={refreshPositions}
-                                            variant="outline"
-                                            className="w-[30px] h-[30px] p-0 border border-bcolor"
                                             icon={reloadIcon}
-                                        ></Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                        <div className="flex flex-wrap justify-between gap-2">
-                            {paginatedPositions.length ? (
-                                <div className="flex flex-col w-full gap-2">
-                                    {paginatedPositions.map((position) => (
-                                        <PositionBlockReadOnly
-                                            key={position.pubkey.toBase58()}
-                                            position={position}
-                                            showFeesInPnl={showFeesInPnl}
+                                            variant="outline"
+                                            onClick={refreshPositions}
+                                            className="w-7 h-7 p-0 border-bcolor ml-auto"
+                                            iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
                                         />
-                                    ))}
+                                    </div>
+                                    {paginatedPositions.length ? (
+                                        <div className="flex flex-col w-full gap-2">
+                                            {paginatedPositions.map((position) => (
+                                                <PositionBlockReadOnly
+                                                    key={position.pubkey.toBase58()}
+                                                    position={position}
+                                                    showFeesInPnl={showFeesInPnl}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center w-full py-4 opacity-50">
+                                            No matches 📭
+                                        </div>
+                                    )}
                                 </div>
-                            ) : (
-                                <div className="text-center w-full py-4 opacity-50">
-                                    No matches 📭
-                                </div>
-                            )}
-                        </div>
 
-                        <Pagination
-                            currentPage={currentPage}
-                            totalItems={sortedPositions.length}
-                            itemsPerPage={itemsPerPage}
-                            onPageChange={setCurrentPage}
-                        />
-                    </> : null}
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalItems={sortedPositions.length}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                />
+                            </>
+                        ) : null}
+                    </div>
                 </div>
             </StyledContainer>
         </div>
