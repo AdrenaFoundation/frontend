@@ -85,7 +85,7 @@ export default function FilterSidebar({
             <div className="flex flex-row gap-2 mb-3">
                 <Image src={filterIcon} alt="filter icon" className="opacity-50" />
 
-                <p className="text-lg font-boldy">Filter</p>
+                <p className="text-base font-boldy">Filter</p>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -95,7 +95,7 @@ export default function FilterSidebar({
                         value={search.value}
                         onChange={(e) => search.handleChange(e.target.value)}
                         placeholder={search.placeholder}
-                        className="hidden md:flex bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-base font-boldy"
+                        className="hidden md:flex bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy"
                     />
                 )}
 
@@ -158,7 +158,7 @@ export default function FilterSidebar({
             <div className="flex flex-row gap-2 mb-3">
                 <Image src={sortIcon} alt="sort icon" className="opacity-50" />
 
-                <p className="text-lg font-boldy">Sort</p>
+                <p className="text-base font-boldy">Sort</p>
             </div>
             <div className="flex flex-row gap-3 flex-wrap">
                 {sortOptions.optionItems.map((opt) => (
@@ -202,7 +202,7 @@ export default function FilterSidebar({
                 />
             )}
 
-            <div className="hidden md:flex flex-col gap-6 min-w-[300px] lg:min-w-[400px]">
+            <div className="hidden md:flex flex-col gap-6 w-[275px] flex-none">
                 {FilterOptions}
                 {SortOptions}
                 {SwitchOptions}
@@ -215,7 +215,7 @@ export default function FilterSidebar({
                         value={search.value}
                         onChange={(e) => search.handleChange(e.target.value)}
                         placeholder={search.placeholder}
-                        className="bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-base font-boldy mb-3"
+                        className="bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy mb-3"
                     />
                 )}
 
@@ -320,7 +320,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
                 />
             </div>
 
-            <label className="flex flex-row gap-1 font-boldy items-center ml-2 text-base cursor-pointer">
+            <label className="flex flex-row gap-1 font-boldy items-center ml-2 text-sm cursor-pointer">
                 {img && <Image src={img} alt="token icon" width="12" height="12" />}
                 {label}
             </label>
@@ -359,7 +359,7 @@ const Radio: React.FC<RadioProps> = ({
             />
             <label
                 className={twMerge(
-                    'flex flex-row gap-1 font-boldy items-center ml-2 text-base cursor-pointer',
+                    'flex flex-row gap-1 font-boldy items-center ml-2 text-sm cursor-pointer',
                     ['profit', 'long'].includes(label) && 'text-green',
                     ['loss', 'short'].includes(label) && 'text-red',
                 )}
