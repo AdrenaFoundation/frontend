@@ -1,6 +1,6 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
@@ -46,10 +46,10 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     flows: <Flow custodies={pageProps.custodies} />,
   };
 
-  const searchParams = new URLSearchParams(window.location.search);
+  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
   useEffect(() => {
-    let searchParamsView = searchParams.get('view') ?? 'lite'
+    const searchParamsView = searchParams.get('view') ?? 'lite'
     if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows'].includes(searchParamsView)) {
       setView(searchParamsView as MonitorViews);
     }
