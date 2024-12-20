@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 
 import arrowIcon from '@/../public/images/Icons/arrow-slim.svg';
 import checkIcon from '@/../public/images/Icons/check.svg';
+import collapseIcon from '@/../public/images/Icons/collapse-left.svg';
 import filterIcon from '@/../public/images/Icons/filter-circle.svg';
 import sortIcon from '@/../public/images/Icons/sort-icon.svg';
 import Button from '@/components/common/Button/Button';
@@ -58,6 +59,7 @@ export default function FilterSidebar({
 }) {
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     const SwitchOptions = switchOptions ? (
         <div className="p-4 bg-[#040D14] border rounded-lg flex flex-col gap-3 ">
@@ -191,22 +193,60 @@ export default function FilterSidebar({
 
     return (
         <div className="p-4 pb-0 md:pb-4 md:border-r">
-            {views && (
-                <TabSelect
-                    selected={activeView}
-                    tabs={views}
-                    onClick={(title) => {
-                        handleViewChange?.(title);
-                    }}
-                    wrapperClassName="mb-5"
+            {!isCollapsed && (
+                <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    leftIcon={collapseIcon}
+                    className="p-0 border-bcolor  border-none ml-auto hidden md:flex flex-none -scale-x-[1]"
+                    iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
                 />
             )}
 
-            <div className="hidden md:flex flex-col gap-6 w-[275px] flex-none">
-                {FilterOptions}
-                {SortOptions}
-                {SwitchOptions}
-            </div>
+            {isCollapsed && (
+                <>
+                    {views && (
+                        <div className="flex flex-row gap-3 items-start">
+                            <TabSelect
+                                selected={activeView}
+                                tabs={views}
+                                onClick={(title) => {
+                                    handleViewChange?.(title);
+                                }}
+                                wrapperClassName="mb-5"
+                            />
+
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setIsCollapsed(!isCollapsed)}
+                                leftIcon={collapseIcon}
+                                className="p-0 border-bcolor  border-none ml-auto hidden md:flex flex-none"
+                                iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+                            />
+                        </div>
+                    )}
+
+                    <div className="hidden md:flex flex-col gap-6 w-[275px] flex-none">
+                        <div>
+                            {!views && (
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setIsCollapsed(!isCollapsed)}
+                                    leftIcon={collapseIcon}
+                                    className="p-0 border-bcolor  border-none ml-auto hidden md:flex flex-none mb-3"
+                                    iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+                                />
+                            )}
+                            {FilterOptions}
+                        </div>
+                        {SortOptions}
+                        {SwitchOptions}
+                    </div>
+                </>
+            )}
 
             <div className="flex flex-col gap-3 md:hidden">
                 {search && (
