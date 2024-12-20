@@ -34,8 +34,8 @@ const RAFFLE_WINNERS = [
   },
   {
     week: 4,
-    feesWinner: null,
-    jitoWinner: null,
+    feesWinner: 'GxGS7GbaZatHbpzzqMNLzbz3kLEUZHejNiYLUZeCBpVU',
+    jitoWinner: '5iAj5Gx5jRnFA2W3HQG4gsvaBnWYXXsgrfpeN6SdDniV',
   },
   {
     week: 5,
@@ -190,10 +190,13 @@ export default function useAwakeningV2({
   } | null>(null);
 
   const userProfilesMap = useMemo(() => {
-    return allUserProfiles.reduce((acc, profile) => {
-      acc[profile.owner.toBase58()] = profile.nickname;
-      return acc;
-    }, {} as Record<string, string>);
+    return allUserProfiles.reduce(
+      (acc, profile) => {
+        acc[profile.owner.toBase58()] = profile.nickname;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
   }, [allUserProfiles]);
 
   const getUserName = useCallback(
