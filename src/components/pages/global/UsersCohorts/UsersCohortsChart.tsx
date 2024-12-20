@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { RechartsData } from '@/types';
-import { getLastSundayUTC } from '@/utils';
+import { getLastMondayUTC } from '@/utils';
 
 import LineRechartCohorts from './LineRechartCohorts';
 
@@ -41,9 +41,10 @@ export default function UsersCohortsChart() {
 
   const getCohortsApiData = async () => {
     try {
-      const res = await fetch(`https://datapi.adrena.xyz/cohorts?end_date=${getLastSundayUTC().toISOString()}`);
+      const res = await fetch(`https://datapi.adrena.xyz/cohorts?end_date=${getLastMondayUTC().toISOString()}`);
 
       const { data } = await res.json();
+
       const { cohorts } = data as {
         cohorts: CohortData;
       };
