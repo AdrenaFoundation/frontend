@@ -128,6 +128,8 @@ export type PositionExtended = {
   token: Token;
   collateralToken: Token;
   side: 'long' | 'short';
+  openDate: Date;
+  updatedDate: Date;
   // Including fees
   pnl?: number | null;
   pnlMinusFees?: number | null;
@@ -148,6 +150,7 @@ export type PositionExtended = {
   stopLossIsSet: boolean;
   takeProfitLimitPrice?: number | null;
   takeProfitIsSet: boolean;
+  unrealizedInterestUsd: number;
 
   // Onchain data
   nativeObject: Position;

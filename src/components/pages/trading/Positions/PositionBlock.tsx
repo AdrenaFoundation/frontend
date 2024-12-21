@@ -15,7 +15,7 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { formatTimeDifference, getFullTimeDifference, getTokenImage, getTokenSymbol } from '@/utils';
 
 import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
@@ -284,6 +284,18 @@ export function PositionBlock({
         )}
 
         <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
+          <div className="flex flex-col items-center min-w-[4.5em] w-[4.5em]">
+            <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+              Time Open
+            </div>
+
+            <div className="flex">
+              <p className="font-mono text-gray-400 text-xs mt-1">
+                {formatTimeDifference(getFullTimeDifference(position.openDate, new Date(Date.now())))}
+              </p>
+            </div>
+          </div>
+
           <div className="flex flex-col items-center min-w-[5em] w-[5em]">
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Cur. Leverage
@@ -293,8 +305,9 @@ export function PositionBlock({
               <FormatNumber
                 nb={position.currentLeverage}
                 format="number"
-                className="text-gray-400 text-xs lowercase"
+                className="text-gray-400 text-xs mt-1"
                 suffix="x"
+                suffixClassName='text-xs'
                 isDecimalDimmed={false}
               />
             </div>
@@ -321,7 +334,7 @@ export function PositionBlock({
                 <FormatNumber
                   nb={position.sizeUsd}
                   format="currency"
-                  className="text-gray-400 text-xs"
+                  className="text-gray-400 text-xs mt-1"
                 />
               </Tippy>
             </div>
@@ -352,7 +365,7 @@ export function PositionBlock({
                 <FormatNumber
                   nb={position.collateralUsd}
                   format="currency"
-                  className="text-xs"
+                  className="text-xs mt-1"
                 />
               </Tippy>
             </div>
@@ -368,7 +381,7 @@ export function PositionBlock({
                 nb={position.price}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                className="text-xs bold"
+                className="text-xs bold mt-1"
                 isDecimalDimmed={false}
               />
             </div>
@@ -384,7 +397,7 @@ export function PositionBlock({
                 nb={tradeTokenPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                className="text-gray-400 text-xs bold"
+                className="text-gray-400 text-xs bold mt-1"
                 isDecimalDimmed={false}
               />
             </div>
@@ -396,7 +409,7 @@ export function PositionBlock({
             </div>
 
             <div
-              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
               onClick={() => triggerEditPositionCollateral(position)}
               role="button"
               tabIndex={0}
@@ -411,12 +424,33 @@ export function PositionBlock({
             </div>
           </div>
 
+          <div className="flex flex-col items-center min-w-[6em] w-[6em]">
+            <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+              Break Even Price
+            </div>
+
+            <div
+              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
+              onClick={() => triggerStopLossTakeProfit(position)}
+              role="button"
+              tabIndex={0}
+            >
+              <FormatNumber
+                nb={position.breakEvenPrice}
+                format="currency"
+                precision={position.token.displayPriceDecimalsPrecision}
+                className="text-xs text-purpleColor"
+                isDecimalDimmed={false}
+              />
+            </div>
+          </div>
+
           <div className="flex flex-col items-center min-w-[5em] w-[5em]">
             <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
               Take Profit
             </div>
             <div
-              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
               onClick={() => triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
@@ -436,12 +470,12 @@ export function PositionBlock({
             </div>
           </div>
 
-          <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+          <div className="flex flex-col items-center min-w-[4em] w-[4em]">
             <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
               Stop Loss
             </div>
             <div
-              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
               onClick={() => triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
