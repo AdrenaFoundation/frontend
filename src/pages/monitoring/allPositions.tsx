@@ -9,7 +9,7 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
-import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
+import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -368,10 +368,11 @@ export default function AllPositions({
                                     {paginatedPositions.length ? (
                                         <div className="flex flex-col w-full gap-2">
                                             {paginatedPositions.map((position) => (
-                                                <PositionBlockReadOnly
+                                                <PositionBlock
                                                     key={position.pubkey.toBase58()}
                                                     position={position}
                                                     showFeesInPnl={showFeesInPnl}
+                                                    readOnly={true}
                                                 />
                                             ))}
                                         </div>
