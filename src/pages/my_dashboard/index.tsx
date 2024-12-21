@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -16,7 +17,6 @@ import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps, VestExtended } from '@/types';
-import { PublicKey } from '@solana/web3.js';
 
 export default function MyDashboard({
   connected,

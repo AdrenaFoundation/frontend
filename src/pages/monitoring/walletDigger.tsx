@@ -1,16 +1,18 @@
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import InputString from '@/components/common/inputString/InputString';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import InputString from '@/components/common/inputString/InputString';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import ClaimBlock from '@/components/pages/stake/ClaimBlock';
 import LockedStakes from '@/components/pages/stake/LockedStakes';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
+import VestStats from '@/components/pages/user_profile/Veststats';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import usePositions from '@/hooks/usePositions';
@@ -19,9 +21,7 @@ import useUserVest from '@/hooks/useUserVest';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
 import { getAdxLockedStakes, getAlpLockedStakes } from '@/utils';
-import { PublicKey } from '@solana/web3.js';
 
-import VestStats from '@/components/pages/user_profile/Veststats';
 import chevronDown from '../../../public/images/chevron-down.svg';
 
 const claimHistoryItemsPerPage = 4;

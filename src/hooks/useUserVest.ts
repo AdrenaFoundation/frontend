@@ -1,7 +1,7 @@
+import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { VestExtended } from '@/types';
-import { PublicKey } from '@solana/web3.js';
 
 export default function useUserVest(walletAddress: string | null): {
   userVest: VestExtended | false | null;
