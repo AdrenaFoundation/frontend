@@ -72,7 +72,7 @@ export default function WalletDigger({
         const startIndex = (adxClaimHistoryCurrentPage - 1) * claimHistoryItemsPerPage;
         const endIndex = startIndex + claimHistoryItemsPerPage;
         setPaginatedAdxClaimsHistory(claimsHistoryAdx.slice(startIndex, endIndex));
-    }, [claimsHistoryAdx, adxClaimHistoryCurrentPage, claimHistoryItemsPerPage]);
+    }, [claimsHistoryAdx, adxClaimHistoryCurrentPage]);
 
     //
 
@@ -87,7 +87,7 @@ export default function WalletDigger({
         const startIndex = (alpClaimHistoryCurrentPage - 1) * claimHistoryItemsPerPage;
         const endIndex = startIndex + claimHistoryItemsPerPage;
         setPaginatedAlpClaimsHistory(claimsHistoryAlp.slice(startIndex, endIndex));
-    }, [claimsHistoryAlp, alpClaimHistoryCurrentPage, claimHistoryItemsPerPage]);
+    }, [claimsHistoryAlp, alpClaimHistoryCurrentPage]);
 
     //
     //
@@ -100,7 +100,7 @@ export default function WalletDigger({
             try {
                 const pubkey = new PublicKey(targetWallet);
                 setTargetWalletPubkey(pubkey);
-            } catch (e) {
+            } catch {
                 setTargetWalletPubkey(null);
             }
         } else {
