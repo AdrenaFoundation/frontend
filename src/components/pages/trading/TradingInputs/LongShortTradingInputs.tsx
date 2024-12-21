@@ -971,7 +971,7 @@ export default function LongShortTradingInputs({
                 )}
               >
                 {newPositionInfo && !isInfoLoading ? (
-                  <AutoScalableDiv>
+                  <AutoScalableDiv className='pt-2'>
                     {openedPosition ? (
                       <>
                         <TextExplainWrapper
