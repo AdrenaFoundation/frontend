@@ -18,10 +18,12 @@ import {
 
 export default function VestStats({
   vest,
+  readonly = false,
   getUserVesting,
 }: {
   vest: Vest;
-  getUserVesting: () => void;
+  readonly?: boolean;
+  getUserVesting?: () => void;
 }) {
   const dispatch = useDispatch();
   const amount = nativeToUi(
@@ -80,7 +82,8 @@ export default function VestStats({
     try {
       const txHash = await window.adrena.client.claimUserVest();
 
-      getUserVesting();
+      if (getUserVesting)
+        getUserVesting();
       dispatch(fetchWalletTokenBalances());
 
       return addSuccessTxNotification({
@@ -152,14 +155,15 @@ export default function VestStats({
           />
         </div>
 
-        <Button
+        {!readonly ? <Button
           title="Claim ADX"
           className="w-full mt-3 h-8"
           size="lg"
           disabled={claimableAmount === 0}
           onClick={() => claimVest()}
-        />
+        /> : null}
       </div>
+
       <div className="py-5 sm:py-0 w-[300px] sm:w-[400px] order-1 sm:order-2">
         <h2 className="text-left mb-3 sm:hidden">Ongoing Vests</h2>
         <div className="flex flex-col justify-center items-center sm:border-l sm:border-third sm:p-3">

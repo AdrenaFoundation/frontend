@@ -13,13 +13,14 @@ import AllUserProfiles from './allUserProfiles';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
 import Flow from './flows';
+import WalletDigger from './walletDigger';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesInPnl: boolean } & PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
-  type MonitorViews = 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows';
+  type MonitorViews = 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows' | 'walletDigger';
 
   const [view, setView] = useState<
     MonitorViews
@@ -35,6 +36,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     userProfiles: 'User Profiles',
     allStaking: 'Staking',
     flows: 'Flows',
+    walletDigger: 'Wallet Digger',
   };
 
   const viewComponents: Record<MonitorViews, React.ReactElement> = {
@@ -44,13 +46,14 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     userProfiles: <AllUserProfiles showFeesInPnl={showFeesInPnl} />,
     allStaking: <AllStaking />,
     flows: <Flow custodies={pageProps.custodies} />,
+    walletDigger: <WalletDigger showFeesInPnl={showFeesInPnl} />,
   };
 
   const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
   useEffect(() => {
     const searchParamsView = searchParams.get('view') ?? 'lite'
-    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows'].includes(searchParamsView)) {
+    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows', 'walletDigger'].includes(searchParamsView)) {
       setView(searchParamsView as MonitorViews);
     }
   }, [searchParams]);
@@ -87,7 +90,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className='flex flex-col sm:flex-row items-center justify-evenly w-[20.8em] sm:w-[28em] ml-auto mr-auto'
+          className='flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[34em] ml-auto mr-auto'
         >
           {MonitoringHeaderLink('lite')}
 
@@ -110,67 +113,74 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           <span className="opacity-20 text-2xl hidden sm:block">/</span>
 
           {MonitoringHeaderLink('flows')}
-        </div>
 
-        {/* {view === 'full' ? (
-          <>
-            <TabSelect
-              wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
-              titleClassName="whitespace-nowrap text-sm"
-              selected={detailedDisplaySelectedTab}
-              initialSelectedIndex={tabsFormatted.findIndex(
-                (tab) => tab.title === detailedDisplaySelectedTab,
-              )}
-              tabs={tabsFormatted}
-              onClick={(tab) => {
-                handleTabChange(tab);
-              }}
-            />
-          </>
-        ) : null} */}
-      </div>
+          <span className="opacity-20 text-2xl hidden sm:block">/</span>
+
+          {MonitoringHeaderLink('walletDigger')}
+        </div>
+      </div >
 
       {view === 'livePositions' ? (
         MonitoringDisplay(
           view,
           previousView === 'userProfiles' ? 20 : -20
         )
-      ) : null}
+      ) : null
+      }
 
-      {view === 'full' ? (
-        MonitoringDisplay(
-          view,
-          previousView !== 'lite' ? 20 : -20
-        )
-      ) : null}
+      {
+        view === 'full' ? (
+          MonitoringDisplay(
+            view,
+            previousView !== 'lite' ? 20 : -20
+          )
+        ) : null
+      }
 
-      {view === 'lite' ? (
-        MonitoringDisplay(
-          view,
-          previousView !== 'lite' ? 20 : -20
-        )
-      ) : null}
+      {
+        view === 'lite' ? (
+          MonitoringDisplay(
+            view,
+            previousView !== 'lite' ? 20 : -20
+          )
+        ) : null
+      }
 
-      {view === 'userProfiles' ? (
-        MonitoringDisplay(
-          view,
-          -20
-        )
-      ) : null}
+      {
+        view === 'userProfiles' ? (
+          MonitoringDisplay(
+            view,
+            -20
+          )
+        ) : null
+      }
 
-      {view === 'allStaking' ? (
-        MonitoringDisplay(
-          view,
-          -20
-        )
-      ) : null}
+      {
+        view === 'allStaking' ? (
+          MonitoringDisplay(
+            view,
+            -20
+          )
+        ) : null
+      }
 
-      {view === 'flows' ? (
-        MonitoringDisplay(
-          view,
-          -20
-        )
-      ) : null}
+      {
+        view === 'flows' ? (
+          MonitoringDisplay(
+            view,
+            -20
+          )
+        ) : null
+      }
+
+      {
+        view === 'walletDigger' ? (
+          MonitoringDisplay(
+            view,
+            -20
+          )
+        ) : null
+      }
     </>
   );
 

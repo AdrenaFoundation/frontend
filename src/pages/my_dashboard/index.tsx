@@ -14,6 +14,9 @@ import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { PageProps, VestExtended } from '@/types';
+import { useSelector } from '@/store/store';
+import { selectWalletAddress } from '@/selectors/wallet';
+import { PublicKey } from '@solana/web3.js';
 
 export default function MyDashboard({
   connected,
@@ -26,8 +29,9 @@ export default function MyDashboard({
 }) {
   const [nickname, setNickname] = useState<string | null>(null);
   const { stakingAccounts } = useWalletStakingAccounts();
-  // FIXME: Only call this hook in a single place & as-close as possible to consumers.
-  const positions = usePositions();
+  const walletAddress = useSelector(selectWalletAddress);
+
+  const positions = usePositions(walletAddress);
 
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
 
@@ -80,7 +84,9 @@ export default function MyDashboard({
 
   const getUserVesting = async () => {
     try {
-      const vest = await window.adrena.client.loadUserVest();
+      if (!walletAddress) throw new Error('no wallet');
+
+      const vest = await window.adrena.client.loadUserVest(new PublicKey(walletAddress));
 
       if (!vest) throw new Error('No vest');
 

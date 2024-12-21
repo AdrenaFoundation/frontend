@@ -4,12 +4,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
-export default function useUserProfile(): {
+export default function useUserProfile(walletAddress: string | null): {
   userProfile: UserProfileExtended | false | null;
   triggerUserProfileReload: () => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
-  const wallet = useSelector((s) => s.walletState.wallet);
 
   // null = not loaded yet
   // false = no user profile
@@ -18,20 +17,20 @@ export default function useUserProfile(): {
   >(null);
 
   const fetchUserProfile = useCallback(async () => {
-    if (!wallet) {
+    if (!walletAddress) {
       setUserProfile(null);
       return;
     }
 
     setUserProfile(
       await window.adrena.client.loadUserProfile(
-        new PublicKey(wallet.walletAddress),
+        new PublicKey(walletAddress),
       ),
     );
-  }, [wallet]);
+  }, [walletAddress]);
 
   useEffect(() => {
-    console.log('Fetch user profile for wallet', wallet);
+    console.log('Fetch user profile for wallet', walletAddress);
     fetchUserProfile();
 
     const interval = setInterval(() => {
@@ -44,7 +43,6 @@ export default function useUserProfile(): {
     fetchUserProfile,
     trickReload,
     window.adrena.client.connection,
-    wallet?.adapterName,
   ]);
 
   return {

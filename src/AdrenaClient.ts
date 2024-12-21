@@ -2228,14 +2228,12 @@ export class AdrenaClient {
 
   // null = not ready
   // false = no vest
-  public async loadUserVest(): Promise<VestExtended | false | null> {
+  public async loadUserVest(walletAddress: PublicKey): Promise<VestExtended | false | null> {
     if (!this.adrenaProgram || !this.connection) {
       return null;
     }
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-
-    const userVestPda = this.getUserVestPda(wallet.publicKey);
+    const userVestPda = this.getUserVestPda(walletAddress);
 
     const vest =
       await this.adrenaProgram.account.vest.fetchNullable(userVestPda);
