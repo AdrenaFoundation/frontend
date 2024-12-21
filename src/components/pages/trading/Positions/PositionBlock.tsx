@@ -35,9 +35,9 @@ export function PositionBlock({
   bodyClassName?: string;
   borderColor?: string;
   position: PositionExtended;
-  triggerClosePosition: (p: PositionExtended) => void;
-  triggerStopLossTakeProfit: (p: PositionExtended) => void;
-  triggerEditPositionCollateral: (p: PositionExtended) => void;
+  triggerClosePosition?: (p: PositionExtended) => void;
+  triggerStopLossTakeProfit?: (p: PositionExtended) => void;
+  triggerEditPositionCollateral?: (p: PositionExtended) => void;
   showFeesInPnl: boolean;
   readOnly?: boolean;
 }) {
@@ -534,7 +534,7 @@ export function PositionBlock({
               title="Edit"
               rounded={false}
               onClick={() => {
-                triggerEditPositionCollateral(position);
+                triggerEditPositionCollateral?.(position);
               }}
             />
 
@@ -544,7 +544,7 @@ export function PositionBlock({
               title="Take Profit & Stop Loss"
               rounded={false}
               onClick={() => {
-                triggerStopLossTakeProfit(position);
+                triggerStopLossTakeProfit?.(position);
               }}
             />
 
@@ -555,7 +555,7 @@ export function PositionBlock({
               rounded={false}
               disabled={closableIn !== 0}
               onClick={() => {
-                triggerClosePosition(position);
+                triggerClosePosition?.(position);
               }}
             />
 

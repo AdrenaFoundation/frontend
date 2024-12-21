@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
@@ -8,9 +8,9 @@ import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
 import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
+import PositionBlock from '../trading/Positions/PositionBlock';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
 import OwnerBlock from './OwnerBlock';
-import PositionBlock from '../trading/Positions/PositionBlock';
 
 export default function ViewProfileModal({
     profile,
@@ -134,11 +134,9 @@ export default function ViewProfileModal({
                         <div className="flex flex-col w-full gap-2">
                             {positions.map((position) => (
                                 <PositionBlock
+                                    key={position.pubkey.toBase58()}
                                     position={position}
                                     showFeesInPnl={showFeesInPnl}
-                                    triggerClosePosition={() => { }}
-                                    triggerStopLossTakeProfit={() => { }}
-                                    triggerEditPositionCollateral={() => { }}
                                     readOnly={true}
                                 />
                             ))}

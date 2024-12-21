@@ -219,10 +219,10 @@ export default function AllPositionsChart({
     <div className='flex flex-col w-0 flex-1 h-full items-center'>
       <div className='min-h-[9em] h-auto w-full max-w-[60em] shrink-0 flex items-center justify-center pb-2'>
         {selectedPositionObject !== null ?
-          <PositionBlock position={selectedPositionObject} showFeesInPnl={showFeesInPnl}
-            triggerClosePosition={() => { }}
-            triggerStopLossTakeProfit={() => { }}
-            triggerEditPositionCollateral={() => { }}
+          <PositionBlock
+            key={selectedPositionObject.pubkey.toBase58()}
+            position={selectedPositionObject}
+            showFeesInPnl={showFeesInPnl}
             readOnly={true}
           /> :
           <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}

@@ -9,6 +9,7 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
+import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -16,7 +17,6 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
-import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 
 export default function AllPositions({
     showFeesInPnl,
@@ -369,11 +369,9 @@ export default function AllPositions({
                                         <div className="flex flex-col w-full gap-2">
                                             {paginatedPositions.map((position) => (
                                                 <PositionBlock
+                                                    key={position.pubkey.toBase58()}
                                                     position={position}
                                                     showFeesInPnl={showFeesInPnl}
-                                                    triggerClosePosition={() => { }}
-                                                    triggerStopLossTakeProfit={() => { }}
-                                                    triggerEditPositionCollateral={() => { }}
                                                     readOnly={true}
                                                 />
                                             ))}
