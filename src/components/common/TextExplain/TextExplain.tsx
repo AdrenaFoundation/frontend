@@ -10,16 +10,16 @@ export default function TextExplain({
   position?: 'top' | 'bottom';
 }) {
   const titleDiv = (
-    <span className="text-gray-500 whitespace-nowrap">{title}</span>
+    <span className="text-gray-500 whitespace-nowrap text-xs">{title}</span>
   );
 
   const barDiv = (
     <div
       className={twMerge(
-        'h-1 border-l-2 border-r-2 border-gray-600 w-full',
+        'h-[0.3em] border-l-2 border-r-2 border-gray-600 w-full',
         position === 'top'
-          ? 'border-t-2 mt-[0.15em]'
-          : 'border-b-2 mb-[0.15em]',
+          ? 'border-t-2 mt-[0.1em]'
+          : 'border-b-2 mb-[0.1em]',
       )}
     />
   );

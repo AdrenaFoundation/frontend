@@ -617,7 +617,7 @@ export default function LongShortTradingInputs({
         </div>
       </div>
 
-      <div className="flex flex-col mt-2 sm:mt-4 transition-opacity duration-500">
+      <div className="flex flex-col mt-2 sm:mt-3 transition-opacity duration-500">
         <h5 className="flex items-center ml-4">Size</h5>
 
         <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
@@ -780,7 +780,7 @@ export default function LongShortTradingInputs({
 
         {inputA && !errorMessage && (
           <>
-            <div className="flex items-center ml-4 mt-3 mb-2">
+            <div className="flex items-center ml-4 mt-1 mb-2">
               <h5 className="hidden sm:flex items-center">Position info</h5>
               <Tippy
                 content={
@@ -801,57 +801,61 @@ export default function LongShortTradingInputs({
 
             <StyledSubSubContainer
               className={twMerge(
-                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
+                'flex pl-3 pr-3 items-center justify-center mt-2 sm:mt-0 border-b-0 rounded-bl-none rounded-br-none',
+                openedPosition ? 'h-[4.8em]' : 'h-[4em]'
               )}
             >
               {newPositionInfo && !isInfoLoading ? (
                 <div className="flex w-full justify-evenly">
-                  <TextExplainWrapper
-                    title="Entry Price"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
-                      format="currency"
-                      className="text-lg"
-                      precision={tokenB.displayPriceDecimalsPrecision}
-                    />
-
-                    {openedPosition && (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Entry Price"
+                      className="flex-col mt-7"
+                    >
                       <FormatNumber
-                        nb={openedPosition.price}
+                        nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                         format="currency"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className="text-base"
                         precision={tokenB.displayPriceDecimalsPrecision}
                       />
-                    )}
-                  </TextExplainWrapper>
+
+                      {openedPosition && (
+                        <FormatNumber
+                          nb={openedPosition.price}
+                          format="currency"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                          precision={tokenB.displayPriceDecimalsPrecision}
+                        />
+                      )}
+                    </TextExplainWrapper>
+                  </div>
 
                   <div className="h-full w-[1px] bg-gray-800" />
 
-                  <TextExplainWrapper
-                    title="Liquidation Price"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
-                      format="currency"
-                      className="text-lg text-orange"
-                      precision={tokenB.displayPriceDecimalsPrecision}
-                    />
-
-                    {openedPosition && openedPosition.liquidationPrice ? (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Liquidation Price"
+                      className="flex-col mt-7"
+                    >
                       <FormatNumber
-                        nb={openedPosition.liquidationPrice}
+                        nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                         format="currency"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className="text-base text-orange"
                         precision={tokenB.displayPriceDecimalsPrecision}
                       />
-                    ) : null}
-                  </TextExplainWrapper>
+
+                      {openedPosition && openedPosition.liquidationPrice ? (
+                        <FormatNumber
+                          nb={openedPosition.liquidationPrice}
+                          format="currency"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                          precision={tokenB.displayPriceDecimalsPrecision}
+                        />
+                      ) : null}
+                    </TextExplainWrapper>
+                  </div>
                 </div>
               ) : (
                 <div className="flex w-full justify-evenly items-center">
@@ -863,65 +867,68 @@ export default function LongShortTradingInputs({
                 </div>
               )}
             </StyledSubSubContainer>
-
-            <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2"></h5>
 
             <StyledSubSubContainer
               className={twMerge(
-                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
+                'flex pl-3 pr-3 pt-0 pb-3 items-center justify-center border-t-0 rounded-tl-none rounded-tr-none',
+                openedPosition ? 'h-[4.8em]' : 'h-[4em]'
               )}
             >
               {newPositionInfo && !isInfoLoading ? (
                 <div className="flex w-full justify-evenly">
-                  <TextExplainWrapper
-                    title="Init. Leverage"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
-                      format="number"
-                      prefix="x"
-                      className={`text-lg ${openedPosition
-                        ? increasePositionInfo?.isLeverageIncreased
-                          ? 'text-orange'
-                          : 'text-green'
-                        : 'text-white'
-                        }`}
-                    />
 
-                    {openedPosition && increasePositionInfo?.newOverallLeverage ? (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Init. Leverage"
+                      className="flex-col mt-6"
+                    >
                       <FormatNumber
-                        nb={increasePositionInfo?.currentLeverage}
+                        nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
                         format="number"
                         prefix="x"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className={`text-base ${openedPosition
+                          ? increasePositionInfo?.isLeverageIncreased
+                            ? 'text-orange'
+                            : 'text-green'
+                          : 'text-white'
+                          }`}
                       />
-                    ) : null}
-                  </TextExplainWrapper>
+
+                      {openedPosition && increasePositionInfo?.newOverallLeverage ? (
+                        <FormatNumber
+                          nb={increasePositionInfo?.currentLeverage}
+                          format="number"
+                          prefix="x"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                        />
+                      ) : null}
+                    </TextExplainWrapper>
+                  </div>
 
                   <div className="h-full w-[1px] bg-gray-800" />
 
-                  <TextExplainWrapper
-                    title="Size (usd)"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
-                      format="number"
-                      className="text-lg"
-                    />
-
-                    {openedPosition && openedPosition.sizeUsd ? (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Size (usd)"
+                      className="flex-col mt-6"
+                    >
                       <FormatNumber
-                        nb={openedPosition.sizeUsd}
+                        nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
                         format="number"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className="text-base"
                       />
-                    ) : null}
-                  </TextExplainWrapper>
+
+                      {openedPosition && openedPosition.sizeUsd ? (
+                        <FormatNumber
+                          nb={openedPosition.sizeUsd}
+                          format="number"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                        />
+                      ) : null}
+                    </TextExplainWrapper>
+                  </div>
                 </div>
               ) : (
                 <div className="flex w-full justify-evenly items-center">
@@ -934,8 +941,8 @@ export default function LongShortTradingInputs({
               )}
             </StyledSubSubContainer>
 
-            <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
-              Fees{' '}
+            <h5 className="hidden sm:flex items-center ml-4 mt-2 mb-2">
+              Fees
               <span className="ml-1">
                 <Tippy
                   content={
@@ -961,23 +968,18 @@ export default function LongShortTradingInputs({
             >
               <StyledSubSubContainer
                 className={twMerge(
-                  'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                  openedPosition ? 'h-[5.5em]' : 'h-[5em]',
-                  isInfoLoading || !newPositionInfo
-                    ? 'pt-4'
-                    : openedPosition
-                      ? 'pt-2'
-                      : 'pt-8',
+                  'flex items-center justify-center mt-2 sm:mt-0',
+                  openedPosition ? 'h-[13em]' : 'h-[8em]',
                 )}
               >
                 {newPositionInfo && !isInfoLoading ? (
-                  <AutoScalableDiv className='pt-2'>
+                  <AutoScalableDiv className='' bodyClassName="flex-col items-center justify-center mt-6">
                     {openedPosition ? (
                       <>
                         <TextExplainWrapper
                           title="Current Fees"
                           className="flex-col"
-                          position="bottom"
+                          position="top"
                         >
                           <FormatNumber
                             nb={
@@ -985,45 +987,45 @@ export default function LongShortTradingInputs({
                               (openedPosition.borrowFeeUsd ?? 0)
                             }
                             format="currency"
-                            className="text-lg"
+                            className="text-base"
                           />
                         </TextExplainWrapper>
 
-                        <span className="text-xl ml-1 mr-1">+</span>
+                        <span className="text-base ml-1 mr-1 mb-6">+</span>
                       </>
                     ) : null}
 
                     {newPositionInfo.swapFeeUsd ? <TextExplainWrapper
-                      title={!openedPosition ? 'Swap & Trade Fees' : 'New Swap & Trade Fees'}
+                      title={openedPosition ? 'Additional Fees (Swap + Exit)' : 'Fees (Swap + Exit)'}
                       className="flex items-center justify-center"
                     >
                       <span className="text-xl ml-1 mr-1">(</span>
                       <FormatNumber
                         nb={newPositionInfo.swapFeeUsd}
                         format="currency"
-                        className="text-lg"
+                        className="text-base"
                       />
 
-                      <span className="text-xl ml-1 mr-1">+</span>
+                      <span className="text-base ml-2 mr-2">+</span>
 
                       <FormatNumber
                         nb={newPositionInfo.exitFeeUsd}
                         format="currency"
-                        className="text-lg"
+                        className="text-base"
                       />
                       <span className="text-xl ml-1 mr-1">)</span>
                     </TextExplainWrapper> : <TextExplainWrapper
-                      title={!openedPosition ? 'Trade Fees' : 'Trade Fees'}
+                      title='Exit Fees'
                       className="flex items-center justify-center"
                     >
                       <FormatNumber
                         nb={newPositionInfo.exitFeeUsd}
                         format="currency"
-                        className="text-lg"
+                        className="text-base"
                       />
                     </TextExplainWrapper>}
 
-                    <span className="text-xl ml-1 mr-1">+</span>
+                    <span className="text-base ml-1 mr-1 mb-6">+</span>
 
                     <TextExplainWrapper
                       title="Dynamic Borrow Rate"
@@ -1036,7 +1038,7 @@ export default function LongShortTradingInputs({
                         minimumFractionDigits={4}
                         suffix="%/hr"
                         isDecimalDimmed={false}
-                        className="text-lg"
+                        className="text-base"
                       />
                     </TextExplainWrapper>
                   </AutoScalableDiv>
