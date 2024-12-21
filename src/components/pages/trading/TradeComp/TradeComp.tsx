@@ -1,6 +1,6 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';

@@ -790,7 +790,8 @@ export default function LongShortTradingInputs({
           onClick={handleExecuteButton}
         />
 
-        {inputA && !errorMessage && (
+
+        {inputA && !errorMessage ? (
           <>
             <div className="flex items-center ml-4 mt-1 mb-2">
               <h5 className="hidden sm:flex items-center">Position info</h5>
@@ -1062,7 +1063,7 @@ export default function LongShortTradingInputs({
               </StyledSubSubContainer>
             </PositionFeesTooltip>
           </>
-        )}
+        ) : null}
       </div>
     </div >
   );
