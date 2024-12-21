@@ -290,11 +290,11 @@ export function PositionBlock({
             </div>
           </div>
         ) : (
-          <div className="flex border-b p-3 justify-between items-center flex-wrap w-full">
-            {positionName}
-            {readOnly ? ownerInfo : null}
-            {pnl}
-            {netValue}
+          <div className="flex border-b p-3 items-center w-full relative">
+            <div className="flex items-center">{positionName}</div>
+            {readOnly && ownerInfo}
+            <div className="ml-auto lg:absolute lg:left-1/2 lg:-translate-x-1/2">{pnl}</div>
+            <div className="ml-auto">{netValue}</div>
           </div>
         )}
 
