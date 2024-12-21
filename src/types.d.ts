@@ -11,7 +11,7 @@ import { Adrena } from '@/target/adrena';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
-import type { WalletAdapterName } from './hooks/useWalletAdapters';
+import type { WalletAdapterName } from './hooks/useWalletAdapters';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -397,6 +397,7 @@ export type PositionHistoryExtended = {
   entry_leverage: number;
   entry_collateral_amount: number;
   size: number;
+  exit_size: number;
   entry_date: Date;
   exit_date: Date | null;
   fees: number;
@@ -424,6 +425,7 @@ export type PositionHistoryApi = {
   entry_leverage: number;
   entry_collateral_amount: number;
   size: number;
+  exit_size: number;
   entry_date: string; // ISO date string
   exit_date: string | null; // ISO date string
   fees: number;
