@@ -455,15 +455,7 @@ export function PositionBlock({
               Break Even Price
             </div>
 
-            <div
-              className={twMerge(
-                "flex mt-1 rounded",
-                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
-              )}
-              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
-              role={!readOnly ? "button" : undefined}
-              tabIndex={!readOnly ? 0 : undefined}
-            >
+            <div className="flex mt-1">
               <FormatNumber
                 nb={position.breakEvenPrice}
                 format="currency"
