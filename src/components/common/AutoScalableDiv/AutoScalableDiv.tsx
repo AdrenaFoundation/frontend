@@ -13,9 +13,11 @@ import { twMerge } from 'tailwind-merge';
  */
 export default function AutoScalableDiv({
   className,
+  bodyClassName,
   children,
 }: {
   className?: string;
+  bodyClassName?: string;
   children: ReactNode;
 }) {
   const wrapperDiv = useRef<HTMLDivElement>(null);
@@ -66,6 +68,7 @@ export default function AutoScalableDiv({
         className={twMerge(
           'w-auto h-auto flex shrink-0',
           isLoaded ? 'opacity-100' : 'opacity-0',
+          bodyClassName,
         )}
         ref={containerDiv}
       >
