@@ -940,7 +940,7 @@ export default function LongShortTradingInputs({
                 <Tippy
                   content={
                     <p className="font-medium text-txtfade">
-                      0 BPS entry fees - 16 BPS exit fees. 🎊 NO SIZE FEES! 🎊
+                      0 BPS entry fees - 16 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
                     </p>
                   }
                 >
@@ -976,7 +976,7 @@ export default function LongShortTradingInputs({
                       <>
                         <TextExplainWrapper
                           title="Current Fees"
-                          className="flex-col sm:mt-3"
+                          className="flex-col"
                           position="bottom"
                         >
                           <FormatNumber
@@ -989,26 +989,45 @@ export default function LongShortTradingInputs({
                           />
                         </TextExplainWrapper>
 
-                        <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                        <span className="text-xl ml-1 mr-1">+</span>
                       </>
                     ) : null}
 
-                    <TextExplainWrapper
-                      title={!openedPosition ? 'Trade Fees' : 'Additional Fees'}
-                      className="flex-col mt-3"
+                    {newPositionInfo.swapFeeUsd ? <TextExplainWrapper
+                      title={!openedPosition ? 'Swap & Trade Fees' : 'New Swap & Trade Fees'}
+                      className="flex items-center justify-center"
+                    >
+                      <span className="text-xl ml-1 mr-1">(</span>
+                      <FormatNumber
+                        nb={newPositionInfo.swapFeeUsd}
+                        format="currency"
+                        className="text-lg"
+                      />
+
+                      <span className="text-xl ml-1 mr-1">+</span>
+
+                      <FormatNumber
+                        nb={newPositionInfo.exitFeeUsd}
+                        format="currency"
+                        className="text-lg"
+                      />
+                      <span className="text-xl ml-1 mr-1">)</span>
+                    </TextExplainWrapper> : <TextExplainWrapper
+                      title={!openedPosition ? 'Trade Fees' : 'Trade Fees'}
+                      className="flex items-center justify-center"
                     >
                       <FormatNumber
                         nb={newPositionInfo.exitFeeUsd}
                         format="currency"
                         className="text-lg"
                       />
-                    </TextExplainWrapper>
+                    </TextExplainWrapper>}
 
-                    <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                    <span className="text-xl ml-1 mr-1">+</span>
 
                     <TextExplainWrapper
                       title="Dynamic Borrow Rate"
-                      className="flex-col mt-3"
+                      className="flex-col"
                     >
                       <FormatNumber
                         // Multiply by 100 to be displayed as %
