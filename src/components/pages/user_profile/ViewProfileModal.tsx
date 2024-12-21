@@ -8,9 +8,9 @@ import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
 import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
-import PositionBlockReadOnly from '../trading/Positions/PositionBlockReadOnly';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
 import OwnerBlock from './OwnerBlock';
+import PositionBlock from '../trading/Positions/PositionBlock';
 
 export default function ViewProfileModal({
     profile,
@@ -133,10 +133,13 @@ export default function ViewProfileModal({
                     {positions !== null && positions.length ? (
                         <div className="flex flex-col w-full gap-2">
                             {positions.map((position) => (
-                                <PositionBlockReadOnly
-                                    key={position.pubkey.toBase58()}
+                                <PositionBlock
                                     position={position}
                                     showFeesInPnl={showFeesInPnl}
+                                    triggerClosePosition={() => { }}
+                                    triggerStopLossTakeProfit={() => { }}
+                                    triggerEditPositionCollateral={() => { }}
+                                    readOnly={true}
                                 />
                             ))}
                         </div>

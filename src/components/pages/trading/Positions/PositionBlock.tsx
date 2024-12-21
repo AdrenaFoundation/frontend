@@ -30,6 +30,7 @@ export function PositionBlock({
   triggerStopLossTakeProfit,
   triggerEditPositionCollateral,
   showFeesInPnl,
+  readOnly = false,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -38,15 +39,17 @@ export function PositionBlock({
   triggerStopLossTakeProfit: (p: PositionExtended) => void;
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   showFeesInPnl: boolean;
+  readOnly?: boolean;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const blockRef = useRef<HTMLDivElement>(null);
+  const isSmallSize = useBetterMediaQuery('(max-width: 900px)');
+  const [closableIn, setClosableIn] = useState<number | null>(null);
+
   // Only subscribe to the price for the token of this position.
   const tradeTokenPrice = useSelector((s) =>
     selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol)),
   );
-
-  const blockRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [closableIn, setClosableIn] = useState<number | null>(null);
 
   useEffect(() => {
     const openedTime = position.nativeObject.openTime.toNumber() * 1000;
@@ -77,6 +80,20 @@ export function PositionBlock({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position.nativeObject.openTime.toNumber()]);
 
+  const ownerInfo = (
+    <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+      <div className="flex w-full font-mono text-xs text-txtfade justify-center items-center">
+        Owner
+      </div>
+      <OnchainAccountInfo
+        address={position.owner}
+        shorten={true}
+        className="text-xs"
+        iconClassName="w-2 h-2"
+      />
+    </div>
+  );
+
   const liquidable = (() => {
     if (
       tradeTokenPrice === null ||
@@ -92,7 +109,6 @@ export function PositionBlock({
   })();
 
 
-  const isSmallSize = useBetterMediaQuery('(max-width: 800px)');
   const positionName = (
     <div className="flex items-center justify-center h-full">
       <Image
@@ -105,7 +121,7 @@ export function PositionBlock({
 
       <div className="flex flex-col">
         <div className="flex items-center justify-center">
-          {window.location.pathname !== '/trade' ? (
+          {!readOnly && window.location.pathname !== '/trade' ? (
             <Link
               href={`/trade?pair=USDC_${getTokenSymbol(
                 position.token.symbol,
@@ -160,15 +176,29 @@ export function PositionBlock({
   const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnl = (
-    <div className="flex flex-col items-center min-w-[5em] w-[5em]">
-      <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+    <div className="flex flex-col items-center min-w-[10em] w-[10em]">
+      <div className="flex flex-row gap-2 w-full font-mono text-xxs text-txtfade justify-center items-center">
         PnL
+        <label className="flex items-center cursor-pointer">
+          <Switch
+            className="mr-0.5"
+            checked={showAfterFees}
+            onChange={() => setShowAfterFees(!showAfterFees)}
+            size="small"
+          />
+          <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
+            {showAfterFees ? 'w/ fees' : 'w/o fees'}
+          </span>
+        </label>
       </div>
-
       {position.pnl ? (
         <div className="flex items-center">
           <FormatNumber
-            nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
+            nb={
+              showAfterFees
+                ? position.pnl
+                : position.pnl - fees
+            }
             format="currency"
             className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
               ? 'green'
@@ -177,10 +207,6 @@ export function PositionBlock({
             isDecimalDimmed={false}
           />
 
-          <span className={twMerge((showAfterFees ? position.pnl : position.pnl - fees) > 0
-            ? 'text-green'
-            : 'text-redbright')}>{"("}</span>
-
           <FormatNumber
             nb={
               ((showAfterFees ? position.pnl : position.pnl - fees) /
@@ -188,6 +214,12 @@ export function PositionBlock({
               100
             }
             format="percentage"
+            prefix="("
+            suffix=")"
+            suffixClassName={`ml-0 text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
+              ? 'green'
+              : 'redbright'
+              }`}
             precision={2}
             isDecimalDimmed={false}
             className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
@@ -195,25 +227,6 @@ export function PositionBlock({
               : 'redbright'
               }`}
           />
-
-          <span className={twMerge((showAfterFees ? position.pnl : position.pnl - fees) > 0
-            ? 'text-green'
-            : 'text-redbright')}>{")"}</span>
-
-          <label className="flex items-center ml-2 cursor-pointer">
-            <label className="flex items-center ml-1 cursor-pointer">
-              <Switch
-                className="mr-0.5"
-                checked={showAfterFees}
-                onChange={() => setShowAfterFees(!showAfterFees)}
-                size="small"
-              />
-
-              <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-                {showAfterFees ? 'w/ fees' : 'w/o fees'}
-              </span>
-            </label>
-          </label>
         </div>
       ) : (
         '-'
@@ -262,22 +275,24 @@ export function PositionBlock({
         ref={blockRef}
       >
         {isSmallSize ? (
-          <div className="flex flex-col w-full overflow-hidden items-center">
-            <div className="border-b pb-2 pt-2 flex w-full justify-center">
+          <div className="flex flex-col w-full items-center">
+            {readOnly ? (
+              <div className="border-b flex-1 flex w-full justify-between p-3">
+                {positionName}
+                {ownerInfo}
+              </div>
+            ) : <div className="border-b flex-1 flex w-full justify-center p-3">
               {positionName}
-            </div>
-
-            <div className="border-b pb-2 pt-2 flex w-full justify-center">
+            </div>}
+            <div className="border-b flex-1 flex w-full justify-between p-3">
               {pnl}
-            </div>
-
-            <div className="border-b pb-2 pt-2 flex w-full justify-center">
               {netValue}
             </div>
           </div>
         ) : (
-          <div className="flex border-b pt-2 pl-4 pb-2 pr-4 justify-between items-center overflow-hidden flex-wrap w-full">
+          <div className="flex border-b p-3 justify-between items-center flex-wrap w-full">
             {positionName}
+            {readOnly ? ownerInfo : null}
             {pnl}
             {netValue}
           </div>
@@ -409,10 +424,13 @@ export function PositionBlock({
             </div>
 
             <div
-              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
-              onClick={() => triggerEditPositionCollateral(position)}
-              role="button"
-              tabIndex={0}
+              className={twMerge(
+                "flex mt-1 rounded",
+                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+              )}
+              onClick={!readOnly ? () => triggerEditPositionCollateral?.(position) : undefined}
+              role={!readOnly ? "button" : undefined}
+              tabIndex={!readOnly ? 0 : undefined}
             >
               <FormatNumber
                 nb={position.liquidationPrice}
@@ -430,10 +448,13 @@ export function PositionBlock({
             </div>
 
             <div
-              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
-              onClick={() => triggerStopLossTakeProfit(position)}
-              role="button"
-              tabIndex={0}
+              className={twMerge(
+                "flex mt-1 rounded",
+                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+              )}
+              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
+              role={!readOnly ? "button" : undefined}
+              tabIndex={!readOnly ? 0 : undefined}
             >
               <FormatNumber
                 nb={position.breakEvenPrice}
@@ -450,10 +471,13 @@ export function PositionBlock({
               Take Profit
             </div>
             <div
-              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
-              onClick={() => triggerStopLossTakeProfit(position)}
-              role="button"
-              tabIndex={0}
+              className={twMerge(
+                "flex mt-1 rounded",
+                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+              )}
+              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
+              role={!readOnly ? "button" : undefined}
+              tabIndex={!readOnly ? 0 : undefined}
             >
               {position.takeProfitIsSet &&
                 position.takeProfitLimitPrice &&
@@ -475,10 +499,13 @@ export function PositionBlock({
               Stop Loss
             </div>
             <div
-              className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 mt-1 rounded"
-              onClick={() => triggerStopLossTakeProfit(position)}
-              role="button"
-              tabIndex={0}
+              className={twMerge(
+                "flex mt-1 rounded",
+                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+              )}
+              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
+              role={!readOnly ? "button" : undefined}
+              tabIndex={!readOnly ? 0 : undefined}
             >
               {position.stopLossIsSet &&
                 position.stopLossLimitPrice &&
@@ -499,55 +526,57 @@ export function PositionBlock({
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-center items-center w-full border-t">
-          <Button
-            size="xs"
-            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-            title="Edit"
-            rounded={false}
-            onClick={() => {
-              triggerEditPositionCollateral(position);
-            }}
-          />
+        {!readOnly && (
+          <div className="flex flex-col md:flex-row justify-center items-center w-full border-t">
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
+              title="Edit"
+              rounded={false}
+              onClick={() => {
+                triggerEditPositionCollateral(position);
+              }}
+            />
 
-          <Button
-            size="xs"
-            className="text-txtfade border-bcolor border-t md:border-t-0 md:border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full min-w-[18em]"
-            title="Take Profit & Stop Loss"
-            rounded={false}
-            onClick={() => {
-              triggerStopLossTakeProfit(position);
-            }}
-          />
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor border-t md:border-t-0 md:border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full min-w-[18em]"
+              title="Take Profit & Stop Loss"
+              rounded={false}
+              onClick={() => {
+                triggerStopLossTakeProfit(position);
+              }}
+            />
 
-          <Button
-            size="xs"
-            className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-            title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
-            rounded={false}
-            disabled={closableIn !== 0}
-            onClick={() => {
-              triggerClosePosition(position);
-            }}
-          />
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
+              title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
+              rounded={false}
+              disabled={closableIn !== 0}
+              onClick={() => {
+                triggerClosePosition(position);
+              }}
+            />
 
-          <Button
-            size="xs"
-            className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full md:max-w-[8em]"
-            leftIcon={shareIcon}
-            rounded={false}
-            onClick={() => {
-              setIsOpen(true);
-            }}
-          />
-        </div>
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full md:max-w-[8em]"
+              leftIcon={shareIcon}
+              rounded={false}
+              onClick={() => {
+                setIsOpen(true);
+              }}
+            />
+          </div>
+        )}
 
         {liquidable ? (
           <div className="flex items-center justify-center pt-2 pb-2 border-t">
             <h2 className="text-red text-xs">Liquidable</h2>
           </div>
         ) : null}
-      </div>
+      </div >
 
       <AnimatePresence>
         {isOpen && (
