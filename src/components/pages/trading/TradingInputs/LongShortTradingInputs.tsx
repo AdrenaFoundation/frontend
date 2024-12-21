@@ -80,6 +80,8 @@ export default function LongShortTradingInputs({
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
 
+  const [insufficientAmount, setInsufficientAmount] = useState<boolean>(false);
+
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
 
@@ -282,6 +284,7 @@ export default function LongShortTradingInputs({
       dispatch(fetchWalletTokenBalances());
 
       setInputA(null);
+      setInsufficientAmount(false);
       setErrorMessage(null);
       setInputB(null);
       setPriceA(null);
@@ -303,6 +306,10 @@ export default function LongShortTradingInputs({
     // If wallet not connected, then user need to connect wallet
     if (!connected) return setButtonTitle('Connect wallet');
 
+    if (insufficientAmount) {
+      return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
+    }
+
     if (openedPosition) {
       if (side === 'short') {
         return setButtonTitle('Increase Short');
@@ -320,6 +327,7 @@ export default function LongShortTradingInputs({
     tokenA,
     wallet,
     walletTokenBalances,
+    insufficientAmount,
   ]);
 
   useEffect(() => {
@@ -453,13 +461,16 @@ export default function LongShortTradingInputs({
   useEffect(() => {
     if (!inputA || !connected) {
       setErrorMessage(null);
+      setInsufficientAmount(false);
       return;
     }
 
     const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     if (!walletTokenABalance || inputA > walletTokenABalance) {
-      return setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
+      setInsufficientAmount(true);
+    } else {
+      setInsufficientAmount(false);
     }
 
     // Check for minimum collateral value
@@ -509,6 +520,7 @@ export default function LongShortTradingInputs({
     return setErrorMessage(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
+
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
@@ -774,7 +786,7 @@ export default function LongShortTradingInputs({
           )}
           size="lg"
           title={buttonTitle}
-          disabled={errorMessage != null}
+          disabled={errorMessage != null || insufficientAmount}
           onClick={handleExecuteButton}
         />
 
