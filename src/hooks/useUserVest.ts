@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { Vest, VestExtended } from '@/types';
+import { VestExtended } from '@/types';
 import { PublicKey } from '@solana/web3.js';
 
 export default function useUserVest(walletAddress: string | null): {

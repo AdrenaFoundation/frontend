@@ -13,9 +13,9 @@ import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { PageProps, VestExtended } from '@/types';
-import { useSelector } from '@/store/store';
 import { selectWalletAddress } from '@/selectors/wallet';
+import { useSelector } from '@/store/store';
+import { PageProps, VestExtended } from '@/types';
 import { PublicKey } from '@solana/web3.js';
 
 export default function MyDashboard({
