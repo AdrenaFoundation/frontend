@@ -893,6 +893,32 @@ export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
   return Math.floor((diffTime % (1000 * 60)) / 1000);
 }
 
+export function getFullTimeDifference(date1: Date, date2: Date) {
+  return {
+    days: getDaysBetweenDates(date1, date2),
+    hours: getHoursBetweenDates(date1, date2),
+    minutes: getMinutesBetweenDates(date1, date2),
+    seconds: getSecondsBetweenDates(date1, date2)
+  };
+}
+
+export function formatTimeDifference(diff: {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}) {
+  if (diff.days > 0) {
+    return `${diff.days.toString().padStart(2, '0')}d ${diff.hours.toString().padStart(2, '0')}h ${diff.minutes.toString().padStart(2, '0')}m`;
+  }
+
+  if (diff.hours > 0) {
+    return `${diff.hours.toString().padStart(2, '0')}h ${diff.minutes.toString().padStart(2, '0')}m ${diff.seconds.toString().padStart(2, '0')}s`;
+  }
+
+  return `${diff.minutes.toString().padStart(2, '0')}m ${diff.seconds.toString().padStart(2, '0')}s`;
+}
+
 export const isValidPublicKey = (key: string) => {
   try {
     new PublicKey(key);

@@ -673,9 +673,8 @@ export class AdrenaClient {
       (custody) => !custody.equals(PublicKey.default),
     );
 
-    const result = await adrenaProgram.account.custody.fetchMultiple(
-      custodiesAddresses,
-    );
+    const result =
+      await adrenaProgram.account.custody.fetchMultiple(custodiesAddresses);
 
     // No custodies should be null
     if (result.find((c) => c === null)) {
@@ -1899,9 +1898,11 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const transaction = await (position.side === 'long'
-      ? this.buildAddCollateralLongTx.bind(this)
-      : this.buildAddCollateralShortTx.bind(this))({
+    const transaction = await (
+      position.side === 'long'
+        ? this.buildAddCollateralLongTx.bind(this)
+        : this.buildAddCollateralShortTx.bind(this)
+    )({
       position,
       collateralAmount: addedCollateral,
     })
@@ -2236,9 +2237,8 @@ export class AdrenaClient {
 
     const userVestPda = this.getUserVestPda(wallet.publicKey);
 
-    const vest = await this.adrenaProgram.account.vest.fetchNullable(
-      userVestPda,
-    );
+    const vest =
+      await this.adrenaProgram.account.vest.fetchNullable(userVestPda);
 
     if (!vest) return null;
 
@@ -3963,6 +3963,26 @@ export class AdrenaClient {
     return nativeToUi(entryPrice.add(maxPriceDiffScaled), PRICE_DECIMALS);
   }
 
+  public calculateBreakEvenPrice({
+    side,
+    price,
+    exitFeeUsd,
+    unrealizedInterestUsd,
+    sizeUsd,
+  }: {
+    side: 'long' | 'short';
+    price: number;
+    exitFeeUsd: number;
+    unrealizedInterestUsd: number;
+    sizeUsd: number;
+  }): number {
+    if (side === 'long') {
+      return price * (1 + (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
+    }
+
+    return price * (1 - (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
+  }
+
   public getPossiblePositionAddresses(user: PublicKey): PublicKey[] {
     return this.tokens.reduce((acc, token) => {
       if (!token.custody) return acc;
@@ -4020,6 +4040,8 @@ export class AdrenaClient {
       currentLeverage: null,
       token,
       collateralToken,
+      openDate: new Date(position.openTime.toNumber() * 1000),
+      updatedDate: new Date(position.updateTime.toNumber() * 1000),
       side,
       sizeUsd,
       size: nativeToUi(position.lockedAmount, token.decimals),
@@ -4045,6 +4067,7 @@ export class AdrenaClient {
         : null,
       takeProfitIsSet: position.takeProfitIsSet === 1,
       breakEvenPrice,
+      unrealizedInterestUsd,
       //
       nativeObject: position,
     };
@@ -4119,6 +4142,20 @@ export class AdrenaClient {
           return acc;
         }
 
+        const side =
+          positionAccount.side === 1 ? 'long' : ('short' as 'long' | 'short');
+        const sizeUsd = nativeToUi(positionAccount.sizeUsd, USD_DECIMALS);
+        const price = nativeToUi(positionAccount.price, PRICE_DECIMALS);
+        const exitFeeUsd = nativeToUi(positionAccount.exitFeeUsd, USD_DECIMALS);
+        const unrealizedInterestUsd = nativeToUi(
+          positionAccount.unrealizedInterestUsd,
+          USD_DECIMALS,
+        );
+        const collateralUsd = nativeToUi(
+          positionAccount.collateralUsd,
+          USD_DECIMALS,
+        );
+
         return [
           ...acc,
           {
@@ -4126,28 +4163,29 @@ export class AdrenaClient {
             collateralCustody: positionAccount.collateralCustody,
             owner: positionAccount.owner,
             pubkey: positionPubkey,
-            initialLeverage:
-              nativeToUi(positionAccount.sizeUsd, USD_DECIMALS) /
-              nativeToUi(positionAccount.collateralUsd, USD_DECIMALS),
+            initialLeverage: sizeUsd / collateralUsd,
             currentLeverage: null,
             token,
             collateralToken,
-            side: (positionAccount.side === 1 ? 'long' : 'short') as
-              | 'long'
-              | 'short',
-            sizeUsd: nativeToUi(positionAccount.sizeUsd, USD_DECIMALS),
+            side,
+            openDate: new Date(positionAccount.openTime.toNumber() * 1000),
+            updatedDate: new Date(positionAccount.updateTime.toNumber() * 1000),
+            sizeUsd,
             size: nativeToUi(positionAccount.lockedAmount, token.decimals),
-            collateralUsd: nativeToUi(
-              positionAccount.collateralUsd,
-              USD_DECIMALS,
-            ),
-            price: nativeToUi(positionAccount.price, PRICE_DECIMALS),
-            breakEvenPrice: 0,
+            collateralUsd,
+            price,
+            breakEvenPrice: this.calculateBreakEvenPrice({
+              side,
+              price,
+              exitFeeUsd,
+              unrealizedInterestUsd,
+              sizeUsd,
+            }),
             collateralAmount: nativeToUi(
               positionAccount.collateralAmount,
               collateralToken.decimals,
             ),
-            exitFeeUsd: nativeToUi(positionAccount.exitFeeUsd, USD_DECIMALS),
+            exitFeeUsd,
             liquidationFeeUsd: nativeToUi(
               positionAccount.liquidationFeeUsd,
               USD_DECIMALS,
@@ -4168,6 +4206,7 @@ export class AdrenaClient {
               ? nativeToUi(positionAccount.takeProfitLimitPrice, PRICE_DECIMALS)
               : null,
             takeProfitIsSet: positionAccount.takeProfitIsSet === 1,
+            unrealizedInterestUsd,
             //
             nativeObject: positionAccount,
           },

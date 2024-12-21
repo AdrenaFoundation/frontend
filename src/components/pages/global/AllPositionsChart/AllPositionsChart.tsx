@@ -7,7 +7,7 @@ import Loader from '@/components/Loader/Loader';
 import { PositionExtended } from '@/types';
 import { formatPercentage, formatPriceInfo } from '@/utils';
 
-import PositionBlockReadOnly from '../../trading/Positions/PositionBlockReadOnly';
+import PositionBlock from '../../trading/Positions/PositionBlock';
 
 const CustomizedContent: React.FC<{
   root: unknown;
@@ -219,7 +219,12 @@ export default function AllPositionsChart({
     <div className='flex flex-col w-0 flex-1 h-full items-center'>
       <div className='min-h-[9em] h-auto w-full max-w-[60em] shrink-0 flex items-center justify-center pb-2'>
         {selectedPositionObject !== null ?
-          <PositionBlockReadOnly position={selectedPositionObject} showFeesInPnl={showFeesInPnl} /> :
+          <PositionBlock
+            key={selectedPositionObject.pubkey.toBase58()}
+            position={selectedPositionObject}
+            showFeesInPnl={showFeesInPnl}
+            readOnly={true}
+          /> :
           <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}
       </div>
       <ResponsiveContainer width="100%" height="100%">

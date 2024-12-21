@@ -11,7 +11,7 @@ import { Adrena } from '@/target/adrena';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
-import type { WalletAdapterName } from './hooks/useWalletAdapters';
+import type { WalletAdapterName } from './hooks/useWalletAdapters';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -128,6 +128,8 @@ export type PositionExtended = {
   token: Token;
   collateralToken: Token;
   side: 'long' | 'short';
+  openDate: Date;
+  updatedDate: Date;
   // Including fees
   pnl?: number | null;
   pnlMinusFees?: number | null;
@@ -148,6 +150,7 @@ export type PositionExtended = {
   stopLossIsSet: boolean;
   takeProfitLimitPrice?: number | null;
   takeProfitIsSet: boolean;
+  unrealizedInterestUsd: number;
 
   // Onchain data
   nativeObject: Position;
@@ -394,6 +397,7 @@ export type PositionHistoryExtended = {
   entry_leverage: number;
   entry_collateral_amount: number;
   size: number;
+  exit_size: number;
   entry_date: Date;
   exit_date: Date | null;
   fees: number;
@@ -421,6 +425,7 @@ export type PositionHistoryApi = {
   entry_leverage: number;
   entry_collateral_amount: number;
   size: number;
+  exit_size: number;
   entry_date: string; // ISO date string
   exit_date: string | null; // ISO date string
   fees: number;
