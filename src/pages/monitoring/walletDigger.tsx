@@ -23,6 +23,7 @@ import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
 import { getAdxLockedStakes, getAlpLockedStakes } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
+import shovelMonster from '../../../public/images/shovel.png';
 
 const claimHistoryItemsPerPage = 4;
 
@@ -93,7 +94,46 @@ export default function WalletDigger({
     //
     //
 
-    console.log('VEST', userVest)
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+
+        // Load `wallet` from URL when the page loads
+        if (searchParams.has('wallet')) {
+            const walletFromURL = searchParams.get('wallet');
+            if (walletFromURL) {
+                setTargetWallet(walletFromURL);
+
+                try {
+                    const pubkey = new PublicKey(walletFromURL);
+                    setTargetWalletPubkey(pubkey);
+                } catch {
+                    setTargetWalletPubkey(null);
+                }
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+
+        if (targetWallet) {
+            // Update the URL with the `wallet` query parameter
+            searchParams.set('wallet', targetWallet);
+            window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`
+            );
+        } else {
+            // Remove the `wallet` query parameter if the wallet is cleared
+            searchParams.delete('wallet');
+            window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`
+            );
+        }
+    }, [targetWallet]);
 
     useEffect(() => {
         if (targetWallet) {
@@ -126,8 +166,8 @@ export default function WalletDigger({
     </div>;
 
     return <div className="flex flex-col gap-2 p-2 w-full">
-        <StyledContainer className="p-4 w-full">
-            <div className="flex flex-col w-full items-center justify-center gap-2 relative">
+        <StyledContainer className="p-4 w-full relative overflow-hidden">
+            <div className="flex flex-col w-full items-center justify-center gap-2 relative h-[15em]">
                 <div>Target Wallet</div>
 
                 {targetWalletPubkey ? <OnchainAccountInfo iconClassName="w-[0.7em] h-[0.7em] ml-4" address={targetWalletPubkey} noAddress={true} className='absolute right-2 top-2' /> : null}
@@ -139,123 +179,138 @@ export default function WalletDigger({
                     className="text-center w-[40em] max-w-full bg-inputcolor border rounded-xl p-2"
                     inputFontSize="0.7em"
                 />
-            </div>
-        </StyledContainer>
 
-        {!targetWalletPubkey ?
-            <StyledContainer className="p-4 w-full h-[15em] items-center justify-center">
-                <h4 className='m-auto'>Enter a valid wallet address to start digging</h4>
-            </StyledContainer> : null}
+                <div className={twMerge('text-sm', !targetWallet?.length ? 'opacity-0' : 'opacity-50 hover:opacity-100 cursor-pointer')} onClick={() => {
+                    setTargetWalletPubkey(null);
+                    setTargetWallet(null);
+                }}>reset</div>
+            </div>
+
+            <Image
+                className="h-[15em] w-[15em] absolute -bottom-2 right-0 -z-10 opacity-40 grayscale"
+                src={shovelMonster}
+                height={600}
+                width={600}
+                alt="Shovel monster"
+            />
+        </StyledContainer >
 
         {targetWalletPubkey ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
-            <UserRelatedAdrenaAccounts
+            < UserRelatedAdrenaAccounts
                 className="h-auto flex mt-auto rounded-lg"
-                userProfile={userProfile ?? false}
+                userProfile={userProfile ?? false
+                }
                 userVest={userVest ? userVest : null}
                 positions={positions}
             />
-        </StyledContainer> : null}
+        </StyledContainer > : null}
 
-        {targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
-            <h1 className='ml-auto mr-auto'>STAKING</h1>
+        {
+            targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
+                <h1 className='ml-auto mr-auto'>STAKING</h1>
 
-            {moreStakingInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMoreStakingInfo(false)}>hide details</div> : null}
+                {moreStakingInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMoreStakingInfo(false)}>hide details</div> : null}
 
-            {moreStakingInfo ? <>
-                <div className='w-full h-[1px] bg-bcolor mt-2' />
+                {moreStakingInfo ? <>
+                    <div className='w-full h-[1px] bg-bcolor mt-2' />
 
-                <h4 className='ml-4 mt-4'>Staking List</h4>
+                    <h4 className='ml-4 mt-4'>Staking List</h4>
 
-                <div className='flex w-full pl-4 pr-4'>
-                    <div className='flex flex-col w-full'>
-                        <div className='flex w-full gap-4'>
-                            {adxLockedStakes ? <LockedStakes
-                                readonly={true}
-                                lockedStakes={adxLockedStakes}
-                                className='gap-3 mt-4 w-full'
-                                handleRedeem={() => { /* readonly */ }}
-                                handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
-                                handleClickOnUpdateLockedStake={() => { /* readonly */ }}
-                            /> : null}
+                    <div className='flex w-full pl-4 pr-4'>
+                        <div className='flex flex-col w-full'>
+                            <div className='flex w-full gap-4 flex-wrap'>
+                                {adxLockedStakes ? <LockedStakes
+                                    readonly={true}
+                                    lockedStakes={adxLockedStakes}
+                                    className='gap-3 mt-4 w-[25em] grow'
+                                    handleRedeem={() => { /* readonly */ }}
+                                    handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
+                                    handleClickOnUpdateLockedStake={() => { /* readonly */ }}
+                                /> : null}
 
-                            {alpLockedStakes ? <LockedStakes
-                                readonly={true}
-                                lockedStakes={alpLockedStakes}
-                                className='gap-3 mt-4 w-full'
-                                handleRedeem={() => { /* readonly */ }}
-                                handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
-                                handleClickOnUpdateLockedStake={() => { /* readonly */ }}
-                            /> : null}
-                        </div>
-
-                        <div className='flex w-full gap-4 mt-2'>
-                            <div className='flex flex-col w-full'>
-                                <h4 className='ml-4 mt-4 mb-4'>ADX Staking claim history</h4>
-
-                                {paginatedAdxClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
-
-                                <Pagination
-                                    currentPage={adxClaimHistoryCurrentPage}
-                                    totalItems={claimsHistoryAdx ? claimsHistoryAdx.length : 0}
-                                    itemsPerPage={claimHistoryItemsPerPage}
-                                    onPageChange={setAdxClaimHistoryCurrentPage}
-                                />
+                                {alpLockedStakes ? <LockedStakes
+                                    readonly={true}
+                                    lockedStakes={alpLockedStakes}
+                                    className='gap-3 mt-4 w-[25em] grow'
+                                    handleRedeem={() => { /* readonly */ }}
+                                    handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
+                                    handleClickOnUpdateLockedStake={() => { /* readonly */ }}
+                                /> : null}
                             </div>
 
-                            <div className='flex flex-col w-full'>
-                                <h4 className='ml-4 mt-4 mb-4'>ALP Staking claim history</h4>
+                            <div className='flex w-full gap-4 mt-2 flex-wrap'>
+                                <div className='flex flex-col w-[25em] grow'>
+                                    <h4 className='ml-4 mt-4 mb-4'>ADX Staking claim history</h4>
 
-                                {paginatedAlpClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
+                                    {paginatedAdxClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
 
-                                <Pagination
-                                    currentPage={alpClaimHistoryCurrentPage}
-                                    totalItems={claimsHistoryAlp ? claimsHistoryAlp.length : 0}
-                                    itemsPerPage={claimHistoryItemsPerPage}
-                                    onPageChange={setAlpClaimHistoryCurrentPage}
-                                />
+                                    <Pagination
+                                        currentPage={adxClaimHistoryCurrentPage}
+                                        totalItems={claimsHistoryAdx ? claimsHistoryAdx.length : 0}
+                                        itemsPerPage={claimHistoryItemsPerPage}
+                                        onPageChange={setAdxClaimHistoryCurrentPage}
+                                    />
+                                </div>
+
+                                <div className='flex flex-col w-[25em] grow'>
+                                    <h4 className='ml-4 mt-4 mb-4'>ALP Staking claim history</h4>
+
+                                    {paginatedAlpClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
+
+                                    <Pagination
+                                        currentPage={alpClaimHistoryCurrentPage}
+                                        totalItems={claimsHistoryAlp ? claimsHistoryAlp.length : 0}
+                                        itemsPerPage={claimHistoryItemsPerPage}
+                                        onPageChange={setAlpClaimHistoryCurrentPage}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </> : null}
+                </> : null}
 
-            {seeDetails(moreStakingInfo, setMoreStakingInfo)}
-        </StyledContainer> : null}
+                {seeDetails(moreStakingInfo, setMoreStakingInfo)}
+            </StyledContainer> : null
+        }
 
-        {targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
-            <h1 className='ml-auto mr-auto'>POSITIONS</h1>
+        {
+            targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
+                <h1 className='ml-auto mr-auto'>POSITIONS</h1>
 
-            {morePositionInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMorePositionInfo(false)}>hide details</div> : null}
+                {morePositionInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMorePositionInfo(false)}>hide details</div> : null}
 
-            {morePositionInfo ? <>
-                <div className='w-full h-[1px] bg-bcolor mt-2' />
+                {morePositionInfo ? <>
+                    <div className='w-full h-[1px] bg-bcolor mt-2' />
 
-                <h4 className='ml-4 mt-4 mb-4'>Live Positions</h4>
+                    <h4 className='ml-4 mt-4 mb-4'>Live Positions</h4>
 
-                <div className='flex flex-col w-full pl-4 pr-4'>
-                    <Positions
-                        connected={false}
-                        positions={positions}
-                        triggerUserProfileReload={() => {/* readonly */ }}
-                        isBigScreen={isBigScreen}
-                        showFeesInPnl={showFeesInPnl}
-                    />
-                </div>
+                    <div className='flex flex-col w-full pl-4 pr-4'>
+                        <Positions
+                            connected={false}
+                            positions={positions}
+                            triggerUserProfileReload={() => {/* readonly */ }}
+                            isBigScreen={isBigScreen}
+                            showFeesInPnl={showFeesInPnl}
+                        />
+                    </div>
 
-                <h4 className='ml-4 mt-4 mb-4'>History</h4>
+                    <h4 className='ml-4 mt-4 mb-4'>History</h4>
 
-                <div className='flex flex-col w-full pl-4 pr-4'>
-                    <PositionsHistory
-                        connected={true}
-                        showFeesInPnl={showFeesInPnl}
-                    />
-                </div></> : null}
+                    <div className='flex flex-col w-full pl-4 pr-4'>
+                        <PositionsHistory
+                            connected={true}
+                            showFeesInPnl={showFeesInPnl}
+                        />
+                    </div></> : null}
 
-            {seeDetails(morePositionInfo, setMorePositionInfo)}
-        </StyledContainer> : null}
+                {seeDetails(morePositionInfo, setMorePositionInfo)}
+            </StyledContainer> : null
+        }
 
-        {targetWalletPubkey && userVest ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
-            <VestStats vest={userVest} readonly={true} />
-        </StyledContainer> : null}
+        {
+            targetWalletPubkey && userVest ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
+                <VestStats vest={userVest} readonly={true} />
+            </StyledContainer> : null
+        }
     </div >;
 }
