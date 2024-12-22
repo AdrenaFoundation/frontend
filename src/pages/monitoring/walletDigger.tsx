@@ -11,7 +11,7 @@ import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import ClaimBlock from '@/components/pages/stake/ClaimBlock';
 import LockedStakes from '@/components/pages/stake/LockedStakes';
-import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
+import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
@@ -379,7 +379,8 @@ export default function WalletDigger({
                             {positions !== null && positions.length ? (
                                 <div className="flex flex-col w-full gap-2">
                                     {positions.map((position) => (
-                                        <PositionBlockReadOnly
+                                        <PositionBlock
+                                            readOnly={true}
                                             key={position.pubkey.toBase58()}
                                             position={position}
                                             showFeesInPnl={showFeesInPnl}
