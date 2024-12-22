@@ -41,7 +41,7 @@ export default function useUserProfile(walletAddress: string | null): {
   }, [
     fetchUserProfile,
     trickReload,
-    window.adrena.client.connection,
+    window.adrena.client.readonlyConnection,
   ]);
 
   return {

@@ -14,7 +14,7 @@ export default function useUserVest(walletAddress: string | null): {
   const [userVest, setUserVest] = useState<VestExtended | false | null>(null);
 
   const fetchUserVest = useCallback(async () => {
-    if (!walletAddress) {
+    if (!walletAddress || !window.adrena.client.readonlyConnection) {
       setUserVest(null);
       return;
     }
@@ -24,12 +24,14 @@ export default function useUserVest(walletAddress: string | null): {
 
   useEffect(() => {
     fetchUserVest();
+
     const interval = setInterval(() => {
       fetchUserVest();
     }, 30000);
+
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchUserVest, trickReload, window.adrena.client.connection]);
+  }, [fetchUserVest, trickReload, window.adrena.client.readonlyConnection]);
 
   return {
     userVest,

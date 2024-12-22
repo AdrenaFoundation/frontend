@@ -11,13 +11,12 @@ import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import ClaimBlock from '@/components/pages/stake/ClaimBlock';
 import LockedStakes from '@/components/pages/stake/LockedStakes';
-import Positions from '@/components/pages/trading/Positions/Positions';
+import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useClaimHistory from '@/hooks/useClaimHistory';
-import usePositions from '@/hooks/usePositions';
+import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -36,7 +35,6 @@ export default function WalletDigger({
 }) {
     const [moreStakingInfo, setMoreStakingInfo] = useState(false);
     const [morePositionInfo, setMorePositionInfo] = useState(false);
-    const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
 
     const [targetWallet, setTargetWallet] = useState<string | null>(null);
     const [targetWalletPubkey, setTargetWalletPubkey] = useState<PublicKey | null>(null);
@@ -44,14 +42,16 @@ export default function WalletDigger({
     const { userProfile } = useUserProfile(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
     const { userVest } = useUserVest(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
 
-    const positions = usePositions(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
+    const positions = usePositionsByAddress({
+        walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
+    });
 
     //
     // Staking
     //
     const {
         stakingAccounts,
-    } = useWalletStakingAccounts();
+    } = useWalletStakingAccounts(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
 
     const adxLockedStakes: LockedStakeExtended[] | null =
         getAdxLockedStakes(stakingAccounts);
@@ -62,7 +62,7 @@ export default function WalletDigger({
     const {
         claimsHistoryAdx,
         claimsHistoryAlp,
-    } = useClaimHistory();
+    } = useClaimHistory(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
 
     const allTimeClaimedUsdc =
         useMemo(() => (claimsHistoryAdx?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0) + (claimsHistoryAlp?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0), [claimsHistoryAdx, claimsHistoryAlp]);
@@ -213,12 +213,12 @@ export default function WalletDigger({
         </StyledContainer >
 
         {targetWalletPubkey ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
-            < UserRelatedAdrenaAccounts
+            <UserRelatedAdrenaAccounts
                 className="h-auto flex mt-auto rounded-lg"
-                userProfile={userProfile ?? false
-                }
+                userProfile={userProfile ?? false}
                 userVest={userVest ? userVest : null}
                 positions={positions}
+                stakingAccounts={stakingAccounts}
             />
         </StyledContainer > : null}
 
@@ -375,19 +375,30 @@ export default function WalletDigger({
                     <h4 className='ml-4 mt-4 mb-4'>Live Positions</h4>
 
                     <div className='flex flex-col w-full pl-4 pr-4'>
-                        <Positions
-                            connected={false}
-                            positions={positions}
-                            triggerUserProfileReload={() => {/* readonly */ }}
-                            isBigScreen={isBigScreen}
-                            showFeesInPnl={showFeesInPnl}
-                        />
+                        <div className="flex flex-wrap justify-between gap-2">
+                            {positions !== null && positions.length ? (
+                                <div className="flex flex-col w-full gap-2">
+                                    {positions.map((position) => (
+                                        <PositionBlockReadOnly
+                                            key={position.pubkey.toBase58()}
+                                            position={position}
+                                            showFeesInPnl={showFeesInPnl}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center w-full py-4 opacity-50">
+                                    No positions 📭
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <h4 className='ml-4 mt-4 mb-4'>History</h4>
 
                     <div className='flex flex-col w-full pl-4 pr-4'>
                         <PositionsHistory
+                            walletAddress={targetWalletPubkey?.toBase58() ?? null}
                             connected={true}
                             showFeesInPnl={showFeesInPnl}
                         />

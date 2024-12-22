@@ -28,8 +28,8 @@ export default function MyDashboard({
   readonly?: boolean;
 }) {
   const [nickname, setNickname] = useState<string | null>(null);
-  const { stakingAccounts } = useWalletStakingAccounts();
   const walletAddress = useSelector(selectWalletAddress);
+  const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
 
   const positions = usePositions(walletAddress);
 
@@ -171,6 +171,7 @@ export default function MyDashboard({
                 userProfile={userProfile}
                 userVest={userVest}
                 positions={positions}
+                stakingAccounts={stakingAccounts}
               />
             </>
           )}

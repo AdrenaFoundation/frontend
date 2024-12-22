@@ -3,7 +3,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Head from 'next/head';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -108,8 +108,13 @@ export default function Genesis({
     : new Date();
 
   const { days, hours, minutes, seconds } = useCountDown(from, campaignEndDate);
+
+  const walletAddress = useSelector(
+    (state) => state.walletState.wallet,
+  )?.walletAddress ?? null;
+
   const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts();
+    useWalletStakingAccounts(walletAddress);
 
   useEffect(() => {
     getAlpAmount();

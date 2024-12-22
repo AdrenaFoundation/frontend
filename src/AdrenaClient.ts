@@ -1,5 +1,4 @@
-import { BN, ProgramAccount, Wallet } from '@coral-xyz/anchor';
-import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { AnchorProvider, BN, Program, ProgramAccount, Wallet } from '@coral-xyz/anchor';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountIdempotentInstruction,
@@ -2229,14 +2228,15 @@ export class AdrenaClient {
   // null = not ready
   // false = no vest
   public async loadUserVest(walletAddress: PublicKey): Promise<VestExtended | false | null> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram) {
       return null;
     }
 
     const userVestPda = this.getUserVestPda(walletAddress);
 
-    const vest =
-      await this.adrenaProgram.account.vest.fetchNullable(userVestPda);
+    const vest = await this.readonlyAdrenaProgram.account.vest.fetchNullable(
+      userVestPda,
+    );
 
     if (!vest) return null;
 
@@ -2346,13 +2346,13 @@ export class AdrenaClient {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
   }): Promise<UserStakingExtended | null> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram || !this.readonlyConnection) {
       throw new Error('adrena program not ready');
     }
     const stakingPda = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, stakingPda);
 
-    const account = await this.adrenaProgram.account.userStaking.fetchNullable(
+    const account = await this.readonlyAdrenaProgram.account.userStaking.fetchNullable(
       userStaking,
       'processed',
     );
