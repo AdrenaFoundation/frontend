@@ -1,9 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import InputString from '@/components/common/inputString/InputString';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
@@ -12,6 +13,7 @@ import ClaimBlock from '@/components/pages/stake/ClaimBlock';
 import LockedStakes from '@/components/pages/stake/LockedStakes';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
+import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useClaimHistory from '@/hooks/useClaimHistory';
@@ -20,7 +22,7 @@ import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
-import { getAdxLockedStakes, getAlpLockedStakes } from '@/utils';
+import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel.png';
@@ -61,6 +63,21 @@ export default function WalletDigger({
         claimsHistoryAdx,
         claimsHistoryAlp,
     } = useClaimHistory();
+
+    const allTimeClaimedUsdc =
+        useMemo(() => (claimsHistoryAdx?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0) + (claimsHistoryAlp?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0), [claimsHistoryAdx, claimsHistoryAlp]);
+
+    const allTimeClaimedAdx = useMemo(() =>
+        (claimsHistoryAdx?.reduce(
+            (sum, claim) => sum + claim.rewards_adx,
+            0,
+        ) ?? 0) + (claimsHistoryAlp?.reduce(
+            (sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis,
+            0,
+        ) ?? 0), [claimsHistoryAdx, claimsHistoryAlp]);
+
+    const totalStakedAdx = useMemo(() => adxLockedStakes?.reduce((sum, stake) => sum + nativeToUi(stake.amount, window.adrena.client.adxToken.decimals), 0) ?? 0, [adxLockedStakes]);
+    const totalStakedAlp = useMemo(() => alpLockedStakes?.reduce((sum, stake) => sum + nativeToUi(stake.amount, window.adrena.client.alpToken.decimals), 0) ?? 0, [alpLockedStakes]);
 
     const [adxClaimHistoryCurrentPage, setAdxClaimHistoryCurrentPage] = useState(1);
     const [paginatedAdxClaimsHistory, setPaginatedAdxClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
@@ -211,6 +228,69 @@ export default function WalletDigger({
 
                 {moreStakingInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMoreStakingInfo(false)}>hide details</div> : null}
 
+                <div className='w-full h-[1px] bg-bcolor mt-2' />
+
+                <div className='flex gap-y-4 mt-2'>
+                    <NumberDisplay
+                        title="LIQUID STAKED ADX"
+                        nb={stakingAccounts?.ADX?.liquidStake.amount ? nativeToUi(stakingAccounts.ADX.liquidStake.amount, window.adrena.client.adxToken.decimals) : 0}
+                        format="number"
+                        suffix='ADX'
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+
+                    <NumberDisplay
+                        title="LOCKED STAKED ADX"
+                        nb={totalStakedAdx}
+                        format="number"
+                        suffix='ADX'
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+
+                    <NumberDisplay
+                        title="LOCKED STAKED ALP"
+                        nb={totalStakedAlp}
+                        format="number"
+                        suffix='ALP'
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+
+                    <NumberDisplay
+                        title="TOTAL CLAIMED USDC"
+                        nb={allTimeClaimedUsdc}
+                        format="currency"
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+
+                    <NumberDisplay
+                        title="TOTAL CLAIMED ADX"
+                        nb={allTimeClaimedAdx}
+                        format="number"
+                        suffix='ADX'
+                        precision={0}
+                        className='border-0 min-w-[12em]'
+                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                        headerClassName='pb-2'
+                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    />
+                </div>
+
                 {moreStakingInfo ? <>
                     <div className='w-full h-[1px] bg-bcolor mt-2' />
 
@@ -278,6 +358,16 @@ export default function WalletDigger({
                 <h1 className='ml-auto mr-auto'>POSITIONS</h1>
 
                 {morePositionInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMorePositionInfo(false)}>hide details</div> : null}
+
+                {userProfile ? <>
+                    <TradingStats
+                        userProfile={userProfile}
+                        livePositionsNb={positions === null ? null : positions.length}
+                        className="gap-y-4 mt-2 mb-2"
+                    />
+
+                    <div className='w-full h-[1px] bg-bcolor mt-2' />
+                </> : null}
 
                 {morePositionInfo ? <>
                     <div className='w-full h-[1px] bg-bcolor mt-2' />
