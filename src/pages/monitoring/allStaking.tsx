@@ -16,7 +16,7 @@ export default function AllStaking() {
     const totalSupplyALP = useALPTotalSupply();
 
     return (
-        <div className="flex flex-col gap-2 p-2 items-center justify-center">
+        <div>
             <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
                 <div className='flex flex-col items-center justify-center gap-1'>
                     <h2 className='flex'>STAKED ADX</h2>

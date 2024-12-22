@@ -150,7 +150,7 @@ export default function AllUserProfiles({
 
     return (
         <>
-            <div className="flex flex-col gap-2 p-2">
+            <div>
                 <StyledContainer className="p-0">
                     <div className="flex flex-col md:flex-row md:gap-3">
                         <FilterSidebar

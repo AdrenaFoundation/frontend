@@ -142,10 +142,12 @@ export function formatNumber(
     precision = minimumFractionDigits;
   }
 
-  return Number(nb.toFixed(precision)).toLocaleString(undefined, {
-    minimumFractionDigits,
-    maximumFractionDigits: precision,
-  });
+  return Number(nb.toFixed(precision)).toLocaleString(
+    'en-US'
+    , {
+      minimumFractionDigits,
+      maximumFractionDigits: precision,
+    });
 }
 
 export function formatPriceInfo(
