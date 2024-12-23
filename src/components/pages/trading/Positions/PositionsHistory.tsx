@@ -15,7 +15,7 @@ function PositionsHistory({
 }: {
   connected: boolean;
   className?: string;
-  walletAddress?: string;
+  walletAddress: string | null;
   showShareButton?: boolean;
   showFeesInPnl: boolean;
 }) {

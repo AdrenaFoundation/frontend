@@ -8,12 +8,14 @@ import { PositionExtended } from '@/types';
 export default function usePositionsByAddress({
   walletAddress,
 }: {
-  walletAddress: string;
+  walletAddress: string | null;
 }): PositionExtended[] | null {
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const initialSetup = useCallback(async () => {
+    if (!walletAddress) return;
+
     // Load positions
     try {
       const freshPositions = await window.adrena.client.loadUserPositions(
@@ -28,7 +30,7 @@ export default function usePositionsByAddress({
       return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.adrena.client.readonlyConnection]);
+  }, [window.adrena.client.readonlyConnection, walletAddress]);
 
   useEffect(() => {
     initialSetup();

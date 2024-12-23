@@ -18,12 +18,14 @@ import LockedStake from './LockedStake';
 
 export default function LockedStakesDuration({
   lockedStakes,
+  readonly = false,
   className,
   handleRedeem,
   handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
 }: {
   lockedStakes: LockedStakeExtended[];
+  readonly?: boolean;
   className?: string;
   handleRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
   handleClickOnFinalizeLockedRedeem: (
@@ -33,7 +35,7 @@ export default function LockedStakesDuration({
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
-  const [showWeights, setShowWeight] = useState<boolean>(false);
+  const [showWeights, setShowWeight] = useState<boolean>(readonly);
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const lockedStakesPerPage = 3;
 
@@ -232,11 +234,11 @@ export default function LockedStakesDuration({
         </div> : null}
       </div>
 
-
       {
         detailOpen ? <div className='border-t-1'>
           {paginatedLockedStakes.map((lockedStake, i) => <LockedStake
             lockedStake={lockedStake}
+            readonly={readonly}
             key={i}
             className="border-t"
             handleRedeem={handleRedeem}
@@ -269,7 +271,7 @@ export default function LockedStakesDuration({
             <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('opacity-20', detailOpen ? 'rotate-180' : '')} />
           </div>
 
-          <div className='flex w-full'>
+          {!readonly ? <div className='flex w-full'>
             {!lockedStakes[0].isGenesis && (
               <Tippy
                 disabled={lockedStakes.some(lockedStake => lockedStake.qualifiedForRewardsInResolvedRoundCount > 0)}
@@ -296,8 +298,8 @@ export default function LockedStakesDuration({
                 </div>
               </Tippy>
             )}
-          </div>
-        </div> : <div className='flex w-full'>
+          </div> : null}
+        </div> : !readonly ? <div className='flex w-full'>
           <Button
             variant="outline"
             size="xs"
@@ -331,8 +333,7 @@ export default function LockedStakesDuration({
                 />
               </div>
             </Tippy>) : null}
-        </div>
-      }
-    </div >
+        </div> : null}
+    </div>
   );
 }
