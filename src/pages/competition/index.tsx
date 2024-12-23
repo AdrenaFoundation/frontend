@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../public/images/adx.svg';
@@ -9,9 +9,8 @@ import banner from '@/../public/images/comp-banner.png';
 import discordIcon from '@/../public/images/discord-black.svg';
 import firstImage from '@/../public/images/first-place.svg';
 import timerBg from '@/../public/images/genesis-timer-bg.png';
+import { default as jitoLogo2, default as jtoImage } from '@/../public/images/jito-logo-2.png';
 import jitoLogo from '@/../public/images/jito-logo.svg';
-import jitoLogo2 from '@/../public/images/jito-logo-2.png';
-import jtoImage from '@/../public/images/jito-logo-2.png';
 import secondImage from '@/../public/images/second-place.svg';
 import thirdImage from '@/../public/images/third-place.svg';
 import xIcon from '@/../public/images/x-black-bg.png';
@@ -95,7 +94,8 @@ const CompetitionBanner = memo(({
                         </span>
                     </>
                 ) : (
-                    'Competition has ended'
+                    <span className="font-boldy tracking-widest text-sm">Competition has ended</span>
+
                 )}
             </div>
 
@@ -498,7 +498,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     // effects
     useEffect(() => {
         if (typeof awakeningData?.weeksPassedSinceStartDate !== 'undefined') {
-            setWeek(awakeningData.weeksPassedSinceStartDate);
+            setWeek(5);
         }
     }, [awakeningData?.weeksPassedSinceStartDate]);
 
