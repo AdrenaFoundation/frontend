@@ -9,7 +9,7 @@ import banner from '@/../public/images/comp-banner.png';
 import discordIcon from '@/../public/images/discord-black.svg';
 import firstImage from '@/../public/images/first-place.svg';
 import timerBg from '@/../public/images/genesis-timer-bg.png';
-import { default as jitoLogo2, default as jtoImage } from '@/../public/images/jito-logo-2.png';
+import jtoImage from '@/../public/images/jito-logo-2.png';
 import jitoLogo from '@/../public/images/jito-logo.svg';
 import secondImage from '@/../public/images/second-place.svg';
 import thirdImage from '@/../public/images/third-place.svg';
@@ -171,7 +171,7 @@ const CompetitionStats = memo(({
                     </div>
 
                     <div className="flex gap-2 items-center justify-center w-full">
-                        <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+                        <Image src={jtoImage} alt="adx logo" width={22} height={22} />
 
                         <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
                     </div>
@@ -185,7 +185,7 @@ const CompetitionStats = memo(({
                     <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
                     <div className="font-boldy text-base ml-1">Airdrop</div>
                     <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
-                    <Image src={jitoLogo2} alt="JTOlogo" width={24} height={24} />
+                    <Image src={jtoImage} alt="JTOlogo" width={24} height={24} />
                     <span className="text-sm text-txtfade font-boldy">)</span>
                     {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') ? (
                         <span className="ml-2 font-boldy text-green">You qualify!</span>
