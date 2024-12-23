@@ -230,7 +230,7 @@ export default function WalletDigger({
 
                 <div className='w-full h-[1px] bg-bcolor mt-2' />
 
-                <div className='flex gap-y-4 mt-2'>
+                <div className='flex gap-y-4 mt-2 flex-wrap'>
                     <NumberDisplay
                         title="LIQUID STAKED ADX"
                         nb={stakingAccounts?.ADX?.liquidStake.amount ? nativeToUi(stakingAccounts.ADX.liquidStake.amount, window.adrena.client.adxToken.decimals) : 0}
