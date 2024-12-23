@@ -24,7 +24,7 @@ import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
 import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
-import shovelMonster from '../../../public/images/shovel.png';
+import shovelMonster from '../../../public/images/shovel-monster.png';
 
 const claimHistoryItemsPerPage = 4;
 
@@ -319,7 +319,7 @@ export default function WalletDigger({
                             </div>
 
                             <div className='flex w-full gap-4 mt-2 flex-wrap'>
-                                <div className='flex flex-col w-[25em] grow'>
+                                <div className='flex flex-col w-[30em] grow'>
                                     <h4 className='ml-4 mt-4 mb-4'>ADX Staking claim history</h4>
 
                                     {paginatedAdxClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
@@ -332,7 +332,7 @@ export default function WalletDigger({
                                     />
                                 </div>
 
-                                <div className='flex flex-col w-[25em] grow'>
+                                <div className='flex flex-col w-[30em] grow'>
                                     <h4 className='ml-4 mt-4 mb-4'>ALP Staking claim history</h4>
 
                                     {paginatedAlpClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
