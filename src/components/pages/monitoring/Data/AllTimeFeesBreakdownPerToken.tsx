@@ -81,6 +81,25 @@ export default function AllTimeFeesBreakdownPerToken({
                     </div>
                   </div>
                 ))}
+
+                <div className='w-full h-[1px] bg-bcolor mt-2 mb-2' />
+
+                <div
+                  className="flex flex-row justify-between items-center"
+                  key={i}
+                >
+                  <p className={twMerge('text-txtfade text-base')}>Total</p>
+
+                  <div key='Total' className="flex">
+                    <NumberDisplay
+                      nb={custody.totalFeeCollected}
+                      precision={0}
+                      format='currency'
+                      className='border-0 p-0 min-h-0'
+                      bodyClassName='text-base'
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           );
