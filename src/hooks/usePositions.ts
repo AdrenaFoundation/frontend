@@ -6,14 +6,12 @@ import {
 } from '@/actions/thunks';
 import type { TokenPricesState } from '@/reducers/streamingTokenPricesReducer';
 import { selectStreamingTokenPricesForTokensStr } from '@/selectors/streamingTokenPrices';
-import { selectWalletAddress } from '@/selectors/wallet';
 import { type RootState, useDispatch, useSelector } from '@/store/store';
 import type { PositionExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
-export default function usePositions() {
+export default function usePositions(walletAddress: string | null) {
   const dispatch = useDispatch();
-  const walletAddress = useSelector(selectWalletAddress);
   const [positions, setPositions] = useState<Array<PositionExtended> | null>(
     null,
   );

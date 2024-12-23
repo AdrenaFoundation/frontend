@@ -1,39 +1,37 @@
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useSelector } from '@/store/store';
 import { PositionHistoryApi, PositionHistoryExtended } from '@/types';
 
 export default function usePositionsHistory({
   walletAddress,
 }: {
-  walletAddress?: string;
+  walletAddress: string | null;
 }): {
   positionsHistory: PositionHistoryExtended[] | null;
   triggerPositionsReload: () => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
-  const wallet = useSelector((s) => s.walletState.wallet);
   const [positionsHistory, setPositionsHistory] = useState<
     PositionHistoryExtended[] | null
   >(null);
 
   const loadPositionsHistory = useCallback(
     async () => {
-      if (!wallet) {
+      if (!walletAddress) {
         return setPositionsHistory(null);
       }
 
       async function fetchPositionsHistory(): Promise<
         PositionHistoryExtended[] | null
       > {
-        if (!wallet) return null;
+        if (!walletAddress) return null;
 
         const tokens = window.adrena.client.tokens;
 
         const response = await fetch(
           `https://datapi.adrena.xyz/position?user_wallet=${
-            walletAddress ? walletAddress : wallet.walletAddress
+            walletAddress
           }&status=liquidate&status=close`,
         );
 
@@ -101,7 +99,7 @@ export default function usePositionsHistory({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [wallet],
+    [walletAddress],
   );
 
   useEffect(() => {

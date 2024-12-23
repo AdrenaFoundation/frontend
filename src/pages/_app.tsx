@@ -178,8 +178,8 @@ function AppComponent({
   const custodies = useCustodies(mainPool);
   const adapters = useWalletAdapters();
   const wallet = useWallet(adapters);
-  const { userProfile, triggerUserProfileReload } = useUserProfile();
   const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
+  const { userProfile, triggerUserProfileReload } = useUserProfile(walletAddress ?? null);
 
   useWatchTokenPrices();
 

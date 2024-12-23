@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { ReactNode, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
+import { WalletStakingAccounts } from '@/hooks/useWalletStakingAccounts';
 import { PositionExtended, UserProfileExtended, VestExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
@@ -37,13 +37,14 @@ export default function UserRelatedAdrenaAccounts({
   userVest,
   positions,
   className,
+  stakingAccounts,
 }: {
   userProfile: false | UserProfileExtended;
   userVest: VestExtended | null;
   positions: PositionExtended[] | null;
   className?: string;
+  stakingAccounts: WalletStakingAccounts | null;
 }) {
-  const { stakingAccounts } = useWalletStakingAccounts();
   const [data, setData] = useState<
     | {
       rowTitle: ReactNode;

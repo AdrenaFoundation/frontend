@@ -71,7 +71,7 @@ export default function Trade({
   showFeesInPnl: boolean;
 }) {
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
-  const positions = usePositions();
+  const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
 
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -395,6 +395,7 @@ export default function Trade({
               {history ? (
                 <div className="flex flex-col w-full p-4">
                   <PositionsHistory
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
                     showFeesInPnl={showFeesInPnl}
                   />
@@ -439,6 +440,7 @@ export default function Trade({
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
                   <PositionsHistory
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
                     showFeesInPnl={showFeesInPnl}
                   />
