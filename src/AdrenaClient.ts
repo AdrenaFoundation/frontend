@@ -720,6 +720,7 @@ export class AdrenaClient {
         minInitialLeverage: 11_000 / BPS,
         maxInitialLeverage: custody.pricing.maxInitialLeverage / BPS,
         owned: nativeToUi(custody.assets.owned, custody.decimals),
+        totalFeeCollected: Object.values(custody.collectedFees).reduce((acc, f) => acc + nativeToUi(f, USD_DECIMALS), 0),
         liquidity: nativeToUi(
           custody.assets.owned.sub(custody.assets.locked),
           custody.decimals,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
@@ -20,6 +20,7 @@ export default function UnlockStakingChart({
 }) {
   const [timingMode, setTimingMode] = useState<'days' | 'weeks' | 'months'>('weeks');
   const [infoMode, setInfoMode] = useState<'count' | 'volume'>('volume');
+  const [periodMode, setPeriodMode] = useState<'7D' | '1M' | '3M' | '6M' | 'All Time'>('All Time');
   const [data, setData] = useState<{
     period: string;
     count: number;
@@ -40,21 +41,27 @@ export default function UnlockStakingChart({
       allStakingStats.byRemainingTime[stakingType]
         .sort((a, b) => a.endTime - b.endTime) // Sort by end time
         .reduce((acc, { endTime, tokenAmount }) => {
-          const remainingDays = Math.floor((endTime - now) / divider); // Calculate period remaining
+          // Check if it's within bounds
+          if (periodMode === '7D' && endTime > now + 7 * 24 * 60 * 60) return acc;
+          if (periodMode === '1M' && endTime > now + 30 * 24 * 60 * 60) return acc;
+          if (periodMode === '3M' && endTime > now + 90 * 24 * 60 * 60) return acc;
+          if (periodMode === '6M' && endTime > now + 180 * 24 * 60 * 60) return acc;
 
-          if (!acc[remainingDays]) {
-            acc[remainingDays] = { period: `${remainingDays}`, count: 0, volume: 0 }; // Initialize group
+          const remaining = Math.floor((endTime - now) / divider); // Calculate period remaining
+
+          if (!acc[remaining]) {
+            acc[remaining] = { period: `${remaining}`, count: 0, volume: 0 }; // Initialize group
           }
 
-          acc[remainingDays].count += 1;
-          acc[remainingDays].volume += tokenAmount;
+          acc[remaining].count += 1;
+          acc[remaining].volume += tokenAmount;
 
           return acc;
         }, {} as Record<string, { period: string; count: number, volume: number }>)
     );
 
     setData(Object.values(groupedData));
-  }, [allStakingStats, stakingType, timingMode]);;
+  }, [allStakingStats, stakingType, timingMode, periodMode]);
 
   if (!data || !data.length) {
     return (
@@ -81,6 +88,19 @@ export default function UnlockStakingChart({
           <div className={twMerge('text-sm cursor-pointer hover:opacity-100', infoMode === 'volume' ? 'opacity-90' : 'opacity-50')} onClick={() => setInfoMode('volume')}>Volume</div>
           <div className='text-sm text-txtfade'>{'/'}</div>
           <div className={twMerge('text-sm cursor-pointer hover:opacity-100', infoMode === 'count' ? 'opacity-90' : 'opacity-50')} onClick={() => setInfoMode('count')}>Count</div>
+        </div>
+
+        <div className='flex gap-2'>
+          <div className='text-sm text-txtfade'>next</div>
+          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '7D' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('7D')}>7D</div>
+          <div className='text-sm text-txtfade'>{'/'}</div>
+          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '1M' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('1M')}>1M</div>
+          <div className='text-sm text-txtfade'>{'/'}</div>
+          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '3M' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('3M')}>3M</div>
+          <div className='text-sm text-txtfade'>{'/'}</div>
+          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '6M' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('6M')}>6M</div>
+          <div className='text-sm text-txtfade'>{'/'}</div>
+          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === 'All Time' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('All Time')}>All Time</div>
         </div>
       </div>
 
