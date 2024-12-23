@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../public/images/adx.svg';
@@ -10,7 +10,6 @@ import discordIcon from '@/../public/images/discord-black.svg';
 import firstImage from '@/../public/images/first-place.svg';
 import timerBg from '@/../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../public/images/jito-logo.svg';
-import jitoLogo2 from '@/../public/images/jito-logo-2.png';
 import jtoImage from '@/../public/images/jito-logo-2.png';
 import secondImage from '@/../public/images/second-place.svg';
 import thirdImage from '@/../public/images/third-place.svg';
@@ -95,7 +94,8 @@ const CompetitionBanner = memo(({
                         </span>
                     </>
                 ) : (
-                    'Competition has ended'
+                    <span className="font-boldy tracking-widest text-sm">Competition has ended</span>
+
                 )}
             </div>
 
@@ -171,7 +171,7 @@ const CompetitionStats = memo(({
                     </div>
 
                     <div className="flex gap-2 items-center justify-center w-full">
-                        <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+                        <Image src={jtoImage} alt="adx logo" width={22} height={22} />
 
                         <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
                     </div>
@@ -185,7 +185,7 @@ const CompetitionStats = memo(({
                     <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
                     <div className="font-boldy text-base ml-1">Airdrop</div>
                     <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
-                    <Image src={jitoLogo2} alt="JTOlogo" width={24} height={24} />
+                    <Image src={jtoImage} alt="JTOlogo" width={24} height={24} />
                     <span className="text-sm text-txtfade font-boldy">)</span>
                     {eligibleJitosolAirdropWallets.includes(wallet?.walletAddress ?? '') ? (
                         <span className="ml-2 font-boldy text-green">You qualify!</span>
@@ -498,7 +498,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     // effects
     useEffect(() => {
         if (typeof awakeningData?.weeksPassedSinceStartDate !== 'undefined') {
-            setWeek(awakeningData.weeksPassedSinceStartDate);
+            setWeek(5);
         }
     }, [awakeningData?.weeksPassedSinceStartDate]);
 
