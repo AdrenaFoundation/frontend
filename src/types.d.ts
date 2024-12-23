@@ -94,6 +94,7 @@ export type CustodyExtended = {
   maxRatio: number;
   minRatio: number;
   owned: number;
+  totalFeeCollected: number;
   // Expressed in tokens
   // Do liquidity * tokenPrice to get liquidityUsd
   liquidity: number;
