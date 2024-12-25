@@ -39,10 +39,6 @@ export default function LockedStakesDuration({
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const lockedStakesPerPage = 3;
 
-  if (lockedStakes.length === 0) {
-    return null;
-  }
-
   const decimals = lockedStakes[0].tokenSymbol === 'ADX' ? window.adrena.client.adxToken.decimals : window.adrena.client.alpToken.decimals;
 
   const totalStaked = lockedStakes.reduce((acc, lockedStake) => {
@@ -99,6 +95,10 @@ export default function LockedStakesDuration({
       clearInterval(interval);
     };
   }, [calculateTimeRemainingFirstUnlock]);
+
+  if (lockedStakes.length === 0) {
+    return null;
+  }
 
   return (
     <div
