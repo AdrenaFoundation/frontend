@@ -1,6 +1,6 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -77,6 +77,28 @@ export default function LockedStakesDuration({
     (lockedStakesPage - 1) * lockedStakesPerPage,
     lockedStakesPage * lockedStakesPerPage,
   );
+
+  const [timeRemainingFirstUnlock, setTimeRemainingFirstUnlock] = useState<number | null>(null);
+
+  const calculateTimeRemainingFirstUnlock = useCallback(() => {
+    if (firstUnlock === null) return;
+
+    const timeRemaining = firstUnlock * 1000 - Date.now();
+
+    setTimeRemainingFirstUnlock(timeRemaining);
+  }, [firstUnlock]);
+
+  useEffect(() => {
+    calculateTimeRemainingFirstUnlock();
+
+    const interval = setInterval(() => {
+      calculateTimeRemainingFirstUnlock();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [calculateTimeRemainingFirstUnlock]);
 
   return (
     <div
@@ -310,17 +332,17 @@ export default function LockedStakesDuration({
             }}
           />
 
-          {firstUnlock !== null && firstUnlock * 1000 - Date.now() <= 0 ? <Button
+          {timeRemainingFirstUnlock !== null && timeRemainingFirstUnlock <= 0 ? <Button
             variant="outline"
             size="xs"
             title="Redeem"
             className="rounded-none py-2 border-b-0 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
             onClick={() => {
-              handleClickOnFinalizeLockedRedeem(lockedStakes[0], false)
+              handleRedeem(lockedStakes[0], false)
             }}
           /> : null}
 
-          {!lockedStakes[0].isGenesis ? (
+          {!lockedStakes[0].isGenesis && (timeRemainingFirstUnlock === null || timeRemainingFirstUnlock > 0) ? (
             <Tippy
               disabled={lockedStakes[0].qualifiedForRewardsInResolvedRoundCount !== 0}
               content={
