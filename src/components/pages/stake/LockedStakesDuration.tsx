@@ -310,6 +310,16 @@ export default function LockedStakesDuration({
             }}
           />
 
+          {firstUnlock !== null && firstUnlock * 1000 - Date.now() <= 0 ? <Button
+            variant="outline"
+            size="xs"
+            title="Redeem"
+            className="rounded-none py-2 border-b-0 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+            onClick={() => {
+              handleClickOnFinalizeLockedRedeem(lockedStakes[0], false)
+            }}
+          /> : null}
+
           {!lockedStakes[0].isGenesis ? (
             <Tippy
               disabled={lockedStakes[0].qualifiedForRewardsInResolvedRoundCount !== 0}
