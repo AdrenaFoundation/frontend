@@ -6,17 +6,27 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import AllStakingChartADX from '@/components/pages/global/AllStakingChart/AllStakingChartADX';
 import AllStakingChartALP from '@/components/pages/global/AllStakingChart/AllStakingChartALP';
 import UnlockStakingChart from '@/components/pages/global/AllStakingChart/UnlockStakingChart';
+import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
+import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
+import StakingChart from '@/components/pages/global/Staking/StakingChart';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 
-export default function AllStaking() {
+export default function AllStaking({ isSmallScreen }: { isSmallScreen: boolean }) {
     const { allStakingStats } = useAllStakingStats();
     const totalSupplyADX = useADXTotalSupply();
     const totalSupplyALP = useALPTotalSupply();
 
     return (
-        <div>
+        <div className="flex flex-col gap-2 p-2 items-center justify-center">
+            <StyledContainer className="p-4">
+                <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+                    <AprLpChart isSmallScreen={isSmallScreen} />
+                    <AprLmChart isSmallScreen={isSmallScreen} />
+                </div>
+            </StyledContainer>
+
             <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
                 <div className='flex flex-col items-center justify-center gap-1'>
                     <h2 className='flex'>STAKED ADX</h2>
@@ -129,6 +139,14 @@ export default function AllStaking() {
 
                     <div className='w-full flex h-[20em]'>
                         <UnlockStakingChart allStakingStats={allStakingStats} stakingType="ALP" />
+                    </div>
+                </div>
+
+                <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
+                    <h2 className='flex'>LOCKED STAKE REPARTITION</h2>
+
+                    <div className='w-full flex h-[20em]'>
+                        <StakingChart />
                     </div>
                 </div>
             </StyledContainer >

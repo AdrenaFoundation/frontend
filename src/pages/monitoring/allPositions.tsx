@@ -8,6 +8,8 @@ import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
+import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
+import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import { useAllPositions } from '@/hooks/useAllPositions';
@@ -18,11 +20,7 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
 
-export default function AllPositions({
-    showFeesInPnl,
-}: {
-    showFeesInPnl: boolean;
-}) {
+export default function AllPositions({ showFeesInPnl, isSmallScreen }: { showFeesInPnl: boolean, isSmallScreen: boolean }) {
     const wallet = useSelector((state) => state.walletState.wallet);
 
     const connected = !!wallet;
@@ -216,6 +214,13 @@ export default function AllPositions({
                         headerClassName="pb-2"
                         titleClassName="text-[0.7em] sm:text-[0.7em]"
                     />
+                </div>
+            </StyledContainer>
+
+            <StyledContainer className="flex gap-6">
+                <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+                    <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+                    <RealizedPnlChart isSmallScreen={isSmallScreen} />
                 </div>
             </StyledContainer>
 

@@ -109,15 +109,6 @@ export default function Flow({
         )}
       </div>
 
-      <ActivityCalendar
-        data={activityCalendarData}
-        setStartDate={setStartDate}
-        setEndDate={setEndDate}
-        bubbleBy={bubbleBy}
-        setBubbleBy={setBubbleBy}
-        setSelectedRange={setSelectedRange}
-      />
-
       <div className="flex flex-col lg:flex-row gap-3">
         {groupedStats &&
           Object.entries(groupedStats).map(([symbol, symbolStats]) => (
@@ -262,6 +253,15 @@ export default function Flow({
             </div>
           ))}
       </div>
+
+      <ActivityCalendar
+        data={activityCalendarData}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        bubbleBy={bubbleBy}
+        setBubbleBy={setBubbleBy}
+        setSelectedRange={setSelectedRange}
+      />
     </StyledContainer>
   );
 }

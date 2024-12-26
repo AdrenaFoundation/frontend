@@ -116,7 +116,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
   return (
     <StakedBarRechart
-      title={'Fees'}
+      title={'Daily Fees'}
       data={chartData}
       labels={[
         {

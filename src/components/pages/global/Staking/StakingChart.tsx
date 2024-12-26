@@ -108,12 +108,6 @@ export default function StakingChart() {
 
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
-      <div className="flex mb-3 justify-between items-center">
-        <div className="flex flex-row gap-3 items-center">
-          <h2 className="">ADX/ALP STAKING</h2>
-        </div>
-      </div>
-
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />

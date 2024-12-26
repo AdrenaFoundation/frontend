@@ -110,7 +110,7 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
 
   return (
     <StakedBarRechart
-      title={'Volume'}
+      title={'Daily Volume'}
       data={chartData}
       labels={[
         {
