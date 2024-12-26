@@ -3020,6 +3020,16 @@ export class AdrenaClient {
 
     const stakedTokenAccount = findATAAddressSync(owner, stakedTokenMint);
 
+    if (!(await isAccountInitialized(this.connection, stakedTokenAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: stakedTokenAccount,
+          mint: stakedTokenMint,
+          owner,
+        }),
+      );
+    }
+
     const transaction = await this.adrenaProgram.methods
       .removeLockedStake({
         lockedStakeIndex,
