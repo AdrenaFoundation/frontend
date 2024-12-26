@@ -1,5 +1,4 @@
-import { BN, ProgramAccount } from '@coral-xyz/anchor';
-import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { AnchorProvider, BN, Program, ProgramAccount, Wallet } from '@coral-xyz/anchor';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountIdempotentInstruction,
@@ -63,6 +62,7 @@ import {
   Vest,
   VestExtended,
   VestRegistry,
+  WalletAdapterExtended,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -623,15 +623,14 @@ export class AdrenaClient {
           total + custody.nativeObject.longPositions.openPositions.toNumber(),
         0,
       ),
-      nbOpenShortPositions: custodies.reduce(
-        (total, custody) => {
-          // Do not double count
-          if (custody.isStable) return total;
+      nbOpenShortPositions: custodies.reduce((total, custody) => {
+        // Do not double count
+        if (custody.isStable) return total;
 
-          return total + custody.nativeObject.shortPositions.openPositions.toNumber();
-        },
-        0,
-      ),
+        return (
+          total + custody.nativeObject.shortPositions.openPositions.toNumber()
+        );
+      }, 0),
       custodies: custodiesAddresses,
       //
       nativeObject: mainPool,
@@ -673,9 +672,8 @@ export class AdrenaClient {
       (custody) => !custody.equals(PublicKey.default),
     );
 
-    const result = await adrenaProgram.account.custody.fetchMultiple(
-      custodiesAddresses,
-    );
+    const result =
+      await adrenaProgram.account.custody.fetchMultiple(custodiesAddresses);
 
     // No custodies should be null
     if (result.find((c) => c === null)) {
@@ -722,6 +720,7 @@ export class AdrenaClient {
         minInitialLeverage: 11_000 / BPS,
         maxInitialLeverage: custody.pricing.maxInitialLeverage / BPS,
         owned: nativeToUi(custody.assets.owned, custody.decimals),
+        totalFeeCollected: Object.values(custody.collectedFees).reduce((acc, f) => acc + nativeToUi(f, USD_DECIMALS), 0),
         liquidity: nativeToUi(
           custody.assets.owned.sub(custody.assets.locked),
           custody.decimals,
@@ -1899,9 +1898,11 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const transaction = await (position.side === 'long'
-      ? this.buildAddCollateralLongTx.bind(this)
-      : this.buildAddCollateralShortTx.bind(this))({
+    const transaction = await (
+      position.side === 'long'
+        ? this.buildAddCollateralLongTx.bind(this)
+        : this.buildAddCollateralShortTx.bind(this)
+    )({
       position,
       collateralAmount: addedCollateral,
     })
@@ -2227,16 +2228,14 @@ export class AdrenaClient {
 
   // null = not ready
   // false = no vest
-  public async loadUserVest(): Promise<VestExtended | false | null> {
-    if (!this.adrenaProgram || !this.connection) {
+  public async loadUserVest(walletAddress: PublicKey): Promise<VestExtended | false | null> {
+    if (!this.readonlyAdrenaProgram) {
       return null;
     }
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    const userVestPda = this.getUserVestPda(walletAddress);
 
-    const userVestPda = this.getUserVestPda(wallet.publicKey);
-
-    const vest = await this.adrenaProgram.account.vest.fetchNullable(
+    const vest = await this.readonlyAdrenaProgram.account.vest.fetchNullable(
       userVestPda,
     );
 
@@ -2348,13 +2347,13 @@ export class AdrenaClient {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
   }): Promise<UserStakingExtended | null> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram || !this.readonlyConnection) {
       throw new Error('adrena program not ready');
     }
     const stakingPda = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, stakingPda);
 
-    const account = await this.adrenaProgram.account.userStaking.fetchNullable(
+    const account = await this.readonlyAdrenaProgram.account.userStaking.fetchNullable(
       userStaking,
       'processed',
     );
@@ -3963,6 +3962,26 @@ export class AdrenaClient {
     return nativeToUi(entryPrice.add(maxPriceDiffScaled), PRICE_DECIMALS);
   }
 
+  public calculateBreakEvenPrice({
+    side,
+    price,
+    exitFeeUsd,
+    unrealizedInterestUsd,
+    sizeUsd,
+  }: {
+    side: 'long' | 'short';
+    price: number;
+    exitFeeUsd: number;
+    unrealizedInterestUsd: number;
+    sizeUsd: number;
+  }): number {
+    if (side === 'long') {
+      return price * (1 + (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
+    }
+
+    return price * (1 - (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
+  }
+
   public getPossiblePositionAddresses(user: PublicKey): PublicKey[] {
     return this.tokens.reduce((acc, token) => {
       if (!token.custody) return acc;
@@ -4020,6 +4039,8 @@ export class AdrenaClient {
       currentLeverage: null,
       token,
       collateralToken,
+      openDate: new Date(position.openTime.toNumber() * 1000),
+      updatedDate: new Date(position.updateTime.toNumber() * 1000),
       side,
       sizeUsd,
       size: nativeToUi(position.lockedAmount, token.decimals),
@@ -4045,6 +4066,7 @@ export class AdrenaClient {
         : null,
       takeProfitIsSet: position.takeProfitIsSet === 1,
       breakEvenPrice,
+      unrealizedInterestUsd,
       //
       nativeObject: position,
     };
@@ -4119,6 +4141,20 @@ export class AdrenaClient {
           return acc;
         }
 
+        const side =
+          positionAccount.side === 1 ? 'long' : ('short' as 'long' | 'short');
+        const sizeUsd = nativeToUi(positionAccount.sizeUsd, USD_DECIMALS);
+        const price = nativeToUi(positionAccount.price, PRICE_DECIMALS);
+        const exitFeeUsd = nativeToUi(positionAccount.exitFeeUsd, USD_DECIMALS);
+        const unrealizedInterestUsd = nativeToUi(
+          positionAccount.unrealizedInterestUsd,
+          USD_DECIMALS,
+        );
+        const collateralUsd = nativeToUi(
+          positionAccount.collateralUsd,
+          USD_DECIMALS,
+        );
+
         return [
           ...acc,
           {
@@ -4126,28 +4162,29 @@ export class AdrenaClient {
             collateralCustody: positionAccount.collateralCustody,
             owner: positionAccount.owner,
             pubkey: positionPubkey,
-            initialLeverage:
-              nativeToUi(positionAccount.sizeUsd, USD_DECIMALS) /
-              nativeToUi(positionAccount.collateralUsd, USD_DECIMALS),
+            initialLeverage: sizeUsd / collateralUsd,
             currentLeverage: null,
             token,
             collateralToken,
-            side: (positionAccount.side === 1 ? 'long' : 'short') as
-              | 'long'
-              | 'short',
-            sizeUsd: nativeToUi(positionAccount.sizeUsd, USD_DECIMALS),
+            side,
+            openDate: new Date(positionAccount.openTime.toNumber() * 1000),
+            updatedDate: new Date(positionAccount.updateTime.toNumber() * 1000),
+            sizeUsd,
             size: nativeToUi(positionAccount.lockedAmount, token.decimals),
-            collateralUsd: nativeToUi(
-              positionAccount.collateralUsd,
-              USD_DECIMALS,
-            ),
-            price: nativeToUi(positionAccount.price, PRICE_DECIMALS),
-            breakEvenPrice: 0,
+            collateralUsd,
+            price,
+            breakEvenPrice: this.calculateBreakEvenPrice({
+              side,
+              price,
+              exitFeeUsd,
+              unrealizedInterestUsd,
+              sizeUsd,
+            }),
             collateralAmount: nativeToUi(
               positionAccount.collateralAmount,
               collateralToken.decimals,
             ),
-            exitFeeUsd: nativeToUi(positionAccount.exitFeeUsd, USD_DECIMALS),
+            exitFeeUsd,
             liquidationFeeUsd: nativeToUi(
               positionAccount.liquidationFeeUsd,
               USD_DECIMALS,
@@ -4168,6 +4205,7 @@ export class AdrenaClient {
               ? nativeToUi(positionAccount.takeProfitLimitPrice, PRICE_DECIMALS)
               : null,
             takeProfitIsSet: positionAccount.takeProfitIsSet === 1,
+            unrealizedInterestUsd,
             //
             nativeObject: positionAccount,
           },
@@ -4747,7 +4785,7 @@ export class AdrenaClient {
     let priorityFeeMicroLamports: number =
       DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet as (Wallet & WalletAdapterExtended);
 
     let latestBlockHash: {
       blockhash: Blockhash;
@@ -4854,8 +4892,15 @@ export class AdrenaClient {
 
     // Adjust compute unit limit
     if (computeUnitUsed !== undefined) {
+      let computeUnitToUse = computeUnitUsed * 1.05; // Add 5% of compute unit to avoid any issues in between simulation and actual execution
+
+      // Solflare add two instructions to the end of the transaction, which cost compute units. Needs to take it into account
+      if (wallet.walletName === 'Solflare') {
+        computeUnitToUse += 12000;
+      }
+
       transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-        units: computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
+        units: computeUnitToUse,
       });
     }
 

@@ -40,8 +40,20 @@ export const calculatePnLandLiquidationPrice = (
     position,
   });
 
+  const breakEvenPrice = window.adrena.client.calculateBreakEvenPrice({
+    side: position.side,
+    price: position.price,
+    exitFeeUsd: position.exitFeeUsd,
+    unrealizedInterestUsd: position.unrealizedInterestUsd,
+    sizeUsd: position.sizeUsd,
+  });
+
   if (liquidationPrice !== null) {
     position.liquidationPrice = liquidationPrice;
+  }
+
+  if (breakEvenPrice !== null) {
+    position.breakEvenPrice = breakEvenPrice;
   }
 };
 
@@ -247,11 +259,14 @@ export const fetchWalletTokenBalances =
 
     dispatch(
       setWalletTokenBalances(
-        balances.reduce((acc, balance, index) => {
-          acc[tokens[index].symbol] = balance;
+        balances.reduce(
+          (acc, balance, index) => {
+            acc[tokens[index].symbol] = balance;
 
-          return acc;
-        }, {} as Record<TokenSymbol, number | null>),
+            return acc;
+          },
+          {} as Record<TokenSymbol, number | null>,
+        ),
       ),
     );
   };

@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { useSelector } from '@/store/store';
 import { ClaimHistoryApi, ClaimHistoryExtended } from '@/types';
 
-export default function useClaimHistory(): {
+export default function useClaimHistory(walletAddress: string | null): {
   claimsHistoryAdx: ClaimHistoryExtended[] | null;
   claimsHistoryAlp: ClaimHistoryExtended[] | null;
   optimisticClaimAdx: ClaimHistoryExtended[];
@@ -12,7 +11,6 @@ export default function useClaimHistory(): {
   setOptimisticClaimAlp: (claims: ClaimHistoryExtended[]) => void;
   triggerClaimsReload: () => void;
 } {
-  const wallet = useSelector((s) => s.walletState.wallet);
   const [claimsHistoryAdx, setClaimsHistoryAdx] = useState<
     ClaimHistoryExtended[] | null
   >(null);
@@ -28,10 +26,10 @@ export default function useClaimHistory(): {
   >([]);
 
   async function fetchClaimsHistory(): Promise<ClaimHistoryExtended[] | null> {
-    if (!wallet) return null;
+    if (!walletAddress) return null;
 
     const response = await fetch(
-      `https://datapi.adrena.xyz/claim?user_wallet=${wallet.walletAddress}&start_date=2024-09-01T00:00:00Z`,
+      `https://datapi.adrena.xyz/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
     );
 
     if (!response.ok) {
@@ -74,7 +72,7 @@ export default function useClaimHistory(): {
   }
 
   const loadClaimsHistory = useCallback(async () => {
-    if (!wallet) {
+    if (!walletAddress || !window.adrena.client.readonlyConnection) {
       setClaimsHistoryAdx(null);
       setClaimsHistoryAlp(null);
       return;
@@ -99,7 +97,7 @@ export default function useClaimHistory(): {
       throw e;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
+  }, [walletAddress, window.adrena.client.readonlyConnection]);
 
   useEffect(() => {
     loadClaimsHistory();

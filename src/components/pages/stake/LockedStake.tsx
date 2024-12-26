@@ -12,12 +12,14 @@ import RemainingTimeToDate from '../monitoring/RemainingTimeToDate';
 export default function LockedStake({
   lockedStake,
   className,
+  readonly = false,
   handleRedeem,
   handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
 }: {
   lockedStake: LockedStakeExtended;
   className?: string;
+  readonly?: boolean;
   handleRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
   handleClickOnFinalizeLockedRedeem: (
     lockedStake: LockedStakeExtended,
@@ -47,7 +49,7 @@ export default function LockedStake({
 
   return (
     <div key={lockedStake.id.toString()} className={twMerge('flex flex-col p-2 w-full', className)}>
-      <div className='flex w-full items-center gap-4 pb-4 sm:pb-2 sm:pl-2 sm:pr-2 flex-col sm:flex-row'>
+      <div className={twMerge('flex w-full items-center gap-4 pb-4 sm:pl-2 sm:pr-2 flex-col sm:flex-row', !readonly ? 'sm:pb-2' : 'sm:pb-0')}>
         <div className='font-boldy text-xs border w-full sm:rounded-xl sm:w-16 h-6 items-center justify-center bg-[#1e272e] flex text-txtfade'>Stake #{lockedStake.index}</div>
 
         <div className='ml-0 flex gap-0 items-center'>
@@ -71,7 +73,7 @@ export default function LockedStake({
         </div>
       </div>
 
-      <div className='flex w-full gap-2'>
+      {!readonly ? <div className='flex w-full gap-2'>
         {timeRemaining !== null && timeRemaining <= 0 ? <Button
           variant="secondary"
           size="lg"
@@ -113,7 +115,7 @@ export default function LockedStake({
               </div>
             </Tippy>) : null}
         </>}
-      </div>
+      </div> : null}
     </div>
   );
 }

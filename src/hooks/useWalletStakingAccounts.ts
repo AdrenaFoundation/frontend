@@ -1,7 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useSelector } from '@/store/store';
 import { UserStakingExtended } from '@/types';
 
 export type WalletStakingAccounts = {
@@ -9,11 +8,10 @@ export type WalletStakingAccounts = {
   ALP: UserStakingExtended | null;
 };
 
-export default function useWalletStakingAccounts(): {
+export default function useWalletStakingAccounts(walletAddress: string | null): {
   stakingAccounts: WalletStakingAccounts | null;
   triggerWalletStakingAccountsReload: () => void;
 } {
-  const wallet = useSelector((s) => s.walletState.wallet);
   const [triggerCount, setTriggerCount] = useState<number>(0);
 
   const [stakingAccounts, setStakingAccounts] = useState<{
@@ -22,11 +20,11 @@ export default function useWalletStakingAccounts(): {
   } | null>(null);
 
   const getUserStakingAccount = useCallback(async () => {
-    if (!wallet || !wallet.walletAddress || !window.adrena.client.connection) {
+    if (!walletAddress || !window.adrena.client.readonlyConnection) {
       return;
     }
 
-    const owner = new PublicKey(wallet.walletAddress);
+    const owner = new PublicKey(walletAddress);
 
     const [adxStakingAccount, alpStakingAccount] = await Promise.all([
       window.adrena.client.getUserStakingAccount({
@@ -44,14 +42,14 @@ export default function useWalletStakingAccounts(): {
       ADX: adxStakingAccount,
       ALP: alpStakingAccount,
     });
-  }, [wallet]);
+  }, [walletAddress]);
 
   useEffect(() => {
     getUserStakingAccount();
 
     // trigger also when connection change in case the call happens before everything is set up
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getUserStakingAccount, window.adrena.client.connection, triggerCount]);
+  }, [getUserStakingAccount, window.adrena.client.readonlyConnection, triggerCount]);
 
   return {
     stakingAccounts,

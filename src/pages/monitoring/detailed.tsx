@@ -115,7 +115,7 @@ export default function DetailedMonitoring({
   }));
 
   return (
-    <div className="border bg-secondary rounded-lg overflow-hidden m-2">
+    <div className="border bg-secondary rounded-lg overflow-hidden">
       <TabSelect
         wrapperClassName="hidden md:flex gap-6 border-b p-3 pb-0 select-none mb-3"
         titleClassName="whitespace-nowrap text-sm"

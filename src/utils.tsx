@@ -81,7 +81,7 @@ export function findATAAddressSync(
 }
 
 // Transfer 12/25 into 25 December
-export function formatToWeekOf(dateString: string, weeksAgo = 0): string {
+export function formatToWeekOf(dateString: string, weeksOffset = 0): string {
   // Parse the date string (MM/DD format) as UTC in the current year
   const [month, day] = dateString.split("/").map(Number);
   const currentYear = new Date().getFullYear();
@@ -90,13 +90,28 @@ export function formatToWeekOf(dateString: string, weeksAgo = 0): string {
   const date = new Date(Date.UTC(currentYear, month - 1, day));
 
   // Subtract weeks (7 days per week) if weeksAgo is provided
-  date.setUTCDate(date.getUTCDate() - weeksAgo * 7);
+  date.setUTCDate(date.getUTCDate() + weeksOffset * 7);
 
   // Format the updated date
   const dayOfMonth = date.getUTCDate();
   const monthName = date.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
 
   return `${dayOfMonth} ${monthName}`;
+}
+
+export function getLastMondayUTC(): Date {
+  const now = new Date();
+  const dayOfWeek = now.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Days since the last Monday
+
+  const lastMonday = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - diffToMonday, // Go back to last Monday
+    0, 0, 0
+  ));
+
+  return lastMonday;
 }
 
 export function getLastSundayUTC(): Date {
@@ -112,7 +127,7 @@ export function getLastSundayUTC(): Date {
   ));
 
   return lastSunday;
-};
+}
 
 export function formatNumber(
   nb: number,
@@ -127,10 +142,12 @@ export function formatNumber(
     precision = minimumFractionDigits;
   }
 
-  return Number(nb.toFixed(precision)).toLocaleString(undefined, {
-    minimumFractionDigits,
-    maximumFractionDigits: precision,
-  });
+  return Number(nb.toFixed(precision)).toLocaleString(
+    'en-US'
+    , {
+      minimumFractionDigits,
+      maximumFractionDigits: precision,
+    });
 }
 
 export function formatPriceInfo(
@@ -177,17 +194,20 @@ export function formatGraphCurrency({ tickItem, maxDecimals = 0, maxDecimalsIfTo
 
   let num;
   if (absValue > 999_999_999) {
-    num = (absValue / 1_000_000_000).toFixed(maxDecimals) + 'B';
+    const billions = absValue / 1_000_000_000;
+    num = (billions % 1 === 0 ? Math.floor(billions) : billions.toFixed(2)) + 'B';
   } else if (absValue > 999_999) {
-    num = (absValue / 1_000_000).toFixed(maxDecimals) + 'M';
+    const millions = absValue / 1_000_000;
+    num = (millions % 1 === 0 ? Math.floor(millions) : millions.toFixed(2)) + 'M';
   } else if (absValue > 999) {
-    num = (absValue / 1_000).toFixed(maxDecimals) + 'K';
+    const thousands = absValue / 1_000;
+    num = (thousands % 1 === 0 ? Math.floor(thousands) : thousands.toFixed(maxDecimals)) + 'K';
   } else if (absValue < 100) {
-    num = absValue.toFixed(maxDecimalsIfToken);
+    num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(maxDecimalsIfToken);
   } else if (absValue <= 999) {
-    num = absValue.toFixed(2);
+    num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(2);
   } else {
-    num = String(absValue);
+    num = String(Math.floor(absValue));
   }
 
   return isNegative ? `-$${num}` : `$${num}`;
@@ -873,6 +893,32 @@ export const getMinutesBetweenDates = (date1: Date, date2: Date) => {
 export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor((diffTime % (1000 * 60)) / 1000);
+}
+
+export function getFullTimeDifference(date1: Date, date2: Date) {
+  return {
+    days: getDaysBetweenDates(date1, date2),
+    hours: getHoursBetweenDates(date1, date2),
+    minutes: getMinutesBetweenDates(date1, date2),
+    seconds: getSecondsBetweenDates(date1, date2)
+  };
+}
+
+export function formatTimeDifference(diff: {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}) {
+  if (diff.days > 0) {
+    return `${diff.days.toString().padStart(2, '0')}d ${diff.hours.toString().padStart(2, '0')}h ${diff.minutes.toString().padStart(2, '0')}m`;
+  }
+
+  if (diff.hours > 0) {
+    return `${diff.hours.toString().padStart(2, '0')}h ${diff.minutes.toString().padStart(2, '0')}m ${diff.seconds.toString().padStart(2, '0')}s`;
+  }
+
+  return `${diff.minutes.toString().padStart(2, '0')}m ${diff.seconds.toString().padStart(2, '0')}s`;
 }
 
 export const isValidPublicKey = (key: string) => {

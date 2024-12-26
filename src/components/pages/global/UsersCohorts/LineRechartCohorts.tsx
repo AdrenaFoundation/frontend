@@ -49,7 +49,7 @@ export default function LineRechartCohorts({
           content={
             <CustomRechartsToolTip
               labelCustomization={(label: string) => {
-                return `from ${formatToWeekOf(label, 1)} to ${formatToWeekOf(label)}`;
+                return `from ${formatToWeekOf(label)} to ${formatToWeekOf(label, 1)}`;
               }}
               isValueOnly={labels.length === 1}
               format={format}
