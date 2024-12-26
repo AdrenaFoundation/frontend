@@ -9,6 +9,7 @@ import Select from '@/components/common/Select/Select';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
+import TopTraders from '@/components/pages/monitoring/TopTraders';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
 
@@ -253,6 +254,11 @@ export default function Flow({
             </div>
           ))}
       </div>
+
+      <TopTraders
+        startDate={startDate}
+        endDate={endDate}
+      />
 
       <ActivityCalendar
         data={activityCalendarData}

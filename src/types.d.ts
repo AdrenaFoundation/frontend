@@ -414,6 +414,18 @@ export type PositionHistoryExtended = {
   final_collateral_amount: number; // Final collateral amount before close
 };
 
+export type Trader = {
+  user_pubkey: string;
+  realized_pnl: number;
+  pnl: number;
+  volume: number;
+  fees: number;
+  borrow_fees: number;
+  exit_fees: number;
+  number_positions: number;
+  number_transactions: number;
+};
+
 export type PositionHistoryApi = {
   position_id: number;
   user_id: number;
