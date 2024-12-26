@@ -37,7 +37,7 @@ export default function Flow({
 
   return (
     <StyledContainer className="rounded-lg overflow-hidden p-5">
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-secondary border border-gray-600 rounded p-2 text-sm items-center">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-secondary border border-gray-800 rounded p-2 text-sm items-center max-w-md">
         <Select
           onSelect={(value) => {
             setSelectedRange(value);
@@ -75,7 +75,7 @@ export default function Flow({
             { title: 'All Time' },
             { title: 'Last Month' },
             { title: 'Last Week' },
-            { title: 'Yesterday' },
+            { title: 'Last Day' },
             { title: 'Custom' },
           ]}
           selected={selectedRange}
@@ -108,15 +108,6 @@ export default function Flow({
           </>
         )}
       </div>
-
-      <ActivityCalendar
-        data={activityCalendarData}
-        setStartDate={setStartDate}
-        setEndDate={setEndDate}
-        bubbleBy={bubbleBy}
-        setBubbleBy={setBubbleBy}
-        setSelectedRange={setSelectedRange}
-      />
 
       <div className="flex flex-col lg:flex-row gap-3">
         {groupedStats &&
@@ -262,6 +253,15 @@ export default function Flow({
             </div>
           ))}
       </div>
+
+      <ActivityCalendar
+        data={activityCalendarData}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        bubbleBy={bubbleBy}
+        setBubbleBy={setBubbleBy}
+        setSelectedRange={setSelectedRange}
+      />
     </StyledContainer>
   );
 }

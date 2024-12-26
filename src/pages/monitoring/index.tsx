@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
@@ -19,9 +20,9 @@ import WalletDigger from './walletDigger';
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesInPnl: boolean } & PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
+  const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
 
-  type MonitorViews = 'lite' | 'full' | 'livePositions' | 'userProfiles' | 'allStaking' | 'flows' | 'walletDigger';
-
+  type MonitorViews = 'lite' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'full' | 'walletDigger';
   const [view, setView] = useState<
     MonitorViews
   >('lite');
@@ -30,8 +31,8 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
   >('lite');
 
   const monitorViewsNames: Record<MonitorViews, string> = {
-    lite: 'Lite',
-    full: 'Full',
+    lite: 'Overview',
+    full: 'On-Chain',
     livePositions: 'Live Positions',
     userProfiles: 'User Profiles',
     allStaking: 'Staking',
@@ -40,11 +41,11 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
   };
 
   const viewComponents: Record<MonitorViews, React.ReactElement> = {
-    lite: <BasicMonitoring {...pageProps} poolInfo={poolInfo} />,
+    lite: <BasicMonitoring isSmallScreen={isSmallScreen} {...pageProps} poolInfo={poolInfo} />,
     full: <DetailedMonitoring {...pageProps} poolInfo={poolInfo} />,
-    livePositions: <AllPositions showFeesInPnl={showFeesInPnl} />,
+    livePositions: <AllPositions isSmallScreen={isSmallScreen} showFeesInPnl={showFeesInPnl} />,
     userProfiles: <AllUserProfiles showFeesInPnl={showFeesInPnl} />,
-    allStaking: <AllStaking />,
+    allStaking: <AllStaking isSmallScreen={isSmallScreen} />,
     flows: <Flow custodies={pageProps.custodies} />,
     walletDigger: <WalletDigger showFeesInPnl={showFeesInPnl} />,
   };
@@ -90,34 +91,34 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className='flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[34em] ml-auto mr-auto'
+          className='flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[38em] ml-auto mr-auto'
         >
+
           {MonitoringHeaderLink('lite')}
 
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
-
-          {MonitoringHeaderLink('full')}
-
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
 
           {MonitoringHeaderLink('livePositions')}
 
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
-
-          {MonitoringHeaderLink('userProfiles')}
-
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
 
           {MonitoringHeaderLink('allStaking')}
 
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
 
           {MonitoringHeaderLink('flows')}
 
-          <span className="opacity-20 text-2xl hidden sm:block">/</span>
+          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+
+          {MonitoringHeaderLink('userProfiles')}
+
+          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+
+          {MonitoringHeaderLink('full')}
+          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
 
           {MonitoringHeaderLink('walletDigger')}
-        </div>
+        </div >
       </div >
 
       {view === 'livePositions' ? (
