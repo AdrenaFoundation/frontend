@@ -969,6 +969,18 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
+    const receivingAccount = findATAAddressSync(owner, mint);
+
+    if (!(await isAccountInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint,
+          owner,
+        }),
+      );
+    }
+
     const transaction = await (
       await this.buildRemoveLiquidityTx({
         owner,
