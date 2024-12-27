@@ -47,7 +47,9 @@ export default function UnlockStakingChart({
           if (periodMode === '3M' && endTime > now + 90 * 24 * 60 * 60) return acc;
           if (periodMode === '6M' && endTime > now + 180 * 24 * 60 * 60) return acc;
 
-          const remaining = Math.floor((endTime - now) / divider); // Calculate period remaining
+          let remaining = Math.floor((endTime - now) / divider); // Calculate period remaining
+
+          if (remaining < 0) remaining = 0;
 
           if (!acc[remaining]) {
             acc[remaining] = { period: `${remaining}`, count: 0, volume: 0 }; // Initialize group
