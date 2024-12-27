@@ -544,9 +544,7 @@ export default function LongShortTradingInputs({
   };
 
   const highSwapFeeTippyContent = useMemo(() => <div className="gap-4 flex flex-col">
-    <div className='text-txtfade text-sm'>Swap fees are high due to the swap moving the pool ratios out of target.</div>
-
-    <div className='text-white text-sm'>Consider swapping your collateral in Jupiter prior to opening the trade. Or open the trade directly with {side === 'short' ? 'USDC' : tokenB.symbol}.</div>
+    <div className='text-txtfade text-sm'>The collateral you provided does not match the assets you'r opening a position for, as such the platform will first have to do a Swap. Swap fees are dynamic and based on the Liquidity Pool's ratios, and currently that direction isn't favorable in term of fees. You can decide to go through or change the provided collateral."</div>
   </div>, [side, tokenB]);
 
   return (
@@ -993,7 +991,7 @@ export default function LongShortTradingInputs({
               <StyledSubSubContainer
                 className={twMerge(
                   'flex items-center justify-center mt-2 sm:mt-0',
-                  openedPosition ? 'h-[13em]' : 'h-[8em]',
+                  openedPosition ? 'h-[13em]' : 'h-[10em]',
                 )}
               >
                 {newPositionInfo && !isInfoLoading ? (
@@ -1023,7 +1021,7 @@ export default function LongShortTradingInputs({
                       title={openedPosition ? 'Additional Fees (Swap + Exit)' : 'Fees (Swap + Exit)'}
                       className="flex items-center justify-center"
                     >
-                      <span className="text-xl ml-1 mr-1">(</span>
+                      <span className="text-xl">(</span>
 
                       {newPositionInfo.highSwapFees ?
                         <Tippy
@@ -1033,8 +1031,8 @@ export default function LongShortTradingInputs({
                             <Image
                               className="opacity-100"
                               src={fireImg}
-                              height={28}
-                              width={28}
+                              height={18}
+                              width={18}
                               alt="Fire icon"
                             />
 
@@ -1058,7 +1056,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-base"
                       />
-                      <span className="text-xl ml-1 mr-1">)</span>
+                      <span className="text-xl">)</span>
                     </TextExplainWrapper> : <TextExplainWrapper
                       title='Exit Fees'
                       className="flex items-center justify-center"
@@ -1074,7 +1072,7 @@ export default function LongShortTradingInputs({
                       <Tippy
                         content={highSwapFeeTippyContent}
                       >
-                        <div className='text-xs text-orange font-boldy'>Careful: Swap Fees are High</div>
+                        <div className='text-xs text-orange font-boldy underline-dashed'>warning: high swap fees</div>
                       </Tippy>
                       : null}
 
