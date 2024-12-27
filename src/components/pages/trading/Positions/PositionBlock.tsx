@@ -200,6 +200,7 @@ export function PositionBlock({
                 : position.pnl - fees
             }
             format="currency"
+            minimumFractionDigits={2}
             className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
               ? 'green'
               : 'redbright'
@@ -221,6 +222,7 @@ export function PositionBlock({
               : 'redbright'
               }`}
             precision={2}
+            minimumFractionDigits={2}
             isDecimalDimmed={false}
             className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
               ? 'green'
@@ -252,6 +254,7 @@ export function PositionBlock({
                   nb={position.collateralUsd + position.pnl}
                   format="currency"
                   className="text-md"
+                  minimumFractionDigits={2}
                 />
               </span>
             </NetValueTooltip>
