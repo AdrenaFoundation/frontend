@@ -13,7 +13,6 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { addNotification, getTokenImage, getTokenSymbol } from '@/utils';
 
-import infoIcon from '../../../../../public/images/Icons/info.svg';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
 
@@ -235,29 +234,13 @@ export default function StopLossTakeProfit({
   return (
     <div
       className={twMerge(
-        'flex flex-col gap-3 mt-4 h-full w-full items-center',
+        'flex flex-col gap-3 mt-3 h-full w-full items-center',
         className,
       )}
     >
-      <div className="px-6 sm:px-4">
-        <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-sm">
-          <Image
-            className="opacity-60 absolute left-3 top-auto bottom-auto"
-            src={infoIcon}
-            height={16}
-            width={16}
-            alt="Info icon"
-          />
-          <a
-            href="https://docs.adrena.xyz/technical-documentation/mrsablier-and-mrsablierstaking-open-source-keepers"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            SL/TP Automation by our open source keeper MrSablier
-          </a>
-        </div>
+      <div className="px-6 sm:px-3 w-full">
 
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mb-3 w-full">
           <div className="w-full flex justify-between">
             <div className="flex gap-2 items-center">
               <Image

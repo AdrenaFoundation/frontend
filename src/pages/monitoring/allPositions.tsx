@@ -168,7 +168,7 @@ export default function AllPositions({ showFeesInPnl, isSmallScreen }: { showFee
     }, [allPositions.map((x) => x.exitFeeUsd ?? 0).join(',')]);
 
     return (
-        <div>
+        <div className='flex flex-col gap-2'>
             <StyledContainer className="p-0">
                 <div className="flex flex-wrap justify-between">
                     <NumberDisplay

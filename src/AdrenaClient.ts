@@ -969,6 +969,18 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
+    const receivingAccount = findATAAddressSync(owner, mint);
+
+    if (!(await isAccountInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint,
+          owner,
+        }),
+      );
+    }
+
     const transaction = await (
       await this.buildRemoveLiquidityTx({
         owner,
@@ -3019,6 +3031,16 @@ export class AdrenaClient {
     }
 
     const stakedTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+
+    if (!(await isAccountInitialized(this.connection, stakedTokenAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: stakedTokenAccount,
+          mint: stakedTokenMint,
+          owner,
+        }),
+      );
+    }
 
     const transaction = await this.adrenaProgram.methods
       .removeLockedStake({
