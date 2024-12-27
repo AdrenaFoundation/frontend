@@ -35,6 +35,7 @@ import {
   uiToNative,
 } from '@/utils';
 
+import fireImg from '../../../../../public/images/fire.png';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
@@ -114,6 +115,7 @@ export default function LongShortTradingInputs({
     liquidationPrice: number;
     exitFeeUsd: number;
     liquidationFeeUsd: number;
+    highSwapFees: boolean;
   } | null>(null);
 
   const [increasePositionInfo, setIncreasePositionInfo] = useState<{
@@ -370,7 +372,10 @@ export default function LongShortTradingInputs({
         // an other request has been casted due to input change
         if (localLoadingCounter !== loadingCounter) return;
 
-        setNewPositionInfo(infos);
+        setNewPositionInfo({
+          ...infos,
+          highSwapFees: infos.swapFeeUsd !== null && infos.swapFeeUsd * 100 / infos.collateralUsd > 1,
+        });
 
         console.log('Position infos', infos);
       } catch (err) {
@@ -537,6 +542,12 @@ export default function LongShortTradingInputs({
     const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
     handleInputAChange(userWalletAmount);
   };
+
+  const highSwapFeeTippyContent = useMemo(() => <div className="gap-4 flex flex-col">
+    <div className='text-txtfade text-sm'>Swap fees are high due to the swap moving the pool ratios out of target.</div>
+
+    <div className='text-white text-sm'>Consider swapping your collateral in Jupiter prior to opening the trade. Or open the trade directly with {side === 'short' ? 'USDC' : tokenB.symbol}.</div>
+  </div>, [side, tokenB]);
 
   return (
     <div
@@ -1013,11 +1024,32 @@ export default function LongShortTradingInputs({
                       className="flex items-center justify-center"
                     >
                       <span className="text-xl ml-1 mr-1">(</span>
-                      <FormatNumber
-                        nb={newPositionInfo.swapFeeUsd}
-                        format="currency"
-                        className="text-base"
-                      />
+
+                      {newPositionInfo.highSwapFees ?
+                        <Tippy
+                          content={highSwapFeeTippyContent}
+                        >
+                          <div className='flex items-center'>
+                            <Image
+                              className="opacity-100"
+                              src={fireImg}
+                              height={28}
+                              width={28}
+                              alt="Fire icon"
+                            />
+
+                            <FormatNumber
+                              nb={newPositionInfo.swapFeeUsd}
+                              format="currency"
+                              className="text-base"
+                            />
+                          </div>
+                        </Tippy>
+                        : <FormatNumber
+                          nb={newPositionInfo.swapFeeUsd}
+                          format="currency"
+                          className="text-base"
+                        />}
 
                       <span className="text-base ml-2 mr-2">+</span>
 
@@ -1037,6 +1069,14 @@ export default function LongShortTradingInputs({
                         className="text-base"
                       />
                     </TextExplainWrapper>}
+
+                    {newPositionInfo.highSwapFees ?
+                      <Tippy
+                        content={highSwapFeeTippyContent}
+                      >
+                        <div className='text-xs text-orange font-boldy'>Careful: Swap Fees are High</div>
+                      </Tippy>
+                      : null}
 
                     <span className="text-base ml-1 mr-1 mb-6">+</span>
 
