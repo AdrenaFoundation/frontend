@@ -13,7 +13,6 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { addNotification, getTokenImage, getTokenSymbol } from '@/utils';
 
-import infoIcon from '../../../../../public/images/Icons/info.svg';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
 
