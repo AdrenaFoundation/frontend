@@ -200,6 +200,7 @@ export function PositionBlock({
                 : position.pnl - fees
             }
             format="currency"
+            minimumFractionDigits={2}
             className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
               ? 'green'
               : 'redbright'
