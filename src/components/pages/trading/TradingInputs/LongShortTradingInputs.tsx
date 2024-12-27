@@ -35,6 +35,7 @@ import {
   uiToNative,
 } from '@/utils';
 
+import fireImg from '../../../../../public/images/fire.png';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
@@ -114,6 +115,7 @@ export default function LongShortTradingInputs({
     liquidationPrice: number;
     exitFeeUsd: number;
     liquidationFeeUsd: number;
+    highSwapFees: boolean;
   } | null>(null);
 
   const [increasePositionInfo, setIncreasePositionInfo] = useState<{
@@ -370,7 +372,10 @@ export default function LongShortTradingInputs({
         // an other request has been casted due to input change
         if (localLoadingCounter !== loadingCounter) return;
 
-        setNewPositionInfo(infos);
+        setNewPositionInfo({
+          ...infos,
+          highSwapFees: infos.swapFeeUsd !== null && infos.swapFeeUsd * 100 / infos.collateralUsd > 1,
+        });
 
         console.log('Position infos', infos);
       } catch (err) {
@@ -537,6 +542,10 @@ export default function LongShortTradingInputs({
     const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
     handleInputAChange(userWalletAmount);
   };
+
+  const highSwapFeeTippyContent = useMemo(() => <div className="gap-4 flex flex-col">
+    <div className='text-txtfade text-sm'>The collateral you provided does not match the assets you&apos;r opening a position for, as such the platform will first have to do a Swap. Swap fees are dynamic and based on the Liquidity Pool&apos;s ratios, and currently that direction isn&apos;t favorable in term of fees. You can decide to go through or change the provided collateral.</div>
+  </div>, []);
 
   return (
     <div
@@ -982,7 +991,7 @@ export default function LongShortTradingInputs({
               <StyledSubSubContainer
                 className={twMerge(
                   'flex items-center justify-center mt-2 sm:mt-0',
-                  openedPosition ? 'h-[13em]' : 'h-[8em]',
+                  openedPosition ? 'h-[13em]' : 'h-[10em]',
                 )}
               >
                 {newPositionInfo && !isInfoLoading ? (
@@ -1012,12 +1021,33 @@ export default function LongShortTradingInputs({
                       title={openedPosition ? 'Additional Fees (Swap + Exit)' : 'Fees (Swap + Exit)'}
                       className="flex items-center justify-center"
                     >
-                      <span className="text-xl ml-1 mr-1">(</span>
-                      <FormatNumber
-                        nb={newPositionInfo.swapFeeUsd}
-                        format="currency"
-                        className="text-base"
-                      />
+                      <span className="text-xl">(</span>
+
+                      {newPositionInfo.highSwapFees ?
+                        <Tippy
+                          content={highSwapFeeTippyContent}
+                        >
+                          <div className='flex items-center'>
+                            <Image
+                              className="opacity-100"
+                              src={fireImg}
+                              height={18}
+                              width={18}
+                              alt="Fire icon"
+                            />
+
+                            <FormatNumber
+                              nb={newPositionInfo.swapFeeUsd}
+                              format="currency"
+                              className="text-base"
+                            />
+                          </div>
+                        </Tippy>
+                        : <FormatNumber
+                          nb={newPositionInfo.swapFeeUsd}
+                          format="currency"
+                          className="text-base"
+                        />}
 
                       <span className="text-base ml-2 mr-2">+</span>
 
@@ -1026,7 +1056,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-base"
                       />
-                      <span className="text-xl ml-1 mr-1">)</span>
+                      <span className="text-xl">)</span>
                     </TextExplainWrapper> : <TextExplainWrapper
                       title='Exit Fees'
                       className="flex items-center justify-center"
@@ -1037,6 +1067,14 @@ export default function LongShortTradingInputs({
                         className="text-base"
                       />
                     </TextExplainWrapper>}
+
+                    {newPositionInfo.highSwapFees ?
+                      <Tippy
+                        content={highSwapFeeTippyContent}
+                      >
+                        <div className='text-xs text-orange font-boldy underline-dashed'>warning: high swap fees</div>
+                      </Tippy>
+                      : null}
 
                     <span className="text-base ml-1 mr-1 mb-6">+</span>
 
