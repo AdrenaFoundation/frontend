@@ -544,7 +544,7 @@ export default function LongShortTradingInputs({
   };
 
   const highSwapFeeTippyContent = useMemo(() => <div className="gap-4 flex flex-col">
-    <div className='text-txtfade text-sm'>The collateral you provided does not match the assets you'r opening a position for, as such the platform will first have to do a Swap. Swap fees are dynamic and based on the Liquidity Pool's ratios, and currently that direction isn't favorable in term of fees. You can decide to go through or change the provided collateral."</div>
+    <div className='text-txtfade text-sm'>The collateral you provided does not match the assets you'r opening a position for, as such the platform will first have to do a Swap. Swap fees are dynamic and based on the Liquidity Pool's ratios, and currently that direction isn't favorable in term of fees. You can decide to go through or change the provided collateral.</div>
   </div>, [side, tokenB]);
 
   return (
