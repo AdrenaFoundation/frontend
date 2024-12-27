@@ -197,18 +197,6 @@ export default function ActivityCalendar({
                                                         : '',
                                                 )}
                                             />
-
-                                            <FormatNumber
-                                                nb={stats.increaseSize}
-                                                prefix="increase size: "
-                                                format="currency"
-                                                prefixClassName={twMerge(
-                                                    'font-mono opacity-50',
-                                                    bubbleBy === 'Increase size'
-                                                        ? 'text-[#F1C40F] opacity-100'
-                                                        : '',
-                                                )}
-                                            />
                                             <FormatNumber
                                                 nb={stats.totalFees}
                                                 prefix="fees: "
