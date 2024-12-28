@@ -4,6 +4,7 @@ import { Connection, PublicKey, TransactionError } from '@solana/web3.js';
 import { useEffect } from 'react';
 
 import { useSelector } from '@/store/store';
+import { Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -11,7 +12,6 @@ import {
   getTokenSymbol,
 } from '@/utils';
 
-import { Token } from '@/types';
 import StyledSubContainer from '../common/StyledSubContainer/StyledSubContainer';
 
 export default function IntegratedTerminalChild({
