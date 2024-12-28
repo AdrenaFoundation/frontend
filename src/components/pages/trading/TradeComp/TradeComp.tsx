@@ -102,6 +102,10 @@ export default function TradeComp({
                     id={terminalId}
                     className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
                     adapters={adapters}
+                    allowedTokenB={window.adrena.client.tokens.filter(
+                      (t) => !t.isStable,
+                    )}
+                    setTokenB={setTokenB}
                   />
                 ) : (
                   <SwapTradingInputs

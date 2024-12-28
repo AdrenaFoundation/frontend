@@ -204,7 +204,7 @@ export default function Trade({
       // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
       const candidate =
         selectedAction === 'long'
-          ? tokenB ?? pickDefaultToken(positions)
+          ? (tokenB ?? pickDefaultToken(positions))
           : tokenACandidate[0];
 
       if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
@@ -291,13 +291,7 @@ export default function Trade({
           <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
             {tokenA && tokenB ? (
               <TradingChart
-                token={
-                  selectedAction === 'short' || selectedAction === 'long'
-                    ? tokenB
-                    : tokenA.isStable
-                      ? tokenB
-                      : tokenA
-                }
+                token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                 positions={positions}
                 showBreakEvenLine={showBreakEvenLine}
                 toggleSizeUsdInChart={toggleSizeUsdInChart}
