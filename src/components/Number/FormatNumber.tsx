@@ -1,12 +1,12 @@
 import Tippy from '@tippyjs/react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatNumber, formatPriceInfo, formatSecondsToTimeDifference } from '@/utils';
 
 interface FormatNumberProps {
   nb?: number | null;
-  format?: 'number' | 'currency' | 'percentage';
+  format?: 'number' | 'currency' | 'percentage' | 'time';
   precision?: number;
   prefix?: string;
   suffix?: string;
@@ -96,6 +96,10 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
 
     if (format === 'percentage') {
       num = Number(nb).toFixed(precision);
+    }
+
+    if (format === 'time') {
+      num = formatSecondsToTimeDifference(nb);
     }
 
 

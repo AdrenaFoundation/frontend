@@ -23,8 +23,10 @@ type SortableKeys = keyof Pick<
 
 export default function AllUserProfiles({
     showFeesInPnl,
+    view
 }: {
     showFeesInPnl: boolean;
+    view: string;
 }) {
     const { allUserProfiles, triggerAllUserProfilesReload } =
         useAllUserProfiles();
@@ -74,6 +76,8 @@ export default function AllUserProfiles({
     // };
 
     useEffect(() => {
+        if (view !== 'userProfiles') return;
+
         const filteredProfiles = allUserProfiles.filter((profile) => {
             const ownerCondition =
                 ownerFilter === '' ||
@@ -124,6 +128,7 @@ export default function AllUserProfiles({
         pnlFilter,
         hideZeroTradeVolume,
         ownerFilter,
+        view,
     ]);
 
     useEffect(() => {

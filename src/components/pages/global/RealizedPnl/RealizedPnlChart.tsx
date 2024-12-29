@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -21,12 +21,25 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
-
+  const intervalRef = useRef<NodeJS.Timeout>();
   const [totalRealizedPnl, setTotalRealizedPnl] = useState<number>(0);
 
   useEffect(() => {
     periodRef.current = period;
+
     getCustodyInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getCustodyInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [period]);
 
   const getCustodyInfo = async () => {
@@ -166,16 +179,6 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       console.error(e);
     }
   };
-
-  useEffect(() => {
-    getCustodyInfo();
-
-    const interval = setInterval(() => {
-      getCustodyInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (!infos) {
     return (

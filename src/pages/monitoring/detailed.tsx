@@ -7,6 +7,7 @@ import MenuItem from '@/components/common/Menu/MenuItem';
 import MenuItems from '@/components/common/Menu/MenuItems';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import { EnabledContainer } from '@/components/pages/global/EnabledContainer';
 import AdrenaAccounts from '@/components/pages/monitoring/Data/AdrenaAccounts';
 import AllTimeFeesBreakdownPerToken from '@/components/pages/monitoring/Data/AllTimeFeesBreakdownPerToken';
 import AUM from '@/components/pages/monitoring/Data/AUM';
@@ -46,11 +47,12 @@ import arrowDownIcon from '../../../public/images/Icons/arrow-down.svg';
 export default function DetailedMonitoring({
   mainPool,
   custodies,
-
   poolInfo,
   connected,
+  view
 }: PageProps & {
   poolInfo: PoolInfo | null;
+  view: string;
 }) {
   const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
 
@@ -77,6 +79,7 @@ export default function DetailedMonitoring({
   const vests = useVests();
 
   if (
+    view != 'full' ||
     !mainPool ||
     !custodies ||
     !tokenPrices ||
@@ -206,101 +209,119 @@ export default function DetailedMonitoring({
         </div>
 
         {selectedTab === 'All' || selectedTab === 'Trading' ? (
-          <div className="flex flex-col lg:flex-row gap-3">
-            <PositionsNow
-              titleClassName={titleClassName}
-              mainPool={mainPool}
-            />
+          <EnabledContainer enabled={view === 'full'}>
+            <div className="flex flex-col lg:flex-row gap-3">
+              <PositionsNow
+                titleClassName={titleClassName}
+                mainPool={mainPool}
+              />
 
-            <PositionsAllTime
-              titleClassName={titleClassName}
-              mainPool={mainPool}
-            />
-          </div>
+              <PositionsAllTime
+                titleClassName={titleClassName}
+                mainPool={mainPool}
+              />
+            </div>
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Staking' ? (
           <>
             <div className="flex flex-col lg:flex-row gap-3">
-              <StakingRewardVaults
-                titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
-                adxStakingAccount={adxStakingAccount}
-                alpStakingRewardsAccumulated={alpStakingRewardsAccumulated}
-                adxStakingRewardsAccumulated={adxStakingRewardsAccumulated}
-              />
+              <EnabledContainer enabled={view === 'full'}>
+                <StakingRewardVaults
+                  titleClassName={titleClassName}
+                  alpStakingAccount={alpStakingAccount}
+                  adxStakingAccount={adxStakingAccount}
+                  alpStakingRewardsAccumulated={alpStakingRewardsAccumulated}
+                  adxStakingRewardsAccumulated={adxStakingRewardsAccumulated}
+                />
 
-              <StakingRewardsWaitingToBeClaimed
-                titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
-                adxStakingAccount={adxStakingAccount}
-              />
+                <StakingRewardsWaitingToBeClaimed
+                  titleClassName={titleClassName}
+                  alpStakingAccount={alpStakingAccount}
+                  adxStakingAccount={adxStakingAccount}
+                />
+              </EnabledContainer>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-3">
-              <CurrentStakingRoundTime
-                titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
-                adxStakingAccount={adxStakingAccount}
-                triggerAlpStakingAccountReload={triggerAlpStakingAccountReload}
-                triggerAdxStakingAccountReload={triggerAdxStakingAccountReload}
-              />
+              <EnabledContainer enabled={view === 'full'}>
+                <CurrentStakingRoundTime
+                  titleClassName={titleClassName}
+                  alpStakingAccount={alpStakingAccount}
+                  adxStakingAccount={adxStakingAccount}
+                  triggerAlpStakingAccountReload={triggerAlpStakingAccountReload}
+                  triggerAdxStakingAccountReload={triggerAdxStakingAccountReload}
+                />
 
-              <StakingLockedTokens
-                titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
-                adxStakingAccount={adxStakingAccount}
-              />
+                <StakingLockedTokens
+                  titleClassName={titleClassName}
+                  alpStakingAccount={alpStakingAccount}
+                  adxStakingAccount={adxStakingAccount}
+                />
+              </EnabledContainer>
             </div>
           </>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Trading' ? (
-          <PositionsNowBreakdown
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+          <EnabledContainer enabled={view === 'full'}>
+            <PositionsNowBreakdown
+              titleClassName={titleClassName}
+              custodies={custodies}
+            />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Pool' ? (
-          <VolumeBreakdownPerToken
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+          <EnabledContainer enabled={view === 'full'}>
+            <VolumeBreakdownPerToken
+              titleClassName={titleClassName}
+              custodies={custodies}
+            />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Fees' ? (
-          <AllTimeFeesBreakdownPerToken
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+          <EnabledContainer enabled={view === 'full'}>
+            <AllTimeFeesBreakdownPerToken
+              titleClassName={titleClassName}
+              custodies={custodies}
+            />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Pool' ? (
-          <AUMBreakdown
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+          <EnabledContainer enabled={view === 'full'}>
+            <AUMBreakdown
+              titleClassName={titleClassName}
+              custodies={custodies}
+            />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Vesting' ? (
-          <VestsBreakdown titleClassName={titleClassName} vests={vests} />
+          <EnabledContainer enabled={view === 'full'}>
+            <VestsBreakdown titleClassName={titleClassName} vests={vests} />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
-          <div className="flex flex-col lg:flex-row gap-3">
-            <BucketsAllocation
-              titleClassName={titleClassName}
-              cortex={cortex}
-            />
+          <EnabledContainer enabled={view === 'full'}>
+            <div className="flex flex-col lg:flex-row gap-3">
+              <BucketsAllocation
+                titleClassName={titleClassName}
+                cortex={cortex}
+              />
 
-            <BucketsMintedAmount
-              titleClassName={titleClassName}
-              cortex={cortex}
-            />
+              <BucketsMintedAmount
+                titleClassName={titleClassName}
+                cortex={cortex}
+              />
 
-            <Tokenomics titleClassName={titleClassName} />
-          </div>
+              <Tokenomics titleClassName={titleClassName} />
+            </div>
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Pool' ? (
@@ -308,27 +329,35 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <AdrenaAccounts
-            titleClassName={titleClassName}
-            cortex={cortex}
-            mainPool={mainPool}
-            custodies={custodies}
-          />
+          <EnabledContainer enabled={view === 'full'}>
+            <AdrenaAccounts
+              titleClassName={titleClassName}
+              cortex={cortex}
+              mainPool={mainPool}
+              custodies={custodies}
+            />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <OracleAccounts
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+          <EnabledContainer enabled={view === 'full'}>
+            <OracleAccounts
+              titleClassName={titleClassName}
+              custodies={custodies}
+            />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <MintAccounts titleClassName={titleClassName} custodies={custodies} />
+          <EnabledContainer enabled={view === 'full'}>
+            <MintAccounts titleClassName={titleClassName} custodies={custodies} />
+          </EnabledContainer>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
+          <EnabledContainer enabled={view === 'full'}>
+            <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
+          </EnabledContainer>
         ) : null}
       </div>
     </div>

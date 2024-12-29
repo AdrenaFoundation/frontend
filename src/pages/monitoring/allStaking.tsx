@@ -1,5 +1,5 @@
 import Tippy from '@tippyjs/react';
-import React from 'react';
+import { useEffect } from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -13,10 +13,14 @@ import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 
-export default function AllStaking({ isSmallScreen }: { isSmallScreen: boolean }) {
+export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const { allStakingStats } = useAllStakingStats();
     const totalSupplyADX = useADXTotalSupply();
     const totalSupplyALP = useALPTotalSupply();
+
+    useEffect(() => {
+        if (view !== 'allStaking') return;
+    }, [view]);
 
     return (
         <div className="flex flex-col gap-2 p-2 items-center justify-center">

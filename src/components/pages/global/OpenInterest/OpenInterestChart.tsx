@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -19,21 +19,25 @@ export default function OpenInterestChart({
   const periodRef = useRef(period);
 
   const [totalOpenInterest, setTotalOpenInterest] = useState<number>(0);
+  const intervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     periodRef.current = period;
+
     getCustodyInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getCustodyInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [period]);
-
-  useEffect(() => {
-    getCustodyInfo();
-
-    const interval = setInterval(() => {
-      getCustodyInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const getCustodyInfo = async () => {
     try {

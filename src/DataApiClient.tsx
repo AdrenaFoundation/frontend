@@ -289,7 +289,13 @@ export default class DataApiClient {
         endDate?: Date;
         limit?: number;
         walletAddress?: string;
-        orderColumn?: 'volume' | 'pnl' | 'realized_pnl' | 'fees' | 'number_positions' | 'number_transactions';
+        orderColumn?: "pnl"
+        | "pnl_minus_fees"
+        | "volume"
+        | "win_rate_percentage"
+        | "volume_weighted_pnl"
+        | "volume_weighted_pnl_percentage"
+        | "pnl_volatility";
         sort?: 'ASC' | 'DESC';
     } = {}): Promise<{
         success: boolean;
