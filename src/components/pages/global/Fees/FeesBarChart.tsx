@@ -12,7 +12,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('1M');
   const periodRef = useRef(period);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
@@ -28,6 +28,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [period]);

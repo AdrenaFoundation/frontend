@@ -21,7 +21,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [totalRealizedPnl, setTotalRealizedPnl] = useState<number>(0);
 
   useEffect(() => {
@@ -38,6 +38,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [period]);

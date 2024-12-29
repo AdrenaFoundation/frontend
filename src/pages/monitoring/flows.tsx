@@ -46,7 +46,7 @@ export default function Flow({
   const { allUserProfiles } = useAllUserProfiles();
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
 
-  if (view != 'flows') return <></>;
+  if (view !== 'flows') return <></>;
 
   if (loading) {
     return <div className="h-full w-full flex items-center justify-center text-sm">

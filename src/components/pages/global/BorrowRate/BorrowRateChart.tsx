@@ -18,7 +18,7 @@ export default function BorrowRateChart() {
 
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
@@ -34,6 +34,7 @@ export default function BorrowRateChart() {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [period]);

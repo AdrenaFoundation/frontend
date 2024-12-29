@@ -23,7 +23,7 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
@@ -39,6 +39,7 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [period]);

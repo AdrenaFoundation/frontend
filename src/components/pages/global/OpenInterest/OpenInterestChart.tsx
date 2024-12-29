@@ -19,7 +19,7 @@ export default function OpenInterestChart({
   const periodRef = useRef(period);
 
   const [totalOpenInterest, setTotalOpenInterest] = useState<number>(0);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
@@ -35,6 +35,7 @@ export default function OpenInterestChart({
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [period]);
