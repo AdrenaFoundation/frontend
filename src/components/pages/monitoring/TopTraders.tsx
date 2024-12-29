@@ -298,8 +298,7 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
                                             isDecimalDimmed={false}
                                             isAbbreviate={isLargeScreen ? true : false}
                                             className='text-xs'
-                                            format="number"
-                                            prefix='$'
+                                            format="currency"
                                             isAbbreviateIcon={false}
                                         />
                                     </div>,
