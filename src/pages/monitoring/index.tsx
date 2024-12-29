@@ -22,10 +22,20 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
   const poolInfo = usePoolInfo(pageProps.custodies);
   const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
 
+  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
+
+  const initialView = (() => {
+    const searchParamsView = searchParams.get('view') ?? 'lite'
+    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows', 'walletDigger'].includes(searchParamsView)) {
+      return searchParamsView as MonitorViews;
+    }
+    return 'lite';
+  })();
+
   type MonitorViews = 'lite' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'full' | 'walletDigger';
   const [view, setView] = useState<
     MonitorViews
-  >('lite');
+  >(initialView as MonitorViews);
   const [previousView, setPreviousView] = useState<
     MonitorViews
   >('lite');
@@ -40,24 +50,33 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     walletDigger: 'Wallet Digger',
   };
 
-  const viewComponents: Record<MonitorViews, React.ReactElement> = {
-    lite: <BasicMonitoring isSmallScreen={isSmallScreen} {...pageProps} poolInfo={poolInfo} />,
-    full: <DetailedMonitoring {...pageProps} poolInfo={poolInfo} />,
-    livePositions: <AllPositions isSmallScreen={isSmallScreen} showFeesInPnl={showFeesInPnl} />,
-    userProfiles: <AllUserProfiles showFeesInPnl={showFeesInPnl} />,
-    allStaking: <AllStaking isSmallScreen={isSmallScreen} />,
-    flows: <Flow custodies={pageProps.custodies} />,
-    walletDigger: <WalletDigger showFeesInPnl={showFeesInPnl} />,
-  };
+  function getTranslateX(currentView: MonitorViews, previousView: MonitorViews): number {
+    if (currentView === 'livePositions' && previousView === 'userProfiles') return 20;
+    if (currentView === 'full' && previousView !== 'lite') return 20;
+    if (currentView === 'lite' && previousView !== 'lite') return 20;
+    return -20;
+  }
 
-  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
-
-  useEffect(() => {
-    const searchParamsView = searchParams.get('view') ?? 'lite'
-    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows', 'walletDigger'].includes(searchParamsView)) {
-      setView(searchParamsView as MonitorViews);
+  function getViewComponent(view: MonitorViews): React.ReactElement {
+    switch (view) {
+      case 'lite':
+        return <BasicMonitoring isSmallScreen={isSmallScreen} {...pageProps} poolInfo={poolInfo} view={view} />;
+      case 'full':
+        return <DetailedMonitoring {...pageProps} poolInfo={poolInfo} view={view} />;
+      case 'livePositions':
+        return <AllPositions isSmallScreen={isSmallScreen} showFeesInPnl={showFeesInPnl} view={view} />;
+      case 'userProfiles':
+        return <AllUserProfiles showFeesInPnl={showFeesInPnl} view={view} />;
+      case 'allStaking':
+        return <AllStaking isSmallScreen={isSmallScreen} view={view} />;
+      case 'flows':
+        return <Flow custodies={pageProps.custodies} view={view} />;
+      case 'walletDigger':
+        return <WalletDigger showFeesInPnl={showFeesInPnl} view={view} />;
+      default:
+        return <div>Invalid view</div>;
     }
-  }, [searchParams]);
+  }
 
   useEffect(() => {
     setPreviousView(view);
@@ -121,66 +140,11 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
         </div >
       </div >
 
-      {view === 'livePositions' ? (
+      {
         MonitoringDisplay(
           view,
-          previousView === 'userProfiles' ? 20 : -20
+          getTranslateX(view, previousView)
         )
-      ) : null
-      }
-
-      {
-        view === 'full' ? (
-          MonitoringDisplay(
-            view,
-            previousView !== 'lite' ? 20 : -20
-          )
-        ) : null
-      }
-
-      {
-        view === 'lite' ? (
-          MonitoringDisplay(
-            view,
-            previousView !== 'lite' ? 20 : -20
-          )
-        ) : null
-      }
-
-      {
-        view === 'userProfiles' ? (
-          MonitoringDisplay(
-            view,
-            -20
-          )
-        ) : null
-      }
-
-      {
-        view === 'allStaking' ? (
-          MonitoringDisplay(
-            view,
-            -20
-          )
-        ) : null
-      }
-
-      {
-        view === 'flows' ? (
-          MonitoringDisplay(
-            view,
-            -20
-          )
-        ) : null
-      }
-
-      {
-        view === 'walletDigger' ? (
-          MonitoringDisplay(
-            view,
-            -20
-          )
-        ) : null
       }
     </>
   );
@@ -196,7 +160,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       className='min-h-[80vh] z-10'
     >
       <div className='p-2'>
-        {viewComponents[view]}
+        {getViewComponent(view)}
       </div>
     </motion.div>;
   }

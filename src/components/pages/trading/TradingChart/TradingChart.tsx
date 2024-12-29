@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';

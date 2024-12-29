@@ -1,4 +1,4 @@
-import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, TraderDivisionRawAPI } from './types';
+import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI } from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -275,5 +275,48 @@ export default class DataApiClient {
             console.error(error);
             return null;
         }
+    }
+
+    public static async getTraders({
+        startDate,
+        endDate,
+        limit,
+        walletAddress,
+        orderColumn,
+        sort = 'DESC'
+    }: {
+        startDate?: Date;
+        endDate?: Date;
+        limit?: number;
+        walletAddress?: string;
+        orderColumn?: "pnl"
+        | "pnl_minus_fees"
+        | "volume"
+        | "win_rate_percentage"
+        | "volume_weighted_pnl"
+        | "volume_weighted_pnl_percentage"
+        | "pnl_volatility";
+        sort?: 'ASC' | 'DESC';
+    } = {}): Promise<{
+        success: boolean;
+        data: {
+            traders: Trader[];
+        };
+    }> {
+        const params = new URLSearchParams();
+
+        if (startDate) params.append('start_date', startDate.toISOString());
+        if (endDate) params.append('end_date', endDate.toISOString());
+        if (limit) params.append('limit', limit.toString());
+        if (walletAddress) params.append('wallet_address', walletAddress);
+        if (orderColumn) params.append('order_column', orderColumn);
+        if (sort) params.append('sort', sort);
+
+        const queryString = params.toString();
+        const url = `https://datapi.adrena.xyz/traders${queryString ? `?${queryString}` : ''}`;
+
+        const result = await fetch(url).then((res) => res.json());
+
+        return result;
     }
 }

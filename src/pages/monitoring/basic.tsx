@@ -20,10 +20,12 @@ import { PageProps } from '@/types';
 
 export default function BasicMonitoring({
   mainPool,
-  isSmallScreen
+  isSmallScreen,
+  view
 }: PageProps & {
   poolInfo: PoolInfo | null;
   isSmallScreen: boolean;
+  view: string;
 }) {
   const [aprs, setAprs] = React.useState<{
     lp: number;
@@ -31,6 +33,8 @@ export default function BasicMonitoring({
   } | null>(null);
 
   useEffect(() => {
+    if (view !== 'lite') return;
+
     DataApiClient.getRolling7DGlobalApr().then(
       ({
         lp_apr_rolling_seven_day,
@@ -62,7 +66,7 @@ export default function BasicMonitoring({
     }, 60000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [view]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -140,38 +144,47 @@ export default function BasicMonitoring({
         </StyledContainer>
       )}
 
-      <StyledContainer className="flex gap-6">
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <AumChart />
-          <VolumeBarChart isSmallScreen={false} />
-        </div>
+      {
+        view === 'lite' ?
+          <StyledContainer className="flex gap-6">
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <UtilizationChart />
-          <FeesBarChart isSmallScreen={isSmallScreen} />
-        </div>
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <AumChart />
+              <VolumeBarChart isSmallScreen={false} />
+            </div>
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <OpenInterestChart isSmallScreen={isSmallScreen} />
-          <BorrowRateChart />
-        </div>
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <UtilizationChart />
+              <FeesBarChart isSmallScreen={isSmallScreen} />
+            </div>
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
-          <RealizedPnlChart isSmallScreen={isSmallScreen} />
-        </div>
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <FeesChart isSmallScreen={isSmallScreen} />
-          <UsersCohortsChart />
-        </div>
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <OpenInterestChart isSmallScreen={isSmallScreen} />
+              <BorrowRateChart />
+            </div>
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <CompositionChart />
-          <ALPPriceChart />
-        </div>
 
-      </StyledContainer>
-    </div>
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+              <RealizedPnlChart isSmallScreen={isSmallScreen} />
+            </div>
+
+
+
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <FeesChart isSmallScreen={isSmallScreen} />
+              <UsersCohortsChart />
+            </div>
+
+
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <CompositionChart />
+              <ALPPriceChart />
+            </div>
+
+          </StyledContainer >
+          : null}
+    </div >
   );
 }
