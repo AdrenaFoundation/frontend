@@ -33,8 +33,6 @@ export default function BasicMonitoring({
     lm: number;
   } | null>(null);
 
-  console.log('view', view);
-
   useEffect(() => {
     if (view !== 'lite') return;
 
