@@ -287,7 +287,9 @@ const PositionHistoryBlock = ({
             className="overflow-y-auto"
             wrapperClassName="h-[80vh] sm:h-auto"
           >
-            {pnlValue > 0 && <Congrats />}
+            <div className="absolute top-0 w-[300px]">
+              {pnlValue > 0 && <Congrats />}
+            </div>
             <SharePositionModal
               position={{
                 pnl: pnlValue,
