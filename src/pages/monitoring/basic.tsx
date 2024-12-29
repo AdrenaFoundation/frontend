@@ -6,7 +6,6 @@ import ALPPriceChart from '@/components/pages/global/ALPPrice/ALPPriceChart';
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
-import { EnabledContainer } from '@/components/pages/global/EnabledContainer';
 import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import FeesChart from '@/components/pages/global/Fees/FeesChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
@@ -146,47 +145,59 @@ export default function BasicMonitoring({
       )}
 
       <StyledContainer className="flex gap-6">
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <EnabledContainer enabled={view === 'lite'}>
-            <AumChart />
-            <VolumeBarChart isSmallScreen={false} />
-          </EnabledContainer>
-        </div>
+        {
+          view === 'lite' ?
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <AumChart />
+              <VolumeBarChart isSmallScreen={false} />
+            </div>
+            : null
+        }
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <EnabledContainer enabled={view === 'lite'}>
-            <UtilizationChart />
-            <FeesBarChart isSmallScreen={isSmallScreen} />
-          </EnabledContainer>
-        </div>
+        {
+          view === 'lite' ?
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <UtilizationChart />
+              <FeesBarChart isSmallScreen={isSmallScreen} />
+            </div>
+            : null
+        }
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <EnabledContainer enabled={view === 'lite'}>
-            <OpenInterestChart isSmallScreen={isSmallScreen} />
-            <BorrowRateChart />
-          </EnabledContainer>
-        </div>
+        {
+          view === 'lite' ?
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <OpenInterestChart isSmallScreen={isSmallScreen} />
+              <BorrowRateChart />
+            </div>
+            : null
+        }
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <EnabledContainer enabled={view === 'lite'}>
-            <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
-            <RealizedPnlChart isSmallScreen={isSmallScreen} />
-          </EnabledContainer>
-        </div>
+        {
+          view === 'lite' ?
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+              <RealizedPnlChart isSmallScreen={isSmallScreen} />
+            </div>
+            : null
+        }
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <EnabledContainer enabled={view === 'lite'}>
-            <FeesChart isSmallScreen={isSmallScreen} />
-            <UsersCohortsChart />
-          </EnabledContainer>
-        </div>
+        {
+          view === 'lite' ?
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <FeesChart isSmallScreen={isSmallScreen} />
+              <UsersCohortsChart />
+            </div>
+            : null
+        }
 
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <EnabledContainer enabled={view === 'lite'}>
-            <CompositionChart />
-            <ALPPriceChart />
-          </EnabledContainer>
-        </div>
+        {
+          view === 'lite' ?
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <CompositionChart />
+              <ALPPriceChart />
+            </div>
+            : null
+        }
 
       </StyledContainer >
     </div >
