@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import AreaRechart from '@/components/ReCharts/AreaRecharts';
@@ -10,10 +10,27 @@ export default function ALPPriceChart() {
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     periodRef.current = period;
+
     getPoolInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getPoolInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [period]);
+
   const getPoolInfo = async () => {
     try {
       const dataEndpoint = (() => {
@@ -92,16 +109,6 @@ export default function ALPPriceChart() {
       console.error(e);
     }
   };
-
-  useEffect(() => {
-    getPoolInfo();
-
-    const interval = setInterval(() => {
-      getPoolInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (!chartData) {
     return (

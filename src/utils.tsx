@@ -624,14 +624,14 @@ export function createCloseWSOLAccountInstruction({
   return createCloseAccountInstruction(wsolATA, owner, owner);
 }
 
-export function getAbbrevNickname(nickname: string) {
-  if (nickname.length <= 16) return nickname;
+export function getAbbrevNickname(nickname: string, maxLength: number = 16) {
+  if (nickname.length <= maxLength) return nickname;
 
-  return `${nickname.slice(0, 14)}..`;
+  return `${nickname.slice(0, maxLength - 2)}..`;
 }
 
-export function getAbbrevWalletAddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(address.length - 6)}`;
+export function getAbbrevWalletAddress(address: string, length: number = 6) {
+  return `${address.slice(0, length)}...${address.slice(address.length - length)}`;
 }
 
 export function formatMilliseconds(milliseconds: number): string {
@@ -919,6 +919,23 @@ export function formatTimeDifference(diff: {
   }
 
   return `${diff.minutes.toString().padStart(2, '0')}m ${diff.seconds.toString().padStart(2, '0')}s`;
+}
+
+export function formatSecondsToTimeDifference(totalSeconds: number) {
+  const days = Math.floor(totalSeconds / (24 * 60 * 60));
+  const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+
+  if (days > 0) {
+    return `${days.toString().padStart(2, '0')}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
+  }
+
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+  }
+
+  return `${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
 }
 
 export const isValidPublicKey = (key: string) => {

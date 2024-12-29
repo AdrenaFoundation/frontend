@@ -4,7 +4,6 @@ import { twMerge } from 'tailwind-merge';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
-import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
 import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
@@ -19,10 +18,6 @@ export default function ViewProfileModal({
     profile: UserProfileExtended;
     showFeesInPnl: boolean;
 }) {
-    const wallet = useSelector((s) => s.walletState.wallet);
-
-    const connected = !!wallet;
-
     const positions = usePositionsByAddress({
         walletAddress: profile.owner.toBase58(),
     });
@@ -151,7 +146,7 @@ export default function ViewProfileModal({
 
             {selectedTab === 'Positions History' ? (
                 <PositionsHistory
-                    connected={connected}
+                    connected={true}
                     walletAddress={profile.owner.toBase58()}
                     showShareButton={false}
                     showFeesInPnl={showFeesInPnl}

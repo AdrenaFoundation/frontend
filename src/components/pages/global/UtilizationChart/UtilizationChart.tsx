@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -18,10 +18,25 @@ export default function UtilizationChart() {
 
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
+
     getCustodyInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getCustodyInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [period]);
 
   const getCustodyInfo = async () => {
@@ -137,16 +152,6 @@ export default function UtilizationChart() {
       console.error(e);
     }
   };
-
-  useEffect(() => {
-    getCustodyInfo();
-
-    const interval = setInterval(() => {
-      getCustodyInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (!infos) {
     return (

@@ -46,11 +46,12 @@ import arrowDownIcon from '../../../public/images/Icons/arrow-down.svg';
 export default function DetailedMonitoring({
   mainPool,
   custodies,
-
   poolInfo,
   connected,
+  view
 }: PageProps & {
   poolInfo: PoolInfo | null;
+  view: string;
 }) {
   const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
 
@@ -77,6 +78,7 @@ export default function DetailedMonitoring({
   const vests = useVests();
 
   if (
+    view != 'full' ||
     !mainPool ||
     !custodies ||
     !tokenPrices ||
@@ -205,7 +207,7 @@ export default function DetailedMonitoring({
           ) : null}
         </div>
 
-        {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        {selectedTab === 'All' || selectedTab === 'Trading' && view === 'full' ? (
           <div className="flex flex-col lg:flex-row gap-3">
             <PositionsNow
               titleClassName={titleClassName}
@@ -219,7 +221,7 @@ export default function DetailedMonitoring({
           </div>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Staking' ? (
+        {selectedTab === 'All' || selectedTab === 'Staking' && view === 'full' ? (
           <>
             <div className="flex flex-col lg:flex-row gap-3">
               <StakingRewardVaults
@@ -255,14 +257,14 @@ export default function DetailedMonitoring({
           </>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        {selectedTab === 'All' || selectedTab === 'Trading' && view === 'full' ? (
           <PositionsNowBreakdown
             titleClassName={titleClassName}
             custodies={custodies}
           />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
           <VolumeBreakdownPerToken
             titleClassName={titleClassName}
             custodies={custodies}
@@ -276,18 +278,18 @@ export default function DetailedMonitoring({
           />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
           <AUMBreakdown
             titleClassName={titleClassName}
             custodies={custodies}
           />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Vesting' ? (
+        {selectedTab === 'All' || selectedTab === 'Vesting' && view === 'full' ? (
           <VestsBreakdown titleClassName={titleClassName} vests={vests} />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
+        {selectedTab === 'All' || selectedTab === 'ADX tokenomics' && view === 'full' ? (
           <div className="flex flex-col lg:flex-row gap-3">
             <BucketsAllocation
               titleClassName={titleClassName}
@@ -303,34 +305,28 @@ export default function DetailedMonitoring({
           </div>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
           <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <AdrenaAccounts
-            titleClassName={titleClassName}
-            cortex={cortex}
-            mainPool={mainPool}
-            custodies={custodies}
-          />
-        ) : null}
+        {selectedTab === 'All' || selectedTab === 'Accounts' && view === 'full' ? (
+          <>
+            <AdrenaAccounts
+              titleClassName={titleClassName}
+              cortex={cortex}
+              mainPool={mainPool}
+              custodies={custodies}
+            />
+            <OracleAccounts
+              titleClassName={titleClassName}
+              custodies={custodies}
+            />
+            <MintAccounts titleClassName={titleClassName} custodies={custodies} />
+            <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
+          </>
 
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <OracleAccounts
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <MintAccounts titleClassName={titleClassName} custodies={custodies} />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
         ) : null}
       </div>
-    </div>
+    </div >
   );
 }

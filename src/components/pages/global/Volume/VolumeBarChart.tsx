@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
@@ -12,15 +12,26 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('1M');
   const periodRef = useRef(period);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
-    getPoolInfo();
-  }, [period]);
 
-  useEffect(() => {
     getPoolInfo();
-  }, []);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getPoolInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [period]);
 
   const getPoolInfo = async () => {
     try {

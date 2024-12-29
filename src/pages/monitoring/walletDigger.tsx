@@ -29,9 +29,11 @@ import shovelMonster from '../../../public/images/shovel-monster.png';
 const claimHistoryItemsPerPage = 4;
 
 export default function WalletDigger({
-    showFeesInPnl
+    showFeesInPnl,
+    view
 }: {
     showFeesInPnl: boolean;
+    view: string;
 }) {
     const [moreStakingInfo, setMoreStakingInfo] = useState(false);
     const [morePositionInfo, setMorePositionInfo] = useState(false);
@@ -83,6 +85,8 @@ export default function WalletDigger({
     const [paginatedAdxClaimsHistory, setPaginatedAdxClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
     useEffect(() => {
+        if (view !== 'walletDigger') return;
+
         if (!claimsHistoryAdx) {
             return setPaginatedAdxClaimsHistory([]);
         }
@@ -90,7 +94,7 @@ export default function WalletDigger({
         const startIndex = (adxClaimHistoryCurrentPage - 1) * claimHistoryItemsPerPage;
         const endIndex = startIndex + claimHistoryItemsPerPage;
         setPaginatedAdxClaimsHistory(claimsHistoryAdx.slice(startIndex, endIndex));
-    }, [claimsHistoryAdx, adxClaimHistoryCurrentPage]);
+    }, [claimsHistoryAdx, adxClaimHistoryCurrentPage, view]);
 
     //
 
@@ -98,6 +102,8 @@ export default function WalletDigger({
     const [paginatedAlpClaimsHistory, setPaginatedAlpClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
     useEffect(() => {
+        if (view !== 'walletDigger') return;
+
         if (!claimsHistoryAlp) {
             return setPaginatedAlpClaimsHistory([]);
         }
@@ -105,7 +111,7 @@ export default function WalletDigger({
         const startIndex = (alpClaimHistoryCurrentPage - 1) * claimHistoryItemsPerPage;
         const endIndex = startIndex + claimHistoryItemsPerPage;
         setPaginatedAlpClaimsHistory(claimsHistoryAlp.slice(startIndex, endIndex));
-    }, [claimsHistoryAlp, alpClaimHistoryCurrentPage]);
+    }, [claimsHistoryAlp, alpClaimHistoryCurrentPage, view]);
 
     //
     //

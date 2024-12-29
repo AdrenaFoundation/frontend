@@ -39,8 +39,8 @@ const RAFFLE_WINNERS = [
   },
   {
     week: 5,
-    feesWinner: null,
-    jitoWinner: null,
+    feesWinner: 'TriaLcGhTL4sPFc5zo7vY5yji4Z2gb3UGz5jL1RcCsM',
+    jitoWinner: 'CJJCXbcrbuN78kaGqzsdAuPAgXo4GB1YDLL56PRmYFPr',
   },
 ];
 

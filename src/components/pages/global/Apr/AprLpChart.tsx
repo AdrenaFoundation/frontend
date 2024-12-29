@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -23,9 +23,25 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     periodRef.current = period;
+
     getInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [period]);
 
   const getInfo = async () => {
@@ -101,16 +117,6 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
       console.error(e);
     }
   };
-
-  useEffect(() => {
-    getInfo();
-
-    const interval = setInterval(() => {
-      getInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (!infos) {
     return (
