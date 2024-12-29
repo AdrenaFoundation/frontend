@@ -144,62 +144,47 @@ export default function BasicMonitoring({
         </StyledContainer>
       )}
 
-      <StyledContainer className="flex gap-6">
-        {
-          view === 'lite' ?
+      {
+        view === 'lite' ?
+          <StyledContainer className="flex gap-6">
+
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <AumChart />
               <VolumeBarChart isSmallScreen={false} />
             </div>
-            : null
-        }
 
-        {
-          view === 'lite' ?
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <UtilizationChart />
               <FeesBarChart isSmallScreen={isSmallScreen} />
             </div>
-            : null
-        }
 
-        {
-          view === 'lite' ?
+
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <OpenInterestChart isSmallScreen={isSmallScreen} />
               <BorrowRateChart />
             </div>
-            : null
-        }
 
-        {
-          view === 'lite' ?
+
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
               <RealizedPnlChart isSmallScreen={isSmallScreen} />
             </div>
-            : null
-        }
 
-        {
-          view === 'lite' ?
+
+
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <FeesChart isSmallScreen={isSmallScreen} />
               <UsersCohortsChart />
             </div>
-            : null
-        }
 
-        {
-          view === 'lite' ?
+
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <CompositionChart />
               <ALPPriceChart />
             </div>
-            : null
-        }
 
-      </StyledContainer >
+          </StyledContainer >
+          : null}
     </div >
   );
 }
