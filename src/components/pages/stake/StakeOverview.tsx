@@ -3,7 +3,7 @@ import '../../../styles/Animation.css';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
 
