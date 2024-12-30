@@ -3,7 +3,7 @@ import '../../../styles/Animation.css';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
 
@@ -216,7 +216,7 @@ export default function StakeOverview({
   const isBigUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 100_000;
   const isBigAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1_000_000;
 
-  const downloadClaimHistory = () => {
+  const downloadClaimHistory = useCallback(() => {
     if (!claimsHistory) {
       return;
     }
@@ -263,7 +263,7 @@ export default function StakeOverview({
 
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-  };
+  }, [claimsHistory, token]);
 
   return (
     <div className="flex flex-col bg-main rounded-2xl border">
@@ -648,10 +648,10 @@ export default function StakeOverview({
             )}
           </div>
 
-          {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1'>
-            <div className='text-xxs tracking-wider' onClick={() => {
-              downloadClaimHistory();
-            }}>Download</div>
+          {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1' onClick={() => {
+            downloadClaimHistory();
+          }}>
+            <div className='text-xxs tracking-wider' >Export</div>
 
             <Image
               src={downloadIcon}
@@ -660,7 +660,6 @@ export default function StakeOverview({
               alt="Download icon"
               className="relative bottom-[1px]"
             />
-
           </div> : null}
 
           {/* Claim History Section */}
