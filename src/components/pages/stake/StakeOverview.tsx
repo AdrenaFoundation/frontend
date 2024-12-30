@@ -28,6 +28,7 @@ import { formatNumber, getNextStakingRoundStartTime } from '@/utils';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxTokenLogo from '../../../../public/images/adx.svg';
+import downloadIcon from '../../../../public/images/download.png';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import ClaimBlock from './ClaimBlock';
@@ -214,6 +215,55 @@ export default function StakeOverview({
   const isMediumAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1000;
   const isBigUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 100_000;
   const isBigAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1_000_000;
+
+  const downloadClaimHistory = () => {
+    if (!claimsHistory) {
+      return;
+    }
+
+    const keys = [
+      'claim_id',
+      'transaction_date',
+      'rewards_adx',
+      ...(token === 'ADX' ? [] : ['rewards_adx_genesis']),
+      'rewards_usdc',
+      'signature',
+    ];
+
+    const csvRows = claimsHistory
+      .filter(
+        (claim) =>
+          claim.rewards_adx !== 0 ||
+          claim.rewards_adx_genesis !== 0 ||
+          claim.rewards_usdc !== 0
+      )
+      .map((claim) =>
+        keys
+          .map((key) => {
+            let value = claim[key as keyof typeof claimsHistory[0]];
+            // Format the date field if it's `transaction_date`
+            if (key === 'transaction_date' && value instanceof Date) {
+              value = (value as Date).toISOString(); // Format to ISO 8601
+            }
+            return `"${String(value).replace(/"/g, '""')}"`;
+          })
+          .join(',')
+      );
+
+    const csvFileContent = [keys.join(','), ...csvRows].join('\n');
+
+    const blob = new Blob([csvFileContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${token}-staking-claim-history-${new Date().toISOString()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
 
   return (
     <div className="flex flex-col bg-main rounded-2xl border">
@@ -534,7 +584,6 @@ export default function StakeOverview({
               <p className='text-xs text-txtfade'>Subject to 30s delay</p>
             </div>
 
-
             {/* TOTALs */}
             {claimsHistory && (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
@@ -598,6 +647,21 @@ export default function StakeOverview({
               </div>
             )}
           </div>
+
+          {claimsHistory ? <div className='w-auto flex ml-auto mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1'>
+            <Image
+              src={downloadIcon}
+              width={14}
+              height={12}
+              alt="Download icon"
+              className="relative bottom-[1px]"
+            />
+
+            <div className='text-xxs tracking-wider' onClick={() => {
+              downloadClaimHistory();
+            }}>Download CSV</div>
+          </div> : null}
+
           {/* Claim History Section */}
 
           <CSSTransition
