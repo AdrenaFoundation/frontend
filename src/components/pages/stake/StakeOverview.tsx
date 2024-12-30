@@ -659,7 +659,7 @@ export default function StakeOverview({
 
             <div className='text-xxs tracking-wider' onClick={() => {
               downloadClaimHistory();
-            }}>Download CSV</div>
+            }}>Download History</div>
           </div> : null}
 
           {/* Claim History Section */}
