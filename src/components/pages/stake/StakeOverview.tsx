@@ -648,7 +648,11 @@ export default function StakeOverview({
             )}
           </div>
 
-          {claimsHistory ? <div className='w-auto flex ml-auto mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1'>
+          {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1'>
+            <div className='text-xxs tracking-wider' onClick={() => {
+              downloadClaimHistory();
+            }}>Download</div>
+
             <Image
               src={downloadIcon}
               width={14}
@@ -657,9 +661,6 @@ export default function StakeOverview({
               className="relative bottom-[1px]"
             />
 
-            <div className='text-xxs tracking-wider' onClick={() => {
-              downloadClaimHistory();
-            }}>Download History</div>
           </div> : null}
 
           {/* Claim History Section */}
