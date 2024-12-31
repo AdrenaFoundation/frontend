@@ -364,7 +364,7 @@ export default function Trade({
 
         {isBigScreen ? (
           <>
-            <div className="bg-secondary mt-4 border rounded-lg">
+            <div className="bg-secondary mt-4 border rounded-lg relative">
               <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
                 <span
                   className={twMerge(
