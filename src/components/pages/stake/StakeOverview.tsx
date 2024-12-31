@@ -28,12 +28,12 @@ import { formatNumber, getNextStakingRoundStartTime } from '@/utils';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxTokenLogo from '../../../../public/images/adx.svg';
+import chevronDown from '../../../../public/images/chevron-down.svg';
 import downloadIcon from '../../../../public/images/download.png';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import ClaimBlock from './ClaimBlock';
 import LockedStakes from './LockedStakes';
-
 interface SortConfig {
   size: 'asc' | 'desc';
   duration: 'asc' | 'desc';
@@ -547,14 +547,9 @@ export default function StakeOverview({
         <div className="h-[1px] bg-bcolor w-full my-4" />
 
         <div className="flex flex-col text-sm py-0 px-5 w-full">
-          <div
-            onClick={() => {
-              setIsClaimHistoryVisible(!isClaimHistoryVisible);
-            }}
-            className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200"
-          >
+          <div className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200">
             <div className='flex flex-col'>
-              <div className='flex flex-row gap-2 items-center cursor-pointer select-none'>
+              <div className='flex flex-row gap-2 items-center select-none'>
                 <div className="flex items-center justify-between">
                   <div className='mr-2'>
                     <h3 className="md:text-lg font-semibold">Claim History</h3>
@@ -563,22 +558,19 @@ export default function StakeOverview({
                   <h3 className="text-lg font-semibold text-txtfade">
                     {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
                   </h3>
-                </div>
 
-                <svg
-                  className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
+                  {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 ml-2' onClick={() => {
+                    downloadClaimHistory();
+                  }}>
+                    <Image
+                      src={downloadIcon}
+                      width={18}
+                      height={16}
+                      alt="Download icon"
+                      className="relative bottom-1"
+                    />
+                  </div> : null}
+                </div>
               </div>
 
               <p className='text-xs text-txtfade'>Subject to 30s delay</p>
@@ -648,20 +640,6 @@ export default function StakeOverview({
             )}
           </div>
 
-          {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1' onClick={() => {
-            downloadClaimHistory();
-          }}>
-            <div className='text-xxs tracking-wider' >Export</div>
-
-            <Image
-              src={downloadIcon}
-              width={14}
-              height={12}
-              alt="Download icon"
-              className="relative bottom-[1px]"
-            />
-          </div> : null}
-
           {/* Claim History Section */}
 
           <CSSTransition
@@ -688,6 +666,21 @@ export default function StakeOverview({
               />
             </div>
           </CSSTransition>
+
+          <div className='w-full flex items-center justify-center h-6 border-t border-b border-bcolor hover:opacity-100 opacity-80 cursor-pointer mt-2' onClick={() => {
+            setIsClaimHistoryVisible(!isClaimHistoryVisible)
+          }}>
+            <Image
+              className={twMerge(
+                `h-6 w-6`,
+                isClaimHistoryVisible ? 'transform rotate-180 transition-all duration-1000 ease-in-out' : '',
+              )}
+              src={chevronDown}
+              height={60}
+              width={60}
+              alt="Chevron down"
+            />
+          </div>
         </div>
 
         <div className="h-[1px] bg-bcolor w-full my-4" />
