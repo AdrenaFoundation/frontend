@@ -172,7 +172,7 @@ function PositionsHistory({
 // a re-render of the parent component.
 // This is not the most expensive component to re-render, but it's sensible
 // because we're avoiding unnecessary work within a critical path of the app,
-// which is subect to a lot of re-renders by nature: a trading view must be reactive.
+// which is subject to a lot of re-renders by nature: a trading view must be reactive.
 // More optimizations are possible within this component, but this is the best low-hanging fruit
 // yielding the most benefits for minimal effort.
 // Note this is a good candidate for memoization because:
