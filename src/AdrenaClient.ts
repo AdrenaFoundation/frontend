@@ -4003,7 +4003,6 @@ export class AdrenaClient {
 
     return price * (1 - (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
   }
-
   public getPossiblePositionAddresses(user: PublicKey): PublicKey[] {
     return this.tokens.reduce((acc, token) => {
       if (!token.custody) return acc;
