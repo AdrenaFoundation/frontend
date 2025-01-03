@@ -132,8 +132,6 @@ export default function useWatchTokenPrices() {
   }, [dispatch]);
 
   const loadADXTokenPrice = useCallback(async () => {
-    if (!window.adrena.client.connection) return;
-
     try {
       // public instance crossbar switchboard : https://crossbar.switchboard.xyz
       const crossbar = new CrossbarClient('https://crossbar.sg.adrena.xyz');
@@ -141,6 +139,8 @@ export default function useWatchTokenPrices() {
       const result = await crossbar.simulateSolanaFeeds('mainnet', [
         '55WB9SGpMwHqzz4PTuLbCcwXsrrBcxbLawbChNtquzLr',
       ]);
+
+      console.log('RESULT CROSSBAR', result);
 
       if (result === null || result.length === 0) {
         throw new Error('Aggregator holds no value');
@@ -155,6 +155,8 @@ export default function useWatchTokenPrices() {
         variance: number;
       };
       const price = firstResult.result;
+
+      console.log('ADX PRICE', price)
 
       dispatch(setTokenPrice(window.adrena.client.adxToken.symbol, price));
     } catch (e) {

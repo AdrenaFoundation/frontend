@@ -163,14 +163,14 @@ export default function Header({
         <Link
           href="/buy_alp"
           className={twMerge(
-            'ml-2 flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
+            'flex flex-col xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
             pathname !== '/buy_alp' && 'opacity-50',
           )}
         >
-          <div className="text-sm mr-2 font-boldy">ALP</div>
+          <div className="text-sm font-boldy">ALP</div>
 
           {tokenPriceALP ? (
-            <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
+            <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded h-5">
               <div className="text-xxs font-mono flex items-center justify-center">
                 {formatPriceInfo(
                   tokenPriceALP,
@@ -180,21 +180,23 @@ export default function Header({
               </div>
             </div>
           ) : (
-            <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+            <div className='h-5 flex items-center justify-center'>
+              <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+            </div>
           )}
         </Link>
 
         <Link
           href="/buy_adx"
           className={twMerge(
-            'ml-2 flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
+            'flex flex-col xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
             pathname !== '/buy_adx' && 'opacity-50',
           )}
         >
-          <div className="text-sm mr-2 font-boldy">ADX</div>
+          <div className="text-sm font-boldy">ADX</div>
 
           {tokenPriceADX ? (
-            <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
+            <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded h-5">
               <div className="text-xxs font-mono flex items-center justify-center">
                 {formatPriceInfo(
                   tokenPriceADX,
@@ -204,7 +206,9 @@ export default function Header({
               </div>
             </div>
           ) : (
-            <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+            <div className='h-5 flex items-center justify-center'>
+              <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+            </div>
           )}
         </Link>
 
