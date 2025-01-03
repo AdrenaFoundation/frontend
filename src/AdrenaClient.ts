@@ -3988,20 +3988,20 @@ export class AdrenaClient {
     side,
     price,
     exitFeeUsd,
-    unrealizedInterestUsd,
+    interestUsd,
     sizeUsd,
   }: {
     side: 'long' | 'short';
     price: number;
     exitFeeUsd: number;
-    unrealizedInterestUsd: number;
+    interestUsd: number;
     sizeUsd: number;
   }): number {
     if (side === 'long') {
-      return price * (1 + (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
+      return price * (1 + (exitFeeUsd + interestUsd) / sizeUsd);
     }
 
-    return price * (1 - (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
+    return price * (1 - (exitFeeUsd + interestUsd) / sizeUsd);
   }
   public getPossiblePositionAddresses(user: PublicKey): PublicKey[] {
     return this.tokens.reduce((acc, token) => {
@@ -4194,13 +4194,7 @@ export class AdrenaClient {
             size: nativeToUi(positionAccount.lockedAmount, token.decimals),
             collateralUsd,
             price,
-            breakEvenPrice: this.calculateBreakEvenPrice({
-              side,
-              price,
-              exitFeeUsd,
-              unrealizedInterestUsd,
-              sizeUsd,
-            }),
+            breakEvenPrice: null,
             collateralAmount: nativeToUi(
               positionAccount.collateralAmount,
               collateralToken.decimals,

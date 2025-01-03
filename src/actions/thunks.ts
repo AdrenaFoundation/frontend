@@ -44,7 +44,7 @@ export const calculatePnLandLiquidationPrice = (
     side: position.side,
     price: position.price,
     exitFeeUsd: position.exitFeeUsd,
-    unrealizedInterestUsd: position.borrowFeeUsd,
+    interestUsd: position.unrealizedInterestUsd + position.borrowFeeUsd,
     sizeUsd: position.sizeUsd,
   });
 
