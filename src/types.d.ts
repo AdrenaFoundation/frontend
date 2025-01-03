@@ -143,7 +143,7 @@ export type PositionExtended = {
   collateralUsd: number;
   collateralAmount: number;
   price: number;
-  breakEvenPrice: number;
+  breakEvenPrice: number | null;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
   stopLossClosePositionPrice?: number | null;
