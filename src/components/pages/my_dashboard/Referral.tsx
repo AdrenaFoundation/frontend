@@ -16,7 +16,7 @@ export default function Referral({
 }: {
     userProfile: false | UserProfileExtended;
     className?: string;
-    redisProfile: Record<string, string>;
+    redisProfile: Record<string, string> | null;
     duplicatedRedis: boolean;
 }) {
     if (userProfile === null) {
@@ -29,7 +29,7 @@ export default function Referral({
         </div>
     }
 
-    if (Object.keys(redisProfile).length === 0) {
+    if (redisProfile === null) {
         return <div>
             Cannot retrieve referral link
         </div>
@@ -75,7 +75,7 @@ export default function Referral({
                 />
             </Tippy>
         </div>
-        {!duplicatedRedis ? <div className='bg-[#060d16A0] h-[3em] pr-3 pl-3 flex items-center justify-center'>
+        {duplicatedRedis ? <div className='bg-[#060d16A0] h-[3em] pr-3 pl-3 flex items-center justify-center'>
             <Tippy
                 content={
                     <p className="text-xs font-boldy">

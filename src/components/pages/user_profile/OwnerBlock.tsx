@@ -32,7 +32,7 @@ export default function OwnerBloc({
   triggerUserProfileReload: () => void;
   canUpdateNickname?: boolean;
   walletPubkey?: PublicKey;
-  redisProfile: Record<string, string>;
+  redisProfile: Record<string, string> | null;
   setRedisProfile: (redisProfile: Record<string, string>) => void;
   duplicatedRedis: boolean;
 }) {
@@ -55,6 +55,12 @@ export default function OwnerBloc({
       'You must be connected to edit your nickname',
     );
 
+    if (trimmedNickname === userProfile.nickname) {
+      return notification.currentStepErrored(
+        'Nickname is already set',
+      );
+    }
+
     const newRedisProfile = await kv.get(trimmedNickname);
 
     if (newRedisProfile !== null) {
@@ -72,7 +78,10 @@ export default function OwnerBloc({
       });
 
       await kv.set(trimmedNickname, walletPubkey.toBase58());
-      await kv.del(redisProfile.nickname);
+
+      if (redisProfile && redisProfile.nickname !== trimmedNickname) {
+        await kv.del(redisProfile.nickname);
+      }
 
       // pre-shot the onchain change as we know it's coming
       setRedisProfile({

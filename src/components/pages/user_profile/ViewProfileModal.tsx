@@ -41,6 +41,9 @@ export default function ViewProfileModal({
                 canUpdateNickname={false}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={profile.owner}
+                redisProfile={null}
+                setRedisProfile={() => { }}
+                duplicatedRedis={false}
             />
 
             <TabSelect
