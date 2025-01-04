@@ -35,6 +35,7 @@ import {
   uiToNative,
 } from '@/utils';
 
+import { kv } from '@vercel/kv';
 import fireImg from '../../../../../public/images/fire.png';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
@@ -99,9 +100,23 @@ export default function LongShortTradingInputs({
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
 
-  const referrer = useMemo(() => {
+  const referrer = useMemo(async () => {
     console.log('Referral', query.referral);
-    return query.referral ? tryPubkey(query.referral as string) : null;
+
+    if (query.referral === null || typeof query.referral === 'undefined' || query.referral === '' || typeof query.referral !== 'string') {
+      return null;
+    }
+
+    if (query.referral.length === 44) return tryPubkey(query.referral as string)
+
+    try {
+      const referralRedis = await kv.get(query.referral as string) as string | null
+
+      return referralRedis !== null ? tryPubkey(referralRedis) : null
+    } catch (err) {
+      console.log('Error getting referral from redis', err)
+      return null
+    }
   }, [query.referral]);
 
   const [custody, setCustody] = useState<CustodyExtended | null>(null);
@@ -261,6 +276,8 @@ export default function LongShortTradingInputs({
     }
 
     try {
+      const referrerPublicKey = await referrer;
+
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
           owner: new PublicKey(wallet.publicKey),
@@ -270,7 +287,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          referrer,
+          referrer: referrerPublicKey,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -280,7 +297,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          referrer,
+          referrer: referrerPublicKey,
         }));
 
       dispatch(fetchWalletTokenBalances());
