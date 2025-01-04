@@ -35,30 +35,31 @@ export default function Referral({
         </div>
     }
 
-    const link = `https://app.adrena.xyz/trade?referral=${duplicatedRedis ? redisProfile.owner : redisProfile.nickname}`;
+    const link = `https://app.adrena.xyz/trade?referral=${duplicatedRedis ? redisProfile.owner : encodeURIComponent(redisProfile.nickname)}`;
 
-    return (<div className={twMerge("w-auto max-w-full border flex text-xs bg-third items-center gap-x-2 h-[3em] rounded-tr-xl overflow-hidden", className)}>
+    return (<div className={twMerge("w-auto max-w-full border flex text-xs bg-third items-center h-[3em] rounded-tr-xl overflow-hidden", className)}>
         <div className='bg-[#060d16A0] border-r h-[3em] pl-4 pr-4 flex items-center justify-center'>
             <div className='font-boldy'>
                 Referral Link
             </div>
         </div>
-        <div className='hidden sm:block max-w-[14em] shrink text-nowrap text-ellipsis overflow-hidden opacity-50'>{link}</div>
+        <div className='hidden sm:block px-2 max-w-[15em] shrink text-nowrap text-ellipsis overflow-hidden opacity-50'>{link}</div>
 
-        <div className='h-[3em] sm:pl-3 bg-[#060d16A0] opacity-50 flex items-center justify-center hover:opacity-100 cursor-pointer' onClick={async () => {
-            try {
-                await navigator.clipboard.writeText(link);
-                console.log('Text copied to clipboard!');
-                addNotification({
-                    title: 'Referral link copied to clipboard',
-                    message: '',
-                    type: 'info',
-                    duration: 'regular',
-                });
-            } catch (err) {
-                console.error('Could not copy text: ', err);
-            }
-        }}>
+        <div className={twMerge('h-[3em] px-2 sm:pl-3 bg-[#060d16A0] opacity-50 flex items-center justify-center hover:opacity-100 cursor-pointer',
+            duplicatedRedis ? '' : 'pr-3')} onClick={async () => {
+                try {
+                    await navigator.clipboard.writeText(link);
+                    console.log('Text copied to clipboard!');
+                    addNotification({
+                        title: 'Referral link copied to clipboard',
+                        message: '',
+                        type: 'info',
+                        duration: 'regular',
+                    });
+                } catch (err) {
+                    console.error('Could not copy text: ', err);
+                }
+            }}>
             <Tippy
                 content={
                     <p className="text-xs font-boldy">

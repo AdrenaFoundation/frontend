@@ -110,8 +110,7 @@ export default function LongShortTradingInputs({
     if (query.referral.length === 44) return tryPubkey(query.referral as string)
 
     try {
-      const referralRedis = await kv.get(query.referral as string) as string | null
-
+      const referralRedis = await kv.get(decodeURIComponent(query.referral as string)) as string | null
       return referralRedis !== null ? tryPubkey(referralRedis) : null
     } catch (err) {
       console.log('Error getting referral from redis', err)
