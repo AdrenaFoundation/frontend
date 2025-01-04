@@ -1,6 +1,7 @@
 import { BN, Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
+import { kv } from '@vercel/kv';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -35,7 +36,6 @@ import {
   uiToNative,
 } from '@/utils';
 
-import { kv } from '@vercel/kv';
 import fireImg from '../../../../../public/images/fire.png';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';

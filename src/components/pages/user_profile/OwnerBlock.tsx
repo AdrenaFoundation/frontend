@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { kv } from '@vercel/kv';
 import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -9,7 +10,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import DateInfo from '@/components/pages/monitoring/DateInfo';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
-import { kv } from '@vercel/kv';
+
 import editIcon from '../../../../public/images/edit-icon.png';
 import pfp from '../../../../public/images/monster-pfp.png';
 import pfw from '../../../../public/images/pfw.png';

@@ -1,10 +1,10 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import { UserProfileExtended } from '@/types';
 import { addNotification } from '@/utils';
 
-import Tippy from '@tippyjs/react';
 import copyIcon from '../../../../public/images/copy.svg';
 import errorIcon from '../../../../public/images/Icons/error.svg';
 
