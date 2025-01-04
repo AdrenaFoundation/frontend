@@ -81,6 +81,7 @@ export default function MyDashboard({
             owner: userProfile.owner.toBase58(),
           });
           setDuplicatedRedis(true);
+          return;
         }
 
         if (setDuplicatedRedis) setDuplicatedRedis(false);

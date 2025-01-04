@@ -6,7 +6,7 @@ import { UserProfileExtended } from '@/types';
 import { addNotification } from '@/utils';
 
 import copyIcon from '../../../../public/images/copy.svg';
-import errorIcon from '../../../../public/images/Icons/error.svg';
+import warningIcon from '../../../../public/images/Icons/warning.png';
 
 export default function Referral({
     userProfile,
@@ -38,10 +38,27 @@ export default function Referral({
     const link = `https://app.adrena.xyz/trade?referral=${duplicatedRedis ? redisProfile.owner : encodeURIComponent(redisProfile.nickname)}`;
 
     return (<div className={twMerge("w-auto max-w-full border flex text-xs bg-third items-center h-[3em] rounded-tr-xl overflow-hidden", className)}>
-        <div className='bg-[#060d16A0] border-r h-[3em] pl-4 pr-4 flex items-center justify-center'>
+        <div className='bg-[#060d16A0] border-r h-[3em] pl-4 pr-4 flex items-center justify-center gap-2'>
             <div className='font-boldy'>
                 Referral Link
             </div>
+
+            {duplicatedRedis ? <Tippy
+                content={
+                    <p className="text-xs font-boldy">
+                        The username &apos;{redisProfile.nickname}&apos; is already in use by another user. Since each username can only have one referral link, we’ve assigned your wallet public key as your referral link.
+                        If you&apos;d like to customize your referral link, please update your username.
+                    </p>
+                }
+            >
+                <Image
+                    className='opacity-75'
+                    src={warningIcon}
+                    alt="warning icon"
+                    width={18}
+                    height={18}
+                />
+            </Tippy> : null}
         </div>
         <div className='hidden sm:block px-2 max-w-[15em] shrink text-nowrap text-ellipsis overflow-hidden opacity-50'>{link}</div>
 
@@ -76,21 +93,5 @@ export default function Referral({
                 />
             </Tippy>
         </div>
-        {duplicatedRedis ? <div className='bg-[#060d16A0] h-[3em] pr-3 pl-3 flex items-center justify-center'>
-            <Tippy
-                content={
-                    <p className="text-xs font-boldy">
-                        {redisProfile.nickname} is already taken by another user, please choose a different one.
-                    </p>
-                }
-            >
-                <Image
-                    src={errorIcon}
-                    alt="duplicate icon"
-                    width={16}
-                    height={16}
-                />
-            </Tippy>
-        </div> : null}
     </div>);
 }
