@@ -35,7 +35,7 @@ export default function Referral({
         </div>
     }
 
-    const link = `https://app.adrena.xyz/trade?referral=${duplicatedRedis ? redisProfile.owner : userProfile.nickname}`;
+    const link = `https://app.adrena.xyz/trade?referral=${duplicatedRedis ? redisProfile.owner : redisProfile.nickname}`;
 
     return (<div className={twMerge("w-auto max-w-full border flex text-xs bg-third items-center gap-x-2 h-[3em] rounded-tr-xl overflow-hidden", className)}>
         <div className='bg-[#060d16A0] border-r h-[3em] pl-4 pr-4 flex items-center justify-center'>
