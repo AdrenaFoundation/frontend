@@ -31,6 +31,7 @@
     "@switchboard-xyz/solana.js": "=3.2.5",
     "@tippyjs/react": "=4.2.6",
     "@vercel/analytics": "=1.4.1",
+    "@vercel/kv": "=1.0.1",
     "@vercel/og": "=1.0.0",
     "@vercel/speed-insights": "=1.1.0",
     "@wallet-standard/app": "=1.1.0",

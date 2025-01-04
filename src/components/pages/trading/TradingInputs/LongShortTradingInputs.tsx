@@ -1,6 +1,7 @@
 import { BN, Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
+import { kv } from '@vercel/kv';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -99,9 +100,22 @@ export default function LongShortTradingInputs({
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
 
-  const referrer = useMemo(() => {
+  const referrer = useMemo(async () => {
     console.log('Referral', query.referral);
-    return query.referral ? tryPubkey(query.referral as string) : null;
+
+    if (query.referral === null || typeof query.referral === 'undefined' || query.referral === '' || typeof query.referral !== 'string') {
+      return null;
+    }
+
+    if (query.referral.length === 44) return tryPubkey(query.referral as string)
+
+    try {
+      const referralRedis = await kv.get(decodeURIComponent(query.referral as string)) as string | null
+      return referralRedis !== null ? tryPubkey(referralRedis) : null
+    } catch (err) {
+      console.log('Error getting referral from redis', err)
+      return null
+    }
   }, [query.referral]);
 
   const [custody, setCustody] = useState<CustodyExtended | null>(null);
@@ -261,6 +275,8 @@ export default function LongShortTradingInputs({
     }
 
     try {
+      const referrerPublicKey = await referrer;
+
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
           owner: new PublicKey(wallet.publicKey),
@@ -270,7 +286,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          referrer,
+          referrer: referrerPublicKey,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -280,7 +296,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          referrer,
+          referrer: referrerPublicKey,
         }));
 
       dispatch(fetchWalletTokenBalances());

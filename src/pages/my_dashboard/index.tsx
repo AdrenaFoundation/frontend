@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { kv } from '@vercel/kv';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -30,11 +31,11 @@ export default function MyDashboard({
   const [nickname, setNickname] = useState<string | null>(null);
   const walletAddress = useSelector(selectWalletAddress);
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
-
+  const [redisProfile, setRedisProfile] = useState<Record<string, string> | null>(null);
   const positions = usePositions(walletAddress);
 
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
-
+  const [duplicatedRedis, setDuplicatedRedis] = useState<boolean>(false);
   const {
     activityCalendarData,
     bubbleBy,
@@ -50,6 +51,49 @@ export default function MyDashboard({
     triggerUserProfileReload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const fetchRedisProfile = async () => {
+      if (userProfile === null || userProfile === false || userProfile.nickname === '') return;
+
+      try {
+        if (redisProfile !== null &&
+          redisProfile.nickname === userProfile.nickname &&
+          redisProfile.owner === userProfile.owner.toBase58()) return;
+
+        const newRedisProfile = {
+          nickname: userProfile.nickname,
+          owner: await kv.get(userProfile.nickname),
+        };
+
+        if (typeof newRedisProfile.owner === 'undefined' || newRedisProfile.owner === null || newRedisProfile.owner === '') {
+          await kv.set(newRedisProfile.nickname, userProfile.owner.toBase58());
+          setRedisProfile({
+            nickname: newRedisProfile.nickname,
+            owner: userProfile.owner.toBase58(),
+          });
+          return;
+        }
+
+        if (newRedisProfile.owner !== userProfile.owner.toBase58()) {
+          setRedisProfile({
+            nickname: newRedisProfile.nickname,
+            owner: userProfile.owner.toBase58(),
+          });
+          setDuplicatedRedis(true);
+          return;
+        }
+
+        if (setDuplicatedRedis) setDuplicatedRedis(false);
+        setRedisProfile(newRedisProfile as Record<string, string>);
+      } catch (error) {
+        console.log('error fetching redis profile', error);
+      }
+    };
+
+    fetchRedisProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile ? userProfile.nickname : '']);
 
   useEffect(() => {
     getUserVesting();
@@ -70,10 +114,28 @@ export default function MyDashboard({
       );
     }
 
+    const newRedisProfile = await kv.get(trimmedNickname);
+
+    if (newRedisProfile !== null) {
+      return notification.currentStepErrored(
+        'Nickname already exists',
+      );
+    }
+
     try {
+      if (!wallet) return notification.currentStepErrored('Wallet not connected');
+
       await window.adrena.client.initUserProfile({
         nickname: trimmedNickname,
         notification,
+      });
+
+      await kv.set(trimmedNickname, wallet.publicKey.toBase58());
+
+      // faster than tracking onchain change
+      setRedisProfile({
+        nickname: trimmedNickname,
+        owner: wallet.publicKey.toBase58(),
       });
 
       triggerUserProfileReload();
@@ -126,6 +188,9 @@ export default function MyDashboard({
                 canUpdateNickname={!readonly}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={wallet?.publicKey}
+                redisProfile={redisProfile ?? {}}
+                setRedisProfile={setRedisProfile}
+                duplicatedRedis={duplicatedRedis}
               />
 
               <TradingStats
