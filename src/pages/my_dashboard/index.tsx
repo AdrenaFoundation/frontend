@@ -91,6 +91,7 @@ export default function MyDashboard({
     };
 
     fetchRedisProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile ? userProfile.nickname : '']);
 
   useEffect(() => {

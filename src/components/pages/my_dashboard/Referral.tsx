@@ -6,7 +6,7 @@ import { addNotification } from '@/utils';
 
 import Tippy from '@tippyjs/react';
 import copyIcon from '../../../../public/images/copy.svg';
-import errorIcon from '../../../../public/images/icons/error.svg';
+import errorIcon from '../../../../public/images/Icons/error.svg';
 
 export default function Referral({
     userProfile,
