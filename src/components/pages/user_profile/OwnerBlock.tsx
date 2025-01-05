@@ -26,6 +26,7 @@ export default function OwnerBloc({
   redisProfile,
   setRedisProfile,
   duplicatedRedis,
+  readonly = false,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
@@ -35,6 +36,7 @@ export default function OwnerBloc({
   redisProfile: Record<string, string> | null;
   setRedisProfile: (redisProfile: Record<string, string>) => void;
   duplicatedRedis: boolean;
+  readonly?: boolean;
 }) {
   const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
   const [updatedNickname, setUpdatedNickname] = useState<string | null>(null);
@@ -198,12 +200,14 @@ export default function OwnerBloc({
         )}
       </div>
 
-      <Referral
-        className='h-auto w-auto flex absolute left-0 bottom-0 z-20'
-        userProfile={userProfile}
-        redisProfile={redisProfile}
-        duplicatedRedis={duplicatedRedis}
-      />
+      {!readonly ? <>
+        <Referral
+          className='h-auto w-auto flex absolute left-0 bottom-0 z-20'
+          userProfile={userProfile}
+          redisProfile={redisProfile}
+          duplicatedRedis={duplicatedRedis}
+        />
+      </> : null}
 
       <DateInfo
         className="text-sm absolute bottom-2 right-4 z-20 font-boldy"
