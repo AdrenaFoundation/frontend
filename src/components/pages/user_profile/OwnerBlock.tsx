@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { kv } from '@vercel/kv';
 import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -22,12 +23,20 @@ export default function OwnerBloc({
   triggerUserProfileReload,
   canUpdateNickname = true,
   walletPubkey,
+  redisProfile,
+  setRedisProfile,
+  duplicatedRedis,
+  readonly = false,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
   triggerUserProfileReload: () => void;
   canUpdateNickname?: boolean;
   walletPubkey?: PublicKey;
+  redisProfile: Record<string, string> | null;
+  setRedisProfile: (redisProfile: Record<string, string>) => void;
+  duplicatedRedis: boolean;
+  readonly?: boolean;
 }) {
   const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
   const [updatedNickname, setUpdatedNickname] = useState<string | null>(null);
@@ -44,11 +53,42 @@ export default function OwnerBloc({
       );
     }
 
+    if (!walletPubkey) return notification.currentStepErrored(
+      'You must be connected to edit your nickname',
+    );
+
+    if (trimmedNickname === userProfile.nickname) {
+      return notification.currentStepErrored(
+        'Nickname is already set',
+      );
+    }
+
+    const newRedisProfile = await kv.get(trimmedNickname);
+
+    if (newRedisProfile !== null) {
+      return notification.currentStepErrored(
+        'Nickname already exists, please choose a different one',
+      );
+    }
+
     try {
+      if (!walletPubkey) return notification.currentStepErrored('Wallet not connected');
+
       await window.adrena.client.editUserProfile({
         nickname: trimmedNickname,
         notification,
+      });
 
+      await kv.set(trimmedNickname, walletPubkey.toBase58());
+
+      if (redisProfile && redisProfile.nickname !== trimmedNickname) {
+        await kv.del(redisProfile.nickname);
+      }
+
+      // pre-shot the onchain change as we know it's coming
+      setRedisProfile({
+        nickname: trimmedNickname,
+        owner: walletPubkey.toBase58(),
       });
 
       triggerUserProfileReload();
@@ -160,10 +200,14 @@ export default function OwnerBloc({
         )}
       </div>
 
-      <Referral
-        className='h-auto w-auto flex absolute left-0 bottom-0 z-20'
-        userProfile={userProfile}
-      />
+      {!readonly ? <>
+        <Referral
+          className='h-auto w-auto flex absolute left-0 bottom-0 z-20'
+          userProfile={userProfile}
+          redisProfile={redisProfile}
+          duplicatedRedis={duplicatedRedis}
+        />
+      </> : null}
 
       <DateInfo
         className="text-sm absolute bottom-2 right-4 z-20 font-boldy"
