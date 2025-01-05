@@ -44,6 +44,7 @@ export default function ViewProfileModal({
                 redisProfile={null}
                 setRedisProfile={() => { }}
                 duplicatedRedis={false}
+                readonly={true}
             />
 
             <TabSelect
