@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { getGMT } from '@/utils';
 
 export default function UtilizationChart() {
@@ -215,6 +216,7 @@ export default function UtilizationChart() {
       setPeriod={setPeriod}
       isReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
       formatY="percentage"
+      events={ADRENA_EVENTS}
     />
   );
 }

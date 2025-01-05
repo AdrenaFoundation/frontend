@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import AreaRechart from '@/components/ReCharts/AreaRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 import { getGMT } from '@/utils';
 
@@ -140,6 +141,7 @@ export default function ALPPriceChart() {
       }]}
       setPeriod={setPeriod}
       domain={['dataMin', 'dataMax']}
+      events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
     />
   );
 }

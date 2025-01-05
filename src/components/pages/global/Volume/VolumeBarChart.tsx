@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 
 interface VolumeChartProps {
@@ -66,8 +67,6 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
           `https://datapi.adrena.xyz/poolinfo?cumulative_trading_volume_usd=true&sort=DESC&limit=1`,
         ).then((res) => res.json()),
       ]);
-
-      console.log('VOLUME', data)
 
       const {
         cumulative_trading_volume_usd,
@@ -140,6 +139,7 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       gmt={0}
       domain={[0, 'auto']}
       tippyContent=""
+      events={ADRENA_EVENTS}
       isSmallScreen={isSmallScreen}
       total={false}
     />

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 
 interface FeesChartProps {
@@ -162,6 +163,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
       isSmallScreen={isSmallScreen}
       total={true}
+      events={ADRENA_EVENTS}
     />
   );
 }

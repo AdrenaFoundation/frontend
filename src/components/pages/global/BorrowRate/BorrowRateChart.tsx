@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { getGMT } from '@/utils';
 
 export default function BorrowRateChart() {
@@ -189,6 +190,7 @@ export default function BorrowRateChart() {
       precision={4}
       precisionTooltip={6}
       scale="sqrt"
+      events={ADRENA_EVENTS}
     />
   );
 }

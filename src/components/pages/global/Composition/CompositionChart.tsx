@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 import { getCustodyByMint, getGMT } from '@/utils';
 
@@ -170,6 +171,7 @@ export default function CompositionChart() {
       }]}
       yDomain={['dataMax']}
       setPeriod={setPeriod}
+      events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
     />
   );
 }

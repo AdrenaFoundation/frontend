@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 
-import { RechartsData } from '@/types';
+import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
@@ -38,6 +38,7 @@ export default function LineRechart<T extends string>({
   precision = 0,
   precisionTooltip = 2,
   isReferenceLine,
+  events,
 }: {
   title: string;
   data: RechartsData[];
@@ -62,6 +63,7 @@ export default function LineRechart<T extends string>({
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
   isReferenceLine?: boolean;
+  events?: AdrenaEvent[],
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -122,6 +124,7 @@ export default function LineRechart<T extends string>({
                 format={formatY}
                 gmt={gmt}
                 precision={precisionTooltip}
+                events={events}
               />
             }
             cursor={false}
@@ -139,6 +142,7 @@ export default function LineRechart<T extends string>({
                     (l) => l !== String(e.dataKey).trim(),
                   ) as DataKey<string | number>[];
                 }
+
                 return [
                   ...hiddenLabels,
                   String(e.dataKey).trim() as DataKey<string | number>,
@@ -173,6 +177,20 @@ export default function LineRechart<T extends string>({
               }}
             />
           )}
+
+          {events?.map((event, i) => <ReferenceLine
+            id={`event-${event.label}`}
+            key={event.label + '-' + i + '-' + event.time}
+            x={event.time}
+            stroke={event.color}
+            strokeDasharray="3 3"
+            label={{
+              position: event.labelPosition ?? 'insideTopRight',
+              value: event.label,
+              fill: event.color,
+              fontSize: 12,
+            }}
+          />)}
         </LineChart>
       </ResponsiveContainer>
     </div>

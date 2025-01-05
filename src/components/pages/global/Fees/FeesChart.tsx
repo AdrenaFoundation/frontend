@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 import { getGMT } from '@/utils';
 
@@ -35,9 +36,9 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
           case '1M':
             return 'poolinfodaily';
           case '3M':
-            return 'custodyinfodaily';
+            return 'poolinfodaily';
           case '6M':
-            return 'custodyinfodaily';
+            return 'poolinfodaily';
           default:
             return 'poolinfo';
         }
@@ -174,6 +175,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
       yDomain={[0, 'auto']}
       tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
       isSmallScreen={isSmallScreen}
+      events={ADRENA_EVENTS}
     />
   );
 }

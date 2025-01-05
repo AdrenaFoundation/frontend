@@ -467,6 +467,17 @@ export type RechartsData = {
   [key: string]: number | string | boolean;
 };
 
+export type AdrenaEventType = 'Global' | 'Trading' | 'Staking' | 'Other';
+
+export type AdrenaEvent = {
+  label: string;
+  description: string;
+  time: string;
+  color: string;
+  labelPosition?: LabelPosition;
+  type: AdrenaEventType;
+};
+
 export type ClaimApi = {
   claim_id: number;
   rewards_adx: number;

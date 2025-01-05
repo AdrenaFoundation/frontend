@@ -6,6 +6,7 @@ import {
 } from 'recharts/types/component/DefaultTooltipContent';
 import { twMerge } from 'tailwind-merge';
 
+import { AdrenaEvent } from '@/types';
 import { formatNumber, formatPercentage, formatPriceInfo } from '@/utils';
 
 export default function CustomRechartsToolTip({
@@ -23,6 +24,7 @@ export default function CustomRechartsToolTip({
   totalColor = 'red',
   gmt, // GMT+0
   labelCustomization,
+  events,
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
@@ -35,8 +37,11 @@ export default function CustomRechartsToolTip({
   totalColor?: string;
   gmt?: number;
   labelCustomization?: (label: string) => string;
+  events?: AdrenaEvent[];
 }) {
   if (active && payload && payload.length) {
+    const activeEvents = (events || []).filter(event => event.time === label);
+
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
         {label && <p className="text-lg mb-2 font-mono">{labelPrefix}{labelCustomization ? labelCustomization(label) : label} {typeof gmt !== 'undefined' ? `${gmt < 0 ? `GMT${gmt}` : gmt > 0 ? `GMT+${gmt}` : "UTC"}` : null} {labelSuffix}</p>}
@@ -100,7 +105,16 @@ export default function CustomRechartsToolTip({
             </span>
           </div>
         ))}
-      </div>
+
+        {activeEvents.length > 0 ? <div className='mt-2 text-xs underline mb-1 opacity-90'>Event{activeEvents.length > 1 ? 's' : ''}:</div> : null}
+
+        <div className='flex flex-col gap-1'>
+          {activeEvents.map((event, i) =>
+            <div key={event.label + '-' + i} className={twMerge('flex text-xs opacity-90 max-w-[20em]')}>
+              {event.description}
+            </div>)}
+        </div>
+      </div >
     );
   }
 

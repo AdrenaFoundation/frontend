@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { getGMT } from '@/utils';
 
 interface CumulativePnlChartProps {
@@ -224,6 +225,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       }]}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
+      events={ADRENA_EVENTS}
     />
   );
 }

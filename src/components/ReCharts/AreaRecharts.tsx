@@ -4,6 +4,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -11,7 +12,7 @@ import {
 } from 'recharts';
 import { AxisDomain } from 'recharts/types/util/types';
 
-import { RechartsData } from '@/types';
+import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
@@ -30,6 +31,7 @@ export default function AreaRechart<T extends string>({
   subValue,
   formatY = 'currency',
   gmt,
+  events,
 }: {
   title: string;
   data: RechartsData[];
@@ -48,6 +50,7 @@ export default function AreaRechart<T extends string>({
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
   gmt?: number;
+  events?: AdrenaEvent[],
 }) {
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
@@ -101,6 +104,7 @@ export default function AreaRechart<T extends string>({
               <CustomRechartsToolTip
                 isValueOnly={labels.length === 1}
                 gmt={gmt}
+                events={events}
               />
             }
             cursor={false}
@@ -117,6 +121,24 @@ export default function AreaRechart<T extends string>({
               />
             );
           })}
+
+          {events?.map(({
+            label,
+            time,
+            color,
+            labelPosition,
+          }, i) => <ReferenceLine
+              key={label + '-' + i + '-' + time}
+              x={time}
+              stroke={color}
+              strokeDasharray="3 3"
+              label={{
+                position: labelPosition ?? 'insideTopRight',
+                value: label,
+                fill: color,
+                fontSize: 12,
+              }}
+            />)}
         </AreaChart>
       </ResponsiveContainer>
     </div>
