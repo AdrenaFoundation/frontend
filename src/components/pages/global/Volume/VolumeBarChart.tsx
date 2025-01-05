@@ -67,6 +67,8 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
         ).then((res) => res.json()),
       ]);
 
+      console.log('VOLUME', data)
+
       const {
         cumulative_trading_volume_usd,
         snapshot_timestamp,
@@ -131,6 +133,10 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       ]}
       period={period}
       setPeriod={setPeriod}
+      periods={['1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       gmt={0}
       domain={[0, 'auto']}
       tippyContent=""

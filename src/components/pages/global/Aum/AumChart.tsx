@@ -40,6 +40,10 @@ export default function AumChart() {
             return 'poolinfohourly';
           case '1M':
             return 'poolinfodaily';
+          case '3M':
+            return 'poolinfodaily';
+          case '6M':
+            return 'poolinfodaily';
           default:
             return 'poolinfo';
         }
@@ -53,6 +57,10 @@ export default function AumChart() {
             return 7;
           case '1M':
             return 31;
+          case '3M':
+            return 93;
+          case '6M':
+            return 183;
           default:
             return 1;
         }
@@ -68,6 +76,8 @@ export default function AumChart() {
       );
 
       const { data } = await res.json();
+      console.log('DATA dzdzd', data);
+
       const { aum_usd, snapshot_timestamp } = data;
 
       const timeStamp = snapshot_timestamp.map((time: string) => {
@@ -86,7 +96,7 @@ export default function AumChart() {
           });
         }
 
-        if (periodRef.current === '1M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -123,7 +133,11 @@ export default function AumChart() {
       data={chartData}
       labels={[{ name: 'value' }]}
       period={period}
-      gmt={period === '1M' ? 0 : getGMT()}
+      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       setPeriod={setPeriod}
       domain={['dataMin', 'dataMax']}
     />

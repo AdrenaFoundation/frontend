@@ -11,20 +11,21 @@ import {
   YAxis,
 } from 'recharts';
 import { AxisDomain, DataKey } from 'recharts/types/util/types';
-import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
 import { formatGraphCurrency } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
+import PeriodSelector from './PeriodSelector';
 
-export default function StakedBarRechart({
+export default function StakedBarRechart<T extends string>({
   title,
   data,
   labels,
   period,
   setPeriod,
+  periods,
   domain,
   tippyContent,
   isSmallScreen = true,
@@ -39,8 +40,12 @@ export default function StakedBarRechart({
     name: string;
     color?: string;
   }[];
-  period: string | null;
-  setPeriod: (v: string | null) => void;
+  period: T | null;
+  setPeriod: (v: T | null) => void;
+  periods: (T | {
+    name: T;
+    disabled?: boolean;
+  })[];
   domain?: AxisDomain;
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
@@ -82,47 +87,7 @@ export default function StakedBarRechart({
           )}
         </div>
 
-        <div className="flex gap-2 text-sm">
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1M' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1M')}
-          >
-            1M
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '3M' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('3M')}
-          >
-            3M
-          </div>
-          <Tippy
-            content={
-              <div className="text-sm w-20 flex flex-col justify-around">
-                Coming soon
-              </div>
-            }
-            placement="auto"
-          >
-            <div className="text-txtfade cursor-not-allowed">6M</div>
-          </Tippy>
-
-          <Tippy
-            content={
-              <div className="text-sm w-20 flex flex-col justify-around">
-                Coming soon
-              </div>
-            }
-            placement="auto"
-          >
-            <div className="text-txtfade cursor-not-allowed">1Y</div>
-          </Tippy>
-        </div>
+        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
