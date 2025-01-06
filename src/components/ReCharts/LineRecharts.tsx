@@ -12,22 +12,24 @@ import {
   YAxis,
 } from 'recharts';
 import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
-import { twMerge } from 'tailwind-merge';
 
-import { RechartsData } from '@/types';
+import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
+import PeriodSelector from './PeriodSelector';
 
-export default function LineRechart({
+export default function LineRechart<T extends string>({
   title,
   data,
   labels,
   period,
   setPeriod,
+  periods,
   gmt,
-  domain,
+  xDomain,
+  yDomain,
   scale = 'linear',
   tippyContent,
   isSmallScreen = true,
@@ -36,6 +38,7 @@ export default function LineRechart({
   precision = 0,
   precisionTooltip = 2,
   isReferenceLine,
+  events,
 }: {
   title: string;
   data: RechartsData[];
@@ -43,9 +46,14 @@ export default function LineRechart({
     name: string;
     color?: string;
   }[];
-  period?: string | null;
-  setPeriod?: (v: string | null) => void;
-  domain?: AxisDomain;
+  period?: T | null;
+  setPeriod?: (v: T | null) => void;
+  periods: (T | {
+    name: T;
+    disabled?: boolean;
+  })[];
+  xDomain?: AxisDomain;
+  yDomain?: AxisDomain;
   scale?: ScaleType;
   precision?: number;
   precisionTooltip?: number;
@@ -55,6 +63,7 @@ export default function LineRechart({
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
   isReferenceLine?: boolean;
+  events?: AdrenaEvent[],
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -97,55 +106,16 @@ export default function LineRechart({
           )}
         </div>
 
-        {setPeriod ? <div className="flex gap-2 text-sm">
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1d')}
-          >
-            1d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '7d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('7d')}
-          >
-            7d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1M' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1M')}
-          >
-            1M
-          </div>
-
-          <Tippy
-            content={
-              <div className="text-sm w-20 flex flex-col justify-around">
-                Coming soon
-              </div>
-            }
-            placement="auto"
-          >
-            <div className="text-txtfade cursor-not-allowed">1Y</div>
-          </Tippy>
-        </div> : null}
+        {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} /> : null}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
-          <XAxis dataKey="time" fontSize="12" />
+          <XAxis dataKey="time" fontSize="12" domain={xDomain} />
 
-          <YAxis domain={domain} tickFormatter={formatYAxis} fontSize="11" scale={scale} />
+          <YAxis domain={yDomain} tickFormatter={formatYAxis} fontSize="11" scale={scale} />
 
           <Tooltip
             content={
@@ -154,6 +124,7 @@ export default function LineRechart({
                 format={formatY}
                 gmt={gmt}
                 precision={precisionTooltip}
+                events={events}
               />
             }
             cursor={false}
@@ -171,6 +142,7 @@ export default function LineRechart({
                     (l) => l !== String(e.dataKey).trim(),
                   ) as DataKey<string | number>[];
                 }
+
                 return [
                   ...hiddenLabels,
                   String(e.dataKey).trim() as DataKey<string | number>,
@@ -205,6 +177,20 @@ export default function LineRechart({
               }}
             />
           )}
+
+          {events?.map((event, i) => <ReferenceLine
+            id={`event-${event.label}`}
+            key={event.label + '-' + i + '-' + event.time}
+            x={event.time}
+            stroke={event.color}
+            strokeDasharray="3 3"
+            label={{
+              position: event.labelPosition ?? 'insideTopRight',
+              value: event.label,
+              fill: event.color,
+              fontSize: 12,
+            }}
+          />)}
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -4,31 +4,34 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import { AxisDomain } from 'recharts/types/util/types';
-import { twMerge } from 'tailwind-merge';
 
-import { RechartsData } from '@/types';
+import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
+import PeriodSelector from './PeriodSelector';
 
-export default function AreaRechart({
+export default function AreaRechart<T extends string>({
   title,
   data,
   labels,
   period,
   setPeriod,
+  periods,
   domain,
   tippyContent,
   subValue,
   formatY = 'currency',
   gmt,
+  events,
 }: {
   title: string;
   data: RechartsData[];
@@ -36,13 +39,18 @@ export default function AreaRechart({
     name: string;
     color?: string;
   }[];
-  period: string | null;
-  setPeriod: (v: string | null) => void;
+  period: T | null;
+  setPeriod: (v: T | null) => void;
+  periods: (T | {
+    name: T;
+    disabled?: boolean;
+  })[];
   domain?: AxisDomain;
   tippyContent?: ReactNode;
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
   gmt?: number;
+  events?: AdrenaEvent[],
 }) {
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
@@ -80,46 +88,7 @@ export default function AreaRechart({
           />
         </div>
 
-        <div className="flex gap-2 text-sm">
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1d')}
-          >
-            1d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '7d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('7d')}
-          >
-            7d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1M' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1M')}
-          >
-            1M
-          </div>
-
-          <Tippy
-            content={
-              <div className="text-sm w-20 flex flex-col justify-around">
-                Coming soon
-              </div>
-            }
-            placement="auto"
-          >
-            <div className="text-txtfade cursor-not-allowed">1Y</div>
-          </Tippy>
-        </div>
+        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -135,6 +104,7 @@ export default function AreaRechart({
               <CustomRechartsToolTip
                 isValueOnly={labels.length === 1}
                 gmt={gmt}
+                events={events}
               />
             }
             cursor={false}
@@ -151,6 +121,24 @@ export default function AreaRechart({
               />
             );
           })}
+
+          {events?.map(({
+            label,
+            time,
+            color,
+            labelPosition,
+          }, i) => <ReferenceLine
+              key={label + '-' + i + '-' + time}
+              x={time}
+              stroke={color}
+              strokeDasharray="3 3"
+              label={{
+                position: labelPosition ?? 'insideTopRight',
+                value: label,
+                fill: color,
+                fontSize: 12,
+              }}
+            />)}
         </AreaChart>
       </ResponsiveContainer>
     </div>

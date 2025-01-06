@@ -2,6 +2,46 @@ import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityR
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
+    public static async getLastPrice(): Promise<{
+        adxPrice: number | null;
+        alpPrice: number | null;
+    } | null> {
+        try {
+            const result = await fetch(
+                `https://datapi.adrena.xyz/last-price`,
+            ).then((res) => res.json());
+
+            if (result === null || typeof result === 'undefined') {
+                return null;
+            }
+
+            const dateNow = new Date();
+            const dateLastPriceAdx = new Date(result.data.adx.price_timestamp);
+            const dateLastPriceAlp = new Date(result.data.alp.price_timestamp);
+
+            let adxPrice = result.data.adx.price;
+            let alpPrice = result.data.alp.price;
+
+            //15 minutes before not showing
+            if (dateNow.getTime() - dateLastPriceAdx.getTime() > 900000) {
+                adxPrice = null;
+            }
+
+            //15 minutes before not showing
+            if (dateNow.getTime() - dateLastPriceAlp.getTime() > 900000) {
+                alpPrice = null;
+            }
+
+            return {
+                adxPrice,
+                alpPrice,
+            };
+        } catch (e) {
+            console.log('error fetching prices', e);
+            return null;
+        }
+    }
+
     public static async getRolling7DGlobalApr(): Promise<{
         lm_apr_rolling_seven_day: number;
         lp_apr_rolling_seven_day: number;
