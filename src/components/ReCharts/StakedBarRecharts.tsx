@@ -5,26 +5,28 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import { AxisDomain, DataKey } from 'recharts/types/util/types';
-import { twMerge } from 'tailwind-merge';
 
-import { RechartsData } from '@/types';
+import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
+import PeriodSelector from './PeriodSelector';
 
-export default function StakedBarRechart({
+export default function StakedBarRechart<T extends string>({
   title,
   data,
   labels,
   period,
   setPeriod,
+  periods,
   domain,
   tippyContent,
   isSmallScreen = true,
@@ -32,6 +34,7 @@ export default function StakedBarRechart({
   formatY = 'currency',
   gmt,
   total,
+  events,
 }: {
   title: string;
   data: RechartsData[];
@@ -39,8 +42,12 @@ export default function StakedBarRechart({
     name: string;
     color?: string;
   }[];
-  period: string | null;
-  setPeriod: (v: string | null) => void;
+  period: T | null;
+  setPeriod: (v: T | null) => void;
+  periods: (T | {
+    name: T;
+    disabled?: boolean;
+  })[];
   domain?: AxisDomain;
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
@@ -48,6 +55,7 @@ export default function StakedBarRechart({
   formatY?: 'percentage' | 'currency' | 'number';
   gmt?: number;
   total?: boolean;
+  events?: AdrenaEvent[],
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -82,47 +90,7 @@ export default function StakedBarRechart({
           )}
         </div>
 
-        <div className="flex gap-2 text-sm">
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1M' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1M')}
-          >
-            1M
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '3M' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('3M')}
-          >
-            3M
-          </div>
-          <Tippy
-            content={
-              <div className="text-sm w-20 flex flex-col justify-around">
-                Coming soon
-              </div>
-            }
-            placement="auto"
-          >
-            <div className="text-txtfade cursor-not-allowed">6M</div>
-          </Tippy>
-
-          <Tippy
-            content={
-              <div className="text-sm w-20 flex flex-col justify-around">
-                Coming soon
-              </div>
-            }
-            placement="auto"
-          >
-            <div className="text-txtfade cursor-not-allowed">1Y</div>
-          </Tippy>
-        </div>
+        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -140,12 +108,13 @@ export default function StakedBarRechart({
                 format={formatY}
                 total={total}
                 gmt={gmt}
+                events={events}
               />
             }
             cursor={false}
           />
 
-          <Legend
+          {labels.length > 1 ? <Legend
             onClick={(e) => {
               setHiddenLabels(() => {
                 if (
@@ -164,7 +133,7 @@ export default function StakedBarRechart({
               });
             }}
             wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
-          />
+          /> : null}
 
           {labels.map(({ name, color }) => {
             return (
@@ -178,6 +147,24 @@ export default function StakedBarRechart({
               />
             );
           })}
+
+          {events?.map(({
+            label,
+            time,
+            color,
+            labelPosition,
+          }, i) => <ReferenceLine
+              key={label + '-' + i + '-' + time}
+              x={time}
+              stroke={color}
+              strokeDasharray="3 3"
+              label={{
+                position: labelPosition ?? 'insideTopRight',
+                value: label,
+                fill: color,
+                fontSize: 12,
+              }}
+            />)}
         </BarChart>
       </ResponsiveContainer>
     </div>

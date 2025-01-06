@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 
 interface VolumeChartProps {
@@ -131,9 +132,14 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       ]}
       period={period}
       setPeriod={setPeriod}
+      periods={['1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       gmt={0}
       domain={[0, 'auto']}
       tippyContent=""
+      events={ADRENA_EVENTS}
       isSmallScreen={isSmallScreen}
       total={false}
     />

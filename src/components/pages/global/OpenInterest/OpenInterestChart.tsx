@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 import { getCustodyByMint, getGMT } from '@/utils';
 
@@ -50,6 +51,10 @@ export default function OpenInterestChart({
             return 'custodyinfohourly';
           case '1M':
             return 'custodyinfodaily';
+          case '3M':
+            return 'custodyinfodaily';
+          case '6M':
+            return 'custodyinfodaily';
           default:
             return 'custodyinfo';
         }
@@ -63,6 +68,10 @@ export default function OpenInterestChart({
             return 7;
           case '1M':
             return 31;
+          case '3M':
+            return 93;
+          case '6M':
+            return 183;
           default:
             return 1;
         }
@@ -100,7 +109,7 @@ export default function OpenInterestChart({
           });
         }
 
-        if (periodRef.current === '1M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -203,11 +212,16 @@ export default function OpenInterestChart({
           color: '#84CC90',
         },
       ]}
-      domain={['dataMax']}
+      yDomain={['dataMax']}
       period={period}
-      gmt={period === '1M' ? 0 : getGMT()}
+      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
+      events={ADRENA_EVENTS}
     />
   );
 }

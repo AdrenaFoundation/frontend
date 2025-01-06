@@ -1,7 +1,7 @@
 import { Keypair, PublicKey } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
-import { AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
+import { AdrenaEvent, AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;
@@ -189,3 +189,110 @@ export const normalize = (
     ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
   );
 };
+
+export const ADRENA_EVENTS: AdrenaEvent[] = [
+  {
+    label: '',
+    time: '9/17',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `The pool enters its "genesis" phase, where liquidity is bootstrapped, and trading is disabled to ensure a smooth start.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '9/25',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `The pool officially opens for trading, marking the end of the genesis phase and the beginning of live market activity.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '10/15',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $500k.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '10/30',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $750k.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/2',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Set pool ratios to 15% USDC, 7% BONK. 54% jitoSOL and 24% WBTC.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '11/2',
+    color: '#ffffff40',
+    labelPosition: 'insideTopLeft',
+    description: 'BONK borrow rate is increased from 0.008%/h to 0.016%/h.',
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/11',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Trading competition Pre-season AWAKENING started.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/13',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $1m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/20',
+    color: '#ffffff40',
+    labelPosition: 'insideTopLeft',
+    description: 'BONK borrow rate is increased from 0.016%/h to 0.032%/h.',
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/23',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $2m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '12/8',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $4m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '12/10',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase liquidity pool soft cap to $30m.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '12/23',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Trading competition Pre-season AWAKENING ended. 876 battled for 2.27M of ADX and 25k JTO rewards.`,
+    type: 'Global',
+  },
+];
