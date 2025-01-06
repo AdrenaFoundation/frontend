@@ -119,18 +119,23 @@ export default function useWatchTokenPrices() {
 
       if (result === null) return;
 
-      dispatch(
-        setTokenPrice(
-          window.adrena.client.alpToken.symbol,
-          Number(result.alpPrice),
-        ),
-      );
-      dispatch(
-        setTokenPrice(
-          window.adrena.client.adxToken.symbol,
-          Number(result.adxPrice),
-        ),
-      );
+      if (result.alpPrice !== null) {
+        dispatch(
+          setTokenPrice(
+            window.adrena.client.alpToken.symbol,
+            Number(result.alpPrice),
+          ),
+        );
+      }
+
+      if (result.adxPrice !== null) {
+        dispatch(
+          setTokenPrice(
+            window.adrena.client.adxToken.symbol,
+            Number(result.adxPrice),
+          ),
+        );
+      }
     } catch (e) {
       console.log('error happened loading alp adx prices', e);
     }

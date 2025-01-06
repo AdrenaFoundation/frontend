@@ -3,8 +3,8 @@ import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityR
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
     public static async getLastPrice(): Promise<{
-        adxPrice: number;
-        alpPrice: number;
+        adxPrice: number | null;
+        alpPrice: number | null;
     } | null> {
         try {
             const result = await fetch(
@@ -15,9 +15,24 @@ export default class DataApiClient {
                 return null;
             }
 
+            const dateNow = new Date();
+            const dateLastPriceAdx = new Date(result.data.adx.price_timestamp);
+            const dateLastPriceAlp = new Date(result.data.alp.price_timestamp);
+
+            let adxPrice = result.data.adx.price;
+            let alpPrice = result.data.alp.price;
+
+            if (dateNow.getTime() - dateLastPriceAdx.getTime() > 30000) {
+                adxPrice = null;
+            }
+
+            if (dateNow.getTime() - dateLastPriceAlp.getTime() > 30000) {
+                alpPrice = null;
+            }
+
             return {
-                adxPrice: result.data.adx.price,
-                alpPrice: result.data.alp.price,
+                adxPrice,
+                alpPrice,
             };
         } catch (e) {
             console.log('error fetching prices', e);
