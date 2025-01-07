@@ -235,7 +235,7 @@ export default function Tokenomics({ view }: { isSmallScreen: boolean, view: str
                                 variant="outline"
                                 size="lg"
                                 onClick={() => {
-                                    window.open('https://www.orca.so');
+                                    window.open('https://docs.adrena.xyz/tokenomics/adx');
                                 }}
                             />
 
@@ -244,7 +244,7 @@ export default function Tokenomics({ view }: { isSmallScreen: boolean, view: str
                                 title="Buy ADX"
                                 size="lg"
                                 onClick={() => {
-                                    window.open('https://www.orca.so');
+                                    window.open('https://jup.ag/swap/USDC-ADX');
                                 }}
                             />
                         </div>
