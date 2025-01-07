@@ -164,7 +164,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                 </div>
             </StyledContainer>
 
-            <div className="grid lg:grid-cols-2 gap-[2em] w-full">
+            <div className="grid lg:grid-cols-2 gap-2 w-full">
                 <StyledContainer className="p-4" bodyClassName='items-center justify-center'>
                     <div className='flex flex-col items-center justify-center h-full w-full'>
                         <h2 className='flex'>TOKEN ALLOCATION</h2>
