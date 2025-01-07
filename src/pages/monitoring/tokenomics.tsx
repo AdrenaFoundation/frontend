@@ -283,7 +283,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
 
             <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
                 <div className='flex flex-col items-center justify-center gap-1 w-full'>
-                    <h2 className='flex'>2 YEARS EMISSION SCHEDULE</h2>
+                    <h2 className='flex'>daily emission rate</h2>
 
                     <div className="h-[20em] w-full mt-4">
                         <EmissionsChart isSmallScreen={isSmallScreen} />
