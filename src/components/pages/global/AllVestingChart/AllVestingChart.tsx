@@ -105,13 +105,13 @@ export const CustomizedContent: React.FC<{
         <div className='flex items-center justify-between w-full'>
           <div className='text-txtfade pr-2 text-sm'>Start Unlock:</div>
 
-          <div className='text-sm'>{startUnlockTimestamp.toLocaleDateString()}</div>
+          <div className='text-sm font-boldy'>{startUnlockTimestamp.toLocaleDateString()}</div>
         </div>
 
         <div className='flex items-center justify-between w-full'>
           <div className='text-txtfade pr-2 text-sm'>End Unlock:</div>
 
-          <div className='text-sm'>{endUnlockTimestamp.toLocaleDateString()}</div>
+          <div className='text-sm font-boldy'>{endUnlockTimestamp.toLocaleDateString()}</div>
         </div>
       </div>}>
         <g key={`node-${index}-${depth}-${name}`} className='relative'
