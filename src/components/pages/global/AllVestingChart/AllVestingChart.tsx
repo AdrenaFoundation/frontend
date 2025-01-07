@@ -1,33 +1,17 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import React, { useEffect, useState } from 'react';
 import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { VestExtended } from '@/types';
-import { getAccountExplorer, nativeToUi } from '@/utils';
-
+import { formatNumAbbreviated, getAccountExplorer, nativeToUi } from '@/utils';
 const colors = {
   team: "#d4c7df",
   investors: "#9e8cae",
   foundation: "#db606c",
 } as const;
-
-function formatNum(num: number): string {
-  if (num > 999_999_999) {
-    return (num / 1_000_000_000).toFixed(2) + 'B';
-  }
-
-  if (num > 999_999) {
-    return (num / 1_000_000).toFixed(2) + 'M';
-  }
-
-  if (num > 999) {
-    return (num / 1_000).toFixed(2) + 'K';
-  }
-
-  return num.toString();
-}
 
 export const CustomizedContent: React.FC<{
   root: unknown;
@@ -61,95 +45,101 @@ export const CustomizedContent: React.FC<{
 }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    const num: string = formatNum(size);
-    const claimedAmountFormatted: string = formatNum(claimedAmount);
+    const num: string = formatNumAbbreviated(size);
+    const claimedAmountFormatted: string = formatNumAbbreviated(claimedAmount);
 
     return (
-      <g key={`node-${index}-${depth}-${name}`} className='relative'
-        onMouseEnter={() => {
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-        }}
-      >
-        <rect
-          className={twMerge(vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          onClick={() => {
-            window.open(getAccountExplorer(vestPubkey), '_blank');
+      <Tippy content={`
+        Total: ${num} ADX
+        ${claimedAmountFormatted !== '0' ? `\nClaimed: ${claimedAmountFormatted} ADX` : ''}
+        ${type ? `\nType: ${type}` : ''}
+      `}>
+        <g key={`node-${index}-${depth}-${name}`} className='relative'
+          onMouseEnter={() => {
+            setIsHovered(true);
           }}
-          style={{
-            fill: color,
-            stroke: "#fff",
-            strokeWidth: depth === 1 ? 5 : 1,
-            opacity: isHovered && vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 1 : 0.7,
-            strokeOpacity: 1,
+          onMouseLeave={() => {
+            setIsHovered(false);
           }}
-        />
+        >
+          <rect
+            className={twMerge(vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            onClick={() => {
+              window.open(getAccountExplorer(vestPubkey), '_blank');
+            }}
+            style={{
+              fill: color,
+              stroke: "#fff",
+              strokeWidth: depth === 1 ? 5 : 1,
+              opacity: isHovered && vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 1 : 0.7,
+              strokeOpacity: 1,
+            }}
+          />
 
-        {size ? <rect
-          className={twMerge(vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
-          x={x}
-          y={y + height * (1 - claimedAmount / size)}
-          width={width}
-          height={height * (claimedAmount / size)}
-          onClick={() => {
-            window.open(getAccountExplorer(vestPubkey), '_blank');
-          }}
-          style={{
-            fill: color,
-            stroke: "#fff",
-            strokeWidth: depth === 1 ? 5 : 1,
-            opacity: isHovered && vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 1 : 0.7,
-            strokeOpacity: 1,
-          }}
-        /> : null}
+          {size ? <rect
+            className={twMerge(vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
+            x={x}
+            y={y + height * (1 - claimedAmount / size)}
+            width={width}
+            height={height * (claimedAmount / size)}
+            onClick={() => {
+              window.open(getAccountExplorer(vestPubkey), '_blank');
+            }}
+            style={{
+              fill: color,
+              stroke: "#fff",
+              strokeWidth: depth === 1 ? 5 : 1,
+              opacity: isHovered && vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 1 : 0.7,
+              strokeOpacity: 1,
+            }}
+          /> : null}
 
-        {
-          depth === 2 && width > 40 && height > 30 && size !== null ? (<>
-            <text
-              className={twMerge(vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
-              x={x + width / 2}
-              y={y + height / 2 + (claimedAmountFormatted !== '0' ? 0 : 4)}
-              textAnchor="middle"
-              fill="#fff"
-              fontSize={width > 50 ? 10 : width > 40 ? 8 : 6}
-              onClick={() => {
-                window.open(getAccountExplorer(vestPubkey), '_blank');
-              }}
-            >
-              {num}
-            </text>
+          {
+            depth === 2 && width > 40 && height > 30 && size !== null ? (<>
+              <text
+                className={twMerge(vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
+                x={x + width / 2}
+                y={y + height / 2 + (claimedAmountFormatted !== '0' ? 0 : 4)}
+                textAnchor="middle"
+                fill="#fff"
+                fontSize={width > 50 ? 10 : width > 40 ? 8 : 6}
+                onClick={() => {
+                  window.open(getAccountExplorer(vestPubkey), '_blank');
+                }}
+              >
+                {num}
+              </text>
 
-            {claimedAmountFormatted !== '0' ? <text
-              className={twMerge('opacity-60', vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
-              x={x + width / 2}
-              y={y + height / 2 + 12}
-              textAnchor="middle"
-              fill="#fff"
-              fontSize={width > 50 ? 8 : width > 40 ? 6 : 4}
-              onClick={() => {
-                window.open(getAccountExplorer(vestPubkey), '_blank');
-              }}
-            >
-              {claimedAmountFormatted} {width > 80 ? 'claimed' : ''}
-            </text> : null}
-          </>
-          ) : null
-        }
+              {claimedAmountFormatted !== '0' ? <text
+                className={twMerge('opacity-60', vestPubkey.toBase58() !== PublicKey.default.toBase58() ? 'cursor-pointer' : '')}
+                x={x + width / 2}
+                y={y + height / 2 + 12}
+                textAnchor="middle"
+                fill="#fff"
+                fontSize={width > 50 ? 8 : width > 40 ? 6 : 4}
+                onClick={() => {
+                  window.open(getAccountExplorer(vestPubkey), '_blank');
+                }}
+              >
+                {claimedAmountFormatted} {width > 80 ? 'claimed' : ''}
+              </text> : null}
+            </>
+            ) : null
+          }
 
-        {
-          type ? (
-            <text x={x + 6} y={y + 16} fill="#fff" fontSize={12} fillOpacity={1}>
-              {name}
-            </text>
-          ) : null
-        }
-      </g >
+          {
+            type ? (
+              <text x={x + 6} y={y + 16} fill="#fff" fontSize={12} fillOpacity={1}>
+                {name}
+              </text>
+            ) : null
+          }
+        </g >
+      </Tippy>
     );
   };
 
