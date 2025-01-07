@@ -244,11 +244,11 @@ export default function AllPositions({ showFeesInPnl, isSmallScreen, view }: { s
                                     ]}
                                     activeView={viewPage}
                                     handleViewChange={setViewPage}
-                                    search={{
+                                    searches={[{
                                         placeholder: 'Filter by owner (pubkey)',
                                         value: ownerFilter,
                                         handleChange: setOwnerFilter,
-                                    }}
+                                    }]}
                                     filterOptions={[
                                         {
                                             type: 'radio',
