@@ -16,16 +16,17 @@ export default class DataApiClient {
             }
 
             const dateNow = new Date();
-            const dateLastPriceAdx = new Date(result.data.adx.price_timestamp);
+            // DISABLE FOR NOW - UNTIL WE GET A MORE STABLE WAY TO GET ADX PRICE
+            // const dateLastPriceAdx = new Date(result.data.adx.price_timestamp);
             const dateLastPriceAlp = new Date(result.data.alp.price_timestamp);
 
-            let adxPrice = result.data.adx.price;
+            const adxPrice = result.data.adx.price;
             let alpPrice = result.data.alp.price;
 
-            //15 minutes before not showing
-            if (dateNow.getTime() - dateLastPriceAdx.getTime() > 900000) {
-                adxPrice = null;
-            }
+            // 15 minutes before not showing
+            // if (dateNow.getTime() - dateLastPriceAdx.getTime() > 900000) {
+            //     adxPrice = null;
+            // }
 
             //15 minutes before not showing
             if (dateNow.getTime() - dateLastPriceAlp.getTime() > 900000) {

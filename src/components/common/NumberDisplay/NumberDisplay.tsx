@@ -22,6 +22,7 @@ export default function NumberDisplay({
   titleClassName,
   tippyInfo,
   subtitle,
+  isAbbreviate = false,
 }: {
   title?: string;
   nb: number | null;
@@ -36,6 +37,7 @@ export default function NumberDisplay({
   titleClassName?: string;
   tippyInfo?: string;
   subtitle?: string;
+  isAbbreviate?: boolean;
 }) {
   return (
     <StyledContainer
@@ -62,6 +64,7 @@ export default function NumberDisplay({
     >
       <FormatNumber
         nb={nb}
+        isAbbreviate={isAbbreviate}
         precision={precision}
         isDecimalDimmed={isDecimalDimmed}
         placeholder={placeholder}
