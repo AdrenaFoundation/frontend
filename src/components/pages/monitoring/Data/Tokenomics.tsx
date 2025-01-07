@@ -6,15 +6,13 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-
-import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import { twMerge } from 'tailwind-merge';
 
+import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
+
 export default function Tokenomics({
-  titleClassName,
   className,
 }: {
-  titleClassName?: string;
   className?: string;
 }) {
   const data = [

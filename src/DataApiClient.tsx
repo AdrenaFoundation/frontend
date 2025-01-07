@@ -22,10 +22,10 @@ export default class DataApiClient {
             let adxPrice = result.data.adx.price;
             let alpPrice = result.data.alp.price;
 
-            //15 minutes before not showing
-            // if (dateNow.getTime() - dateLastPriceAdx.getTime() > 900000) {
-            //     adxPrice = null;
-            // }
+            // 15 minutes before not showing
+            if (dateNow.getTime() - dateLastPriceAdx.getTime() > 900000) {
+                adxPrice = null;
+            }
 
             //15 minutes before not showing
             if (dateNow.getTime() - dateLastPriceAlp.getTime() > 900000) {
