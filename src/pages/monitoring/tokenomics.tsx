@@ -8,6 +8,7 @@ import AllVestingChart from '@/components/pages/global/AllVestingChart/AllVestin
 import { EmissionsChart } from '@/components/pages/global/Emissions/EmissionsChart';
 import TokenomicsPieChart from '@/components/pages/monitoring/Data/Tokenomics';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import useADXHolderCount from '@/hooks/useADXHolderCount';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useVests from '@/hooks/useVests';
@@ -36,6 +37,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
         vestingClaimable: 0,
         vestingVested: 0,
     });
+    const adxHolderCount = useADXHolderCount();
 
     const marketCap = useMemo(() => {
         if (!tokenPriceADX || !totalSupplyADX) return 0;
@@ -155,6 +157,17 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                         nb={circulatingSupply}
                         format="number"
                         suffix='ADX'
+                        precision={0}
+                        className="border-0 min-w-[12em]"
+                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                        headerClassName="pb-2"
+                        titleClassName="text-[0.7em] sm:text-[0.7em]"
+                    />
+
+                    <NumberDisplay
+                        title="HOLDER COUNT"
+                        nb={adxHolderCount}
+                        format="number"
                         precision={0}
                         className="border-0 min-w-[12em]"
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
@@ -306,6 +319,10 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
 
                     <div className="h-[20em] w-full mt-8">
                         <AllVestingChart vests={vests} />
+                    </div>
+
+                    <div>
+                        {/* TOP TOKEN HOLDERS */}
                     </div>
                 </div>
             </StyledContainer >
