@@ -4,8 +4,8 @@ import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import { VestExtended } from '@/types';
 import { getAccountExplorer, nativeToUi } from '@/utils';
-import { Vest, VestExtended } from '@/types';
 
 const colors = {
   team: "#d4c7df",

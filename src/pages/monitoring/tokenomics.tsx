@@ -1,21 +1,22 @@
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
+import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import useStakingAccount from '@/hooks/useStakingAccount';
-import { useSelector } from '@/store/store';
-import { nativeToUi } from '@/utils';
+import AllVestingChart from '@/components/pages/global/AllVestingChart/AllVestingChart';
 import { EmissionsChart } from '@/components/pages/global/Emissions/EmissionsChart';
 import TokenomicsPieChart from '@/components/pages/monitoring/Data/Tokenomics';
-import useVests from '@/hooks/useVests';
-import AllVestingChart from '@/components/pages/global/AllVestingChart/AllVestingChart';
-import Button from '@/components/common/Button/Button';
-import coingeckoImg from '../../../public/images/coingecko.png';
-import raydiumImg from '../../../public/images/raydium.png';
-import jupImg from '../../../public/images/jup-logo.png';
-import Image from 'next/image';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useStakingAccount from '@/hooks/useStakingAccount';
+import useVests from '@/hooks/useVests';
+import { useSelector } from '@/store/store';
+import { nativeToUi } from '@/utils';
+
+import coingeckoImg from '../../../public/images/coingecko.png';
+import jupImg from '../../../public/images/jup-logo.png';
+import raydiumImg from '../../../public/images/raydium.png';
 
 const MAX_ADX_SUPPLY = 1_000_000_000;
 

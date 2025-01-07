@@ -30,7 +30,6 @@ import { PoolInfo } from '@/hooks/usePoolInfo';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import useVestRegistry from '@/hooks/useVestRegistry';
-import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -71,7 +70,6 @@ export default function DetailedMonitoring({
   );
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
-  const vests = useVests();
 
   if (
     view != 'full' ||

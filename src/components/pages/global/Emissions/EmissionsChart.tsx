@@ -1,9 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
-import { ADRENA_EVENTS } from '@/constant';
-import useVestRegistry from '@/hooks/useVestRegistry';
 
 interface EmissionsChartProps {
   isSmallScreen: boolean;
