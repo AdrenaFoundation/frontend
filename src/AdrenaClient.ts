@@ -2697,7 +2697,22 @@ export class AdrenaClient {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
+    const preInstructions: TransactionInstruction[] = [];
 
+    const usdcToken = this.getUsdcToken();
+
+    const usdcAta = findATAAddressSync(owner, usdcToken.mint);
+
+    if (!(await isAccountInitialized(this.connection, usdcAta))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: usdcAta,
+          mint: usdcToken.mint,
+          owner,
+        }),
+      );
+    }
+    
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
     const stakedTokenAccount = findATAAddressSync(owner, stakedTokenMint);
     const staking = this.getStakingPda(stakedTokenMint);
@@ -2760,6 +2775,7 @@ export class AdrenaClient {
         genesisLock: this.genesisLockPda,
         pool: this.mainPool.pubkey,
       })
+      .preInstructions(preInstructions)
       // .preInstructions([modifyComputeUnits])
       .transaction();
 
