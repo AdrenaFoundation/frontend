@@ -5,13 +5,26 @@ import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { VestExtended } from '@/types';
 import { formatNumAbbreviated, getAccountExplorer, nativeToUi } from '@/utils';
+
 const colors = {
   team: "#d4c7df",
   investors: "#9e8cae",
   foundation: "#db606c",
 } as const;
+
+function calculateClaimableAmount(vest: VestExtended): number {
+  //vest haven't started yet
+  if (vest.unlockStartTimestamp.toNumber() > (Date.now() / 1000)) {
+    return 0;
+  }
+
+  const unlockedTokens = (nativeToUi(vest.amount, window.adrena.client.adxToken.decimals) / (vest.unlockEndTimestamp.toNumber() - vest.unlockStartTimestamp.toNumber())) * (Date.now() / 1000 - vest.unlockStartTimestamp.toNumber());
+
+  return unlockedTokens - nativeToUi(vest.claimedAmount, window.adrena.client.adxToken.decimals);
+}
 
 export const CustomizedContent: React.FC<{
   root: unknown;
@@ -28,7 +41,10 @@ export const CustomizedContent: React.FC<{
   type?: 'team' | 'investor' | 'foundation';
   size: number;
   claimedAmount: number;
+  claimableAmount: number;
   vestPubkey: PublicKey;
+  startUnlockTimestamp: Date;
+  endUnlockTimestamp: Date;
 }> = ({
   depth,
   x,
@@ -40,8 +56,11 @@ export const CustomizedContent: React.FC<{
   name,
   type,
   size,
+  claimableAmount,
   claimedAmount,
   vestPubkey,
+  startUnlockTimestamp,
+  endUnlockTimestamp,
 }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -49,11 +68,52 @@ export const CustomizedContent: React.FC<{
     const claimedAmountFormatted: string = formatNumAbbreviated(claimedAmount);
 
     return (
-      <Tippy content={`
-        Total: ${num} ADX
-        ${claimedAmountFormatted !== '0' ? `\nClaimed: ${claimedAmountFormatted} ADX` : ''}
-        ${type ? `\nType: ${type}` : ''}
-      `}>
+      <Tippy content={<div className='flex flex-col items-center min-w-[12em]'>
+        <div className='flex items-center justify-between w-full'>
+          <div className='text-txtfade pr-2 text-sm'>Vested:</div>
+
+          <FormatNumber
+            nb={size}
+            className="text-sm"
+            suffix=' ADX'
+            precision={0}
+          />
+        </div>
+
+        <div className='flex items-center justify-between w-full'>
+          <div className='text-txtfade pr-2 text-sm'>Claimed:</div>
+
+          <FormatNumber
+            nb={claimedAmount}
+            className="text-sm"
+            suffix=' ADX'
+            precision={0}
+          />
+        </div>
+
+        <div className='flex items-center justify-between w-full'>
+          <div className='text-txtfade pr-2 text-sm'>Claimable:</div>
+
+          <FormatNumber
+            nb={claimableAmount}
+            className="text-sm"
+            suffix=' ADX'
+            precision={0}
+          />
+        </div>
+
+        <div className='flex items-center justify-between w-full'>
+          <div className='text-txtfade pr-2 text-sm'>Start Unlock:</div>
+
+          <div className='text-sm'>{startUnlockTimestamp.toLocaleDateString()}</div>
+        </div>
+
+        <div className='flex items-center justify-between w-full'>
+          <div className='text-txtfade pr-2 text-sm'>End Unlock:</div>
+
+          <div className='text-sm'>{endUnlockTimestamp.toLocaleDateString()}</div>
+        </div>
+      </div>}>
         <g key={`node-${index}-${depth}-${name}`} className='relative'
           onMouseEnter={() => {
             setIsHovered(true);
@@ -158,6 +218,9 @@ export default function AllVestingChart({
       claimedAmount: number;
       size: number;
       color: string;
+      claimableAmount: number;
+      startUnlockTimestamp: Date;
+      endUnlockTimestamp: Date;
     }[];
   }[] | null>(null);
 
@@ -180,6 +243,9 @@ export default function AllVestingChart({
           vestPubkey: vest.pubkey,
           size: nativeToUi(vest.amount, window.adrena.client.adxToken.decimals),
           color: colors.team,
+          claimableAmount: calculateClaimableAmount(vest),
+          startUnlockTimestamp: new Date(vest.unlockStartTimestamp.toNumber() * 1000),
+          endUnlockTimestamp: new Date(vest.unlockEndTimestamp.toNumber() * 1000),
         })),
       },
       {
@@ -192,6 +258,9 @@ export default function AllVestingChart({
           vestPubkey: vest.pubkey,
           size: nativeToUi(vest.amount, window.adrena.client.adxToken.decimals),
           color: colors.investors,
+          claimableAmount: calculateClaimableAmount(vest),
+          startUnlockTimestamp: new Date(vest.unlockStartTimestamp.toNumber() * 1000),
+          endUnlockTimestamp: new Date(vest.unlockEndTimestamp.toNumber() * 1000),
         })),
       },
       {
@@ -204,6 +273,9 @@ export default function AllVestingChart({
           vestPubkey: vest.pubkey,
           size: nativeToUi(vest.amount, window.adrena.client.adxToken.decimals),
           color: colors.foundation,
+          claimableAmount: calculateClaimableAmount(vest),
+          startUnlockTimestamp: new Date(vest.unlockStartTimestamp.toNumber() * 1000),
+          endUnlockTimestamp: new Date(vest.unlockEndTimestamp.toNumber() * 1000),
         })),
       },
     ]);
@@ -227,7 +299,7 @@ export default function AllVestingChart({
           dataKey="size"
           isAnimationActive={false}
           // Note: Needs to provide keys for typescript to be happy, even though Treemap is filling up the keys
-          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} claimedAmount={0} vestPubkey={PublicKey.default} color={''} rank={0} name={''} size={0} />}>
+          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} claimableAmount={0} startUnlockTimestamp={new Date()} endUnlockTimestamp={new Date()} width={0} height={0} index={0} payload={undefined} claimedAmount={0} vestPubkey={PublicKey.default} color={''} rank={0} name={''} size={0} />}>
         </Treemap>
       </ResponsiveContainer>
     </div >

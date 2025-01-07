@@ -98,6 +98,6 @@ export default function Tokenomics({
           />
         </PieChart>
       </ResponsiveContainer>
-    </div >
+    </div>
   );
 }
