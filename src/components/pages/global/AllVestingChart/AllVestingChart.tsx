@@ -237,7 +237,7 @@ export default function AllVestingChart({
         name: 'Team vest',
         type: 'team',
         color: `transparent`,
-        children: sortedVests.filter((vest) => vest.voteMultiplier === 40000).map((vest) => ({
+        children: sortedVests.filter((vest) => vest.voteMultiplier === 40000 && vest.originBucket === 0).map((vest) => ({
           name: `${vest.owner.toBase58()} vest`,
           claimedAmount: nativeToUi(vest.claimedAmount, window.adrena.client.adxToken.decimals),
           vestPubkey: vest.pubkey,
