@@ -16,6 +16,7 @@ import { useSelector } from '@/store/store';
 import { nativeToUi } from '@/utils';
 
 import coingeckoImg from '../../../public/images/coingecko.png';
+import dexscreenerImg from '../../../public/images/dexscreener.png';
 import jupImg from '../../../public/images/jup-logo.png';
 import raydiumImg from '../../../public/images/raydium.png';
 
@@ -205,6 +206,20 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                 />
 
                                 <div className='text-sm font-boldy'>Coingecko</div>
+                            </div>
+
+                            <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
+                                <Image
+                                    src={dexscreenerImg}
+                                    height={54}
+                                    width={54}
+                                    alt="dex screener icon"
+                                    onClick={() => {
+                                        window.open('https://dexscreener.com/solana/2qnwswsp1deymnbuzgjfrz55jnubiwgrnpk6fmiz1mef');
+                                    }}
+                                />
+
+                                <div className='text-sm font-boldy'>DEX screener</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
