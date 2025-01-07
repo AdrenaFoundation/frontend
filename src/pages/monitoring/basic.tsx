@@ -158,25 +158,20 @@ export default function BasicMonitoring({
               <FeesBarChart isSmallScreen={isSmallScreen} />
             </div>
 
-
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <OpenInterestChart isSmallScreen={isSmallScreen} />
               <BorrowRateChart />
             </div>
-
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
               <RealizedPnlChart isSmallScreen={isSmallScreen} />
             </div>
 
-
-
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <FeesChart isSmallScreen={isSmallScreen} />
               <UsersCohortsChart />
             </div>
-
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <CompositionChart />

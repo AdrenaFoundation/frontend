@@ -11,8 +11,6 @@ import AdrenaAccounts from '@/components/pages/monitoring/Data/AdrenaAccounts';
 import AllTimeFeesBreakdownPerToken from '@/components/pages/monitoring/Data/AllTimeFeesBreakdownPerToken';
 import AUM from '@/components/pages/monitoring/Data/AUM';
 import AUMBreakdown from '@/components/pages/monitoring/Data/AUMBreakdown';
-import BucketsAllocation from '@/components/pages/monitoring/Data/BucketsAllocation';
-import BucketsMintedAmount from '@/components/pages/monitoring/Data/BucketsMintedAmount';
 import CurrentStakingRoundTime from '@/components/pages/monitoring/Data/CurrentStakingRoundTime';
 import GovernanceAccounts from '@/components/pages/monitoring/Data/GovernanceAccounts';
 import MintAccounts from '@/components/pages/monitoring/Data/MintsAccounts';
@@ -24,8 +22,6 @@ import PositionsNowBreakdown from '@/components/pages/monitoring/Data/PositionsN
 import StakingLockedTokens from '@/components/pages/monitoring/Data/StakingLockedTokens';
 import StakingRewardsWaitingToBeClaimed from '@/components/pages/monitoring/Data/StakingRewardsWaitingToBeClaimed';
 import StakingRewardVaults from '@/components/pages/monitoring/Data/StakingRewardVaults';
-import Tokenomics from '@/components/pages/monitoring/Data/Tokenomics';
-import VestsBreakdown from '@/components/pages/monitoring/Data/VestsBreakdown';
 import VolumeBreakdownPerToken from '@/components/pages/monitoring/Data/VolumeBreakdownPerToken';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
@@ -102,12 +98,10 @@ export default function DetailedMonitoring({
 
   const tabs = [
     'All',
-    'ADX tokenomics',
     'Pool',
     'Fees',
     'Staking',
     'Trading',
-    'Vesting',
     'Accounts',
   ] as const;
 
@@ -172,15 +166,6 @@ export default function DetailedMonitoring({
         >
           {selectedTab === 'All' || selectedTab === 'Pool' ? (
             <AUM connected={connected} />
-          ) : null}
-
-          {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
-            <NumberDisplay
-              title="ADX CIRCULATING SUPPLY"
-              nb={adxTotalSupply}
-              precision={0}
-              className='bg-[#050D14]'
-            />
           ) : null}
 
           {selectedTab === 'All' || selectedTab === 'Staking' ? (
@@ -283,26 +268,6 @@ export default function DetailedMonitoring({
             titleClassName={titleClassName}
             custodies={custodies}
           />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'Vesting' && view === 'full' ? (
-          <VestsBreakdown titleClassName={titleClassName} vests={vests} />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'ADX tokenomics' && view === 'full' ? (
-          <div className="flex flex-col lg:flex-row gap-3">
-            <BucketsAllocation
-              titleClassName={titleClassName}
-              cortex={cortex}
-            />
-
-            <BucketsMintedAmount
-              titleClassName={titleClassName}
-              cortex={cortex}
-            />
-
-            <Tokenomics titleClassName={titleClassName} />
-          </div>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
