@@ -14,6 +14,7 @@ import AllUserProfiles from './allUserProfiles';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
 import Flow from './flows';
+import Tokenomics from './tokenomics';
 import WalletDigger from './walletDigger';
 
 // Display all sorts of interesting data used to make sure everything works as intended
@@ -26,13 +27,13 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
   const initialView = (() => {
     const searchParamsView = searchParams.get('view') ?? 'lite'
-    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows', 'walletDigger'].includes(searchParamsView)) {
+    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'tokenomics', 'flows', 'walletDigger'].includes(searchParamsView)) {
       return searchParamsView as MonitorViews;
     }
     return 'lite';
   })();
 
-  type MonitorViews = 'lite' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'full' | 'walletDigger';
+  type MonitorViews = 'lite' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'tokenomics' | 'full' | 'walletDigger';
   const [view, setView] = useState<
     MonitorViews
   >(initialView as MonitorViews);
@@ -45,6 +46,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     full: 'On-Chain',
     livePositions: 'Live Positions',
     userProfiles: 'User Profiles',
+    tokenomics: 'Tokenomics',
     allStaking: 'Staking',
     flows: 'Flows',
     walletDigger: 'Wallet Digger',
@@ -67,6 +69,8 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
         return <AllPositions isSmallScreen={isSmallScreen} showFeesInPnl={showFeesInPnl} view={view} />;
       case 'userProfiles':
         return <AllUserProfiles showFeesInPnl={showFeesInPnl} view={view} />;
+      case 'tokenomics':
+        return <Tokenomics isSmallScreen={isSmallScreen} view={view} />;
       case 'allStaking':
         return <AllStaking isSmallScreen={isSmallScreen} view={view} />;
       case 'flows':
@@ -110,9 +114,8 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className='flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[38em] ml-auto mr-auto'
+          className='flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[45em] ml-auto mr-auto'
         >
-
           {MonitoringHeaderLink('lite')}
 
           <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
@@ -130,6 +133,10 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
           <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
 
           {MonitoringHeaderLink('userProfiles')}
+
+          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+
+          {MonitoringHeaderLink('tokenomics')}
 
           <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
 

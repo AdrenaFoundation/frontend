@@ -214,7 +214,7 @@ export default function UtilizationChart() {
         disabled: true,
       }]}
       setPeriod={setPeriod}
-      isReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
+      isMaxUtilizationReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
       formatY="percentage"
       events={ADRENA_EVENTS}
     />

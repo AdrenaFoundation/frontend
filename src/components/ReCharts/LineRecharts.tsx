@@ -37,8 +37,9 @@ export default function LineRechart<T extends string>({
   formatY = 'currency',
   precision = 0,
   precisionTooltip = 2,
-  isReferenceLine,
+  isMaxUtilizationReferenceLine,
   events,
+  isNowReferenceLine,
 }: {
   title: string;
   data: RechartsData[];
@@ -62,8 +63,9 @@ export default function LineRechart<T extends string>({
   subValue?: number;
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
-  isReferenceLine?: boolean;
+  isMaxUtilizationReferenceLine?: boolean;
   events?: AdrenaEvent[],
+  isNowReferenceLine?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -165,7 +167,7 @@ export default function LineRechart<T extends string>({
             );
           })}
 
-          {isReferenceLine && (
+          {isMaxUtilizationReferenceLine && (
             <ReferenceLine
               y={100}
               stroke="white"
@@ -173,6 +175,28 @@ export default function LineRechart<T extends string>({
                 position: 'top',
                 value: 'Max utilization',
                 fill: 'white',
+                fontSize: 12,
+              }}
+            />
+          )}
+
+          {isNowReferenceLine && (
+            <ReferenceLine
+              x={new Date().toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric',
+                timeZone: 'UTC',
+              })}
+              stroke="#fffffff0"
+              strokeWidth={1}
+              strokeDasharray={'6 6'}
+              label={{
+                position: 'insideTopRight',
+                offset: 10,
+                value: 'Now',
+                fill: '#fffffff0',
+                fontWeight: 'bold',
                 fontSize: 12,
               }}
             />

@@ -70,6 +70,22 @@ export function getRightArrowElement() {
   );
 }
 
+export function formatNumAbbreviated(num: number): string {
+  if (num > 999_999_999) {
+    return (num / 1_000_000_000).toFixed(2) + 'B';
+  }
+
+  if (num > 999_999) {
+    return (num / 1_000_000).toFixed(2) + 'M';
+  }
+
+  if (num > 999) {
+    return (num / 1_000).toFixed(2) + 'K';
+  }
+
+  return num.toString();
+}
+
 export function findATAAddressSync(
   wallet: PublicKey,
   mint: PublicKey,
