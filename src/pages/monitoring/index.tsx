@@ -27,7 +27,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
   const initialView = (() => {
     const searchParamsView = searchParams.get('view') ?? 'lite'
-    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'flows', 'walletDigger'].includes(searchParamsView)) {
+    if (['lite', 'full', 'livePositions', 'userProfiles', 'allStaking', 'tokenomics', 'flows', 'walletDigger'].includes(searchParamsView)) {
       return searchParamsView as MonitorViews;
     }
     return 'lite';

@@ -20,7 +20,7 @@ import raydiumImg from '../../../public/images/raydium.png';
 
 const MAX_ADX_SUPPLY = 1_000_000_000;
 
-export default function Tokenomics({ view }: { isSmallScreen: boolean, view: string }) {
+export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
     const totalSupplyADX = useADXTotalSupply();
     const {
@@ -258,7 +258,7 @@ export default function Tokenomics({ view }: { isSmallScreen: boolean, view: str
                     <h2 className='flex'>2 YEARS EMISSION SCHEDULE</h2>
 
                     <div className="h-[20em] w-full mt-4">
-                        <EmissionsChart isSmallScreen={false} />
+                        <EmissionsChart isSmallScreen={isSmallScreen} />
                     </div>
                 </div>
             </StyledContainer>
