@@ -2144,7 +2144,7 @@ export class AdrenaClient {
       await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
         mint: custody.mint,
-        preInstructions: [],
+        preInstructions,
       });
 
     return this.signAndExecuteTxAlternative({
@@ -2215,7 +2215,7 @@ export class AdrenaClient {
       await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
         mint: collateralCustody.mint,
-        preInstructions: [],
+        preInstructions,
       });
 
     return this.signAndExecuteTxAlternative({
@@ -2712,7 +2712,7 @@ export class AdrenaClient {
         }),
       );
     }
-    
+
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
     const stakedTokenAccount = findATAAddressSync(owner, stakedTokenMint);
     const staking = this.getStakingPda(stakedTokenMint);
@@ -5125,13 +5125,13 @@ export class AdrenaClient {
       await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: stakingRewardTokenMint,
-        preInstructions: [],
+        preInstructions,
       });
     const lmTokenAccount =
       await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: this.lmTokenMint,
-        preInstructions: [],
+        preInstructions,
       });
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
