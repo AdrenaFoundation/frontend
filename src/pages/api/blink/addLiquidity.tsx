@@ -1,0 +1,164 @@
+import {
+    ActionGetResponse,
+    ActionPostResponse,
+} from '@solana/actions';
+import { ComputeBudgetProgram, Connection, PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+import { AdrenaClient } from '@/AdrenaClient';
+import MainnetConfiguration from '@/config/mainnet';
+import DataApiClient from '@/DataApiClient';
+import { createReadOnlyAdrenaProgram } from '@/initializeApp';
+import { Token } from '@/types';
+import { formatNumber, uiToNative } from '@/utils';
+
+export default async function handler(
+    req: NextApiRequest,
+    res: NextApiResponse<ActionGetResponse | ActionPostResponse>,
+) {
+    const connection = new Connection(
+        'https://mainnet.helius-rpc.com/?api-key=d7a1bbbc-5a12-43d0-ab41-c96ffef811e0',
+        'processed',
+    );
+    const CONFIG = new MainnetConfiguration(false);
+    const adrenaProgram = createReadOnlyAdrenaProgram(connection);
+
+    const client = await AdrenaClient.initialize(adrenaProgram, CONFIG);
+
+    client.setAdrenaProgram(adrenaProgram);
+
+    if (req.method === 'POST') {
+        const { account } = req.body;
+        const { amount, tokenSymbol } = req.query;
+
+        try {
+            if (!account || !tokenSymbol) {
+                // tood: validate request body
+
+                throw new Error('Invalid request body');
+            }
+
+            const token = client.getTokenBySymbol(tokenSymbol as Token['symbol']);
+
+            if (!token) {
+                throw new Error('Invalid token');
+            }
+
+            const ix = await client.buildAddLiquidityTx({
+                amountIn: uiToNative(Number(amount), token.decimals),
+                minLpAmountOut: new BN(0),
+                owner: new PublicKey(account),
+                mint: token.mint,
+            });
+
+            const tx = await ix.transaction();
+
+            tx.recentBlockhash = (
+                await connection.getLatestBlockhash('confirmed')
+            ).blockhash;
+
+            tx.feePayer = new PublicKey(account);
+
+            tx.instructions.unshift(
+                ComputeBudgetProgram.setComputeUnitLimit({
+                    units: 1400000, // Use a lot of units to avoid any issues during next simulation
+                }),
+            );
+
+            const serialTX = tx
+                .serialize({
+                    requireAllSignatures: false,
+                    verifySignatures: false,
+                })
+                .toString('base64');
+
+            res
+                .setHeader('Access-Control-Allow-Origin', '*')
+                .setHeader('Access-Control-Allow-Credentials', 'true')
+                .setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS')
+                .setHeader(
+                    'Access-Control-Allow-Headers',
+                    'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+                )
+                .setHeader(
+                    'Access-Control-Expose-Headers',
+                    'X-Action-Version, X-Blockchain-Ids',
+                )
+                .setHeader('Content-Type', 'application/json')
+                .status(200)
+                .json({
+                    type: 'transaction',
+                    transaction: serialTX,
+                });
+        } catch (error) {
+            console.log(error);
+
+            res.status(500).json({
+                type: 'transaction',
+                message: 'Error building transaction',
+                transaction: '',
+            });
+        }
+    } else {
+        const currentAlpPrice = formatNumber(
+            Number((await DataApiClient.getLastPrice())?.alpPrice ?? 0),
+            2,
+        );
+
+        const custodies = (await client.custodies).map((c) => (c.tokenInfo.symbol));
+
+        res
+            .setHeader('Access-Control-Allow-Origin', '*')
+            .setHeader('Access-Control-Allow-Credentials', 'true')
+            .setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS')
+            .setHeader(
+                'Access-Control-Allow-Headers',
+                'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+            )
+            .setHeader(
+                'Access-Control-Expose-Headers',
+                'X-Action-Version, X-Blockchain-Ids',
+            )
+            .setHeader('Content-Type', 'application/json')
+            .status(200)
+            .json({
+                type: 'action',
+                icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena-addLiquidity-v3-Gf3XBj49MBxTU62cY0TmUBRz2f3nDQ.jpg',
+                title: 'Buy ALP',
+                description: `Provide liquidity to the ALP pool, and earn fees on every trade. Current price: $${currentAlpPrice}`,
+                label: 'Add Liquidity',
+                error: {
+                    message: 'Providing liquidity failed', // TODO: add error message
+                },
+                links: {
+                    actions: [
+                        {
+                            label: 'Buy ALP',
+                            href: '/api/blink/addLiquidity?amount={amount}&tokenSymbol={tokenSymbol}',
+                            parameters: [
+                                {
+                                    name: 'tokenSymbol',
+                                    type: 'select',
+                                    label: 'preferred token',
+                                    required: true,
+                                    options: custodies.map((symbol) => ({
+                                        label: symbol,
+                                        value: symbol,
+                                        selected: symbol === 'USDC',
+                                    })),
+                                },
+                                {
+                                    name: 'amount',
+                                    label: 'Amount',
+                                    required: true,
+                                    type: 'number',
+                                },
+                            ],
+                            type: 'transaction',
+                        },
+                    ],
+                },
+            });
+    }
+}

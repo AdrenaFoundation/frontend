@@ -17,6 +17,7 @@
     "@pythnetwork/pyth-solana-receiver": "=0.8.2",
     "@reduxjs/toolkit": "=2.5.0",
     "@rive-app/react-canvas": "=4.17.3",
+    "@solana/actions": "^1.6.6",
     "@solana/spl-token": "=0.4.9",
     "@solana/wallet-adapter-base": "=0.9.23",
     "@solana/wallet-adapter-coinbase": "=0.1.19",
