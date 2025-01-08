@@ -8,7 +8,7 @@ export const config = {
 
 export default async function handler(request: NextRequest) {
     const fontData = await fetch(
-        new URL('../../assets/ArchivoBlack-Regular.ttf', import.meta.url),
+        new URL('./fonts/ArchivoBlack-Regular.ttf', request.url.substring(0, request.url.lastIndexOf("/api")))
     ).then((res) => res.arrayBuffer());
 
     const { searchParams } = request.nextUrl;
