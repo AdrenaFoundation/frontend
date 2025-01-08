@@ -988,7 +988,7 @@ export class AdrenaClient {
    * INSTRUCTIONS
    */
 
-  protected async buildAddLiquidityTx({
+  async buildAddLiquidityTx({
     owner,
     mint,
     amountIn,
