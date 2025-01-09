@@ -15,7 +15,12 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatTimeDifference, getFullTimeDifference, getTokenImage, getTokenSymbol } from '@/utils';
+import {
+  formatTimeDifference,
+  getFullTimeDifference,
+  getTokenImage,
+  getTokenSymbol,
+} from '@/utils';
 
 import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
@@ -63,7 +68,7 @@ export function PositionBlock({
     }
 
     const interval = setInterval(() => {
-      console.log('interval')
+      console.log('interval');
       const openedDuration = Date.now() - openedTime;
       const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
 
@@ -102,12 +107,12 @@ export function PositionBlock({
     )
       return;
 
-    if (position.side === 'long') return tradeTokenPrice < position.liquidationPrice;
+    if (position.side === 'long')
+      return tradeTokenPrice < position.liquidationPrice;
 
     // Short
     return tradeTokenPrice > position.liquidationPrice;
   })();
-
 
   const positionName = (
     <div className="flex items-center justify-center h-full">
@@ -194,11 +199,7 @@ export function PositionBlock({
       {position.pnl ? (
         <div className="flex items-center">
           <FormatNumber
-            nb={
-              showAfterFees
-                ? position.pnl
-                : position.pnl - fees
-            }
+            nb={showAfterFees ? position.pnl : position.pnl - fees}
             format="currency"
             minimumFractionDigits={2}
             className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
@@ -284,29 +285,31 @@ export function PositionBlock({
                 {positionName}
                 {ownerInfo}
               </div>
-            ) : <div className="border-b flex-1 flex w-full justify-center p-3">
-              {positionName}
-            </div>}
+            ) : (
+              <div className="border-b flex-1 flex w-full justify-center p-3">
+                {positionName}
+              </div>
+            )}
             <div className="border-b flex-1 flex w-full justify-between p-3">
               {pnl}
               {netValue}
             </div>
           </div>
+        ) : readOnly ? (
+          <div className="flex border-b p-3 justify-between items-center flex-wrap w-full">
+            {positionName}
+            {ownerInfo}
+            {pnl}
+            {netValue}
+          </div>
         ) : (
-          readOnly ? (
-            <div className="flex border-b p-3 justify-between items-center flex-wrap w-full">
-              {positionName}
-              {ownerInfo}
+          <div className="flex border-b p-3 items-center w-full relative">
+            <div className="flex items-center">{positionName}</div>
+            <div className="ml-auto lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               {pnl}
-              {netValue}
             </div>
-          ) : (
-            <div className="flex border-b p-3 items-center w-full relative">
-              <div className="flex items-center">{positionName}</div>
-              <div className="ml-auto lg:absolute lg:left-1/2 lg:-translate-x-1/2">{pnl}</div>
-              <div className="ml-auto">{netValue}</div>
-            </div>
-          )
+            <div className="ml-auto">{netValue}</div>
+          </div>
         )}
 
         <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
@@ -317,7 +320,12 @@ export function PositionBlock({
 
             <div className="flex">
               <p className="font-mono text-gray-400 text-xs mt-1">
-                {formatTimeDifference(getFullTimeDifference(position.openDate, new Date(Date.now())))}
+                {formatTimeDifference(
+                  getFullTimeDifference(
+                    position.openDate,
+                    new Date(Date.now()),
+                  ),
+                )}
               </p>
             </div>
           </div>
@@ -333,7 +341,7 @@ export function PositionBlock({
                 format="number"
                 className="text-gray-400 text-xs mt-1"
                 suffix="x"
-                suffixClassName='text-xs'
+                suffixClassName="text-xs"
                 isDecimalDimmed={false}
               />
             </div>
@@ -348,7 +356,11 @@ export function PositionBlock({
               <Tippy
                 content={
                   <FormatNumber
-                    nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+                    nb={
+                      position.side === 'long'
+                        ? position.size
+                        : position.sizeUsd / position.price
+                    }
                     format="number"
                     className="text-gray-400 text-xs"
                     precision={position.token.displayAmountDecimalsPrecision}
@@ -436,11 +448,16 @@ export function PositionBlock({
 
             <div
               className={twMerge(
-                "flex mt-1 rounded",
-                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                'flex mt-1 rounded',
+                !readOnly &&
+                'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
               )}
-              onClick={!readOnly ? () => triggerEditPositionCollateral?.(position) : undefined}
-              role={!readOnly ? "button" : undefined}
+              onClick={
+                !readOnly
+                  ? () => triggerEditPositionCollateral?.(position)
+                  : undefined
+              }
+              role={!readOnly ? 'button' : undefined}
               tabIndex={!readOnly ? 0 : undefined}
             >
               <FormatNumber
@@ -475,11 +492,16 @@ export function PositionBlock({
             </div>
             <div
               className={twMerge(
-                "flex mt-1 rounded",
-                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                'flex mt-1 rounded',
+                !readOnly &&
+                'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
               )}
-              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
-              role={!readOnly ? "button" : undefined}
+              onClick={
+                !readOnly
+                  ? () => triggerStopLossTakeProfit?.(position)
+                  : undefined
+              }
+              role={!readOnly ? 'button' : undefined}
               tabIndex={!readOnly ? 0 : undefined}
             >
               {position.takeProfitIsSet &&
@@ -503,11 +525,16 @@ export function PositionBlock({
             </div>
             <div
               className={twMerge(
-                "flex mt-1 rounded",
-                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                'flex mt-1 rounded',
+                !readOnly &&
+                'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
               )}
-              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
-              role={!readOnly ? "button" : undefined}
+              onClick={
+                !readOnly
+                  ? () => triggerStopLossTakeProfit?.(position)
+                  : undefined
+              }
+              role={!readOnly ? 'button' : undefined}
               tabIndex={!readOnly ? 0 : undefined}
             >
               {position.stopLossIsSet &&
@@ -554,7 +581,11 @@ export function PositionBlock({
             <Button
               size="xs"
               className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-              title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
+              title={
+                closableIn === 0 || closableIn === null
+                  ? 'Close'
+                  : `Close (${Math.floor(closableIn / 1000)}s)`
+              }
               rounded={false}
               disabled={closableIn !== 0}
               onClick={() => {
@@ -571,6 +602,56 @@ export function PositionBlock({
                 setIsOpen(true);
               }}
             />
+            <div className="flex items-center justify-center text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full md:max-w-[5em]" onClick={() => {
+              // const params = Object.entries(position).map(([key, value]) => `${key}=${value}`).join('&');
+              const params = `tokenSymbolB=${position.token.symbol}&tokenSymbolA=${position.collateralToken.symbol}&collateralAmount=${position.collateralAmount}&price=${position.price}&leverage=${position.initialLeverage}`;
+              // open link to the position
+              window.open(`/api/blink/openPosition?${params}`, '_blank');
+            }}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 15 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clip-path="url(#clip0_946_2016)">
+                  <g clip-path="url(#clip1_946_2016)">
+                    <path
+                      d="M0.8211 9.84976C0.453601 8.54791 0.502117 6.14404 0.502117 6.14404C0.502117 6.14404 1.8471 8.31316 4.16661 8.99174C5.87548 9.49168 8.22753 9.52995 9.70766 8.86079C11.5004 8.2727 12.6129 6.44409 12.0882 5.13685C11.3169 3.21533 9.07214 2.45433 6.73206 2.63638C4.93863 2.7759 3.46002 3.63536 2.57618 4.48124C1.70194 5.31791 1.48094 5.99067 1.48094 5.99067C1.48094 5.99067 0.798969 5.26365 0.715779 4.48124C0.525004 2.68697 2.13816 1.28994 4.43657 0.806763C7.55087 0.152069 11.2087 1.42387 13.2052 3.91062C14.5864 5.63102 14.9698 7.96302 13.8286 9.97084C12.1194 12.9778 8.31405 13.5725 5.84969 13.286C3.38533 12.9996 1.23742 11.3246 0.8211 9.84976Z"
+                      fill="#fff"
+                    ></path>
+                  </g>
+                </g>
+                <defs>
+                  <clipPath id="clip0_946_2016">
+                    <rect
+                      width="14"
+                      height="14"
+                      fill="white"
+                      transform="translate(0.5)"
+                    ></rect>
+                  </clipPath>
+                  <clipPath id="clip1_946_2016">
+                    <rect
+                      width="14"
+                      height="12.7273"
+                      fill="white"
+                      transform="translate(0.5 0.63623)"
+                    ></rect>
+                  </clipPath>
+                </defs>
+              </svg>
+            </div>
+            {/* <Button
+              size="xs"
+              className=""
+              leftIcon={shareIcon}
+              rounded={false}
+              onClick={() => {
+                setIsOpen(true);
+              }}
+            /> */}
           </div>
         )}
 
@@ -579,18 +660,22 @@ export function PositionBlock({
             <h2 className="text-red text-xs">Liquidable</h2>
           </div>
         ) : null}
-      </div >
+      </div>
 
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Share PnL" close={() => setIsOpen(false)} className="overflow-y-auto"
-            wrapperClassName="h-[80vh] sm:h-auto">
+          <Modal
+            title="Share PnL"
+            close={() => setIsOpen(false)}
+            className="overflow-y-auto"
+            wrapperClassName="h-[80vh] sm:h-auto"
+          >
             <div className="absolute top-0 w-[300px]">
               {(() => {
-                const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
-                const pnlUsd = position.pnl
-                  ? position.pnl - fees
-                  : null;
+                const fees = -(
+                  (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0)
+                );
+                const pnlUsd = position.pnl ? position.pnl - fees : null;
 
                 if (!pnlUsd || pnlUsd < 0) return;
 
