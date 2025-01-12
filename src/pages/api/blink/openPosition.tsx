@@ -176,8 +176,8 @@ export default async function handler(
             .json({
                 type: 'action',
                 icon: 'https://app.adrena.xyz/api/og?opt=0&pnl=2.65&pnlUsd=0.609208&isPnlUsd=false&side=long&symbol=SOL&collateral=22.961887&mark=197.2&price=197.09286285&opened=1736331462000&size=197.472229&exitPrice=0',
-                title: 'Open Trade',
-                description: `Open a trade using based on my current position`,
+                title: `Copy Trade | Long – ${tokenSymbolA}/${tokenSymbolB}`,
+                description: `Description..`,
                 label: 'Add Liquidity',
                 error: {
                     message: 'Providing liquidity failed', // TODO: add error message
@@ -188,6 +188,21 @@ export default async function handler(
                             label: 'Open trade',
                             href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&price=${price}`,
                             type: 'transaction',
+                            // parameters: [
+                            //     {
+                            //         label: `Leverage (current: ${Number(leverage).toFixed(2)})`,
+                            //         name: 'leverage',
+                            //         type: 'number',
+                            //         max: 100,
+                            //         min: 0,
+                            //     },
+                            //     {
+                            //         label: `Collateral Amount (current: ${collateralAmount})`,
+                            //         name: 'collateralAmount',
+                            //         type: 'number',
+                            //         min: 0,
+                            //     },
+                            // ]
                         },
                     ],
                 },
