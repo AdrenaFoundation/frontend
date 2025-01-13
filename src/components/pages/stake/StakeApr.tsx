@@ -104,9 +104,9 @@ export default function StakeApr({
 
             <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => {
-                const a = apr !== null && !apr?.aprs ? apr.aprs.find(({
+                const a = !apr || !apr.aprs ? null : apr.aprs.find(({
                   lock_period,
-                }) => lock_period === lockPeriod) ?? null : null;
+                }) => lock_period === lockPeriod) ?? null;
 
                 return <NumberDisplayBoilerplate
                   key={lockPeriod}
@@ -122,9 +122,9 @@ export default function StakeApr({
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
-                  nb={apr !== null && !apr?.aprs ? apr.aprs.find(({
+                  nb={!apr || !apr.aprs ? null : apr.aprs.find(({
                     lock_period,
-                  }) => lock_period === lockPeriod)?.locked_adx_apr ?? null : null}
+                  }) => lock_period === lockPeriod)?.locked_adx_apr ?? null}
                 />
               ))}
             </div>
@@ -139,9 +139,9 @@ export default function StakeApr({
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
-                  nb={apr !== null && !apr?.aprs ? apr.aprs.find(({
+                  nb={!apr || !apr.aprs ? null : apr.aprs.find(({
                     lock_period,
-                  }) => lock_period === lockPeriod)?.total_apr ?? null : null}
+                  }) => lock_period === lockPeriod)?.total_apr ?? null}
                 />
               ))}
             </div>
