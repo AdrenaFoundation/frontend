@@ -1,5 +1,4 @@
 import { Connection } from '@solana/web3.js';
-import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -24,6 +23,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import Mutagen from '../Mutagen/Mutagen';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
@@ -231,32 +231,7 @@ export default function Header({
           setShowFeesInPnl={setShowFeesInPnl}
         />
 
-        <Tippy
-          content={
-            <div className="gap-4 flex flex-col">
-              <p className="text-sm">
-                Points, also known as Mutagens, are the core scoring system for Adrena&apos;s trading competitions. They represent your activity, performance, and engagement on the platform. Every trade you make, every milestone you achieve, and every quest you complete earns you Mutagens. These points not only determine your rank in the competition but also accumulate for future multi-season rewards, including the highly anticipated Adrena Airdrop.
-              </p>
-              <p className="text-sm">
-                Mutagens have been accruing since Adrena&apos;s launch, so all your past activity counts towards the future multi-season rewards. Whether you&apos;re new or a seasoned trader, every trade contributes to your legacy.
-              </p>
-              <p className="text-sm">
-                With Mutagens, it&apos;s not just about trading volume &mdash; participation, streaks, and strategic actions like setting Stop Loss or Take Profit orders are also rewarded. Plus, bonus points from daily Mutations add an exciting twist, creating new metas and strategies each day.
-              </p>
-              <p className="text-sm">
-                Earn points, climb the leaderboards, and secure your place in Adrena&apos;s trading legacy!
-              </p>
-            </div>
-
-          }
-        >
-          <div className='flex bg-[#1f2c3c] pt-1 pb-1 pr-4 pl-4 rounded-full'>
-            <div className='flex gap-2'>
-              <div className='text-xs font-mono'>?</div>
-              <div className='text-xs font-mono'>Mutagens</div>
-            </div>
-          </div>
-        </Tippy>
+        <Mutagen />
 
         <WalletAdapter userProfile={userProfile} adapters={adapters} />
 
