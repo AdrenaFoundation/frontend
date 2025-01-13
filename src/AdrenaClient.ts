@@ -1147,7 +1147,7 @@ export class AdrenaClient {
       });
   }
 
-  protected buildOpenOrIncreasePositionWithSwapShort({
+  buildOpenOrIncreasePositionWithSwapShort({
     owner,
     mint,
     price,
