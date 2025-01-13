@@ -322,7 +322,7 @@ export default function SharePositionModal({
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                 blinkTwitterText,
               )}&url=${encodeURIComponent(
-                `https://dial.to/?action=solana-action:https://${window.location.hostname}/api/blink/openPosition?${blinkParams}`,
+                `https://dial.to/?action=${encodeURIComponent(`solana-action:http://${window.location.hostname}:3000/api/blink/openPosition?${blinkParams}`)}`,
               )}`}
               isOpenLinkInNewTab
             />
