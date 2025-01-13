@@ -133,7 +133,7 @@ export default function LeverageSlider({
               onChange(mark);
               setIsLeverageInputEmpty(false);
             }}
-          ></Button>
+          />
         ))}
       </div>
     </div>
