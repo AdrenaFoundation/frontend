@@ -25,7 +25,7 @@ export default function UserProfileBlock({ profile, setActiveProfile, className 
 
     return (
         <div className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden p-3 ${className}`}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row gap-6 justify-between items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-row gap-6 justify-between items-center">
                 <div className="flex flex-1 flex-col items-start" onClick={
                     () => setActiveProfile(profile)
                 }>

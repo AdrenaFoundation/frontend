@@ -1,16 +1,7 @@
+import Lottie from 'lottie-react';
 import React from 'react';
-import Lottie from 'react-lottie';
 
 import loader from './animation_llnqetok.json';
-
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: loader,
-  rendererSettings: {
-    preserveAspectRatio: 'xMidYMid slice',
-  },
-};
 
 export default function Loader({
   height = 30,
@@ -23,7 +14,15 @@ export default function Loader({
 }) {
   return (
     <div className={className ?? ''}>
-      <Lottie options={defaultOptions} height={height} width={width} />
+      <Lottie
+        animationData={loader}
+        loop={true}
+        autoplay={true}
+        style={{ height, width }}
+        rendererSettings={{
+          preserveAspectRatio: 'xMidYMid slice'
+        }}
+      />
     </div>
   );
 }

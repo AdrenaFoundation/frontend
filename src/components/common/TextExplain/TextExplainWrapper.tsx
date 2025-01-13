@@ -21,7 +21,7 @@ export default function TextExplainWrapper({
       <TextExplain
         title={title}
         className={twMerge(
-          position === 'top' ? 'top-[-1.7em]' : 'bottom-[-1.7em]',
+          position === 'top' ? 'top-[-1.4em]' : 'bottom-[-1.5em]',
           textExplainClassName,
         )}
         position={position}

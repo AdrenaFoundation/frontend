@@ -1,6 +1,7 @@
 import { BN, Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
+import { kv } from '@vercel/kv';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -36,6 +37,7 @@ import {
   uiToNative,
 } from '@/utils';
 
+import fireImg from '../../../../../public/images/fire.png';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
@@ -133,6 +135,7 @@ export default function LongShortTradingInputs({
 
   const [limitOrderTriggerPrice, setLimitOrderTriggerPrice] = useState<number | null>(null);
   const [limitOrderSlippage, setLimitOrderSlippage] = useState<number | null>(null);
+  const [insufficientAmount, setInsufficientAmount] = useState<boolean>(false);
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -150,9 +153,22 @@ export default function LongShortTradingInputs({
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
 
-  const referrer = useMemo(() => {
+  const referrer = useMemo(async () => {
     console.log('Referral', query.referral);
-    return query.referral ? tryPubkey(query.referral as string) : null;
+
+    if (query.referral === null || typeof query.referral === 'undefined' || query.referral === '' || typeof query.referral !== 'string') {
+      return null;
+    }
+
+    if (query.referral.length === 44) return tryPubkey(query.referral as string)
+
+    try {
+      const referralRedis = await kv.get(decodeURIComponent(query.referral as string)) as string | null
+      return referralRedis !== null ? tryPubkey(referralRedis) : null
+    } catch (err) {
+      console.log('Error getting referral from redis', err)
+      return null
+    }
   }, [query.referral]);
 
   const [custody, setCustody] = useState<CustodyExtended | null>(null);
@@ -166,6 +182,7 @@ export default function LongShortTradingInputs({
     liquidationPrice: number;
     exitFeeUsd: number;
     liquidationFeeUsd: number;
+    highSwapFees: boolean;
   } | null>(null);
 
   const [increasePositionInfo, setIncreasePositionInfo] = useState<{
@@ -351,6 +368,8 @@ export default function LongShortTradingInputs({
     }
 
     try {
+      const referrerPublicKey = await referrer;
+
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
           owner: new PublicKey(wallet.publicKey),
@@ -360,7 +379,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          referrer,
+          referrer: referrerPublicKey,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -370,12 +389,13 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          referrer,
+          referrer: referrerPublicKey,
         }));
 
       dispatch(fetchWalletTokenBalances());
 
       setInputA(null);
+      setInsufficientAmount(false);
       setErrorMessage(null);
       setInputB(null);
       setPriceA(null);
@@ -397,6 +417,10 @@ export default function LongShortTradingInputs({
     // If wallet not connected, then user need to connect wallet
     if (!connected) return setButtonTitle('Connect wallet');
 
+    if (insufficientAmount) {
+      return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
+    }
+
     if (openedPosition) {
       if (side === 'short') {
         return setButtonTitle('Increase Short');
@@ -414,6 +438,7 @@ export default function LongShortTradingInputs({
     tokenA,
     wallet,
     walletTokenBalances,
+    insufficientAmount,
   ]);
 
   useEffect(() => {
@@ -456,7 +481,10 @@ export default function LongShortTradingInputs({
         // an other request has been casted due to input change
         if (localLoadingCounter !== loadingCounter) return;
 
-        setNewPositionInfo(infos);
+        setNewPositionInfo({
+          ...infos,
+          highSwapFees: infos.swapFeeUsd !== null && infos.swapFeeUsd * 100 / infos.collateralUsd > 1,
+        });
 
         console.log('Position infos', infos);
       } catch (err) {
@@ -547,13 +575,16 @@ export default function LongShortTradingInputs({
   useEffect(() => {
     if (!inputA || !connected) {
       setErrorMessage(null);
+      setInsufficientAmount(false);
       return;
     }
 
     const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     if (!walletTokenABalance || inputA > walletTokenABalance) {
-      return setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
+      setInsufficientAmount(true);
+    } else {
+      setInsufficientAmount(false);
     }
 
     // Check for minimum collateral value
@@ -604,6 +635,7 @@ export default function LongShortTradingInputs({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
 
+
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
     setInputA(v);
@@ -620,6 +652,10 @@ export default function LongShortTradingInputs({
     handleInputAChange(userWalletAmount);
   };
 
+  const highSwapFeeTippyContent = useMemo(() => <div className="gap-4 flex flex-col">
+    <div className='text-txtfade text-sm'>The collateral you provided does not match the assets you&apos;r opening a position for, as such the platform will first have to do a Swap. Swap fees are dynamic and based on the Liquidity Pool&apos;s ratios, and currently that direction isn&apos;t favorable in term of fees. You can decide to go through or change the provided collateral.</div>
+  </div>, []);
+
   return (
     <div
       className={twMerge('relative flex flex-col sm:pb-2', className)}
@@ -634,7 +670,7 @@ export default function LongShortTradingInputs({
             alt="Info icon"
           />
           <span className="text-sm" >
-            Short positions have a maximum absolute PnL of the borrowed USDC amount (a.k.a. position size). <br />More about the peer2pool perp model
+            Max payout on short is equivalent to the borrowed USDC (size). <br />More about the peer2pool perp model
             <Link href="https://docs.adrena.xyz/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider" className="underline ml-1 text-sm" target='_blank'>
               in the docs
             </Link>
@@ -741,419 +777,268 @@ export default function LongShortTradingInputs({
         </div>
       </div>
 
-      {isLimitOrder ?
-        <>
-          <h5 className='ml-4 mt-4 flex'>Open Position after reaching</h5>
+      {
+        isLimitOrder ?
+          <>
+            <h5 className='ml-4 mt-4 flex'>Open Position after reaching</h5>
 
-          <div className="flex items-center border-l border-t border-r rounded-tl-lg rounded-tr-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative gap-[0.1em]">
-            <div className='pl-4 mt-[0.1em] text-[1.4em]'>{limitOrderTriggerPrice !== null ? '$' : null}</div>
+            <div className="flex items-center border-l border-t border-r rounded-tl-lg rounded-tr-lg bg-inputcolor pt-2 pb-2 mt-3 grow text-sm w-full relative gap-[0.1em]">
+              <div className='pl-4 mt-[0.1em] text-[1.4em]'>{limitOrderTriggerPrice !== null ? '$' : null}</div>
 
-            <InputNumber
-              value={limitOrderTriggerPrice === null ? undefined : limitOrderTriggerPrice}
-              placeholder="$100"
-              className="font-mono border-0 outline-none bg-transparent h-8"
-              onChange={setLimitOrderTriggerPrice}
-              inputFontSize="1.4em"
+              <InputNumber
+                value={limitOrderTriggerPrice === null ? undefined : limitOrderTriggerPrice}
+                placeholder="$100"
+                className="font-mono border-0 outline-none bg-transparent h-8"
+                onChange={setLimitOrderTriggerPrice}
+                inputFontSize="1.4em"
+              />
+
+              {limitOrderTriggerPrice !== null && (
+                <div
+                  className="absolute right-4 cursor-pointer text-txtfade hover:text-white"
+                  onClick={() => setLimitOrderTriggerPrice(null)}
+                >
+                  clear
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-row bg-inputcolor rounded-bl-lg rounded-br-lg h-7">
+              {triggerPricePresets.map((percent, i) => {
+                return (
+                  <Button
+                    key={i}
+                    title={`${side === 'long' ? '-' : '+'}${percent}%`}
+                    variant="secondary"
+                    rounded={false}
+                    className={twMerge(
+                      'flex-1 opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor h-full font-bold',
+                      i === 0 ? 'rounded-bl-[0.7em]' : '',
+                      i === triggerPricePresets.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',
+                      side === "long" ? 'text-redbright' : 'text-green',
+                    )}
+                    onClick={() => {
+                      if (!tokenPriceBTrade) return;
+
+                      setLimitOrderTriggerPrice(calculateLimitOrderTriggerPrice({
+                        tokenPriceBTrade,
+                        percent,
+                        side,
+                      }));
+                    }}
+                  />
+                );
+              })}
+            </div>
+
+            <div className='flex items-center mt-3 ml-4 gap-1'>
+              <div className='text-xs font-boldy relative bottom-[0.2em] text-txtfade'>Trigger price must be {side === 'long' ? 'below' : 'above'}</div>
+
+              <div className='flex relative bottom-[0.15em]'>
+                <FormatNumber
+                  nb={tokenPriceBTrade}
+                  format="currency"
+                  className="text-xs"
+                  isDecimalDimmed={false}
+                />
+              </div>
+            </div>
+
+            <h5 className='ml-4 mt-4 flex'>Slippage</h5>
+
+            <div className="flex flex-row rounded-bl-lg rounded-br-lg h-7 gap-2 mt-3 pl-6 pr-6">
+              {limitOrderSlippagePresets.map((percent, i) => {
+                return (
+                  <Button
+                    key={i}
+                    title={percent === null ? 'none' : `${percent}%`}
+                    variant="secondary"
+                    rounded={false}
+                    className={twMerge(
+                      'flex-1 hover:border-b-[#ffffffA0] flex-grow text-xs h-full font-bold border-b-2 border-transparent',
+                      limitOrderSlippage === percent ? 'border-b-white' : '',
+                    )}
+                    onClick={() => {
+                      setLimitOrderSlippage(percent);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </> : null
+      }
+
+      {
+        !isLimitOrder ? <div className="flex flex-col transition-opacity duration-500 mt-4">
+          <h5 className="flex items-center ml-4">Size</h5>
+
+          <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
+            <Select
+              className="shrink-0 h-full flex items-center w-[7em]"
+              selectedClassName="w-14"
+              menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
+              menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
+              selected={getTokenSymbol(tokenB.symbol)}
+              options={allowedTokenB.map((token) => ({
+                title: getTokenSymbol(token.symbol),
+                img: getTokenImage(token),
+              }))}
+              onSelect={(name) => {
+                // Force linting, you cannot not find the token in the list
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const token = allowedTokenB.find(
+                  (t) => getTokenSymbol(t.symbol) === name,
+                )!;
+                setTokenB(token);
+
+                // if the prev value has more decimals than the new token, we need to adjust the value
+                const newTokenDecimals = token.decimals ?? 18;
+                const decimals = inputB?.toString().split('.')[1]?.length;
+
+                if (Number(decimals) > Number(newTokenDecimals)) {
+                  handleInputBChange(Number(inputB?.toFixed(newTokenDecimals)));
+                }
+              }}
+              reversed={true}
             />
 
-            {limitOrderTriggerPrice !== null && (
-              <div
-                className="absolute right-4 cursor-pointer text-txtfade hover:text-white"
-                onClick={() => setLimitOrderTriggerPrice(null)}
-              >
-                clear
+            {!isInfoLoading ? (
+              <div className="flex ml-auto">
+                {openedPosition && tokenPriceBTrade && inputB ? (
+                  <>
+                    {/* Opened position */}
+                    <div className="flex flex-col self-center items-end line-through mr-3">
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd / tokenPriceBTrade}
+                        precision={tokenB.symbol === 'BTC' ? 4 : 2}
+                        className="text-txtfade"
+                        isAbbreviate={tokenB.symbol === 'BONK'}
+                        info={
+                          tokenB.symbol === 'BONK'
+                            ? (openedPosition.sizeUsd / tokenPriceBTrade).toString()
+                            : null
+                        }
+                      />
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd}
+                        format="currency"
+                        className="text-txtfade text-xs line-through"
+                      />
+                    </div>
+                  </>
+                ) : null}
+
+                <div className="relative flex flex-col">
+                  <div className="flex flex-col items-end font-mono">
+                    <FormatNumber
+                      nb={inputB}
+                      precision={tokenB.displayAmountDecimalsPrecision}
+                      className="text-lg"
+                      isAbbreviate={tokenB.symbol === 'BONK'}
+                      info={
+                        tokenB.symbol === 'BONK' ? inputB?.toString() : null
+                      }
+                    />
+
+                    <FormatNumber
+                      nb={priceB}
+                      format="currency"
+                      className="text-txtfade text-sm"
+                    />
+                  </div>
+                </div>
               </div>
+            ) : (
+              <div className="w-full h-[40px] bg-bcolor rounded-xl" />
             )}
           </div>
 
-          <div className="flex flex-row bg-inputcolor rounded-bl-lg rounded-br-lg h-7">
-            {triggerPricePresets.map((percent, i) => {
-              return (
-                <Button
-                  key={i}
-                  title={`${side === 'long' ? '-' : '+'}${percent}%`}
-                  variant="secondary"
-                  rounded={false}
-                  className={twMerge(
-                    'flex-1 opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor h-full font-bold',
-                    i === 0 ? 'rounded-bl-[0.7em]' : '',
-                    i === triggerPricePresets.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',
-                    side === "long" ? 'text-redbright' : 'text-green',
-                  )}
-                  onClick={() => {
-                    if (!tokenPriceBTrade) return;
+          <div className="flex sm:mt-2">
+            <div className="flex items-center ml-2">
+              <span className="text-txtfade">max size:</span>
 
-                    setLimitOrderTriggerPrice(calculateLimitOrderTriggerPrice({
-                      tokenPriceBTrade,
-                      percent,
-                      side,
-                    }));
-                  }}
-                />
-              );
-            })}
-          </div>
-
-          <div className='flex items-center mt-3 ml-4 gap-1'>
-            <div className='text-xs font-boldy relative bottom-[0.2em] text-txtfade'>Trigger price must be {side === 'long' ? 'below' : 'above'}</div>
-
-            <div className='flex relative bottom-[0.15em]'>
               <FormatNumber
-                nb={tokenPriceBTrade}
-                format="currency"
-                className="text-xs"
-                isDecimalDimmed={false}
-              />
-            </div>
-          </div>
-
-          <h5 className='ml-4 mt-4 flex'>Slippage</h5>
-
-          <div className="flex flex-row rounded-bl-lg rounded-br-lg h-7 gap-2 mt-3 pl-6 pr-6">
-            {limitOrderSlippagePresets.map((percent, i) => {
-              return (
-                <Button
-                  key={i}
-                  title={percent === null ? 'none' : `${percent}%`}
-                  variant="secondary"
-                  rounded={false}
-                  className={twMerge(
-                    'flex-1 hover:border-b-[#ffffffA0] flex-grow text-xs h-full font-bold border-b-2 border-transparent',
-                    limitOrderSlippage === percent ? 'border-b-white' : '',
-                  )}
-                  onClick={() => {
-                    setLimitOrderSlippage(percent);
-                  }}
-                />
-              );
-            })}
-          </div>
-        </> : null}
-
-      {!isLimitOrder ? <div className="flex flex-col transition-opacity duration-500 mt-4">
-        <h5 className="flex items-center ml-4">Size</h5>
-
-        <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
-          <Select
-            className="shrink-0 h-full flex items-center w-[7em]"
-            selectedClassName="w-14"
-            menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
-            menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
-            selected={getTokenSymbol(tokenB.symbol)}
-            options={allowedTokenB.map((token) => ({
-              title: getTokenSymbol(token.symbol),
-              img: getTokenImage(token),
-            }))}
-            onSelect={(name) => {
-              // Force linting, you cannot not find the token in the list
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const token = allowedTokenB.find(
-                (t) => getTokenSymbol(t.symbol) === name,
-              )!;
-              setTokenB(token);
-
-              // if the prev value has more decimals than the new token, we need to adjust the value
-              const newTokenDecimals = token.decimals ?? 18;
-              const decimals = inputB?.toString().split('.')[1]?.length;
-
-              if (Number(decimals) > Number(newTokenDecimals)) {
-                handleInputBChange(Number(inputB?.toFixed(newTokenDecimals)));
-              }
-            }}
-            reversed={true}
-          />
-
-          {!isInfoLoading ? (
-            <div className="flex ml-auto">
-              {openedPosition && tokenPriceBTrade && inputB ? (
-                <>
-                  {/* Opened position */}
-                  <div className="flex flex-col self-center items-end line-through mr-3">
-                    <FormatNumber
-                      nb={openedPosition.sizeUsd / tokenPriceBTrade}
-                      precision={tokenB.symbol === 'BTC' ? 4 : 2}
-                      className="text-txtfade"
-                      isAbbreviate={tokenB.symbol === 'BONK'}
-                      info={
-                        tokenB.symbol === 'BONK'
-                          ? (openedPosition.sizeUsd / tokenPriceBTrade).toString()
-                          : null
-                      }
-                    />
-                    <FormatNumber
-                      nb={openedPosition.sizeUsd}
-                      format="currency"
-                      className="text-txtfade text-xs line-through"
-                    />
-                  </div>
-                </>
-              ) : null}
-
-              <div className="relative flex flex-col">
-                <div className="flex flex-col items-end font-mono">
-                  <FormatNumber
-                    nb={inputB}
-                    precision={tokenB.displayAmountDecimalsPrecision}
-                    className="text-lg"
-                    isAbbreviate={tokenB.symbol === 'BONK'}
-                    info={
-                      tokenB.symbol === 'BONK' ? inputB?.toString() : null
-                    }
-                  />
-
-                  <FormatNumber
-                    nb={priceB}
-                    format="currency"
-                    className="text-txtfade text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="w-full h-[40px] bg-bcolor rounded-xl" />
-          )}
-        </div>
-
-        <div className="flex sm:mt-2">
-          <div className="flex items-center ml-2">
-            <span className="text-txtfade">max size:</span>
-
-            <FormatNumber
-              nb={
-                side === 'long' ?
-                  custody && custody.maxPositionLockedUsd
-                    ? custody.maxPositionLockedUsd
-                    : null : usdcCustody?.maxPositionLockedUsd ?? null
-              }
-              format="currency"
-              className="text-txtfade text-xs ml-1"
-            />
-
-            <InfoAnnotation
-              className="ml-1 inline-flex"
-              text="The maximum size of the position you can open, for that market and side."
-            />
-          </div>
-
-          <div className="ml-auto items-center flex mr-2">
-            <span className="text-txtfade mr-1">avail. liq.:</span>
-            <FormatNumber
-              nb={
-                side === 'long'
-                  ? custody && tokenPriceB && custody.liquidity * tokenPriceB
-                  : usdcPrice &&
-                  usdcCustody && custody &&
-                  Math.min(usdcCustody.liquidity * usdcPrice, availableLiquidityShort)
-              }
-              format="currency"
-              precision={0}
-              className="text-txtfade text-xs"
-            />
-            <InfoAnnotation
-              className=" inline-flex"
-              text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
-            />
-          </div>
-        </div>
-
-        {errorMessage !== null ? (
-          <AnimatePresence>
-            <motion.div
-              className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-30 items-center justify-center rounded-xl"
-              initial={{ opacity: 0, scaleY: 0 }}
-              animate={{ opacity: 1, scaleY: 1 }}
-              exit={{ opacity: 0, scaleY: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{ originY: 0 }}
-            >
-              <Image
-                className="w-auto h-[1.5em] absolute left-[0.5em]"
-                src={errorImg}
-                alt="Error icon"
-              />
-
-              <div className="items-center justify-center">
-                <div className="text-sm">{errorMessage}</div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        ) : null}
-
-        {/* Button to execute action */}
-        <Button
-          className={twMerge(
-            'w-full justify-center mt-2 mb-1 sm:mb-2',
-            side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
-          )}
-          size="lg"
-          title={buttonTitle}
-          disabled={errorMessage != null}
-          onClick={handleExecuteButton}
-        />
-
-        {inputA && !errorMessage && (
-          <>
-            <div className="flex items-center ml-4 mt-3 mb-2">
-              <h5 className="hidden sm:flex items-center">Position info</h5>
-              <Tippy
-                content={
-                  <p className="font-medium text-txtfade">
-                    The information below is calculated locally based on current market prices, and does not account for confidence of the price feed at execution time, as such the Liquidation price and init. leverage may slightly differ.
-                  </p>
+                nb={
+                  side === 'long' ?
+                    custody && custody.maxPositionLockedUsd
+                      ? custody.maxPositionLockedUsd
+                      : null : usdcCustody?.maxPositionLockedUsd ?? null
                 }
+                format="currency"
+                className="text-txtfade text-xs ml-1"
+              />
+
+              <InfoAnnotation
+                className="ml-1 inline-flex"
+                text="The maximum size of the position you can open, for that market and side."
+              />
+            </div>
+
+            <div className="ml-auto items-center flex mr-2">
+              <span className="text-txtfade mr-1">avail. liq.:</span>
+              <FormatNumber
+                nb={
+                  side === 'long'
+                    ? custody && tokenPriceB && custody.liquidity * tokenPriceB
+                    : usdcPrice &&
+                    usdcCustody && custody &&
+                    Math.min(usdcCustody.liquidity * usdcPrice, availableLiquidityShort)
+                }
+                format="currency"
+                precision={0}
+                className="text-txtfade text-xs"
+              />
+              <InfoAnnotation
+                className=" inline-flex"
+                text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
+              />
+            </div>
+          </div>
+
+          {errorMessage !== null ? (
+            <AnimatePresence>
+              <motion.div
+                className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-30 items-center justify-center rounded-xl"
+                initial={{ opacity: 0, scaleY: 0 }}
+                animate={{ opacity: 1, scaleY: 1 }}
+                exit={{ opacity: 0, scaleY: 0 }}
+                transition={{ duration: 0.5 }}
+                style={{ originY: 0 }}
               >
                 <Image
-                  src={infoIcon}
-                  width={14}
-                  height={14}
-                  alt="info icon"
-                  className="ml-1 cursor-pointer"
+                  className="w-auto h-[1.5em] absolute left-[0.5em]"
+                  src={errorImg}
+                  alt="Error icon"
                 />
-              </Tippy>
-            </div>
 
-            <StyledSubSubContainer
-              className={twMerge(
-                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
-              )}
-            >
-              {newPositionInfo && !isInfoLoading ? (
-                <div className="flex w-full justify-evenly">
-                  <TextExplainWrapper
-                    title="Entry Price"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
-                      format="currency"
-                      className="text-lg"
-                      precision={tokenB.displayPriceDecimalsPrecision}
-                    />
-
-                    {openedPosition && (
-                      <FormatNumber
-                        nb={openedPosition.price}
-                        format="currency"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
-                        precision={tokenB.displayPriceDecimalsPrecision}
-                      />
-                    )}
-                  </TextExplainWrapper>
-
-                  <div className="h-full w-[1px] bg-gray-800" />
-
-                  <TextExplainWrapper
-                    title="Liquidation Price"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
-                      format="currency"
-                      className="text-lg text-orange"
-                      precision={tokenB.displayPriceDecimalsPrecision}
-                    />
-
-                    {openedPosition && openedPosition.liquidationPrice ? (
-                      <FormatNumber
-                        nb={openedPosition.liquidationPrice}
-                        format="currency"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
-                        precision={tokenB.displayPriceDecimalsPrecision}
-                      />
-                    ) : null}
-                  </TextExplainWrapper>
+                <div className="items-center justify-center">
+                  <div className="text-sm">{errorMessage}</div>
                 </div>
-              ) : (
-                <div className="flex w-full justify-evenly items-center">
-                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+              </motion.div>
+            </AnimatePresence>
+          ) : null}
 
-                  <div className="h-full w-[1px] bg-gray-800" />
+          {/* Button to execute action */}
+          <Button
+            className={twMerge(
+              'w-full justify-center mt-2 mb-1 sm:mb-2',
+              side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+            )}
+            size="lg"
+            title={buttonTitle}
+            disabled={errorMessage != null || insufficientAmount}
+            onClick={handleExecuteButton}
+          />
 
-                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
-                </div>
-              )}
-            </StyledSubSubContainer>
 
-            <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2"></h5>
-
-            <StyledSubSubContainer
-              className={twMerge(
-                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
-              )}
-            >
-              {newPositionInfo && !isInfoLoading ? (
-                <div className="flex w-full justify-evenly">
-                  <TextExplainWrapper
-                    title="Init. Leverage"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
-                      format="number"
-                      prefix="x"
-                      className={`text-lg ${openedPosition
-                        ? increasePositionInfo?.isLeverageIncreased
-                          ? 'text-orange'
-                          : 'text-green'
-                        : 'text-white'
-                        }`}
-                    />
-
-                    {openedPosition && increasePositionInfo?.newOverallLeverage ? (
-                      <FormatNumber
-                        nb={increasePositionInfo?.currentLeverage}
-                        format="number"
-                        prefix="x"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
-                      />
-                    ) : null}
-                  </TextExplainWrapper>
-
-                  <div className="h-full w-[1px] bg-gray-800" />
-
-                  <TextExplainWrapper
-                    title="Size (usd)"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
-                      format="number"
-                      className="text-lg"
-                    />
-
-                    {openedPosition && openedPosition.sizeUsd ? (
-                      <FormatNumber
-                        nb={openedPosition.sizeUsd}
-                        format="number"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
-                      />
-                    ) : null}
-                  </TextExplainWrapper>
-                </div>
-              ) : (
-                <div className="flex w-full justify-evenly items-center">
-                  <div className="w-0 h-4 bg-gray-800 rounded-xl" />
-
-                  <div className="h-full w-[1px] bg-gray-800" />
-
-                  <div className="w-0 h-4 bg-gray-800 rounded-xl" />
-                </div>
-              )}
-            </StyledSubSubContainer>
-
-            <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
-              Fees{' '}
-              <span className="ml-1">
+          {inputA && !errorMessage ? (
+            <>
+              <div className="flex items-center ml-4 mt-1 mb-2">
+                <h5 className="hidden sm:flex items-center">Position info</h5>
                 <Tippy
                   content={
                     <p className="font-medium text-txtfade">
-                      0 BPS entry fees - 16 BPS exit fees. 🎊 NO SIZE FEES! 🎊
+                      The information below is calculated locally based on current market prices, and does not account for confidence of the price feed at execution time, as such the Liquidation price and init. leverage may slightly differ.
                     </p>
                   }
                 >
@@ -1162,97 +1047,302 @@ export default function LongShortTradingInputs({
                     width={14}
                     height={14}
                     alt="info icon"
+                    className="ml-1 cursor-pointer"
                   />
                 </Tippy>
-              </span>
-            </h5>
+              </div>
 
-            <PositionFeesTooltip
-              borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
-              positionInfos={newPositionInfo}
-              openedPosition={openedPosition}
-            >
               <StyledSubSubContainer
                 className={twMerge(
-                  'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                  openedPosition ? 'h-[5.5em]' : 'h-[5em]',
-                  isInfoLoading || !newPositionInfo
-                    ? 'pt-4'
-                    : openedPosition
-                      ? 'pt-2'
-                      : 'pt-8',
+                  'flex pl-3 pr-3 items-center justify-center mt-2 sm:mt-0 border-b-0 rounded-bl-none rounded-br-none',
+                  openedPosition ? 'h-[4.8em]' : 'h-[4em]'
                 )}
               >
                 {newPositionInfo && !isInfoLoading ? (
-                  <AutoScalableDiv>
-                    {openedPosition ? (
-                      <>
-                        <TextExplainWrapper
-                          title="Current Fees"
-                          className="flex-col sm:mt-3"
-                          position="bottom"
-                        >
+                  <div className="flex w-full justify-evenly">
+                    <div className='w-1/2 flex items-center justify-center'>
+                      <TextExplainWrapper
+                        title="Entry Price"
+                        className="flex-col mt-7"
+                      >
+                        <FormatNumber
+                          nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
+                          format="currency"
+                          className="text-base"
+                          precision={tokenB.displayPriceDecimalsPrecision}
+                        />
+
+                        {openedPosition && (
                           <FormatNumber
-                            nb={
-                              openedPosition.exitFeeUsd +
-                              (openedPosition.borrowFeeUsd ?? 0)
-                            }
+                            nb={openedPosition.price}
                             format="currency"
-                            className="text-lg"
+                            className="text-txtfade text-xs self-center line-through"
+                            isDecimalDimmed={false}
+                            precision={tokenB.displayPriceDecimalsPrecision}
                           />
-                        </TextExplainWrapper>
+                        )}
+                      </TextExplainWrapper>
+                    </div>
 
-                        <span className="text-xl ml-2 mr-2 mt-3">+</span>
-                      </>
-                    ) : null}
+                    <div className="h-full w-[1px] bg-gray-800" />
 
-                    <TextExplainWrapper
-                      title={!openedPosition ? 'Trade Fees' : 'Additional Fees'}
-                      className="flex-col mt-3"
-                    >
-                      <FormatNumber
-                        nb={newPositionInfo.exitFeeUsd}
-                        format="currency"
-                        className="text-lg"
-                      />
-                    </TextExplainWrapper>
+                    <div className='w-1/2 flex items-center justify-center'>
+                      <TextExplainWrapper
+                        title="Liquidation Price"
+                        className="flex-col mt-7"
+                      >
+                        <FormatNumber
+                          nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
+                          format="currency"
+                          className="text-base text-orange"
+                          precision={tokenB.displayPriceDecimalsPrecision}
+                        />
 
-                    <span className="text-xl ml-2 mr-2 mt-3">+</span>
-
-                    <TextExplainWrapper
-                      title="Dynamic Borrow Rate"
-                      className="flex-col mt-3"
-                    >
-                      <FormatNumber
-                        // Multiply by 100 to be displayed as %
-                        nb={((side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee) ?? 0) * 100}
-                        precision={RATE_DECIMALS}
-                        minimumFractionDigits={4}
-                        suffix="%/hr"
-                        isDecimalDimmed={false}
-                        className="text-lg"
-                      />
-                    </TextExplainWrapper>
-                  </AutoScalableDiv>
+                        {openedPosition && openedPosition.liquidationPrice ? (
+                          <FormatNumber
+                            nb={openedPosition.liquidationPrice}
+                            format="currency"
+                            className="text-txtfade text-xs self-center line-through"
+                            isDecimalDimmed={false}
+                            precision={tokenB.displayPriceDecimalsPrecision}
+                          />
+                        ) : null}
+                      </TextExplainWrapper>
+                    </div>
+                  </div>
                 ) : (
-                  <div className="flex h-full justify-center items-center">
-                    <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+                  <div className="flex w-full justify-evenly items-center">
+                    <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+
+                    <div className="h-full w-[1px] bg-gray-800" />
+
+                    <div className="w-20 h-4 bg-gray-800 rounded-xl" />
                   </div>
                 )}
               </StyledSubSubContainer>
-            </PositionFeesTooltip>
-          </>
-        )}
-      </div> : <Button
-        className={twMerge(
-          'w-full justify-center mt-4',
-          side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
-        )}
-        size="lg"
-        title="Add Limit Order"
-        disabled={limitOrderTriggerPrice === null || inputA === null}
-        onClick={handleAddLimitOrder}
-      />}
+
+              <StyledSubSubContainer
+                className={twMerge(
+                  'flex pl-3 pr-3 pt-0 pb-3 items-center justify-center border-t-0 rounded-tl-none rounded-tr-none',
+                  openedPosition ? 'h-[4.8em]' : 'h-[4em]'
+                )}
+              >
+                {newPositionInfo && !isInfoLoading ? (
+                  <div className="flex w-full justify-evenly">
+
+                    <div className='w-1/2 flex items-center justify-center'>
+                      <TextExplainWrapper
+                        title="Init. Leverage"
+                        className="flex-col mt-6"
+                      >
+                        <FormatNumber
+                          nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
+                          format="number"
+                          prefix="x"
+                          className={`text-base ${openedPosition
+                            ? increasePositionInfo?.isLeverageIncreased
+                              ? 'text-orange'
+                              : 'text-green'
+                            : 'text-white'
+                            }`}
+                        />
+
+                        {openedPosition && increasePositionInfo?.newOverallLeverage ? (
+                          <FormatNumber
+                            nb={increasePositionInfo?.currentLeverage}
+                            format="number"
+                            prefix="x"
+                            className="text-txtfade text-xs self-center line-through"
+                            isDecimalDimmed={false}
+                          />
+                        ) : null}
+                      </TextExplainWrapper>
+                    </div>
+
+                    <div className="h-full w-[1px] bg-gray-800" />
+
+                    <div className='w-1/2 flex items-center justify-center'>
+                      <TextExplainWrapper
+                        title="Size (usd)"
+                        className="flex-col mt-6"
+                      >
+                        <FormatNumber
+                          nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
+                          format="number"
+                          className="text-base"
+                        />
+
+                        {openedPosition && openedPosition.sizeUsd ? (
+                          <FormatNumber
+                            nb={openedPosition.sizeUsd}
+                            format="number"
+                            className="text-txtfade text-xs self-center line-through"
+                            isDecimalDimmed={false}
+                          />
+                        ) : null}
+                      </TextExplainWrapper>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex w-full justify-evenly items-center">
+                    <div className="w-0 h-4 bg-gray-800 rounded-xl" />
+
+                    <div className="h-full w-[1px] bg-gray-800" />
+
+                    <div className="w-0 h-4 bg-gray-800 rounded-xl" />
+                  </div>
+                )}
+              </StyledSubSubContainer>
+
+              <h5 className="hidden sm:flex items-center ml-4 mt-2 mb-2">
+                Fees
+                <span className="ml-1">
+                  <Tippy
+                    content={
+                      <p className="font-medium text-txtfade">
+                        0 BPS entry fees - 16 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
+                      </p>
+                    }
+                  >
+                    <Image
+                      src={infoIcon}
+                      width={14}
+                      height={14}
+                      alt="info icon"
+                    />
+                  </Tippy>
+                </span>
+              </h5>
+
+              <PositionFeesTooltip
+                borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
+                positionInfos={newPositionInfo}
+                openedPosition={openedPosition}
+              >
+                <StyledSubSubContainer
+                  className={twMerge(
+                    'flex items-center justify-center mt-2 sm:mt-0',
+                    openedPosition ? 'h-[13em]' : 'h-[10em]',
+                  )}
+                >
+                  {newPositionInfo && !isInfoLoading ? (
+                    <AutoScalableDiv className='' bodyClassName="flex-col items-center justify-center mt-6">
+                      {openedPosition ? (
+                        <>
+                          <TextExplainWrapper
+                            title="Current Fees"
+                            className="flex-col"
+                            position="top"
+                          >
+                            <FormatNumber
+                              nb={
+                                openedPosition.exitFeeUsd +
+                                (openedPosition.borrowFeeUsd ?? 0)
+                              }
+                              format="currency"
+                              className="text-base"
+                            />
+                          </TextExplainWrapper>
+
+                          <span className="text-base ml-1 mr-1 mb-6">+</span>
+                        </>
+                      ) : null}
+
+                      {newPositionInfo.swapFeeUsd ? <TextExplainWrapper
+                        title={openedPosition ? 'Additional Fees (Swap + Exit)' : 'Fees (Swap + Exit)'}
+                        className="flex items-center justify-center"
+                      >
+                        <span className="text-xl">(</span>
+
+                        {newPositionInfo.highSwapFees ?
+                          <Tippy
+                            content={highSwapFeeTippyContent}
+                          >
+                            <div className='flex items-center'>
+                              <Image
+                                className="opacity-100"
+                                src={fireImg}
+                                height={18}
+                                width={18}
+                                alt="Fire icon"
+                              />
+
+                              <FormatNumber
+                                nb={newPositionInfo.swapFeeUsd}
+                                format="currency"
+                                className="text-base"
+                              />
+                            </div>
+                          </Tippy>
+                          : <FormatNumber
+                            nb={newPositionInfo.swapFeeUsd}
+                            format="currency"
+                            className="text-base"
+                          />}
+
+                        <span className="text-base ml-2 mr-2">+</span>
+
+                        <FormatNumber
+                          nb={newPositionInfo.exitFeeUsd}
+                          format="currency"
+                          className="text-base"
+                        />
+                        <span className="text-xl">)</span>
+                      </TextExplainWrapper> : <TextExplainWrapper
+                        title='Exit Fees'
+                        className="flex items-center justify-center"
+                      >
+                        <FormatNumber
+                          nb={newPositionInfo.exitFeeUsd}
+                          format="currency"
+                          className="text-base"
+                        />
+                      </TextExplainWrapper>}
+
+                      {newPositionInfo.highSwapFees ?
+                        <Tippy
+                          content={highSwapFeeTippyContent}
+                        >
+                          <div className='text-xs text-orange font-boldy underline-dashed'>warning: high swap fees</div>
+                        </Tippy>
+                        : null}
+
+                      <span className="text-base ml-1 mr-1 mb-6">+</span>
+
+                      <TextExplainWrapper
+                        title="Dynamic Borrow Rate"
+                        className="flex-col"
+                      >
+                        <FormatNumber
+                          // Multiply by 100 to be displayed as %
+                          nb={((side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee) ?? 0) * 100}
+                          precision={RATE_DECIMALS}
+                          minimumFractionDigits={4}
+                          suffix="%/hr"
+                          isDecimalDimmed={false}
+                          className="text-base"
+                        />
+                      </TextExplainWrapper>
+                    </AutoScalableDiv>
+                  ) : (
+                    <div className="flex h-full justify-center items-center">
+                      <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+                    </div>
+                  )}
+                </StyledSubSubContainer>
+              </PositionFeesTooltip>
+            </>
+          ) : null}
+        </div> : <Button
+          className={twMerge(
+            'w-full justify-center mt-4',
+            side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+          )}
+          size="lg"
+          title="Add Limit Order"
+          disabled={limitOrderTriggerPrice === null || inputA === null}
+          onClick={handleAddLimitOrder}
+        />}
     </div >
   );
 }

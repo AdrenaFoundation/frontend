@@ -1,12 +1,11 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { SUPPORTED_RESOLUTIONS } from '@/constant';
 import { useChartDrawing } from '@/hooks/useChartDrawing';
-import { useSelector } from '@/store/store';
 import { PositionExtended, Token, TokenSymbol } from '@/types';
-import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
+import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
   EntityId,
@@ -39,17 +38,25 @@ export default function TradingChart({
   const [widget, setWidget] = useState<Widget | null>(null);
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const activePositionLineIDs = useRef<EntityId[]>([]);
-  const breakEvenLinesID = useRef<EntityId[]>([]);
+  const [loadingCounter, setIsLoadingCounter] = useState<number>(0);
 
   useChartDrawing({
+    tokenSymbol: token.symbol,
     widget,
     widgetReady,
     positions,
     showBreakEvenLine,
-    activePositionLineIDs,
-    breakEvenLinesID,
     toggleSizeUsdInChart,
+    drawingErrorCallback: () => {
+      console.log('ERROR DRAWING ON CHART, RELOAD WIDGET');
+
+      setWidgetReady(false);
+      setWidget(null);
+      setIsLoading(true);
+
+      // Force refresh the widget
+      setIsLoadingCounter((i) => i + 1);
+    },
   });
 
   // Retrieve saved resolution or default to 'H'
@@ -136,6 +143,9 @@ export default function TradingChart({
             'mainSeriesProperties.priceLineColor': '#FFFF05',
           });
 
+          // Note: this event is triggered before positionLines array is updated in the react state
+          // So we can't check in the event if the positionLines matches our own drawing or the user's drawing
+          // For now, will use the name of the draws to filter out ours drawing (liquidation, entry, break even etc.)
           widget.subscribe('drawing_event', () => {
             const symbol = widget
               .activeChart()
@@ -159,19 +169,22 @@ export default function TradingChart({
                   .activeChart()
                   .getShapeById(line.id)
                   .getProperties();
+
+                // Uses text to filter out our drawings
                 if (
-                  !(
-                    activePositionLineIDs.current.includes(line.id) ||
-                    breakEvenLinesID.current.includes(line.id)
-                  )
+                  shape.options.text.includes('long') ||
+                  shape.options.text.includes('short')
                 ) {
-                  return {
-                    id: line.id as EntityId,
-                    points,
-                    name: line.name as SupportedLineTools,
-                    options: shape,
-                  };
+                  return null;
                 }
+
+                // Save user drawn line
+                return {
+                  id: line.id as EntityId,
+                  points,
+                  name: line.name as SupportedLineTools,
+                  options: shape,
+                };
               })
               .filter((line) => line);
 
@@ -193,6 +206,7 @@ export default function TradingChart({
                 localStorage.setItem(STORAGE_KEY_RESOLUTION, '1D');
                 return;
               }
+
               localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
             });
         });
@@ -221,9 +235,9 @@ export default function TradingChart({
       onLoadScriptRef.current = null;
     };
 
-    // Only trigger it onces when the chart load
+    // Only trigger it onces when the chart load or when there is an error
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadingCounter]);
 
   // When the token changes, we need to change the symbol of the widget so we only reload the chart
   useEffect(() => {
@@ -244,7 +258,7 @@ export default function TradingChart({
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary select-none">
-      <Loader className={twMerge('mt-[20%]', isLoading ? '' : 'hidden')} />
+      <Loader className={twMerge('mt-[20%] ml-auto mr-auto', isLoading ? '' : 'hidden')} />
       <div
         id="wrapper-trading-chart"
         className={twMerge(

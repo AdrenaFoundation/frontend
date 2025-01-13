@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 
-import { AdxLockPeriod, AlpLockPeriod, LockedStakeExtended } from '@/types';
+import { LockedStakeExtended } from '@/types';
 
 import LockedStakesDuration from './LockedStakesDuration';
 
@@ -10,6 +10,7 @@ export default function LockedStakes({
   handleRedeem,
   handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
+  readonly = false,
 }: {
   lockedStakes: LockedStakeExtended[];
   className?: string;
@@ -19,6 +20,7 @@ export default function LockedStakes({
     earlyExit: boolean,
   ) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
+  readonly?: boolean;
 }) {
   const lockedStakesPerDuration = lockedStakes.reduce((acc, lockedStake) => {
     if (!acc[lockedStake.lockDuration.toString()])
@@ -38,6 +40,7 @@ export default function LockedStakes({
     >
       {Object.values(lockedStakesPerDuration).map((lockedStakes, i) => (
         <LockedStakesDuration
+          readonly={readonly}
           lockedStakes={lockedStakes}
           key={i}
           handleRedeem={handleRedeem}

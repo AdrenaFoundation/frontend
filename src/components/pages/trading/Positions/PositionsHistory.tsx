@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import Pagination from '@/components/common/Pagination/Pagination';
 import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import usePositionsHistory from '@/hooks/usePositionHistory';
 
+import downloadIcon from '../../../../../public/images/download.png';
 import PositionHistoryBlock from './PositionHistoryBlock';
 
 function PositionsHistory({
@@ -15,7 +17,7 @@ function PositionsHistory({
 }: {
   connected: boolean;
   className?: string;
-  walletAddress?: string;
+  walletAddress: string | null;
   showShareButton?: boolean;
   showFeesInPnl: boolean;
 }) {
@@ -34,10 +36,61 @@ function PositionsHistory({
     currentPage * itemsPerPage,
   );
 
+  const downloadPositionHistory = useCallback(() => {
+    if (!positionsHistory) {
+      return;
+    }
+
+    const keys = [
+      'position_id',
+      'entry_date',
+      'exit_date',
+      'symbol',
+      'entry_price',
+      'exit_price',
+      'pnl',
+      'final_collateral_amount',
+      'exit_size',
+      'fees',
+      'borrow_fees',
+      'exit_fees',
+    ];
+
+    const csvRows = positionsHistory
+      .map((position) =>
+        keys
+          .map((key) => {
+            let value = position[key as keyof typeof positionsHistory[0]];
+
+            // Format the date field if it's `transaction_date`
+            if ((key === 'entry_date' || key === 'exit_date') && value instanceof Date) {
+              value = (value as Date).toISOString(); // Format to ISO 8601
+            }
+
+            return `"${String(value).replace(/"/g, '""')}"`;
+          })
+          .join(',')
+      );
+
+    const csvFileContent = [keys.join(','), ...csvRows].join('\n');
+
+    const blob = new Blob([csvFileContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `position-history-${new Date().toISOString()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }, [positionsHistory]);
+
   return (
-    <div className="relative w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col relative">
       <div
-        className="flex justify-center grow"
+        className="flex flex-col justify-center grow"
         style={{
           minHeight: `${itemsPerPage * 49}px`,
         }}
@@ -56,6 +109,20 @@ function PositionsHistory({
                         showFeesInPnl={showFeesInPnl}
                       />
                     ))}
+
+                    <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute bottom-2 left-2' onClick={() => {
+                      downloadPositionHistory();
+                    }}>
+                      <div className='text-xs tracking-wider' >Export</div>
+
+                      <Image
+                        src={downloadIcon}
+                        width={14}
+                        height={12}
+                        alt="Download icon"
+                        className="relative bottom-[1px]"
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
@@ -66,7 +133,7 @@ function PositionsHistory({
                 )}
               </>
             ) : (
-              <Loader />
+              <Loader className='ml-auto mr-auto' />
             )}
           </>
         ) : (
@@ -82,6 +149,7 @@ function PositionsHistory({
           itemsPerPage={itemsPerPage}
           onPageChange={setCurrentPage}
         />
+
         {(positionsHistory?.length ?? 0) > 5 && (
           <select
             value={itemsPerPage}
@@ -104,7 +172,7 @@ function PositionsHistory({
 // a re-render of the parent component.
 // This is not the most expensive component to re-render, but it's sensible
 // because we're avoiding unnecessary work within a critical path of the app,
-// which is subect to a lot of re-renders by nature: a trading view must be reactive.
+// which is subject to a lot of re-renders by nature: a trading view must be reactive.
 // More optimizations are possible within this component, but this is the best low-hanging fruit
 // yielding the most benefits for minimal effort.
 // Note this is a good candidate for memoization because:

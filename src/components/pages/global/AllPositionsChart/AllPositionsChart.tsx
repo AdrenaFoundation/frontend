@@ -7,7 +7,7 @@ import Loader from '@/components/Loader/Loader';
 import { PositionExtended } from '@/types';
 import { formatPercentage, formatPriceInfo } from '@/utils';
 
-import PositionBlockReadOnly from '../../trading/Positions/PositionBlockReadOnly';
+import PositionBlock from '../../trading/Positions/PositionBlock';
 
 const CustomizedContent: React.FC<{
   root: unknown;
@@ -216,13 +216,17 @@ export default function AllPositionsChart({
   }
 
   return (
-    <div className='flex flex-col w-full h-full items-center'>
+    <div className='flex flex-col w-0 flex-1 h-full items-center'>
       <div className='min-h-[9em] h-auto w-full max-w-[60em] shrink-0 flex items-center justify-center pb-2'>
         {selectedPositionObject !== null ?
-          <PositionBlockReadOnly position={selectedPositionObject} showFeesInPnl={showFeesInPnl} /> :
+          <PositionBlock
+            key={selectedPositionObject.pubkey.toBase58()}
+            position={selectedPositionObject}
+            showFeesInPnl={showFeesInPnl}
+            readOnly={true}
+          /> :
           <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}
       </div>
-
       <ResponsiveContainer width="100%" height="100%">
         <Treemap
           width={400}
@@ -234,7 +238,6 @@ export default function AllPositionsChart({
           content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} pnl={null} pnlPercentage={null} blocTitle={null} positionPubkey={PublicKey.default} showFeesInPnl={showFeesInPnl} />}>
         </Treemap>
       </ResponsiveContainer>
-
       <div className='flex mt-4 items-center justify-center'>
         <div className='flex ml-4 gap-8'>
           <div className='flex flex-col items-center justify-center text-xs gap-2 font-mono'>

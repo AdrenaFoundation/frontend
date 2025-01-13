@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
-import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
 import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
-import PositionBlockReadOnly from '../trading/Positions/PositionBlockReadOnly';
+import PositionBlock from '../trading/Positions/PositionBlock';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
 import OwnerBlock from './OwnerBlock';
 
@@ -19,10 +18,6 @@ export default function ViewProfileModal({
     profile: UserProfileExtended;
     showFeesInPnl: boolean;
 }) {
-    const wallet = useSelector((s) => s.walletState.wallet);
-
-    const connected = !!wallet;
-
     const positions = usePositionsByAddress({
         walletAddress: profile.owner.toBase58(),
     });
@@ -46,6 +41,10 @@ export default function ViewProfileModal({
                 canUpdateNickname={false}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={profile.owner}
+                redisProfile={null}
+                setRedisProfile={() => { }}
+                duplicatedRedis={false}
+                readonly={true}
             />
 
             <TabSelect
@@ -133,10 +132,11 @@ export default function ViewProfileModal({
                     {positions !== null && positions.length ? (
                         <div className="flex flex-col w-full gap-2">
                             {positions.map((position) => (
-                                <PositionBlockReadOnly
+                                <PositionBlock
                                     key={position.pubkey.toBase58()}
                                     position={position}
                                     showFeesInPnl={showFeesInPnl}
+                                    readOnly={true}
                                 />
                             ))}
                         </div>
@@ -150,7 +150,7 @@ export default function ViewProfileModal({
 
             {selectedTab === 'Positions History' ? (
                 <PositionsHistory
-                    connected={connected}
+                    connected={true}
                     walletAddress={profile.owner.toBase58()}
                     showShareButton={false}
                     showFeesInPnl={showFeesInPnl}

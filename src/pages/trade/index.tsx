@@ -17,6 +17,7 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
@@ -60,7 +61,6 @@ function pickDefaultToken(positions: PositionExtended[] | null): Token {
 }
 
 export default function Trade({
-  positions,
   wallet,
   connected,
   triggerUserProfileReload,
@@ -70,6 +70,9 @@ export default function Trade({
 }: PageProps & {
   showFeesInPnl: boolean;
 }) {
+  // FIXME: Only call this hook in a single place & as-close as possible to consumers.
+  const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
+
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );
@@ -201,7 +204,7 @@ export default function Trade({
       // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
       const candidate =
         selectedAction === 'long'
-          ? tokenB ?? pickDefaultToken(positions)
+          ? (tokenB ?? pickDefaultToken(positions))
           : tokenACandidate[0];
 
       if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
@@ -288,13 +291,7 @@ export default function Trade({
           <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
             {tokenA && tokenB ? (
               <TradingChart
-                token={
-                  selectedAction === 'short' || selectedAction === 'long'
-                    ? tokenB
-                    : tokenA.isStable
-                      ? tokenB
-                      : tokenA
-                }
+                token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                 positions={positions}
                 showBreakEvenLine={showBreakEvenLine}
                 toggleSizeUsdInChart={toggleSizeUsdInChart}
@@ -367,7 +364,7 @@ export default function Trade({
 
         {isBigScreen ? (
           <>
-            <div className="bg-secondary mt-4 border rounded-lg">
+            <div className="bg-secondary mt-4 border rounded-lg relative">
               <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
                 <span
                   className={twMerge(
@@ -392,6 +389,7 @@ export default function Trade({
               {history ? (
                 <div className="flex flex-col w-full p-4">
                   <PositionsHistory
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
                     showFeesInPnl={showFeesInPnl}
                   />
@@ -436,6 +434,7 @@ export default function Trade({
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
                   <PositionsHistory
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
                     showFeesInPnl={showFeesInPnl}
                   />

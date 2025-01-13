@@ -34,9 +34,9 @@ import {
   addNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
+  getNextStakingRoundStartTime,
   nativeToUi,
 } from '@/utils';
-import { getNextStakingRoundStartTime } from '@/utils';
 
 export type ADXTokenDetails = {
   balance: number | null;
@@ -73,7 +73,7 @@ export default function Stake({
     optimisticClaimAlp,
     setOptimisticClaimAlp,
     setOptimisticClaimAdx,
-  } = useClaimHistory();
+  } = useClaimHistory(wallet?.walletAddress ?? null);
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -84,7 +84,7 @@ export default function Stake({
     null;
 
   const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts();
+    useWalletStakingAccounts(wallet?.walletAddress ?? null);
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
@@ -197,20 +197,22 @@ export default function Stake({
     ).fire();
 
     try {
-      lockPeriod === 0
-        ? await window.adrena.client.addLiquidStake({
+      if (lockPeriod === 0) {
+        await window.adrena.client.addLiquidStake({
           owner,
           amount,
           stakedTokenMint,
           notification,
-        })
-        : await window.adrena.client.addLockedStake({
+        });
+      } else {
+        await window.adrena.client.addLockedStake({
           owner,
           amount,
           lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
           stakedTokenMint,
           notification,
         });
+      }
 
       setAmount(null);
       setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);

@@ -4,15 +4,16 @@ import { headers } from 'next/headers';
 import Redirect from '../components/Redirect';
 
 type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<Record<string, string>>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata(
   { searchParams }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const data = searchParams.data as string | undefined;
+  const resolvedSearchParams = await searchParams;
+  const data = resolvedSearchParams.data as string | undefined;
 
   if (!data) {
     return {
@@ -39,7 +40,7 @@ export async function generateMetadata(
     exitPrice,
   } = JSON.parse(json);
 
-  const heads = headers();
+  const heads = await headers();
 
   const currentUrl = heads.get('host');
 

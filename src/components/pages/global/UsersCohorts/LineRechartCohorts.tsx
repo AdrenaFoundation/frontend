@@ -12,7 +12,7 @@ import {
 import { DataKey } from 'recharts/types/util/types';
 
 import { RechartsData } from '@/types';
-import { formatNumberShort } from '@/utils';
+import { formatNumberShort, formatToWeekOf } from '@/utils';
 
 import CustomRechartsToolTip from '../../../CustomRechartsToolTip/CustomRechartsToolTip';
 
@@ -48,8 +48,12 @@ export default function LineRechartCohorts({
         <Tooltip
           content={
             <CustomRechartsToolTip
+              labelCustomization={(label: string) => {
+                return `from ${formatToWeekOf(label)} to ${formatToWeekOf(label, 1)}`;
+              }}
               isValueOnly={labels.length === 1}
               format={format}
+              total={true}
             />
           }
           cursor={false}

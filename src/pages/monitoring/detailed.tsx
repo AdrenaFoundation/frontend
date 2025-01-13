@@ -11,8 +11,6 @@ import AdrenaAccounts from '@/components/pages/monitoring/Data/AdrenaAccounts';
 import AllTimeFeesBreakdownPerToken from '@/components/pages/monitoring/Data/AllTimeFeesBreakdownPerToken';
 import AUM from '@/components/pages/monitoring/Data/AUM';
 import AUMBreakdown from '@/components/pages/monitoring/Data/AUMBreakdown';
-import BucketsAllocation from '@/components/pages/monitoring/Data/BucketsAllocation';
-import BucketsMintedAmount from '@/components/pages/monitoring/Data/BucketsMintedAmount';
 import CurrentStakingRoundTime from '@/components/pages/monitoring/Data/CurrentStakingRoundTime';
 import GovernanceAccounts from '@/components/pages/monitoring/Data/GovernanceAccounts';
 import MintAccounts from '@/components/pages/monitoring/Data/MintsAccounts';
@@ -24,8 +22,6 @@ import PositionsNowBreakdown from '@/components/pages/monitoring/Data/PositionsN
 import StakingLockedTokens from '@/components/pages/monitoring/Data/StakingLockedTokens';
 import StakingRewardsWaitingToBeClaimed from '@/components/pages/monitoring/Data/StakingRewardsWaitingToBeClaimed';
 import StakingRewardVaults from '@/components/pages/monitoring/Data/StakingRewardVaults';
-import Tokenomics from '@/components/pages/monitoring/Data/Tokenomics';
-import VestsBreakdown from '@/components/pages/monitoring/Data/VestsBreakdown';
 import VolumeBreakdownPerToken from '@/components/pages/monitoring/Data/VolumeBreakdownPerToken';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
@@ -34,7 +30,6 @@ import { PoolInfo } from '@/hooks/usePoolInfo';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import useVestRegistry from '@/hooks/useVestRegistry';
-import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -46,11 +41,12 @@ import arrowDownIcon from '../../../public/images/Icons/arrow-down.svg';
 export default function DetailedMonitoring({
   mainPool,
   custodies,
-
   poolInfo,
   connected,
+  view
 }: PageProps & {
   poolInfo: PoolInfo | null;
+  view: string;
 }) {
   const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
 
@@ -74,9 +70,9 @@ export default function DetailedMonitoring({
   );
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
-  const vests = useVests();
 
   if (
+    view != 'full' ||
     !mainPool ||
     !custodies ||
     !tokenPrices ||
@@ -100,12 +96,10 @@ export default function DetailedMonitoring({
 
   const tabs = [
     'All',
-    'ADX tokenomics',
     'Pool',
     'Fees',
     'Staking',
     'Trading',
-    'Vesting',
     'Accounts',
   ] as const;
 
@@ -115,7 +109,7 @@ export default function DetailedMonitoring({
   }));
 
   return (
-    <div className="border bg-secondary rounded-lg overflow-hidden m-2">
+    <div className="border bg-secondary rounded-lg overflow-hidden">
       <TabSelect
         wrapperClassName="hidden md:flex gap-6 border-b p-3 pb-0 select-none mb-3"
         titleClassName="whitespace-nowrap text-sm"
@@ -172,15 +166,6 @@ export default function DetailedMonitoring({
             <AUM connected={connected} />
           ) : null}
 
-          {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
-            <NumberDisplay
-              title="ADX CIRCULATING SUPPLY"
-              nb={adxTotalSupply}
-              precision={0}
-              className='bg-[#050D14]'
-            />
-          ) : null}
-
           {selectedTab === 'All' || selectedTab === 'Staking' ? (
             <NumberDisplay
               title="LOCKED STAKED ADX"
@@ -205,7 +190,7 @@ export default function DetailedMonitoring({
           ) : null}
         </div>
 
-        {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        {selectedTab === 'All' || selectedTab === 'Trading' && view === 'full' ? (
           <div className="flex flex-col lg:flex-row gap-3">
             <PositionsNow
               titleClassName={titleClassName}
@@ -219,7 +204,7 @@ export default function DetailedMonitoring({
           </div>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Staking' ? (
+        {selectedTab === 'All' || selectedTab === 'Staking' && view === 'full' ? (
           <>
             <div className="flex flex-col lg:flex-row gap-3">
               <StakingRewardVaults
@@ -255,14 +240,14 @@ export default function DetailedMonitoring({
           </>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        {selectedTab === 'All' || selectedTab === 'Trading' && view === 'full' ? (
           <PositionsNowBreakdown
             titleClassName={titleClassName}
             custodies={custodies}
           />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
           <VolumeBreakdownPerToken
             titleClassName={titleClassName}
             custodies={custodies}
@@ -276,61 +261,35 @@ export default function DetailedMonitoring({
           />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
           <AUMBreakdown
             titleClassName={titleClassName}
             custodies={custodies}
           />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Vesting' ? (
-          <VestsBreakdown titleClassName={titleClassName} vests={vests} />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
-          <div className="flex flex-col lg:flex-row gap-3">
-            <BucketsAllocation
-              titleClassName={titleClassName}
-              cortex={cortex}
-            />
-
-            <BucketsMintedAmount
-              titleClassName={titleClassName}
-              cortex={cortex}
-            />
-
-            <Tokenomics titleClassName={titleClassName} />
-          </div>
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
           <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <AdrenaAccounts
-            titleClassName={titleClassName}
-            cortex={cortex}
-            mainPool={mainPool}
-            custodies={custodies}
-          />
-        ) : null}
+        {selectedTab === 'All' || selectedTab === 'Accounts' && view === 'full' ? (
+          <>
+            <AdrenaAccounts
+              titleClassName={titleClassName}
+              cortex={cortex}
+              mainPool={mainPool}
+              custodies={custodies}
+            />
+            <OracleAccounts
+              titleClassName={titleClassName}
+              custodies={custodies}
+            />
+            <MintAccounts titleClassName={titleClassName} custodies={custodies} />
+            <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
+          </>
 
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <OracleAccounts
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <MintAccounts titleClassName={titleClassName} custodies={custodies} />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'Accounts' ? (
-          <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
         ) : null}
       </div>
-    </div>
+    </div >
   );
 }

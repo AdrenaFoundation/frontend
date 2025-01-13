@@ -6,13 +6,14 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import { twMerge } from 'tailwind-merge';
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 
 export default function Tokenomics({
-  titleClassName,
+  className,
 }: {
-  titleClassName?: string;
+  className?: string;
 }) {
   const data = [
     {
@@ -59,35 +60,33 @@ export default function Tokenomics({
   const bucketColors = ['#9F8CAE', '#EB6672', '#7FD7C1'];
 
   return (
-    <div className="bg-[#050D14] border rounded-lg lg:flex-1 shadow-xl h-[400px]">
-      <div className="w-full border-b p-3 mb-6">
-        <p className={titleClassName}>ADX Tokenomic</p>
-      </div>
-
-      <ResponsiveContainer width="80%" height="80%" className="m-auto">
+    <div className={twMerge("flex flex-col h-full w-full max-h-[15em]", className)}>
+      <ResponsiveContainer width="100%" height="100%" className="m-auto">
         <PieChart
+          width={400}
+          height={400}
         >
           <Tooltip
             content={<CustomRechartsToolTip format="percentage" isPieChart />}
             cursor={false}
           />
+
           <Pie
             dataKey="value"
             nameKey="label"
             data={formattedData}
             cx="50%"
             cy="50%"
-            innerRadius={30}
+            innerRadius={50}
             labelLine={false}
           >
             {formattedData.map(({ color }, index) => (
-              <>
-                <Cell key={index} fill={color} />
-              </>
+              <Cell key={index} fill={color} />
             ))}
           </Pie>
+
           <Legend
-            verticalAlign="top"
+            verticalAlign="bottom"
             align="center"
             iconType="circle"
             iconSize={10}
@@ -99,6 +98,6 @@ export default function Tokenomics({
           />
         </PieChart>
       </ResponsiveContainer>
-    </div >
+    </div>
   );
 }

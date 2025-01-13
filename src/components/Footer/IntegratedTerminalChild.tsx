@@ -1,10 +1,16 @@
 import { WalletName } from '@solana/wallet-adapter-base';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Connection, TransactionError } from '@solana/web3.js';
-import React, { useEffect } from 'react';
+import { Connection, PublicKey, TransactionError } from '@solana/web3.js';
+import { useEffect } from 'react';
 
 import { useSelector } from '@/store/store';
-import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
+import { Token } from '@/types';
+import {
+  addFailedTxNotification,
+  addSuccessTxNotification,
+  getTokenNameByMint,
+  getTokenSymbol,
+} from '@/utils';
 
 import StyledSubContainer from '../common/StyledSubContainer/StyledSubContainer';
 
@@ -13,6 +19,8 @@ export default function IntegratedTerminalChild({
   className,
   activeRpc,
   id = 'integrated-terminal',
+  setTokenB,
+  allowedTokenB,
 }: {
   connected: boolean;
   className?: string;
@@ -21,6 +29,8 @@ export default function IntegratedTerminalChild({
     connection: Connection;
   };
   id: string;
+  allowedTokenB: Token[];
+  setTokenB: (t: Token) => void;
 }) {
   const walletState = useSelector((s) => s.walletState.wallet);
 
@@ -28,7 +38,9 @@ export default function IntegratedTerminalChild({
 
   useEffect(() => {
     if (connected && walletState?.adapterName) {
-      passthroughWalletContextState.select(walletState.adapterName as WalletName);
+      passthroughWalletContextState.select(
+        walletState.adapterName as WalletName,
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected, walletState]);
@@ -40,6 +52,25 @@ export default function IntegratedTerminalChild({
       enableWalletPassthrough: true,
       endpoint: activeRpc.connection.rpcEndpoint,
       containerStyles: { minHeight: '400px' },
+      onFormUpdate: (form: {
+        fromMint: string;
+        toMint: string;
+        fromValue: string;
+        toValue: string;
+        slippageBps: number;
+        userSlippageMode: 'DYNAMIC' | 'FIXED';
+        dynamicSlippageBps: number;
+      }) => {
+        const tokenB = getTokenSymbol(getTokenNameByMint(new PublicKey(form.toMint)))
+        const allowedTokenBSymbols = allowedTokenB.map((t) => getTokenSymbol(t.symbol));
+
+        if (!allowedTokenBSymbols.includes(tokenB)) {
+          return;
+        }
+
+        setTokenB(allowedTokenB.find((t) => getTokenSymbol(t.symbol) === getTokenSymbol(tokenB)) as Token);
+
+      },
       onSuccess: ({ txid }: { txid: string }) => {
         console.log({ txid });
 

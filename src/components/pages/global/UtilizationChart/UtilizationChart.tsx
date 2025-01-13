@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { getGMT } from '@/utils';
 
 export default function UtilizationChart() {
@@ -18,10 +19,25 @@ export default function UtilizationChart() {
 
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
+
     getCustodyInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getCustodyInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [period]);
 
   const getCustodyInfo = async () => {
@@ -33,6 +49,10 @@ export default function UtilizationChart() {
           case '7d':
             return 'custodyinfohourly';
           case '1M':
+            return 'custodyinfodaily';
+          case '3M':
+            return 'custodyinfodaily';
+          case '6M':
             return 'custodyinfodaily';
           default:
             return 'custodyinfo';
@@ -47,6 +67,10 @@ export default function UtilizationChart() {
             return 7;
           case '1M':
             return 31;
+          case '3M':
+            return 93;
+          case '6M':
+            return 183;
           default:
             return 1;
         }
@@ -89,7 +113,7 @@ export default function UtilizationChart() {
         });
       }
 
-      const formatted = snapshot_timestamp.map((time: string, i: number) => {
+      let formatted = snapshot_timestamp.map((time: string, i: number) => {
         const formattedTime = (() => {
           if (periodRef.current === '1d') {
             return new Date(time).toLocaleTimeString('en-US', {
@@ -106,7 +130,7 @@ export default function UtilizationChart() {
             });
           }
 
-          if (periodRef.current === '1M') {
+          if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
             return new Date(time).toLocaleDateString('en-US', {
               day: 'numeric',
               month: 'numeric',
@@ -129,6 +153,30 @@ export default function UtilizationChart() {
         };
       });
 
+      if (snapshot_timestamp.length < dataPeriod) {
+        const filled = [];
+
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - dataPeriod);
+
+        for (let i = 0; i < snapshot_timestamp.length - dataPeriod; i++) {
+          filled.push({
+            time: startDate.toISOString(),
+            ...infos.reduce(
+              (acc, { custody }) => ({
+                ...acc,
+                [custody.tokenInfo.symbol]: 0,
+              }),
+              {} as { [key: string]: number },
+            ),
+          });
+
+          startDate.setDate(startDate.getDate() + 1);
+        }
+
+        formatted = [...filled, ...formatted];
+      }
+
       setInfos({
         formattedData: formatted,
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
@@ -137,16 +185,6 @@ export default function UtilizationChart() {
       console.error(e);
     }
   };
-
-  useEffect(() => {
-    getCustodyInfo();
-
-    const interval = setInterval(() => {
-      getCustodyInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (!infos) {
     return (
@@ -168,12 +206,17 @@ export default function UtilizationChart() {
             color: infos.custodiesColors[i],
           };
         })}
-      domain={[0, 100]}
+      yDomain={[0, 100]}
       period={period}
-      gmt={period === '1M' ? 0 : getGMT()}
+      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       setPeriod={setPeriod}
-      isReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
+      isMaxUtilizationReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
       formatY="percentage"
+      events={ADRENA_EVENTS}
     />
   );
 }

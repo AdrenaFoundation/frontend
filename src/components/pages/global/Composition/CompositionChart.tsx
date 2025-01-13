@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 import { getCustodyByMint, getGMT } from '@/utils';
 
@@ -12,9 +13,25 @@ export default function CompositionChart() {
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     periodRef.current = period;
+
     getCustodyInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getCustodyInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [period]);
 
   const getCustodyInfo = async () => {
@@ -26,6 +43,10 @@ export default function CompositionChart() {
           case '7d':
             return 'custodyinfohourly';
           case '1M':
+            return 'custodyinfodaily';
+          case '3M':
+            return 'custodyinfodaily';
+          case '6M':
             return 'custodyinfodaily';
           default:
             return 'custodyinfo';
@@ -40,6 +61,10 @@ export default function CompositionChart() {
             return 7;
           case '1M':
             return 31;
+          case '3M':
+            return 93;
+          case '6M':
+            return 183;
           default:
             return 1;
         }
@@ -73,7 +98,7 @@ export default function CompositionChart() {
           });
         }
 
-        if (periodRef.current === '1M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -122,16 +147,6 @@ export default function CompositionChart() {
     }
   };
 
-  useEffect(() => {
-    getCustodyInfo();
-
-    const interval = setInterval(() => {
-      getCustodyInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   if (!data || !custodyInfo) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
@@ -149,9 +164,14 @@ export default function CompositionChart() {
         color: info.color,
       }))}
       period={period}
-      gmt={period === '1M' ? 0 : getGMT()}
-      domain={['dataMax']}
+      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
+      yDomain={['dataMax']}
       setPeriod={setPeriod}
+      events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
     />
   );
 }

@@ -4,7 +4,10 @@ import {
 } from '@pythnetwork/client';
 import { PublicKey } from '@solana/web3.js';
 
-import { setStreamingTokenPrice } from '@/actions/streamingTokenPrices';
+import {
+  setStreamingTokenPrice,
+  stopStreamingTokenPrices,
+} from '@/actions/streamingTokenPrices';
 import { PYTH_CONNECTION } from '@/pages/_app';
 import store from '@/store/store';
 
@@ -20,10 +23,10 @@ const channelToSubscription = new Map<
   {
     subscriberUID: string;
     resolution: ResolutionString;
-    lastDailyBar: Bar;
     handlers: {
       id: string;
       callback: SubscribeBarsCallback;
+      lastBar: Bar;
     }[];
   }
 >();
@@ -53,10 +56,10 @@ function startStreaming() {
   pythConnectionStarted = true;
 
   pythConnection.feedIds = [
-    // new PublicKey('Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr'), // WBTC
+    new PublicKey('Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr'), // WBTC
     new PublicKey('GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU'), // BTC
     new PublicKey('H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG'), // SOL
-    // new PublicKey('7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk'), // JITOSOL
+    new PublicKey('7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk'), // JITOSOL
     new PublicKey('Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD'), // USDC
     new PublicKey('8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN'), // BONK
   ];
@@ -66,32 +69,8 @@ function startStreaming() {
     // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
     const subscriptionItem = channelToSubscription.get(product.symbol);
 
-    if (!subscriptionItem || !price.price) {
+    if (!price.price) {
       return;
-    }
-
-    const lastDailyBar = subscriptionItem.lastDailyBar;
-    const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
-
-    let bar: Bar;
-
-    const tradeTime = Number(price.timestamp.toString()) * 1000; // Multiplying by 1000 to get milliseconds
-
-    if (tradeTime >= nextDailyBarTime) {
-      bar = {
-        time: nextDailyBarTime,
-        open: price.price,
-        high: price.price,
-        low: price.price,
-        close: price.price,
-      };
-    } else {
-      bar = {
-        ...lastDailyBar,
-        high: Math.max(lastDailyBar.high, price.price),
-        low: Math.min(lastDailyBar.low, price.price),
-        close: price.price,
-      };
     }
 
     store.dispatch(
@@ -101,10 +80,41 @@ function startStreaming() {
       ),
     );
 
-    subscriptionItem.lastDailyBar = bar;
+    if (!subscriptionItem) {
+      return;
+    }
 
-    // Send data to every subscriber of that symbol
-    subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
+    subscriptionItem.handlers.forEach((handler) => {
+      if (!price.price) return;
+
+      const lastBar = handler.lastBar;
+      const nextBarTime = getNextDailyBarTime(lastBar.time);
+
+      let bar: Bar;
+
+      const tradeTime = Number(price.timestamp.toString()) * 1000; // Multiplying by 1000 to get milliseconds
+
+      if (tradeTime >= nextBarTime) {
+        bar = {
+          time: nextBarTime,
+          open: price.price,
+          high: price.price,
+          low: price.price,
+          close: price.price,
+        };
+      } else {
+        bar = {
+          ...lastBar,
+          high: Math.max(lastBar.high, price.price),
+          low: Math.min(lastBar.low, price.price),
+          close: price.price,
+        };
+      }
+
+      handler.lastBar = bar;
+
+      handler.callback(bar);
+    });
 
     channelToSubscription.set(product.symbol, subscriptionItem);
   });
@@ -119,12 +129,14 @@ export function subscribeOnStream(
   onRealtimeCallback: SubscribeBarsCallback,
   subscriberUID: string,
   onResetCacheNeededCallback: () => void,
-  lastDailyBar: Bar,
+  lastBar: Bar,
 ) {
   const channelString = symbolInfo.ticker;
   const handler = {
     id: subscriberUID,
     callback: onRealtimeCallback,
+    paused: false,
+    lastBar,
   };
 
   if (!channelString) return;
@@ -137,7 +149,6 @@ export function subscribeOnStream(
     subscriptionItem = {
       subscriberUID,
       resolution,
-      lastDailyBar,
       handlers: [handler],
     };
   }
@@ -197,5 +208,6 @@ export function unsubscribeFromStream(subscriberUID: string) {
     console.log('[Chart] No one subscribed to the streaming. Stopping...');
     pythConnection.stop();
     pythConnectionStarted = false;
+    store.dispatch(stopStreamingTokenPrices());
   }
 }

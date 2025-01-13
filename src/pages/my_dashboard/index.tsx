@@ -1,7 +1,10 @@
+import { PublicKey } from '@solana/web3.js';
+import { kv } from '@vercel/kv';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import Referral from '@/components/pages/my_dashboard/Referral';
+import Loader from '@/components/Loader/Loader';
+import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
@@ -9,15 +12,15 @@ import StakingStats from '@/components/pages/user_profile/StakingStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import usePositions from '@/hooks/usePositions';
+import usePositionStats from '@/hooks/usePositionStats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import {
-  PageProps,
-  VestExtended,
-} from '@/types';
+import { selectWalletAddress } from '@/selectors/wallet';
+import { useSelector } from '@/store/store';
+import { PageProps, VestExtended } from '@/types';
 
 export default function MyDashboard({
   connected,
-  positions,
   userProfile,
   triggerUserProfileReload,
   readonly,
@@ -26,9 +29,21 @@ export default function MyDashboard({
   readonly?: boolean;
 }) {
   const [nickname, setNickname] = useState<string | null>(null);
-  const { stakingAccounts } = useWalletStakingAccounts();
+  const walletAddress = useSelector(selectWalletAddress);
+  const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
+  const [redisProfile, setRedisProfile] = useState<Record<string, string> | null>(null);
+  const positions = usePositions(walletAddress);
 
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
+  const [duplicatedRedis, setDuplicatedRedis] = useState<boolean>(false);
+  const {
+    activityCalendarData,
+    bubbleBy,
+    setBubbleBy,
+    loading,
+    setStartDate,
+    setEndDate,
+  } = usePositionStats(true);
 
   // When the profile page loads, update the profile so it's up to date with latests
   // user actions
@@ -36,6 +51,49 @@ export default function MyDashboard({
     triggerUserProfileReload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const fetchRedisProfile = async () => {
+      if (userProfile === null || userProfile === false || userProfile.nickname === '') return;
+
+      try {
+        if (redisProfile !== null &&
+          redisProfile.nickname === userProfile.nickname &&
+          redisProfile.owner === userProfile.owner.toBase58()) return;
+
+        const newRedisProfile = {
+          nickname: userProfile.nickname,
+          owner: await kv.get(userProfile.nickname),
+        };
+
+        if (typeof newRedisProfile.owner === 'undefined' || newRedisProfile.owner === null || newRedisProfile.owner === '') {
+          await kv.set(newRedisProfile.nickname, userProfile.owner.toBase58());
+          setRedisProfile({
+            nickname: newRedisProfile.nickname,
+            owner: userProfile.owner.toBase58(),
+          });
+          return;
+        }
+
+        if (newRedisProfile.owner !== userProfile.owner.toBase58()) {
+          setRedisProfile({
+            nickname: newRedisProfile.nickname,
+            owner: userProfile.owner.toBase58(),
+          });
+          setDuplicatedRedis(true);
+          return;
+        }
+
+        if (setDuplicatedRedis) setDuplicatedRedis(false);
+        setRedisProfile(newRedisProfile as Record<string, string>);
+      } catch (error) {
+        console.log('error fetching redis profile', error);
+      }
+    };
+
+    fetchRedisProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile ? userProfile.nickname : '']);
 
   useEffect(() => {
     getUserVesting();
@@ -56,11 +114,28 @@ export default function MyDashboard({
       );
     }
 
+    const newRedisProfile = await kv.get(trimmedNickname);
+
+    if (newRedisProfile !== null) {
+      return notification.currentStepErrored(
+        'Nickname already exists',
+      );
+    }
+
     try {
+      if (!wallet) return notification.currentStepErrored('Wallet not connected');
+
       await window.adrena.client.initUserProfile({
         nickname: trimmedNickname,
         notification,
+      });
 
+      await kv.set(trimmedNickname, wallet.publicKey.toBase58());
+
+      // faster than tracking onchain change
+      setRedisProfile({
+        nickname: trimmedNickname,
+        owner: wallet.publicKey.toBase58(),
       });
 
       triggerUserProfileReload();
@@ -71,7 +146,9 @@ export default function MyDashboard({
 
   const getUserVesting = async () => {
     try {
-      const vest = await window.adrena.client.loadUserVest();
+      if (!walletAddress) throw new Error('no wallet');
+
+      const vest = await window.adrena.client.loadUserVest(new PublicKey(walletAddress));
 
       if (!vest) throw new Error('No vest');
 
@@ -82,17 +159,19 @@ export default function MyDashboard({
   };
 
   if (userProfile === null) {
-    return <div className="flex flex-col max-w-[55em] gap-4 p-4 w-full h-full self-center">
-      <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
-        <WalletConnection connected={connected} />
+    return (
+      <div className="flex flex-col max-w-[55em] gap-4 p-4 w-full h-full self-center">
+        <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
+          <WalletConnection connected={connected} />
+        </div>
       </div>
-    </div>;
+    );
   }
 
   return (
     <>
       <div className="flex flex-col max-w-[55em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
-        <div className='bg-main z-20 border w-full min-h-full gap-4 flex flex-col rounded-xl'>
+        <div className="bg-main z-20 border w-full min-h-full gap-4 flex flex-col rounded-xl">
           {userProfile === false ? (
             <div className="flex w-full justify-center items-center">
               <ProfileCreation
@@ -109,37 +188,60 @@ export default function MyDashboard({
                 canUpdateNickname={!readonly}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={wallet?.publicKey}
+                redisProfile={redisProfile ?? {}}
+                setRedisProfile={setRedisProfile}
+                duplicatedRedis={duplicatedRedis}
               />
 
-              <TradingStats userProfile={userProfile} livePositionsNb={positions === null ? null : positions.length} className='gap-y-4' />
+              <TradingStats
+                userProfile={userProfile}
+                livePositionsNb={positions === null ? null : positions.length}
+                className="gap-y-4"
+              />
 
-              <div className='h-[1px] w-full bg-bcolor' />
+              <div className="h-[1px] w-full bg-bcolor" />
 
-              <StakingStats stakingAccounts={stakingAccounts} className='gap-y-4' />
+              {!loading && connected ? (
+                <ActivityCalendar
+                  data={activityCalendarData}
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                  bubbleBy={bubbleBy}
+                  setBubbleBy={setBubbleBy}
+                  wrapperClassName="bg-transparent border-transparent"
+                  isUserActivity
+                />
+              ) : (
+                <Loader />
+              )}
+              <div className="h-[1px] w-full bg-bcolor" />
+
+              <StakingStats
+                stakingAccounts={stakingAccounts}
+                className="gap-y-4"
+              />
 
               {userVest && (
                 <>
-                  <div className='h-[1px] w-full bg-bcolor' />
+                  <div className="h-[1px] w-full bg-bcolor" />
 
-                  <VestStats
-                    vest={userVest}
-                    getUserVesting={getUserVesting}
-                  />
+                  <VestStats vest={userVest} getUserVesting={getUserVesting} />
                 </>
               )}
 
-              <div className='h-[1px] w-full bg-bcolor' />
+              <div className="h-[1px] w-full bg-bcolor" />
 
               <UserRelatedAdrenaAccounts
-                className='h-auto w-full flex mt-auto'
+                className="h-auto w-full flex mt-auto"
                 userProfile={userProfile}
                 userVest={userVest}
                 positions={positions}
+                stakingAccounts={stakingAccounts}
               />
             </>
           )}
         </div>
-      </div >
+      </div>
     </>
   );
 }

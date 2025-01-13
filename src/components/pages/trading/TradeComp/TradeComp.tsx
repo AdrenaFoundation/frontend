@@ -1,6 +1,6 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -102,6 +102,10 @@ export default function TradeComp({
                     id={terminalId}
                     className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
                     adapters={adapters}
+                    allowedTokenB={window.adrena.client.tokens.filter(
+                      (t) => !t.isStable,
+                    )}
+                    setTokenB={setTokenB}
                   />
                 ) : (
                   <SwapTradingInputs

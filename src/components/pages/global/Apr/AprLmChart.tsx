@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -22,10 +22,25 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
+
     getInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [period]);
 
   const getInfo = async () => {
@@ -38,6 +53,10 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
             return 7;
           case '1M':
             return 31;
+          case '3M':
+            return 93;
+          case '6M':
+            return 183;
           default:
             return 1;
         }
@@ -61,7 +80,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
           });
         }
 
-        if (periodRef.current === '1M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -100,16 +119,6 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
     }
   };
 
-  useEffect(() => {
-    getInfo();
-
-    const interval = setInterval(() => {
-      getInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   if (!infos) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
@@ -138,10 +147,14 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
             })(),
           })),
       ]}
-      domain={[0]}
+      yDomain={[0]}
       period={period}
-      gmt={period === '1M' ? 0 : getGMT()}
+      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
       setPeriod={setPeriod}
+      periods={['1d', '7d', '1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
     />

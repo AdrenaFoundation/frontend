@@ -1,23 +1,20 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { PythSolanaReceiver } from '@pythnetwork/pyth-solana-receiver';
 import { PublicKey } from '@solana/web3.js';
-import { CrossbarClient } from '@switchboard-xyz/on-demand';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setTokenPrice } from '@/actions/tokenPrices';
-import { PRICE_DECIMALS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { useDispatch } from '@/store/store';
 import { Token } from '@/types';
 import { nativeToUi } from '@/utils';
 
 let pythPriceInterval: NodeJS.Timeout | null = null;
-let alpPriceInterval: NodeJS.Timeout | null = null;
-let adxPriceInterval: NodeJS.Timeout | null = null;
+let pricesAlpAdxInterval: NodeJS.Timeout | null = null;
 
 // 2 requests are made when fetching prices
 const PYTH_PRICE_LOADING_INTERVAL_IN_MS = 5_000;
-const ALP_PRICE_LOADING_INTERVAL_IN_MS = 10_000;
-const ADX_PRICE_LOADING_INTERVAL_IN_MS = 5_000;
+const PRICES_ALP_ADX_LOADING_INTERVAL_IN_MS = 10_000;
 
 export default function useWatchTokenPrices() {
   const dispatch = useDispatch();
@@ -116,49 +113,31 @@ export default function useWatchTokenPrices() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadPythPrices, !!window.adrena.client.connection]);
 
-  const loadALPTokenPrice = useCallback(async () => {
+  const loadAlpAdxPrices = useCallback(async () => {
     try {
-      const price = await window.adrena.client.getLpTokenPrice();
+      const result = await DataApiClient.getLastPrice();
 
-      dispatch(
-        setTokenPrice(
-          window.adrena.client.alpToken.symbol,
-          price ? nativeToUi(price, PRICE_DECIMALS) : null,
-        ),
-      );
-    } catch (e) {
-      console.log('error happened loading lp token price', e);
-    }
-  }, [dispatch]);
+      if (result === null) return;
 
-  const loadADXTokenPrice = useCallback(async () => {
-    if (!window.adrena.client.connection) return;
-
-    try {
-      // public instance crossbar switchboard : https://crossbar.switchboard.xyz
-      const crossbar = new CrossbarClient('https://crossbar.adrena.xyz');
-
-      const result = await crossbar.simulateSolanaFeeds('mainnet', [
-        '55WB9SGpMwHqzz4PTuLbCcwXsrrBcxbLawbChNtquzLr',
-      ]);
-
-      if (result === null || result.length === 0) {
-        throw new Error('Aggregator holds no value');
+      if (result.alpPrice !== null) {
+        dispatch(
+          setTokenPrice(
+            window.adrena.client.alpToken.symbol,
+            Number(result.alpPrice),
+          ),
+        );
       }
 
-      const firstResult = result[0] as unknown as {
-        feed: string;
-        feedHash: string;
-        result: number;
-        results: number[];
-        stdev: number;
-        variance: number;
-      };
-      const price = firstResult.result;
-
-      dispatch(setTokenPrice(window.adrena.client.adxToken.symbol, price));
+      if (result.adxPrice !== null) {
+        dispatch(
+          setTokenPrice(
+            window.adrena.client.adxToken.symbol,
+            Number(result.adxPrice),
+          ),
+        );
+      }
     } catch (e) {
-      console.log('error happened loading ADX token price', e);
+      console.log('error happened loading alp adx prices', e);
     }
   }, [dispatch]);
 
@@ -167,44 +146,21 @@ export default function useWatchTokenPrices() {
       return;
     }
 
-    loadALPTokenPrice();
+    loadAlpAdxPrices();
 
-    alpPriceInterval = setInterval(() => {
-      loadALPTokenPrice();
-    }, ALP_PRICE_LOADING_INTERVAL_IN_MS);
+    pricesAlpAdxInterval = setInterval(() => {
+      loadAlpAdxPrices();
+    }, PRICES_ALP_ADX_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (!alpPriceInterval) {
+      if (!pricesAlpAdxInterval) {
         return;
       }
 
-      clearInterval(alpPriceInterval);
-      alpPriceInterval = null;
+      clearInterval(pricesAlpAdxInterval);
+      pricesAlpAdxInterval = null;
     };
     // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadALPTokenPrice, !!window.adrena.client.connection]);
-
-  useEffect(() => {
-    if (!dispatch) {
-      return;
-    }
-
-    loadADXTokenPrice();
-
-    adxPriceInterval = setInterval(() => {
-      loadADXTokenPrice();
-    }, ADX_PRICE_LOADING_INTERVAL_IN_MS);
-
-    return () => {
-      if (!adxPriceInterval) {
-        return;
-      }
-
-      clearInterval(adxPriceInterval);
-      adxPriceInterval = null;
-    };
-    // Manually handle dependencies to avoid unwanted refresh
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadADXTokenPrice, !!window.adrena.client.connection]);
+  }, [loadAlpAdxPrices, !!window.adrena.client.connection]);
 }

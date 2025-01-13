@@ -1,11 +1,9 @@
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
-import annotationPlugin from 'chartjs-plugin-annotation';
 import {
   differenceInDays,
   differenceInMonths,
   differenceInYears,
 } from 'date-fns';
-import { Doughnut } from 'react-chartjs-2';
+import { Cell, Legend, Pie, PieChart } from 'recharts';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
@@ -18,14 +16,14 @@ import {
   nativeToUi,
 } from '@/utils';
 
-ChartJS.register(annotationPlugin, ArcElement, Tooltip, Legend);
-
 export default function VestStats({
   vest,
+  readonly = false,
   getUserVesting,
 }: {
   vest: Vest;
-  getUserVesting: () => void;
+  readonly?: boolean;
+  getUserVesting?: () => void;
 }) {
   const dispatch = useDispatch();
   const amount = nativeToUi(
@@ -72,11 +70,20 @@ export default function VestStats({
   const daysLeft = (differenceInDays(unlockEndDate, now) % 365) % 30;
   const timeLeft = `${yearsLeft}y ${monthsLeft}m ${daysLeft}d left`;
 
+  const data = [
+    { name: 'Claimed ADX', value: claimedAmount },
+    { name: 'Unclaimed ADX', value: claimableAmount },
+    { name: 'Total Vested ADX', value: amount },
+  ];
+
+  const COLORS = ['#9F8CAE', '#5C576B', '#15202C'];
+
   const claimVest = async () => {
     try {
       const txHash = await window.adrena.client.claimUserVest();
 
-      getUserVesting();
+      if (getUserVesting)
+        getUserVesting();
       dispatch(fetchWalletTokenBalances());
 
       return addSuccessTxNotification({
@@ -117,14 +124,7 @@ export default function VestStats({
           <p className="text-sm">Vested</p>
 
           <FormatNumber
-            nb={
-              vest
-                ? nativeToUi(
-                  vest.amount,
-                  window.adrena.client.adxToken.decimals,
-                )
-                : null
-            }
+            nb={amount}
             placeholder="0"
             suffix="ADX"
             precision={3}
@@ -135,14 +135,7 @@ export default function VestStats({
           <p className="text-sm">Claimed</p>
 
           <FormatNumber
-            nb={
-              vest
-                ? nativeToUi(
-                  vest.claimedAmount,
-                  window.adrena.client.adxToken.decimals,
-                )
-                : null
-            }
+            nb={claimedAmount}
             placeholder="0"
             suffix="ADX"
             precision={3}
@@ -162,54 +155,44 @@ export default function VestStats({
           />
         </div>
 
-        <Button
+        {!readonly ? <Button
           title="Claim ADX"
           className="w-full mt-3 h-8"
           size="lg"
           disabled={claimableAmount === 0}
           onClick={() => claimVest()}
-        />
+        /> : null}
       </div>
+
       <div className="py-5 sm:py-0 w-[300px] sm:w-[400px] order-1 sm:order-2">
         <h2 className="text-left mb-3 sm:hidden">Ongoing Vests</h2>
         <div className="flex flex-col justify-center items-center sm:border-l sm:border-third sm:p-3">
-          <Doughnut
-            height={100}
-            width={100}
-            options={{
-              cutout: '0%',
-              plugins: {
-                datalabels: {
-                  display: false,
-                },
-                legend: {
-                  display: true,
-                  position: 'top',
-                  align: 'center',
-                  fullSize: true,
-                  maxWidth: 20,
-
-                  labels: {
-                    boxWidth: 5,
-                    boxHeight: 5,
-                    usePointStyle: true,
-                  },
-                },
-              },
-            }}
-            data={{
-              labels: ['Claimed ADX', 'Unclaimed ADX', 'Total Vested ADX'],
-              datasets: [
-                {
-                  data: [claimedAmount, claimableAmount, amount],
-                  type: 'doughnut',
-                  borderWidth: 0,
-                  backgroundColor: ['#9F8CAE', '#5C576B', '#192128'],
-                },
-              ],
-            }}
-            className="w-full h-full"
-          />
+          <PieChart width={300} height={300}>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              dataKey="value"
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Legend
+              verticalAlign="top"
+              align="center"
+              iconSize={5}
+              iconType="circle"
+              formatter={(value: string) => {
+                return <span className="opacity-50">{value}</span>;
+              }}
+            />
+          </PieChart>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { Keypair, PublicKey } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
-import { AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
+import { AdrenaEvent, AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;
@@ -120,43 +120,38 @@ export const SOLANA_EXPLORERS_OPTIONS = {
     url: 'https://solanabeach.io',
     // TODO: support devnet
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solanabeach.io/address/${address}`,
+      cluster === 'devnet'
+        ? `https://explorer.solana.com/address/${address}?cluster=devnet` // redirection vers Solana Explorer pour devnet
+        : `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solanabeach.io/transaction/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solanabeach.io/transaction/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   Solscan: {
     url: 'https://solscan.io',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solscan.io/account/${address}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/account/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solscan.io/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana Explorer': {
     url: 'https://explorer.solana.com',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/address/${address}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/address/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana FM': {
     url: 'https://solana.fm',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solana.fm/address/${address}${
-        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/address/${address}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solana.fm/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
   },
 } as const;
@@ -168,3 +163,137 @@ export const whiteColor = '#ffffff';
 export const orangeColor = '#f77f00';
 export const blueColor = '#3a86ff';
 export const purpleColor = '#9333ea';
+
+export const normalize = (
+  value: number,
+  minRange: number,
+  maxRange: number,
+  minValue: number,
+  maxValue: number,
+) => {
+  if (maxValue === minValue) {
+    return maxRange;
+  }
+  if (value < minValue || value > maxValue) {
+    return 0;
+  }
+  return (
+    minRange +
+    ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
+  );
+};
+
+export const ADRENA_EVENTS: AdrenaEvent[] = [
+  {
+    label: '',
+    time: '9/17',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Genesis phase: liquidity pool raises 10m to bootstrap trading.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '9/25',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Trading goes live.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '10/15',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and JitoSOL max position size to $500k.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '10/30',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and JitoSOL max position size to $750k.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/2',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Update pool target ratios to [15% USDC, 7% BONK, 54% jitoSOL, 24% WBTC].`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '11/2',
+    color: '#ffffff40',
+    labelPosition: 'insideTopLeft',
+    description: 'BONK borrow rate increased from 0.008%/h to 0.016%/h.',
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/11',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `"Pre-season: AWAKENING" trading competition starts.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/13',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $1m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/20',
+    color: '#ffffff40',
+    labelPosition: 'insideTopLeft',
+    description: 'BONK borrow rate increased from 0.016%/h to 0.032%/h.',
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/23',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $2m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '12/8',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $4m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '12/10',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase liquidity pool soft cap to $30m.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '12/23',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `"Pre-season: AWAKENING" trading competition ends. 876 participants fought for 2.27M ADX and 25k JTO rewards.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '01/05',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Adrena is now supported by Solana AgentKit from SendAI.`,
+    type: 'Trading',
+  },
+];
