@@ -1,7 +1,4 @@
-import {
-    ActionGetResponse,
-    ActionPostResponse,
-} from '@solana/actions';
+import { ActionGetResponse, ActionPostResponse } from '@solana/actions';
 import { ComputeBudgetProgram, Connection, PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -10,8 +7,7 @@ import { AdrenaClient } from '@/AdrenaClient';
 import MainnetConfiguration from '@/config/mainnet';
 import DataApiClient from '@/DataApiClient';
 import { createReadOnlyAdrenaProgram } from '@/initializeApp';
-import { Token } from '@/types';
-import { formatNumber, uiToNative } from '@/utils';
+import { formatNumber, isValidPublicKey, uiToNative } from '@/utils';
 
 export default async function handler(
     req: NextApiRequest,
@@ -32,19 +28,27 @@ export default async function handler(
         const { account } = req.body;
         const { amount, tokenSymbol } = req.query;
 
+        const allowedTokens = client.tokens.map((token) => token);
+
+        const token = allowedTokens.find((token) => token.symbol === tokenSymbol);
+
+        if (!token) {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'Token not found',
+                transaction: '',
+            });
+        }
+
+        if (!isValidPublicKey(account)) {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'Invalid public key',
+                transaction: '',
+            });
+        }
+
         try {
-            if (!account || !tokenSymbol) {
-                // tood: validate request body
-
-                throw new Error('Invalid request body');
-            }
-
-            const token = client.getTokenBySymbol(tokenSymbol as Token['symbol']);
-
-            if (!token) {
-                throw new Error('Invalid token');
-            }
-
             const ix = await client.buildAddLiquidityTx({
                 amountIn: uiToNative(Number(amount), token.decimals),
                 minLpAmountOut: new BN(0),
@@ -106,7 +110,7 @@ export default async function handler(
             2,
         );
 
-        const custodies = (await client.custodies).map((c) => (c.tokenInfo.symbol));
+        const custodies = (await client.custodies).map((c) => c.tokenInfo.symbol);
 
         res
             .setHeader('Access-Control-Allow-Origin', '*')
