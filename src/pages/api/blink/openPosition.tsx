@@ -11,8 +11,13 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { AdrenaClient } from '@/AdrenaClient';
 import MainnetConfiguration from '@/config/mainnet';
 import { createReadOnlyAdrenaProgram } from '@/initializeApp';
-import { PositionExtended, Token } from '@/types';
-import { uiLeverageToNative, uiToNative } from '@/utils';
+import { PositionExtended } from '@/types';
+import {
+    formatNumber,
+    isValidPublicKey,
+    uiLeverageToNative,
+    uiToNative,
+} from '@/utils';
 
 export default async function handler(
     req: NextApiRequest,
@@ -31,38 +36,79 @@ export default async function handler(
 
     if (req.method === 'POST') {
         const { account } = req.body;
+
         const {
+            side,
             referrer,
             tokenSymbolA,
             tokenSymbolB,
             leverage,
             collateralAmount,
-            price,
         } = req.query;
 
+        const allowedTokenA = client.tokens.map((token) => token);
+        const allowedTokenB = client.tokens.filter((token) => !token.isStable);
+
+        const tokenA = allowedTokenA.find((token) => token.symbol === tokenSymbolA);
+
+        const tokenB = allowedTokenB.find((token) => token.symbol === tokenSymbolB);
+
+        if (side !== 'long' && side !== 'short') {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'side must be long or short',
+                transaction: '',
+            });
+        }
+
+        if (!isValidPublicKey(account)) {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'Invalid public key',
+                transaction: '',
+            });
+        }
+
+        if (!tokenA || !tokenB) {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'Invalid tokens',
+                transaction: '',
+            });
+        }
+
+        if (
+            Number.isNaN(leverage) ||
+            Number(leverage) < 0 ||
+            Number(leverage) > 100
+        ) {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'Invalid leverage',
+                transaction: '',
+            });
+        }
+
+        if (Number.isNaN(collateralAmount) || Number(collateralAmount) < 0) {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'Invalid collateral amount',
+                transaction: '',
+            });
+        }
+
+        if (!tokenA || !tokenB) {
+            return res.status(400).json({
+                type: 'transaction',
+                message: 'Invalid tokens',
+                transaction: '',
+            });
+        }
+
         try {
-            if (
-                !account ||
-                !tokenSymbolA ||
-                !tokenSymbolB ||
-                !collateralAmount ||
-                !price ||
-                !leverage
-            ) {
-                // tood: validate request body
-
-                throw new Error('Invalid request body');
-            }
-
-            const tokenA = client.getTokenBySymbol(tokenSymbolA as Token['symbol']);
-            const tokenB = client.getTokenBySymbol(tokenSymbolB as Token['symbol']);
-
-            if (!tokenA || !tokenB) {
-                throw new Error('Invalid token');
-            }
-
             const openPositionWithSwapAmountAndFees =
                 await client.getOpenPositionWithSwapAmountAndFees({
+                    side: side as 'long' | 'short',
                     collateralMint: tokenA.mint,
                     mint: tokenB.mint,
                     collateralAmount: uiToNative(
@@ -70,28 +116,48 @@ export default async function handler(
                         tokenA.decimals,
                     ),
                     leverage: uiLeverageToNative(Number(leverage)),
-                    side: 'long',
                 });
 
-            // await client.checkATAAddressInitializedAndCreatePreInstruction({
-            //     owner: new PublicKey(account),
-            //     mint: tokenB.mint,
-            //     preInstructions: [],
-            // });
+            await client.checkATAAddressInitializedAndCreatePreInstruction({
+                owner: new PublicKey(account),
+                mint: tokenB.mint,
+                preInstructions: [],
+            });
 
             if (!openPositionWithSwapAmountAndFees) {
                 throw new Error('Error calculating fees');
             }
 
-            const ix = await client.buildOpenOrIncreasePositionWithSwapLong({
-                owner: new PublicKey(account),
-                collateralMint: tokenA.mint,
-                mint: tokenB.mint,
-                price: openPositionWithSwapAmountAndFees.entryPrice,
-                collateralAmount: uiToNative(Number(collateralAmount), tokenA.decimals),
-                leverage: uiLeverageToNative(Number(leverage)),
-                referrer: referrer ? new PublicKey(referrer) : null,
-            });
+            const ix =
+                side === 'long'
+                    ? await client.buildOpenOrIncreasePositionWithSwapLong({
+                        owner: new PublicKey(account),
+                        collateralMint: tokenA.mint,
+                        mint: tokenB.mint,
+                        price: openPositionWithSwapAmountAndFees.entryPrice,
+                        collateralAmount: uiToNative(
+                            Number(collateralAmount),
+                            tokenA.decimals,
+                        ),
+                        leverage: uiLeverageToNative(Number(leverage)),
+                        referrer: isValidPublicKey(referrer as string)
+                            ? new PublicKey(referrer as string)
+                            : null,
+                    })
+                    : await client.buildOpenOrIncreasePositionWithSwapShort({
+                        owner: new PublicKey(account),
+                        collateralMint: tokenA.mint,
+                        mint: tokenB.mint,
+                        price: openPositionWithSwapAmountAndFees.entryPrice,
+                        collateralAmount: uiToNative(
+                            Number(collateralAmount),
+                            tokenA.decimals,
+                        ),
+                        leverage: uiLeverageToNative(Number(leverage)),
+                        referrer: isValidPublicKey(referrer as string)
+                            ? new PublicKey(referrer as string)
+                            : null,
+                    });
 
             const tx = await ix.transaction();
 
@@ -121,6 +187,7 @@ export default async function handler(
                 await client.simulateTransactionStrong(versionedTransaction);
 
             console.log(result);
+
             const serialTX = tx
                 .serialize({
                     requireAllSignatures: false,
@@ -156,8 +223,32 @@ export default async function handler(
             });
         }
     } else {
-        const { tokenSymbolA, tokenSymbolB, leverage, collateralAmount, price } =
-            req.query as typeof req.query & PositionExtended;
+        const {
+            opt,
+            pnl,
+            pnlUsd,
+            mark,
+            price,
+            opened,
+            size,
+            isPnlUsd,
+            symbol,
+            tokenSymbolA,
+            tokenSymbolB,
+            leverage,
+            collateralAmount,
+            side,
+            exitPrice,
+            collateralUsd,
+            referrer,
+        } = req.query as typeof req.query & PositionExtended;
+
+        const openedOn = new Date(Number(opened)).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            minute: 'numeric',
+            hour: 'numeric',
+        });
 
         res
             .setHeader('Access-Control-Allow-Origin', '*')
@@ -175,18 +266,24 @@ export default async function handler(
             .status(200)
             .json({
                 type: 'action',
-                icon: 'https://app.adrena.xyz/api/og?opt=0&pnl=2.65&pnlUsd=0.609208&isPnlUsd=false&side=long&symbol=SOL&collateral=22.961887&mark=197.2&price=197.09286285&opened=1736331462000&size=197.472229&exitPrice=0',
-                title: `Copy Trade | Long – ${tokenSymbolA}/${tokenSymbolB}`,
-                description: `Description..`,
-                label: 'Add Liquidity',
+                icon: `https://app.adrena.xyz/api/og?opt=${opt}&pnl=${pnl}&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&mark=${mark}&price=${price}&opened=${opened}&size=${size}&leverage=${leverage}exitPrice=${exitPrice}&collateral=${collateralUsd}`,
+                title: `Copy Trade | ${side === 'long' ? 'Long' : 'Short'} – ${tokenSymbolA}/${tokenSymbolB}`,
+                description: `
+    Position token: ${tokenSymbolB}
+    Collateral: ${formatNumber(Number(collateralUsd), 2)} ${tokenSymbolA}
+    Price: ${price}
+    Leverage: ${leverage}x
+    Open time: ${openedOn}
+                `,
+                label: 'Open Trade',
                 error: {
-                    message: 'Providing liquidity failed', // TODO: add error message
+                    message: 'Failed opening position',
                 },
                 links: {
                     actions: [
                         {
                             label: 'Open trade',
-                            href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&price=${price}`,
+                            href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                             type: 'transaction',
                             // parameters: [
                             //     {

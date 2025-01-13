@@ -110,7 +110,7 @@ export default async function handler(request: NextRequest) {
                             'flex text-[24px] px-4 py-1 rounded-lg archivo-black capitalize ml-3',
                             side === 'long'
                                 ? 'bg-[#0F2E2B] text-[#49d7ad]'
-                                : 'bg-[#c9243a] text-[#c9243a]',
+                                : 'bg-[#2D1418] text-[#c9243a]',
                         )}
                     >
                         {side} {Number(Number(sizeUsd) / Number(collateralUsd)).toFixed(2)}x

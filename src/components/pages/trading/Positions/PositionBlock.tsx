@@ -602,56 +602,6 @@ export function PositionBlock({
                 setIsOpen(true);
               }}
             />
-            <div className="flex items-center justify-center text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full md:max-w-[5em]" onClick={() => {
-              // const params = Object.entries(position).map(([key, value]) => `${key}=${value}`).join('&');
-              const params = `tokenSymbolB=${position.token.symbol}&tokenSymbolA=${position.collateralToken.symbol}&collateralAmount=${position.collateralAmount}&price=${position.price}&leverage=${position.initialLeverage}`;
-              // open link to the position
-              window.open(`/api/blink/openPosition?${params}`, '_blank');
-            }}>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 15 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g clip-path="url(#clip0_946_2016)">
-                  <g clip-path="url(#clip1_946_2016)">
-                    <path
-                      d="M0.8211 9.84976C0.453601 8.54791 0.502117 6.14404 0.502117 6.14404C0.502117 6.14404 1.8471 8.31316 4.16661 8.99174C5.87548 9.49168 8.22753 9.52995 9.70766 8.86079C11.5004 8.2727 12.6129 6.44409 12.0882 5.13685C11.3169 3.21533 9.07214 2.45433 6.73206 2.63638C4.93863 2.7759 3.46002 3.63536 2.57618 4.48124C1.70194 5.31791 1.48094 5.99067 1.48094 5.99067C1.48094 5.99067 0.798969 5.26365 0.715779 4.48124C0.525004 2.68697 2.13816 1.28994 4.43657 0.806763C7.55087 0.152069 11.2087 1.42387 13.2052 3.91062C14.5864 5.63102 14.9698 7.96302 13.8286 9.97084C12.1194 12.9778 8.31405 13.5725 5.84969 13.286C3.38533 12.9996 1.23742 11.3246 0.8211 9.84976Z"
-                      fill="#fff"
-                    ></path>
-                  </g>
-                </g>
-                <defs>
-                  <clipPath id="clip0_946_2016">
-                    <rect
-                      width="14"
-                      height="14"
-                      fill="white"
-                      transform="translate(0.5)"
-                    ></rect>
-                  </clipPath>
-                  <clipPath id="clip1_946_2016">
-                    <rect
-                      width="14"
-                      height="12.7273"
-                      fill="white"
-                      transform="translate(0.5 0.63623)"
-                    ></rect>
-                  </clipPath>
-                </defs>
-              </svg>
-            </div>
-            {/* <Button
-              size="xs"
-              className=""
-              leftIcon={shareIcon}
-              rounded={false}
-              onClick={() => {
-                setIsOpen(true);
-              }}
-            /> */}
           </div>
         )}
 
