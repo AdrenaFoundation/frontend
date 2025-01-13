@@ -271,7 +271,7 @@ export default async function handler(
                 description: `
     Position token: ${tokenSymbolB}
     Collateral: ${formatNumber(Number(collateralUsd), 2)} ${tokenSymbolA}
-    Price: ${price}
+    Price: $${formatNumber(Number(price), 2)}
     Leverage: ${leverage}x
     Open time: ${openedOn}
                 `,
