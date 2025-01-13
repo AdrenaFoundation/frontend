@@ -11,7 +11,7 @@ export default class DataApiClient {
                 `https://datapi.adrena.xyz/last-price`,
             ).then((res) => res.json());
 
-            if (result === null || typeof result === 'undefined') {
+            if (result === null || typeof result === 'undefined' || !result.data || !result.data.adx || !result.data.alp) {
                 return null;
             }
 
