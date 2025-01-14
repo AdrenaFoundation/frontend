@@ -7,7 +7,7 @@ import { AdrenaClient } from '@/AdrenaClient';
 import MainnetConfiguration from '@/config/mainnet';
 import DataApiClient from '@/DataApiClient';
 import { createReadOnlyAdrenaProgram } from '@/initializeApp';
-import { formatNumber, isValidPublicKey, uiToNative } from '@/utils';
+import { AdrenaTransactionError, formatNumber, isValidPublicKey, uiToNative } from '@/utils';
 
 export default async function handler(
     req: NextApiRequest,
@@ -97,10 +97,11 @@ export default async function handler(
                 });
         } catch (error) {
             console.log(error);
+            const errString = error instanceof AdrenaTransactionError ? error.errorString : String(error);
 
             res.status(500).json({
                 type: 'transaction',
-                message: 'Error building transaction',
+                message: errString ? errString : 'Error building transaction',
                 transaction: '',
             });
         }
