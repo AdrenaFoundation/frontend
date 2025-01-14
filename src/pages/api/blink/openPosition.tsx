@@ -13,6 +13,7 @@ import MainnetConfiguration from '@/config/mainnet';
 import { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { PositionExtended } from '@/types';
 import {
+    AdrenaTransactionError,
     formatNumber,
     getTokenSymbol,
     isValidPublicKey,
@@ -215,11 +216,11 @@ export default async function handler(
                     transaction: serialTX,
                 });
         } catch (error) {
-            console.log(error);
+            const errString = error instanceof AdrenaTransactionError ? error.errorString : String(error);
 
             res.status(500).json({
                 type: 'transaction',
-                message: 'Error building transaction',
+                message: errString ? errString : 'Error building transaction',
                 transaction: '',
             });
         }
