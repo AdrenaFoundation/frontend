@@ -14,6 +14,7 @@ import { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { PositionExtended } from '@/types';
 import {
     formatNumber,
+    getTokenSymbol,
     isValidPublicKey,
     uiLeverageToNative,
     uiToNative,
@@ -267,13 +268,13 @@ export default async function handler(
             .json({
                 type: 'action',
                 icon: `https://app.adrena.xyz/api/og?opt=${opt}&pnl=${pnl}&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&mark=${mark}&price=${price}&opened=${opened}&size=${size}&leverage=${leverage}exitPrice=${exitPrice}&collateral=${collateralUsd}`,
-                title: `Copy Trade | ${side === 'long' ? 'Long' : 'Short'} – ${tokenSymbolA}/${tokenSymbolB}`,
+                title: `Copy Trade | ${side === 'long' ? 'Long' : 'Short'} – ${tokenSymbolA}/${getTokenSymbol(tokenSymbolB as string)}`,
                 description: `
-    Position token: ${tokenSymbolB}
-    Collateral: ${formatNumber(Number(collateralUsd), 2)} ${tokenSymbolA}
+    Position token: ${getTokenSymbol(tokenSymbolB as string)}
+    Collateral: ${formatNumber(Number(collateralAmount), 2)} ${tokenSymbolA}
     Price: $${formatNumber(Number(price), 2)}
     Leverage: ${leverage}x
-    Open time: ${openedOn}
+    Opened on: ${openedOn}
                 `,
                 label: 'Open Trade',
                 error: {
