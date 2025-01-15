@@ -129,7 +129,7 @@ export default async function handler(
             .status(200)
             .json({
                 type: 'action',
-                icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena-addLiquidity-v3-Gf3XBj49MBxTU62cY0TmUBRz2f3nDQ.jpg',
+                icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/add-liq.jpg',
                 title: 'Buy ALP',
                 description: `Provide liquidity to the ALP pool, and earn fees on every trade. Current price: $${currentAlpPrice}`,
                 label: 'Add Liquidity',
