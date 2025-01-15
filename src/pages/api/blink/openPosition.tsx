@@ -1,4 +1,9 @@
-import { ActionGetResponse, ActionPostResponse } from '@solana/actions';
+import {
+    ActionGetResponse,
+    ActionPostResponse,
+    ACTIONS_CORS_HEADERS,
+} from '@solana/actions';
+import { getAccount } from '@solana/spl-token';
 import {
     ComputeBudgetProgram,
     Connection,
@@ -6,6 +11,7 @@ import {
     TransactionMessage,
     VersionedTransaction,
 } from '@solana/web3.js';
+import BN from 'bn.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { AdrenaClient } from '@/AdrenaClient';
@@ -14,9 +20,11 @@ import { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { PositionExtended } from '@/types';
 import {
     AdrenaTransactionError,
+    findATAAddressSync,
     formatNumber,
     getTokenSymbol,
     isValidPublicKey,
+    nativeToUi,
     uiLeverageToNative,
     uiToNative,
 } from '@/utils';
@@ -56,7 +64,7 @@ export default async function handler(
         const tokenB = allowedTokenB.find((token) => token.symbol === tokenSymbolB);
 
         if (side !== 'long' && side !== 'short') {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'side must be long or short',
                 transaction: '',
@@ -64,7 +72,7 @@ export default async function handler(
         }
 
         if (!isValidPublicKey(account)) {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'Invalid public key',
                 transaction: '',
@@ -72,7 +80,7 @@ export default async function handler(
         }
 
         if (!tokenA || !tokenB) {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'Invalid tokens',
                 transaction: '',
@@ -84,7 +92,7 @@ export default async function handler(
             Number(leverage) < 0 ||
             Number(leverage) > 100
         ) {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'Invalid leverage',
                 transaction: '',
@@ -92,7 +100,7 @@ export default async function handler(
         }
 
         if (Number.isNaN(collateralAmount) || Number(collateralAmount) < 0) {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'Invalid collateral amount',
                 transaction: '',
@@ -100,9 +108,21 @@ export default async function handler(
         }
 
         if (!tokenA || !tokenB) {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'Invalid tokens',
+                transaction: '',
+            });
+        }
+
+        const ata = findATAAddressSync(new PublicKey(account), tokenA.mint);
+        const acc = await getAccount(connection, ata, 'confirmed');
+        const accBalance = nativeToUi(new BN(Number(acc.amount)), tokenA.decimals);
+
+        if (accBalance < Number(collateralAmount)) {
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
+                type: 'transaction',
+                message: 'Insufficient balance',
                 transaction: '',
             });
         }
@@ -197,26 +217,15 @@ export default async function handler(
                 })
                 .toString('base64');
 
-            res
-                .setHeader('Access-Control-Allow-Origin', '*')
-                .setHeader('Access-Control-Allow-Credentials', 'true')
-                .setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS')
-                .setHeader(
-                    'Access-Control-Allow-Headers',
-                    'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-                )
-                .setHeader(
-                    'Access-Control-Expose-Headers',
-                    'X-Action-Version, X-Blockchain-Ids',
-                )
-                .setHeader('Content-Type', 'application/json')
-                .status(200)
-                .json({
-                    type: 'transaction',
-                    transaction: serialTX,
-                });
+            res.writeHead(200, ACTIONS_CORS_HEADERS).json({
+                type: 'transaction',
+                transaction: serialTX,
+            });
         } catch (error) {
-            const errString = error instanceof AdrenaTransactionError ? error.errorString : String(error);
+            const errString =
+                error instanceof AdrenaTransactionError
+                    ? error.errorString
+                    : String(error);
 
             res.status(500).json({
                 type: 'transaction',
@@ -252,59 +261,45 @@ export default async function handler(
             hour: 'numeric',
         });
 
-        res
-            .setHeader('Access-Control-Allow-Origin', '*')
-            .setHeader('Access-Control-Allow-Credentials', 'true')
-            .setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS')
-            .setHeader(
-                'Access-Control-Allow-Headers',
-                'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-            )
-            .setHeader(
-                'Access-Control-Expose-Headers',
-                'X-Action-Version, X-Blockchain-Ids',
-            )
-            .setHeader('Content-Type', 'application/json')
-            .status(200)
-            .json({
-                type: 'action',
-                icon: `https://app.adrena.xyz/api/og?opt=${opt}&pnl=${pnl}&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&mark=${mark}&price=${price}&opened=${opened}&size=${size}&leverage=${leverage}exitPrice=${exitPrice}&collateral=${collateralUsd}`,
-                title: `Copy Trade | ${side === 'long' ? 'Long' : 'Short'} – ${tokenSymbolA}/${getTokenSymbol(tokenSymbolB as string)}`,
-                description: `
+        res.writeHead(200, ACTIONS_CORS_HEADERS).json({
+            type: 'action',
+            icon: `https://app.adrena.xyz/api/og?opt=${opt}&pnl=${pnl}&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&mark=${mark}&price=${price}&opened=${opened}&size=${size}&leverage=${leverage}exitPrice=${exitPrice}&collateral=${collateralUsd}`,
+            title: `Copy Trade | ${side === 'long' ? 'Long' : 'Short'} – ${tokenSymbolA}/${getTokenSymbol(tokenSymbolB as string)}`,
+            description: `
     Position token: ${getTokenSymbol(tokenSymbolB as string)}
     Collateral: ${formatNumber(Number(collateralAmount), 2)} ${tokenSymbolA}
     Price: $${formatNumber(Number(price), 2)}
     Leverage: ${leverage}x
     Opened on: ${openedOn}
                 `,
-                label: 'Open Trade',
-                error: {
-                    message: 'Failed opening position',
-                },
-                links: {
-                    actions: [
-                        {
-                            label: 'Open trade',
-                            href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
-                            type: 'transaction',
-                            // parameters: [
-                            //     {
-                            //         label: `Leverage (current: ${Number(leverage).toFixed(2)})`,
-                            //         name: 'leverage',
-                            //         type: 'number',
-                            //         max: 100,
-                            //         min: 0,
-                            //     },
-                            //     {
-                            //         label: `Collateral Amount (current: ${collateralAmount})`,
-                            //         name: 'collateralAmount',
-                            //         type: 'number',
-                            //         min: 0,
-                            //     },
-                            // ]
-                        },
-                    ],
-                },
-            });
+            label: 'Open Trade',
+            error: {
+                message: 'Failed opening position',
+            },
+            links: {
+                actions: [
+                    {
+                        label: 'Open trade',
+                        href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
+                        type: 'transaction',
+                        // parameters: [
+                        //     {
+                        //         label: `Leverage (current: ${Number(leverage).toFixed(2)})`,
+                        //         name: 'leverage',
+                        //         type: 'number',
+                        //         max: 100,
+                        //         min: 0,
+                        //     },
+                        //     {
+                        //         label: `Collateral Amount (current: ${collateralAmount})`,
+                        //         name: 'collateralAmount',
+                        //         type: 'number',
+                        //         min: 0,
+                        //     },
+                        // ]
+                    },
+                ],
+            },
+        });
     }
 }

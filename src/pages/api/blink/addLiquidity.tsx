@@ -1,4 +1,9 @@
-import { ActionGetResponse, ActionPostResponse } from '@solana/actions';
+import {
+    ActionGetResponse,
+    ActionPostResponse,
+    ACTIONS_CORS_HEADERS,
+} from '@solana/actions';
+import { getAccount } from '@solana/spl-token';
 import { ComputeBudgetProgram, Connection, PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -7,7 +12,14 @@ import { AdrenaClient } from '@/AdrenaClient';
 import MainnetConfiguration from '@/config/mainnet';
 import DataApiClient from '@/DataApiClient';
 import { createReadOnlyAdrenaProgram } from '@/initializeApp';
-import { AdrenaTransactionError, formatNumber, isValidPublicKey, uiToNative } from '@/utils';
+import {
+    AdrenaTransactionError,
+    findATAAddressSync,
+    formatNumber,
+    isValidPublicKey,
+    nativeToUi,
+    uiToNative,
+} from '@/utils';
 
 export default async function handler(
     req: NextApiRequest,
@@ -33,7 +45,7 @@ export default async function handler(
         const token = allowedTokens.find((token) => token.symbol === tokenSymbol);
 
         if (!token) {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'Token not found',
                 transaction: '',
@@ -41,9 +53,21 @@ export default async function handler(
         }
 
         if (!isValidPublicKey(account)) {
-            return res.status(400).json({
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: 'Invalid public key',
+                transaction: '',
+            });
+        }
+
+        const ata = findATAAddressSync(new PublicKey(account), token.mint);
+        const acc = await getAccount(connection, ata, 'confirmed');
+        const accBalance = nativeToUi(new BN(Number(acc.amount)), token.decimals);
+
+        if (accBalance < Number(amount)) {
+            return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
+                type: 'transaction',
+                message: 'Insufficient balance',
                 transaction: '',
             });
         }
@@ -77,29 +101,18 @@ export default async function handler(
                 })
                 .toString('base64');
 
-            res
-                .setHeader('Access-Control-Allow-Origin', '*')
-                .setHeader('Access-Control-Allow-Credentials', 'true')
-                .setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS')
-                .setHeader(
-                    'Access-Control-Allow-Headers',
-                    'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-                )
-                .setHeader(
-                    'Access-Control-Expose-Headers',
-                    'X-Action-Version, X-Blockchain-Ids',
-                )
-                .setHeader('Content-Type', 'application/json')
-                .status(200)
-                .json({
-                    type: 'transaction',
-                    transaction: serialTX,
-                });
+            res.writeHead(200, ACTIONS_CORS_HEADERS).json({
+                type: 'transaction',
+                transaction: serialTX,
+            });
         } catch (error) {
             console.log(error);
-            const errString = error instanceof AdrenaTransactionError ? error.errorString : String(error);
+            const errString =
+                error instanceof AdrenaTransactionError
+                    ? error.errorString
+                    : String(error);
 
-            res.status(500).json({
+            res.writeHead(500, ACTIONS_CORS_HEADERS).json({
                 type: 'transaction',
                 message: errString ? errString : 'Error building transaction',
                 transaction: '',
@@ -113,57 +126,43 @@ export default async function handler(
 
         const custodies = (await client.custodies).map((c) => c.tokenInfo.symbol);
 
-        res
-            .setHeader('Access-Control-Allow-Origin', '*')
-            .setHeader('Access-Control-Allow-Credentials', 'true')
-            .setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS')
-            .setHeader(
-                'Access-Control-Allow-Headers',
-                'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-            )
-            .setHeader(
-                'Access-Control-Expose-Headers',
-                'X-Action-Version, X-Blockchain-Ids',
-            )
-            .setHeader('Content-Type', 'application/json')
-            .status(200)
-            .json({
-                type: 'action',
-                icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/add-liq.jpg',
-                title: 'Buy ALP',
-                description: `Provide liquidity to the ALP pool, and earn fees on every trade. Current price: $${currentAlpPrice}`,
-                label: 'Add Liquidity',
-                error: {
-                    message: 'Providing liquidity failed', // TODO: add error message
-                },
-                links: {
-                    actions: [
-                        {
-                            label: 'Buy ALP',
-                            href: '/api/blink/addLiquidity?amount={amount}&tokenSymbol={tokenSymbol}',
-                            parameters: [
-                                {
-                                    name: 'tokenSymbol',
-                                    type: 'select',
-                                    label: 'preferred token',
-                                    required: true,
-                                    options: custodies.map((symbol) => ({
-                                        label: symbol,
-                                        value: symbol,
-                                        selected: symbol === 'USDC',
-                                    })),
-                                },
-                                {
-                                    name: 'amount',
-                                    label: 'Amount',
-                                    required: true,
-                                    type: 'number',
-                                },
-                            ],
-                            type: 'transaction',
-                        },
-                    ],
-                },
-            });
+        res.writeHead(200, ACTIONS_CORS_HEADERS).json({
+            type: 'action',
+            icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/add-liq.jpg',
+            title: 'Buy ALP',
+            description: `Provide liquidity to the ALP pool, and earn fees on every trade. Current price: $${currentAlpPrice}`,
+            label: 'Add Liquidity',
+            error: {
+                message: 'Providing liquidity failed', // TODO: add error message
+            },
+            links: {
+                actions: [
+                    {
+                        label: 'Buy ALP',
+                        href: '/api/blink/addLiquidity?amount={amount}&tokenSymbol={tokenSymbol}',
+                        parameters: [
+                            {
+                                name: 'tokenSymbol',
+                                type: 'select',
+                                label: 'preferred token',
+                                required: true,
+                                options: custodies.map((symbol) => ({
+                                    label: symbol,
+                                    value: symbol,
+                                    selected: symbol === 'USDC',
+                                })),
+                            },
+                            {
+                                name: 'amount',
+                                label: 'Amount',
+                                required: true,
+                                type: 'number',
+                            },
+                        ],
+                        type: 'transaction',
+                    },
+                ],
+            },
+        });
     }
 }
