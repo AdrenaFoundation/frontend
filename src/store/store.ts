@@ -5,6 +5,7 @@ import {
   useSelector as defaultUseSelector,
 } from 'react-redux';
 
+import borrowRatesReducer from '@/reducers/borrowRatesReducer';
 import streamingTokenPricesReducer from '@/reducers/streamingTokenPricesReducer';
 import tokenPricesReducer from '@/reducers/tokenPricesReducer';
 
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   tokenPrices: tokenPricesReducer,
   streamingTokenPrices: streamingTokenPricesReducer,
   walletTokenBalances: walletBalancesReducer,
+  borrowRates: borrowRatesReducer,
 });
 
 const store = configureStore({
