@@ -21,7 +21,7 @@ export default function FilterSidebar({
     views,
     handleViewChange,
     activeView,
-    search,
+    searches,
 }: {
     views?: {
         title: string;
@@ -29,11 +29,11 @@ export default function FilterSidebar({
         activeColor?: string;
         disabled?: boolean;
     }[];
-    search?: {
+    searches?: {
         value: string;
         placeholder: string;
         handleChange: React.Dispatch<React.SetStateAction<string>>;
-    };
+    }[];
     handleViewChange?: (title: string) => void;
     activeView?: string;
     switchOptions?: {
@@ -91,15 +91,16 @@ export default function FilterSidebar({
             </div>
 
             <div className="flex flex-col gap-3">
-                {search && (
+                {searches?.map((search, i) => (
                     <input
+                        key={`search-${i}`}
                         type="text"
                         value={search.value}
                         onChange={(e) => search.handleChange(e.target.value)}
                         placeholder={search.placeholder}
                         className="hidden md:flex bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy"
                     />
-                )}
+                ))}
 
                 {filterOptions.map((filterOption, i) => (
                     <div key={`filter-${i}`}>
@@ -268,15 +269,16 @@ export default function FilterSidebar({
             )}
 
             <div className="flex flex-col gap-3 md:hidden">
-                {search && (
+                {searches?.map((search, i) => (
                     <input
+                        key={`search-${i}`}
                         type="text"
                         value={search.value}
                         onChange={(e) => search.handleChange(e.target.value)}
                         placeholder={search.placeholder}
                         className="bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy mb-3"
                     />
-                )}
+                ))}
 
                 <div className="flex flex-row border rounded-lg">
                     <div
