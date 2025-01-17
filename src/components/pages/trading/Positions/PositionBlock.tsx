@@ -10,7 +10,7 @@ import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
+import { MINIMUM_POSITION_OPEN_TIME, RATE_DECIMALS } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
@@ -45,6 +45,7 @@ export function PositionBlock({
   const blockRef = useRef<HTMLDivElement>(null);
   const isSmallSize = useBetterMediaQuery('(max-width: 900px)');
   const [closableIn, setClosableIn] = useState<number | null>(null);
+  const borrowRate = useSelector((s) => s.borrowRates[position.side === 'long' ? position.custody.toBase58() : position.collateralCustody.toBase58()]);
 
   // Only subscribe to the price for the token of this position.
   const tradeTokenPrice = useSelector((s) =>
@@ -107,7 +108,6 @@ export function PositionBlock({
     // Short
     return tradeTokenPrice > position.liquidationPrice;
   })();
-
 
   const positionName = (
     <div className="flex items-center justify-center h-full">
@@ -191,6 +191,7 @@ export function PositionBlock({
           </span>
         </label>
       </div>
+
       {position.pnl ? (
         <div className="flex items-center">
           <FormatNumber
@@ -525,6 +526,25 @@ export function PositionBlock({
               ) : (
                 <div className="flex text-xs">-</div>
               )}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center min-w-[6em] w-[6em]">
+            <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+              Cur. Borrow Rate
+            </div>
+
+            <div className="flex mt-1">
+              <FormatNumber
+                // Multiply by 100 to be displayed as %
+                nb={(borrowRate ?? 0) * 100}
+                precision={RATE_DECIMALS}
+                minimumFractionDigits={4}
+                suffix="%/hr"
+                isDecimalDimmed={false}
+                className="text-xs text-txtfade"
+                suffixClassName='text-xs text-txtfade'
+              />
             </div>
           </div>
         </div>
