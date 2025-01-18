@@ -24,6 +24,7 @@ import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWalletAdapters from '@/hooks/useWalletAdapters';
+import useWatchBorrowRates from '@/hooks/useWatchBorrowRates';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import initializeApp, {
   createReadOnlyAdrenaProgram,
@@ -182,6 +183,7 @@ function AppComponent({
   const { userProfile, triggerUserProfileReload } = useUserProfile(walletAddress ?? null);
 
   useWatchTokenPrices();
+  useWatchBorrowRates();
 
   // Fetch token balances for the connected wallet:
   // on initial mount of the app & on account change.
