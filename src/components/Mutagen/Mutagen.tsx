@@ -57,7 +57,7 @@ export default function Mutagen({
     <Menu
       openMenuTriggerType='hover'
       trigger={
-        <div className='gap-x-2 flex items-center justify-center bg-[#57123e] border border-[#37142f] rounded-full pl-4 pr-3 pt-1 pb-1'>
+        <div className='gap-x-2 flex items-center justify-center bg-[#953265] rounded-full pl-4 pr-3 pt-1 pb-1'>
           <div className='text-xs font-boldy text-white'>-</div>
 
           <Image
