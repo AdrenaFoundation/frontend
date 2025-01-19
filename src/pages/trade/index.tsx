@@ -1,5 +1,4 @@
 import { Switch } from '@mui/material';
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
@@ -15,7 +14,6 @@ import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
@@ -245,30 +243,7 @@ export default function Trade({
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[100px] sm:pb-4">
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-50">
-        <RiveAnimation
-          animation="btm-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
-          imageClassName="absolute w-full max-w-[1200px] bottom-0 left-[-10vh] scale-x-[-1]"
-        />
-
-        <RiveAnimation
-          animation="mid-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
-          imageClassName="absolute w-full max-w-[1200px] top-0 right-0 -z-10"
-        />
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]">
       </div>
 
       <div className="flex flex-col w-full">
