@@ -3,7 +3,7 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import mutagenIcon from '../../../public/images/mutagen-10.png';
+import mutagenIcon from '../../../public/images/mutagen.png';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Modal from '../common/Modal/Modal';
@@ -57,15 +57,15 @@ export default function Mutagen({
     <Menu
       openMenuTriggerType='hover'
       trigger={
-        <div className='gap-x-2 flex items-center justify-center bg-[#1f2c3c] rounded-full pl-3 pr-2 pt-1 pb-1 w-20'>
-          <div className='text-xs font-boldy'>1650</div>
+        <div className='gap-x-2 flex items-center justify-center bg-[#1f2c3c] rounded-full pl-4 pr-3 pt-1 pb-1'>
+          <div className='text-xs font-boldy text-txtfade'>-</div>
 
           <Image
             src={mutagenIcon}
             alt={'mutagen'}
-            width='40'
-            height='40'
-            className={'w-5 h-5'}
+            width='30'
+            height='30'
+            className={'w-4 h-4'}
           />
         </div>
       }
