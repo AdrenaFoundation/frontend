@@ -20,7 +20,7 @@ export default function Quests() {
                 {
                     type: 'checkbox',
                     description:
-                        'Open a short and long trades with at least 25x leverage',
+                        'Open a short and long trade with at least 25x leverage',
                     reward: 0.25,
                     completed: false,
                 },
@@ -30,12 +30,12 @@ export default function Quests() {
         dailyMutations: {
             title: 'Daily Mutations',
             description:
-                'Each day, 2 mutation will be affecting the mutagens generated that day. The daily mutation are selected randomly. Goal is to create a meta for the day.',
+                'Each day, 2 mutation will be affecting the mutagen generated that day. The daily mutation are selected randomly. Goal is to create a meta for the day.',
             tasks: [
                 {
                     type: 'checkbox',
                     title: 'Frenzy',
-                    description: 'Bonus mutagens per position closed',
+                    description: 'Bonus mutagen per position',
                     reward: 0.05,
                     completed: false,
                     isActive: true,
@@ -43,7 +43,7 @@ export default function Quests() {
                 {
                     type: 'checkbox',
                     title: 'Corruption',
-                    description: 'Bonus mutagens per x50+ leveraged position closed',
+                    description: 'Bonus mutagen per x50+ leveraged position',
                     reward: 0.04,
                     completed: false,
                     isActive: true,
@@ -51,7 +51,7 @@ export default function Quests() {
                 {
                     type: 'checkbox',
                     title: 'Madness',
-                    description: 'Bonus mutagens per x80+ leveraged position closed',
+                    description: 'Bonus mutagen per x80+ leveraged position',
                     reward: 0.08,
                     completed: false,
                     isActive: false,
@@ -60,7 +60,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Celerity',
                     description:
-                        'Bonus mutagens for closing a position that lived less than 5 minutes',
+                        'Bonus mutagen for a position that lived less than 5 minutes',
                     reward: 0.08,
                     completed: false,
                     isActive: false,
@@ -69,7 +69,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Tempo',
                     description:
-                        'Bonus mutagens for closing a position that lived more than 30 minutes',
+                        'Bonus mutagen for a position that lived more than 30 minutes',
                     reward: 0.1,
                     completed: false,
                     isActive: false,
@@ -78,7 +78,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Growth',
                     description:
-                        'Bonus mutagens per 0.1% positive PnL Volume ratio (capped to 2.5 mutagens)',
+                        'Bonus mutagen per 0.1% positive trade performance (capped to 2.5 mutagen)',
                     reward: '0.1 - 2.5',
                     completed: false,
                     isActive: false,
@@ -87,7 +87,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Regeneration',
                     description:
-                        'Bonus mutagens per 0.1% negative PnL Volume ratio (capped to 3 mutagens)',
+                        'Bonus mutagen per 0.1% negative trade performance (capped to 3 mutagen)',
                     reward: '0.12 – 3',
                     completed: false,
                     isActive: false,
@@ -96,7 +96,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Telepathy',
                     description:
-                        'bonus mutagens per SL/TP/LimitOrder triggered for a given position',
+                        'bonus mutagen per triggered SL/TP',
                     reward: 0.01,
                     completed: false,
                     isActive: false,
@@ -109,7 +109,7 @@ export default function Quests() {
             tasks: [
                 {
                     type: 'checkbox',
-                    description: 'have 50% win-rate on at least 50 trades ',
+                    description: 'Have 50% win-rate on at least 50 trades ',
                     reward: 2,
                     completed: false,
                 },
@@ -127,60 +127,60 @@ export default function Quests() {
             tasks: [
                 {
                     type: 'text',
-                    title: 'Trader Performance',
+                    title: 'Trade Performance',
                     description:
-                        'PnL Volume ratio (PnL* volume / volume) based -> rewards performance.',
+                        `Performance = PnL / volume * 100`,
                     task: '0.1% → 25%',
                     reward: '0.01 - 2.5',
                 },
                 {
                     type: 'text',
-                    title: 'Duration of trades',
-                    description: 'Rewards traders for holding positions for longer',
+                    title: 'Trade Duration',
+                    description: '',
                     task: '10s → 72h',
                     reward: '0 – 2',
                 },
                 {
                     type: 'progressive',
-                    title: 'Size multiplier',
+                    title: 'Exit Size Multiplier',
                     levels: [
                         {
-                            description: '$10-$1k',
+                            description: '$10 → $1k',
                             multiplier: '0.05x',
                             completed: false,
                         },
                         {
-                            description: '$1k-$10k',
+                            description: '$1k → $10k',
                             multiplier: '0.05x – 0.1x',
                             completed: false,
                         },
                         {
-                            description: '$10k-$50k',
+                            description: '$10k → $50k',
                             multiplier: '0.1x – 0.2x',
                             completed: false,
                         },
                         {
-                            description: '$50k-$100k',
+                            description: '$50k → $100k',
                             multiplier: '0.2x – 0.5x',
                             completed: false,
                         },
                         {
-                            description: '$100k-$250k',
+                            description: '$100k → $250k',
                             multiplier: '0.5x – 0.7x',
                             completed: false,
                         },
                         {
-                            description: '$250k-$500k',
+                            description: '$250k → $500k',
                             multiplier: '0.7x – 0.9x',
                             completed: false,
                         },
                         {
-                            description: '$500k-$1M',
+                            description: '$500k → $1M',
                             multiplier: '0.9x – 1.1x',
                             completed: false,
                         },
                         {
-                            description: '$1M-$4.5M:',
+                            description: '$1M → $4.5M',
                             multiplier: '1.1x – 1.3x',
                             completed: false,
                         },
@@ -193,11 +193,11 @@ export default function Quests() {
     return (
         <div className="my-[100px]">
             <TabSelect
-                selected="Guide"
-                tabs={[{ title: 'Guide' }, { title: 'Leaderboard', disabled: true }]}
+                selected="Mechanics"
+                tabs={[{ title: 'Mechanics' }, { title: 'Leaderboard', disabled: true }]}
                 onClick={() => { }}
                 className='mb-4'
-                titleClassName='text-3xl font-boldy capitalize'
+                titleClassName='text-xl xl:text-2xl font-boldy capitalize'
             />
             <div className="grid lg:grid-cols-2 gap-4 flex-1">
                 <QuestComp quest={QUESTS.daily as QuestType} />

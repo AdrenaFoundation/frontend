@@ -23,7 +23,7 @@ export default function Expanse() {
                 </div>
 
                 <div>
-                    <p className="font-boldy mb-3 text-base">Total Contest Rewards</p>
+                    <p className="font-boldy mb-3 mt-4 xl:mt-0 flex text-base justify-center xl:justify-start">Total Contest Rewards</p>
                     <div className="flex flex-row gap-2 items-center bg-[#0D1923] px-8 py-3 rounded-lg border border-white/5 mb-3">
                         <Image
                             src={window.adrena.client.adxToken.image}

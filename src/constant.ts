@@ -336,10 +336,13 @@ export const TRADING_COMPETITION_SEASONS = {
     gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
     primaryColor: '#FA6724',
     description: [
-      "Adrena's first full scale trading season, the Expanse. Come get some in our division based trading competition. Farm the daily and weekly quests for locking in some flat rewards that will not only server you to climb the season volume based ladder, but also for the future Adrena Airdrop.",
-      'Streaks, Mutagens & Mutations, Achievements with exclusive titles, size multipliers...',
-      "Mutagen is an elusive resource that can only be generated through trading activity. Accumulate it through leverage trading to rank up in the upcoming season and also to earn shares the upcoming $ADX airdrop.', Mutagen will start accruing on February 1st for the Season ranking, but will also be back generated for all your trading activity before that date (so counting for the airdroponly).",
-      'Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC.',
+      `Adrena's first Trading Season: The Expanse. Get ready for Adrena's inaugural trading season, The Expanse. Engage in our division-based trading competition where you can:`,
+      `- Farm Mutagen through daily and weekly quests. By accumulating Mutagen through leverage trading, you can improve your ranking in the upcoming season and secure a share in the upcoming $ADX Airdrop. Can only generate through trading activities.`, 
+      `- Earn Streaks, leverage daily Mutations, and unlock Exclusive Achievement Titles.`, 
+      `Important Dates and Details:`,
+      `Mutagen Accrual starts on February 1st for the Season rankings. However, all trading activity prior to this date will retroactively provide you Mutagen that will solely count towards the airdrop. Eligible Trades: Only positions opened after February 1st and closed before the season's end will qualify for the season rankings. Weekly Periods: Each week ends at 12:00 AM UTC on Monday, with the exception of the final week, which concludes at 12:00 PM UTC.`,
+
+      `Come get some.`,
     ] as string[],
   },
 } as const;
