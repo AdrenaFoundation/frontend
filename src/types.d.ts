@@ -799,5 +799,5 @@ type ProgressiveType = {
 export type QuestType = {
   title: string | null;
   description?: string;
-  tasks: (CheckBox | Text | Progressive)[];
+  tasks: (CheckBoxType | TextType | ProgressiveType)[];
 };

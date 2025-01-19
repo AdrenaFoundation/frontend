@@ -344,10 +344,11 @@ export const TRADING_COMPETITION_SEASONS = {
       "Adrena's first full scale trading season, the Expanse. Come get some in our division based trading competition.",
       'Farm the daily and weekly quests for locking in some flat rewards that will not only server you to climb the season volume based ladder, but also for the future Adrena Airdrop.',
       'Streaks, Mutagens & Mutations, Achievements with exclusive titles, size multipliers...',
-      'Check out the divisions below, continuously updated based on onchain events.',
+      'Mutagen is an elusive resource that can only be generated through trading activity.',
+      'Accumulate it through leverage trading to rank up in the upcoming season and also to earn shares the upcoming $ADX airdrop.',
+      'Mutagen will start accruing on February 1st for the Season ranking, but will also be back generated for all your trading activity before that date (so counting for the airdroponly).',
       'Only positions open after the start date and closed before the end date qualify.',
       'Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC.',
-      "Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
     ] as string[],
   },
 } as const;
