@@ -15,8 +15,6 @@ export default function BuyADX({ }: PageProps) {
 
         <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-        <div className="absolute w-[50px] h-full top-0 right-0 bg-gradient-to-r from-[#050f1900] to-[#050f19] z-10" />
-
         <div className="flex flex-col lg:flex-row items-center justify-between pt-[50px] mb-[150px] lg:mb-0 lg:h-[800px] w-full z-10">
           <div>
             <h1 className="text-[2.6rem] sm:text-[4rem] uppercase max-w-[840px]">

@@ -48,7 +48,7 @@ export default function ADXVoteAnimation() {
   }, [totalParticipants]);
 
   return (
-    <div className="relative flex flex-col items-center border border-bcolor rounded-2xl w-full lg:w-[400px] h-[500px]">
+    <div className="relative flex flex-col items-center border border-bcolor rounded-2xl w-full lg:w-[400px] h-[500px] bg-[#0c1016]">
       <h4 className="mt-4 font-mono text-sm">
         00:{30 - totalParticipants}s left
       </h4>
@@ -91,9 +91,8 @@ export default function ADXVoteAnimation() {
       <div
         className="grid gap-3 w-full h-[150px] overflow-hidden items-center bg-main p-5 border-t border-bcolor rounded-b-2xl"
         style={{
-          gridTemplateColumns: `repeat(${
-            participants.length < 8 ? participants.length : 8
-          },  1fr)`,
+          gridTemplateColumns: `repeat(${participants.length < 8 ? participants.length : 8
+            },  1fr)`,
         }}
       >
         <AnimatePresence>
