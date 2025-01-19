@@ -1,7 +1,7 @@
 import { Keypair, PublicKey } from '@solana/web3.js';
 
 import awakeningBanner from '@/../../public/images/comp-banner.png';
-import expanseBanner from '@/../public/images/expanse-banner.png';
+import expanseBanner from '@/../public/images/expanse-banner.jpg';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
 import {
