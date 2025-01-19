@@ -21,7 +21,7 @@ export default function Mutagen({
 
       <p className='text-txtfade text-sm mt-2 text-center'>
         Mutagen is an elusive resource that can only be generated through trading activity. Accumulate it through leverage trading to rank up in the upcoming &quot;Season One: Expanse&quot;
-        and earn our future $ADX airdrop. Mutagen will start accruing on February 1st—refer to this page for more information: <a href='INSERT LINK' target='_blank' rel='noreferrer' className='underline text-white'>see docs</a>
+        and earn our future $ADX airdrop.
       </p>
     </div>
   );

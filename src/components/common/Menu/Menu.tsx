@@ -73,6 +73,12 @@ export default function Menu({
 
             setIsMenuOpen(true);
           }}
+          onMouseLeave={() => {
+            if (openMenuTriggerType !== 'hover') return;
+            if (disabled) return;
+
+            setIsMenuOpen(false);
+          }}
         >
           <div
             className={twMerge(
