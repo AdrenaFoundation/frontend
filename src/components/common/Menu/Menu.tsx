@@ -19,6 +19,7 @@ export default function Menu({
   disabled,
   disableOnClickInside = false,
   isDim = false,
+  openMenuTriggerType = 'click',
 }: {
   trigger: ReactNode;
   className?: string;
@@ -29,6 +30,7 @@ export default function Menu({
   disabled?: boolean;
   disableOnClickInside?: boolean;
   isDim?: boolean;
+  openMenuTriggerType?: 'click' | 'hover';
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -59,7 +61,24 @@ export default function Menu({
       <AnimatePresence>
         <div
           className={twMerge('relative', className)}
-          onClick={() => !disabled && setIsMenuOpen(!isMenuOpen)}
+          onClick={() => {
+            if (openMenuTriggerType !== 'click') return;
+            if (disabled) return;
+
+            setIsMenuOpen(!isMenuOpen);
+          }}
+          onMouseEnter={() => {
+            if (openMenuTriggerType !== 'hover') return;
+            if (disabled) return;
+
+            setIsMenuOpen(true);
+          }}
+          onMouseLeave={() => {
+            if (openMenuTriggerType !== 'hover') return;
+            if (disabled) return;
+
+            setIsMenuOpen(false);
+          }}
         >
           <div
             className={twMerge(
@@ -91,7 +110,8 @@ export default function Menu({
           ) : null}
         </div>
       </AnimatePresence>
-      {isDim && isMenuOpen && (
+
+      {isDim && isMenuOpen ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -99,7 +119,7 @@ export default function Menu({
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="absolute top-0 left-0 w-full h-full bg-black/75 z-30"
         />
-      )}
+      ) : null}
     </>
   );
 }

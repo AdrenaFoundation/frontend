@@ -73,7 +73,7 @@ export default function RootLayout({
     { name: 'Trade', link: '/trade' },
     { name: 'Profile', link: '/my_dashboard' },
     { name: 'Stake', link: '/stake' },
-    { name: 'Ranked', link: '/competition' },
+    { name: 'Ranked', link: '/ranked' },
     { name: 'Provide Liquidity', link: '/buy_alp' },
     { name: 'Monitor', link: '/monitoring' },
     { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },

@@ -23,6 +23,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import Mutagen from '../Mutagen/Mutagen';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
@@ -163,11 +164,11 @@ export default function Header({
         <Link
           href="/buy_alp"
           className={twMerge(
-            'ml-2 flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
+            'flex flex-col xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
             pathname !== '/buy_alp' && 'opacity-50',
           )}
         >
-          <div className="text-sm mr-2 font-boldy">ALP</div>
+          <div className="text-sm font-boldy">ALP</div>
 
           {tokenPriceALP ? (
             <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
@@ -187,11 +188,11 @@ export default function Header({
         <Link
           href="/buy_adx"
           className={twMerge(
-            'ml-2 flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
+            'flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
             pathname !== '/buy_adx' && 'opacity-50',
           )}
         >
-          <div className="text-sm mr-2 font-boldy">ADX</div>
+          <div className="text-sm font-boldy">ADX</div>
 
           {tokenPriceADX ? (
             <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
@@ -229,6 +230,8 @@ export default function Header({
           showFeesInPnl={showFeesInPnl}
           setShowFeesInPnl={setShowFeesInPnl}
         />
+
+        <Mutagen />
 
         <WalletAdapter userProfile={userProfile} adapters={adapters} />
 

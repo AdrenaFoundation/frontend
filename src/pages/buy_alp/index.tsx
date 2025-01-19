@@ -1,4 +1,3 @@
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
@@ -8,7 +7,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import RewardsAnimation from '@/components/pages/buy_alp_adx/RewardsAnimation/RewardsAnimation';
 import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { PageProps } from '@/types';
 
@@ -27,31 +25,8 @@ export default function Buy({
   return (
     <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10 mt-[150px] lg:mt-[50px]">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4 lg:h-[800px]">
-        <div className="absolute w-full h-full left-0 top-0 opacity-20">
-          <RiveAnimation
-            animation="fred-bg"
-            layout={
-              new Layout({
-                fit: Fit.Fill,
-                alignment: Alignment.TopLeft,
-              })
-            }
-            className="absolute top-0 left-0 h-full w-full scale-x-[-1]"
-            imageClassName="absolute top-0 left-0 w-[300px] sm:w-[400px] scale-x-[-1]"
-          />
 
-          <RiveAnimation
-            animation="fred-bg"
-            layout={
-              new Layout({
-                fit: Fit.Fill,
-                alignment: Alignment.TopRight,
-              })
-            }
-            className="absolute top-0 right-0 w-full h-full scale-y-[-1.2]"
-            imageClassName="absolute top-0 right-0 w-[300px] sm:w-[400px] scale-y-[-1.2]"
-          />
-        </div>
+        <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
         <div className="flex flex-col justify-center items-start z-10 -translate-y-28">
           <h1 className="text-[2.6rem] lg:text-[4rem] uppercase max-w-[640px]">

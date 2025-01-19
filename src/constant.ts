@@ -1,7 +1,15 @@
 import { Keypair, PublicKey } from '@solana/web3.js';
 
+import awakeningBanner from '@/../../public/images/comp-banner.png';
+import expanseBanner from '@/../public/images/expanse-banner.jpg';
+
 import { ResolutionString } from '../public/charting_library/charting_library';
-import { AdrenaEvent, AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
+import {
+  AdrenaEvent,
+  AdxLockPeriod,
+  AlpLockPeriod,
+  SupportedCluster,
+} from './types';
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;
@@ -124,34 +132,41 @@ export const SOLANA_EXPLORERS_OPTIONS = {
         ? `https://explorer.solana.com/address/${address}?cluster=devnet` // redirection vers Solana Explorer pour devnet
         : `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solanabeach.io/transaction/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solanabeach.io/transaction/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   Solscan: {
     url: 'https://solscan.io',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solscan.io/account/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/account/${address}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solscan.io/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/tx/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana Explorer': {
     url: 'https://explorer.solana.com',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/address/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/address/${address}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/tx/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana FM': {
     url: 'https://solana.fm',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solana.fm/address/${address}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/address/${address}${
+        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solana.fm/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/tx/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
   },
 } as const;
@@ -297,3 +312,37 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
     type: 'Trading',
   },
 ];
+
+export const TRADING_COMPETITION_SEASONS = {
+  awakening: {
+    img: awakeningBanner,
+    title: 'Awakening',
+    subTitle: 'pre-season',
+    startDate: new Date('11/11/2024'),
+    endDate: new Date('12/23/2024'),
+    gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
+    primaryColor: '#E5B958',
+    description: [
+      "Welcome to Adrena's trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons. From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions. Your total trading volume during the six-week event determines your division qualification. Check out the divisions below, continuously updated based on onchain events.",
+      "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
+    ] as string[],
+  },
+  expanse: {
+    img: expanseBanner,
+    title: 'The Expanse',
+    subTitle: 'new season',
+    startDate: new Date('02/01/2025'),
+    endDate: new Date('04/12/2025'),
+    gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
+    primaryColor: '#FA6724',
+    description: [
+      `Adrena's first Trading Season: The Expanse. Get ready for Adrena's inaugural trading season, The Expanse. Engage in our division-based trading competition where you can:`,
+      `- Farm Mutagen through daily and weekly quests. By accumulating Mutagen through leverage trading, you can improve your ranking in the upcoming season and secure a share in the upcoming $ADX Airdrop. Can only generate through trading activities.`, 
+      `- Earn Streaks, leverage daily Mutations, and unlock Exclusive Achievement Titles.`, 
+      `Important Dates and Details:`,
+      `Mutagen Accrual starts on February 1st for the Season rankings. However, all trading activity prior to this date will retroactively provide you Mutagen that will solely count towards the airdrop. Eligible Trades: Only positions opened after February 1st and closed before the season's end will qualify for the season rankings. Weekly Periods: Each week ends at 12:00 AM UTC on Monday, with the exception of the final week, which concludes at 12:00 PM UTC.`,
+
+      `Come get some.`,
+    ] as string[],
+  },
+} as const;
