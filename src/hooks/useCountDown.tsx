@@ -1,5 +1,3 @@
-//Create a useCountDown hook that takes a from and a to date and returns the remaining time in seconds.
-
 import { useEffect, useState } from 'react';
 
 export default function useCountDown(from: Date, to: Date) {
