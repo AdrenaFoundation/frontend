@@ -129,14 +129,14 @@ export default function Quests() {
                     title: 'Trader Performance',
                     description:
                         'PnL Volume ratio (PnL* volume / volume) based -> rewards performance.',
-                    task: '0.1% - 25%',
+                    task: '0.1% → 25%',
                     reward: '0.01 - 2.5',
                 },
                 {
                     type: 'text',
                     title: 'Duration of trades',
                     description: 'Rewards traders for holding positions for longer',
-                    task: '10s - 72h',
+                    task: '10s → 72h',
                     reward: '0 – 2',
                 },
                 {
@@ -192,13 +192,11 @@ export default function Quests() {
     return (
         <div className="my-[100px]">
             <h2 className="font-boldy text-3xl capitalize mb-4">The Quests</h2>
-            <div className="flex flex-row gap-4">
-                <div className="grid xl:grid-cols-2 gap-4 flex-1">
-                    <QuestComp quest={QUESTS.daily as QuestType} />
-                    <QuestComp quest={QUESTS.weekly as QuestType} />
-                    <QuestComp quest={QUESTS.dailyMutations as QuestType} />
-                    <QuestComp quest={QUESTS.perpetual as QuestType} className="h-full" />
-                </div>
+            <div className="grid lg:grid-cols-2 gap-4 flex-1">
+                <QuestComp quest={QUESTS.daily as QuestType} />
+                <QuestComp quest={QUESTS.weekly as QuestType} />
+                <QuestComp quest={QUESTS.dailyMutations as QuestType} />
+                <QuestComp quest={QUESTS.perpetual as QuestType} className="h-full" />
             </div>
 
             <Streak />
