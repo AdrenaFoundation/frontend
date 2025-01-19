@@ -4,26 +4,13 @@ import { twMerge } from 'tailwind-merge';
 
 import wing from '@/../../public/images/wing.svg';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
+import { QuestType } from '@/types';
 
-export default function QuestComp<T extends 'progressive' | 'text' | 'checkbox'>({ quest, className }: {
-    quest: {
-        title?: string;
-        description?: string;
-        tasks: {
-            type: T;
-            title?: string;
-            description?: string;
-            task: string;
-            reward: number;
-            completed: boolean;
-            levels?: {
-                description: string;
-                reward: number;
-                multiplier?: string;
-                completed: boolean;
-            }[];
-        }[];
-    };
+export default function QuestComp({
+    quest,
+    className,
+}: {
+    quest: QuestType;
     className?: string;
 }) {
     return (
@@ -85,14 +72,12 @@ export default function QuestComp<T extends 'progressive' | 'text' | 'checkbox'>
                                             checked={false}
                                             onChange={() => false}
                                         />
-                                        <p
-                                            className="font-boldy opacity-50"
-                                        >
-                                            {task.task}
-                                        </p>
+                                        <p className="font-boldy opacity-50">{task.task}</p>
                                     </div>
 
-                                    <p className="font-mono opacity-50 text-right">+{task.reward} mutagens</p>
+                                    <p className="font-mono opacity-50 text-right">
+                                        +{task.reward} mutagens
+                                    </p>
                                 </div>
                             </li>
                         );

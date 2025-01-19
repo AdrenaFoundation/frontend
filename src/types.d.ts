@@ -766,3 +766,38 @@ export type GetPositionStatsReturnType<
       }[];
     }
   : object);
+
+type CheckBoxType = {
+  type: 'checkbox';
+  description: string;
+  reward: number | string;
+  completed: boolean;
+  isActive?: boolean;
+  title?: string;
+};
+
+type TextType = {
+  type: 'text';
+  title: string;
+  description: string;
+  task: string;
+  reward: string;
+};
+
+type ProgressiveType = {
+  type: 'progressive';
+  description?: string;
+  title: string;
+  levels: {
+    description: string;
+    multiplier: string;
+    reward?: number;
+    completed: boolean;
+  }[];
+};
+
+export type QuestType = {
+  title: string | null;
+  description?: string;
+  tasks: (CheckBox | Text | Progressive)[];
+};

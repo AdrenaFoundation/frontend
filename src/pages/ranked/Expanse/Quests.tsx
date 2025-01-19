@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { QuestType } from '@/types';
+
 import QuestComp from './QuestComp';
 import Streak from './Streak';
 
@@ -185,17 +187,17 @@ export default function Quests() {
                 },
             ],
         },
-    } as const;
+    };
 
     return (
         <div className="my-[100px]">
             <h2 className="font-boldy text-3xl capitalize mb-4">The Quests</h2>
             <div className="flex flex-row gap-4">
                 <div className="grid xl:grid-cols-2 gap-4 flex-1">
-                    <QuestComp quest={QUESTS.daily} />
-                    <QuestComp quest={QUESTS.weekly} />
-                    <QuestComp quest={QUESTS.dailyMutations} />
-                    <QuestComp quest={QUESTS.perpetual} className="h-full" />
+                    <QuestComp quest={QUESTS.daily as QuestType} />
+                    <QuestComp quest={QUESTS.weekly as QuestType} />
+                    <QuestComp quest={QUESTS.dailyMutations as QuestType} />
+                    <QuestComp quest={QUESTS.perpetual as QuestType} className="h-full" />
                 </div>
             </div>
 
