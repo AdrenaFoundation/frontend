@@ -17,11 +17,14 @@ export default function Mutagen({
 
   const content = (
     <div className="flex flex-col mb-3 items-center">
-      <h2 className="flex">Mutagens</h2>
+      <h2 className="flex">Mutagen</h2>
 
       <p className='text-txtfade text-sm mt-2 text-center'>
-        Mutagen is an elusive resource that can only be generated through trading activity. Accumulate it through leverage trading to rank up in the upcoming &quot;Season One: Expanse&quot;
-        and earn our future $ADX airdrop.
+        Mutagen is an elusive resource that can only be generated through trading activity. Accumulate it doing leveraged trades and rank up in the upcoming &quot;Season One: Expanse&quot;.
+      </p>
+
+      <p className='text-txtfade text-sm mt-1 text-center'>
+        Note that Mutagen amount will also determine your rewards during the upcoming Airdrop.
       </p>
 
       <div className='mt-2 font-boldy text-xs'>Coming soon</div>
