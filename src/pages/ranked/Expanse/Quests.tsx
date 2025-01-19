@@ -20,7 +20,7 @@ export default function Quests() {
                 {
                     type: 'checkbox',
                     description:
-                        'Open a short and long trades with at least 25x leverage',
+                        'Open a short and long trade with at least 25x leverage',
                     reward: 0.25,
                     completed: false,
                 },
@@ -30,12 +30,12 @@ export default function Quests() {
         dailyMutations: {
             title: 'Daily Mutations',
             description:
-                'Each day, 2 mutation will be affecting the mutagens generated that day. The daily mutation are selected randomly. Goal is to create a meta for the day.',
+                'Each day, 2 mutation will be affecting the mutagen generated that day. The daily mutation are selected randomly. Goal is to create a meta for the day.',
             tasks: [
                 {
                     type: 'checkbox',
                     title: 'Frenzy',
-                    description: 'Bonus mutagens per position',
+                    description: 'Bonus mutagen per position',
                     reward: 0.05,
                     completed: false,
                     isActive: true,
@@ -43,7 +43,7 @@ export default function Quests() {
                 {
                     type: 'checkbox',
                     title: 'Corruption',
-                    description: 'Bonus mutagens per x50+ leveraged position',
+                    description: 'Bonus mutagen per x50+ leveraged position',
                     reward: 0.04,
                     completed: false,
                     isActive: true,
@@ -51,7 +51,7 @@ export default function Quests() {
                 {
                     type: 'checkbox',
                     title: 'Madness',
-                    description: 'Bonus mutagens per x80+ leveraged position',
+                    description: 'Bonus mutagen per x80+ leveraged position',
                     reward: 0.08,
                     completed: false,
                     isActive: false,
@@ -60,7 +60,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Celerity',
                     description:
-                        'Bonus mutagens for a position that lived less than 5 minutes',
+                        'Bonus mutagen for a position that lived less than 5 minutes',
                     reward: 0.08,
                     completed: false,
                     isActive: false,
@@ -69,7 +69,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Tempo',
                     description:
-                        'Bonus mutagens for a position that lived more than 30 minutes',
+                        'Bonus mutagen for a position that lived more than 30 minutes',
                     reward: 0.1,
                     completed: false,
                     isActive: false,
@@ -78,7 +78,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Growth',
                     description:
-                        'Bonus mutagens per 0.1% positive trade performance (capped to 2.5 mutagens)',
+                        'Bonus mutagen per 0.1% positive trade performance (capped to 2.5 mutagen)',
                     reward: '0.1 - 2.5',
                     completed: false,
                     isActive: false,
@@ -87,7 +87,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Regeneration',
                     description:
-                        'Bonus mutagens per 0.1% negative trade performance (capped to 3 mutagens)',
+                        'Bonus mutagen per 0.1% negative trade performance (capped to 3 mutagen)',
                     reward: '0.12 – 3',
                     completed: false,
                     isActive: false,
@@ -96,7 +96,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Telepathy',
                     description:
-                        'bonus mutagens per triggered SL/TP',
+                        'bonus mutagen per triggered SL/TP',
                     reward: 0.01,
                     completed: false,
                     isActive: false,
