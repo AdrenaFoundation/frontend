@@ -26,12 +26,12 @@ import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import useAwakeningV2 from '@/hooks/useAwakeningV2';
+import useCountDown from '@/hooks/useCountDown';
 import { useSelector } from '@/store/store';
 import { ImageRef, UserProfileExtended, UserStats } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import infoIcon from '../../../../public/images/Icons/info.svg';
-import useCountDown from '@/hooks/useCountDown';
 
 export const CompetitionBanner = memo(
     ({
