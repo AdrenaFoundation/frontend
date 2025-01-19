@@ -49,7 +49,10 @@ export const CompetitionBanner = memo(
         subTitle?: string;
         gradientColor?: string;
     }) => {
-        const { days, hours, minutes, seconds } = useCountDown(new Date(), startDate);
+        const { days, hours, minutes, seconds } = useCountDown(
+            new Date(),
+            startDate,
+        );
 
         return (
             <div className="relative">
@@ -88,10 +91,10 @@ export const CompetitionBanner = memo(
                     </div>
 
                     {startDate && startDate >= new Date() ? (
-                        <ul className="flex flex-row gap-9 mt-2 px-9 p-3 bg-black/40 rounded-lg z-10">
+                        <ul className="flex flex-row gap-3 md:gap-9 mt-2 px-6 md:px-9 p-3 bg-black/40 rounded-lg z-10">
                             <li className="flex flex-col items-center justify-center">
-                                <p className="text-center text-[2rem] font-mono leading-[46px]">
-                                    {days}
+                                <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
+                                    {days >= 0 ? days : '–'}
                                 </p>
                                 <p className="text-center text-sm font-boldy tracking-widest">
                                     Days
@@ -99,8 +102,8 @@ export const CompetitionBanner = memo(
                             </li>
                             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
                             <li className="flex flex-col items-center justify-center">
-                                <p className="text-center text-[2rem] font-mono leading-[46px]">
-                                    {hours}
+                                <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
+                                    {Number(hours) >= 0 ? hours : '–'}
                                 </p>
                                 <p className="text-center text-sm font-boldy tracking-widest">
                                     Hours
@@ -108,8 +111,8 @@ export const CompetitionBanner = memo(
                             </li>
                             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
                             <li className="flex flex-col items-center justify-center">
-                                <p className="text-center text-[2rem] font-mono leading-[46px]">
-                                    {minutes}
+                                <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
+                                    {Number(minutes) >= 0 ? minutes : '–'}
                                 </p>
                                 <p className="text-center text-sm font-boldy tracking-widest">
                                     Minutes
@@ -117,8 +120,8 @@ export const CompetitionBanner = memo(
                             </li>
                             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
                             <li className="flex flex-col items-center justify-center">
-                                <p className="text-center text-[2rem] font-mono leading-[46px]">
-                                    {seconds}
+                                <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
+                                    {Number(seconds) >= 0 ? seconds : '–'}
                                 </p>
                                 <p className="text-center text-sm font-boldy tracking-widest">
                                     seconds
@@ -433,12 +436,9 @@ export const CompetitionHeader = memo(
                     year: 'numeric',
                 })}
             </p>
-            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center xl:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
+            <div className="text-sm max-w-[70em] text-justify flex flex-col gap-3 items-center xl:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
                 {description.map((text, index) => (
-                    <span
-                        key={index}
-                        className={`text-txtfade text-center xl:text-left ${index === 4 ? 'mt-2' : ''}`}
-                    >
+                    <span key={index} className="text-txtfade text-center xl:text-left">
                         {text}
                     </span>
                 ))}

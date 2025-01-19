@@ -1,5 +1,6 @@
 import React from 'react';
 
+import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { QuestType } from '@/types';
 
 import QuestComp from './QuestComp';
@@ -180,7 +181,7 @@ export default function Quests() {
                         },
                         {
                             description: '$1M-$4.5M:',
-                            multiplier: ' 1.1x – 1.3x',
+                            multiplier: '1.1x – 1.3x',
                             completed: false,
                         },
                     ],
@@ -191,7 +192,13 @@ export default function Quests() {
 
     return (
         <div className="my-[100px]">
-            <h2 className="font-boldy text-3xl capitalize mb-4">The Quests</h2>
+            <TabSelect
+                selected="Guide"
+                tabs={[{ title: 'Guide' }, { title: 'Leaderboard', disabled: true }]}
+                onClick={() => { }}
+                className='mb-4'
+                titleClassName='text-3xl font-boldy capitalize'
+            />
             <div className="grid lg:grid-cols-2 gap-4 flex-1">
                 <QuestComp quest={QUESTS.daily as QuestType} />
                 <QuestComp quest={QUESTS.weekly as QuestType} />
