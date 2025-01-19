@@ -1,9 +1,7 @@
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
@@ -88,29 +86,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-10 -z-0 mx-5">
-        <RiveAnimation
-          animation="btm-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          imageClassName="absolute w-full max-w-[1200px] bottom-0 left-[-10vh] scale-x-[-1] -z-10"
-        />
-
-        <RiveAnimation
-          animation="mid-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          imageClassName="absolute w-full max-w-[1200px] top-0 right-0 -z-10"
-        />
-      </div>
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
