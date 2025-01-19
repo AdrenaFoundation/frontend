@@ -417,11 +417,11 @@ img {
   ) padding-box,
   conic-gradient(
       from var(--bg-angle),
-      #73204b 0%,           /* Base purple */
+      #1f2c3c 0%,           /* Base purple */
       #1f2c3c 25%,          /* Slightly lighter purple */
       #1f2c3c 50%,          /* Bright purple */
-      #73204b 75%,          /* Slightly lighter purple */
-      #73204b 100%          /* Back to base */
+      #1f2c3c 75%,          /* Slightly lighter purple */
+      #f8e0ec 100%          /* Back to base */
   ) border-box;
   
   border: 0.2em solid transparent;
