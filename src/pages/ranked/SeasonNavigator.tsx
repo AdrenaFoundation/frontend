@@ -26,7 +26,7 @@ export default function SeasonNavigator({
                         'flex items-center justify-center relative bg-third border rounded-md overflow-hidden transition-opacity duration-300 cursor-pointer hover:opacity-100',
                         activeSeason === season
                             ? 'border-white'
-                            : 'border-white/10 opacity-50',
+                            : 'border-white/10 opacity-50 grayscale',
                     )}
                     key={season}
                     onClick={() => setActiveSeason(season)}

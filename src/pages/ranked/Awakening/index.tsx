@@ -1,9 +1,4 @@
 import Tippy from '@tippyjs/react';
-import {
-    differenceInDays,
-    differenceInHours,
-    differenceInMinutes,
-} from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { memo, useCallback, useEffect, useState } from 'react';
@@ -31,6 +26,7 @@ import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import useAwakeningV2 from '@/hooks/useAwakeningV2';
+import useTimer from '@/hooks/useTimer';
 import { useSelector } from '@/store/store';
 import { ImageRef, UserProfileExtended, UserStats } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
@@ -53,10 +49,7 @@ export const CompetitionBanner = memo(
         subTitle?: string;
         gradientColor?: string;
     }) => {
-        const now = new Date();
-        const daysLeft = (differenceInDays(startDate, now) % 365) % 30;
-        const hoursLeft = differenceInHours(startDate, now) % 24;
-        const minutesLeft = differenceInMinutes(startDate, now) % 60;
+        const { days, hours, minutes, seconds } = useTimer(startDate);
 
         return (
             <div className="relative">
@@ -73,7 +66,7 @@ export const CompetitionBanner = memo(
                                 <Image
                                     src={banner}
                                     alt="competition banner"
-                                    className="absolute top-0 left-0 w-full h-full object-cover opacity-60"
+                                    className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
                                 />
                             </motion.span>
                         </AnimatePresence>
@@ -98,7 +91,7 @@ export const CompetitionBanner = memo(
                         <ul className="flex flex-row gap-9 mt-2 px-9 p-3 bg-black/40 rounded-lg z-10">
                             <li className="flex flex-col items-center justify-center">
                                 <p className="text-center text-[2rem] font-mono leading-[46px]">
-                                    {daysLeft}
+                                    {days}
                                 </p>
                                 <p className="text-center text-sm font-boldy tracking-widest">
                                     Days
@@ -107,7 +100,7 @@ export const CompetitionBanner = memo(
                             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
                             <li className="flex flex-col items-center justify-center">
                                 <p className="text-center text-[2rem] font-mono leading-[46px]">
-                                    {hoursLeft}
+                                    {hours}
                                 </p>
                                 <p className="text-center text-sm font-boldy tracking-widest">
                                     Hours
@@ -116,10 +109,19 @@ export const CompetitionBanner = memo(
                             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
                             <li className="flex flex-col items-center justify-center">
                                 <p className="text-center text-[2rem] font-mono leading-[46px]">
-                                    {minutesLeft}
+                                    {minutes}
                                 </p>
                                 <p className="text-center text-sm font-boldy tracking-widest">
                                     Minutes
+                                </p>
+                            </li>
+                            <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
+                            <li className="flex flex-col items-center justify-center">
+                                <p className="text-center text-[2rem] font-mono leading-[46px]">
+                                    {seconds}
+                                </p>
+                                <p className="text-center text-sm font-boldy tracking-widest">
+                                    seconds
                                 </p>
                             </li>
                         </ul>
@@ -706,18 +708,17 @@ export default function Competition({
         <>
             <div className="flex flex-col gap-6 pb-20 relative overflow-hidden bg-[#070E18]">
                 <div className="bg-[#FF35382A] bottom-[-17%] absolute h-[20%] w-full blur-3xl backdrop-opacity-10 rounded-full"></div>
-                {/* <CompetitionBanner
-                    banner={banner}
-                    gradientColor="bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]"
-                    title="AWAKENING"
-                    subTitle="PRE-SEASON"
-                    endDate={endDate}
-                /> */}
 
                 <div className="px-4 sm:px-8">
                     <div className="flex flex-col xl:flex-row justify-between md:items-center gap-6 mb-12">
                         <div className="flex flex-col items-center xl:items-start">
-                            <CompetitionHeader startDate={startDate} endDate={endDate} description={TRADING_COMPETITION_SEASONS['awakening'].description} />
+                            <CompetitionHeader
+                                startDate={startDate}
+                                endDate={endDate}
+                                description={
+                                    TRADING_COMPETITION_SEASONS['awakening'].description
+                                }
+                            />
                             <SocialButtons twitterText={twitterText} />
                         </div>
 
