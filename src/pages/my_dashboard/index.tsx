@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { kv } from '@vercel/kv';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -18,6 +19,8 @@ import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps, VestExtended } from '@/types';
+
+import wallpaper from '../../../public/images/wallpaper-1.png';
 
 export default function MyDashboard({
   connected,
@@ -160,7 +163,7 @@ export default function MyDashboard({
 
   if (userProfile === null) {
     return (
-      <div className="flex flex-col max-w-[55em] gap-4 p-4 w-full h-full self-center">
+      <div className="flex flex-col max-w-[65em] gap-4 p-4 w-full h-full self-center">
         <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
           <WalletConnection connected={connected} />
         </div>
@@ -170,10 +173,20 @@ export default function MyDashboard({
 
   return (
     <>
-      <div className="flex flex-col max-w-[55em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
-        <div className="bg-main z-20 border w-full min-h-full gap-4 flex flex-col rounded-xl">
+      {userProfile !== false ? <div className='w-full h-full fixed opacity-40 top-0 z-10 overflow-hidden'>
+        <Image
+          src={wallpaper}
+          alt="Profile wallpaper"
+          className='min-w-full min-h-full'
+          width={1920}
+          height={1080}
+        />
+      </div> : null}
+
+      <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
+        <div className="z-20 w-full min-h-full flex flex-col rounded-xl">
           {userProfile === false ? (
-            <div className="flex w-full justify-center items-center">
+            <div className="flex w-full justify-center items-center bg-main">
               <ProfileCreation
                 initUserProfile={initUserProfile}
                 nickname={nickname}
@@ -193,51 +206,53 @@ export default function MyDashboard({
                 duplicatedRedis={duplicatedRedis}
               />
 
-              <TradingStats
-                userProfile={userProfile}
-                livePositionsNb={positions === null ? null : positions.length}
-                className="gap-y-4"
-              />
-
-              <div className="h-[1px] w-full bg-bcolor" />
-
-              {!loading && connected ? (
-                <ActivityCalendar
-                  data={activityCalendarData}
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  bubbleBy={bubbleBy}
-                  setBubbleBy={setBubbleBy}
-                  wrapperClassName="bg-transparent border-transparent"
-                  isUserActivity
+              <div className='bg-main flex flex-col gap-2 pt-4'>
+                <TradingStats
+                  userProfile={userProfile}
+                  livePositionsNb={positions === null ? null : positions.length}
+                  className="gap-y-4"
                 />
-              ) : (
-                <Loader />
-              )}
-              <div className="h-[1px] w-full bg-bcolor" />
 
-              <StakingStats
-                stakingAccounts={stakingAccounts}
-                className="gap-y-4"
-              />
+                <div className="h-[1px] w-full bg-bcolor" />
 
-              {userVest && (
-                <>
-                  <div className="h-[1px] w-full bg-bcolor" />
+                {!loading && connected ? (
+                  <ActivityCalendar
+                    data={activityCalendarData}
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    bubbleBy={bubbleBy}
+                    setBubbleBy={setBubbleBy}
+                    wrapperClassName="bg-transparent border-transparent"
+                    isUserActivity
+                  />
+                ) : (
+                  <Loader />
+                )}
+                <div className="h-[1px] w-full bg-bcolor" />
 
-                  <VestStats vest={userVest} getUserVesting={getUserVesting} />
-                </>
-              )}
+                <StakingStats
+                  stakingAccounts={stakingAccounts}
+                  className="gap-y-4"
+                />
 
-              <div className="h-[1px] w-full bg-bcolor" />
+                {userVest && (
+                  <>
+                    <div className="h-[1px] w-full bg-bcolor" />
 
-              <UserRelatedAdrenaAccounts
-                className="h-auto w-full flex mt-auto"
-                userProfile={userProfile}
-                userVest={userVest}
-                positions={positions}
-                stakingAccounts={stakingAccounts}
-              />
+                    <VestStats vest={userVest} getUserVesting={getUserVesting} />
+                  </>
+                )}
+
+                <div className="h-[1px] w-full bg-bcolor" />
+
+                <UserRelatedAdrenaAccounts
+                  className="h-auto w-full flex mt-auto"
+                  userProfile={userProfile}
+                  userVest={userVest}
+                  positions={positions}
+                  stakingAccounts={stakingAccounts}
+                />
+              </div>
             </>
           )}
         </div>

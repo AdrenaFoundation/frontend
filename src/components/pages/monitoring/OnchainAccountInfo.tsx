@@ -11,12 +11,16 @@ export default function OnchainAccountInfo({
   iconClassName,
   noAddress = false,
   shorten = false,
+  addressClassName,
+  shortenSize = 4,
 }: {
   address: PublicKey;
   className?: string;
   iconClassName?: string;
   noAddress?: boolean;
   shorten?: boolean;
+  addressClassName?: string;
+  shortenSize?: number;
 }) {
   return (
     <Link
@@ -28,11 +32,11 @@ export default function OnchainAccountInfo({
       )}
     >
       {noAddress ? null : (
-        <span className="text-xs sm:text-[0.9em]">
+        <span className={twMerge("text-xs sm:text-[0.9em]", addressClassName)}>
           {shorten
-            ? `${address.toBase58().slice(0, 4)}..${address
+            ? `${address.toBase58().slice(0, shortenSize)}..${address
               .toBase58()
-              .slice(-4)}`
+              .slice(-shortenSize)}`
             : address.toBase58()}
         </span>
       )}
