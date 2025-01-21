@@ -102,7 +102,7 @@ export default function OwnerBloc({
   const [profilePictureHovering, setProfilePictureHovering] = useState<boolean>(false);
 
   return (
-    <div className={twMerge("items-center justify-center flex relative backdrop-blur-lg rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
+    <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
       <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
         <div className='border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30 cursor-not-allowed'
           onMouseEnter={() => setProfilePictureHovering(true)}
@@ -126,7 +126,7 @@ export default function OwnerBloc({
         </div>
       </div>
 
-      <div className="flex flex-col w-full h-full justify-center z-20 pl-6">
+      <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
         <div className='flex'>
           {walletPubkey ? <div className='z-20 flex gap-1'>
             <Image
@@ -148,9 +148,9 @@ export default function OwnerBloc({
         <div className='flex mt-1'>
           {nicknameUpdating ? (
 
-            <div className="flex items-end pb-2">
+            <div className="flex items-center sm:items-end pb-2 flex-col sm:flex-row gap-y-4 sm:gap-y-0">
               <InputString
-                className="font-archivo uppercase text-3xl relative p-1 bg-transparent border-b border-white"
+                className="font-archivo uppercase text-3xl relative p-1 bg-transparent border-b border-white text-center sm:text-start"
                 value={updatedNickname ?? ''}
                 onChange={setUpdatedNickname}
                 placeholder="The Great Trader"
@@ -158,23 +158,25 @@ export default function OwnerBloc({
                 maxLength={24}
               />
 
-              {canUpdateNickname ? (<div
-                onClick={() => editNickname()}
-                className={twMerge(
-                  'text-xs opacity-70 relative bottom-1 left-2 hover:opacity-100 ml-4',
-                  updatedNickname && (updatedNickname.length >= 3 &&
-                    updatedNickname.length <= 24)
-                    ? 'cursor-pointer'
-                    : 'cursor-not-allowed'
-                )}>
-                Save
-              </div>) : null}
+              <div className='flex gap-4 ml-0 sm:ml-4'>
+                {canUpdateNickname ? (<div
+                  onClick={() => editNickname()}
+                  className={twMerge(
+                    'text-xs opacity-70 relative bottom-1 left-2 hover:opacity-100',
+                    updatedNickname && (updatedNickname.length >= 3 &&
+                      updatedNickname.length <= 24)
+                      ? 'cursor-pointer'
+                      : 'cursor-not-allowed'
+                  )}>
+                  Save
+                </div>) : null}
 
-              {canUpdateNickname ? (<div onClick={() => {
-                setNicknameUpdating(false);
-              }} className='text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100 ml-4'>
-                Cancel
-              </div>) : null}
+                {canUpdateNickname ? (<div onClick={() => {
+                  setNicknameUpdating(false);
+                }} className='text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100'>
+                  Cancel
+                </div>) : null}
+              </div>
             </div>
           ) : (
             <div className="flex items-end">
@@ -223,7 +225,7 @@ export default function OwnerBloc({
           }
           placement="auto"
         >
-          <div className='text-xs opacity-70 cursor-not-allowed flex hover:opacity-100'>Change wallpaper</div>
+          <div className='text-xs opacity-70 cursor-not-allowed flex hover:opacity-100'>Edit wallpaper</div>
         </Tippy>
       </div>
     </div>
