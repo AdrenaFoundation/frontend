@@ -37,9 +37,9 @@ export default function Referral({
 
     const link = `https://app.adrena.xyz/trade?referral=${duplicatedRedis ? redisProfile.owner : encodeURIComponent(redisProfile.nickname)}`;
 
-    return (<div className={twMerge("w-auto max-w-full border flex text-xs bg-third/60 items-center h-[2.5em] rounded-tl-xl overflow-hidden", className)}>
-        <div className='bg-[#060d1660] border-r h-[2.5em] pl-3 pr-3 flex items-center justify-center gap-2'>
-            <div className='font-boldy'>
+    return (<div className={twMerge("w-auto max-w-full border flex text-xs bg-third/60 items-center h-[3.5em] rounded-tl-xl overflow-hidden", className)}>
+        <div className='bg-[#060d1660] h-[3.5em] pl-3 pr-3 flex items-center justify-center gap-2'>
+            <div className='font-boldy text-md'>
                 Referral Link
             </div>
 
@@ -62,7 +62,7 @@ export default function Referral({
         </div>
         <div className='hidden sm:block px-2 max-w-[15em] shrink text-nowrap text-ellipsis overflow-hidden opacity-50'>{link}</div>
 
-        <div className={twMerge('h-[2.5em] px-2 sm:pl-3 bg-[#060d1680] opacity-50 flex items-center justify-center hover:opacity-100 cursor-pointer',
+        <div className={twMerge('h-[3.5em] px-2 sm:pl-3 bg-[#060d16A0] opacity-70 flex items-center justify-center hover:opacity-100 cursor-pointer',
             duplicatedRedis ? '' : 'pr-3')} onClick={async () => {
                 try {
                     await navigator.clipboard.writeText(link);

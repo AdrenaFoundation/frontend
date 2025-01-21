@@ -4,17 +4,15 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
 
-import editIcon from '../../../../public/images/edit-icon.png';
-import pfp from '../../../../public/images/monster-pfp.png';
+import pfp from '../../../../public/images/profile-picture-1.png';
 import walletIcon from '../../../../public/images/wallet-icon.svg';
 import Referral from '../my_dashboard/Referral';
-import DateInfo from '../monitoring/DateInfo';
+import Tippy from '@tippyjs/react';
 
 export default function OwnerBloc({
   userProfile,
@@ -101,10 +99,15 @@ export default function OwnerBloc({
     }
   };
 
+  const [profilePictureHovering, setProfilePictureHovering] = useState<boolean>(false);
+
   return (
     <div className={twMerge("items-center justify-center flex relative backdrop-blur-lg rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
       <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
-        <div className='border-2 border-[#0000005A] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30'>
+        <div className='border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30 cursor-not-allowed'
+          onMouseEnter={() => setProfilePictureHovering(true)}
+          onMouseLeave={() => setProfilePictureHovering(false)}
+        >
           <Image
             src={pfp}
             alt="Profile picture"
@@ -112,71 +115,18 @@ export default function OwnerBloc({
             width={250}
             height={130}
           />
+
+          {profilePictureHovering ? <>
+            <div className='h-full w-full absolute z-10 backdrop-blur-2xl'></div>
+            <div className='h-full w-full absolute z-20 items-center justify-center flex flex-col'>
+              <div className='font-archivo tracking-widest opacity-70 text-sm text-center'>Change Profile Picture</div>
+              <div className='font-boldy tracking-widest opacity-50 text-xs'>Coming Soon</div>
+            </div>
+          </> : null}
         </div>
       </div>
 
       <div className="flex flex-col w-full h-full justify-center z-20 pl-6">
-        <div className='flex'>
-          {nicknameUpdating ? (
-            <div className="flex flex-col items-center w-full justify-center">
-              <InputString
-                className="flex w-full max-w-[24em] border rounded-lg bg-inputcolor text-center justify-center font-boldy"
-                value={updatedNickname ?? ''}
-                onChange={setUpdatedNickname}
-                placeholder="The Great Trader"
-                inputFontSize="1.2em"
-                maxLength={24}
-              />
-
-              <div className="flex w-full items-center justify-evenly">
-                <Button
-                  disabled={
-                    updatedNickname
-                      ? !(
-                        updatedNickname.length >= 3 &&
-                        updatedNickname.length <= 24
-                      )
-                      : true
-                  }
-                  className="text-sm pl-8 pr-8 w-24"
-                  title="Update"
-                  onClick={() => editNickname()}
-                />
-
-                <Button
-                  className="text-sm pl-8 pr-8 w-24"
-                  title="Cancel"
-                  variant="outline"
-                  onClick={() => {
-                    setNicknameUpdating(false);
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center">
-              <div className="font-archivo uppercase text-3xl relative">
-                {userProfile.nickname}
-              </div>
-
-              {canUpdateNickname ? (
-                <Image
-                  className="flex ml-4 shrink-0 max-w-[20px] max-h-[20px] opacity-20 hover:opacity-100 cursor-pointer"
-                  src={editIcon}
-                  alt="edit icon"
-                  width={20}
-                  height={20}
-                  onClick={() => {
-                    // init with actual nickname
-                    setUpdatedNickname(userProfile.nickname);
-                    setNicknameUpdating(true);
-                  }}
-                />
-              ) : null}
-            </div>
-          )}
-        </div>
-
         <div className='flex'>
           {walletPubkey ? <div className='z-20 flex gap-1'>
             <Image
@@ -187,13 +137,73 @@ export default function OwnerBloc({
 
             <OnchainAccountInfo
               address={walletPubkey}
-              className="text-md text-sm opacity-90"
+              className="text-sm opacity-90"
               addressClassName="text-xs tracking-[0.12em]"
               iconClassName='ml-1'
               shorten={true}
-              shortenSize={10}
             />
           </div> : null}
+        </div>
+
+        <div className='flex mt-1'>
+          {nicknameUpdating ? (
+
+            <div className="flex items-end pb-2">
+              <InputString
+                className="font-archivo uppercase text-3xl relative p-1 bg-transparent border-b border-white"
+                value={updatedNickname ?? ''}
+                onChange={setUpdatedNickname}
+                placeholder="The Great Trader"
+                inputFontSize="1.2em"
+                maxLength={24}
+              />
+
+              {canUpdateNickname ? (<div
+                onClick={() => editNickname()}
+                className={twMerge(
+                  'text-xs opacity-70 relative bottom-1 left-2 hover:opacity-100 ml-4',
+                  updatedNickname && (updatedNickname.length >= 3 &&
+                    updatedNickname.length <= 24)
+                    ? 'cursor-pointer'
+                    : 'cursor-not-allowed'
+                )}>
+                Save
+              </div>) : null}
+
+              {canUpdateNickname ? (<div onClick={() => {
+                setNicknameUpdating(false);
+              }} className='text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100 ml-4'>
+                Cancel
+              </div>) : null}
+            </div>
+          ) : (
+            <div className="flex items-end">
+              <div className="font-archivo uppercase text-3xl relative">
+                {userProfile.nickname}
+              </div>
+
+              {canUpdateNickname ? (<div onClick={() => {
+                setNicknameUpdating(true);
+              }} className='text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100'>Edit</div>) : null}
+            </div>
+          )}
+        </div>
+
+        <div className='flex gap-x-2 items-end relative bottom-1'>
+          <span className='text-lg font-cursive relative top-1'>"</span>
+          <span className='text-sm font-archivo'>Nameless One</span>
+          <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>"</span>
+
+          {canUpdateNickname ? (
+            <Tippy
+              content={
+                <div className="text-sm">Coming soon</div>
+              }
+              placement="auto"
+            >
+              <div className='text-xs opacity-70 cursor-not-allowed hover:opacity-100 relative'>Edit</div>
+            </Tippy>
+          ) : null}
         </div>
       </div>
 
@@ -206,11 +216,16 @@ export default function OwnerBloc({
         />
       </> : null}
 
-      <DateInfo
-        className="text-xs absolute top-2 right-4 z-20 font-regular text-txtfade tracking-wider"
-        timestamp={userProfile.nativeObject.createdAt}
-        shorten={true}
-      />
+      <div className="absolute top-2 right-4 z-20 ">
+        <Tippy
+          content={
+            <div className="text-sm">Coming soon</div>
+          }
+          placement="auto"
+        >
+          <div className='text-xs opacity-70 cursor-not-allowed flex hover:opacity-100'>Change wallpaper</div>
+        </Tippy>
+      </div>
     </div>
   );
 }

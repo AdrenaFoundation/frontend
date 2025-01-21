@@ -20,8 +20,6 @@ import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps, VestExtended } from '@/types';
 
-import wallpaper from '../../../public/images/wallpaper-1.png';
-
 export default function MyDashboard({
   connected,
   userProfile,
@@ -173,15 +171,7 @@ export default function MyDashboard({
 
   return (
     <>
-      {userProfile !== false ? <div className='w-full h-full fixed opacity-40 top-0 z-10 overflow-hidden'>
-        <Image
-          src={wallpaper}
-          alt="Profile wallpaper"
-          className='min-w-full min-h-full'
-          width={1920}
-          height={1080}
-        />
-      </div> : null}
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.png')]" />
 
       <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
         <div className="z-20 w-full min-h-full flex flex-col rounded-xl">
@@ -206,11 +196,16 @@ export default function MyDashboard({
                 duplicatedRedis={duplicatedRedis}
               />
 
-              <div className='bg-main flex flex-col gap-2 pt-4'>
+              <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl'>
                 <TradingStats
                   userProfile={userProfile}
                   livePositionsNb={positions === null ? null : positions.length}
-                  className="gap-y-4"
+                  className="gap-y-4 pt-4 pb-4"
+                />
+
+                <StakingStats
+                  stakingAccounts={stakingAccounts}
+                  className="gap-y-4 pb-4"
                 />
 
                 <div className="h-[1px] w-full bg-bcolor" />
@@ -228,12 +223,8 @@ export default function MyDashboard({
                 ) : (
                   <Loader />
                 )}
-                <div className="h-[1px] w-full bg-bcolor" />
 
-                <StakingStats
-                  stakingAccounts={stakingAccounts}
-                  className="gap-y-4"
-                />
+                <div className="h-[1px] w-full bg-bcolor" />
 
                 {userVest && (
                   <>
@@ -243,10 +234,8 @@ export default function MyDashboard({
                   </>
                 )}
 
-                <div className="h-[1px] w-full bg-bcolor" />
-
                 <UserRelatedAdrenaAccounts
-                  className="h-auto w-full flex mt-auto"
+                  className="h-auto w-full flex mt-auto pb-4"
                   userProfile={userProfile}
                   userVest={userVest}
                   positions={positions}

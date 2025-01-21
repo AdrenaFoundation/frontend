@@ -53,6 +53,7 @@ module.exports = {
       boldy: ['boldy', 'sans-serif'],
       special: ['special', 'sans-serif'],
       archivo: ['Archivo Black', 'sans-serif'],
+      cursive: ['cursive', 'sans-serif'],
     },
     fontFamily: {
       regular: ['regular'],
@@ -60,6 +61,7 @@ module.exports = {
       boldy: ['boldy'],
       mono: 'Roboto Mono',
       archivo: 'Archivo Black',
+      cursive: 'cursive',
     },
   },
   plugins: [],
