@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import { kv } from '@vercel/kv';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -12,7 +13,6 @@ import { UserProfileExtended } from '@/types';
 import pfp from '../../../../public/images/profile-picture-1.png';
 import walletIcon from '../../../../public/images/wallet-icon.svg';
 import Referral from '../my_dashboard/Referral';
-import Tippy from '@tippyjs/react';
 
 export default function OwnerBloc({
   userProfile,
@@ -192,9 +192,9 @@ export default function OwnerBloc({
         </div>
 
         <div className='flex gap-x-2 items-end relative bottom-1'>
-          <span className='text-lg font-cursive relative top-1'>"</span>
+          <span className='text-lg font-cursive relative top-1'>&quot;</span>
           <span className='text-sm font-archivo'>Nameless One</span>
-          <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>"</span>
+          <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
 
           {canUpdateNickname ? (
             <Tippy

@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
 import { kv } from '@vercel/kv';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
