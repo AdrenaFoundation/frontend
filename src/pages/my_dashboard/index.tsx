@@ -160,7 +160,7 @@ export default function MyDashboard({
 
   if (userProfile === null) {
     return (
-      <div className="flex flex-col max-w-[55em] gap-4 p-4 w-full h-full self-center">
+      <div className="flex flex-col max-w-[65em] gap-4 p-4 w-full h-full self-center">
         <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
           <WalletConnection connected={connected} />
         </div>
@@ -170,10 +170,12 @@ export default function MyDashboard({
 
   return (
     <>
-      <div className="flex flex-col max-w-[55em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
-        <div className="bg-main z-20 border w-full min-h-full gap-4 flex flex-col rounded-xl">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]" />
+
+      <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
+        <div className="z-20 w-full min-h-full flex flex-col rounded-xl">
           {userProfile === false ? (
-            <div className="flex w-full justify-center items-center">
+            <div className="flex w-full justify-center items-center bg-main">
               <ProfileCreation
                 initUserProfile={initUserProfile}
                 nickname={nickname}
@@ -193,51 +195,52 @@ export default function MyDashboard({
                 duplicatedRedis={duplicatedRedis}
               />
 
-              <TradingStats
-                userProfile={userProfile}
-                livePositionsNb={positions === null ? null : positions.length}
-                className="gap-y-4"
-              />
-
-              <div className="h-[1px] w-full bg-bcolor" />
-
-              {!loading && connected ? (
-                <ActivityCalendar
-                  data={activityCalendarData}
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  bubbleBy={bubbleBy}
-                  setBubbleBy={setBubbleBy}
-                  wrapperClassName="bg-transparent border-transparent"
-                  isUserActivity
+              <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl'>
+                <TradingStats
+                  userProfile={userProfile}
+                  livePositionsNb={positions === null ? null : positions.length}
+                  className="gap-y-4 pt-4 pb-4"
                 />
-              ) : (
-                <Loader />
-              )}
-              <div className="h-[1px] w-full bg-bcolor" />
 
-              <StakingStats
-                stakingAccounts={stakingAccounts}
-                className="gap-y-4"
-              />
+                <StakingStats
+                  stakingAccounts={stakingAccounts}
+                  className="gap-y-4 pb-4"
+                />
 
-              {userVest && (
-                <>
-                  <div className="h-[1px] w-full bg-bcolor" />
+                <div className="h-[1px] w-full bg-bcolor" />
 
-                  <VestStats vest={userVest} getUserVesting={getUserVesting} />
-                </>
-              )}
+                {!loading && connected ? (
+                  <ActivityCalendar
+                    data={activityCalendarData}
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    bubbleBy={bubbleBy}
+                    setBubbleBy={setBubbleBy}
+                    wrapperClassName="bg-transparent border-transparent"
+                    isUserActivity
+                  />
+                ) : (
+                  <Loader />
+                )}
 
-              <div className="h-[1px] w-full bg-bcolor" />
+                <div className="h-[1px] w-full bg-bcolor" />
 
-              <UserRelatedAdrenaAccounts
-                className="h-auto w-full flex mt-auto"
-                userProfile={userProfile}
-                userVest={userVest}
-                positions={positions}
-                stakingAccounts={stakingAccounts}
-              />
+                {userVest && (
+                  <>
+                    <div className="h-[1px] w-full bg-bcolor" />
+
+                    <VestStats vest={userVest} getUserVesting={getUserVesting} />
+                  </>
+                )}
+
+                <UserRelatedAdrenaAccounts
+                  className="h-auto w-full flex mt-auto pb-4"
+                  userProfile={userProfile}
+                  userVest={userVest}
+                  positions={positions}
+                  stakingAccounts={stakingAccounts}
+                />
+              </div>
             </>
           )}
         </div>

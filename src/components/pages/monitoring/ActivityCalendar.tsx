@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import clandarIcon from '@/../public/images/Icons/calendar.svg';
+import calendarIcon from '@/../public/images/Icons/calendar.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
@@ -71,15 +71,15 @@ export default function ActivityCalendar({
                 wrapperClassName,
             )}
         >
-            <div className="flex flex-col sm:flex-row mb-6 justify-between items-center">
-                <p className="font-boldy text-lg">Trading activity</p>
+            <div className="flex flex-col sm:flex-row mb-6 pl-3 pr-3 justify-between items-center">
+                <p className="font-boldy text-lg">Daily Trading activity</p>
 
                 <div className="flex flex-row gap-3">
                     <p className='opacity-25'>by: </p>
                     {['pnl', 'volume', 'position count'].map((filter, i) => (
                         <p
                             className={twMerge(
-                                'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300 font-mono',
+                                'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300 font-regular text-sm',
                                 bubbleBy === filter && 'opacity-100 underline',
                             )}
                             onClick={() => setBubbleBy(filter)}
@@ -90,6 +90,7 @@ export default function ActivityCalendar({
                     ))}
                 </div>
             </div>
+
             <div className="gap-3 mt-4 flex flex-col items-center justify-center">
                 <div className="hide-scrollbar overflow-auto">
                     <div className="relative flex flex-row mt-4">
@@ -138,7 +139,7 @@ export default function ActivityCalendar({
                                         <div className="flex flex-col gap-1">
                                             <div className="flex flex-row gap-1 items-center mb-1">
                                                 <Image
-                                                    src={clandarIcon}
+                                                    src={calendarIcon}
                                                     alt="calendar"
                                                     width={10}
                                                     height={10}

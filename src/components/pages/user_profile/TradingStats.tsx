@@ -24,13 +24,13 @@ export default function TradingStats({
     userProfile.shortStats.feePaidUsd;
 
   return (
-    <div className={twMerge("flex-wrap flex-row w-full flex", className)}>
+    <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4", className)}>
       <NumberDisplay
         title="Realized PnL"
         nb={totalProfitLoss}
         format="currency"
         precision={2}
-        className='border-0 min-w-[9em] p-1'
+        className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
         headerClassName='pb-2'
         titleClassName='text-[0.7em] sm:text-[0.7em]'
         bodyClassName={twMerge(
@@ -50,7 +50,7 @@ export default function TradingStats({
         }
         format="currency"
         precision={2}
-        className='border-0 min-w-[9em] p-1'
+        className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
         headerClassName='pb-2'
         titleClassName='text-[0.7em] sm:text-[0.7em]'
         bodyClassName={twMerge(
@@ -61,7 +61,7 @@ export default function TradingStats({
         isDecimalDimmed={false}
       />
 
-      <div className='flex-col w-full rounded-lg z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[9em] p-1'>
+      <div className='flex-col w-full rounded-lg z-20 relative flex items-center flex-1 min-h-[2em] border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'>
         <div className='flex flex-col text-center justify-center pb-2 uppercase text-txtfade text-[0.7em] sm:text-[0.7em] font-boldy'>Positions</div>
 
         <div className='flex gap-1 items-center justify-center w-full'>
@@ -91,7 +91,7 @@ export default function TradingStats({
 
       <NumberDisplay
         title="Liquidated Positions"
-        className='border-0 min-w-[9em] p-1'
+        className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
         bodyClassName='text-base'
         headerClassName='pb-2'
         titleClassName='text-[0.7em] sm:text-[0.7em]'
@@ -104,7 +104,7 @@ export default function TradingStats({
 
       <NumberDisplay
         title="Total Open Volume"
-        className='border-0 min-w-[9em] p-1'
+        className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
         bodyClassName='text-base'
         headerClassName='pb-2'
         titleClassName='text-[0.7em] sm:text-[0.7em]'

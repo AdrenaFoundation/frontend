@@ -57,14 +57,14 @@ export default function TradingStats({
         setLockedStakedALP(lockedStakedALP);
     }, [stakingAccounts]);
 
-    return <div className={twMerge("flex-wrap flex-row w-full flex", className)}>
+    return <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4", className)}>
         <NumberDisplay
             title="Liquid Staked ADX"
             nb={liquidStakedADX}
             precision={2}
             placeholder="0 ADX"
             suffix="ADX"
-            className='border-0 min-w-[9em] p-1'
+            className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
             headerClassName='pb-2'
             titleClassName='text-[0.7em] sm:text-[0.7em]'
             bodyClassName='text-base'
@@ -76,7 +76,7 @@ export default function TradingStats({
             precision={2}
             placeholder="0 ADX"
             suffix="ADX"
-            className='border-0 min-w-[9em] p-1'
+            className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
             headerClassName='pb-2'
             titleClassName='text-[0.7em] sm:text-[0.7em]'
             bodyClassName='text-base'
@@ -88,7 +88,7 @@ export default function TradingStats({
             precision={2}
             placeholder="0 ALP"
             suffix="ALP"
-            className='border-0 min-w-[9em] p-1'
+            className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
             headerClassName='pb-2'
             titleClassName='text-[0.7em] sm:text-[0.7em]'
             bodyClassName='text-base'
