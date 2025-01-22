@@ -3,7 +3,7 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import mutagenIcon from '../../../public/images/mutagen.png';
+import needle from '../../../public/images/needle.png';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Modal from '../common/Modal/Modal';
@@ -36,7 +36,7 @@ export default function Mutagen({
       <AnimatePresence>
         <Button
           variant={'lightbg'}
-          rightIcon={mutagenIcon}
+          rightIcon={needle}
           title={
             <div className='flex gap-2'>
               <div className='text-xs font-mono'>-</div>
@@ -66,8 +66,8 @@ export default function Mutagen({
           <div className='text-xs font-boldy text-white'>-</div>
 
           <Image
-            src={mutagenIcon}
-            alt={'mutagen'}
+            src={needle}
+            alt={'needle'}
             width='30'
             height='30'
             className={'w-4 h-4'}
