@@ -1,19 +1,16 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import { kv } from '@vercel/kv';
 import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import DateInfo from '@/components/pages/monitoring/DateInfo';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
 
-import editIcon from '../../../../public/images/edit-icon.png';
-import pfp from '../../../../public/images/monster-pfp.png';
-import pfw from '../../../../public/images/pfw.png';
+import pfp from '../../../../public/images/profile-picture-1.jpg';
 import walletIcon from '../../../../public/images/wallet-icon.svg';
 import Referral from '../my_dashboard/Referral';
 
@@ -102,118 +99,135 @@ export default function OwnerBloc({
     }
   };
 
+  const [profilePictureHovering, setProfilePictureHovering] = useState<boolean>(false);
+
   return (
-    <div className={twMerge("items-center justify-center flex flex-col relative pt-[5em] rounded-tl-xl rounded-tr-xl min-h-[12em] sm:min-h-auto", className)}>
-      {walletPubkey ? <div className='z-20 absolute top-[-1.4em] right-0 flex gap-1'>
-        <Image
-          src={walletIcon}
-          className="w-4 h-4 inline-block opacity-50"
-          alt="alp logo"
-        />
+    <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#211a1a99]/50 rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
+      <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
+        <div className='border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30 cursor-not-allowed'
+          onMouseEnter={() => setProfilePictureHovering(true)}
+          onMouseLeave={() => setProfilePictureHovering(false)}
+        >
+          <Image
+            src={pfp}
+            alt="Profile picture"
+            className='w-full h-full'
+            width={250}
+            height={130}
+          />
 
-        <OnchainAccountInfo
-          address={walletPubkey}
-          className="text-md text-xs font-white font-boldy"
-          iconClassName='ml-1'
-          shorten={true}
-        />
-      </div> : null}
-
-      <div className='border-2 border-[#0000005A] rounded-full w-[10em] h-[10em] flex shrink-0 top-[-5em] absolute overflow-hidden z-30'>
-        <Image
-          src={pfp}
-          alt="Profile picture"
-          className='w-full h-full'
-          width={250}
-          height={130}
-        />
+          {profilePictureHovering ? <>
+            <div className='h-full w-full absolute z-10 backdrop-blur-2xl'></div>
+            <div className='h-full w-full absolute z-20 items-center justify-center flex flex-col'>
+              <div className='font-archivo tracking-widest opacity-70 text-sm text-center'>Change Profile Picture</div>
+              <div className='font-boldy tracking-widest opacity-50 text-xs'>Coming Soon</div>
+            </div>
+          </> : null}
+        </div>
       </div>
 
-      <div className='w-full h-full absolute opacity-40 top-0 rounded-tl-xl rounded-tr-xl z-10 overflow-hidden'>
-        <Image
-          src={pfw}
-          alt="Profile wallpaper"
-          className='min-w-full min-h-full'
-          width={800}
-          height={400}
-        />
-      </div>
-
-      <div className="flex flex-col w-full h-full items-center justify-center pb-4 z-20">
-        {nicknameUpdating ? (
-          <div className="flex flex-col items-center w-full justify-center pb-4">
-            <InputString
-              className="flex w-full max-w-[24em] border rounded-lg bg-inputcolor text-center justify-center mt-4 font-boldy"
-              value={updatedNickname ?? ''}
-              onChange={setUpdatedNickname}
-              placeholder="The Great Trader"
-              inputFontSize="1.2em"
-              maxLength={24}
+      <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
+        <div className='flex'>
+          {walletPubkey ? <div className='z-20 flex gap-1'>
+            <Image
+              src={walletIcon}
+              className="w-4 h-4 opacity-100"
+              alt="alp logo"
             />
 
-            <div className="flex w-full items-center justify-evenly mt-4">
-              <Button
-                disabled={
-                  updatedNickname
-                    ? !(
-                      updatedNickname.length >= 3 &&
-                      updatedNickname.length <= 24
-                    )
-                    : true
-                }
-                className="text-sm pl-8 pr-8 w-24"
-                title="Update"
-                onClick={() => editNickname()}
+            <OnchainAccountInfo
+              address={walletPubkey}
+              className="text-sm opacity-90"
+              addressClassName="text-xs tracking-[0.12em]"
+              iconClassName='ml-1'
+              shorten={true}
+            />
+          </div> : null}
+        </div>
+
+        <div className='flex mt-1'>
+          {nicknameUpdating ? (
+
+            <div className="flex items-center sm:items-end pb-2 flex-col sm:flex-row gap-y-4 sm:gap-y-0">
+              <InputString
+                className="font-archivo uppercase text-3xl relative p-1 bg-transparent border-b border-white text-center sm:text-start"
+                value={updatedNickname ?? ''}
+                onChange={setUpdatedNickname}
+                placeholder="The Great Trader"
+                inputFontSize="1.2em"
+                maxLength={24}
               />
 
-              <Button
-                className="text-sm pl-8 pr-8 w-24"
-                title="Cancel"
-                variant="outline"
-                onClick={() => {
+              <div className='flex gap-4 ml-0 sm:ml-4'>
+                {canUpdateNickname ? (<div
+                  onClick={() => editNickname()}
+                  className={twMerge(
+                    'text-xs opacity-70 relative bottom-1 left-2 hover:opacity-100',
+                    updatedNickname && (updatedNickname.length >= 3 &&
+                      updatedNickname.length <= 24)
+                      ? 'cursor-pointer'
+                      : 'cursor-not-allowed'
+                  )}>
+                  Save
+                </div>) : null}
+
+                {canUpdateNickname ? (<div onClick={() => {
                   setNicknameUpdating(false);
-                }}
-              />
+                }} className='text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100'>
+                  Cancel
+                </div>) : null}
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center mb-4">
-            <div className="font-boldy text-4xl ml-2 relative">
-              {userProfile.nickname}
-            </div>
+          ) : (
+            <div className="flex items-end">
+              <div className="font-archivo uppercase text-3xl relative">
+                {userProfile.nickname}
+              </div>
 
-            {canUpdateNickname ? (
-              <Image
-                className="flex ml-4 shrink-0 max-w-[20px] max-h-[20px] opacity-20 hover:opacity-100 cursor-pointer"
-                src={editIcon}
-                alt="edit icon"
-                width={20}
-                height={20}
-                onClick={() => {
-                  // init with actual nickname
-                  setUpdatedNickname(userProfile.nickname);
-                  setNicknameUpdating(true);
-                }}
-              />
-            ) : null}
-          </div>
-        )}
+              {canUpdateNickname ? (<div onClick={() => {
+                setNicknameUpdating(true);
+              }} className='text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100'>Edit</div>) : null}
+            </div>
+          )}
+        </div>
+
+        <div className='flex gap-x-2 items-end relative bottom-1'>
+          <span className='text-lg font-cursive relative top-1'>&quot;</span>
+          <span className='text-sm font-archivo'>Nameless One</span>
+          <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
+
+          {canUpdateNickname ? (
+            <Tippy
+              content={
+                <div className="text-sm">Coming soon</div>
+              }
+              placement="auto"
+            >
+              <div className='text-xs opacity-70 cursor-not-allowed hover:opacity-100 relative'>Edit</div>
+            </Tippy>
+          ) : null}
+        </div>
       </div>
 
       {!readonly ? <>
         <Referral
-          className='h-auto w-auto flex absolute left-0 bottom-0 z-20'
+          className='h-auto w-auto flex absolute right-0 bottom-0 z-20'
           userProfile={userProfile}
           redisProfile={redisProfile}
           duplicatedRedis={duplicatedRedis}
         />
       </> : null}
 
-      <DateInfo
-        className="text-sm absolute bottom-2 right-4 z-20 font-boldy"
-        timestamp={userProfile.nativeObject.createdAt}
-        shorten={true}
-      />
+      <div className="absolute top-2 right-4 z-20 ">
+        <Tippy
+          content={
+            <div className="text-sm">Coming soon</div>
+          }
+          placement="auto"
+        >
+          <div className='text-xs opacity-70 cursor-not-allowed flex hover:opacity-100'>Edit wallpaper</div>
+        </Tippy>
+      </div>
     </div>
   );
 }

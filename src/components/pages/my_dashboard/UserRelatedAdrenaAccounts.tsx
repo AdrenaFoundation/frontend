@@ -122,9 +122,9 @@ export default function UserRelatedAdrenaAccounts({
 
   if (!data) return null;
 
-  return (<div className={twMerge("flex w-full bg-third items-center justify-center rounded-tl-none rounded-tr-none rounded-bl-xl rounded-br-xl overflow-hidden", className)}>
+  return (<div className={twMerge("flex w-full items-center justify-center rounded-tl-none rounded-tr-none rounded-bl-xl rounded-br-xl overflow-hidden", className)}>
     <Table
-      className='rounded-none sm:pl-8 sm:pr-6'
+      className='rounded-none sm:pl-8 sm:pr-6 bg-transparent border-0'
       rowHovering={true}
       breakpoint="0px"
       rowTitleWidth="70%"
