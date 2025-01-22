@@ -102,7 +102,7 @@ export default function OwnerBloc({
   const [profilePictureHovering, setProfilePictureHovering] = useState<boolean>(false);
 
   return (
-    <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
+    <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#211a1a99]/50 rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
       <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
         <div className='border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30 cursor-not-allowed'
           onMouseEnter={() => setProfilePictureHovering(true)}
