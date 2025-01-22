@@ -10,7 +10,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
 
-import pfp from '../../../../public/images/profile-picture-1.png';
+import pfp from '../../../../public/images/profile-picture-1.jpg';
 import walletIcon from '../../../../public/images/wallet-icon.svg';
 import Referral from '../my_dashboard/Referral';
 

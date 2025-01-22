@@ -170,7 +170,7 @@ export default function MyDashboard({
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.png')]" />
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]" />
 
       <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
         <div className="z-20 w-full min-h-full flex flex-col rounded-xl">
