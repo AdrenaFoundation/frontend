@@ -9,7 +9,7 @@ import Streak from './Streak';
 export default function Quests() {
     const QUESTS = {
         daily: {
-            title: 'Daily Quest',
+            title: 'Daily Quests',
             tasks: [
                 {
                     type: 'checkbox',
@@ -30,7 +30,7 @@ export default function Quests() {
         dailyMutations: {
             title: 'Daily Mutations',
             description:
-                'Each day, 2 mutation will be affecting the mutagen generated that day. The daily mutation are selected randomly. Goal is to create a meta for the day.',
+                'Each day, 2 mutations will be affecting the mutagen gained that day. The daily mutations are selected randomly.',
             tasks: [
                 {
                     type: 'checkbox',
@@ -78,7 +78,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Growth',
                     description:
-                        'Bonus mutagen per 0.1% positive trade performance (capped to 2.5 mutagen)',
+                        'Bonus mutagen per 0.1% positive trade performance',
                     reward: '0.1 - 2.5',
                     completed: false,
                     isActive: false,
@@ -87,7 +87,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Regeneration',
                     description:
-                        'Bonus mutagen per 0.1% negative trade performance (capped to 3 mutagen)',
+                        'Bonus mutagen per 0.1% negative trade performance',
                     reward: '0.12 – 3',
                     completed: false,
                     isActive: false,
@@ -96,7 +96,7 @@ export default function Quests() {
                     type: 'checkbox',
                     title: 'Telepathy',
                     description:
-                        'bonus mutagen per triggered SL/TP',
+                        'Bonus mutagen per triggered SL/TP',
                     reward: 0.01,
                     completed: false,
                     isActive: false,
@@ -105,11 +105,11 @@ export default function Quests() {
         },
 
         weekly: {
-            title: 'Weekly Quest',
+            title: 'Weekly Quests',
             tasks: [
                 {
                     type: 'checkbox',
-                    description: 'Have 50% win-rate on at least 50 trades ',
+                    description: 'Have 50% win-rate on at least 50 trades',
                     reward: 2,
                     completed: false,
                 },
@@ -121,28 +121,31 @@ export default function Quests() {
                 },
             ],
         },
-
         perpetual: {
-            title: null,
+            title: 'Perpetual Quest (rewards on each trade)',
+            description:
+                'Each trade done during the season will score mutagen based on its performance/duration and is close size.',
             tasks: [
                 {
-                    type: 'text',
-                    title: 'Trade Performance',
-                    description:
-                        `Performance = PnL / volume * 100`,
-                    task: '0.1% → 25%',
+                    type: 'checkbox',
+                    title: 'Trade Performance (PnL / volume * 100)',
+                    description: '0.1% → 25%',
                     reward: '0.01 - 2.5',
+                    completed: false,
+                    isActive: true,
                 },
                 {
-                    type: 'text',
+                    type: 'checkbox',
                     title: 'Trade Duration',
-                    description: '',
-                    task: '10s → 72h',
+                    description: '10s → 72h',
                     reward: '0 – 2',
+                    completed: false,
+                    isActive: true,
                 },
                 {
                     type: 'progressive',
-                    title: 'Exit Size Multiplier',
+                    title: 'Size Multiplier',
+                    description: 'A multiplier is then applied to the mutagen score based on the trade size (non linear)',
                     levels: [
                         {
                             description: '$10 → $1k',
@@ -188,6 +191,78 @@ export default function Quests() {
                 },
             ],
         },
+
+        // perpetual: {
+        //     title: null,
+        //     tasks: [
+        //         {
+        //             type: 'text',
+        //             title: 'Perpetual Quest',
+        //             description: '',
+        //         },
+        //         {
+        //             type: 'text',
+        //             title: 'Trade Performance',
+        //             description:
+        //                 `Performance = position PnL / volume * 100`,
+        //             task: '0.1% → 25%',
+        //             reward: '0.01 - 2.5',
+        //         },
+        //         {
+        //             type: 'text',
+        //             title: 'Trade Duration',
+        //             description: '',
+        //             task: '10s → 72h',
+        //             reward: '0 – 2',
+        //         },
+        //         {
+        //             type: 'progressive',
+        //             title: 'Size Multiplier',
+        //             levels: [
+        //                 {
+        //                     description: '$10 → $1k',
+        //                     multiplier: '0.05x',
+        //                     completed: false,
+        //                 },
+        //                 {
+        //                     description: '$1k → $10k',
+        //                     multiplier: '0.05x – 0.1x',
+        //                     completed: false,
+        //                 },
+        //                 {
+        //                     description: '$10k → $50k',
+        //                     multiplier: '0.1x – 0.2x',
+        //                     completed: false,
+        //                 },
+        //                 {
+        //                     description: '$50k → $100k',
+        //                     multiplier: '0.2x – 0.5x',
+        //                     completed: false,
+        //                 },
+        //                 {
+        //                     description: '$100k → $250k',
+        //                     multiplier: '0.5x – 0.7x',
+        //                     completed: false,
+        //                 },
+        //                 {
+        //                     description: '$250k → $500k',
+        //                     multiplier: '0.7x – 0.9x',
+        //                     completed: false,
+        //                 },
+        //                 {
+        //                     description: '$500k → $1M',
+        //                     multiplier: '0.9x – 1.1x',
+        //                     completed: false,
+        //                 },
+        //                 {
+        //                     description: '$1M → $4.5M',
+        //                     multiplier: '1.1x – 1.3x',
+        //                     completed: false,
+        //                 },
+        //             ],
+        //         },
+        //     ],
+        // },
     };
 
     return (

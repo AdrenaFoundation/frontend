@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React, { Fragment } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import needle from '@/../../public/images/needle.png';
 import wing from '@/../../public/images/wing.svg';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
 import { QuestType } from '@/types';
@@ -76,7 +77,9 @@ export default function QuestComp({
                                     </div>
 
                                     <p className="font-mono opacity-50 text-right">
-                                        +{task.reward} mutagens
+                                        {typeof task.reward === 'string'
+                                            ? <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
+                                            : <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
                                     </p>
                                 </div>
                             </li>
@@ -144,7 +147,9 @@ export default function QuestComp({
                                                                 level.completed && 'opacity-100',
                                                             )}
                                                         >
-                                                            +{Number(level.reward).toFixed(2)} mutagens
+                                                            {typeof level.reward === 'string'
+                                                                ? <span>+{level.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
+                                                                : <span>+{level.reward.toFixed(2)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
                                                         </p>
                                                     ) : null}
 
@@ -199,13 +204,13 @@ export default function QuestComp({
                                 )}
                             >
                                 {typeof task.reward === 'string'
-                                    ? `+${task.reward} mutagens`
-                                    : `+${task.reward.toFixed(2)} mutagens`}
+                                    ? <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
+                                    : <span>+{task.reward.toFixed(2)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
                             </p>
                         </li>
                     );
                 })}
             </ul>
-        </div>
+        </div >
     );
 }

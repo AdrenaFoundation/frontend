@@ -31,14 +31,14 @@ export default function Expanse() {
                             className="w-4 h-4"
                         />
                         <p className="text-xl font-mono">
-                            2,000,000 ADX <span>Rewards</span>
+                            2m ADX <span>Rewards</span>
                         </p>
                     </div>
 
                     <div className="flex flex-row gap-1 items-center bg-[#0D1923] px-8 py-3 rounded-lg border border-white/5">
                         <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
                         <p className="text-xl font-mono">
-                            50,000 JTO <span>Rewards</span>
+                            50k JTO <span>Rewards</span>
                         </p>
                     </div>
                 </div>
