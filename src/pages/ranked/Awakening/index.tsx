@@ -428,9 +428,9 @@ export const CompetitionHeader = memo(
             </h1>
             <p className="text-base text-txtfade mb-2">
                 From{' '}
-                {startDate?.toLocaleString('en-US', { month: 'short', day: 'numeric' })}{' '}
+                {startDate?.toLocaleString(undefined, { month: 'short', day: 'numeric' })}{' '}
                 -{' '}
-                {endDate?.toLocaleString('en-US', {
+                {endDate?.toLocaleString(undefined, {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',

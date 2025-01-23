@@ -15,20 +15,20 @@ export default function useCountDown(from: Date, to: Date) {
 
   const hours = Math.floor(
     (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-  ).toLocaleString('en-US', {
+  ).toLocaleString(undefined, {
     minimumIntegerDigits: 2,
     useGrouping: false,
   });
 
   const minutes = Math.round(
     (diffMs % (1000 * 60 * 60)) / (1000 * 60),
-  ).toLocaleString('en-US', {
+  ).toLocaleString(undefined, {
     minimumIntegerDigits: 2,
     useGrouping: false,
   });
 
   const seconds = Math.round((diffMs % (1000 * 60)) / 1000).toLocaleString(
-    'en-US',
+    undefined,
     {
       minimumIntegerDigits: 2,
       useGrouping: false,
