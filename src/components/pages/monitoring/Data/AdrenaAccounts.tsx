@@ -263,6 +263,19 @@ export default function AdrenaAccounts({
               />
             ),
           },
+          {
+            rowTitle: (
+              <div className="flex items-center font-boldy">
+                Vest Registry <TitleAnnotation text="PDA" />
+              </div>
+            ),
+            value: (
+              <OnchainAccountInfo
+                className="md:ml-auto"
+                address={AdrenaClient.vestRegistryPda}
+              />
+            ),
+          },
         ]}
       />
     </div>
