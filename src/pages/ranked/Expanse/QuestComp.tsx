@@ -176,7 +176,7 @@ export default function QuestComp({
                             key={index}
                             className={twMerge(
                                 'flex flex-row gap-4 justify-between items-center',
-                                className,
+
                                 task?.title && index !== 0 && 'mt-3',
                             )}
                         >
