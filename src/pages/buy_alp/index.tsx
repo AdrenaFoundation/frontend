@@ -5,17 +5,12 @@ import { twMerge } from 'tailwind-merge';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
-import RewardsAnimation from '@/components/pages/buy_alp_adx/RewardsAnimation/RewardsAnimation';
-import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { PageProps } from '@/types';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
 
-export default function Buy({
-  connected,
-  mainPool,
-}: PageProps) {
+export default function Buy({ connected, mainPool }: PageProps) {
   const aumUsd = useAssetsUnderManagement();
   const aumLiquidityRatio =
     mainPool && mainPool.aumSoftCapUsd > 0 && aumUsd !== null
@@ -23,19 +18,18 @@ export default function Buy({
       : 0;
 
   return (
-    <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10 mt-[150px] lg:mt-[50px]">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4 lg:h-[800px]">
-
+    <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10 mt-[50px]">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4 ">
         <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-        <div className="flex flex-col justify-center items-start z-10 -translate-y-28">
-          <h1 className="text-[2.6rem] lg:text-[4rem] uppercase max-w-[640px]">
+        <div className="flex flex-col justify-center items-start z-10">
+          <h1 className="font-archivo text-[2.6rem] lg:text-[4rem] uppercase max-w-[840px] -translate-y-6">
             Buy ALP, receive 70% of all revenues
           </h1>
-          <div className="w-full max-w-[640px] h-[1px] bg-bcolor my-8" />
+          <div className="w-full max-w-[640px] h-[1px] bg-bcolor my-4" />
           <div className="w-full">
             <div className="flex flex-row gap-2 items-center">
-              <h2>TOTAL VALUE LOCKED</h2>{' '}
+              <h2 className="font-archivo">TOTAL VALUE LOCKED</h2>{' '}
               <Tippy
                 content={
                   <p className="font-medium">
@@ -63,7 +57,7 @@ export default function Buy({
                 className="text-[1.2rem] sm:text-[2rem] font-bold opacity-50"
               />
             </div>
-            <div className="flex-start flex h-4 w-full overflow-hidden rounded-full bg-bcolor font-sans text-xs font-medium mt-6 p-1">
+            <div className="flex-start flex h-3 w-full overflow-hidden rounded-full bg-bcolor font-sans text-xs font-medium mt-6 p-1">
               <div
                 className={twMerge(
                   'flex items-center justify-center h-full overflow-hidden break-all bg-gradient-to-r from-[#2C30DC] to-[#6029BA] rounded-full',
@@ -72,22 +66,38 @@ export default function Buy({
               ></div>
             </div>
           </div>
+
+          <div className="mt-[50px]">
+            <div className="p-3 pl-6 border-l-2 border-white">
+              <h3 className="font-boldy text-lg">GET PASSIVE INCOME</h3>
+              <p className="text-base opacity-75 max-w-96">
+                The value of each share of ALP naturally appreciates as fee
+                revenue grows.
+              </p>
+            </div>
+
+            <div className="p-3 pl-6 border-l-2 border-white mt-7">
+              <h3 className="font-boldy text-lg">GET BONUS REWARDS</h3>
+              <p className="text-base opacity-75 max-w-96">
+                Duration lock ALP for bonus USDC yield and ADX token rewards.
+                The longer you lock, the higher the yield multipliers.
+              </p>
+            </div>
+          </div>
         </div>
 
         <StyledContainer className="max-w-[400px] lg:max-w-[25em] mb-auto">
-          <ALPSwap
-            connected={connected}
-          />
+          <ALPSwap connected={connected} />
         </StyledContainer>
       </div>
 
-      <RewardsAnimation />
+      {/* <RewardsAnimation />
 
       <StakeAnimation
         title="GET BONUS REWARDS"
         subtitle="Duration lock ALP for bonus USDC yield and ADX token rewards. The
           longer you lock, the higher the yield multipliers."
-      />
+      /> */}
     </div>
   );
 }
