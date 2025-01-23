@@ -1,5 +1,5 @@
 export type Adrena = {
-  "version": "1.1.5",
+  "version": "1.1.8",
   "name": "adrena",
   "instructions": [
     {
@@ -492,7 +492,7 @@ export type Adrena = {
       "returns": "u8"
     },
     {
-      "name": "claimVest",
+      "name": "setVestDelegate",
       "accounts": [
         {
           "name": "caller",
@@ -514,6 +514,132 @@ export type Adrena = {
           "name": "payer",
           "isMut": true,
           "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "vest",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "SetVestDelegateParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "migrateVestFromV1ToV2",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1",
+            "The caller of this instruction"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2",
+            "Wallet related to the vest"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#3",
+            "Account paying for the reallocation"
+          ]
+        },
+        {
+          "name": "vest",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimVest",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
           "docs": [
             "#3"
           ]
@@ -9172,9 +9298,31 @@ export type Adrena = {
             }
           },
           {
+            "name": "currentStakingRoundLiquidRewardsUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
             "name": "nextStakingRound",
             "type": {
-              "defined": "StakingRound"
+              "defined": "NextStakingRound"
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
             }
           },
           {
@@ -9193,7 +9341,7 @@ export type Adrena = {
             "type": "u8"
           },
           {
-            "name": "padding",
+            "name": "padding3",
             "type": {
               "array": [
                 "u8",
@@ -9344,6 +9492,58 @@ export type Adrena = {
       }
     },
     {
+      "name": "vestV1",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "originBucket",
+            "type": "u8"
+          },
+          {
+            "name": "cancelled",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "voteMultiplier",
+            "type": "u32"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "unlockStartTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "unlockEndTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "claimedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "lastClaimTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
       "name": "vestRegistry",
       "type": {
         "kind": "struct",
@@ -9387,13 +9587,8 @@ export type Adrena = {
             "type": "u8"
           },
           {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                1
-              ]
-            }
+            "name": "version",
+            "type": "u8"
           },
           {
             "name": "voteMultiplier",
@@ -9422,6 +9617,32 @@ export type Adrena = {
           {
             "name": "owner",
             "type": "publicKey"
+          },
+          {
+            "name": "delegate",
+            "type": "publicKey"
+          },
+          {
+            "name": "hasDelegate",
+            "type": "u8"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           }
         ]
       }
@@ -10270,6 +10491,20 @@ export type Adrena = {
       }
     },
     {
+      "name": "SetVestDelegateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "delegate",
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "GetAddLiquidityAmountAndFeeParams",
       "type": {
         "kind": "struct",
@@ -11044,6 +11279,31 @@ export type Adrena = {
       }
     },
     {
+      "name": "NextStakingRound",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "totalStake",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "lmTotalStake",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "TradingStats",
       "type": {
         "kind": "struct",
@@ -11401,6 +11661,20 @@ export type Adrena = {
           },
           {
             "name": "Initialized"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VestVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
           }
         ]
       }
@@ -12264,12 +12538,17 @@ export type Adrena = {
       "code": 6070,
       "name": "PositionAlreadyClosed",
       "msg": "The position is already pending cleanup and close"
+    },
+    {
+      "code": 6071,
+      "name": "InvalidVestVersion",
+      "msg": "Invalid vest version"
     }
   ]
 };
 
 export const IDL: Adrena = {
-  "version": "1.1.5",
+  "version": "1.1.8",
   "name": "adrena",
   "instructions": [
     {
@@ -12762,7 +13041,7 @@ export const IDL: Adrena = {
       "returns": "u8"
     },
     {
-      "name": "claimVest",
+      "name": "setVestDelegate",
       "accounts": [
         {
           "name": "caller",
@@ -12784,6 +13063,132 @@ export const IDL: Adrena = {
           "name": "payer",
           "isMut": true,
           "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "vest",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "SetVestDelegateParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "migrateVestFromV1ToV2",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1",
+            "The caller of this instruction"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2",
+            "Wallet related to the vest"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#3",
+            "Account paying for the reallocation"
+          ]
+        },
+        {
+          "name": "vest",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimVest",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
           "docs": [
             "#3"
           ]
@@ -21442,9 +21847,31 @@ export const IDL: Adrena = {
             }
           },
           {
+            "name": "currentStakingRoundLiquidRewardsUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
             "name": "nextStakingRound",
             "type": {
-              "defined": "StakingRound"
+              "defined": "NextStakingRound"
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
             }
           },
           {
@@ -21463,7 +21890,7 @@ export const IDL: Adrena = {
             "type": "u8"
           },
           {
-            "name": "padding",
+            "name": "padding3",
             "type": {
               "array": [
                 "u8",
@@ -21614,6 +22041,58 @@ export const IDL: Adrena = {
       }
     },
     {
+      "name": "vestV1",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "originBucket",
+            "type": "u8"
+          },
+          {
+            "name": "cancelled",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "voteMultiplier",
+            "type": "u32"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "unlockStartTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "unlockEndTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "claimedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "lastClaimTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
       "name": "vestRegistry",
       "type": {
         "kind": "struct",
@@ -21657,13 +22136,8 @@ export const IDL: Adrena = {
             "type": "u8"
           },
           {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                1
-              ]
-            }
+            "name": "version",
+            "type": "u8"
           },
           {
             "name": "voteMultiplier",
@@ -21692,6 +22166,32 @@ export const IDL: Adrena = {
           {
             "name": "owner",
             "type": "publicKey"
+          },
+          {
+            "name": "delegate",
+            "type": "publicKey"
+          },
+          {
+            "name": "hasDelegate",
+            "type": "u8"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           }
         ]
       }
@@ -22540,6 +23040,20 @@ export const IDL: Adrena = {
       }
     },
     {
+      "name": "SetVestDelegateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "delegate",
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "GetAddLiquidityAmountAndFeeParams",
       "type": {
         "kind": "struct",
@@ -23314,6 +23828,31 @@ export const IDL: Adrena = {
       }
     },
     {
+      "name": "NextStakingRound",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "totalStake",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "lmTotalStake",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "TradingStats",
       "type": {
         "kind": "struct",
@@ -23671,6 +24210,20 @@ export const IDL: Adrena = {
           },
           {
             "name": "Initialized"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VestVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
           }
         ]
       }
@@ -24534,6 +25087,11 @@ export const IDL: Adrena = {
       "code": 6070,
       "name": "PositionAlreadyClosed",
       "msg": "The position is already pending cleanup and close"
+    },
+    {
+      "code": 6071,
+      "name": "InvalidVestVersion",
+      "msg": "Invalid vest version"
     }
   ]
 };
