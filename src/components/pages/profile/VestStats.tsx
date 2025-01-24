@@ -7,12 +7,11 @@ import { Cell, Legend, Pie, PieChart } from 'recharts';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useDispatch } from '@/store/store';
 import { Vest } from '@/types';
 import {
-  addFailedTxNotification,
-  addSuccessTxNotification,
   nativeToUi,
 } from '@/utils';
 
@@ -79,22 +78,22 @@ export default function VestStats({
   const COLORS = ['#9F8CAE', '#5C576B', '#15202C'];
 
   const claimVest = async () => {
+    const notification =
+      MultiStepNotification.newForRegularTransaction(
+        'Claim Vest',
+      ).fire();
+
     try {
-      const txHash = await window.adrena.client.claimUserVest();
+      await window.adrena.client.claimUserVest({
+        notification,
+      });
 
       if (getUserVesting)
         getUserVesting();
-      dispatch(fetchWalletTokenBalances());
 
-      return addSuccessTxNotification({
-        title: 'Successfully Claimed ADX',
-        txHash,
-      });
+      dispatch(fetchWalletTokenBalances());
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Claiming ADX',
-        error,
-      });
+      console.log('error', error);
     }
   };
 

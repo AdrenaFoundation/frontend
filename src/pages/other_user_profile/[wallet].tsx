@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import EmphasizedTitle from '@/components/pages/user_profile/EmphasizedTitle';
+import EmphasizedTitle from '@/components/pages/profile/EmphasizedTitle';
 import { UserProfileExtended } from '@/types';
 
 export default function OtherUserProfile() {

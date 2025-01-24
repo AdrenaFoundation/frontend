@@ -7,7 +7,7 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
-import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { UserProfileExtended } from '@/types';
 
