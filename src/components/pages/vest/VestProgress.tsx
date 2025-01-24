@@ -1,7 +1,4 @@
-import { VestExtended } from "@/types";
-import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
-
 
 export default function VestProgress({
     className,
@@ -14,11 +11,6 @@ export default function VestProgress({
     claimedAmount: number;
     claimableAmount: number;
 }) {
-    const [progress, setProgress] = useState<{
-        claimed: number;
-        claimable: number;
-    } | null>(null);
-
     const claimedAmountPercentage = amount > 0 ? (claimedAmount * 100 / amount) : 0;
     const claimableAmountPercentage = amount > 0 ? (claimableAmount * 100 / amount) : 0;
 

@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { kv } from '@vercel/kv';
 import { useEffect, useState } from 'react';
 
@@ -16,7 +15,7 @@ import usePositionStats from '@/hooks/usePositionStats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
-import { PageProps, VestExtended } from '@/types';
+import { PageProps } from '@/types';
 
 export default function Profile({
   connected,

@@ -1,18 +1,17 @@
 import { PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import { useCallback, useEffect, useState } from 'react';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
+import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import VestProgress from '@/components/pages/vest/VestProgress';
 import useCountDown from '@/hooks/useCountDown';
 import { useDispatch } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
-import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
-import VestProgress from '@/components/pages/vest/VestProgress';
 
 export default function UserVest({
   userVest: paramUserVest,
@@ -42,6 +41,7 @@ export default function UserVest({
     if (!userVest) return;
 
     setUpdatedDelegate(userVest.delegate.toBase58());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!userVest]);
 
   const claimVest = useCallback(async (targetWallet: PublicKey) => {
@@ -67,7 +67,8 @@ export default function UserVest({
     } catch (error) {
       console.log('error', error);
     }
-  }, [dispatch, triggerUserVestReload]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, triggerUserVestReload, !!userVest, !!wallet]);
 
   useEffect(() => {
     const trimmed = updatedDelegate?.trim() ?? '';

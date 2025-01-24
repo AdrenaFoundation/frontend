@@ -24,6 +24,7 @@ export default function RootLayout({
   children,
   userProfile,
   userVest,
+  userDelegatedVest,
   activeRpc,
   rpcInfos,
   autoRpcMode,
@@ -45,6 +46,7 @@ export default function RootLayout({
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
   userVest: VestExtended | null;
+  userDelegatedVest: VestExtended | null;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -106,6 +108,7 @@ export default function RootLayout({
       {window.location.pathname === '/genesis' ? null : isBigScreen ? (
         <Header
           userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
           priorityFeeOption={priorityFeeOption}
           setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
@@ -129,6 +132,7 @@ export default function RootLayout({
       ) : (
         <BurgerMenu
           userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
           priorityFeeOption={priorityFeeOption}
           setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}

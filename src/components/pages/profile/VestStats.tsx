@@ -7,15 +7,13 @@ import { Cell, Legend, Pie, PieChart } from 'recharts';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useDispatch } from '@/store/store';
 import { Vest } from '@/types';
 import {
-  addFailedTxNotification,
-  addSuccessTxNotification,
   nativeToUi,
 } from '@/utils';
-import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 
 export default function VestStats({
   vest,

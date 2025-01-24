@@ -326,6 +326,7 @@ function AppComponent({
 
       <RootLayout
         userVest={userVest}
+        userDelegatedVest={userDelegatedVest}
         priorityFeeOption={priorityFeeOption}
         setPriorityFeeOption={(p: PriorityFeeOption) => {
           setCookie('priority-fee', p, {
