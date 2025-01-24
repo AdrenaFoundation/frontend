@@ -26,7 +26,7 @@ export default function Buy({ connected, mainPool }: PageProps) {
           <h1 className="font-archivo text-[2.6rem] lg:text-[4rem] uppercase max-w-[840px] -translate-y-6">
             Buy ALP, receive 70% of all revenues
           </h1>
-          <div className="w-full max-w-[640px] h-[1px] bg-bcolor my-4" />
+
           <div className="w-full">
             <div className="flex flex-row gap-2 items-center">
               <h2 className="font-archivo">TOTAL VALUE LOCKED</h2>{' '}
