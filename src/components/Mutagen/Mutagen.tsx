@@ -13,38 +13,18 @@ interface MutagenSource {
   description: string;
   comingSoon?: boolean;
   comingSoonText?: string;
-  link?: {
-    text: string;
-    href: string;
-  };
 }
 
 const mutagenSources: MutagenSource[] = [
   {
     title: 'Trading Season',
-    description: 'Complete quests and earn Mutagen, battle against others to win rewards in our 10 weeks long recurring events.',
+    description: 'Complete quests, streaks and earn Mutagen, battle against others to win rewards in our 10 weeks long recurring events.',
     comingSoon: true,
-    comingSoonText: 'Starts February 1st',
-    link: {
-      text: 'View Season',
-      href: '/ranked'
-    }
+    comingSoonText: 'Starts February 1st'
   },
   {
     title: 'Leveraged Trading',
-    description: 'Continuously earn Mutagen by executing leveraged trades on the platform. The higher the size and leverage, the more Mutagen. Mutagen is retro-generated since platform launch for all traders.',
-    link: {
-      text: 'Trade Now',
-      href: '/trade'
-    }
-  },
-  {
-    title: 'Referral Program',
-    description: 'Earn Mutagen by referring friends to the platform. You will get 5% of the Mutagen they earn.',
-    link: {
-      text: 'Get Referral Link',
-      href: '/my_dashboard'
-    }
+    description: 'Continuously earn Mutagen by executing leveraged trades on the platform. The higher the size and leverage, the more Mutagen. Mutagen is retro-generated since platform launch for all traders.'
   },
 ];
 
@@ -75,15 +55,6 @@ export default function Mutagen({
               )}
             </div>
             <p className="text-xs text-txtfade mt-1">{source.description}</p>
-            {source.link && (
-              <a
-                href={source.link.href}
-                className="text-xs text-primary hover:text-primary/80 mt-2 inline-flex items-center gap-1"
-              >
-                {source.link.text}
-                <span>→</span>
-              </a>
-            )}
           </div>
         ))}
       </div>
@@ -120,7 +91,7 @@ export default function Mutagen({
 
   return (
     <Menu
-      openMenuTriggerType='click'
+      openMenuTriggerType='hover'
       trigger={
         <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
           <div className='text-xs font-boldy text-white'>-</div>
