@@ -45,8 +45,8 @@ export default function RootLayout({
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
-  userVest: VestExtended | null;
-  userDelegatedVest: VestExtended | null;
+  userVest: VestExtended | null | false;
+  userDelegatedVest: VestExtended | null | false;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -166,7 +166,6 @@ export default function RootLayout({
       <ToastContainer />
 
       <Footer className="z-10" />
-
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

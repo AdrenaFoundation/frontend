@@ -8,6 +8,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import VestProgress from '@/components/pages/vest/VestProgress';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useCountDown from '@/hooks/useCountDown';
 import { useDispatch } from '@/store/store';
 import { PageProps } from '@/types';
@@ -18,13 +19,14 @@ export default function UserVest({
   userDelegatedVest,
   triggerUserVestReload,
   wallet,
+  connected,
 }: PageProps & {
   readonly?: boolean;
 }) {
   const dispatch = useDispatch();
 
   // Vest takes priority over delegate - But tbh, Vest + Delegate is not handled
-  const userVest = paramUserVest ?? userDelegatedVest;
+  const userVest = paramUserVest ? paramUserVest : userDelegatedVest;
 
   const { days, hours, minutes, seconds } = useCountDown(
     new Date(),
@@ -120,6 +122,13 @@ export default function UserVest({
     claimableAmount: 0,
   });
 
+  // Handle special usecase where user loaded the page with no vest (by loading the page directly in the URL for example)
+  useEffect(() => {
+    if (userDelegatedVest === false && userVest === false) {
+      window.location.href = '/trade';
+    }
+  }, [userDelegatedVest, userVest]);
+
   useEffect(() => {
     if (!userVest) return;
 
@@ -165,7 +174,15 @@ export default function UserVest({
     return () => clearInterval(interval);
   }, [userVest]);
 
-  if (!userVest) return null;
+  if (!userVest) {
+    return (
+      <div className="flex flex-col max-w-[65em] gap-4 p-4 w-full h-full self-center">
+        <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
+          <WalletConnection connected={connected} />
+        </div>
+      </div>
+    );
+  }
 
   const hasVestStarted =
     new Date(userVest.unlockStartTimestamp.toNumber() * 1000) <= new Date();
@@ -194,7 +211,7 @@ export default function UserVest({
               <div className='flex w-full flex-col items-center justify-center'>
                 <div className='text-txtfade pt-8 uppercase font-thin'>completed in</div>
 
-                <ul className="flex flex-row gap-3 md:gap-9 px-6 md:px-9 p-3 z-10 h-[6em] items-center w-full justify-center bg-third rounded-none mt-4">
+                <ul className="flex flex-row gap-3 md:gap-9 px-6 md:px-9 p-3 z-10 h-[6em] items-center w-full justify-center bg-third rounded-lg mt-4">
                   <li className="flex flex-col items-center justify-center">
                     <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">{days}</p>
                     <p className="text-center text-sm font-boldy tracking-widest">Days</p>

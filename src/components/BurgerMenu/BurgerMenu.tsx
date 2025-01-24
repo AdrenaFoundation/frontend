@@ -70,8 +70,8 @@ export default function BurgerMenu({
   autoRpcMode: boolean;
   customRpcUrl: string | null;
   favoriteRpc: string | null;
-  userVest: VestExtended | null;
-  userDelegatedVest: VestExtended | null;
+  userVest: VestExtended | null | false;
+  userDelegatedVest: VestExtended | null | false;
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
@@ -239,7 +239,7 @@ export default function BurgerMenu({
           >
             <div>
               <ul className="flex flex-col gap-3 mt-4">
-                {PAGES.filter(p => p.name !== 'vest' || (userVest || userDelegatedVest)).map((page) => {
+                {PAGES.filter(p => p.name !== 'Vest' || (userVest || userDelegatedVest)).map((page) => {
                   return (
                     <li
                       className={twMerge(

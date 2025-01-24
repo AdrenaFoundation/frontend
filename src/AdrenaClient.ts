@@ -2259,7 +2259,7 @@ export class AdrenaClient {
     const vest =
       await this.readonlyAdrenaProgram.account.vest.fetchNullable(userVestPda);
 
-    if (!vest) return null;
+    if (!vest) return false;
 
     return {
       pubkey: userVestPda,
@@ -2286,18 +2286,19 @@ export class AdrenaClient {
       ],
     });
 
-    if (!accounts) return null;
+    if (!accounts || !accounts.length) return false;
 
     try {
       const vest = await this.readonlyAdrenaProgram.account.vest.fetch(accounts[0].pubkey);
 
-      if (!vest) return null;
+      if (!vest) return false;
 
       return {
         pubkey: accounts[0].pubkey,
         ...vest,
       };
-    } catch {
+    } catch(e) {
+      console.log('e', e);
       return null;
     }
   }

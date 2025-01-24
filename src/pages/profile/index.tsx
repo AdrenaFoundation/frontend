@@ -207,7 +207,7 @@ export default function Profile({
                 <UserRelatedAdrenaAccounts
                   className="h-auto w-full flex mt-auto pb-4"
                   userProfile={userProfile}
-                  userVest={userVest}
+                  userVest={userVest ? userVest : null}
                   positions={positions}
                   stakingAccounts={stakingAccounts}
                 />

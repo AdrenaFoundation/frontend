@@ -209,8 +209,8 @@ function AppComponent({
 
   const [showFeesInPnl, setShowFeesInPnl] = useState<boolean>(true);
 
-  const [userVest, setUserVest] = useState<VestExtended | null>(null);
-  const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null>(null);
+  const [userVest, setUserVest] = useState<VestExtended | null | false>(null);
+  const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null | false>(null);
 
   const getUserVesting = useCallback(async () => {
     try {
@@ -221,8 +221,8 @@ function AppComponent({
         window.adrena.client.loadUserVest(wallet.publicKey),
       ]);
 
-      setUserVest(vest ? vest : null);
-      setUserDelegatedVest(delegatedVest ? delegatedVest : null);
+      setUserVest(vest);
+      setUserDelegatedVest(delegatedVest);
     } catch (error) {
       console.log('failed to load vesting', error);
     }
