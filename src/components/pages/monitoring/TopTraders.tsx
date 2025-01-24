@@ -28,7 +28,7 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
     const [sortField, setSortField] = useState<SortField>('pnl_minus_fees');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const isExtraLargeScreen = useBetterMediaQuery('(min-width: 1500px)');
-    const isLargeScreen = useBetterMediaQuery('(min-width: 1024px)');
+    // const isLargeScreen = useBetterMediaQuery('(min-width: 1024px)');
 
     const numberTraders = 100;
 
