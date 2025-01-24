@@ -44,6 +44,7 @@ export default function PeriodSelector<T extends string>({
                 {name}
             </div>
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [periods]);
 
     return (

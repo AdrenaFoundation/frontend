@@ -12,7 +12,7 @@ import { UserProfileExtended } from '@/types';
 
 import pfp from '../../../../public/images/profile-picture-1.jpg';
 import walletIcon from '../../../../public/images/wallet-icon.svg';
-import Referral from '../my_dashboard/Referral';
+import Referral from './Referral';
 
 export default function OwnerBloc({
   userProfile,

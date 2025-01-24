@@ -6,7 +6,7 @@ export default function useCountDown(from: Date, to: Date) {
   useEffect(() => {
     const interval = setInterval(() => {
       setDiffMs(to.getTime() - new Date().getTime());
-    }, 500);
+    }, 300);
 
     return () => clearInterval(interval);
   }, [from, to]);

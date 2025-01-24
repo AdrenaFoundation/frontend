@@ -13,6 +13,7 @@ import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  VestExtended,
   WalletAdapterExtended,
 } from '@/types';
 
@@ -22,6 +23,8 @@ import Header from '../../Header/Header';
 export default function RootLayout({
   children,
   userProfile,
+  userVest,
+  userDelegatedVest,
   activeRpc,
   rpcInfos,
   autoRpcMode,
@@ -42,6 +45,8 @@ export default function RootLayout({
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
+  userVest: VestExtended | null | false;
+  userDelegatedVest: VestExtended | null | false;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -71,7 +76,8 @@ export default function RootLayout({
     { name: string; link: string; external?: boolean }[]
   >([
     { name: 'Trade', link: '/trade' },
-    { name: 'Profile', link: '/my_dashboard' },
+    { name: 'Profile', link: '/profile' },
+    { name: 'Vest', link: '/vest' },
     { name: 'Stake', link: '/stake' },
     { name: 'Ranked', link: '/ranked' },
     { name: 'Provide Liquidity', link: '/buy_alp' },
@@ -87,6 +93,7 @@ export default function RootLayout({
       );
     }
   }, []);
+
   if (isBigScreen === null) {
     return null;
   }
@@ -100,6 +107,8 @@ export default function RootLayout({
 
       {window.location.pathname === '/genesis' ? null : isBigScreen ? (
         <Header
+          userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
           priorityFeeOption={priorityFeeOption}
           setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
@@ -122,6 +131,8 @@ export default function RootLayout({
         />
       ) : (
         <BurgerMenu
+          userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
           priorityFeeOption={priorityFeeOption}
           setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
@@ -155,7 +166,6 @@ export default function RootLayout({
       <ToastContainer />
 
       <Footer className="z-10" />
-
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>
