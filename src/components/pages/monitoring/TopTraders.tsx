@@ -286,17 +286,17 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
                                             nb={trader.pnl_minus_fees}
                                             format="currency"
                                             className={twMerge('text-xs font-boldy', trader.pnl_minus_fees >= 0 ? 'text-green' : 'text-red')}
-                                            isAbbreviate={isLargeScreen ? true : false}
                                             precision={trader.pnl_minus_fees >= 50 ? 0 : 2}
                                             isDecimalDimmed={false}
                                             minimumFractionDigits={trader.pnl_minus_fees >= 50 ? 0 : 2}
+                                            isAbbreviate={trader.pnl_minus_fees > 1000 ? true : false}
                                         />
                                     </div>,
                                     <div className='flex items-center justify-end lg:justify-center grow' key={`volume-${i}`}>
                                         <FormatNumber
                                             nb={trader.volume}
                                             isDecimalDimmed={false}
-                                            isAbbreviate={isLargeScreen ? true : false}
+                                            isAbbreviate={trader.volume > 1000 ? true : false}
                                             className='text-xs'
                                             format="currency"
                                             isAbbreviateIcon={false}
@@ -330,7 +330,7 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
                                                 <FormatNumber
                                                     nb={trader.fees}
                                                     isDecimalDimmed={false}
-                                                    isAbbreviate={trader.fees > 1000 && isLargeScreen ? true : false}
+                                                    isAbbreviate={trader.fees > 1000}
                                                     className='text-xs'
                                                     format="currency"
                                                 />
