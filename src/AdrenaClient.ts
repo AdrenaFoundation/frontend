@@ -2286,8 +2286,6 @@ export class AdrenaClient {
       ],
     });
 
-    console.log('accounts', accounts, accounts[0].pubkey.toBase58())
-
     if (!accounts) return null;
 
     try {

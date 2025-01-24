@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -12,6 +12,7 @@ import { useDispatch } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import VestProgress from '@/components/pages/vest/VestProgress';
 
 export default function UserVest({
   userVest: paramUserVest,
@@ -31,7 +32,7 @@ export default function UserVest({
     userVest ? new Date(userVest.unlockEndTimestamp.toNumber() * 1000) : new Date(),
   );
 
-  const isDelegate = userVest?.delegate.toBase58() === wallet?.publicKey.toBase58();
+  const isDelegate = userVest && wallet && userVest?.delegate.toBase58() === wallet?.publicKey.toBase58();
 
   const [updatedDelegate, setUpdatedDelegate] = useState<string | null>(null);
   const [proofedUpdatedDelegate, setProofedUpdatedDelegate] = useState<PublicKey | null>(null);
@@ -108,46 +109,65 @@ export default function UserVest({
     }
   }, [delegateError, proofedUpdatedDelegate]);
 
+  const [amounts, setAmounts] = useState<{
+    amount: number;
+    claimedAmount: number;
+    claimableAmount: number;
+  }>({
+    amount: 0,
+    claimedAmount: 0,
+    claimableAmount: 0,
+  });
+
+  useEffect(() => {
+    if (!userVest) return;
+
+    const amount = nativeToUi(
+      userVest.amount,
+      window.adrena.client.adxToken.decimals,
+    );
+
+    const claimedAmount = nativeToUi(
+      userVest.claimedAmount,
+      window.adrena.client.adxToken.decimals,
+    );
+
+    // Calculate how much tokens per seconds are getting accrued for the userVest
+    const amountPerSecond =
+      amount /
+      (userVest.unlockEndTimestamp.toNumber() * 1000 -
+        userVest.unlockStartTimestamp.toNumber() * 1000);
+
+    const start = new Date(userVest.unlockStartTimestamp.toNumber() * 1000);
+
+    const interval = setInterval(() => {
+      if (!userVest) return;
+      if (start > new Date()) return;
+
+      // Calculate how many seconds has passed since the last claim
+      const nbSecondsSinceLastClaim =
+        Date.now() -
+        (userVest.lastClaimTimestamp.toNumber() === 0
+          ? userVest.unlockStartTimestamp.toNumber()
+          : userVest.lastClaimTimestamp.toNumber()) *
+        1000;
+
+      const claimableAmount = nbSecondsSinceLastClaim * amountPerSecond;
+
+      setAmounts({
+        amount,
+        claimedAmount,
+        claimableAmount,
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [userVest]);
+
   if (!userVest) return null;
-
-  const amount = nativeToUi(
-    userVest.amount,
-    window.adrena.client.adxToken.decimals,
-  );
-
-  const claimedAmount = nativeToUi(
-    userVest.claimedAmount,
-    window.adrena.client.adxToken.decimals,
-  );
-
-  // Calculate how much tokens per seconds are getting accrued for the userVest
-  const amountPerSecond =
-    amount /
-    (userVest.unlockEndTimestamp.toNumber() * 1000 -
-      userVest.unlockStartTimestamp.toNumber() * 1000);
 
   const hasVestStarted =
     new Date(userVest.unlockStartTimestamp.toNumber() * 1000) <= new Date();
-
-  // Calculate how many seconds has passed since the last claim
-  const nbSecondsSinceLastClaim =
-    Date.now() -
-    (userVest.lastClaimTimestamp.toNumber() === 0
-      ? userVest.unlockStartTimestamp.toNumber()
-      : userVest.lastClaimTimestamp.toNumber()) *
-    1000;
-
-  const claimableAmount = hasVestStarted
-    ? nbSecondsSinceLastClaim * amountPerSecond
-    : 0;
-
-  const data = [
-    { name: 'Claimed ADX', value: claimedAmount },
-    { name: 'Unclaimed ADX', value: claimableAmount },
-    { name: 'Total Vested ADX', value: amount },
-  ];
-
-  const COLORS = ['#9F8CAE', '#5C576B', '#15202C'];
 
   return (
     <>
@@ -165,7 +185,7 @@ export default function UserVest({
                   title="Claim"
                   className="mt-6 sm:mt-0 max-w-[15em] w-[15em] sm:w-[12em] self-center sm:absolute sm:top-6 sm:right-6"
                   size="lg"
-                  disabled={claimableAmount === 0}
+                  disabled={amounts.claimableAmount === 0}
                   onClick={() => claimVest(userVest.owner)}
                 />
               }
@@ -224,7 +244,7 @@ export default function UserVest({
                         title="Claim to your wallet"
                         className="max-w-[20em] w-[20em] sm:w-[20em] self-center"
                         size="lg"
-                        disabled={claimableAmount === 0}
+                        disabled={amounts.claimableAmount === 0}
                         onClick={() => claimVest(userVest.delegate)}
                       />
 
@@ -232,10 +252,9 @@ export default function UserVest({
                         title="Claim to original wallet"
                         className="max-w-[20em] w-[20em] sm:w-[20em] self-center"
                         size="lg"
-                        disabled={claimableAmount === 0}
+                        disabled={amounts.claimableAmount === 0}
                         onClick={() => claimVest(userVest.owner)}
                       />
-
                     </div>
                   </div>
                 </>
@@ -248,7 +267,7 @@ export default function UserVest({
               <div className="flex-wrap flex-row w-full flex gap-6 p-4">
                 <NumberDisplay
                   title="Vested"
-                  nb={amount}
+                  nb={amounts.amount}
                   format="number"
                   suffix='ADX'
                   precision={2}
@@ -260,7 +279,7 @@ export default function UserVest({
 
                 <NumberDisplay
                   title="Claimed"
-                  nb={claimedAmount}
+                  nb={amounts.claimedAmount}
                   format="number"
                   suffix='ADX'
                   precision={2}
@@ -272,7 +291,7 @@ export default function UserVest({
 
                 <NumberDisplay
                   title="Claimable"
-                  nb={claimableAmount}
+                  nb={amounts.claimableAmount}
                   format="number"
                   suffix='ADX'
                   precision={2}
@@ -283,36 +302,8 @@ export default function UserVest({
                 />
               </div>
 
-              <div className="flex w-full h-[16em] mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart width={600} height={300}>
-                    <Pie
-                      data={data}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      dataKey="value"
-                    >
-                      {data.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-
-                    <Legend
-                      verticalAlign="top"
-                      align="center"
-                      iconSize={5}
-                      iconType="circle"
-                      formatter={(value: string) => {
-                        return <span className="opacity-50">{value}</span>;
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="flex w-full mt-4 mb-4">
+                <VestProgress {...amounts} />
               </div>
 
               {!isDelegate ? <>

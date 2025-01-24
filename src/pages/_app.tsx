@@ -8,7 +8,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
@@ -212,7 +212,7 @@ function AppComponent({
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
   const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null>(null);
 
-  const getUserVesting = async () => {
+  const getUserVesting = useCallback(async () => {
     try {
       if (!wallet?.publicKey) return;
 
@@ -226,7 +226,8 @@ function AppComponent({
     } catch (error) {
       console.log('failed to load vesting', error);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!wallet]);
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
@@ -234,8 +235,7 @@ function AppComponent({
 
   useEffect(() => {
     getUserVesting();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected]);
+  }, [getUserVesting]);
 
   useEffect(() => {
     const acceptanceDate = cookies['terms-and-conditions-acceptance'];
