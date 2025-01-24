@@ -175,7 +175,7 @@ export default function UserVest({
 
       <div className="flex flex-col max-w-[60em] pl-4 pr-4 pb-4 w-full self-center bg-main z-10 rounded-xl mt-4 mb-4 relative">
 
-        <OnchainAccountInfo address={userVest.pubkey} shorten={true} className='absolute top-4 left-4 opacity-50 text-sm z-10' />
+        <OnchainAccountInfo address={userVest.pubkey} shorten={true} className='self-center mt-4 sm:mt-0 sm:absolute sm:top-4 sm:left-4 opacity-50 text-sm z-10' />
 
         {hasVestStarted ?
           <>
