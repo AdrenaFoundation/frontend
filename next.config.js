@@ -11,6 +11,11 @@ module.exports = (phase, { defaultConfig }) => {
           destination: '/trade',
           permanent: true,
         },
+        {
+          source: '/my_dashboard',
+          destination: '/profile',
+          permanent: true,
+        },
       ];
     },
 

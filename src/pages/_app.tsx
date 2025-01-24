@@ -30,7 +30,7 @@ import initializeApp, {
   createReadOnlyAdrenaProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { PriorityFeeOption, SolanaExplorerOptions } from '@/types';
+import { PriorityFeeOption, SolanaExplorerOptions, VestExtended } from '@/types';
 import {
   DEFAULT_MAX_PRIORITY_FEE,
   DEFAULT_PRIORITY_FEE_OPTION,
@@ -209,9 +209,33 @@ function AppComponent({
 
   const [showFeesInPnl, setShowFeesInPnl] = useState<boolean>(true);
 
+  const [userVest, setUserVest] = useState<VestExtended | null>(null);
+  const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null>(null);
+
+  const getUserVesting = async () => {
+    try {
+      if (!wallet?.publicKey) return;
+
+      const [delegatedVest, vest] = await Promise.all([
+        window.adrena.client.loadUserDelegatedVest(wallet.publicKey),
+        window.adrena.client.loadUserVest(wallet.publicKey),
+      ]);
+
+      setUserVest(vest ? vest : null);
+      setUserDelegatedVest(delegatedVest ? delegatedVest : null);
+    } catch (error) {
+      console.log('failed to load vesting', error);
+    }
+  };
+
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
+
+  useEffect(() => {
+    getUserVesting();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connected]);
 
   useEffect(() => {
     const acceptanceDate = cookies['terms-and-conditions-acceptance'];
@@ -301,6 +325,7 @@ function AppComponent({
       </Head>
 
       <RootLayout
+        userVest={userVest}
         priorityFeeOption={priorityFeeOption}
         setPriorityFeeOption={(p: PriorityFeeOption) => {
           setCookie('priority-fee', p, {
@@ -362,6 +387,9 @@ function AppComponent({
           {...pageProps}
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
+          userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
+          triggerUserVestReload={getUserVesting}
           mainPool={mainPool}
           custodies={custodies}
           wallet={wallet}

@@ -13,7 +13,7 @@ import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import TopTraders from '@/components/pages/monitoring/TopTraders';
-import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended, UserProfileExtended } from '@/types';

@@ -2266,20 +2266,99 @@ export class AdrenaClient {
       ...vest,
     };
   }
+  
+  // Load vest delegated to this user
+  public async loadUserDelegatedVest(
+    walletAddress: PublicKey,
+  ): Promise<VestExtended | false | null> {
+    if (!this.readonlyConnection) {
+      return null;
+    }
 
-  public async claimUserVest() {
+    const accounts = await this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
+      filters: [
+        {
+          memcmp: {
+            offset: 80 + 8,
+            bytes: walletAddress.toBase58(),
+          },
+        },
+      ],
+    });
+
+    console.log('accounts', accounts, accounts[0].pubkey.toBase58())
+
+    if (!accounts) return null;
+
+    try {
+      const vest = await this.readonlyAdrenaProgram.account.vest.fetch(accounts[0].pubkey);
+
+      if (!vest) return null;
+
+      return {
+        pubkey: accounts[0].pubkey,
+        ...vest,
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  public async setVestDelegate({
+    notification,
+    delegate,
+  }: {
+    notification: MultiStepNotification;
+    delegate: PublicKey | null;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    return this.signAndExecuteTxAlternative({ 
+      transaction: await this.adrenaProgram.methods
+        .setVestDelegate({
+          delegate,
+        })
+        .accountsStrict({
+          owner,
+          cortex: AdrenaClient.cortexPda,
+          vest: this.getUserVestPda(owner),
+          systemProgram: SystemProgram.programId,
+          payer: owner,
+          caller: owner,
+        })
+        .transaction(),
+        notification,
+     });
+  }
+
+  public async claimUserVest({
+    notification,
+    targetWallet, // Wallet to receive the vest
+    caller,
+    owner: paramOwner,
+  }: {
+    notification: MultiStepNotification;
+    targetWallet?: PublicKey;
+    caller?: PublicKey;
+    owner?: PublicKey;
+  }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+    const owner = paramOwner ?? (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
     const receivingAccount =
       await this.checkATAAddressInitializedAndCreatePreInstruction({
-        owner,
+        owner: targetWallet ?? owner,
         mint: this.adxToken.mint,
         preInstructions,
       });
@@ -2311,13 +2390,13 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         rent: SYSVAR_RENT_PUBKEY,
-        payer: owner,
-        caller: owner,
+        payer: caller ?? owner,
+        caller: caller ?? owner,
       })
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({ transaction });
+    return this.signAndExecuteTxAlternative({ transaction, notification });
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {

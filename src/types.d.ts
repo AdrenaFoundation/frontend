@@ -76,6 +76,9 @@ export type PageProps = {
     connection: Connection;
   };
   adapters: WalletAdapterExtended[];
+  userVest: VestExtended | null;
+  userDelegatedVest: VestExtended | null;
+  triggerUserVestReload: () => void;
 };
 
 export type CustodyExtended = {

@@ -5,12 +5,11 @@ import { useEffect, useState } from 'react';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
-import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
-import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
-import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
-import StakingStats from '@/components/pages/user_profile/StakingStats';
-import TradingStats from '@/components/pages/user_profile/TradingStats';
-import VestStats from '@/components/pages/user_profile/Veststats';
+import OwnerBlock from '@/components/pages/profile/OwnerBlock';
+import ProfileCreation from '@/components/pages/profile/ProfileCreation';
+import StakingStats from '@/components/pages/profile/StakingStats';
+import TradingStats from '@/components/pages/profile/TradingStats';
+import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
@@ -19,12 +18,13 @@ import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps, VestExtended } from '@/types';
 
-export default function MyDashboard({
+export default function Profile({
   connected,
   userProfile,
   triggerUserProfileReload,
   readonly,
   wallet,
+  userVest,
 }: PageProps & {
   readonly?: boolean;
 }) {
@@ -34,7 +34,6 @@ export default function MyDashboard({
   const [redisProfile, setRedisProfile] = useState<Record<string, string> | null>(null);
   const positions = usePositions(walletAddress);
 
-  const [userVest, setUserVest] = useState<VestExtended | null>(null);
   const [duplicatedRedis, setDuplicatedRedis] = useState<boolean>(false);
   const {
     activityCalendarData,
@@ -95,11 +94,6 @@ export default function MyDashboard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile ? userProfile.nickname : '']);
 
-  useEffect(() => {
-    getUserVesting();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected]);
-
   const initUserProfile = async () => {
     const trimmedNickname = (nickname ?? '').trim();
 
@@ -141,20 +135,6 @@ export default function MyDashboard({
       triggerUserProfileReload();
     } catch (error) {
       console.log('error', error);
-    }
-  };
-
-  const getUserVesting = async () => {
-    try {
-      if (!walletAddress) throw new Error('no wallet');
-
-      const vest = await window.adrena.client.loadUserVest(new PublicKey(walletAddress));
-
-      if (!vest) throw new Error('No vest');
-
-      setUserVest(vest);
-    } catch (error) {
-      console.log('failed to load vesting', error);
     }
   };
 
@@ -224,14 +204,6 @@ export default function MyDashboard({
                 )}
 
                 <div className="h-[1px] w-full bg-bcolor" />
-
-                {userVest && (
-                  <>
-                    <div className="h-[1px] w-full bg-bcolor" />
-
-                    <VestStats vest={userVest} getUserVesting={getUserVesting} />
-                  </>
-                )}
 
                 <UserRelatedAdrenaAccounts
                   className="h-auto w-full flex mt-auto pb-4"

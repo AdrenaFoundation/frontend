@@ -10,6 +10,7 @@ import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  VestExtended,
   WalletAdapterExtended,
 } from '@/types';
 import { formatPriceInfo } from '@/utils';
@@ -37,6 +38,8 @@ export default function Header({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  userVest,
+  userDelegatedVest,
   priorityFeeOption,
   setPriorityFeeOption,
   setAutoRpcMode,
@@ -65,6 +68,8 @@ export default function Header({
   autoRpcMode: boolean;
   customRpcUrl: string | null;
   favoriteRpc: string | null;
+  userVest: VestExtended | null;
+  userDelegatedVest: VestExtended | null;
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
@@ -115,7 +120,7 @@ export default function Header({
           ) : null}
         </Link>
 
-        {PAGES.map((page) => {
+        {PAGES.filter(p => p.name !== 'vest' || (userVest || userDelegatedVest)).map((page) => {
           return (
             <Link
               href={page.link}

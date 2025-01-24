@@ -21,7 +21,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
-import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
