@@ -68,11 +68,16 @@ const fetchConnectedUsers = async (roomId: number) => {
 export default function Chat({
     userProfile,
     wallet,
+    className,
+    isOpen,
+    clickOnHeader,
 }: {
     userProfile: UserProfileExtended | null | false;
     wallet: Wallet | null;
+    className?: string;
+    isOpen: boolean;
+    clickOnHeader: () => void;
 }) {
-    const [open, setOpen] = useCookies(['chat-open']);
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
@@ -151,7 +156,7 @@ export default function Chat({
     useEffect(() => {
         if (!wallet?.publicKey) return;
 
-        if (typeof open["chat-open"] === 'undefined' || open["chat-open"]) {
+        if (isOpen) {
             trackOpenChat(roomId, wallet.publicKey)
                 .then(() => {
                     // Force refresh the number, which should be +1
@@ -166,7 +171,7 @@ export default function Chat({
         return () => {
             clearInterval(interval);
 
-            if (open["chat-open"] === false) return;
+            if (isOpen === false) return;
 
             // Meaning the chat was closed
             trackCloseChat(roomId, wallet.publicKey).then(() => {
@@ -174,13 +179,13 @@ export default function Chat({
                 fetchConnectedUsers(roomId).then(setNbConnectedUsers);
             });
         };
-    }, [open]);
+    }, [isOpen]);
 
     return (
-        <div className={twMerge("bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col border-t border-r border-l w-[25em]", (open["chat-open"] ?? true) ? 'h-[25em]' : 'h-[3em]')}>
+        <div className={className}>
             <div
                 className="h-[3em] flex gap-2 items-center justify-between pl-4 pr-4 border-b flex-shrink-0 opacity-90 hover:opacity-100 cursor-pointer"
-                onClick={() => setOpen('chat-open', !(open["chat-open"] ?? true))}
+                onClick={() => clickOnHeader()}
             >
                 <Image
                     src={collapseIcon}
@@ -209,7 +214,7 @@ export default function Chat({
                 {messages.map((msg, i) => (
                     <div key={i} className="flex gap-2 items-center">
                         <div className="text-xs opacity-20 font-mono">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                        <div className="text-sm font-boldy text-[#E2464A]">{msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}</div>
+                        <div className={twMerge("text-sm font-boldy", msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58() ? 'text-[#e1aa2a]' : 'text-[#E2464A]')}>{msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}</div>
                         <div className="text-sm font-regular text-txtfade">{msg.text}</div>
                     </div>
                 ))}

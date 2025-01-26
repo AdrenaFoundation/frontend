@@ -21,6 +21,9 @@ import {
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
+import { AnimatePresence } from 'framer-motion';
+import Modal from '@/components/common/Modal/Modal';
+import ChatContainer from '@/components/Chat/ChatContainer';
 
 export default function RootLayout({
   children,
@@ -76,6 +79,7 @@ export default function RootLayout({
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
+  const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
@@ -98,7 +102,7 @@ export default function RootLayout({
     }
   }, []);
 
-  if (isBigScreen === null) {
+  if (isBigScreen === null || isMobile === null) {
     return null;
   }
 
@@ -169,9 +173,7 @@ export default function RootLayout({
 
       <ToastContainer />
 
-      <div className='fixed bottom-0 right-4 z-20'>
-        <Chat userProfile={userProfile} wallet={wallet} />
-      </div>
+      <ChatContainer userProfile={userProfile} wallet={wallet} isMobile={isMobile} />
 
       <Footer className="z-10" />
 
