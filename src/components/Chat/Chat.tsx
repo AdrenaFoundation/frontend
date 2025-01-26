@@ -79,12 +79,14 @@ export default function Chat({
     className,
     isOpen,
     clickOnHeader,
+    displaySmileys = true,
 }: {
     userProfile: UserProfileExtended | null | false;
     wallet: Wallet | null;
     className?: string;
     isOpen: boolean;
     clickOnHeader: () => void;
+    displaySmileys?: boolean;
 }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
@@ -92,6 +94,7 @@ export default function Chat({
     const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
     const [profileCache, setProfileCache] = useState<Record<string, UserProfileExtended | null | false>>({});
     const dispatch = useDispatch();
+    const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
 
     const handleConnectionClick = () => {
         dispatch(openCloseConnectionModalAction(true));
@@ -350,11 +353,30 @@ export default function Chat({
                         onEnterKeyPressed={sendMessage}
                         disabled={!wallet}
                     />
-                    {
-                        wallet ?
-                            <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" disabled={!wallet} /> :
-                            <Button title="Connect Wallet" onClick={handleConnectionClick} className="w-25 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" />
-                    }
+
+                    <div className="flex w-full justify-between">
+                        {displaySmileys ? <div className="flex gap-2 pl-8 grow relative bottom-2">
+                            {smileys.map((emoji, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setInput((prev) => `${prev}${emoji}`)}
+                                    className="text-xl hover:scale-110 transition-transform"
+                                >
+                                    {emoji}
+                                </button>
+                            ))}
+                        </div> : null}
+
+                        <div className={twMerge("flex", displaySmileys ? '' : 'ml-auto')}>
+                            {
+                                wallet ?
+                                    <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" disabled={!wallet} /> :
+                                    <Button title="Connect Wallet" onClick={handleConnectionClick} className="w-25 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" />
+                            }
+                        </div>
+                    </div>
+
+
                 </div>
             </div >
         </>

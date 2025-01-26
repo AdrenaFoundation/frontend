@@ -63,11 +63,18 @@ export default function ChatContainer({
                         }}
                         className="flex flex-col w-full h-[85vh] max-h-[85vh]"
                     >
-                        <Chat userProfile={userProfile} wallet={wallet} isOpen={isOpen} clickOnHeader={() => {
-                            setIsOpen(!isOpen);
-                        }} className={twMerge(
-                            "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full",
-                        )} />
+                        <Chat
+                            displaySmileys={false}
+                            userProfile={userProfile}
+                            wallet={wallet}
+                            isOpen={isOpen}
+                            clickOnHeader={() => {
+                                setIsOpen(!isOpen);
+                            }}
+                            className={twMerge(
+                                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full",
+                            )}
+                        />
                     </Modal>
                 </AnimatePresence> : null}
             </>
