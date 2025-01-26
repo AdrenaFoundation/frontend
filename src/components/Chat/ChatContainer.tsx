@@ -31,7 +31,7 @@ export default function ChatContainer({
             }
 
             // Opened by default on desktop, otherwise follow what the cookie says
-            setIsOpen(typeof isOpenCookie['chat-open'] === 'undefined' || isOpenCookie['chat-open'] === 'true');
+            setIsOpen(typeof isOpenCookie['chat-open'] === 'undefined' || isOpenCookie['chat-open'] === true);
             return;
         }
 
