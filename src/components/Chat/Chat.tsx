@@ -150,7 +150,7 @@ export default function Chat({
         if (containerRef.current) {
             containerRef.current.scrollTop = containerRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [messages, isOpen]);
 
     useEffect(() => {
         if (!wallet?.publicKey) return;
