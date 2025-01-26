@@ -23,7 +23,17 @@ import {
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<ActionGetResponse | ActionPostResponse>,
+    res: NextApiResponse<
+        | (ActionGetResponse & {
+            dialectExperimental?: {
+                liveData?: {
+                    enabled: boolean;
+                    delayMs?: number; // default 1000 (1s)
+                };
+            };
+        })
+        | ActionPostResponse
+    >,
 ) {
     const connection = new Connection(
         'https://mainnet.helius-rpc.com/?api-key=d7a1bbbc-5a12-43d0-ab41-c96ffef811e0',
@@ -162,6 +172,12 @@ export default async function handler(
                         type: 'transaction',
                     },
                 ],
+            },
+            dialectExperimental: {
+                liveData: {
+                    enabled: true,
+                    delayMs: 2000,
+                },
             },
         });
     }
