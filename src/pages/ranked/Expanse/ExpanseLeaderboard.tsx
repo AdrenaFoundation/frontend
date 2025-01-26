@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -9,7 +10,6 @@ import {
     EXPANSE_DIVISIONS_NAMES,
 } from '@/constants/divisions';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
-import Image from 'next/image';
 
 export default function ExpanseLeaderboard({
     division,
@@ -135,7 +135,7 @@ export default function ExpanseLeaderboard({
                             <p className="text-sm text-center w-[40px]" key={`rank-${i}`}>
                                 {d.rank}
                             </p>,
-                            <div className="flex flex-row gap-2 items-center">
+                            <div className="flex flex-row gap-2 items-center" key={`rank-${i}`}>
                                 {d.avatar ? (
                                     <Image
                                         src="/images/wallpaper.jpg"
@@ -178,8 +178,8 @@ export default function ExpanseLeaderboard({
                                     )}
                                     {d.title ? (
                                         <p className="text-xxs">
-                                            <span className="font-cursive">"</span> {d.title}{' '}
-                                            <span className="font-cursive">"</span>
+                                            <span className="font-cursive">&ldquo;</span> {d.title}{' '}
+                                            <span className="font-cursive">&ldquo;</span>
                                         </p>
                                     ) : null}
                                 </div>
