@@ -75,11 +75,17 @@ export default function ChatContainer({
     }
 
     return <div className='fixed bottom-0 right-4 z-20'>
-        <Chat userProfile={userProfile} wallet={wallet} isOpen={isOpen} clickOnHeader={() => {
-            setIsOpen(!isOpen);
-        }} className={twMerge(
-            "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col border-t border-r border-l w-[25em]",
-            isOpen ? 'h-[25em]' : 'h-[3em]'
-        )} />
+        <Chat
+            userProfile={userProfile}
+            wallet={wallet}
+            isOpen={isOpen}
+            clickOnHeader={() => {
+                setIsOpen(!isOpen);
+            }}
+            className={twMerge(
+                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em]",
+                isOpen ? 'h-[25em]' : 'h-[3em]'
+            )}
+        />
     </div>;
 }
