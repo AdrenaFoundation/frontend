@@ -15,6 +15,10 @@ import Button from "../common/Button/Button";
 import InputString from "../common/inputString/InputString";
 import Loader from "../Loader/Loader";
 import FormatNumber from "../Number/FormatNumber";
+import WalletConnection from "../WalletAdapter/WalletConnection";
+import { openCloseConnectionModalAction } from "@/actions/walletActions";
+import { useDispatch } from "@/store/store";
+import LiveIcon from "../common/LiveIcon/LiveIcon";
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
@@ -88,6 +92,11 @@ export default function Chat({
     const containerRef = useRef<HTMLDivElement>(null);
     const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
     const [profileCache, setProfileCache] = useState<Record<string, UserProfileExtended | null | false>>({});
+    const dispatch = useDispatch();
+
+    const handleConnectionClick = () => {
+        dispatch(openCloseConnectionModalAction(true));
+    };
 
     useEffect(() => {
         fetchConnectedUsers(roomId).then(setNbConnectedUsers);
@@ -221,6 +230,8 @@ export default function Chat({
                     </div>
 
                     <div className="flex gap-2">
+                        <LiveIcon />
+
                         <div className="text-xs flex mt-[0.1em] font-archivo text-txtfade">{nbConnectedUsers === null ? '-' : nbConnectedUsers}</div>
 
                         <Image
@@ -333,13 +344,16 @@ export default function Chat({
                         onChange={(value: string | null) => setInput(value ?? '')}
                         placeholder="Send a message"
                         value={input}
-                        className="pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-lg w-[90%] text-txtfade placeholder:text-txtfade"
+                        className={twMerge("pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-lg w-[90%] text-txtfade placeholder:text-txtfade", wallet ? '' : 'opacity-40')}
                         inputFontSize="0.8em"
                         onEnterKeyPressed={sendMessage}
                         disabled={!wallet}
                     />
-
-                    <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" disabled={!wallet} />
+                    {
+                        wallet ?
+                            <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" disabled={!wallet} /> :
+                            <Button title="Connect Wallet" onClick={handleConnectionClick} className="w-25 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" />
+                    }
                 </div>
             </div >
         </>
