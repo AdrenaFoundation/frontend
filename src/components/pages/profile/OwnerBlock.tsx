@@ -116,7 +116,7 @@ export default function OwnerBloc({
             height={130}
           />
 
-          {profilePictureHovering ? <>
+          {profilePictureHovering && !readonly ? <>
             <div className='h-full w-full absolute z-10 backdrop-blur-2xl'></div>
             <div className='h-full w-full absolute z-20 items-center justify-center flex flex-col'>
               <div className='font-archivo tracking-widest opacity-70 text-sm text-center'>Change Profile Picture</div>
@@ -218,7 +218,7 @@ export default function OwnerBloc({
         />
       </> : null}
 
-      <div className="absolute top-2 right-4 z-20 ">
+      {!readonly ? <div className="absolute top-2 right-4 z-20 ">
         <Tippy
           content={
             <div className="text-sm">Coming soon</div>
@@ -227,7 +227,7 @@ export default function OwnerBloc({
         >
           <div className='text-xs opacity-70 cursor-not-allowed flex hover:opacity-100'>Edit wallpaper</div>
         </Tippy>
-      </div>
+      </div> : null}
     </div>
   );
 }

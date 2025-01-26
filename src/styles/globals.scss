@@ -215,6 +215,10 @@ input[type='number'] {
 
 // Tooltips
 
+.tippy-box.tippy-no-padding {
+  padding: 0 !important;
+}
+
 .tippy-box {
   display: flex;
   flex-direction: column;
