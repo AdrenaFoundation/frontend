@@ -325,6 +325,7 @@ function AppComponent({
       </Head>
 
       <RootLayout
+        wallet={wallet}
         userVest={userVest}
         userDelegatedVest={userDelegatedVest}
         priorityFeeOption={priorityFeeOption}

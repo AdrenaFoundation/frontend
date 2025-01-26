@@ -233,6 +233,7 @@ export default function AllUserProfiles({
                     </div>
                 </StyledContainer>
             </div>
+
             <AnimatePresence>
                 {activeProfile && (
                     <Modal
