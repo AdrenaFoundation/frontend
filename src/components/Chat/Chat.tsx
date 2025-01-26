@@ -7,17 +7,17 @@ import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+import { openCloseConnectionModalAction } from "@/actions/walletActions";
+import { useDispatch } from "@/store/store";
 import { UserProfileExtended } from "@/types";
 
 import collapseIcon from '../../../public/images/collapse-all.svg';
 import groupIcon from '../../../public/images/group.svg';
 import Button from "../common/Button/Button";
 import InputString from "../common/inputString/InputString";
+import LiveIcon from "../common/LiveIcon/LiveIcon";
 import Loader from "../Loader/Loader";
 import FormatNumber from "../Number/FormatNumber";
-import { openCloseConnectionModalAction } from "@/actions/walletActions";
-import { useDispatch } from "@/store/store";
-import LiveIcon from "../common/LiveIcon/LiveIcon";
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
