@@ -1,12 +1,13 @@
 import { Wallet } from "@coral-xyz/anchor";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import { twMerge } from "tailwind-merge";
 
 import { UserProfileExtended } from "@/types";
-import { twMerge } from "tailwind-merge";
-import { useCookies } from "react-cookie";
-import Chat from "./Chat";
-import { AnimatePresence } from "framer-motion";
+
 import Modal from "../common/Modal/Modal";
+import Chat from "./Chat";
 
 export default function ChatContainer({
     userProfile,
@@ -37,19 +38,20 @@ export default function ChatContainer({
         if (isMobile) return;
 
         setIsOpenCookie('chat-open', isOpen);
-    }, [isOpen]);
+    }, [isMobile, isOpen, isOpenCookie, setIsOpenCookie]);
 
     if (isOpen === null) return <></>;
 
     if (isMobile) {
         return (
             <>
-                <div className="absolute top-4 left-16 z-40">
+                <div className="absolute top-[1.45em] left-14 z-40">
                     <div className="flex flex-col items-center justify-center text-center cursor-pointer opacity-80 hover:opacity-100" onClick={() => {
                         setIsOpen(!isOpen);
                     }}>
-                        <div className="text-xs font-archivo uppercase">Live</div>
-                        <div className="text-xs font-archivo uppercase">Chat</div>
+                        <div className="text-sm font-archivo uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#ffffff,40%,#808080,60%,#ffffff)]">
+                            Live Chat
+                        </div>
                     </div>
                 </div>
 

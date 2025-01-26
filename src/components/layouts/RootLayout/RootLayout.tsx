@@ -9,7 +9,7 @@ import { ToastContainer } from 'react-toastify';
 
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
-import Chat from '@/components/Chat/Chat';
+import ChatContainer from '@/components/Chat/ChatContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   PriorityFeeOption,
@@ -21,9 +21,6 @@ import {
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
-import { AnimatePresence } from 'framer-motion';
-import Modal from '@/components/common/Modal/Modal';
-import ChatContainer from '@/components/Chat/ChatContainer';
 
 export default function RootLayout({
   children,

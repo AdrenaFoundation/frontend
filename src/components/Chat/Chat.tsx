@@ -1,7 +1,10 @@
 import { Wallet } from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
 import { createClient } from "@supabase/supabase-js";
+import { kv } from "@vercel/kv";
 import Image from 'next/image';
 import { useEffect, useRef, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 import { UserProfileExtended } from "@/types";
 
@@ -9,10 +12,6 @@ import collapseIcon from '../../../public/images/collapse-all.svg';
 import groupIcon from '../../../public/images/group.svg';
 import Button from "../common/Button/Button";
 import InputString from "../common/inputString/InputString";
-import { twMerge } from "tailwind-merge";
-import { PublicKey } from "@solana/web3.js";
-import { kv } from "@vercel/kv";
-import { useCookies } from "react-cookie";
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
@@ -50,7 +49,7 @@ const trackCloseChat = async (roomId: number, walletAddress: PublicKey) => {
         await kv.del(`connected:${roomId}:${walletAddress.toBase58()}`);
     } catch (e) {
         // ignore error - it's not a big deal if we can't save that info
-        console.log('Error tracking close chat');
+        console.log('Error tracking close chat', e);
     }
 };
 
@@ -179,7 +178,8 @@ export default function Chat({
                 fetchConnectedUsers(roomId).then(setNbConnectedUsers);
             });
         };
-    }, [isOpen]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, !!wallet]);
 
     return (
         <div className={className}>
