@@ -1,6 +1,7 @@
 import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
@@ -8,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
+import ChatContainer from '@/components/Chat/ChatContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   PriorityFeeOption,
@@ -22,6 +24,7 @@ import Header from '../../Header/Header';
 
 export default function RootLayout({
   children,
+  wallet,
   userProfile,
   userVest,
   userDelegatedVest,
@@ -44,6 +47,7 @@ export default function RootLayout({
   setShowFeesInPnl,
 }: {
   children: ReactNode;
+  wallet: Wallet | null;
   userProfile: UserProfileExtended | null | false;
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
@@ -72,6 +76,7 @@ export default function RootLayout({
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
+  const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
@@ -94,7 +99,7 @@ export default function RootLayout({
     }
   }, []);
 
-  if (isBigScreen === null) {
+  if (isBigScreen === null || isMobile === null) {
     return null;
   }
 
@@ -164,6 +169,8 @@ export default function RootLayout({
       </div>
 
       <ToastContainer />
+
+      <ChatContainer userProfile={userProfile} wallet={wallet} isMobile={isMobile} />
 
       <Footer className="z-10" />
 
