@@ -249,6 +249,8 @@ export default function Chat({
                             <div className="text-xs opacity-20 font-mono">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                             <Tippy
                                 className="relative tippy-no-padding border-2"
+                                trigger="click"
+                                interactive={true}
                                 content={
                                     <>
                                         <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
