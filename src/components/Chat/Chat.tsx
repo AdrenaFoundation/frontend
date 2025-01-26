@@ -15,7 +15,6 @@ import Button from "../common/Button/Button";
 import InputString from "../common/inputString/InputString";
 import Loader from "../Loader/Loader";
 import FormatNumber from "../Number/FormatNumber";
-import WalletConnection from "../WalletAdapter/WalletConnection";
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
 import { useDispatch } from "@/store/store";
 import LiveIcon from "../common/LiveIcon/LiveIcon";
