@@ -228,9 +228,10 @@ export default function Chat({
                     className="pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-lg w-[90%] text-txtfade placeholder:text-txtfade"
                     inputFontSize="0.8em"
                     onEnterKeyPressed={sendMessage}
+                    disabled={!wallet}
                 />
 
-                <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" />
+                <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" disabled={!wallet} />
             </div>
         </div>
     );
