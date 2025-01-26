@@ -773,6 +773,7 @@ export type GetPositionStatsReturnType<
 type CheckBoxType = {
   type: 'checkbox';
   description: string;
+  progress: string;
   reward: number | string;
   completed: boolean;
   isActive?: boolean;
@@ -784,6 +785,7 @@ type TextType = {
   title: string;
   description: string;
   task: string;
+  progress: string;
   reward: string;
 };
 
@@ -791,6 +793,7 @@ type ProgressiveType = {
   type: 'progressive';
   description?: string;
   title: string;
+  progress: number;
   levels: {
     description: string;
     multiplier: string;

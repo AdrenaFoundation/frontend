@@ -8,6 +8,7 @@ import { QuestType } from '@/types';
 
 export default function QuestMenu() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isQuestOpenedFirstTime, setIsQuestOpenedFirstTime] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
     useOnClickOutside(ref, () => {
@@ -21,18 +22,33 @@ export default function QuestMenu() {
     return (
         <motion.div
             ref={ref}
-            className="fixed bottom-6 left-6 p-2 rounded-lg px-3 flex items-center justify-center bg-[#0D1923] border border-white/5 shadow-lg hover:border-white/20 cursor-pointer transition duration-300"
+            className="fixed bottom-6 left-6 p-2 rounded-lg px-3 flex items-center w-[300px] h-[75px] bg-cover bg-center bg-no-repeat bg-[url('/images/expanse-banner.jpg')] border border-red/75 shadow-lg cursor-pointer transition duration-300 "
         >
-            <p
+            <div className='absolute left-0 w-full h-full bg-gradient-to-r from-black/50 to-transparent rounded-l-lg' />
+
+            <div
+                className="flex flex-col gap-0 z-10"
                 onClick={() => {
                     setIsOpen(!isOpen);
+                    setIsQuestOpenedFirstTime(true);
                 }}
-                className="text-base font-archivo z-10 select-none"
             >
-                {isOpen ? 'Close' : 'Quest'}
-            </p>
+                <div className="flex flex-row gap-2 items-center">
+                    <p className="text-lg font-archivo z-10 select-none">
+                        {isOpen ? 'Close' : 'Quest'}
+                    </p>
 
-            <div className="absolute bottom-[50px] left-0 w-[500px] flex-none">
+                    {!isQuestOpenedFirstTime ? (
+                        <div className="px-2 rounded-full bg-red">
+                            <p className="font-archivo text-xs">New</p>
+                        </div>
+                    ) : null}
+                </div>
+
+                <p className="font-mono">Point based trading competition</p>
+            </div>
+
+            <div className="absolute bottom-[90px] left-0 w-[500px] flex-none">
                 <motion.div
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: isOpen ? 1 : 0, y: isOpen ? 0 : 50 }}
@@ -47,6 +63,7 @@ export default function QuestMenu() {
                             <QuestComp
                                 quest={QUESTS.daily as QuestType}
                                 className="bg-transparent border-none"
+                                showProgress={true}
                             />
                             <QuestComp
                                 quest={
@@ -56,10 +73,12 @@ export default function QuestMenu() {
                                     } as QuestType
                                 }
                                 className="bg-transparent border-none"
+                                showProgress={true}
                             />
                             <QuestComp
                                 quest={QUESTS.weekly as QuestType}
                                 className="bg-transparent border-none"
+                                showProgress={true}
                             />
                         </div>
                     ) : null}

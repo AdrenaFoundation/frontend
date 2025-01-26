@@ -9,13 +9,14 @@ import {
     EXPANSE_DIVISIONS_NAMES,
 } from '@/constants/divisions';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
+import Image from 'next/image';
 
 export default function ExpanseLeaderboard({
     division,
     myDivision,
     index,
 }: {
-    division: typeof EXPANSE_DIVISIONS_NAMES[number];
+    division: (typeof EXPANSE_DIVISIONS_NAMES)[number];
     myDivision: boolean;
     index: number;
 }) {
@@ -28,6 +29,8 @@ export default function ExpanseLeaderboard({
             connected: false,
             adxRewards: 300000,
             jtoRewards: 32000,
+            avatar: true,
+            title: 'The Mutant',
         },
 
         {
@@ -54,7 +57,7 @@ export default function ExpanseLeaderboard({
     data.push(...fillers);
 
     return (
-        <div className={twMerge("", division === 'No Division' && 'col-span-2')}>
+        <div className={twMerge('', division === 'No Division' && 'col-span-2')}>
             {/* {EXPANSE_DIVISIONS[division].img ? (
                 <Image
                     src={EXPANSE_DIVISIONS[division].img}
@@ -132,35 +135,55 @@ export default function ExpanseLeaderboard({
                             <p className="text-sm text-center w-[40px]" key={`rank-${i}`}>
                                 {d.rank}
                             </p>,
-                            d.username ? (
-                                isValidPublicKey(d.username) ? (
-                                    <p
-                                        key={`trader-${i}`}
-                                        className={twMerge(
-                                            'text-xs font-boldy opacity-50',
-                                            d.connected ? 'text-yellow-600' : '',
-                                        )}
-                                    >
-                                        {getAbbrevWalletAddress(d.username)}
-                                    </p>
-                                ) : (
-                                    <p
-                                        key={`trader-${i}`}
-                                        className={twMerge(
-                                            'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
-                                            d.connected ? 'text-yellow-600 ' : '',
-                                        )}
-                                    >
-                                        {d.username.length > 16
-                                            ? `${d.username.substring(0, 16)}...`
-                                            : d.username}
-                                    </p>
-                                )
-                            ) : (
-                                <p key={`trader-${i}`} className="text-xs font-boldy">
-                                    -
-                                </p>
-                            ),
+                            <div className="flex flex-row gap-2 items-center">
+                                {d.avatar ? (
+                                    <Image
+                                        src="/images/wallpaper.jpg"
+                                        width={30}
+                                        height={30}
+                                        alt="rank"
+                                        className="h-8 w-8 rounded-full"
+                                        key={`rank-${i}`}
+                                    />
+                                ) : null}
+                                <div>
+                                    {d.username ? (
+                                        isValidPublicKey(d.username) ? (
+                                            <p
+                                                key={`trader-${i}`}
+                                                className={twMerge(
+                                                    'text-xs font-boldy opacity-50',
+                                                    d.connected ? 'text-yellow-600' : '',
+                                                )}
+                                            >
+                                                {getAbbrevWalletAddress(d.username)}
+                                            </p>
+                                        ) : (
+                                            <p
+                                                key={`trader-${i}`}
+                                                className={twMerge(
+                                                    'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
+                                                    d.connected ? 'text-yellow-600 ' : '',
+                                                )}
+                                            >
+                                                {d.username.length > 16
+                                                    ? `${d.username.substring(0, 16)}...`
+                                                    : d.username}
+                                            </p>
+                                        )
+                                    ) : (
+                                        <p key={`trader-${i}`} className="text-xs font-boldy">
+                                            -
+                                        </p>
+                                    )}
+                                    {d.title ? (
+                                        <p className="text-xxs">
+                                            <span className="font-cursive">"</span> {d.title}{' '}
+                                            <span className="font-cursive">"</span>
+                                        </p>
+                                    ) : null}
+                                </div>
+                            </div>,
 
                             <div
                                 className="flex items-center justify-end md:justify-center grow"

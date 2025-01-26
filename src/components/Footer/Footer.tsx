@@ -19,7 +19,7 @@ export default function Footer({ className }: { className?: string }) {
       )}
     >
 
-      <QuestMenu />
+      {/* <QuestMenu /> */}
 
       <div className="flex w-full justify-center items-center gap-x-6">
         <Link href="https://discord.gg/adrena" target="_blank">

@@ -354,12 +354,14 @@ export const QUESTS = {
       {
         type: 'checkbox',
         description: 'Do 3 trades',
+        progress: '2/3',
         reward: 0.25,
         completed: false,
       },
       {
         type: 'checkbox',
         description: 'Open a short and long trade with at least 25x leverage',
+        progress: null,
         reward: 0.25,
         completed: false,
       },

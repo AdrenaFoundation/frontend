@@ -11,7 +11,7 @@ export default function Expanse() {
     const twitterText = `Join the Adrena Trading Competition! 🚀📈🏆 @adrenaprotocol`;
 
     return (
-        <div className="max-w-[1400px] mx-auto mt-5 px-4">
+        <div className="max-w-[1400px] w-full mx-auto mt-5 px-4">
             <div className="flex flex-col xl:flex-row justify-between md:items-center gap-6 mb-12">
                 <div className="flex flex-col items-center xl:items-start">
                     <CompetitionHeader
