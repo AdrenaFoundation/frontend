@@ -1,6 +1,7 @@
 import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
@@ -8,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
+import Chat from '@/components/Chat/Chat';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   PriorityFeeOption,
@@ -22,6 +24,7 @@ import Header from '../../Header/Header';
 
 export default function RootLayout({
   children,
+  wallet,
   userProfile,
   userVest,
   userDelegatedVest,
@@ -44,6 +47,7 @@ export default function RootLayout({
   setShowFeesInPnl,
 }: {
   children: ReactNode;
+  wallet: Wallet | null;
   userProfile: UserProfileExtended | null | false;
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
@@ -164,6 +168,10 @@ export default function RootLayout({
       </div>
 
       <ToastContainer />
+
+      <div className='fixed bottom-0 right-4 z-20'>
+        <Chat userProfile={userProfile} wallet={wallet} />
+      </div>
 
       <Footer className="z-10" />
 

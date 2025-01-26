@@ -334,6 +334,28 @@ input[type='checkbox']:checked {
   border: 3px solid #16293d; /* creates padding around scroll thumb */
 }
 
+/* Custom styles for .custom-scrollbar */
+/* Works on Firefox */
+.custom-chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #E2464A80 #0F0F19; /* Thumb color, Track color */
+}
+
+/* Works on Chrome, Edge, and Safari */
+.custom-chat-scrollbar::-webkit-scrollbar {
+  width: 10px; /* width of the entire scrollbar */
+}
+
+.custom-chat-scrollbar::-webkit-scrollbar-track {
+  background: #0F0F19; /* color of the tracking area */
+}
+
+.custom-chat-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #E2464A; /* color of the scroll thumb */
+  border-radius: 6px; /* roundness of the scroll thumb */
+  border: 2px solid #0F0F19; /* creates padding around scroll thumb */
+}
+
 .Toastify__toast-container--bottom-left {
   bottom: 4em !important;
 }
