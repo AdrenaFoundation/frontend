@@ -337,56 +337,47 @@ export default function Chat({
                                                 </div> : null}
 
                                                 {msg.wallet && profileCache[msg.wallet] ?
-                                                    <div className="w-[30em] h-[10em] relative flex">
-                                                        <div className="h-[10em] w-[10em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
+                                                    <div className="w-[25em] h-[9em] relative flex">
+                                                        <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
 
-                                                        <div className="flex flex-col w-[20em] pl-4 items-center justify-evenly">
+                                                        <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
                                                             <div className="w-full flex flex-col items-center">
-                                                                <div className="text-[1.2em]">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
-
-                                                                <div className="h-[1px] w-full bg-white opacity-90 mt-2 mb-2" />
+                                                                <div className="text-base truncate max-w-full">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
+                                                                <div className="h-[1px] w-full bg-white opacity-90 mt-1 mb-1" />
                                                             </div>
 
                                                             <div className="flex flex-col w-full gap-1">
                                                                 <div className="flex justify-between items-center w-full">
-                                                                    <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                        Trading Volume
-                                                                    </div>
-
+                                                                    <div className="text-xs font-boldy">Trading Volume</div>
                                                                     <FormatNumber
                                                                         nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
                                                                         format="currency"
                                                                         precision={0}
                                                                         isDecimalDimmed={false}
-                                                                        className='border-0'
+                                                                        className='border-0 text-xs'
+                                                                        isAbbreviate={true}
                                                                     />
                                                                 </div>
 
                                                                 <div className="flex justify-between items-center w-full">
-                                                                    <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                        PnL
-                                                                    </div>
-
+                                                                    <div className="text-xs font-boldy">PnL</div>
                                                                     <FormatNumber
                                                                         nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
                                                                         format="currency"
                                                                         precision={0}
                                                                         isDecimalDimmed={false}
-                                                                        className='border-0'
+                                                                        className='border-0 text-xs'
                                                                     />
                                                                 </div>
 
                                                                 <div className="flex justify-between items-center w-full">
-                                                                    <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                        Fees Paid
-                                                                    </div>
-
+                                                                    <div className="text-xs font-boldy">Fees Paid</div>
                                                                     <FormatNumber
                                                                         nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
                                                                         format="currency"
                                                                         precision={0}
                                                                         isDecimalDimmed={false}
-                                                                        className='border-0'
+                                                                        className='border-0 text-xs'
                                                                     />
                                                                 </div>
                                                             </div>
