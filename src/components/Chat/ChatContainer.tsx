@@ -1,6 +1,6 @@
 import { Wallet } from "@coral-xyz/anchor";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useCookies } from "react-cookie";
 import { twMerge } from "tailwind-merge";
 
@@ -8,6 +8,7 @@ import { UserProfileExtended } from "@/types";
 
 import Modal from "../common/Modal/Modal";
 import Chat from "./Chat";
+import { AiChat } from "../AiChat/AiChat";
 
 export default function ChatContainer({
     userProfile,
@@ -20,6 +21,41 @@ export default function ChatContainer({
 }) {
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
+    const [activeTab, setActiveTab] = useState('chat');
+    const [height, setHeight] = useState(400); // 25em = 400px default
+    const [isResizing, setIsResizing] = useState(false);
+
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+    }, []);
+
+    const handleMouseUp = useCallback(() => {
+        setIsResizing(false);
+    }, []);
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!isResizing) return;
+
+        const windowHeight = window.innerHeight;
+        const mouseY = e.clientY;
+        const newHeight = windowHeight - mouseY;
+
+        // Limit min/max height
+        setHeight(Math.min(Math.max(newHeight, 300), 800));
+    }, [isResizing]);
+
+    useEffect(() => {
+        if (isResizing) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing, handleMouseMove, handleMouseUp]);
 
     useEffect(() => {
         // Decide if isOpen should be true or not, depending on cookies and if we are in mobile
@@ -42,57 +78,92 @@ export default function ChatContainer({
 
     if (isOpen === null) return <></>;
 
+    const chatContent = (
+        <div className="flex flex-col h-full">
+            <div className="flex px-2 pt-1 border-b border-gray-700">
+                <button
+                    onClick={() => setActiveTab('chat')}
+                    className={`px-4 py-2 text-sm ${activeTab === 'chat'
+                        ? 'border-b-2 border-blue-500'
+                        : 'text-gray-400'
+                        }`}
+                >
+                    Live Chat
+                </button>
+                <button
+                    onClick={() => setActiveTab('ai')}
+                    className={`px-4 py-2 text-sm ${activeTab === 'ai'
+                        ? 'border-b-2 border-blue-500'
+                        : 'text-gray-400'
+                        }`}
+                >
+                    AI Assistant
+                </button>
+            </div>
+            <div className="flex-1 min-h-0">
+                {activeTab === 'chat' ? (
+                    <Chat
+                        userProfile={userProfile}
+                        wallet={wallet}
+                        isOpen={isOpen}
+                        clickOnHeader={() => setIsOpen(!isOpen)}
+                        className={twMerge(
+                            "bg-[#070F16] flex flex-col w-full h-full",
+                        )}
+                    />
+                ) : (
+                    <AiChat
+                        userProfile={userProfile}
+                        chartData={window.adrena?.currentChart ?? null}
+                        recentTrades={window.adrena?.recentTrades ?? []}
+                    />
+                )}
+            </div>
+        </div>
+    );
+
     if (isMobile) {
         return (
             <>
                 <div className="absolute top-[1.45em] left-14 z-40">
-                    <div className="flex flex-col items-center justify-center text-center cursor-pointer opacity-80 hover:opacity-100" onClick={() => {
-                        setIsOpen(!isOpen);
-                    }}>
+                    <div className="flex flex-col items-center justify-center text-center cursor-pointer opacity-80 hover:opacity-100"
+                        onClick={() => setIsOpen(!isOpen)}>
                         <div className="text-sm font-archivo uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#ffffff,40%,#808080,60%,#ffffff)]">
-                            Live Chat
+                            Chat
                         </div>
                     </div>
                 </div>
 
-                {isOpen ? <AnimatePresence>
-                    <Modal
-                        title={`Live Chat`}
-                        close={() => {
-                            setIsOpen(false)
-                        }}
-                        className="flex flex-col w-full h-[85vh] max-h-[85vh]"
-                    >
-                        <Chat
-                            displaySmileys={false}
-                            userProfile={userProfile}
-                            wallet={wallet}
-                            isOpen={isOpen}
-                            clickOnHeader={() => {
-                                setIsOpen(!isOpen);
-                            }}
-                            className={twMerge(
-                                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full",
-                            )}
-                        />
-                    </Modal>
-                </AnimatePresence> : null}
+                {isOpen && (
+                    <AnimatePresence>
+                        <Modal
+                            title="Chat"
+                            close={() => setIsOpen(false)}
+                            className="flex flex-col w-full h-[85vh] max-h-[85vh]"
+                        >
+                            {chatContent}
+                        </Modal>
+                    </AnimatePresence>
+                )}
             </>
         );
     }
 
-    return <div className='fixed bottom-0 right-4 z-20'>
-        <Chat
-            userProfile={userProfile}
-            wallet={wallet}
-            isOpen={isOpen}
-            clickOnHeader={() => {
-                setIsOpen(!isOpen);
-            }}
-            className={twMerge(
-                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em]",
-                isOpen ? 'h-[25em]' : 'h-[3em]'
+    return (
+        <div className='fixed bottom-0 right-4 z-20'>
+            <div className={twMerge(
+                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] relative",
+                isOpen ? { height: `${height}px` } : 'h-[3em]'
             )}
-        />
-    </div>;
+                style={isOpen ? { height: `${height}px` } : undefined}>
+                {isOpen && (
+                    <div
+                        className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-blue-500/20"
+                        onMouseDown={handleMouseDown}
+                    />
+                )}
+                {chatContent}
+            </div>
+        </div>
+    );
 }

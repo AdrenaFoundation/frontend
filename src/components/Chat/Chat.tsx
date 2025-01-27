@@ -18,6 +18,7 @@ import InputString from "../common/inputString/InputString";
 import LiveIcon from "../common/LiveIcon/LiveIcon";
 import Loader from "../Loader/Loader";
 import FormatNumber from "../Number/FormatNumber";
+import { generateUserColor } from '@/utils/colors';
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
@@ -330,7 +331,9 @@ export default function Chat({
                                 <div
                                     className={twMerge(
                                         "text-sm font-boldy cursor-pointer hover:underline relative",
-                                        msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58() ? 'text-[#e1aa2a]' : 'text-[#E2464A]'
+                                        msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
+                                            ? 'text-[#e1aa2a]'
+                                            : generateUserColor(msg.username ?? msg.wallet ?? 'anon')
                                     )}
                                     onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
                                 >

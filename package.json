@@ -35,6 +35,7 @@
     "@vercel/speed-insights": "=1.1.0",
     "@wallet-standard/app": "=1.1.0",
     "@walletconnect/types": "=2.17.2",
+    "axios": "^1.7.9",
     "big.js": "=6.2.2",
     "bignumber.js": "=9.1.2",
     "date-fns": "=4.1.0",
