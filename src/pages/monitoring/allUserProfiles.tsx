@@ -237,10 +237,11 @@ export default function AllUserProfiles({
             <AnimatePresence>
                 {activeProfile && (
                     <Modal
-                        className="h-[80vh] overflow-y-scroll w-full"
-                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
+                        className="h-[80vh] w-full overflow-y-auto"
+                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]"
                         title=""
                         close={() => setActiveProfile(null)}
+                        isWrapped={false}
                     >
                         <ViewProfileModal
                             profile={activeProfile}
