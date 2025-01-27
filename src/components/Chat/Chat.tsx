@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import Tippy from "@tippyjs/react";
 import { kv } from "@vercel/kv";
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
@@ -82,6 +82,11 @@ const fetchConnectedUsers = async (roomId: number) => {
 
 let profileLoading: string | false = false;
 
+interface ConnectedUser {
+    wallet: string;
+    nickname?: string | null;
+}
+
 interface ChatProps {
     userProfile: UserProfileExtended | null | false;
     wallet: Wallet | null;
@@ -108,17 +113,20 @@ export default function Chat({
     const [profileCache, setProfileCache] = useState<Record<string, UserProfileExtended | null | false>>({});
     const dispatch = useDispatch();
     const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
+    const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
 
     const handleConnectionClick = () => {
         dispatch(openCloseConnectionModalAction(true));
     };
 
     useEffect(() => {
-        fetchConnectedUsers(roomId).then(setNbConnectedUsers);
-
-        const interval = setInterval(() => {
+        const updateUsers = () => {
             fetchConnectedUsers(roomId).then(setNbConnectedUsers);
-        }, 20000);
+            fetchDetailedConnectedUsers(roomId).then(setConnectedUsers);
+        };
+
+        updateUsers();
+        const interval = setInterval(updateUsers, 20000);
 
         return () => clearInterval(interval);
     }, []);
@@ -226,6 +234,34 @@ export default function Chat({
             });
     }, [profileCache]);
 
+    const fetchDetailedConnectedUsers = async (roomId: number) => {
+        try {
+            const keys = await kv.keys(`connected:${roomId}:*`);
+            const users = await Promise.all(keys.map(async (key) => {
+                const wallet = key.split(':')[2];
+                const profile = await window.adrena.client.loadUserProfile(new PublicKey(wallet));
+                if (profile) {
+                    setProfileCache(prev => ({
+                        ...prev,
+                        [wallet]: profile
+                    }));
+                }
+                return {
+                    wallet,
+                    nickname: profile?.nickname
+                };
+            }));
+            return users;
+        } catch (e) {
+            console.log('Error loading connected users', e);
+            return [];
+        }
+    };
+
+    const anonymousCount = useMemo(() => {
+        return connectedUsers.filter(user => !user.nickname).length;
+    }, [connectedUsers]);
+
     return (
         <>
             <div className={className} style={style}>
@@ -246,15 +282,39 @@ export default function Chat({
 
                     <div className="flex gap-2">
                         <LiveIcon />
-
-                        <div className="text-xs flex mt-[0.1em] font-archivo text-txtfade">{nbConnectedUsers === null ? '-' : nbConnectedUsers}</div>
-
-                        <Image
-                            src={groupIcon}
-                            alt="group logo"
-                            width={18}
-                            height={18}
-                        />
+                        <Tippy
+                            trigger="click"
+                            interactive={true}
+                            content={
+                                <div className="p-2 text-xs">
+                                    {connectedUsers.filter(user => user.nickname).map((user, i) => (
+                                        <div key={i} className="mb-1">
+                                            <div className="text-sm" style={{ color: generateColorFromString(user.wallet) }}>
+                                                {user.nickname}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {anonymousCount > 0 && (
+                                        <div className="text-gray-400">+{anonymousCount} anonymous</div>
+                                    )}
+                                </div>
+                            }
+                        >
+                            <div
+                                className="flex items-center gap-2 cursor-pointer"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="text-xs flex mt-[0.1em] font-archivo text-txtfade">
+                                    {nbConnectedUsers === null ? '-' : nbConnectedUsers}
+                                </div>
+                                <Image
+                                    src={groupIcon}
+                                    alt="group logo"
+                                    width={18}
+                                    height={18}
+                                />
+                            </div>
+                        </Tippy>
                     </div>
                 </div>
 
