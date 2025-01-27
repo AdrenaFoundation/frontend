@@ -82,21 +82,25 @@ const fetchConnectedUsers = async (roomId: number) => {
 
 let profileLoading: string | false = false;
 
+interface ChatProps {
+    userProfile: UserProfileExtended | null | false;
+    wallet: Wallet | null;
+    className?: string;
+    style?: React.CSSProperties;
+    isOpen: boolean;
+    clickOnHeader: () => void;
+    displaySmileys?: boolean;
+}
+
 export default function Chat({
     userProfile,
     wallet,
     className,
+    style,
     isOpen,
     clickOnHeader,
     displaySmileys = true,
-}: {
-    userProfile: UserProfileExtended | null | false;
-    wallet: Wallet | null;
-    className?: string;
-    isOpen: boolean;
-    clickOnHeader: () => void;
-    displaySmileys?: boolean;
-}) {
+}: ChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
@@ -224,7 +228,7 @@ export default function Chat({
 
     return (
         <>
-            <div className={className}>
+            <div className={className} style={style}>
                 <div
                     className="h-[3em] flex gap-2 items-center justify-between pl-4 pr-4 border-b flex-shrink-0 opacity-90 hover:opacity-100 cursor-pointer"
                     onClick={() => clickOnHeader()}

@@ -20,6 +20,8 @@ export default function ChatContainer({
 }) {
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
+    const [height, setHeight] = useState(400); // Default height
+    const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
         // Decide if isOpen should be true or not, depending on cookies and if we are in mobile
@@ -39,6 +41,31 @@ export default function ChatContainer({
 
         setIsOpenCookie('chat-open', isOpen);
     }, [isMobile, isOpen, isOpenCookie, setIsOpenCookie]);
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isDragging || !isOpen) return;
+            const newHeight = window.innerHeight - e.clientY;
+            setHeight(Math.min(Math.max(newHeight, 200), 800)); // Min 200px, max 800px
+        };
+
+        const handleMouseUp = () => {
+            setIsDragging(false);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, isOpen]);
 
     if (isOpen === null) return <></>;
 
@@ -82,6 +109,10 @@ export default function ChatContainer({
     }
 
     return <div className='fixed bottom-0 right-4 z-20'>
+        {isOpen && <div
+            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-gray-600"
+            onMouseDown={handleMouseDown}
+        />}
         <Chat
             userProfile={userProfile}
             wallet={wallet}
@@ -91,8 +122,11 @@ export default function ChatContainer({
             }}
             className={twMerge(
                 "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em]",
-                isOpen ? 'h-[25em]' : 'h-[3em]'
+                isOpen ? {
+                    height: `${height}px`
+                } : 'h-[3em]'
             )}
+            style={isOpen ? { height } : undefined}
         />
     </div>;
 }
