@@ -321,104 +321,102 @@ export default function Chat({
                 <div className="p-4 flex flex-col h-[calc(100% - 9em)] max-h-[calc(100% - 9em)] flex-grow w-full overflow-auto custom-chat-scrollbar" ref={containerRef}>
                     {messages.map((msg, i) => (
                         <div key={i} className="flex gap-2 mb-1">
-                            <div className="text-xs opacity-20 font-mono mt-[2px]">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                            <div className="flex flex-col min-w-0">
-                                <div className="flex gap-2">
-                                    <Tippy
-                                        className="relative tippy-no-padding border-2"
-                                        trigger="click"
-                                        interactive={true}
-                                        content={
-                                            <>
-                                                <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
+                            <div className="text-xs opacity-20 font-mono mt-[2px] shrink-0">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            <div className="flex gap-2 min-w-0">
+                                <Tippy
+                                    className="relative tippy-no-padding border-2"
+                                    trigger="click"
+                                    interactive={true}
+                                    content={
+                                        <>
+                                            <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
 
-                                                <div className="text-xs font-boldy p-2">
-                                                    {!msg.wallet ? <div className="relative flex text-[1.2em] p-4">
-                                                        Anonymous
-                                                    </div> : null}
+                                            <div className="text-xs font-boldy p-2">
+                                                {!msg.wallet ? <div className="relative flex text-[1.2em] p-4">
+                                                    Anonymous
+                                                </div> : null}
 
-                                                    {msg.wallet && profileCache[msg.wallet] ?
-                                                        <div className="w-[30em] h-[10em] relative flex">
-                                                            <div className="h-[10em] w-[10em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
+                                                {msg.wallet && profileCache[msg.wallet] ?
+                                                    <div className="w-[30em] h-[10em] relative flex">
+                                                        <div className="h-[10em] w-[10em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
 
-                                                            <div className="flex flex-col w-[20em] pl-4 items-center justify-evenly">
-                                                                <div className="w-full flex flex-col items-center">
-                                                                    <div className="text-[1.2em]">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
+                                                        <div className="flex flex-col w-[20em] pl-4 items-center justify-evenly">
+                                                            <div className="w-full flex flex-col items-center">
+                                                                <div className="text-[1.2em]">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
 
-                                                                    <div className="h-[1px] w-full bg-white opacity-90 mt-2 mb-2" />
+                                                                <div className="h-[1px] w-full bg-white opacity-90 mt-2 mb-2" />
+                                                            </div>
+
+                                                            <div className="flex flex-col w-full gap-1">
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <div className="text-nowrap font-boldy text-[1.2em]">
+                                                                        Trading Volume
+                                                                    </div>
+
+                                                                    <FormatNumber
+                                                                        nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
+                                                                        format="currency"
+                                                                        precision={0}
+                                                                        isDecimalDimmed={false}
+                                                                        className='border-0'
+                                                                    />
                                                                 </div>
 
-                                                                <div className="flex flex-col w-full gap-1">
-                                                                    <div className="flex justify-between items-center w-full">
-                                                                        <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                            Trading Volume
-                                                                        </div>
-
-                                                                        <FormatNumber
-                                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
-                                                                            format="currency"
-                                                                            precision={0}
-                                                                            isDecimalDimmed={false}
-                                                                            className='border-0'
-                                                                        />
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <div className="text-nowrap font-boldy text-[1.2em]">
+                                                                        PnL
                                                                     </div>
 
-                                                                    <div className="flex justify-between items-center w-full">
-                                                                        <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                            PnL
-                                                                        </div>
+                                                                    <FormatNumber
+                                                                        nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
+                                                                        format="currency"
+                                                                        precision={0}
+                                                                        isDecimalDimmed={false}
+                                                                        className='border-0'
+                                                                    />
+                                                                </div>
 
-                                                                        <FormatNumber
-                                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
-                                                                            format="currency"
-                                                                            precision={0}
-                                                                            isDecimalDimmed={false}
-                                                                            className='border-0'
-                                                                        />
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <div className="text-nowrap font-boldy text-[1.2em]">
+                                                                        Fees Paid
                                                                     </div>
 
-                                                                    <div className="flex justify-between items-center w-full">
-                                                                        <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                            Fees Paid
-                                                                        </div>
-
-                                                                        <FormatNumber
-                                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
-                                                                            format="currency"
-                                                                            precision={0}
-                                                                            isDecimalDimmed={false}
-                                                                            className='border-0'
-                                                                        />
-                                                                    </div>
+                                                                    <FormatNumber
+                                                                        nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
+                                                                        format="currency"
+                                                                        precision={0}
+                                                                        isDecimalDimmed={false}
+                                                                        className='border-0'
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        : msg.wallet && profileCache[msg.wallet] === false ?
-                                                            <div className="relative flex text-[1.2em] p-4">
-                                                                No profile
-                                                            </div> : <Loader />}
-                                                </div>
-                                            </>
-                                        }
-                                        key={i}
+                                                    </div>
+                                                    : msg.wallet && profileCache[msg.wallet] === false ?
+                                                        <div className="relative flex text-[1.2em] p-4">
+                                                            No profile
+                                                        </div> : <Loader />}
+                                            </div>
+                                        </>
+                                    }
+                                    key={i}
+                                >
+                                    <div
+                                        className="text-sm font-boldy cursor-pointer hover:underline shrink-0"
+                                        style={{
+                                            color: msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
+                                                ? '#e1aa2a'
+                                                : msg.wallet
+                                                    ? generateColorFromString(msg.wallet)
+                                                    : '#9ca3af'
+                                        }}
+                                        onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
                                     >
-                                        <div
-                                            className="text-sm font-boldy cursor-pointer hover:underline"
-                                            style={{
-                                                color: msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
-                                                    ? '#e1aa2a'
-                                                    : msg.wallet
-                                                        ? generateColorFromString(msg.wallet)
-                                                        : '#9ca3af'
-                                            }}
-                                            onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
-                                        >
-                                            {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
-                                        </div>
-                                    </Tippy>
+                                        {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
+                                    </div>
+                                </Tippy>
 
-                                    <div className="text-sm font-regular text-txtfade break-words">{msg.text}</div>
-                                </div>
+                                <div className="text-sm font-regular text-txtfade break-words min-w-0">{msg.text}</div>
                             </div>
                         </div>
                     ))}
