@@ -39,6 +39,15 @@ interface Message {
 
 const OPEN_CHAT_TTL = 600000; // 10 minute TTL - in millisecond
 
+const generateColorFromString = (str: string): string => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 60%)`;
+};
+
 const trackOpenChat = async (roomId: number, walletAddress: PublicKey) => {
     try {
         const expiryInSeconds = OPEN_CHAT_TTL / 1000;
@@ -330,8 +339,19 @@ export default function Chat({
                                 <div
                                     className={twMerge(
                                         "text-sm font-boldy cursor-pointer hover:underline relative",
-                                        msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58() ? 'text-[#e1aa2a]' : 'text-[#E2464A]'
+                                        msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
+                                            ? 'text-[#e1aa2a]'
+                                            : msg.wallet
+                                                ? `text-[${generateColorFromString(msg.wallet)}]`
+                                                : 'text-gray-400'
                                     )}
+                                    style={{
+                                        color: msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
+                                            ? '#e1aa2a'
+                                            : msg.wallet
+                                                ? generateColorFromString(msg.wallet)
+                                                : '#9ca3af'
+                                    }}
                                     onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
                                 >
                                     {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
