@@ -20,7 +20,7 @@ export default function ChatContainer({
 }) {
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
-    const [height, setHeight] = useState(400); // Default height
+    const [height, setHeight] = useState(Math.round(window.innerHeight * 0.35)); // 35% of window height
     const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
@@ -41,6 +41,18 @@ export default function ChatContainer({
 
         setIsOpenCookie('chat-open', isOpen);
     }, [isMobile, isOpen, isOpenCookie, setIsOpenCookie]);
+
+    // Add window resize handler
+    useEffect(() => {
+        const handleResize = () => {
+            if (!isDragging) {
+                setHeight(Math.round(window.innerHeight * 0.35));
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isDragging]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -110,8 +122,9 @@ export default function ChatContainer({
 
     return <div className='fixed bottom-0 right-4 z-20'>
         {isOpen && <div
-            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-gray-600"
+            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-gray-600 select-none"
             onMouseDown={handleMouseDown}
+            style={{ userSelect: 'none' }}
         />}
         <Chat
             userProfile={userProfile}
@@ -121,12 +134,12 @@ export default function ChatContainer({
                 setIsOpen(!isOpen);
             }}
             className={twMerge(
-                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em]",
+                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none",
                 isOpen
                     ? `h-[${height}px]`
                     : 'h-[3em]'
             )}
-            style={isOpen ? { height } : undefined}
+            style={isOpen ? { height, userSelect: 'none' } : undefined}
         />
     </div>;
 }
