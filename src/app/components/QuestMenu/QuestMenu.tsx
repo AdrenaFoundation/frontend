@@ -131,7 +131,7 @@ export default function QuestMenu({
         <div
             className={twMerge(
                 'fixed',
-                isMobile ? 'bottom-[5em] left-4' : 'bottom-0 left-0',
+                isMobile ? 'bottom-[4.2em] left-4' : 'bottom-0 left-0',
                 className,
             )}
         >
