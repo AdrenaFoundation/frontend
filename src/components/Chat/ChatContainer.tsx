@@ -1,6 +1,6 @@
 import { Wallet } from "@coral-xyz/anchor";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { twMerge } from "tailwind-merge";
 
@@ -8,6 +8,8 @@ import { UserProfileExtended } from "@/types";
 
 import Modal from "../common/Modal/Modal";
 import Chat from "./Chat";
+
+const DRAGGING_CLASS = 'chat-container-dragging';
 
 export default function ChatContainer({
     userProfile,
@@ -20,7 +22,11 @@ export default function ChatContainer({
 }) {
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
-    const [height, setHeight] = useState(Math.round(window.innerHeight * 0.35)); // 35% of window height
+    const [chatHeightCookie, setChatHeightCookie] = useCookies(['chat-height']);
+    const [height, setHeight] = useState(() => {
+        // Initialize with cookie value or default
+        return chatHeightCookie['chat-height'] || Math.round(window.innerHeight * 0.35);
+    });
     const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
@@ -46,38 +52,47 @@ export default function ChatContainer({
     useEffect(() => {
         const handleResize = () => {
             if (!isDragging) {
-                setHeight(Math.round(window.innerHeight * 0.35));
+                if (chatHeightCookie['chat-height']) {
+                    setHeight(chatHeightCookie['chat-height']);
+                } else {
+                    setHeight(Math.round(window.innerHeight * 0.35));
+                }
             }
         };
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [isDragging]);
+    }, [isDragging, height, chatHeightCookie]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
         setIsDragging(true);
+        document.body.classList.add(DRAGGING_CLASS);
     };
 
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!isDragging || !isOpen) return;
+        const newHeight = window.innerHeight - e.clientY;
+        const clampedHeight = Math.min(Math.max(newHeight, 250), 1000);
+        setHeight(clampedHeight);
+    }, [isDragging, isOpen]);
+
+    const handleMouseUp = useCallback(() => {
+        if (isDragging) {
+            setChatHeightCookie('chat-height', height, { path: '/' });
+            document.body.classList.remove(DRAGGING_CLASS);
+        }
+        setIsDragging(false);
+    }, [isDragging, height, setChatHeightCookie]);
+
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (!isDragging || !isOpen) return;
-            const newHeight = window.innerHeight - e.clientY;
-            setHeight(Math.min(Math.max(newHeight, 200), 800)); // Min 200px, max 800px
-        };
-
-        const handleMouseUp = () => {
-            setIsDragging(false);
-        };
-
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
-
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDragging, isOpen]);
+    }, [handleMouseMove, handleMouseUp]);
 
     if (isOpen === null) return <></>;
 
