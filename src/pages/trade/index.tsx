@@ -467,10 +467,10 @@ export default function Trade({
           />
         ) : null}
 
-        <div className='relative w-full'>
+        <div className='relative w-full sm:hidden'>
           <QuestMenu isMobile className='sm:hidden' />
 
-          <div className="fixed sm:hidden left-0 bottom-0 w-full bg-bcolor backdrop-blur-sm p-3 z-30">
+          <div className="fixed left-0 bottom-0 w-full bg-bcolor backdrop-blur-sm p-3 z-30">
             <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
               <li>
                 <Button
