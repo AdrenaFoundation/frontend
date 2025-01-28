@@ -1,4 +1,4 @@
-import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI } from './types';
+import { GetPositionStatsReturnType, PreSeasonLeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI, SeasonLeaderboardsReturnTypeAPI } from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -114,7 +114,32 @@ export default class DataApiClient {
         return result.data;
     }
 
-    public static async getTradingCompetitionLeaderboard<
+    public static async getSeasonLeaderboards({
+        season,
+    }: {
+        season: 'season1';
+    }): Promise<SeasonLeaderboardsReturnTypeAPI | null> {
+        try {
+            // const result = await fetch(
+            //     `https://datapi.adrena.xyz/v2/awakening?season=${season}&show_achievements=${Boolean(
+            //         showAchievements,
+            //     )}&show_trader_divisions=${Boolean(
+            //         showTraderDivisions,
+            //     )}&show_global_stats=${Boolean(
+            //         showGlobalStats,
+            //     )}&show_eligible_jitosol_wallets=${Boolean(
+            //         showEligibleJitosolWallets,
+            //     )}`,
+            // ).then((res) => res.json());
+
+            return [];
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+
+    public static async getPreSeasonLeaderboard<
         T extends {
             showGlobalStats?: boolean;
             showAchievements?: boolean;
@@ -128,8 +153,8 @@ export default class DataApiClient {
         showTraderDivisions,
         showEligibleJitosolWallets,
     }: {
-        season: 'preseason' | 'season1' | 'season2' | 'season3' | 'season4';
-    } & T): Promise<LeaderboardReturnTypeAPI<T> | null> {
+        season: 'preseason';
+    } & T): Promise<PreSeasonLeaderboardReturnTypeAPI<T> | null> {
         try {
             const result = await fetch(
                 `https://datapi.adrena.xyz/v2/awakening?season=${season}&show_achievements=${Boolean(
@@ -236,7 +261,7 @@ export default class DataApiClient {
                 ...(showEligibleJitosolWallets && {
                     eligibleJitosolWallets: result.data.eligible_jitosol_wallets,
                 }),
-            } as LeaderboardReturnTypeAPI<T>;
+            } as PreSeasonLeaderboardReturnTypeAPI<T>;
 
             return data;
         } catch (e) {

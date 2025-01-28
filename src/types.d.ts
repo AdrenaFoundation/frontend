@@ -563,25 +563,101 @@ export type TradingCompetitionLeaderboardAPI = {
   }[];
 };
 
-export type TraderDivisionRawAPI = {
-  division: string;
-  traders: {
-    address: string;
-    total_volume: number;
-    total_pnl: number;
-    rank_in_division: number;
-    adx_reward: number;
-    jto_reward: number;
-    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
-  }[];
-};
-
 export type ConnectedWalletTickets = {
   fees: number | null;
   jito: number | null;
 } | null;
 
-export type LeaderboardReturnTypeAPI<
+type SeasonLeaderboardsRawAPI = {
+  success: boolean;
+  data: {
+    start_date: string; // ISO 8601 Date String
+    end_date: string; // ISO 8601 Date String
+    quests: Record<string, unknown>;
+    mutations: Record<string, unknown>;
+    week_leaderboard: {
+      week_dates_start: string[]; // Array of ISO 8601 Date Strings
+      week_dates_end: string[]; // Array of ISO 8601 Date Strings
+      leaderboard: {
+        user_wallet: string;
+        season_id: number;
+        week_date_id: number;
+        points_trading: number;
+        points_mutations: number;
+        points_streaks: number;
+        points_quests: number;
+        total_points: number;
+        volume: number;
+        pnl: number;
+        borrow_fees: number;
+        close_fees: number;
+        fees: number;
+        rank: number;
+        championship_points: number;
+      }[][];
+    };
+    season_leaderboard: {
+      user_wallet: string;
+      season_id: number;
+      points_trading: number;
+      points_mutations: number;
+      points_streaks: number;
+      points_quests: number;
+      total_points: number;
+      volume: number;
+      pnl: number;
+      borrow_fees: number;
+      close_fees: number;
+      fees: number;
+      rank: number;
+      championship_points: number;
+      rewards_adx: number;
+      rewards_jto: number;
+    }[];
+    name: string;
+    description: string;
+  };
+};
+
+export type SeasonLeaderboardsReturnTypeAPI = {
+  startDate: Date;
+  endDate: Date;
+  weekLeaderboard: {
+    startDate: Date;
+    endDate: Date;
+    leaderboard: {
+      wallet: PublicKey;
+      rank: number;
+      championshipPoints: number;
+      totalPoints: number;
+      streaksPoints:  number;
+      questsPoints: number;
+      mutationPoints: number;
+      tradingPoints: number;
+      volume: number;
+      pnl: number;
+      fees: number;
+    }[];
+  }[];
+
+  seasonLeaderboard: {
+    wallet: PublicKey;
+    rank: number;
+    tradingPoints: number;
+    mutationPoints: number;
+    streaksPoints: number;
+    questsPoints: number;
+    totalPoints: number;
+    volume: number;
+    pnl: number;
+    fees: number;
+    championshipPoints: number;
+    rewardsAdx: number;
+    rewardsJto: number;
+  };
+};
+
+export type PreSeasonLeaderboardReturnTypeAPI<
   T extends {
     showGlobalStats?: boolean;
     showAchievements?: boolean;

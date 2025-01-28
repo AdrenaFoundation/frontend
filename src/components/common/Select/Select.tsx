@@ -70,9 +70,9 @@ export default function Select<T extends string>({
             <div
               className={twMerge(
                 'flex flex-row gap-x-1 items-center',
-                selectedClassName,
                 options.length > 1 && 'w-full pr-3',
                 align === 'right' && 'justify-between',
+                selectedClassName,
               )}
             >
               {reversed ? img : chevron}

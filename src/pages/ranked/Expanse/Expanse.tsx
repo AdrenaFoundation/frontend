@@ -8,7 +8,7 @@ import { CompetitionHeader, SocialButtons } from '@/pages/ranked/Awakening';
 import Quests from './Quests';
 
 export default function Expanse() {
-    const twitterText = `Join the Adrena Trading Competition! 🚀📈🏆 @adrenaprotocol`;
+    const twitterText = `Join the Adrena Trading Competition! 🚀📈🏆 @AdrenaProtocol`;
 
     return (
         <div className="max-w-[1400px] w-full mx-auto mt-5 px-4">
@@ -19,6 +19,7 @@ export default function Expanse() {
                         endDate={TRADING_COMPETITION_SEASONS['expanse'].endDate}
                         description={TRADING_COMPETITION_SEASONS['expanse'].description}
                     />
+
                     <SocialButtons twitterText={twitterText} docsLink="https://app.gitbook.com/o/DR8o6dMfEDmyhzH0OIxj/s/SrdLcmUOicAVBsHQeHAa/community/trading-competitions/season-1-expanse" />
                 </div>
 
@@ -31,7 +32,7 @@ export default function Expanse() {
                             className="w-4 h-4"
                         />
                         <p className="text-xl font-mono">
-                            2m ADX <span>Rewards</span>
+                            5m ADX <span>Rewards</span>
                         </p>
                     </div>
 

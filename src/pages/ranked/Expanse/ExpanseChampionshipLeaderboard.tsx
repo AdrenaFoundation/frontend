@@ -1,25 +1,12 @@
-import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
-import {
-    EXPANSE_DIVISIONS,
-    EXPANSE_DIVISIONS_NAMES,
-} from '@/constants/divisions';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 
-export default function ExpanseLeaderboard({
-    division,
-    myDivision,
-    index,
-}: {
-    division: (typeof EXPANSE_DIVISIONS_NAMES)[number];
-    myDivision: boolean;
-    index: number;
-}) {
+export default function ExpanseChampionshipLeaderboard({ }) {
     const data = [
         {
             rank: 1,
@@ -44,7 +31,7 @@ export default function ExpanseLeaderboard({
         },
     ];
 
-    const fillers = Array.from({ length: 8 }, (_, i) => ({
+    const fillers = Array.from({ length: 98 }, (_, i) => ({
         rank: i + 3,
         username: '...',
         mutagens: 0,
@@ -57,51 +44,7 @@ export default function ExpanseLeaderboard({
     data.push(...fillers);
 
     return (
-        <div className={twMerge('', division === 'No Division' && 'col-span-2')}>
-            {/* {EXPANSE_DIVISIONS[division].img ? (
-                <Image
-                    src={EXPANSE_DIVISIONS[division].img}
-                    width={75}
-                    height={75}
-                    alt=""
-                    className="rounded-full border-2 border-yellow-600 h-[6em] w-[6em]"
-                />
-            ) : null} */}
-
-            <div className="flex flex-row items-center gap-3 my-3">
-                <h3
-                    className={twMerge(
-                        'font-boldy capitalize',
-                        division === 'No Division' ? 'ml-auto mr-auto' : '',
-                    )}
-                >
-                    {EXPANSE_DIVISIONS[division].title}
-                </h3>
-
-                <Tippy
-                    content={`Top ${EXPANSE_DIVISIONS[division].topTradersPercentage} percentile of traders by traded VOLUME, minus the ones on previous divisions.`}
-                    arrow
-                >
-                    <div
-                        className={twMerge(
-                            `capitalize text-sm tracking-widest font-boldy ${division === 'No Division' ? 'hidden' : ''}`,
-                            EXPANSE_DIVISIONS[division].color,
-                        )}
-                    >
-                        TIER {index}
-                        <div
-                            className={`border-b-2 border-dotted border-gray-400 mt-0`}
-                        ></div>
-                    </div>
-                </Tippy>
-
-                {myDivision ? (
-                    <div className="font-boldy text-xs bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center">
-                        Your division
-                    </div>
-                ) : null}
-            </div>
-
+        <div className={twMerge('')}>
             <Table
                 className="bg-transparent gap-1 border-none p-0"
                 columnTitlesClassName="text-sm opacity-50"
@@ -123,7 +66,7 @@ export default function ExpanseLeaderboard({
                 rowHovering={true}
                 pagination={true}
                 paginationClassName="scale-[80%] p-0"
-                nbItemPerPage={10}
+                nbItemPerPage={100}
                 nbItemPerPageWhenBreakpoint={3}
                 rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                 rowTitleWidth="0%"

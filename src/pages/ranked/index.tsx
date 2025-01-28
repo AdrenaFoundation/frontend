@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 
@@ -10,6 +10,8 @@ export default function Ranked() {
     const [activeSeason, setActiveSeason] =
         useState<keyof typeof TRADING_COMPETITION_SEASONS>('expanse');
 
+    const data = useMemo(() => TRADING_COMPETITION_SEASONS[activeSeason], [activeSeason]);
+
     return (
         <>
             <div className="relative">
@@ -17,13 +19,14 @@ export default function Ranked() {
                     activeSeason={activeSeason}
                     setActiveSeason={setActiveSeason}
                 />
+
                 <CompetitionBanner
-                    banner={TRADING_COMPETITION_SEASONS[activeSeason].img}
-                    gradientColor={TRADING_COMPETITION_SEASONS[activeSeason].gradient}
-                    title={TRADING_COMPETITION_SEASONS[activeSeason].title}
-                    subTitle={TRADING_COMPETITION_SEASONS[activeSeason].subTitle}
-                    startDate={TRADING_COMPETITION_SEASONS[activeSeason].startDate}
-                    endDate={TRADING_COMPETITION_SEASONS[activeSeason].endDate}
+                    banner={data.img}
+                    gradientColor={data.gradient}
+                    title={data.title}
+                    subTitle={data.subTitle}
+                    startDate={data.startDate}
+                    endDate={data.endDate}
                 />
             </div>
 
