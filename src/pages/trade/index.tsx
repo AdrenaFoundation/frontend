@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import QuestMenu from '@/app/components/QuestMenu/QuestMenu';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Positions from '@/components/pages/trading/Positions/Positions';
@@ -466,77 +467,81 @@ export default function Trade({
           />
         ) : null}
 
-        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-3 z-30">
-          <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
-            <li>
-              <Button
-                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
-                title="Long"
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setActivePositionModal('long');
-                  setSelectedAction('long');
-                }}
-              />
-            </li>
-            <li>
-              <Button
-                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
-                title="Short"
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setActivePositionModal('short');
-                  setSelectedAction('short');
-                }}
-              />
-            </li>
-            <li>
-              <Button
-                className="bg-transparent font-boldy border-white text-white"
-                title="Swap"
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setActivePositionModal('swap');
-                  setSelectedAction('swap');
-                }}
-              />
-            </li>
-          </ul>
+        <div className='relative w-full'>
+          <QuestMenu isMobile className='sm:hidden' />
 
-          <AnimatePresence>
-            {activePositionModal && (
-              <Modal
-                title={`${activePositionModal.charAt(0).toUpperCase() +
-                  activePositionModal.slice(1)
-                  } Position`}
-                close={() => setActivePositionModal(null)}
-                className="flex flex-col overflow-y-auto"
-              >
-                {tokenB && <TradingChartMini token={tokenB} />}
-                <div className="bg-bcolor w-full h-[1px] my-3" />
-                <div className="flex w-full px-4">
-                  <TradeComp
-                    selectedAction={selectedAction}
-                    setSelectedAction={setSelectedAction}
-                    tokenA={tokenA}
-                    tokenB={tokenB}
-                    setTokenA={setTokenA}
-                    setTokenB={setTokenB}
-                    openedPosition={openedPosition}
-                    className="p-0 m-0"
-                    wallet={wallet}
-                    connected={connected}
-                    activeRpc={activeRpc}
-                    terminalId="integrated-terminal-3"
-                    adapters={adapters}
-                  />
-                </div>
-              </Modal>
-            )}
-          </AnimatePresence>
+          <div className="fixed sm:hidden left-0 bottom-0 w-full bg-bcolor backdrop-blur-sm p-3 z-30">
+            <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
+              <li>
+                <Button
+                  className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
+                  title="Long"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    setActivePositionModal('long');
+                    setSelectedAction('long');
+                  }}
+                />
+              </li>
+              <li>
+                <Button
+                  className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
+                  title="Short"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    setActivePositionModal('short');
+                    setSelectedAction('short');
+                  }}
+                />
+              </li>
+              <li>
+                <Button
+                  className="bg-transparent font-boldy border-white text-white"
+                  title="Swap"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    setActivePositionModal('swap');
+                    setSelectedAction('swap');
+                  }}
+                />
+              </li>
+            </ul>
+
+            <AnimatePresence>
+              {activePositionModal && (
+                <Modal
+                  title={`${activePositionModal.charAt(0).toUpperCase() +
+                    activePositionModal.slice(1)
+                    } Position`}
+                  close={() => setActivePositionModal(null)}
+                  className="flex flex-col overflow-y-auto"
+                >
+                  {tokenB && <TradingChartMini token={tokenB} />}
+                  <div className="bg-bcolor w-full h-[1px] my-3" />
+                  <div className="flex w-full px-4">
+                    <TradeComp
+                      selectedAction={selectedAction}
+                      setSelectedAction={setSelectedAction}
+                      tokenA={tokenA}
+                      tokenB={tokenB}
+                      setTokenA={setTokenA}
+                      setTokenB={setTokenB}
+                      openedPosition={openedPosition}
+                      className="p-0 m-0"
+                      wallet={wallet}
+                      connected={connected}
+                      activeRpc={activeRpc}
+                      terminalId="integrated-terminal-3"
+                      adapters={adapters}
+                    />
+                  </div>
+                </Modal>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </>
     </div>
