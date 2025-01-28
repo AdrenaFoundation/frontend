@@ -133,7 +133,7 @@ export default function ChatContainer({
 
     return <div className='fixed bottom-0 right-4 z-20'>
         {isOpen && <div
-            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-gray-600 select-none"
+            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize select-none"
             onMouseDown={handleMouseDown}
             style={{ userSelect: 'none' }}
         />}
@@ -142,7 +142,7 @@ export default function ChatContainer({
             wallet={wallet}
             isOpen={isOpen}
             clickOnHeader={() => {
-                setIsOpen(!isOpen);
+                if (!isDragging) setIsOpen(!isOpen);
             }}
             className={twMerge(
                 "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none",
@@ -150,7 +150,7 @@ export default function ChatContainer({
                     ? `h-[${height}px]`
                     : 'h-[3em]'
             )}
-            style={isOpen ? { height, userSelect: 'none' } : undefined}
+            style={isOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined}
         />
     </div>;
 }
