@@ -1,6 +1,6 @@
 import { Wallet } from "@coral-xyz/anchor";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { twMerge } from "tailwind-merge";
 
@@ -19,8 +19,13 @@ export default function ChatContainer({
     isMobile: boolean;
 }) {
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
+    const [showUserList, setShowUserList] = useState(false);
     const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
-    const [height, setHeight] = useState(Math.round(window.innerHeight * 0.35)); // 35% of window height
+    const [chatHeightCookie, setChatHeightCookie] = useCookies(['chat-height']);
+    const [height, setHeight] = useState(() => {
+        // Initialize with cookie value or default
+        return chatHeightCookie['chat-height'] || Math.round(window.innerHeight * 0.35);
+    });
     const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
@@ -46,38 +51,45 @@ export default function ChatContainer({
     useEffect(() => {
         const handleResize = () => {
             if (!isDragging) {
-                setHeight(Math.round(window.innerHeight * 0.35));
+                if (chatHeightCookie['chat-height']) {
+                    setHeight(chatHeightCookie['chat-height']);
+                } else {
+                    setHeight(Math.round(window.innerHeight * 0.35));
+                }
             }
         };
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [isDragging]);
+    }, [isDragging, height, chatHeightCookie]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
         setIsDragging(true);
     };
 
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!isDragging || !isOpen) return;
+        const newHeight = window.innerHeight - e.clientY;
+        const clampedHeight = Math.min(Math.max(newHeight, 250), 1000);
+        setHeight(clampedHeight);
+    }, [isDragging, isOpen]);
+
+    const handleMouseUp = useCallback(() => {
+        if (isDragging) {
+            setChatHeightCookie('chat-height', height, { path: '/' });
+        }
+        setIsDragging(false);
+    }, [isDragging, height, setChatHeightCookie]);
+
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (!isDragging || !isOpen) return;
-            const newHeight = window.innerHeight - e.clientY;
-            setHeight(Math.min(Math.max(newHeight, 200), 800)); // Min 200px, max 800px
-        };
-
-        const handleMouseUp = () => {
-            setIsDragging(false);
-        };
-
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
-
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDragging, isOpen]);
+    }, [handleMouseMove, handleMouseUp]);
 
     if (isOpen === null) return <></>;
 
@@ -96,10 +108,8 @@ export default function ChatContainer({
 
                 {isOpen ? <AnimatePresence>
                     <Modal
-                        title={`Live Chat`}
-                        close={() => {
-                            setIsOpen(false)
-                        }}
+                        title="Live Chat"
+                        close={() => setIsOpen(false)}
                         className="flex flex-col w-full h-[85vh] max-h-[85vh]"
                     >
                         <Chat
@@ -107,12 +117,10 @@ export default function ChatContainer({
                             userProfile={userProfile}
                             wallet={wallet}
                             isOpen={isOpen}
-                            clickOnHeader={() => {
-                                setIsOpen(!isOpen);
-                            }}
-                            className={twMerge(
-                                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full",
-                            )}
+                            showUserList={showUserList}
+                            onToggleUserList={() => setShowUserList(!showUserList)}
+                            clickOnHeader={() => setIsOpen(!isOpen)}
+                            className="bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full"
                         />
                     </Modal>
                 </AnimatePresence> : null}
@@ -122,7 +130,7 @@ export default function ChatContainer({
 
     return <div className='fixed bottom-0 right-4 z-20'>
         {isOpen && <div
-            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize hover:bg-gray-600 select-none"
+            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize select-none"
             onMouseDown={handleMouseDown}
             style={{ userSelect: 'none' }}
         />}
@@ -130,16 +138,16 @@ export default function ChatContainer({
             userProfile={userProfile}
             wallet={wallet}
             isOpen={isOpen}
+            showUserList={showUserList}
+            onToggleUserList={() => setShowUserList(!showUserList)}
             clickOnHeader={() => {
-                setIsOpen(!isOpen);
+                if (!isDragging) setIsOpen(!isOpen);
             }}
             className={twMerge(
                 "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none",
-                isOpen
-                    ? `h-[${height}px]`
-                    : 'h-[3em]'
+                isOpen ? `h-[${height}px]` : 'h-[3em]'
             )}
-            style={isOpen ? { height, userSelect: 'none' } : undefined}
+            style={isOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined}
         />
     </div>;
 }
