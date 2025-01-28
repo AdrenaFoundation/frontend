@@ -37,7 +37,7 @@ export default function QuestMenu({
                 {!isMobile ? (
                     <Button
                         variant="text"
-                        className="absolute top-2 right-2 w-[20px] h-[20px] p-[5px] border border-txtfade cursor-pointer z-20"
+                        className="absolute top-2 right-2 w-[2em] h-[2em] p-[0.01em] cursor-pointer z-20"
                         onClick={() => {
                             setIsOpen(!isOpen);
                         }}
@@ -48,17 +48,25 @@ export default function QuestMenu({
 
                 <Image
                     src={monster10}
-                    className={twMerge('w-[200px] scale-x-[-1]')}
+                    className={twMerge('w-[200px] scale-x-[-1] cursor-pointer')}
                     alt="monster illustration"
+                    onClick={() => {
+                        setIsOpen(!isOpen);
+                    }}
                 />
+
                 <div className="absolute left-0 w-[30px] h-full bg-gradient-to-r from-[#07131D] to-transparent" />
-                <div className="absolute bottom-0 w-full h-[100px] bg-gradient-to-t from-[#07131D] to-transparent" />
+                <div className="absolute -bottom-2 w-full h-[8em] bg-gradient-to-t from-[#07131D] to-transparent cursor-pointer" onClick={() => {
+                    setIsOpen(!isOpen);
+                }} />
+
                 <div className="p-3 z-10 -translate-x-3 rounded-lg">
                     <p className="font-archivo uppercase bg-[#8DC52E]/70 px-1 mb-2 text-white w-fit">
-                        Expanse
+                        Season 1: Expanse
                     </p>
-                    <p className="font-archivo text-2xl uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
-                        Point based trading competition
+
+                    <p className="font-archivo text-xl uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
+                        COMPLETE QUESTS TO ASCEND
                     </p>
 
                     <div className="flex flex-row gap-3 items-center">
@@ -84,14 +92,15 @@ export default function QuestMenu({
             </div>
 
             <div className="relative border-t">
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <p className="font-mono text-center opacity-50 text-base">
-                        Remaining time
+                <div className="absolute top-[calc(50%-3em)] z-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <p className="font-mono text-center text-base opacity-40">
+                        Starts in
                     </p>
+
                     <RemainingTimeToDate
                         timestamp={new Date(Date.UTC(2025, 1, 1)).getTime() / 1000}
                         className="text-center"
-                        classNameTime="font-archivo text-2xl"
+                        classNameTime="font-thin text-lg opacity-70"
                     />
                 </div>
 
@@ -122,7 +131,7 @@ export default function QuestMenu({
         <div
             className={twMerge(
                 'fixed',
-                isMobile ? 'bottom-[60px] left-4' : 'bottom-0 left-0',
+                isMobile ? 'bottom-[5em] left-4' : 'bottom-0 left-0',
                 className,
             )}
         >
@@ -138,8 +147,8 @@ export default function QuestMenu({
                         <Image
                             src={monster10}
                             className={twMerge(
-                                'w-[150px] scale-x-[-1]',
-                                isMobile && 'w-[100px]',
+                                'w-[10em] scale-x-[-1]',
+                                isMobile && 'w-[5em]',
                             )}
                             alt="monster illustration"
                             key={isOpen ? 'monster-10' : 'monster-10-2'}
@@ -147,8 +156,8 @@ export default function QuestMenu({
 
                         <p
                             className={twMerge(
-                                'absolute top-[70px] left-[90px] bg-red px-2 font-archivo uppercase',
-                                isMobile && 'top-[40px] left-[40px]',
+                                'absolute top-[5em] left-[8em] bg-red px-2 font-archivo uppercase',
+                                isMobile && 'top-[5em] left-[4em] text-[0.55em]',
                             )}
                         >
                             Quests
@@ -166,14 +175,14 @@ export default function QuestMenu({
                             bottom: 0,
                             backgroundColor: 'transparent',
                             height: 0,
-                            width: 500,
+                            width: '35em',
                             opacity: 1,
                         }}
                         animate={{
                             left: 10,
                             bottom: 10,
-                            height: 727,
-                            width: 500,
+                            height: '40em',
+                            width: '35em',
                             opacity: 1,
                             backgroundColor: '#07131D',
                         }}
@@ -181,7 +190,7 @@ export default function QuestMenu({
                             left: 0,
                             bottom: 0,
                             height: 0,
-                            width: 500,
+                            width: '35em',
                             opacity: 0,
                             backgroundColor: 'transparent',
                         }}
