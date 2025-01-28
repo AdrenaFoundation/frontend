@@ -1,7 +1,7 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
-import { createPhantom } from "@phantom/wallet-sdk";
+import { createPhantom, Position } from "@phantom/wallet-sdk";
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -101,8 +101,11 @@ export default function App(props: AppProps) {
     activeRpc !== null
   ) {
     setInitStatus('starting');
-    console.log('createPhantom', createPhantom)
-    createPhantom();
+
+    createPhantom({
+      position: Position.bottomLeft,
+    });
+
     initializeApp(
       preferredSolanaExplorer,
       CONFIG,
