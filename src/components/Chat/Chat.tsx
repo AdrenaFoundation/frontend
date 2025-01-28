@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import Tippy from "@tippyjs/react";
 import { kv } from "@vercel/kv";
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
@@ -38,6 +38,15 @@ interface Message {
 }
 
 const OPEN_CHAT_TTL = 600000; // 10 minute TTL - in millisecond
+
+const generateColorFromString = (str: string): string => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 60%)`;
+};
 
 const trackOpenChat = async (roomId: number, walletAddress: PublicKey) => {
     try {
@@ -73,21 +82,30 @@ const fetchConnectedUsers = async (roomId: number) => {
 
 let profileLoading: string | false = false;
 
+interface ConnectedUser {
+    wallet: string;
+    nickname?: string | null;
+}
+
+interface ChatProps {
+    userProfile: UserProfileExtended | null | false;
+    wallet: Wallet | null;
+    className?: string;
+    style?: React.CSSProperties;
+    isOpen: boolean;
+    clickOnHeader: () => void;
+    displaySmileys?: boolean;
+}
+
 export default function Chat({
     userProfile,
     wallet,
     className,
+    style,
     isOpen,
     clickOnHeader,
     displaySmileys = true,
-}: {
-    userProfile: UserProfileExtended | null | false;
-    wallet: Wallet | null;
-    className?: string;
-    isOpen: boolean;
-    clickOnHeader: () => void;
-    displaySmileys?: boolean;
-}) {
+}: ChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
@@ -95,17 +113,20 @@ export default function Chat({
     const [profileCache, setProfileCache] = useState<Record<string, UserProfileExtended | null | false>>({});
     const dispatch = useDispatch();
     const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
+    const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
 
     const handleConnectionClick = () => {
         dispatch(openCloseConnectionModalAction(true));
     };
 
     useEffect(() => {
-        fetchConnectedUsers(roomId).then(setNbConnectedUsers);
-
-        const interval = setInterval(() => {
+        const updateUsers = () => {
             fetchConnectedUsers(roomId).then(setNbConnectedUsers);
-        }, 20000);
+            fetchDetailedConnectedUsers(roomId).then(setConnectedUsers);
+        };
+
+        updateUsers();
+        const interval = setInterval(updateUsers, 20000);
 
         return () => clearInterval(interval);
     }, []);
@@ -213,9 +234,37 @@ export default function Chat({
             });
     }, [profileCache]);
 
+    const fetchDetailedConnectedUsers = async (roomId: number) => {
+        try {
+            const keys = await kv.keys(`connected:${roomId}:*`);
+            const users = await Promise.all(keys.map(async (key) => {
+                const wallet = key.split(':')[2];
+                const profile = await window.adrena.client.loadUserProfile(new PublicKey(wallet));
+                if (profile) {
+                    setProfileCache(prev => ({
+                        ...prev,
+                        [wallet]: profile
+                    }));
+                }
+                return {
+                    wallet,
+                    nickname: profile ? profile.nickname : null
+                };
+            }));
+            return users;
+        } catch (e) {
+            console.log('Error loading connected users', e);
+            return [];
+        }
+    };
+
+    const anonymousCount = useMemo(() => {
+        return connectedUsers.filter(user => !user.nickname).length;
+    }, [connectedUsers]);
+
     return (
         <>
-            <div className={className}>
+            <div className={className} style={style}>
                 <div
                     className="h-[3em] flex gap-2 items-center justify-between pl-4 pr-4 border-b flex-shrink-0 opacity-90 hover:opacity-100 cursor-pointer"
                     onClick={() => clickOnHeader()}
@@ -233,112 +282,133 @@ export default function Chat({
 
                     <div className="flex gap-2">
                         <LiveIcon />
-
-                        <div className="text-xs flex mt-[0.1em] font-archivo text-txtfade">{nbConnectedUsers === null ? '-' : nbConnectedUsers}</div>
-
-                        <Image
-                            src={groupIcon}
-                            alt="group logo"
-                            width={18}
-                            height={18}
-                        />
+                        <Tippy
+                            trigger="click"
+                            interactive={true}
+                            content={
+                                <div className="p-2 text-xs">
+                                    {connectedUsers.filter(user => user.nickname).map((user, i) => (
+                                        <div key={i} className="mb-1">
+                                            <div className="text-sm" style={{ color: generateColorFromString(user.wallet) }}>
+                                                {user.nickname}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {anonymousCount > 0 && (
+                                        <div className="text-gray-400">+{anonymousCount} anonymous</div>
+                                    )}
+                                </div>
+                            }
+                        >
+                            <div
+                                className="flex items-center gap-2 cursor-pointer"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="text-xs flex mt-[0.1em] font-archivo text-txtfade">
+                                    {nbConnectedUsers === null ? '-' : nbConnectedUsers}
+                                </div>
+                                <Image
+                                    src={groupIcon}
+                                    alt="group logo"
+                                    width={18}
+                                    height={18}
+                                />
+                            </div>
+                        </Tippy>
                     </div>
                 </div>
 
                 <div className="p-4 flex flex-col h-[calc(100% - 9em)] max-h-[calc(100% - 9em)] flex-grow w-full overflow-auto custom-chat-scrollbar" ref={containerRef}>
                     {messages.map((msg, i) => (
-                        <div key={i} className="flex gap-2 items-center">
-                            <div className="text-xs opacity-20 font-mono">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                            <Tippy
-                                className="relative tippy-no-padding border-2"
-                                trigger="click"
-                                interactive={true}
-                                content={
-                                    <>
-                                        <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
+                        <div key={i} className="flex gap-2 mb-1">
+                            <div className="text-xs opacity-20 font-mono mt-[2px] shrink-0">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            <div className="flex gap-2 min-w-0">
+                                <Tippy
+                                    className="relative tippy-no-padding border-2"
+                                    trigger="click"
+                                    interactive={true}
+                                    content={
+                                        <>
+                                            <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
 
-                                        <div className="text-xs font-boldy p-2">
-                                            {!msg.wallet ? <div className="relative flex text-[1.2em] p-4">
-                                                Anonymous
-                                            </div> : null}
+                                            <div className="text-xs font-boldy p-2">
+                                                {!msg.wallet ? <div className="relative flex text-[1.2em] p-4">
+                                                    Anonymous
+                                                </div> : null}
 
-                                            {msg.wallet && profileCache[msg.wallet] ?
-                                                <div className="w-[30em] h-[10em] relative flex">
-                                                    <div className="h-[10em] w-[10em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
+                                                {msg.wallet && profileCache[msg.wallet] ?
+                                                    <div className="w-[25em] h-[9em] relative flex">
+                                                        <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
 
-                                                    <div className="flex flex-col w-[20em] pl-4 items-center justify-evenly">
-                                                        <div className="w-full flex flex-col items-center">
-                                                            <div className="text-[1.2em]">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
-
-                                                            <div className="h-[1px] w-full bg-white opacity-90 mt-2 mb-2" />
-                                                        </div>
-
-                                                        <div className="flex flex-col w-full gap-1">
-                                                            <div className="flex justify-between items-center w-full">
-                                                                <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                    Trading Volume
-                                                                </div>
-
-                                                                <FormatNumber
-                                                                    nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
-                                                                    format="currency"
-                                                                    precision={0}
-                                                                    isDecimalDimmed={false}
-                                                                    className='border-0'
-                                                                />
+                                                        <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
+                                                            <div className="w-full flex flex-col items-center">
+                                                                <div className="text-base truncate max-w-full">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
+                                                                <div className="h-[1px] w-full bg-white opacity-90 mt-1 mb-1" />
                                                             </div>
 
-                                                            <div className="flex justify-between items-center w-full">
-                                                                <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                    PnL
+                                                            <div className="flex flex-col w-full gap-1">
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <div className="text-xs font-boldy">Trading Volume</div>
+                                                                    <FormatNumber
+                                                                        nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
+                                                                        format="currency"
+                                                                        precision={0}
+                                                                        isDecimalDimmed={false}
+                                                                        className='border-0 text-xs'
+                                                                        isAbbreviate={true}
+                                                                    />
                                                                 </div>
 
-                                                                <FormatNumber
-                                                                    nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
-                                                                    format="currency"
-                                                                    precision={0}
-                                                                    isDecimalDimmed={false}
-                                                                    className='border-0'
-                                                                />
-                                                            </div>
-
-                                                            <div className="flex justify-between items-center w-full">
-                                                                <div className="text-nowrap font-boldy text-[1.2em]">
-                                                                    Fees Paid
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <div className="text-xs font-boldy">PnL</div>
+                                                                    <FormatNumber
+                                                                        nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
+                                                                        format="currency"
+                                                                        precision={0}
+                                                                        isDecimalDimmed={false}
+                                                                        className='border-0 text-xs'
+                                                                    />
                                                                 </div>
 
-                                                                <FormatNumber
-                                                                    nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
-                                                                    format="currency"
-                                                                    precision={0}
-                                                                    isDecimalDimmed={false}
-                                                                    className='border-0'
-                                                                />
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <div className="text-xs font-boldy">Fees Paid</div>
+                                                                    <FormatNumber
+                                                                        nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
+                                                                        format="currency"
+                                                                        precision={0}
+                                                                        isDecimalDimmed={false}
+                                                                        className='border-0 text-xs'
+                                                                    />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                : msg.wallet && profileCache[msg.wallet] === false ?
-                                                    <div className="relative flex text-[1.2em] p-4">
-                                                        No profile
-                                                    </div> : <Loader />}
-                                        </div>
-                                    </>
-                                }
-                                key={i}
-                            >
-                                <div
-                                    className={twMerge(
-                                        "text-sm font-boldy cursor-pointer hover:underline relative",
-                                        msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58() ? 'text-[#e1aa2a]' : 'text-[#E2464A]'
-                                    )}
-                                    onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
+                                                    : msg.wallet && profileCache[msg.wallet] === false ?
+                                                        <div className="relative flex text-[1.2em] p-4">
+                                                            No profile
+                                                        </div> : <Loader />}
+                                            </div>
+                                        </>
+                                    }
+                                    key={i}
                                 >
-                                    {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
-                                </div>
-                            </Tippy>
+                                    <div
+                                        className="text-sm font-boldy cursor-pointer hover:underline shrink-0"
+                                        style={{
+                                            color: msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
+                                                ? '#e1aa2a'
+                                                : msg.wallet
+                                                    ? generateColorFromString(msg.wallet)
+                                                    : '#9ca3af'
+                                        }}
+                                        onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
+                                    >
+                                        {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
+                                    </div>
+                                </Tippy>
 
-                            <div className="text-sm font-regular text-txtfade">{msg.text}</div>
+                                <div className="text-sm font-regular text-txtfade break-words min-w-0">{msg.text}</div>
+                            </div>
                         </div>
                     ))}
                 </div>

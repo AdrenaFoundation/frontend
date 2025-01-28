@@ -8,6 +8,26 @@ import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Modal from '../common/Modal/Modal';
 
+interface MutagenSource {
+  title: string;
+  description: string;
+  comingSoon?: boolean;
+  comingSoonText?: string;
+}
+
+const mutagenSources: MutagenSource[] = [
+  {
+    title: 'Trading Season',
+    description: 'Complete quests, streaks and earn Mutagen, battle against others to win rewards in our 10 weeks long recurring events.',
+    comingSoon: true,
+    comingSoonText: 'Starts February 1st'
+  },
+  {
+    title: 'Leveraged Trading',
+    description: 'Continuously earn Mutagen by executing leveraged trades on the platform. The higher the size and leverage, the more Mutagen. Mutagen is retro-generated since platform launch for all traders.'
+  },
+];
+
 export default function Mutagen({
   isMobile = false,
 }: {
@@ -20,14 +40,25 @@ export default function Mutagen({
       <h2 className="flex">Mutagen</h2>
 
       <p className='text-txtfade text-sm mt-2 text-center'>
-        Mutagen is an elusive resource that can only be generated through trading activity. Accumulate it doing leveraged trades and rank up in the upcoming &quot;Season One: Expanse&quot;.
+        Mutagen is an elusive resource earned through trading. Accumulate it to increase your Airdrop share.
       </p>
 
-      <p className='text-txtfade text-sm mt-1 text-center'>
-        Note that Mutagen amount will also determine your rewards during the upcoming Airdrop.
-      </p>
+      <div className="w-full mt-4 space-y-3">
+        {mutagenSources.map((source, index) => (
+          <div key={index} className="bg-[#0f1114] p-4 rounded-lg border border-[#1f2124] hover:border-[#2f3134] transition-colors">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold">{source.title}</h3>
+              {source.comingSoon && (
+                <span className="text-xs text-[#ff47b5] border border-[#ff47b5]/30 px-2 py-0.5 rounded-full shadow-[0_0_8px_-3px_#ff47b5]">
+                  {source.comingSoonText}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-txtfade mt-1">{source.description}</p>
+          </div>
+        ))}
+      </div>
 
-      <div className='mt-2 font-boldy text-xs'>Coming soon</div>
     </div>
   );
 
@@ -62,9 +93,8 @@ export default function Mutagen({
     <Menu
       openMenuTriggerType='hover'
       trigger={
-        <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c]'>
+        <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
           <div className='text-xs font-boldy text-white'>-</div>
-
           <Image
             src={needle}
             alt={'needle'}
@@ -75,9 +105,9 @@ export default function Mutagen({
         </div>
       }
       openMenuClassName={twMerge(
-        'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
+        'rounded-lg w-[400px] bg-secondary p-3 shadow-lg transition duration-300 right-0',
       )}
-      disableOnClickInside={true}
+      disableOnClickInside={false}
       isDim={false}
     >
       {content}

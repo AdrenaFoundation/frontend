@@ -986,7 +986,7 @@ export default function LongShortTradingInputs({
                 <Tippy
                   content={
                     <p className="font-medium text-txtfade">
-                      0 BPS entry fees - 16 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
+                      0 BPS entry fees - 12 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
                     </p>
                   }
                 >
