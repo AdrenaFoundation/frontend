@@ -29,7 +29,8 @@
     "**/*.ts",
     "**/*.tsx",
     "src/pages/_error.jsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "global.d.ts"
   ],
   "exclude": ["node_modules"]
 }

@@ -68,6 +68,8 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
         }),
     ]);
 
+    console.log('Adapters', adapters)
+
     // Remove the adapters that has been added automatically but that we don't want to use
     return useMemo(() => adapters.filter(adapter => {
         return SUPPORTED_WALLETS.includes(adapter.name as WalletAdapterName);
