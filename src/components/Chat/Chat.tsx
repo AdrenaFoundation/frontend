@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import Tippy from "@tippyjs/react";
 import { kv } from "@vercel/kv";
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
