@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import crossIcon from '@/../public/images/cross.svg';
+import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -14,9 +16,11 @@ import TradingStats from './TradingStats';
 export default function ViewProfileModal({
     profile,
     showFeesInPnl,
+    close,
 }: {
     profile: UserProfileExtended;
     showFeesInPnl: boolean;
+    close: () => void;
 }) {
     const walletAddress = profile.owner.toBase58();
     const positions = usePositionsByAddress({
@@ -28,6 +32,16 @@ export default function ViewProfileModal({
 
     return (
         <div className="p-3 w-full">
+            <Button
+                variant="text"
+                className="hidden sm:block absolute right-6 top-6 w-[20px] h-[20px] p-[5px] border border-txtfade cursor-pointer z-20"
+                onClick={() => {
+                    close();
+                }}
+                leftIcon={crossIcon}
+                size="sm"
+            />
+
             <OwnerBlock
                 userProfile={profile}
                 triggerUserProfileReload={() => {

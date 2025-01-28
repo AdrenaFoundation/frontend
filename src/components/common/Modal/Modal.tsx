@@ -101,7 +101,7 @@ export default function Modal({
 
         <motion.div
           className={twMerge(
-            'min-w-20 min-h-20 z-[102] rounded-lg border overflow-hidden flex flex-col items-center',
+            'min-w-20 min-h-20 z-[102] bg-secondary rounded-lg border overflow-hidden flex flex-col items-center',
             !isMobile ? '-mt-[8%] mx-4' : 'mt-auto rounded-b-none w-full',
             wrapperClassName,
           )}
@@ -115,7 +115,7 @@ export default function Modal({
           <div
             className={twMerge(
               'h-16 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
-              !isWrapped && 'hidden',
+              !isWrapped && 'sm:hidden',
             )}
             onPointerDown={isMobile ? startDrag : undefined}
             style={{ touchAction: 'none' }}

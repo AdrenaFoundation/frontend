@@ -809,7 +809,7 @@ export default function Competition({
                         isWrapped={false}
                         close={() => setProfile(null)}
                     >
-                        <ViewProfileModal profile={profile} showFeesInPnl={showFeesInPnl} />
+                        <ViewProfileModal profile={profile} showFeesInPnl={showFeesInPnl} close={() => setProfile(null)} />
                     </Modal>
                 )}
             </AnimatePresence>

@@ -246,6 +246,7 @@ export default function AllUserProfiles({
                         <ViewProfileModal
                             profile={activeProfile}
                             showFeesInPnl={showFeesInPnl}
+                            close={() => setActiveProfile(null)}
                         />
                     </Modal>
                 )}
