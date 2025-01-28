@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Layout } from '@rive-app/react-canvas';
 import Image from 'next/image';
 import React, { useMemo, useState } from 'react';

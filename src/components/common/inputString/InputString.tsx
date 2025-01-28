@@ -8,6 +8,7 @@ export default function InputString({
   className,
   inputFontSize,
   maxLength,
+  onEnterKeyPressed,
 }: {
   value?: string;
   disabled?: boolean;
@@ -16,6 +17,7 @@ export default function InputString({
   className?: string;
   maxLength?: number;
   inputFontSize?: string;
+  onEnterKeyPressed?: () => void;
 }) {
   return (
     <input
@@ -31,6 +33,13 @@ export default function InputString({
         if (!v.target.value.length) return onChange(null);
 
         onChange(v.target.value);
+      }}
+      onKeyDown={(e) => {
+        if (!onEnterKeyPressed) return;
+
+        if (e.key === "Enter") {
+          onEnterKeyPressed();
+        }
       }}
       placeholder={placeholder}
       className={twMerge(

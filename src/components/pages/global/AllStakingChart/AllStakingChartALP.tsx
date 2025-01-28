@@ -38,7 +38,7 @@ export default function AllStakingChartALP({
       return;
     }
 
-    setData(Object.entries(allStakingStats.ALP.locked).sort((a, b) => Number(b[0]) - Number(a[0])).map(([duration, lockedPerDuration], i) => ({
+    setData(Object.entries(allStakingStats.byDurationByAmount.ALP.locked).sort((a, b) => Number(b[0]) - Number(a[0])).map(([duration, lockedPerDuration], i) => ({
       name: `${duration}d ALP-${lockedPerDuration.total}-${i}`,
       duration: `${duration}d`,
       color: 'transparent',

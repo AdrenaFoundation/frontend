@@ -1,33 +1,7 @@
-import {
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  Title,
-  Tooltip,
-} from 'chart.js';
-import ChartPluginAnnotation from 'chartjs-plugin-annotation';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import { PoolInfo } from '@/hooks/usePoolInfo';
-
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  ChartDataLabels,
-  ChartPluginAnnotation,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-);
 
 export default function PoolRatios({
   poolInfo,

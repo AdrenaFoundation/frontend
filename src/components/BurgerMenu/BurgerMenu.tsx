@@ -12,6 +12,7 @@ import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  VestExtended,
   WalletAdapterExtended,
 } from '@/types';
 import { formatPriceInfo } from '@/utils';
@@ -41,6 +42,8 @@ export default function BurgerMenu({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  userVest,
+  userDelegatedVest,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
@@ -67,6 +70,8 @@ export default function BurgerMenu({
   autoRpcMode: boolean;
   customRpcUrl: string | null;
   favoriteRpc: string | null;
+  userVest: VestExtended | null | false;
+  userDelegatedVest: VestExtended | null | false;
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
@@ -234,7 +239,7 @@ export default function BurgerMenu({
           >
             <div>
               <ul className="flex flex-col gap-3 mt-4">
-                {PAGES.map((page) => {
+                {PAGES.filter(p => p.name !== 'Vest' || (userVest || userDelegatedVest)).map((page) => {
                   return (
                     <li
                       className={twMerge(

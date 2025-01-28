@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 import { getGMT } from '@/utils';
 
@@ -34,6 +35,10 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
             return 'poolinfohourly';
           case '1M':
             return 'poolinfodaily';
+          case '3M':
+            return 'poolinfodaily';
+          case '6M':
+            return 'poolinfodaily';
           default:
             return 'poolinfo';
         }
@@ -47,6 +52,10 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
             return 7;
           case '1M':
             return 31;
+          case '3M':
+            return 93;
+          case '6M':
+            return 183;
           default:
             return 1;
         }
@@ -87,7 +96,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
           });
         }
 
-        if (periodRef.current === '1M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -157,11 +166,16 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
         },
       ]}
       period={period}
-      gmt={period === '1M' ? 0 : getGMT()}
+      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       setPeriod={setPeriod}
-      domain={[0, 'auto']}
+      yDomain={[0, 'auto']}
       tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
       isSmallScreen={isSmallScreen}
+      events={ADRENA_EVENTS}
     />
   );
 }

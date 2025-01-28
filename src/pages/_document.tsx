@@ -3,24 +3,24 @@ import Script from 'next/script';
 
 export const metadata = {
   metadataBase: new URL('https://app.adrena.xyz/'),
-  title: 'Adrena | Pre-Season: Awakening',
+  title: 'Adrena | Season 1: Expanse',
   description:
-    "Adrena's first trading competition. Compete for a share of over 2 million ADX and 25K JTO rewards",
+    "Adrena's inaugural trading competition season. Compete for a share of over 2 million ADX and 50K JTO rewards",
   openGraph: {
-    title: 'Adrena | Pre-Season: Awakening',
+    title: 'Adrena | Season 1: Expanse',
     description:
-      "Adrena's first trading competition. Compete for a share of over 2 million ADX and 25K JTO rewards",
+      "Adrena's inaugural trading competition season. Compete for a share of over 2 million ADX and 50K JTO rewards",
     images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/competition-banner-1.jpg',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/expanse.png',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Adrena | Pre-Season: Awakening',
+    title: 'Adrena | Season 1: Expanse',
     description:
-      "Adrena's first trading competition. Compete for a share of over 2 million ADX and 25K JTO rewards",
+      "Adrena's inaugural trading competition season. Compete for a share of over 2 million ADX and 50K JTO rewards",
     creator: '@adrenaprotocol',
     images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/competition-banner-1.jpg',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/expanse.png',
   },
 } as const;
 
@@ -33,7 +33,7 @@ export default function Document() {
 
         <meta
           name="description"
-          content="Adrena's first trading competition. Compete for a share of over 2 million ADX and 25K JTO rewards"
+          content="Adrena's inaugural trading competition season. Compete for a share of over 2 million ADX and 50K JTO rewards"
         />
         <link rel="icon" href="/favicon.ico" />
 

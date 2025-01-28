@@ -1,7 +1,15 @@
 import { Keypair, PublicKey } from '@solana/web3.js';
 
+import awakeningBanner from '@/../../public/images/comp-banner.png';
+import expanseBanner from '@/../public/images/expanse-banner.jpg';
+
 import { ResolutionString } from '../public/charting_library/charting_library';
-import { AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
+import {
+  AdrenaEvent,
+  AdxLockPeriod,
+  AlpLockPeriod,
+  SupportedCluster,
+} from './types';
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;
@@ -120,7 +128,9 @@ export const SOLANA_EXPLORERS_OPTIONS = {
     url: 'https://solanabeach.io',
     // TODO: support devnet
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solanabeach.io/address/${address}`,
+      cluster === 'devnet'
+        ? `https://explorer.solana.com/address/${address}?cluster=devnet` // redirection vers Solana Explorer pour devnet
+        : `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
       `https://solanabeach.io/transaction/${tx}${
         cluster === 'devnet' ? '?cluster=devnet' : ''
@@ -158,5 +168,181 @@ export const SOLANA_EXPLORERS_OPTIONS = {
       `https://solana.fm/tx/${tx}${
         cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
+  },
+} as const;
+
+export const greenColor = '#07956be6';
+export const redColor = '#F23645';
+export const greyColor = '#78828e';
+export const whiteColor = '#ffffff';
+export const orangeColor = '#f77f00';
+export const blueColor = '#3a86ff';
+export const purpleColor = '#9333ea';
+
+export const normalize = (
+  value: number,
+  minRange: number,
+  maxRange: number,
+  minValue: number,
+  maxValue: number,
+) => {
+  if (maxValue === minValue) {
+    return maxRange;
+  }
+  if (value < minValue || value > maxValue) {
+    return 0;
+  }
+  return (
+    minRange +
+    ((value - minValue) / (maxValue - minValue)) * (maxRange - minRange)
+  );
+};
+
+export const ADRENA_EVENTS: AdrenaEvent[] = [
+  {
+    label: '',
+    time: '9/17',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Genesis phase: liquidity pool raises 10m to bootstrap trading.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '9/25',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Trading goes live.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '10/15',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and JitoSOL max position size to $500k.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '10/30',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and JitoSOL max position size to $750k.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/2',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Update pool target ratios to [15% USDC, 7% BONK, 54% jitoSOL, 24% WBTC].`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '11/2',
+    color: '#ffffff40',
+    labelPosition: 'insideTopLeft',
+    description: 'BONK borrow rate increased from 0.008%/h to 0.016%/h.',
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/11',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `"Pre-season: AWAKENING" trading competition starts.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/13',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $1m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/20',
+    color: '#ffffff40',
+    labelPosition: 'insideTopLeft',
+    description: 'BONK borrow rate increased from 0.016%/h to 0.032%/h.',
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '11/23',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $2m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '12/8',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase WBTC and jitoSOL max position size to $4m.`,
+    type: 'Trading',
+  },
+  {
+    label: '',
+    time: '12/10',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Increase liquidity pool soft cap to $30m.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '12/23',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `"Pre-season: AWAKENING" trading competition ends. 876 participants fought for 2.27M ADX and 25k JTO rewards.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '01/05',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Adrena is now supported by Solana AgentKit from SendAI.`,
+    type: 'Trading',
+  },
+];
+
+export const TRADING_COMPETITION_SEASONS = {
+  awakening: {
+    img: awakeningBanner,
+    title: 'Awakening',
+    subTitle: 'pre-season',
+    startDate: new Date('11/11/2024'),
+    endDate: new Date('12/23/2024'),
+    gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
+    primaryColor: '#E5B958',
+    description: [
+      "Welcome to Adrena's trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons. From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions. Your total trading volume during the six-week event determines your division qualification. Check out the divisions below, continuously updated based on onchain events.",
+      "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
+    ] as string[],
+  },
+  expanse: {
+    img: expanseBanner,
+    title: 'The Expanse',
+    subTitle: 'new season',
+    startDate: new Date('02/01/2025'),
+    endDate: new Date('04/12/2025'),
+    gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
+    primaryColor: '#FA6724',
+    description: [
+      `Adrena's first Trading Season: The Expanse. Get ready for Adrena's inaugural trading season, The Expanse. Engage in our division-based trading competition where you can:`,
+      `- Farm Mutagen through daily and weekly quests. By accumulating Mutagen through leverage trading, you can improve your ranking in the upcoming season and secure a share in the upcoming $ADX Airdrop. Can only generate through trading activities.`, 
+      `- Earn Streaks, leverage daily Mutations, and unlock Exclusive Achievement Titles.`, 
+      `Important Dates and Details:`,
+      `Mutagen Accrual starts on February 1st for the Season rankings. However, all trading activity prior to this date will retroactively provide you Mutagen that will solely count towards the airdrop. Eligible Trades: Only positions opened after February 1st and closed before the season's end will qualify for the season rankings. Weekly Periods: Each week ends at 12:00 AM UTC on Monday, with the exception of the final week, which concludes at 12:00 PM UTC.`,
+
+      `Come get some.`,
+    ] as string[],
   },
 } as const;

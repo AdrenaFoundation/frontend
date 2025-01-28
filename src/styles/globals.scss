@@ -35,7 +35,7 @@
   --color-light: #f5f5f5;
   --color-dark: #080a0d;
 
-  --color-bcolor: #2a2a2a;
+  --color-bcolor: #15202c;
 
   --color-gray-200: #1a2431;
 
@@ -215,6 +215,10 @@ input[type='number'] {
 
 // Tooltips
 
+.tippy-box.tippy-no-padding {
+  padding: 0 !important;
+}
+
 .tippy-box {
   display: flex;
   flex-direction: column;
@@ -251,6 +255,23 @@ input[type='radio']:checked {
   background-color: var(--color-light);
   border: 1px solid var(--color-light);
   box-shadow: 0 0 0 3px var(--color-dark) inset;
+}
+
+input[type='checkbox'] {
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  font: inherit;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--color-bcolor);
+  border-radius: 4px;
+  transition: 0.3s var(--bezier-spring);
+}
+
+input[type='checkbox']:checked {
+  background-color: var(--color-light);
+  border: 1px solid var(--color-light);
 }
 
 .fade-in {
@@ -315,6 +336,28 @@ input[type='radio']:checked {
   background-color: #ffffff; /* color of the scroll thumb */
   border-radius: 6px; /* roundness of the scroll thumb */
   border: 3px solid #16293d; /* creates padding around scroll thumb */
+}
+
+/* Custom styles for .custom-scrollbar */
+/* Works on Firefox */
+.custom-chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #E2464A80 #0F0F19; /* Thumb color, Track color */
+}
+
+/* Works on Chrome, Edge, and Safari */
+.custom-chat-scrollbar::-webkit-scrollbar {
+  width: 10px; /* width of the entire scrollbar */
+}
+
+.custom-chat-scrollbar::-webkit-scrollbar-track {
+  background: #0F0F19; /* color of the tracking area */
+}
+
+.custom-chat-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #E2464A; /* color of the scroll thumb */
+  border-radius: 6px; /* roundness of the scroll thumb */
+  border: 2px solid #0F0F19; /* creates padding around scroll thumb */
 }
 
 .Toastify__toast-container--bottom-left {

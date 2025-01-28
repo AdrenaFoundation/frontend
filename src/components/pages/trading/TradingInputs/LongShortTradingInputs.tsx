@@ -1,10 +1,12 @@
 import { BN, Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
+import { kv } from '@vercel/kv';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -29,10 +31,12 @@ import {
   getTokenImage,
   getTokenSymbol,
   nativeToUi,
+  tryPubkey,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
 
+import fireImg from '../../../../../public/images/fire.png';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
@@ -70,12 +74,16 @@ export default function LongShortTradingInputs({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
 }) {
+  const { query } = useRouter();
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const borrowRates = useSelector((s) => s.borrowRates);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
+
+  const [insufficientAmount, setInsufficientAmount] = useState<boolean>(false);
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -93,6 +101,24 @@ export default function LongShortTradingInputs({
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
 
+  const referrer = useMemo(async () => {
+    console.log('Referral', query.referral);
+
+    if (query.referral === null || typeof query.referral === 'undefined' || query.referral === '' || typeof query.referral !== 'string') {
+      return null;
+    }
+
+    if (query.referral.length === 44) return tryPubkey(query.referral as string)
+
+    try {
+      const referralRedis = await kv.get(decodeURIComponent(query.referral as string)) as string | null
+      return referralRedis !== null ? tryPubkey(referralRedis) : null
+    } catch (err) {
+      console.log('Error getting referral from redis', err)
+      return null
+    }
+  }, [query.referral]);
+
   const [custody, setCustody] = useState<CustodyExtended | null>(null);
 
   const [newPositionInfo, setNewPositionInfo] = useState<{
@@ -104,6 +130,7 @@ export default function LongShortTradingInputs({
     liquidationPrice: number;
     exitFeeUsd: number;
     liquidationFeeUsd: number;
+    highSwapFees: boolean;
   } | null>(null);
 
   const [increasePositionInfo, setIncreasePositionInfo] = useState<{
@@ -249,6 +276,8 @@ export default function LongShortTradingInputs({
     }
 
     try {
+      const referrerPublicKey = await referrer;
+
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
           owner: new PublicKey(wallet.publicKey),
@@ -258,6 +287,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          referrer: referrerPublicKey,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -267,11 +297,13 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          referrer: referrerPublicKey,
         }));
 
       dispatch(fetchWalletTokenBalances());
 
       setInputA(null);
+      setInsufficientAmount(false);
       setErrorMessage(null);
       setInputB(null);
       setPriceA(null);
@@ -293,6 +325,10 @@ export default function LongShortTradingInputs({
     // If wallet not connected, then user need to connect wallet
     if (!connected) return setButtonTitle('Connect wallet');
 
+    if (insufficientAmount) {
+      return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
+    }
+
     if (openedPosition) {
       if (side === 'short') {
         return setButtonTitle('Increase Short');
@@ -310,6 +346,7 @@ export default function LongShortTradingInputs({
     tokenA,
     wallet,
     walletTokenBalances,
+    insufficientAmount,
   ]);
 
   useEffect(() => {
@@ -352,7 +389,10 @@ export default function LongShortTradingInputs({
         // an other request has been casted due to input change
         if (localLoadingCounter !== loadingCounter) return;
 
-        setNewPositionInfo(infos);
+        setNewPositionInfo({
+          ...infos,
+          highSwapFees: infos.swapFeeUsd !== null && infos.swapFeeUsd * 100 / infos.collateralUsd > 1,
+        });
 
         console.log('Position infos', infos);
       } catch (err) {
@@ -443,13 +483,16 @@ export default function LongShortTradingInputs({
   useEffect(() => {
     if (!inputA || !connected) {
       setErrorMessage(null);
+      setInsufficientAmount(false);
       return;
     }
 
     const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     if (!walletTokenABalance || inputA > walletTokenABalance) {
-      return setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
+      setInsufficientAmount(true);
+    } else {
+      setInsufficientAmount(false);
     }
 
     // Check for minimum collateral value
@@ -497,7 +540,9 @@ export default function LongShortTradingInputs({
     }
 
     return setErrorMessage(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
+
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
@@ -515,6 +560,10 @@ export default function LongShortTradingInputs({
     handleInputAChange(userWalletAmount);
   };
 
+  const highSwapFeeTippyContent = useMemo(() => <div className="gap-4 flex flex-col">
+    <div className='text-txtfade text-sm'>The collateral you provided does not match the assets you&apos;r opening a position for, as such the platform will first have to do a Swap. Swap fees are dynamic and based on the Liquidity Pool&apos;s ratios, and currently that direction isn&apos;t favorable in term of fees. You can decide to go through or change the provided collateral.</div>
+  </div>, []);
+
   return (
     <div
       className={twMerge('relative flex flex-col sm:pb-2', className)}
@@ -529,7 +578,7 @@ export default function LongShortTradingInputs({
             alt="Info icon"
           />
           <span className="text-sm" >
-            Short positions have a maximum absolute PnL of the borrowed USDC amount (a.k.a. position size). <br />More about the peer2pool perp model
+            Max payout on short is equivalent to the borrowed USDC (size). <br />More about the peer2pool perp model
             <Link href="https://docs.adrena.xyz/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider" className="underline ml-1 text-sm" target='_blank'>
               in the docs
             </Link>
@@ -606,7 +655,7 @@ export default function LongShortTradingInputs({
         </div>
       </div>
 
-      <div className="flex flex-col mt-2 sm:mt-4 transition-opacity duration-500">
+      <div className="flex flex-col mt-2 sm:mt-3 transition-opacity duration-500">
         <h5 className="flex items-center ml-4">Size</h5>
 
         <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
@@ -763,13 +812,14 @@ export default function LongShortTradingInputs({
           )}
           size="lg"
           title={buttonTitle}
-          disabled={errorMessage != null}
+          disabled={errorMessage != null || insufficientAmount}
           onClick={handleExecuteButton}
         />
 
-        {inputA && !errorMessage && (
+
+        {inputA && !errorMessage ? (
           <>
-            <div className="flex items-center ml-4 mt-3 mb-2">
+            <div className="flex items-center ml-4 mt-1 mb-2">
               <h5 className="hidden sm:flex items-center">Position info</h5>
               <Tippy
                 content={
@@ -790,57 +840,61 @@ export default function LongShortTradingInputs({
 
             <StyledSubSubContainer
               className={twMerge(
-                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
+                'flex pl-3 pr-3 items-center justify-center mt-2 sm:mt-0 border-b-0 rounded-bl-none rounded-br-none',
+                openedPosition ? 'h-[4.8em]' : 'h-[4em]'
               )}
             >
               {newPositionInfo && !isInfoLoading ? (
                 <div className="flex w-full justify-evenly">
-                  <TextExplainWrapper
-                    title="Entry Price"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
-                      format="currency"
-                      className="text-lg"
-                      precision={tokenB.displayPriceDecimalsPrecision}
-                    />
-
-                    {openedPosition && (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Entry Price"
+                      className="flex-col mt-7"
+                    >
                       <FormatNumber
-                        nb={openedPosition.price}
+                        nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                         format="currency"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className="text-base"
                         precision={tokenB.displayPriceDecimalsPrecision}
                       />
-                    )}
-                  </TextExplainWrapper>
+
+                      {openedPosition && (
+                        <FormatNumber
+                          nb={openedPosition.price}
+                          format="currency"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                          precision={tokenB.displayPriceDecimalsPrecision}
+                        />
+                      )}
+                    </TextExplainWrapper>
+                  </div>
 
                   <div className="h-full w-[1px] bg-gray-800" />
 
-                  <TextExplainWrapper
-                    title="Liquidation Price"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
-                      format="currency"
-                      className="text-lg text-orange"
-                      precision={tokenB.displayPriceDecimalsPrecision}
-                    />
-
-                    {openedPosition && openedPosition.liquidationPrice ? (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Liquidation Price"
+                      className="flex-col mt-7"
+                    >
                       <FormatNumber
-                        nb={openedPosition.liquidationPrice}
+                        nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                         format="currency"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className="text-base text-orange"
                         precision={tokenB.displayPriceDecimalsPrecision}
                       />
-                    ) : null}
-                  </TextExplainWrapper>
+
+                      {openedPosition && openedPosition.liquidationPrice ? (
+                        <FormatNumber
+                          nb={openedPosition.liquidationPrice}
+                          format="currency"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                          precision={tokenB.displayPriceDecimalsPrecision}
+                        />
+                      ) : null}
+                    </TextExplainWrapper>
+                  </div>
                 </div>
               ) : (
                 <div className="flex w-full justify-evenly items-center">
@@ -852,65 +906,68 @@ export default function LongShortTradingInputs({
                 </div>
               )}
             </StyledSubSubContainer>
-
-            <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2"></h5>
 
             <StyledSubSubContainer
               className={twMerge(
-                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
+                'flex pl-3 pr-3 pt-0 pb-3 items-center justify-center border-t-0 rounded-tl-none rounded-tr-none',
+                openedPosition ? 'h-[4.8em]' : 'h-[4em]'
               )}
             >
               {newPositionInfo && !isInfoLoading ? (
                 <div className="flex w-full justify-evenly">
-                  <TextExplainWrapper
-                    title="Init. Leverage"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
-                      format="number"
-                      prefix="x"
-                      className={`text-lg ${openedPosition
-                        ? increasePositionInfo?.isLeverageIncreased
-                          ? 'text-orange'
-                          : 'text-green'
-                        : 'text-white'
-                        }`}
-                    />
 
-                    {openedPosition && increasePositionInfo?.newOverallLeverage ? (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Init. Leverage"
+                      className="flex-col mt-6"
+                    >
                       <FormatNumber
-                        nb={increasePositionInfo?.currentLeverage}
+                        nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
                         format="number"
                         prefix="x"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className={`text-base ${openedPosition
+                          ? increasePositionInfo?.isLeverageIncreased
+                            ? 'text-orange'
+                            : 'text-green'
+                          : 'text-white'
+                          }`}
                       />
-                    ) : null}
-                  </TextExplainWrapper>
+
+                      {openedPosition && increasePositionInfo?.newOverallLeverage ? (
+                        <FormatNumber
+                          nb={increasePositionInfo?.currentLeverage}
+                          format="number"
+                          prefix="x"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                        />
+                      ) : null}
+                    </TextExplainWrapper>
+                  </div>
 
                   <div className="h-full w-[1px] bg-gray-800" />
 
-                  <TextExplainWrapper
-                    title="Size (usd)"
-                    className="flex-col mt-8"
-                  >
-                    <FormatNumber
-                      nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
-                      format="number"
-                      className="text-lg"
-                    />
-
-                    {openedPosition && openedPosition.sizeUsd ? (
+                  <div className='w-1/2 flex items-center justify-center'>
+                    <TextExplainWrapper
+                      title="Size (usd)"
+                      className="flex-col mt-6"
+                    >
                       <FormatNumber
-                        nb={openedPosition.sizeUsd}
+                        nb={openedPosition ? openedPosition.sizeUsd + (increasePositionInfo?.newSizeUsd ?? 0) : newPositionInfo.sizeUsd}
                         format="number"
-                        className="text-txtfade text-xs self-center line-through"
-                        isDecimalDimmed={false}
+                        className="text-base"
                       />
-                    ) : null}
-                  </TextExplainWrapper>
+
+                      {openedPosition && openedPosition.sizeUsd ? (
+                        <FormatNumber
+                          nb={openedPosition.sizeUsd}
+                          format="number"
+                          className="text-txtfade text-xs self-center line-through"
+                          isDecimalDimmed={false}
+                        />
+                      ) : null}
+                    </TextExplainWrapper>
+                  </div>
                 </div>
               ) : (
                 <div className="flex w-full justify-evenly items-center">
@@ -923,13 +980,13 @@ export default function LongShortTradingInputs({
               )}
             </StyledSubSubContainer>
 
-            <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
-              Fees{' '}
+            <h5 className="hidden sm:flex items-center ml-4 mt-2 mb-2">
+              Fees
               <span className="ml-1">
                 <Tippy
                   content={
                     <p className="font-medium text-txtfade">
-                      0 BPS entry fees - 16 BPS exit fees. 🎊 NO SIZE FEES! 🎊
+                      0 BPS entry fees - 12 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
                     </p>
                   }
                 >
@@ -950,23 +1007,18 @@ export default function LongShortTradingInputs({
             >
               <StyledSubSubContainer
                 className={twMerge(
-                  'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
-                  openedPosition ? 'h-[5.5em]' : 'h-[5em]',
-                  isInfoLoading || !newPositionInfo
-                    ? 'pt-4'
-                    : openedPosition
-                      ? 'pt-2'
-                      : 'pt-8',
+                  'flex items-center justify-center mt-2 sm:mt-0',
+                  openedPosition ? 'h-[13em]' : 'h-[10em]',
                 )}
               >
                 {newPositionInfo && !isInfoLoading ? (
-                  <AutoScalableDiv>
+                  <AutoScalableDiv className='' bodyClassName="flex-col items-center justify-center mt-6">
                     {openedPosition ? (
                       <>
                         <TextExplainWrapper
                           title="Current Fees"
-                          className="flex-col sm:mt-3"
-                          position="bottom"
+                          className="flex-col"
+                          position="top"
                         >
                           <FormatNumber
                             nb={
@@ -974,39 +1026,87 @@ export default function LongShortTradingInputs({
                               (openedPosition.borrowFeeUsd ?? 0)
                             }
                             format="currency"
-                            className="text-lg"
+                            className="text-base"
                           />
                         </TextExplainWrapper>
 
-                        <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                        <span className="text-base ml-1 mr-1 mb-6">+</span>
                       </>
                     ) : null}
 
-                    <TextExplainWrapper
-                      title={!openedPosition ? 'Trade Fees' : 'Additional Fees'}
-                      className="flex-col mt-3"
+                    {newPositionInfo.swapFeeUsd ? <TextExplainWrapper
+                      title={openedPosition ? 'Additional Fees (Swap + Exit)' : 'Fees (Swap + Exit)'}
+                      className="flex items-center justify-center"
+                    >
+                      <span className="text-xl">(</span>
+
+                      {newPositionInfo.highSwapFees ?
+                        <Tippy
+                          content={highSwapFeeTippyContent}
+                        >
+                          <div className='flex items-center'>
+                            <Image
+                              className="opacity-100"
+                              src={fireImg}
+                              height={18}
+                              width={18}
+                              alt="Fire icon"
+                            />
+
+                            <FormatNumber
+                              nb={newPositionInfo.swapFeeUsd}
+                              format="currency"
+                              className="text-base"
+                            />
+                          </div>
+                        </Tippy>
+                        : <FormatNumber
+                          nb={newPositionInfo.swapFeeUsd}
+                          format="currency"
+                          className="text-base"
+                        />}
+
+                      <span className="text-base ml-2 mr-2">+</span>
+
+                      <FormatNumber
+                        nb={newPositionInfo.exitFeeUsd}
+                        format="currency"
+                        className="text-base"
+                      />
+                      <span className="text-xl">)</span>
+                    </TextExplainWrapper> : <TextExplainWrapper
+                      title='Exit Fees'
+                      className="flex items-center justify-center"
                     >
                       <FormatNumber
                         nb={newPositionInfo.exitFeeUsd}
                         format="currency"
-                        className="text-lg"
+                        className="text-base"
                       />
-                    </TextExplainWrapper>
+                    </TextExplainWrapper>}
 
-                    <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                    {newPositionInfo.highSwapFees ?
+                      <Tippy
+                        content={highSwapFeeTippyContent}
+                      >
+                        <div className='text-xs text-orange font-boldy underline-dashed'>warning: high swap fees</div>
+                      </Tippy>
+                      : null}
+
+                    <span className="text-base ml-1 mr-1 mb-6">+</span>
 
                     <TextExplainWrapper
                       title="Dynamic Borrow Rate"
-                      className="flex-col mt-3"
+                      className="flex-col"
                     >
                       <FormatNumber
                         // Multiply by 100 to be displayed as %
-                        nb={((side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee) ?? 0) * 100}
+                        nb={((custody && usdcCustody && (borrowRates[side === "long" ? custody.pubkey.toBase58() : usdcCustody.pubkey.toBase58()])) ?? 0) * 100}
                         precision={RATE_DECIMALS}
                         minimumFractionDigits={4}
                         suffix="%/hr"
                         isDecimalDimmed={false}
-                        className="text-lg"
+                        className="text-base"
                       />
                     </TextExplainWrapper>
                   </AutoScalableDiv>
@@ -1018,7 +1118,7 @@ export default function LongShortTradingInputs({
               </StyledSubSubContainer>
             </PositionFeesTooltip>
           </>
-        )}
+        ) : null}
       </div>
     </div >
   );

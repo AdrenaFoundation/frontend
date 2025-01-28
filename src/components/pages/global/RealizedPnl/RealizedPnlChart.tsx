@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { getGMT } from '@/utils';
 
 interface CumulativePnlChartProps {
@@ -21,12 +22,26 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
-
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [totalRealizedPnl, setTotalRealizedPnl] = useState<number>(0);
 
   useEffect(() => {
     periodRef.current = period;
+
     getCustodyInfo();
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getCustodyInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [period]);
 
   const getCustodyInfo = async () => {
@@ -38,6 +53,10 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
           case '7d':
             return 'custodyinfohourly';
           case '1M':
+            return 'custodyinfodaily';
+          case '3M':
+            return 'custodyinfodaily';
+          case '6M':
             return 'custodyinfodaily';
           default:
             return 'custodyinfo';
@@ -52,6 +71,10 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             return 7;
           case '1M':
             return 31;
+          case '3M':
+            return 93;
+          case '6M':
+            return 183;
           default:
             return 1;
         }
@@ -93,7 +116,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
           });
         }
 
-        if (periodRef.current === '1M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -167,16 +190,6 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
     }
   };
 
-  useEffect(() => {
-    getCustodyInfo();
-
-    const interval = setInterval(() => {
-      getCustodyInfo();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   if (!infos) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
@@ -203,11 +216,16 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             )[i],
           })),
       ]}
-      domain={[0]}
+      yDomain={[0]}
       period={period}
-      gmt={period === '1M' ? 0 : getGMT()}
+      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
+      events={ADRENA_EVENTS}
     />
   );
 }

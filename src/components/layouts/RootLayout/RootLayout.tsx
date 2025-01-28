@@ -1,6 +1,7 @@
 import 'tippy.js/dist/tippy.css';
-import 'react-toastify/dist/ReactToastify.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 
+import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
@@ -8,11 +9,13 @@ import { ToastContainer } from 'react-toastify';
 
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
+import ChatContainer from '@/components/Chat/ChatContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  VestExtended,
   WalletAdapterExtended,
 } from '@/types';
 
@@ -21,7 +24,10 @@ import Header from '../../Header/Header';
 
 export default function RootLayout({
   children,
+  wallet,
   userProfile,
+  userVest,
+  userDelegatedVest,
   activeRpc,
   rpcInfos,
   autoRpcMode,
@@ -41,7 +47,10 @@ export default function RootLayout({
   setShowFeesInPnl,
 }: {
   children: ReactNode;
+  wallet: Wallet | null;
   userProfile: UserProfileExtended | null | false;
+  userVest: VestExtended | null | false;
+  userDelegatedVest: VestExtended | null | false;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -67,13 +76,15 @@ export default function RootLayout({
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
+  const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
     { name: 'Trade', link: '/trade' },
-    { name: 'Profile', link: '/my_dashboard' },
+    { name: 'Profile', link: '/profile' },
+    { name: 'Vest', link: '/vest' },
     { name: 'Stake', link: '/stake' },
-    { name: 'Ranked', link: '/competition' },
+    { name: 'Ranked', link: '/ranked' },
     { name: 'Provide Liquidity', link: '/buy_alp' },
     { name: 'Monitor', link: '/monitoring' },
     { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
@@ -87,7 +98,8 @@ export default function RootLayout({
       );
     }
   }, []);
-  if (isBigScreen === null) {
+
+  if (isBigScreen === null || isMobile === null) {
     return null;
   }
 
@@ -100,6 +112,8 @@ export default function RootLayout({
 
       {window.location.pathname === '/genesis' ? null : isBigScreen ? (
         <Header
+          userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
           priorityFeeOption={priorityFeeOption}
           setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
@@ -122,6 +136,8 @@ export default function RootLayout({
         />
       ) : (
         <BurgerMenu
+          userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
           priorityFeeOption={priorityFeeOption}
           setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
@@ -154,8 +170,9 @@ export default function RootLayout({
 
       <ToastContainer />
 
-      <Footer className="z-10" />
+      <ChatContainer userProfile={userProfile} wallet={wallet} isMobile={isMobile} />
 
+      <Footer className="z-10" />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
 
 interface VolumeChartProps {
@@ -12,15 +13,26 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('1M');
   const periodRef = useRef(period);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
-    getPoolInfo();
-  }, [period]);
 
-  useEffect(() => {
     getPoolInfo();
-  }, []);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(getPoolInfo, 30000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [period]);
 
   const getPoolInfo = async () => {
     try {
@@ -69,14 +81,7 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
         });
       });
 
-      // Get the days
-      const days = Array.from(timeStamp.reduce((set: Set<string>, timestamp: string) => {
-        set.add(timestamp.split(",")[0]);
-
-        return set;
-      }, new Set()));
-
-      // Get fees for that day, taking last 
+      // Get fees for that day, taking last
 
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
         (time: string, i: number) => ({
@@ -117,7 +122,7 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
 
   return (
     <StakedBarRechart
-      title={'Volume'}
+      title={'Daily Volume'}
       data={chartData}
       labels={[
         {
@@ -127,9 +132,14 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       ]}
       period={period}
       setPeriod={setPeriod}
+      periods={['1M', '3M', '6M', {
+        name: '1Y',
+        disabled: true,
+      }]}
       gmt={0}
       domain={[0, 'auto']}
       tippyContent=""
+      events={ADRENA_EVENTS}
       isSmallScreen={isSmallScreen}
       total={false}
     />

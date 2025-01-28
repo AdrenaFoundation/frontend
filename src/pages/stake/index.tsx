@@ -1,5 +1,4 @@
 import { BN } from '@coral-xyz/anchor';
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -16,7 +15,6 @@ import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
@@ -34,9 +32,9 @@ import {
   addNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
+  getNextStakingRoundStartTime,
   nativeToUi,
 } from '@/utils';
-import { getNextStakingRoundStartTime } from '@/utils';
 
 export type ADXTokenDetails = {
   balance: number | null;
@@ -73,7 +71,7 @@ export default function Stake({
     optimisticClaimAlp,
     setOptimisticClaimAlp,
     setOptimisticClaimAdx,
-  } = useClaimHistory();
+  } = useClaimHistory(wallet?.walletAddress ?? null);
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -84,7 +82,7 @@ export default function Stake({
     null;
 
   const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts();
+    useWalletStakingAccounts(wallet?.walletAddress ?? null);
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
@@ -197,20 +195,22 @@ export default function Stake({
     ).fire();
 
     try {
-      lockPeriod === 0
-        ? await window.adrena.client.addLiquidStake({
+      if (lockPeriod === 0) {
+        await window.adrena.client.addLiquidStake({
           owner,
           amount,
           stakedTokenMint,
           notification,
-        })
-        : await window.adrena.client.addLockedStake({
+        });
+      } else {
+        await window.adrena.client.addLockedStake({
           owner,
           amount,
           lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
           stakedTokenMint,
           notification,
         });
+      }
 
       setAmount(null);
       setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
@@ -668,31 +668,8 @@ export default function Stake({
     </>
   ) : (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0">
-        <RiveAnimation
-          animation="mid-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className="absolute top-0 left-[-10vh] h-[85vh] w-[110vh] scale-x-[-1]"
-          imageClassName="absolute w-full max-w-[1200px] top-0 left-0 scale-x-[-1]"
-        />
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-        <RiveAnimation
-          animation="blob-bg"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.BottomLeft,
-            })
-          }
-          className="absolute hidden md:block bottom-0 right-[-20vh] h-[50vh] w-[80vh] scale-y-[-1] -z-10"
-          imageClassName="absolute w-full max-w-[500px] bottom-0 right-0 scale-y-[-1]"
-        />
-      </div>
       <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[80em] m-auto">
         <>
           <div className="flex-1">

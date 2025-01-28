@@ -9,16 +9,13 @@ import DataApiClient from '@/DataApiClient';
 import chevronDown from '../../../../public/images/chevron-down.svg';
 
 function NumberDisplayBoilerplate({
-  key,
   title,
   nb,
 }: {
-  key?: string | number;
   title?: string;
   nb: number | null;
 }) {
   return <NumberDisplay
-    key={key}
     title={title}
     nb={nb}
     format="percentage"
@@ -63,7 +60,7 @@ export default function StakeApr({
       <div className={twMerge("flex flex-wrap p-2")}>
         {token === 'ALP' ? <NumberDisplayBoilerplate
           title="LIQUID APR"
-          nb={apr !== null ? apr.aprs[0].liquid_apr : null}
+          nb={!apr || !apr.aprs ? null : apr.aprs[0].liquid_apr}
         /> : null}
 
         {
@@ -71,9 +68,9 @@ export default function StakeApr({
             <NumberDisplayBoilerplate
               key={lockPeriod}
               title={`${lockPeriod}d APR`}
-              nb={apr !== null ? apr.aprs.find(({
+              nb={!apr || !apr.aprs ? null : apr.aprs.find(({
                 lock_period,
-              }) => lock_period === lockPeriod)?.locked_apr ?? null : null}
+              }) => lock_period === lockPeriod)?.locked_apr ?? null}
             />
           ))
         }
@@ -107,9 +104,9 @@ export default function StakeApr({
 
             <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => {
-                const a = apr !== null ? apr.aprs.find(({
+                const a = !apr || !apr.aprs ? null : apr.aprs.find(({
                   lock_period,
-                }) => lock_period === lockPeriod) ?? null : null;
+                }) => lock_period === lockPeriod) ?? null;
 
                 return <NumberDisplayBoilerplate
                   key={lockPeriod}
@@ -125,9 +122,9 @@ export default function StakeApr({
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
-                  nb={apr !== null ? apr.aprs.find(({
+                  nb={!apr || !apr.aprs ? null : apr.aprs.find(({
                     lock_period,
-                  }) => lock_period === lockPeriod)?.locked_adx_apr ?? null : null}
+                  }) => lock_period === lockPeriod)?.locked_adx_apr ?? null}
                 />
               ))}
             </div>
@@ -142,9 +139,9 @@ export default function StakeApr({
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
-                  nb={apr !== null ? apr.aprs.find(({
+                  nb={!apr || !apr.aprs ? null : apr.aprs.find(({
                     lock_period,
-                  }) => lock_period === lockPeriod)?.total_apr ?? null : null}
+                  }) => lock_period === lockPeriod)?.total_apr ?? null}
                 />
               ))}
             </div>

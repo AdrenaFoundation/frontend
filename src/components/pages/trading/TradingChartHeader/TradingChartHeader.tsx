@@ -1,10 +1,7 @@
 import Head from 'next/head';
-import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
-import FormatNumber from '@/components/Number/FormatNumber';
-import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';

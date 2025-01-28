@@ -1,7 +1,5 @@
-import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import firstImage from '@/../public/images/first-place.svg';
@@ -10,18 +8,9 @@ import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { DIVISIONS } from '@/constants/divisions';
 import { TradingCompetitionLeaderboardAPI } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
+import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 
 import Table from '../monitoring/Table';
-
-const isValidPublicKey = (key: string) => {
-    try {
-        new PublicKey(key);
-        return true;
-    } catch (e) {
-        return false;
-    }
-};
 
 export default function LeaderboardTable({
     division,
@@ -32,13 +21,13 @@ export default function LeaderboardTable({
     myDivision,
     handleProfileView
 }: {
-    division: keyof TradingCompetitionLeaderboardAPI;
+    division: string;
     index: number;
     data: TradingCompetitionLeaderboardAPI;
     className?: string;
     nbItemPerPage?: number;
     myDivision: boolean;
-    handleProfileView: (address: string) => void;
+    handleProfileView: (username: string) => void;
 }) {
     return (
         <div className={className}>
@@ -112,7 +101,7 @@ export default function LeaderboardTable({
                                 d.username
                                     ? isValidPublicKey(d.username)
                                         ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-yellow-600' : '')}>{getAbbrevWalletAddress(d.username)}</p>
-                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.address)}>
+                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.username)}>
                                             {d.username.length > 16 ? `${d.username.substring(0, 16)}...` : d.username}
                                         </p>
                                     : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
@@ -122,10 +111,10 @@ export default function LeaderboardTable({
                                     <FormatNumber
                                         nb={d.pnl}
                                         format="currency"
-                                        className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
-                                        precision={d.pnl >= 50 ? 0 : 2}
+                                        className={twMerge('text-xs font-boldy', d.pnl && (d.pnl >= 0) ? 'text-green' : 'text-red')}
+                                        precision={d.pnl && (d.pnl >= 50) ? 0 : 2}
                                         isDecimalDimmed={false}
-                                        minimumFractionDigits={d.pnl >= 50 ? 0 : 2}
+                                        minimumFractionDigits={d.pnl && (d.pnl >= 50) ? 0 : 2}
                                     />
                                 </div>,
 

@@ -11,28 +11,35 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { AxisDomain, DataKey } from 'recharts/types/util/types';
-import { twMerge } from 'tailwind-merge';
+import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 
-import { RechartsData } from '@/types';
-import { formatNumberShort, formatPercentage, formatPriceInfo } from '@/utils';
+import { AdrenaEvent, RechartsData } from '@/types';
+import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
+import PeriodSelector from './PeriodSelector';
 
-export default function LineRechart({
+export default function LineRechart<T extends string>({
   title,
   data,
   labels,
   period,
   setPeriod,
+  periods,
   gmt,
-  domain,
+  xDomain,
+  yDomain,
+  scale = 'linear',
   tippyContent,
   isSmallScreen = true,
   subValue,
   formatY = 'currency',
-  isReferenceLine,
+  precision = 0,
+  precisionTooltip = 2,
+  isMaxUtilizationReferenceLine,
+  events,
+  isNowReferenceLine,
 }: {
   title: string;
   data: RechartsData[];
@@ -40,15 +47,25 @@ export default function LineRechart({
     name: string;
     color?: string;
   }[];
-  period: string | null;
-  setPeriod: (v: string | null) => void;
-  domain?: AxisDomain;
+  period?: T | null;
+  setPeriod?: (v: T | null) => void;
+  periods: (T | {
+    name: T;
+    disabled?: boolean;
+  })[];
+  xDomain?: AxisDomain;
+  yDomain?: AxisDomain;
+  scale?: ScaleType;
+  precision?: number;
+  precisionTooltip?: number;
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
   subValue?: number;
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
-  isReferenceLine?: boolean;
+  isMaxUtilizationReferenceLine?: boolean;
+  events?: AdrenaEvent[],
+  isNowReferenceLine?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -56,13 +73,14 @@ export default function LineRechart({
 
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
-      return formatPercentage(tickItem, 0);
+      return Math.abs(tickItem) === 0 ? '0%' : formatPercentage(tickItem, precision);
     }
 
     if (formatY === 'currency') {
-      return formatPriceInfo(tickItem, 0);
+      return formatGraphCurrency({ tickItem, maxDecimals: 0, maxDecimalsIfToken: 4 });
     }
-    return formatNumberShort(tickItem);
+
+    return formatNumberShort(tickItem, precision);
   };
 
   return (
@@ -90,55 +108,16 @@ export default function LineRechart({
           )}
         </div>
 
-        <div className="flex gap-2 text-sm">
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1d')}
-          >
-            1d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '7d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('7d')}
-          >
-            7d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '1M' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1M')}
-          >
-            1M
-          </div>
-
-          <Tippy
-            content={
-              <div className="text-sm w-20 flex flex-col justify-around">
-                Coming soon
-              </div>
-            }
-            placement="auto"
-          >
-            <div className="text-txtfade cursor-not-allowed">1Y</div>
-          </Tippy>
-        </div>
+        {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} /> : null}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
-          <XAxis dataKey="time" fontSize="12" />
+          <XAxis dataKey="time" fontSize="12" domain={xDomain} />
 
-          <YAxis domain={domain} tickFormatter={formatYAxis} fontSize="11" />
+          <YAxis domain={yDomain} tickFormatter={formatYAxis} fontSize="11" scale={scale} />
 
           <Tooltip
             content={
@@ -146,6 +125,8 @@ export default function LineRechart({
                 isValueOnly={labels.length === 1}
                 format={formatY}
                 gmt={gmt}
+                precision={precisionTooltip}
+                events={events}
               />
             }
             cursor={false}
@@ -163,6 +144,7 @@ export default function LineRechart({
                     (l) => l !== String(e.dataKey).trim(),
                   ) as DataKey<string | number>[];
                 }
+
                 return [
                   ...hiddenLabels,
                   String(e.dataKey).trim() as DataKey<string | number>,
@@ -185,7 +167,7 @@ export default function LineRechart({
             );
           })}
 
-          {isReferenceLine && (
+          {isMaxUtilizationReferenceLine && (
             <ReferenceLine
               y={100}
               stroke="white"
@@ -197,6 +179,42 @@ export default function LineRechart({
               }}
             />
           )}
+
+          {isNowReferenceLine && (
+            <ReferenceLine
+              x={new Date().toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric',
+                timeZone: 'UTC',
+              })}
+              stroke="#fffffff0"
+              strokeWidth={1}
+              strokeDasharray={'6 6'}
+              label={{
+                position: 'insideTopRight',
+                offset: 10,
+                value: 'Now',
+                fill: '#fffffff0',
+                fontWeight: 'bold',
+                fontSize: 12,
+              }}
+            />
+          )}
+
+          {events?.map((event, i) => <ReferenceLine
+            id={`event-${event.label}`}
+            key={event.label + '-' + i + '-' + event.time}
+            x={event.time}
+            stroke={event.color}
+            strokeDasharray="3 3"
+            label={{
+              position: event.labelPosition ?? 'insideTopRight',
+              value: event.label,
+              fill: event.color,
+              fontSize: 12,
+            }}
+          />)}
         </LineChart>
       </ResponsiveContainer>
     </div>

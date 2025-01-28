@@ -1,9 +1,9 @@
 import { Switch } from '@mui/material';
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -14,8 +14,8 @@ import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
@@ -59,7 +59,6 @@ function pickDefaultToken(positions: PositionExtended[] | null): Token {
 }
 
 export default function Trade({
-  positions,
   wallet,
   connected,
   triggerUserProfileReload,
@@ -69,6 +68,9 @@ export default function Trade({
 }: PageProps & {
   showFeesInPnl: boolean;
 }) {
+  // FIXME: Only call this hook in a single place & as-close as possible to consumers.
+  const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
+
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );
@@ -78,7 +80,17 @@ export default function Trade({
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
-  const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(false);
+  const [cookies, setCookie] = useCookies([
+    'showBreakEvenLine',
+    'toggleSizeUsdInChart',
+  ]);
+
+  const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(
+    cookies?.showBreakEvenLine === 'true',
+  );
+  const [toggleSizeUsdInChart, setToggleSizeUsdInChart] = useState<boolean>(
+    cookies?.toggleSizeUsdInChart === 'true',
+  );
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
 
@@ -188,7 +200,10 @@ export default function Trade({
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
     ) {
       // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
-      const candidate = selectedAction === 'long' ? tokenB ?? pickDefaultToken(positions) : tokenACandidate[0];
+      const candidate =
+        selectedAction === 'long'
+          ? (tokenB ?? pickDefaultToken(positions))
+          : tokenACandidate[0];
 
       if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
         setTokenA(candidate);
@@ -228,34 +243,10 @@ export default function Trade({
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[100px] sm:pb-4">
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-50">
-        <RiveAnimation
-          animation="btm-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
-          imageClassName="absolute w-full max-w-[1200px] bottom-0 left-[-10vh] scale-x-[-1]"
-        />
-
-        <RiveAnimation
-          animation="mid-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
-          imageClassName="absolute w-full max-w-[1200px] top-0 right-0 -z-10"
-        />
-      </div>
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border rounded-lg overflow-hidden">
+        <div className="flex flex-col w-full border rounded-lg overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -274,51 +265,80 @@ export default function Trade({
           <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
             {tokenA && tokenB ? (
               <TradingChart
-                token={
-                  selectedAction === 'short' || selectedAction === 'long'
-                    ? tokenB
-                    : tokenA.isStable
-                      ? tokenB
-                      : tokenA
-                }
+                token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                 positions={positions}
                 showBreakEvenLine={showBreakEvenLine}
+                toggleSizeUsdInChart={toggleSizeUsdInChart}
               />
             ) : null}
           </div>
 
-          <div className="flex items-center justify-end p-0.5 bg-secondary text-white">
-            <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+          <div className="flex flex-row gap-3 items-center justify-end">
+            <div className="flex items-center p-0.5 text-white">
+              <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+                <p className="opacity-50 text-xs underline-dashed cursor-help">
+                  Show Break Even line
+                </p>
+              </Tippy>
+              <Switch
+                checked={showBreakEvenLine}
+                onChange={() => {
+                  setCookie('showBreakEvenLine', !showBreakEvenLine);
+                  setShowBreakEvenLine(!showBreakEvenLine);
+                }}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
+
+            <div className="flex items-center p-0.5 text-white">
               <p className="opacity-50 text-xs underline-dashed cursor-help">
-                Show Break Even line
+                Show size in chart
               </p>
-            </Tippy>
-            <Switch
-              checked={showBreakEvenLine}
-              onChange={(event) => setShowBreakEvenLine(event.target.checked)}
-              size="small"
-              sx={{
-                transform: 'scale(0.7)',
-                '& .MuiSwitch-switchBase': {
-                  color: '#ccc',
-                },
-                '& .MuiSwitch-switchBase.Mui-checked': {
-                  color: '#1a1a1a',
-                },
-                '& .MuiSwitch-track': {
-                  backgroundColor: '#555',
-                },
-                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                  backgroundColor: '#10e1a3',
-                },
-              }}
-            />
+              <Switch
+                checked={toggleSizeUsdInChart}
+                onChange={() => {
+                  setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
+                  setToggleSizeUsdInChart(!toggleSizeUsdInChart);
+                }}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
 
         {isBigScreen ? (
           <>
-            <div className="bg-secondary mt-4 border rounded-lg">
+            <div className="bg-secondary mt-4 border rounded-lg relative">
               <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
                 <span
                   className={twMerge(
@@ -342,7 +362,11 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="flex flex-col w-full p-4">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col w-full p-4">
@@ -383,7 +407,11 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
-                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
+                  <PositionsHistory
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    connected={connected}
+                    showFeesInPnl={showFeesInPnl}
+                  />
                 </div>
               ) : (
                 <div className="mt-1 w-full p-4">
@@ -487,11 +515,8 @@ export default function Trade({
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto"
               >
-                {tokenB &&
-                  <TradingChartMini
-                    token={tokenB}
-                  />}
-                <div className='bg-bcolor w-full h-[1px] my-3' />
+                {tokenB && <TradingChartMini token={tokenB} />}
+                <div className="bg-bcolor w-full h-[1px] my-3" />
                 <div className="flex w-full px-4">
                   <TradeComp
                     selectedAction={selectedAction}
