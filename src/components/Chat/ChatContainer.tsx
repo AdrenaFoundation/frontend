@@ -19,6 +19,7 @@ export default function ChatContainer({
     isMobile: boolean;
 }) {
     const [isOpen, setIsOpen] = useState<boolean | null>(null);
+    const [showUserList, setShowUserList] = useState(false);
     const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
     const [chatHeightCookie, setChatHeightCookie] = useCookies(['chat-height']);
     const [height, setHeight] = useState(() => {
@@ -107,10 +108,8 @@ export default function ChatContainer({
 
                 {isOpen ? <AnimatePresence>
                     <Modal
-                        title={`Live Chat`}
-                        close={() => {
-                            setIsOpen(false)
-                        }}
+                        title="Live Chat"
+                        close={() => setIsOpen(false)}
                         className="flex flex-col w-full h-[85vh] max-h-[85vh]"
                     >
                         <Chat
@@ -118,12 +117,10 @@ export default function ChatContainer({
                             userProfile={userProfile}
                             wallet={wallet}
                             isOpen={isOpen}
-                            clickOnHeader={() => {
-                                setIsOpen(!isOpen);
-                            }}
-                            className={twMerge(
-                                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full",
-                            )}
+                            showUserList={showUserList}
+                            onToggleUserList={() => setShowUserList(!showUserList)}
+                            clickOnHeader={() => setIsOpen(!isOpen)}
+                            className="bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full"
                         />
                     </Modal>
                 </AnimatePresence> : null}
@@ -141,14 +138,14 @@ export default function ChatContainer({
             userProfile={userProfile}
             wallet={wallet}
             isOpen={isOpen}
+            showUserList={showUserList}
+            onToggleUserList={() => setShowUserList(!showUserList)}
             clickOnHeader={() => {
                 if (!isDragging) setIsOpen(!isOpen);
             }}
             className={twMerge(
                 "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none",
-                isOpen
-                    ? `h-[${height}px]`
-                    : 'h-[3em]'
+                isOpen ? `h-[${height}px]` : 'h-[3em]'
             )}
             style={isOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined}
         />
