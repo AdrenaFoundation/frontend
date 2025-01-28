@@ -248,7 +248,7 @@ export default function Chat({
                 }
                 return {
                     wallet,
-                    nickname: profile?.nickname
+                    nickname: profile ? profile.nickname : null
                 };
             }));
             return users;

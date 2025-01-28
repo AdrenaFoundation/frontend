@@ -122,9 +122,9 @@ export default function ChatContainer({
             }}
             className={twMerge(
                 "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em]",
-                isOpen ? {
-                    height: `${height}px`
-                } : 'h-[3em]'
+                isOpen
+                    ? `h-[${height}px]`
+                    : 'h-[3em]'
             )}
             style={isOpen ? { height } : undefined}
         />
