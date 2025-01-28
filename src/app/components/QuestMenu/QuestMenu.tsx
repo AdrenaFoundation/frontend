@@ -130,7 +130,7 @@ export default function QuestMenu({
                 {!isOpen ? (
                     <motion.div
                         key="closed-state"
-                        className="-translate-x-6 translate-y-6 hover:translate-x-0 hover:translate-y-0 transition-transform duration-300 cursor-pointer"
+                        className={twMerge("-translate-x-6 translate-y-6 cursor-pointer", !isMobile && 'hover:translate-x-0 hover:translate-y-0 transition-transform duration-300')}
                         onClick={() => {
                             setIsOpen(!isOpen);
                         }}
