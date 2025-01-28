@@ -51,7 +51,7 @@ export const CompetitionBanner = memo(
     }) => {
         const { days, hours, minutes, seconds } = useCountDown(
             new Date(),
-            startDate,
+            new Date(Date.UTC(2025, 1, 1)),
         );
 
         return (
