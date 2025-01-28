@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
+import QuestMenu from '@/app/components/QuestMenu/QuestMenu';
+
 import discordLogo from '../../../public/images/discord.png';
 // import discourseLogo from '../../../public/images/discourse.svg';
 import githubLogo from '../../../public/images/github.svg';
@@ -16,6 +18,9 @@ export default function Footer({ className }: { className?: string }) {
         className,
       )}
     >
+
+      <QuestMenu />
+
       <div className="flex w-full justify-center items-center gap-x-6">
         <Link href="https://discord.gg/adrena" target="_blank">
           <Image
