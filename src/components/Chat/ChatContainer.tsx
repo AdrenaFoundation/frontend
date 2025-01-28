@@ -9,8 +9,6 @@ import { UserProfileExtended } from "@/types";
 import Modal from "../common/Modal/Modal";
 import Chat from "./Chat";
 
-const DRAGGING_CLASS = 'chat-container-dragging';
-
 export default function ChatContainer({
     userProfile,
     wallet,
@@ -67,7 +65,6 @@ export default function ChatContainer({
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
         setIsDragging(true);
-        document.body.classList.add(DRAGGING_CLASS);
     };
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -80,7 +77,6 @@ export default function ChatContainer({
     const handleMouseUp = useCallback(() => {
         if (isDragging) {
             setChatHeightCookie('chat-height', height, { path: '/' });
-            document.body.classList.remove(DRAGGING_CLASS);
         }
         setIsDragging(false);
     }, [isDragging, height, setChatHeightCookie]);
