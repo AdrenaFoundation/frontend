@@ -1,28 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import { AnimatePresence } from 'framer-motion';
+import React, { useMemo, useState } from 'react';
 
+import Modal from '@/components/common/Modal/Modal';
 import Select from '@/components/common/Select/Select';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
-import { QUESTS, TRADING_COMPETITION_SEASONS } from '@/constant';
-import { QuestType, UserProfileExtended } from '@/types';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import { TRADING_COMPETITION_SEASONS } from '@/constant';
+import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useExpanseData from '@/hooks/useExpanseData';
+import { useSelector } from '@/store/store';
+import { UserProfileExtended } from '@/types';
 
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
-import QuestComp from './QuestComp';
-import Streak from './Streak';
-import DataApiClient from '@/DataApiClient';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
-import useExpanseData from '@/hooks/useExpanseData';
-import { useSelector } from '@/store/store';
-import { AnimatePresence } from 'framer-motion';
-import Modal from '@/components/common/Modal/Modal';
-import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { PublicKey } from '@solana/web3.js';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
-export default function Quests() {
-    const [activeTab] = useState('Leaderboard');
+export default function Leaderboards() {
     const [week, setWeek] = useState<string>('Week 1');
     const { allUserProfiles } = useAllUserProfiles();
     const wallet = useSelector((s) => s.walletState.wallet);
@@ -43,41 +39,9 @@ export default function Quests() {
     return (
         <>
             <div className="flex flex-col gap-8">
-                {/* <TabSelect
-                selected={activeTab}
-                tabs={[{ title: 'Mechanics' }, { title: 'Leaderboard' }]}
-                onClick={(title) => {
-                    setActiveTab(title);
-                }}
-                className="mb-4"
-                titleClassName="text-xl xl:text-2xl font-boldy capitalize"
-            /> */}
-
-                {activeTab === 'Mechanics' ? (
-                    <>
-                        <div className="grid lg:grid-cols-2 gap-4 flex-1">
-                            <QuestComp quest={QUESTS.daily as QuestType} />
-                            <QuestComp quest={QUESTS.weekly as QuestType} />
-                            <QuestComp quest={QUESTS.dailyMutations as QuestType} />
-                            <QuestComp
-                                quest={QUESTS.perpetual as QuestType}
-                                className="h-full"
-                            />
-                        </div>
-
-                        <Streak />
-                    </>
-                ) : null}
-
-                {/* {activeTab === 'Leaderboard' ? (
-                <div className="grid grid-cols-2 gap-[100px]">
-                   
-                </div>
-            ) : null} */}
-
-                <div className='flex gap-16 flex-wrap'>
-                    <div className='flex flex-col w-[25em] grow max-w-full'>
-                        <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-start'>
+                <div className='flex gap-4 flex-wrap'>
+                    <div className='flex flex-col w-[25em] grow max-w-full p-2 pt-4 bg-[#0D1923] border border-white/5 rounded-lg'>
+                        <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-center pt-2'>
                             <div className='flex'>
                                 <Select
                                     selectedClassName='pr-1'
@@ -126,8 +90,6 @@ export default function Quests() {
                                             <span className="text-xs font-boldy">left</span>
                                         </div>}
                             </div>
-
-
                         </div>
 
                         <ExpanseWeeklyLeaderboard
@@ -141,9 +103,9 @@ export default function Quests() {
                         />
                     </div>
 
-                    <div className='flex flex-col w-[25em] grow max-w-full'>
-                        <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-start'>
-                            <div className='text-2xl font-archivo relative top-[0.03em] uppercase'>Championship Leaderboard</div>
+                    <div className='flex flex-col w-[25em] grow max-w-full p-2 pt-4 bg-[#0D1923] border border-white/5 rounded-lg'>
+                        <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-center pt-4'>
+                            <div className='text-2xl font-archivo uppercase'>Season Leaderboard</div>
                         </div>
 
                         <ExpanseChampionshipLeaderboard
@@ -174,7 +136,6 @@ export default function Quests() {
                     </Modal>
                 ) : null}
             </AnimatePresence>
-
         </>
     );
 }

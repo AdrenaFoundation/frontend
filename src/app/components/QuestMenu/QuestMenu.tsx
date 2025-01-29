@@ -10,7 +10,7 @@ import Modal from '@/components/common/Modal/Modal';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import { QUESTS } from '@/constant';
 import { useOnClickOutside } from '@/hooks/onClickOutside';
-import QuestComp from '@/pages/ranked/Expanse/QuestComp';
+import QuestComp from '@/components/pages/ranked/QuestComp';
 import { QuestType } from '@/types';
 
 export default function QuestMenu({

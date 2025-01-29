@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 
+import CompetitionBanner from '@/components/pages/ranked/CompetitionBanner';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 
-import Competition, { CompetitionBanner } from './Awakening';
+import Competition from './Awakening';
 import Expanse from './Expanse/Expanse';
 import SeasonNavigator from './SeasonNavigator';
 

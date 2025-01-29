@@ -1,15 +1,14 @@
+import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
-import { getAbbrevWalletAddress } from '@/utils';
-import { SeasonLeaderboardsData } from '@/types';
 import { useSelector } from '@/store/store';
-import { PublicKey } from '@solana/web3.js';
-import Tippy from '@tippyjs/react';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { SeasonLeaderboardsData } from '@/types';
+import { getAbbrevWalletAddress } from '@/utils';
 
 export default function ExpanseWeeklyLeaderboard({
     data,
@@ -24,17 +23,13 @@ export default function ExpanseWeeklyLeaderboard({
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
 
-    if (!data) {
-        return null;
-    }
-
     const columnsTitles = useMemo(() => {
         const columnsTitles = [
             <span className="ml-3 opacity-50" key="rank">
                 #
             </span>,
 
-            <span className='ml-6 opacity-50'>Trader</span>,
+            <span className='ml-6 opacity-50' key="trader">Trader</span>,
 
             <div className="ml-auto mr-auto opacity-50" key="pnl">
                 mutagen
@@ -51,8 +46,8 @@ export default function ExpanseWeeklyLeaderboard({
 
         if (!isMobile) {
             columnsTitles.push(
-                <div className="ml-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
-                    championship
+                <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
+                    Season
                 </div>,
             );
         }
@@ -60,6 +55,8 @@ export default function ExpanseWeeklyLeaderboard({
     }, [isMobile, isLarge]);
 
     const dataReady = useMemo(() => {
+        if (!data) return null;
+
         return data.ranks.map((d, i) => {
             const values = [
                 <p className="text-sm text-center w-[2em]" key={`rank-${i}`}>
@@ -77,6 +74,7 @@ export default function ExpanseWeeklyLeaderboard({
                             key={`rank-${i}`}
                         />
                     ) : null}
+
                     <div>
                         {d.username ? (
 
@@ -115,6 +113,7 @@ export default function ExpanseWeeklyLeaderboard({
                 </div>,
 
                 <Tippy
+                    key="mutagens"
                     content={
                         <div className="text-xs font-boldy min-w-[15em]">
                             <div className='grid grid-cols-2'>
@@ -233,20 +232,20 @@ export default function ExpanseWeeklyLeaderboard({
 
             if (!isMobile) {
                 values.push(<div
-                    className="flex flex-col items-end ml-auto"
+                    className="flex flex-col items-center justify-center ml-auto mr-auto"
                     key={`rewards-${i}`}
                 >
                     {d.championshipPoints ? (
                         <div className="flex">
                             <FormatNumber
                                 nb={d.championshipPoints}
-                                className="text-green text-xs font-boldy"
+                                className="text-[#fa6723] text-xs font-boldy"
                                 prefix="+"
-                                suffixClassName="text-green"
+                                suffixClassName="text-[#fa6723]"
                                 isDecimalDimmed={false}
                             />
 
-                            <span className="flex text-green font-boldy text-xs ml-1">
+                            <span className="flex text-[#fa6723] font-boldy text-xs ml-1">
                                 Points
                             </span>
                         </div>
@@ -260,6 +259,10 @@ export default function ExpanseWeeklyLeaderboard({
             };
         });
     }, [data, onClickUserProfile, wallet, isLarge, isMobile]);
+
+    if (!data || !dataReady) {
+        return null;
+    }
 
     return (
         <div className={twMerge('')}>

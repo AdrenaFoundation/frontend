@@ -322,6 +322,8 @@ export const TRADING_COMPETITION_SEASONS = {
     endDate: new Date('12/23/2024'),
     gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
     primaryColor: '#E5B958',
+    adxRewards: 2270000,
+    jtoRewards: 25000,
     description: [
       "Welcome to Adrena's trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons. From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions. Your total trading volume during the six-week event determines your division qualification. Check out the divisions below, continuously updated based on onchain events.",
       "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
@@ -336,6 +338,8 @@ export const TRADING_COMPETITION_SEASONS = {
     endDate: new Date('04/12/2025'),
     gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
     primaryColor: '#FA6724',
+    adxRewards: 5000000,
+    jtoRewards: 50000,
     description: [
       `Adrena's first Trading Season: The Expanse. Get ready for Adrena's inaugural trading season, The Expanse. Engage in our division-based trading competition where you can:`,
       `- Farm Mutagen through daily and weekly quests. By accumulating Mutagen through leverage trading, you can improve your ranking in the upcoming season and secure a share in the upcoming $ADX Airdrop. Can only generate through trading activities.`,

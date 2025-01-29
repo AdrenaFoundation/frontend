@@ -1,13 +1,16 @@
+import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import adxLogo from '@/../../public/images/adx.svg';
+import jtoImage from '@/../../public/images/jito-logo-2.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
-import { getAbbrevWalletAddress } from '@/utils';
-import { SeasonLeaderboardsData } from '@/types';
 import { useSelector } from '@/store/store';
-import { PublicKey } from '@solana/web3.js';
+import { SeasonLeaderboardsData } from '@/types';
+import { getAbbrevWalletAddress } from '@/utils';
 
 export default function ExpanseChampionshipLeaderboard({
     data,
@@ -32,9 +35,9 @@ export default function ExpanseChampionshipLeaderboard({
                     </span>,
                     'Trader',
                     <span className="ml-auto mr-auto opacity-50" key="pnl">
-                        Championship
+                        Season
                     </span>,
-                    <span className="ml-auto opacity-50" key="rewards">
+                    <span className="ml-auto mr-auto opacity-50" key="rewards">
                         Rewards
                     </span>,
                 ]}
@@ -69,7 +72,6 @@ export default function ExpanseChampionshipLeaderboard({
 
                                 <div>
                                     {d.username ? (
-
                                         <p
                                             key={`trader-${i}`}
                                             className={twMerge(
@@ -110,63 +112,74 @@ export default function ExpanseChampionshipLeaderboard({
                             >
                                 <FormatNumber
                                     nb={d.championshipPoints}
-                                    className="text-xs font-boldy"
+                                    className="text-xs font-boldy text-[#fa6723]"
                                     precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
                                     isDecimalDimmed={false}
                                 />
-                                <div className='text-xs font-boldy'>Points</div>
+                                <div className='text-xs font-boldy text-[#fa6723]'>Points</div>
                             </div>,
 
-                            <div
-                                className="flex flex-col items-end ml-auto"
-                                key={`rewards-${i}`}
+                            <Tippy
+                                key="rewards"
+                                content={
+                                    <div className="text-xs font-boldy min-w-[15em]">
+                                        <div className='flex gap-1 p-2 bg-third rounded items-center justify-center'>
+                                            <Image
+                                                src={adxLogo}
+                                                alt="ADX logo"
+                                                className="w-[1.5em] h-[1.5em]"
+                                            />
+
+                                            <FormatNumber
+                                                nb={d.rewardsAdx}
+                                                className="text-md font-boldy"
+                                                isDecimalDimmed={false}
+                                            />
+
+                                            <span className="flex font-boldy text-sm">
+                                                ADX
+                                            </span>
+                                        </div>
+
+                                        <div className='flex gap-1 p-2 bg-third rounded items-center justify-center mt-2'>
+                                            <Image
+                                                src={jtoImage}
+                                                alt="jito logo"
+                                                className="w-[2em] h-[2em]"
+                                            />
+
+                                            <FormatNumber
+                                                nb={d.rewardsJto}
+                                                className="text-md font-boldy"
+                                                isDecimalDimmed={false}
+                                            />
+
+                                            <span className="flex font-boldy text-sm">
+                                                JTO
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
                             >
-                                {d.rewardsAdx && d.rewardsJto ?
-                                    <div className="flex">
-                                        <FormatNumber
-                                            format='currency'
-                                            nb={d.rewardsAdx * (tokenPrices['ADX'] ?? 0) + d.rewardsJto * (tokenPrices['JTO'] ?? 0)}
-                                            className="text-green text-xs font-boldy"
-                                            suffixClassName="text-green"
-                                            isDecimalDimmed={false}
-                                        />
-                                    </div>
-                                    : null}
+                                <div
+                                    className="flex flex-col items-center justify-center ml-auto mr-auto"
+                                >
+                                    {d.rewardsAdx && d.rewardsJto ?
+                                        <div className="flex">
+                                            <FormatNumber
+                                                format='currency'
+                                                nb={d.rewardsAdx * (tokenPrices['ADX'] ?? 0) + d.rewardsJto * (tokenPrices['JTO'] ?? 0)}
+                                                className="text-xs font-boldy"
+                                                isDecimalDimmed={false}
+                                            />
+                                        </div>
+                                        : null}
 
-                                {d.rewardsAdx ? (
-                                    <div className="flex opacity-30">
-                                        <FormatNumber
-                                            nb={d.rewardsAdx}
-                                            className="text-xxs font-boldy"
-                                            prefix="+"
-                                            isDecimalDimmed={false}
-                                        />
-
-                                        <span className="flex font-boldy text-xxs ml-1">
-                                            ADX
-                                        </span>
-                                    </div>
-                                ) : null}
-
-                                {d.rewardsJto ? (
-                                    <div className="flex opacity-30">
-                                        <FormatNumber
-                                            nb={d.rewardsJto}
-                                            className="text-xxs font-boldy"
-                                            prefix="+"
-                                            suffixClassName="text-green"
-                                            isDecimalDimmed={false}
-                                        />
-                                        <span className="flex font-boldy text-xxs ml-1">
-                                            JTO
-                                        </span>
-                                    </div>
-                                ) : null}
-
-                                {d.rewardsAdx === 0 && d.rewardsJto === 0 ? (
-                                    <span className="h-[2.64em]">--</span>
-                                ) : null}
-                            </div>,
+                                    {d.rewardsAdx === 0 && d.rewardsJto === 0 ? (
+                                        <span className="h-[2.64em]">--</span>
+                                    ) : null}
+                                </div>
+                            </Tippy>,
                         ],
                     };
                 })}
