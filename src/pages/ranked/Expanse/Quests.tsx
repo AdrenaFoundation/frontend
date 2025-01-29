@@ -16,6 +16,8 @@ import { useSelector } from '@/store/store';
 import { AnimatePresence } from 'framer-motion';
 import Modal from '@/components/common/Modal/Modal';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import { PublicKey } from '@solana/web3.js';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -25,12 +27,18 @@ export default function Quests() {
     const { allUserProfiles } = useAllUserProfiles();
     const wallet = useSelector((s) => s.walletState.wallet);
     const leaderboardData = useExpanseData({ wallet, allUserProfiles });
+    const isMobile = useBetterMediaQuery('(max-width: 25em)');
+    const isLarge = useBetterMediaQuery('(min-width: 1500px)');
 
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
     const weekStartDate = useMemo(() => new Date(TRADING_COMPETITION_SEASONS.expanse.startDate.getTime() + ((Number(week.split(' ')[1]) - 1) * ONE_WEEK_IN_MS)), [week]);
     const weekEndDate = useMemo(() => new Date(weekStartDate.getTime() + ONE_WEEK_IN_MS), [weekStartDate]);
+
+    if (isMobile === null || isLarge === null) {
+        return null;
+    }
 
     return (
         <>
@@ -61,17 +69,14 @@ export default function Quests() {
                     </>
                 ) : null}
 
-                {/* 
-            <h3 className='flex items-center justify-center font-archivo mb-4'>
-                Week 2 Leaderboard
-            </h3>
+                {/* {activeTab === 'Leaderboard' ? (
+                <div className="grid grid-cols-2 gap-[100px]">
+                   
+                </div>
+            ) : null} */}
 
-            <h3 className='flex items-center justify-center font-archivo tracking-wider mb-4'>
-                Championship
-            </h3> */}
-
-                <div className='grid grid-cols-2 gap-[100px]'>
-                    <div className='flex flex-col w-full'>
+                <div className='flex gap-16 flex-wrap'>
+                    <div className='flex flex-col w-[25em] grow max-w-full'>
                         <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-start'>
                             <div className='flex'>
                                 <Select
@@ -126,6 +131,8 @@ export default function Quests() {
                         </div>
 
                         <ExpanseWeeklyLeaderboard
+                            isMobile={isMobile}
+                            isLarge={isLarge}
                             onClickUserProfile={(wallet) => {
                                 const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
                                 setActiveProfile(profile ?? null);
@@ -134,33 +141,35 @@ export default function Quests() {
                         />
                     </div>
 
-
-                    {/* {activeTab === 'Leaderboard' ? (
-                <div className="grid grid-cols-2 gap-[100px]">
-                   
-                </div>
-            ) : null} */}
-
-                    <div className='flex flex-col'>
+                    <div className='flex flex-col w-[25em] grow max-w-full'>
                         <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-start'>
                             <div className='text-2xl font-archivo relative top-[0.03em] uppercase'>Championship Leaderboard</div>
                         </div>
 
-                        <ExpanseChampionshipLeaderboard leaderboardData={leaderboardData} />
+                        <ExpanseChampionshipLeaderboard
+                            data={leaderboardData ? leaderboardData.seasonLeaderboard : null}
+                            onClickUserProfile={(wallet: PublicKey) => {
+                                const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
+                                setActiveProfile(profile ?? null);
+                            }}
+                        />
                     </div>
                 </div>
-            </div >
+            </div>
 
             <AnimatePresence>
                 {activeProfile ? (
                     <Modal
-                        className="h-[80vh] overflow-y-scroll w-full"
-                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
+                        className="h-[80vh] w-full overflow-y-auto"
+                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]"
+                        title=""
                         close={() => setActiveProfile(null)}
+                        isWrapped={false}
                     >
                         <ViewProfileModal
                             profile={activeProfile}
                             showFeesInPnl={false}
+                            close={() => setActiveProfile(null)}
                         />
                     </Modal>
                 ) : null}

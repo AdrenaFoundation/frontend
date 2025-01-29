@@ -4,49 +4,22 @@ import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
-import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
+import { getAbbrevWalletAddress } from '@/utils';
 import { SeasonLeaderboardsData } from '@/types';
+import { useSelector } from '@/store/store';
+import { PublicKey } from '@solana/web3.js';
 
 export default function ExpanseChampionshipLeaderboard({
-    leaderboardData,
+    data,
+    onClickUserProfile,
 }: {
-    leaderboardData: SeasonLeaderboardsData | null;
+    data: SeasonLeaderboardsData['seasonLeaderboard'] | null;
+    onClickUserProfile: (wallet: PublicKey) => void;
 }) {
-    const data = [
-        {
-            rank: 1,
-            username: '2L6MW86Arda1G9j52ED2hfp3NtYETcCxRLwDKmKeYtXS',
-            mutagens: 212,
-            volume: 3092920,
-            connected: false,
-            adxRewards: 300000,
-            jtoRewards: 32000,
-            avatar: true,
-            title: 'The Mutant',
-        },
+    const wallet = useSelector((s) => s.walletState.wallet);
+    const tokenPrices = useSelector((s) => s.tokenPrices);
 
-        {
-            rank: 2,
-            username: 'trade4days',
-            mutagens: 198,
-            volume: 829392,
-            connected: false,
-            adxRewards: 300000,
-            jtoRewards: 32000,
-        },
-    ];
-
-    const fillers = Array.from({ length: 98 }, (_, i) => ({
-        rank: i + 3,
-        username: '...',
-        mutagens: 0,
-        volume: 0,
-        connected: false,
-        adxRewards: 0,
-        jtoRewards: 0,
-    }));
-
-    data.push(...fillers);
+    if (!data) return null;
 
     return (
         <div className={twMerge('')}>
@@ -59,10 +32,7 @@ export default function ExpanseChampionshipLeaderboard({
                     </span>,
                     'Trader',
                     <span className="ml-auto mr-auto opacity-50" key="pnl">
-                        mutagens
-                    </span>,
-                    <span className="ml-auto mr-auto opacity-50" key="volume">
-                        Volume
+                        Championship
                     </span>,
                     <span className="ml-auto opacity-50" key="rewards">
                         Rewards
@@ -73,6 +43,7 @@ export default function ExpanseChampionshipLeaderboard({
                 paginationClassName="scale-[80%] p-0"
                 nbItemPerPage={100}
                 nbItemPerPageWhenBreakpoint={3}
+                breakpoint="24em"
                 rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                 rowTitleWidth="0%"
                 isFirstColumnId
@@ -83,120 +54,116 @@ export default function ExpanseChampionshipLeaderboard({
                             <p className="text-sm text-center w-[40px]" key={`rank-${i}`}>
                                 {d.rank}
                             </p>,
-                            <div className="flex flex-row gap-2 items-center" key={`rank-${i}`}>
+
+                            <div className="flex flex-row gap-2 w-[10em] items-center" key={`rank-${i}`}>
                                 {d.avatar ? (
                                     <Image
-                                        src="/images/wallpaper.jpg"
+                                        src={d.avatar}
                                         width={30}
                                         height={30}
                                         alt="rank"
-                                        className="h-8 w-8 rounded-full"
+                                        className="h-8 w-8 rounded-full opacity-40"
                                         key={`rank-${i}`}
                                     />
                                 ) : null}
+
                                 <div>
                                     {d.username ? (
-                                        isValidPublicKey(d.username) ? (
-                                            <p
-                                                key={`trader-${i}`}
-                                                className={twMerge(
-                                                    'text-xs font-boldy opacity-50',
-                                                    d.connected ? 'text-yellow-600' : '',
-                                                )}
-                                            >
-                                                {getAbbrevWalletAddress(d.username)}
-                                            </p>
-                                        ) : (
-                                            <p
-                                                key={`trader-${i}`}
-                                                className={twMerge(
-                                                    'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
-                                                    d.connected ? 'text-yellow-600 ' : '',
-                                                )}
-                                            >
-                                                {d.username.length > 16
-                                                    ? `${d.username.substring(0, 16)}...`
-                                                    : d.username}
-                                            </p>
-                                        )
+
+                                        <p
+                                            key={`trader-${i}`}
+                                            className={twMerge(
+                                                'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
+                                                wallet?.walletAddress === d.wallet.toBase58() ? 'text-yellow-600 ' : '',
+                                            )}
+                                            onClick={() => {
+                                                onClickUserProfile(d.wallet);
+                                            }}
+                                        >
+                                            {d.username.length > 16
+                                                ? `${d.username.substring(0, 16)}...`
+                                                : d.username}
+                                        </p>
                                     ) : (
-                                        <p key={`trader-${i}`} className="text-xs font-boldy">
-                                            -
+                                        <p
+                                            key={`trader-${i}`}
+                                            className={twMerge(
+                                                'text-xs font-boldy opacity-50',
+                                                wallet?.walletAddress === d.wallet.toBase58() ? 'text-yellow-600' : '',
+                                            )}
+                                        >
+                                            {getAbbrevWalletAddress(d.wallet.toBase58())}
                                         </p>
                                     )}
+
                                     {d.title ? (
-                                        <p className="text-xxs">
-                                            <span className="font-cursive">&ldquo;</span> {d.title}{' '}
-                                            <span className="font-cursive">&ldquo;</span>
-                                        </p>
+                                        <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
+                                            {d.title}
+                                        </div>
                                     ) : null}
                                 </div>
                             </div>,
 
                             <div
-                                className="flex items-center justify-end md:justify-center grow"
-                                key={`mutagens-${i}`}
+                                className="flex items-center justify-center grow gap-1"
+                                key={`championship-points-${i}`}
                             >
                                 <FormatNumber
-                                    nb={d.mutagens}
+                                    nb={d.championshipPoints}
                                     className="text-xs font-boldy"
-                                    precision={d.mutagens && d.mutagens >= 50 ? 0 : 2}
+                                    precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
                                     isDecimalDimmed={false}
                                 />
-                            </div>,
-
-                            <div
-                                className="flex items-center justify-end md:justify-center grow"
-                                key={`volume-${i}`}
-                            >
-                                <FormatNumber
-                                    nb={d.volume}
-                                    isDecimalDimmed={false}
-                                    isAbbreviate={true}
-                                    className="text-xs"
-                                    format="number"
-                                    prefix="$"
-                                    isAbbreviateIcon={false}
-                                />
+                                <div className='text-xs font-boldy'>Points</div>
                             </div>,
 
                             <div
                                 className="flex flex-col items-end ml-auto"
                                 key={`rewards-${i}`}
                             >
-                                {d.adxRewards ? (
+                                {d.rewardsAdx && d.rewardsJto ?
                                     <div className="flex">
                                         <FormatNumber
-                                            nb={d.adxRewards}
+                                            format='currency'
+                                            nb={d.rewardsAdx * (tokenPrices['ADX'] ?? 0) + d.rewardsJto * (tokenPrices['JTO'] ?? 0)}
                                             className="text-green text-xs font-boldy"
-                                            prefix="+"
                                             suffixClassName="text-green"
                                             isDecimalDimmed={false}
                                         />
+                                    </div>
+                                    : null}
 
-                                        <span className="flex text-green font-boldy text-xs ml-1">
+                                {d.rewardsAdx ? (
+                                    <div className="flex opacity-30">
+                                        <FormatNumber
+                                            nb={d.rewardsAdx}
+                                            className="text-xxs font-boldy"
+                                            prefix="+"
+                                            isDecimalDimmed={false}
+                                        />
+
+                                        <span className="flex font-boldy text-xxs ml-1">
                                             ADX
                                         </span>
                                     </div>
                                 ) : null}
 
-                                {d.adxRewards ? (
-                                    <div className="flex">
+                                {d.rewardsJto ? (
+                                    <div className="flex opacity-30">
                                         <FormatNumber
-                                            nb={d.jtoRewards}
-                                            className="text-green text-xs font-boldy"
-                                            suffix=""
+                                            nb={d.rewardsJto}
+                                            className="text-xxs font-boldy"
                                             prefix="+"
                                             suffixClassName="text-green"
                                             isDecimalDimmed={false}
                                         />
-                                        <span className="flex text-green font-boldy text-xs ml-1">
+                                        <span className="flex font-boldy text-xxs ml-1">
                                             JTO
                                         </span>
                                     </div>
                                 ) : null}
 
-                                {d.adxRewards === 0 && d.jtoRewards === 0 ? (
+                                {d.rewardsAdx === 0 && d.rewardsJto === 0 ? (
                                     <span className="h-[2.64em]">--</span>
                                 ) : null}
                             </div>,
