@@ -4,9 +4,13 @@ import { twMerge } from 'tailwind-merge';
 
 import timerBg from '@/../../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../../public/images/jito-logo.svg';
+import jtoLogo from '@/../../public/images/jito-logo-2.png';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import useCountDown from '@/hooks/useCountDown';
 import { ImageRef } from '@/types';
+import { useSelector } from '@/store/store';
+import { useMemo } from 'react';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function CompetitionBanner({
     banner,
@@ -27,6 +31,12 @@ export default function CompetitionBanner({
         new Date(),
         new Date(Date.UTC(2025, 1, 1)),
     );
+
+    const tokenPrices = useSelector((s) => s.tokenPrices);
+
+    const totalPrize = useMemo(() => {
+        return 5000000 * (tokenPrices['ADX'] ?? 0) + 50000 * (tokenPrices['JTO'] ?? 0);
+    }, [tokenPrices]);
 
     return (
         <div className="relative">
@@ -104,9 +114,47 @@ export default function CompetitionBanner({
                     </ul>
                 ) : null}
 
+                <div className='flex flex-col mt-8 z-10 items-center'>
+                    <div className='text-xs font-thin text-txtfade'>PRIZE POOL</div>
+
+                    <div className='w-[20em] flex items-center justify-center rounded-lg flex-col'>
+                        {!tokenPrices["ADX"] || !tokenPrices["JTO"] ? '-' :
+                            <FormatNumber
+                                format='currency'
+                                nb={totalPrize}
+                                className="text-5xl font-boldy"
+                                isDecimalDimmed={false}
+                            />}
+
+                        <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
+                            <div className="flex flex-row gap-1 items-center justify-center">
+                                <Image
+                                    src={window.adrena.client.adxToken.image}
+                                    alt="ADX logo"
+                                    className="w-4 h-4"
+                                />
+
+                                <p className="text-md font-boldy text-txtfade">
+                                    5,000,000 ADX
+                                </p>
+                            </div>
+
+                            <div className='flex text-txtfade'>/</div>
+
+                            <div className="flex flex-row gap-1 items-center justify-center">
+                                <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
+
+                                <p className="text-md font-boldy text-txtfade">
+                                    50,000 JTO
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div
                     className={twMerge(
-                        'flex flex-row items-center gap-3 z-10',
+                        'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
                         startDate && startDate >= new Date() ? 'mt-[2em]' : 'mt-[4em]',
                     )}
                 >
@@ -114,7 +162,7 @@ export default function CompetitionBanner({
                     <Image
                         src={jitoLogo}
                         alt="jito logo"
-                        className="w-[4em] md:w-[5em]"
+                        className="w-[3em] md:w-[4em]"
                     />
                 </div>
             </div>
