@@ -299,11 +299,12 @@ export default function Flow({
       <AnimatePresence>
         {profile && (
           <Modal
-            className="h-[85vh] sm:h-[40em] overflow-y-auto max-h-[85vh] w-full"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
+            className="h-[80vh] w-full overflow-y-auto"
+            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]"
+            isWrapped={false}
             close={() => setProfile(null)}
           >
-            <ViewProfileModal profile={profile} showFeesInPnl={true} />
+            <ViewProfileModal profile={profile} showFeesInPnl={true} close={() => setProfile(null)} />
           </Modal>
         )}
       </AnimatePresence>

@@ -1,45 +1,54 @@
 import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
-import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
+import crossIcon from '@/../public/images/cross.svg';
+import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
+import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { UserProfileExtended } from '@/types';
 
-import { getLeverageColorClass } from '../monitoring/UserProfileBlock';
 import PositionBlock from '../trading/Positions/PositionBlock';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
 import OwnerBlock from './OwnerBlock';
+import StakingStats from './StakingStats';
+import TradingStats from './TradingStats';
 
 export default function ViewProfileModal({
     profile,
     showFeesInPnl,
+    close,
 }: {
     profile: UserProfileExtended;
     showFeesInPnl: boolean;
+    close: () => void;
 }) {
+    const walletAddress = profile.owner.toBase58();
     const positions = usePositionsByAddress({
-        walletAddress: profile.owner.toBase58(),
+        walletAddress,
     });
+    const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
 
-    const [selectedTab, setSelectedTab] = useState('Overview');
-
-    const leverageColorClass = getLeverageColorClass(
-        profile.openingAverageLeverage,
-    );
-
-    const totalPnlColorClass =
-        profile.totalPnlUsd < 0 ? 'text-red' : 'text-green';
+    const [selectedTab, setSelectedTab] = useState('Active Positions');
 
     return (
-        <div className="flex flex-col gap-5 pl-3 pr-3 pb-3 pt-[6em] w-full">
+        <div className="p-3 w-full">
+            <Button
+                variant="text"
+                className="hidden sm:block absolute right-6 top-6 w-[20px] h-[20px] p-[5px] border border-txtfade cursor-pointer z-20"
+                onClick={() => {
+                    close();
+                }}
+                leftIcon={crossIcon}
+                size="sm"
+            />
+
             <OwnerBlock
                 userProfile={profile}
                 triggerUserProfileReload={() => {
                     //
                 }}
                 canUpdateNickname={false}
-                className="flex w-full w-min-[30em]"
+                className="flex w-full w-min-[30em] border "
                 walletPubkey={profile.owner}
                 redisProfile={null}
                 setRedisProfile={() => { }}
@@ -47,115 +56,60 @@ export default function ViewProfileModal({
                 readonly={true}
             />
 
-            <TabSelect
-                tabs={[
-                    { title: 'Overview' },
-                    { title: 'Active Positions' },
-                    { title: 'Positions History' },
-                ]}
-                selected={selectedTab}
-                titleClassName="text-xs sm:text-sm"
-                onClick={(title) => setSelectedTab(title)}
-            />
-
-            {selectedTab === 'Overview' ? (
-                <>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <NumberDisplay
-                            title="Open Volume"
-                            nb={profile.totalTradeVolumeUsd}
-                            format="currency"
-                            className='border-0 min-w-[9em] p-1'
-                            headerClassName='pb-2'
-                            titleClassName='text-[0.7em] sm:text-[0.7em]'
-                            bodyClassName='text-base'
-                            isDecimalDimmed={false}
-                        />
-
-                        <NumberDisplay
-                            title="PnL"
-                            nb={profile.totalPnlUsd}
-                            format="currency"
-                            className='border-0 min-w-[9em] p-1'
-                            headerClassName='pb-2'
-                            titleClassName='text-[0.7em] sm:text-[0.7em]'
-                            bodyClassName={twMerge(
-                                'text-base',
-                                totalPnlColorClass,
-                            )}
-                            isDecimalDimmed={false}
-                        />
-
-                        <NumberDisplay
-                            title="Total fees paid"
-                            nb={profile.totalFeesPaidUsd}
-                            format="currency"
-                            className='border-0 min-w-[9em] p-1'
-                            headerClassName='pb-2'
-                            titleClassName='text-[0.7em] sm:text-[0.7em]'
-                            bodyClassName="text-red text-base"
-                            isDecimalDimmed={false}
-                        />
-
-                        <NumberDisplay
-                            title="Opening Average Leverage"
-                            nb={profile.openingAverageLeverage}
-                            format="number"
-                            suffix=" x"
-                            isDecimalDimmed={false}
-                            className='border-0 min-w-[9em] p-1'
-                            headerClassName='pb-2'
-                            titleClassName='text-[0.7em] sm:text-[0.7em]'
-                            bodyClassName={twMerge('text-base', leverageColorClass)}
-                        />
-
-                        <NumberDisplay
-                            title="Long/Short Ratio"
-                            nb={
-                                (profile.longStats.openedPositionCount /
-                                    (profile.longStats.openedPositionCount +
-                                        profile.shortStats.openedPositionCount)) * 100
-                            }
-                            format="percentage"
-                            className='border-0 min-w-[9em] p-1'
-                            headerClassName='pb-2'
-                            titleClassName='text-[0.7em] sm:text-[0.7em]'
-                            bodyClassName={twMerge('text-base', leverageColorClass)}
-                            isDecimalDimmed={false}
-                        />
-                    </div>
-                </>
-            ) : null}
-
-            {selectedTab === 'Active Positions' ? (
-                <div className="flex flex-wrap justify-between gap-2">
-                    {positions !== null && positions.length ? (
-                        <div className="flex flex-col w-full gap-2">
-                            {positions.map((position) => (
-                                <PositionBlock
-                                    key={position.pubkey.toBase58()}
-                                    position={position}
-                                    showFeesInPnl={showFeesInPnl}
-                                    readOnly={true}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center w-full py-4 opacity-50">
-                            No matches 📭
-                        </div>
-                    )}
-                </div>
-            ) : null}
-
-            {selectedTab === 'Positions History' ? (
-                <PositionsHistory
-                    connected={true}
-                    walletAddress={profile.owner.toBase58()}
-                    showShareButton={false}
-                    showFeesInPnl={showFeesInPnl}
+            <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border border-t-transparent">
+                <TradingStats
+                    userProfile={profile}
+                    livePositionsNb={positions === null ? null : positions.length}
+                    className="gap-y-4 pt-4 pb-4"
                 />
-            ) : null}
+                <StakingStats
+                    stakingAccounts={stakingAccounts}
+                    className="gap-y-4 pb-4"
+                />
+
+                <div className="flex flex-col gap-3 p-4">
+                    <TabSelect
+                        tabs={[
+                            { title: 'Active Positions' },
+                            { title: 'Positions History' },
+                        ]}
+                        selected={selectedTab}
+                        titleClassName="text-xs sm:text-base"
+                        onClick={(title) => setSelectedTab(title)}
+                    />
+                    <div className="flex flex-col gap-3">
+                        {selectedTab === 'Active Positions' ? (
+                            <div className="flex flex-wrap justify-between gap-2">
+                                {positions !== null && positions.length ? (
+                                    <div className="flex flex-col w-full gap-2">
+                                        {positions.map((position) => (
+                                            <PositionBlock
+                                                key={position.pubkey.toBase58()}
+                                                position={position}
+                                                showFeesInPnl={showFeesInPnl}
+                                                readOnly={true}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center w-full py-4 opacity-50">
+                                        No matches 📭
+                                    </div>
+                                )}
+                            </div>
+                        ) : null}
+
+                        {selectedTab === 'Positions History' ? (
+                            <PositionsHistory
+                                connected={true}
+                                walletAddress={profile.owner.toBase58()}
+                                showShareButton={false}
+                                showFeesInPnl={showFeesInPnl}
+                            />
+                        ) : null}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
