@@ -1,4 +1,8 @@
-import { GetPositionStatsReturnType, PreSeasonLeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI, SeasonLeaderboardsReturnTypeAPI } from './types';
+import {
+    GetPositionStatsReturnType, PreSeasonLeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI, SeasonLeaderboardsRawAPI, SeasonLeaderboardsData
+} from './types';
+import * as fakeData from "./pages/ranked/Expanse/fakeDate.json";
+import { PublicKey } from '@solana/web3.js';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -114,11 +118,7 @@ export default class DataApiClient {
         return result.data;
     }
 
-    public static async getSeasonLeaderboards({
-        season,
-    }: {
-        season: 'season1';
-    }): Promise<SeasonLeaderboardsReturnTypeAPI | null> {
+    public static async getSeasonLeaderboards(): Promise<SeasonLeaderboardsData | null> {
         try {
             // const result = await fetch(
             //     `https://datapi.adrena.xyz/v2/awakening?season=${season}&show_achievements=${Boolean(
@@ -132,7 +132,51 @@ export default class DataApiClient {
             //     )}`,
             // ).then((res) => res.json());
 
-            return [];
+            const result: SeasonLeaderboardsRawAPI = fakeData;
+
+            return {
+                startDate: new Date(result.data.start_date),
+                endDate: new Date(result.data.end_date),
+                weekLeaderboard: result.data.week_leaderboard.leaderboard.map((leaderboard, i) => ({
+                    startDate: new Date(result.data.week_leaderboard.week_dates_start[i]),
+                    endDate: new Date(result.data.week_leaderboard.week_dates_end[i]),
+                    ranks: leaderboard.map((rank) => ({
+                        wallet: new PublicKey(rank.user_wallet),
+                        rank: rank.rank,
+                        championshipPoints: rank.championship_points,
+                        totalPoints: rank.total_points,
+                        streaksPoints: rank.points_streaks,
+                        questsPoints: rank.points_quests,
+                        mutationPoints: rank.points_mutations,
+                        tradingPoints: rank.points_trading,
+                        volume: rank.volume,
+                        pnl: rank.pnl,
+                        fees: rank.fees,
+                        avatar: '/images/profile-picture-1.jpg',
+                        username: null,
+                        title: 'Nameless one',
+                    })),
+                })),
+
+                seasonLeaderboard: result.data.season_leaderboard.map((leaderboard) => ({
+                    wallet: new PublicKey(leaderboard.user_wallet),
+                    rank: leaderboard.rank,
+                    tradingPoints: leaderboard.points_trading,
+                    mutationPoints: leaderboard.points_mutations,
+                    streaksPoints: leaderboard.points_streaks,
+                    questsPoints: leaderboard.points_quests,
+                    totalPoints: leaderboard.total_points,
+                    volume: leaderboard.volume,
+                    pnl: leaderboard.pnl,
+                    fees: leaderboard.fees,
+                    championshipPoints: leaderboard.championship_points,
+                    rewardsAdx: leaderboard.rewards_adx,
+                    rewardsJto: leaderboard.rewards_jto,
+                    avatar: '/images/profile-picture-1.jpg',
+                    username: null,
+                    title: 'Nameless one',
+                })),
+            };
         } catch (e) {
             console.error(e);
             return null;

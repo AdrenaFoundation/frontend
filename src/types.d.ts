@@ -563,6 +563,19 @@ export type TradingCompetitionLeaderboardAPI = {
   }[];
 };
 
+export type TraderDivisionRawAPI = {
+  division: string;
+  traders: {
+    address: string;
+    total_volume: number;
+    total_pnl: number;
+    rank_in_division: number;
+    adx_reward: number;
+    jto_reward: number;
+    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
+  }[];
+};
+
 export type ConnectedWalletTickets = {
   fees: number | null;
   jito: number | null;
@@ -619,25 +632,28 @@ type SeasonLeaderboardsRawAPI = {
   };
 };
 
-export type SeasonLeaderboardsReturnTypeAPI = {
+export type SeasonLeaderboardsData = {
   startDate: Date;
   endDate: Date;
   weekLeaderboard: {
-    startDate: Date;
-    endDate: Date;
-    leaderboard: {
-      wallet: PublicKey;
-      rank: number;
-      championshipPoints: number;
-      totalPoints: number;
-      streaksPoints:  number;
-      questsPoints: number;
-      mutationPoints: number;
-      tradingPoints: number;
-      volume: number;
-      pnl: number;
-      fees: number;
-    }[];
+      startDate: Date;
+      endDate: Date;
+      ranks: {
+        wallet: PublicKey;
+        rank: number;
+        championshipPoints: number;
+        totalPoints: number;
+        streaksPoints:  number;
+        questsPoints: number;
+        mutationPoints: number;
+        tradingPoints: number;
+        volume: number;
+        pnl: number;
+        fees: number;
+        avatar: string | null;
+        username: string | null;
+        title: string | null;
+      }[];
   }[];
 
   seasonLeaderboard: {
@@ -654,7 +670,10 @@ export type SeasonLeaderboardsReturnTypeAPI = {
     championshipPoints: number;
     rewardsAdx: number;
     rewardsJto: number;
-  };
+    avatar: string | null;
+    username: string | null;
+    title: string | null;
+  }[];
 };
 
 export type PreSeasonLeaderboardReturnTypeAPI<

@@ -5,8 +5,13 @@ import { twMerge } from 'tailwind-merge';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
+import { SeasonLeaderboardsData } from '@/types';
 
-export default function ExpanseChampionshipLeaderboard({ }) {
+export default function ExpanseChampionshipLeaderboard({
+    leaderboardData,
+}: {
+    leaderboardData: SeasonLeaderboardsData | null;
+}) {
     const data = [
         {
             rank: 1,
