@@ -9,7 +9,6 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import { QUESTS } from '@/constant';
-import { useOnClickOutside } from '@/hooks/onClickOutside';
 import QuestComp from '@/pages/ranked/Expanse/QuestComp';
 import { QuestType } from '@/types';
 
@@ -22,10 +21,6 @@ export default function QuestMenu({
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-
-    useOnClickOutside(ref, () => {
-        setIsOpen(false);
-    });
 
     if (window.location.pathname !== '/trade') {
         return null;
