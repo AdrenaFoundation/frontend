@@ -15,6 +15,7 @@ export default function NumberDisplay({
   precision,
   placeholder,
   isDecimalDimmed,
+  prefix,
   suffix,
   className,
   bodyClassName,
@@ -23,10 +24,12 @@ export default function NumberDisplay({
   tippyInfo,
   subtitle,
   isAbbreviate = false,
+  isAbbreviateIcon = false,
 }: {
   title?: string;
   nb: number | null;
   format?: 'number' | 'currency' | 'percentage';
+  prefix?: string;
   precision?: number;
   placeholder?: string;
   isDecimalDimmed?: boolean;
@@ -38,6 +41,7 @@ export default function NumberDisplay({
   tippyInfo?: string;
   subtitle?: string;
   isAbbreviate?: boolean;
+  isAbbreviateIcon?: boolean;
 }) {
   return (
     <StyledContainer
@@ -64,7 +68,9 @@ export default function NumberDisplay({
     >
       <FormatNumber
         nb={nb}
+        prefix={prefix}
         isAbbreviate={isAbbreviate}
+        isAbbreviateIcon={isAbbreviateIcon}
         precision={precision}
         isDecimalDimmed={isDecimalDimmed}
         placeholder={placeholder}

@@ -2,8 +2,10 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import React, { useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
@@ -35,18 +37,20 @@ export default function Leaderboards() {
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
-    const weekStartDate = useMemo(() => new Date(TRADING_COMPETITION_SEASONS.expanse.startDate.getTime() + (getWeekIndexFromWeek(week) * ONE_WEEK_IN_MS)), [week]);
+    const currentWeekIndex = useMemo(() => getWeekIndexFromWeek(week), [week]);
+
+    const weekStartDate = useMemo(() => new Date(TRADING_COMPETITION_SEASONS.expanse.startDate.getTime() + (currentWeekIndex * ONE_WEEK_IN_MS)), [currentWeekIndex]);
     const weekEndDate = useMemo(() => new Date(weekStartDate.getTime() + ONE_WEEK_IN_MS), [weekStartDate]);
 
     const userWeeklyRank: number | null | false = useMemo(() => {
         if (!wallet) return null;
 
-        const weekLeaderboard = leaderboardData?.weekLeaderboard[getWeekIndexFromWeek(week)] ?? null;
+        const weekLeaderboard = leaderboardData?.weekLeaderboard[currentWeekIndex] ?? null;
 
         if (!weekLeaderboard) return null;
 
         return weekLeaderboard.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
-    }, [leaderboardData?.weekLeaderboard, wallet, week]);
+    }, [currentWeekIndex, leaderboardData?.weekLeaderboard, wallet]);
 
     const userSeasonRank: number | null | false = useMemo(() => {
         if (!wallet || !leaderboardData) return null;
@@ -54,102 +58,135 @@ export default function Leaderboards() {
         return leaderboardData.seasonLeaderboard.find((p) => p.wallet.toBase58() === wallet?.walletAddress)?.rank ?? false;
     }, [leaderboardData, wallet]);
 
+    const weeklyStats = useMemo(() => {
+        const ranks = leaderboardData?.weekLeaderboard[currentWeekIndex]?.ranks;
+
+        if (!ranks) return null;
+
+        return ranks.reduce((acc, rank) => {
+            acc.totalVolume += rank.volume;
+            acc.totalFees += rank.fees;
+            acc.totalMutagen += rank.totalPoints;
+            return acc;
+        }, {
+            totalUsers: ranks.length,
+            totalVolume: 0,
+            totalFees: 0,
+            totalMutagen: 0,
+        });
+    }, [currentWeekIndex, leaderboardData?.weekLeaderboard]);
+
+    const seasonStats = useMemo(() => {
+        const ranks = leaderboardData?.seasonLeaderboard;
+
+        if (!ranks) return null;
+
+        return ranks.reduce((acc, rank) => {
+            acc.totalVolume += rank.volume;
+            acc.totalFees += rank.fees;
+            acc.totalChampionshipPoint += rank.championshipPoints;
+            return acc;
+        }, {
+            totalUsers: ranks.length,
+            totalVolume: 0,
+            totalFees: 0,
+            totalChampionshipPoint: 0,
+        });
+    }, [leaderboardData?.seasonLeaderboard]);
+
     if (isMobile === null || isLarge === null) {
         return null;
     }
-
 
     return (
         <>
             <div className="flex flex-col gap-8">
                 <div className='flex gap-4 flex-wrap'>
-                    <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
-                        <div className="opacity-30 text-xs absolute left-4 top-[-2.4em]">
-                            {weekStartDate.toLocaleDateString()} – {weekEndDate.toLocaleDateString()}
+
+                    {/* WEEKLY LEADERBOARD */}
+
+                    <div className='flex flex-col w-[25em] grow max-w-full'>
+                        <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
+                            Fight weekly
                         </div>
 
-                        <div className="opacity-30 text-xs absolute right-4 top-[-2.4em]">
-                            {Date.now() <= weekStartDate.getTime() ?
-                                <div className="flex text-xs gap-1">
-                                    <span className="text-xs font-boldy">Starts in</span>
-                                    <RemainingTimeToDate
-                                        timestamp={weekStartDate.getTime() / 1000}
-                                        stopAtZero={true}
-                                    />
-                                </div>
-
-                                : Date.now() > weekEndDate.getTime() ?
-                                    <p className="text-xs font-boldy">Week has ended</p>
-                                    : <div className="flex text-xs gap-1">
-                                        <RemainingTimeToDate
-                                            timestamp={weekEndDate.getTime() / 1000}
-                                            stopAtZero={true}
-                                        />
-                                        <span className="text-xs font-boldy">left</span>
-                                    </div>}
-                        </div>
-
-                        {userWeeklyRank !== null ? <div
-                            className="z-20 sm:absolute sm:top-2 sm:right-2 text-sm h-[2em] flex items-center justify-center rounded-full p-2 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5]"
-                        >
-                            <Tippy
-                                className='z-50'
-                                key="user-rank-week"
-                                content={
-                                    <div>
-                                        {userWeeklyRank === false ?
-                                            'You are not ranked. Trade and complete quests to earn mutagen and climb the ladder.' :
-                                            `You are ranked #${userWeeklyRank} in this weekly leaderboard. Trade and complete quests to earn mutagen and climb the ladder.`}
-                                    </div>
-                                }>
-                                <div>
-                                    {userWeeklyRank === false ? 'Unranked' : `#${userWeeklyRank}`}
-                                </div>
-                            </Tippy>
-                        </div> : null}
-
-                        <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
-                            <Select
-                                selectedClassName='pr-1'
-                                selectedTextClassName='text-xl font-boldy tracking-wider uppercase'
-                                menuTextClassName='uppercase text-sm'
-                                selected={week}
-                                options={[
-                                    { title: 'Week 1' },
-                                    { title: 'Week 2' },
-                                    { title: 'Week 3' },
-                                    { title: 'Week 4' },
-                                    { title: 'Week 5' },
-                                    { title: 'Week 6' },
-                                    { title: 'Week 7' },
-                                    { title: 'Week 8' },
-                                    { title: 'Week 9' },
-                                    { title: 'Week 10' },
-                                ]}
-                                onSelect={(week: string) => {
-                                    setWeek(week);
-                                }}
+                        <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-10 md:pb-14")}>
+                            <NumberDisplay
+                                title="Traders"
+                                nb={weeklyStats?.totalUsers ?? null}
+                                format="number"
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
 
-                            <div className='text-xl font-boldy tracking-wider uppercase'>Leaderboard</div>
+                            <NumberDisplay
+                                title="Mutagen"
+                                nb={weeklyStats?.totalMutagen ?? null}
+                                format="number"
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
+
+                            <NumberDisplay
+                                title="Volume"
+                                nb={weeklyStats?.totalVolume ?? null}
+                                format="currency"
+                                prefix='$'
+                                isAbbreviate={true}
+                                isAbbreviateIcon={false}
+                                isDecimalDimmed={false}
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
+
+                            <NumberDisplay
+                                title="Fees"
+                                nb={weeklyStats?.totalFees ?? null}
+                                format="currency"
+                                prefix='$'
+                                isAbbreviate={true}
+                                isAbbreviateIcon={false}
+                                isDecimalDimmed={false}
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
                         </div>
 
-                        <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
+                        <div className='flex flex-col w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
+                            <div className="opacity-30 text-xs absolute left-4 top-[-2.4em]">
+                                {weekStartDate.toLocaleDateString()} – {weekEndDate.toLocaleDateString()}
+                            </div>
 
-                        {leaderboardData ? <ExpanseWeeklyLeaderboard
-                            isMobile={isMobile}
-                            isLarge={isLarge}
-                            onClickUserProfile={(wallet) => {
-                                const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
-                                setActiveProfile(profile ?? null);
-                            }}
-                            data={leaderboardData.weekLeaderboard[Number(week.split(' ')[1]) - 1]}
-                        /> : <Loader className='self-center mt-8 mb-8' />}
-                    </div>
+                            <div className="opacity-30 text-xs absolute right-4 top-[-2.4em]">
+                                {Date.now() <= weekStartDate.getTime() ?
+                                    <div className="flex text-xs gap-1">
+                                        <span className="text-xs font-boldy">Starts in</span>
+                                        <RemainingTimeToDate
+                                            timestamp={weekStartDate.getTime() / 1000}
+                                            stopAtZero={true}
+                                        />
+                                    </div>
 
-                    <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
-                        {userWeeklyRank !== null ?
-                            <div
+                                    : Date.now() > weekEndDate.getTime() ?
+                                        <p className="text-xs font-boldy">Week has ended</p>
+                                        : <div className="flex text-xs gap-1">
+                                            <RemainingTimeToDate
+                                                timestamp={weekEndDate.getTime() / 1000}
+                                                stopAtZero={true}
+                                            />
+                                            <span className="text-xs font-boldy">left</span>
+                                        </div>}
+                            </div>
+
+                            {userWeeklyRank !== null ? <div
                                 className="z-20 sm:absolute sm:top-2 sm:right-2 text-sm h-[2em] flex items-center justify-center rounded-full p-2 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5]"
                             >
                                 <Tippy
@@ -157,31 +194,151 @@ export default function Leaderboards() {
                                     key="user-rank-week"
                                     content={
                                         <div>
-                                            {userSeasonRank === false ?
-                                                'You are not ranked. Earn season points in weekly leaderboards to climb the ladder.' :
-                                                `You are ranked #${userSeasonRank} in the season. Earn season points in weekly leaderboards to climb the ladder.`}
+                                            {userWeeklyRank === false ?
+                                                'You are not ranked. Trade and complete quests to earn mutagen and climb the ladder.' :
+                                                `You are ranked #${userWeeklyRank} in this weekly leaderboard. Trade and complete quests to earn mutagen and climb the ladder.`}
                                         </div>
                                     }>
                                     <div>
-                                        {userSeasonRank === false ? 'Unranked' : `#${userSeasonRank}`}
+                                        {userWeeklyRank === false ? 'Unranked' : `#${userWeeklyRank}`}
                                     </div>
                                 </Tippy>
-                            </div>
-                            : null}
+                            </div> : null}
 
-                        <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
-                            <div className='text-xl font-boldy tracking-wider uppercase'>Season Leaderboard</div>
+                            <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
+                                <Select
+                                    selectedClassName='pr-1'
+                                    selectedTextClassName='text-xl font-boldy tracking-wider uppercase'
+                                    menuTextClassName='uppercase text-sm'
+                                    selected={week}
+                                    options={[
+                                        { title: 'Week 1' },
+                                        { title: 'Week 2' },
+                                        { title: 'Week 3' },
+                                        { title: 'Week 4' },
+                                        { title: 'Week 5' },
+                                        { title: 'Week 6' },
+                                        { title: 'Week 7' },
+                                        { title: 'Week 8' },
+                                        { title: 'Week 9' },
+                                        { title: 'Week 10' },
+                                    ]}
+                                    onSelect={(week: string) => {
+                                        setWeek(week);
+                                    }}
+                                />
+
+                                <div className='text-xl font-boldy tracking-wider uppercase'>Leaderboard</div>
+                            </div>
+
+                            <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
+
+                            {leaderboardData ? <ExpanseWeeklyLeaderboard
+                                isMobile={isMobile}
+                                isLarge={isLarge}
+                                onClickUserProfile={(wallet) => {
+                                    const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
+                                    setActiveProfile(profile ?? null);
+                                }}
+                                data={leaderboardData.weekLeaderboard[Number(week.split(' ')[1]) - 1]}
+                            /> : <Loader className='self-center mt-8 mb-8' />}
+                        </div>
+                    </div>
+
+                    {/* SEASON LEADERBOARD */}
+
+                    <div className='flex flex-col w-[25em] grow max-w-full'>
+                        <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
+                            become the champion
                         </div>
 
-                        <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
+                        <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-4 md:pb-14")}>
+                            <NumberDisplay
+                                title="Traders"
+                                nb={seasonStats?.totalUsers ?? null}
+                                format="number"
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
 
-                        {leaderboardData ? <ExpanseChampionshipLeaderboard
-                            data={leaderboardData.seasonLeaderboard}
-                            onClickUserProfile={(wallet: PublicKey) => {
-                                const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
-                                setActiveProfile(profile ?? null);
-                            }}
-                        /> : <Loader className='self-center mt-8 mb-8' />}
+                            <NumberDisplay
+                                title="Volume"
+                                nb={seasonStats?.totalVolume ?? null}
+                                format="currency"
+                                prefix='$'
+                                isAbbreviate={true}
+                                isAbbreviateIcon={false}
+                                isDecimalDimmed={false}
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
+
+                            <NumberDisplay
+                                title="Points"
+                                nb={seasonStats?.totalChampionshipPoint ?? null}
+                                format="number"
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
+
+                            <NumberDisplay
+                                title="Fees"
+                                nb={seasonStats?.totalFees ?? null}
+                                format="currency"
+                                prefix='$'
+                                isAbbreviate={true}
+                                isAbbreviateIcon={false}
+                                isDecimalDimmed={false}
+                                precision={0}
+                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
+                        </div>
+
+                        <div className='flex flex-col w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
+                            {userWeeklyRank !== null ?
+                                <div
+                                    className="z-20 sm:absolute sm:top-2 sm:right-2 text-sm h-[2em] flex items-center justify-center rounded-full p-2 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5]"
+                                >
+                                    <Tippy
+                                        className='z-50'
+                                        key="user-rank-week"
+                                        content={
+                                            <div>
+                                                {userSeasonRank === false ?
+                                                    'You are not ranked. Earn season points in weekly leaderboards to climb the ladder.' :
+                                                    `You are ranked #${userSeasonRank} in the season. Earn season points in weekly leaderboards to climb the ladder.`}
+                                            </div>
+                                        }>
+                                        <div>
+                                            {userSeasonRank === false ? 'Unranked' : `#${userSeasonRank}`}
+                                        </div>
+                                    </Tippy>
+                                </div>
+                                : null}
+
+                            <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
+                                <div className='text-xl font-boldy tracking-wider uppercase'>Season Leaderboard</div>
+                            </div>
+
+                            <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
+
+                            {leaderboardData ? <ExpanseChampionshipLeaderboard
+                                isMobile={isMobile}
+                                data={leaderboardData.seasonLeaderboard}
+                                onClickUserProfile={(wallet: PublicKey) => {
+                                    const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
+                                    setActiveProfile(profile ?? null);
+                                }}
+                            /> : <Loader className='self-center mt-8 mb-8' />}
+                        </div>
                     </div>
                 </div>
             </div>

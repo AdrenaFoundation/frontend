@@ -40,19 +40,7 @@ export default function Expanse() {
                 {activeTab === 'leaderboard' ? 'see mechanics' : 'see leaderboard'}
             </div>
 
-            {activeTab === 'leaderboard' ? <>
-                <div className="flex mb-16 gap-8">
-                    <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]'>
-                        Trade and dominate weekly
-                    </div>
-
-                    <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]'>
-                        be the champion and claim your prize
-                    </div>
-                </div>
-
-                <Leaderboards />
-            </> : <Quests />}
+            {activeTab === 'leaderboard' ? <Leaderboards /> : <Quests />}
         </div>
     );
 }

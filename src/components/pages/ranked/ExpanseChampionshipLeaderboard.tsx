@@ -15,9 +15,11 @@ import { getAbbrevWalletAddress } from '@/utils';
 export default function ExpanseChampionshipLeaderboard({
     data,
     onClickUserProfile,
+    isMobile,
 }: {
     data: SeasonLeaderboardsData['seasonLeaderboard'] | null;
     onClickUserProfile: (wallet: PublicKey) => void;
+    isMobile: boolean;
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
     const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -29,85 +31,83 @@ export default function ExpanseChampionshipLeaderboard({
         return data.map((d, i) => {
             const filler = d.wallet.equals(PublicKey.default);
 
-            return {
-                rowTitle: '',
-                specificRowClassName: twMerge(wallet?.walletAddress === d.wallet.toBase58() ?
-                    'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
-                    : null),
-                values: [
-                    <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
-                        <p className="text-sm text-center" key={`rank-${i}`}>
-                            {d.rank}
-                        </p>
-                    </p>,
+            const values = [
+                <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
+                    <p className="text-sm text-center" key={`rank-${i}`}>
+                        {d.rank}
+                    </p>
+                </p>,
 
-                    <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
-                        {d.avatar && !filler ? (
-                            <Image
-                                src={d.avatar}
-                                width={30}
-                                height={30}
-                                alt="rank"
-                                className="h-8 w-8 rounded-full opacity-40"
-                                key={`rank-${i}`}
-                            />
-                        ) : <div className='h-8 w-8 bg-third rounded-full' />}
+                <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
+                    {d.avatar && !filler ? (
+                        <Image
+                            src={d.avatar}
+                            width={30}
+                            height={30}
+                            alt="rank"
+                            className="h-8 w-8 rounded-full opacity-40"
+                            key={`rank-${i}`}
+                        />
+                    ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
-                        <div className=''>
-                            {!filler && d.username ? (
-                                <p
-                                    key={`trader-${i}`}
-                                    className={twMerge(
-                                        'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
-                                    )}
-                                    onClick={() => {
-                                        onClickUserProfile(d.wallet);
-                                    }}
-                                >
-                                    {d.username.length > 16
-                                        ? `${d.username.substring(0, 16)}...`
-                                        : d.username}
-                                </p>
-                            ) : null}
+                    <div className=''>
+                        {!filler && d.username ? (
+                            <p
+                                key={`trader-${i}`}
+                                className={twMerge(
+                                    'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
+                                )}
+                                onClick={() => {
+                                    onClickUserProfile(d.wallet);
+                                }}
+                            >
+                                {d.username.length > 16
+                                    ? `${d.username.substring(0, 16)}...`
+                                    : d.username}
+                            </p>
+                        ) : null}
 
-                            {!filler && !d.username ? (
-                                <p
-                                    key={`trader-${i}`}
-                                    className={twMerge(
-                                        'text-xs font-boldy opacity-50',
-                                    )}
-                                >
-                                    {getAbbrevWalletAddress(d.wallet.toBase58())}
-                                </p>
-                            ) : null}
+                        {!filler && !d.username ? (
+                            <p
+                                key={`trader-${i}`}
+                                className={twMerge(
+                                    'text-xs font-boldy opacity-50',
+                                )}
+                            >
+                                {getAbbrevWalletAddress(d.wallet.toBase58())}
+                            </p>
+                        ) : null}
 
-                            {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
 
-                            {!filler && d.title ? (
-                                <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
-                                    {d.title}
-                                </div>
-                            ) : null}
+                        {!filler && d.title ? (
+                            <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
+                                {d.title}
+                            </div>
+                        ) : null}
 
-                            {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
-                        </div>
-                    </div>,
+                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
+                    </div>
+                </div>,
 
-                    <div
-                        className="flex items-center justify-center grow gap-1"
-                        key={`championship-points-${i}`}
-                    >
-                        {!filler ? <>
-                            <FormatNumber
-                                nb={d.championshipPoints}
-                                className="text-xs font-boldy text-[#fa6723]"
-                                precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
-                                isDecimalDimmed={false}
-                            />
-                            <div className='text-xs font-boldy text-[#fa6723]'>Points</div>
-                        </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
-                    </div>,
+                <div
+                    className="flex items-center justify-center grow gap-1"
+                    key={`championship-points-${i}`}
+                >
+                    {!filler ? <>
+                        <FormatNumber
+                            nb={d.championshipPoints}
+                            className="text-xs font-boldy text-[#fa6723]"
+                            precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
+                            isDecimalDimmed={false}
+                        />
+                        <div className='text-xs font-boldy text-[#fa6723]'>Points</div>
+                    </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                </div>,
+            ];
 
+            if (!isMobile) {
+                values.push(
                     <Tippy
                         key="rewards"
                         content={
@@ -169,11 +169,41 @@ export default function ExpanseChampionshipLeaderboard({
                                 <span className="h-[2.64em]">--</span>
                             ) : null}
                         </div>
-                    </Tippy>,
-                ],
+                    </Tippy>
+                );
+            }
+
+            return {
+                rowTitle: '',
+                specificRowClassName: twMerge(wallet?.walletAddress === d.wallet.toBase58() ?
+                    'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
+                    : null),
+                values,
             };
         });
-    }, [data, onClickUserProfile, tokenPrices, wallet?.walletAddress]);
+    }, [data, isMobile, onClickUserProfile, tokenPrices, wallet?.walletAddress]);
+
+    const columnsTitles = useMemo(() => {
+        const columnsTitles = [
+            <span className="ml-[2.2em] opacity-50" key="rank">
+                #
+            </span>,
+            'Trader',
+            <span className="ml-auto mr-auto opacity-50" key="pnl">
+                Season
+            </span>,
+        ];
+
+        if (!isMobile) {
+            columnsTitles.push(
+                <span className="ml-auto mr-auto opacity-50" key="rewards">
+                    Rewards
+                </span>
+            );
+        }
+
+        return columnsTitles;
+    }, [isMobile]);
 
     if (!data) return null;
 
@@ -182,24 +212,13 @@ export default function ExpanseChampionshipLeaderboard({
             <Table
                 className="bg-transparent gap-1 border-none p-0"
                 columnTitlesClassName="text-sm opacity-50"
-                columnsTitles={[
-                    <span className="ml-[2.2em] opacity-50" key="rank">
-                        #
-                    </span>,
-                    'Trader',
-                    <span className="ml-auto mr-auto opacity-50" key="pnl">
-                        Season
-                    </span>,
-                    <span className="ml-auto mr-auto opacity-50" key="rewards">
-                        Rewards
-                    </span>,
-                ]}
+                columnsTitles={columnsTitles}
                 rowHovering={true}
                 pagination={true}
                 paginationClassName="scale-[80%] p-0"
                 nbItemPerPage={100}
                 nbItemPerPageWhenBreakpoint={3}
-                breakpoint="24em"
+                breakpoint="0" // No breakpoint
                 rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                 rowTitleWidth="0%"
                 isFirstColumnId
