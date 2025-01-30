@@ -243,7 +243,7 @@ export default function Trade({
   }, [activePositionModal]);
 
   return (
-    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[100px] sm:pb-4">
+    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col w-full">
@@ -470,7 +470,7 @@ export default function Trade({
         <div className='relative w-full sm:hidden'>
           <QuestMenu isMobile className='sm:hidden' />
 
-          <div className="fixed left-0 bottom-0 w-full bg-bcolor backdrop-blur-sm p-3 z-30">
+          <div className="fixed left-0 bottom-[3.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
             <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
               <li>
                 <Button
