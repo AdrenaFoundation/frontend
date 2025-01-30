@@ -55,7 +55,7 @@ export default function Settings({
   isMobile?: boolean;
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
-  setCloseMobileModal: (close: boolean) => void;
+  setCloseMobileModal?: (close: boolean) => void;
 }) {
 
   const [, setCookies] = useCookies(['solanaExplorer']);
@@ -161,7 +161,7 @@ export default function Settings({
   if (isMobile) {
     return (
       <Modal
-        close={() => setCloseMobileModal(false)}
+        close={() => setCloseMobileModal?.(false)}
         className="flex flex-col w-full p-5 relative overflow-visible"
       >
         {content}

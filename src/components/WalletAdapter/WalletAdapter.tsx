@@ -35,8 +35,8 @@ export default function WalletAdapter({
   isIconOnly?: boolean;
   adapters: WalletAdapterExtended[];
   isMobile?: boolean;
-  setIsSettingsModalOpen: (isOpen: boolean) => void;
-  setIsPriorityFeeModalOpen: (isOpen: boolean) => void;
+  setIsSettingsModalOpen?: (isOpen: boolean) => void;
+  setIsPriorityFeeModalOpen?: (isOpen: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -159,7 +159,7 @@ export default function WalletAdapter({
                 <MenuSeparator />
                 <MenuItem
                   className="py-2"
-                  onClick={() => setIsPriorityFeeModalOpen(true)}
+                  onClick={() => setIsPriorityFeeModalOpen?.(true)}
                 >
                   Priority Fee
                 </MenuItem>
@@ -167,7 +167,7 @@ export default function WalletAdapter({
                 <MenuItem
                   className="py-2"
                   onClick={() => {
-                    setIsSettingsModalOpen(true);
+                    setIsSettingsModalOpen?.(true);
                   }}
                 >
                   Settings

@@ -25,7 +25,7 @@ export default function PriorityFeeSetting({
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
-  setCloseMobileModal: (close: boolean) => void;
+  setCloseMobileModal?: (close: boolean) => void;
   isMobile?: boolean;
 }) {
   const priorityFeeAmounts = usePriorityFee();
@@ -181,7 +181,7 @@ export default function PriorityFeeSetting({
   if (isMobile) {
     return (
       <Modal
-        close={() => setCloseMobileModal(false)}
+        close={() => setCloseMobileModal?.(false)}
         className="flex flex-col w-full p-5 relative overflow-visible"
       >
         {content}
