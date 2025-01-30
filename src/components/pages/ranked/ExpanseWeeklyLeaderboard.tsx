@@ -4,9 +4,6 @@ import Image from 'next/image';
 import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import firstImage from '@/../public/images/first-place.svg';
-import secondImage from '@/../public/images/second-place.svg';
-import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import { useSelector } from '@/store/store';
@@ -65,28 +62,9 @@ export default function ExpanseWeeklyLeaderboard({
 
             const values = [
                 <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
-                    {d.rank < 4 ? (
-                        <Image
-                            src={
-                                d.rank === 1
-                                    ? firstImage
-                                    : d.rank === 2
-                                        ? secondImage
-                                        : d.rank === 3
-                                            ? thirdImage
-                                            : ''
-                            }
-                            width={30}
-                            height={30}
-                            alt="rank"
-                            className='h-6 w-6'
-                            key={`rank-${i}`}
-                        />
-                    ) : (
-                        <p className="text-sm text-center" key={`rank-${i}`}>
-                            {d.rank}
-                        </p>
-                    )}
+                    <p className="text-sm text-center" key={`rank-${i}`}>
+                        {d.rank}
+                    </p>
                 </p>,
 
                 <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
