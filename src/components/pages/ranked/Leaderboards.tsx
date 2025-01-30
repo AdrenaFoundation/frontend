@@ -40,56 +40,55 @@ export default function Leaderboards() {
         <>
             <div className="flex flex-col gap-8">
                 <div className='flex gap-4 flex-wrap'>
-                    <div className='flex flex-col w-[25em] grow max-w-full p-2 pt-4 bg-[#0D1923] border border-white/5 rounded-lg'>
-                        <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-center pt-2'>
-                            <div className='flex'>
-                                <Select
-                                    selectedClassName='pr-1'
-                                    selectedTextClassName='text-2xl font-archivo uppercase'
-                                    selected={week}
-                                    options={[
-                                        { title: 'Week 1' },
-                                        { title: 'Week 2' },
-                                        { title: 'Week 3' },
-                                        { title: 'Week 4' },
-                                        { title: 'Week 5' },
-                                        { title: 'Week 6' },
-                                        { title: 'Week 7' },
-                                        { title: 'Week 8' },
-                                        { title: 'Week 9' },
-                                        { title: 'Week 10' },
-                                    ]}
-                                    onSelect={(week: string) => {
-                                        setWeek(week);
-                                    }}
-                                />
+                    <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
+                        <div className="opacity-30 text-xs absolute left-4 top-[-2.4em]">
+                            {weekStartDate.toLocaleDateString()} – {weekEndDate.toLocaleDateString()}
+                        </div>
 
-                                <div className='text-2xl font-archivo relative top-[0.03em] uppercase'>Leaderboard</div>
-                            </div>
+                        <div className="opacity-30 text-xs absolute right-4 top-[-2.4em]">
+                            {Date.now() <= weekStartDate.getTime() ?
+                                <div className="flex text-xs gap-1">
+                                    <span className="text-xs font-boldy">Starts in</span>
+                                    <RemainingTimeToDate
+                                        timestamp={weekStartDate.getTime() / 1000}
+                                        stopAtZero={true}
+                                    />
+                                </div>
 
-                            <div className="flex flex-row gap-3 min-w-[17em]">
-                                <p className="opacity-50">
-                                    ({weekStartDate.toLocaleDateString()} – {weekEndDate.toLocaleDateString()})
-                                </p>
-
-                                {Date.now() <= weekStartDate.getTime() ?
-                                    <div className="flex text-xs gap-1">
-                                        <span className="text-xs font-boldy">Starts in</span>
+                                : Date.now() > weekEndDate.getTime() ?
+                                    <p className="text-xs font-boldy">Week has ended</p>
+                                    : <div className="flex text-xs gap-1">
                                         <RemainingTimeToDate
-                                            timestamp={weekStartDate.getTime() / 1000}
+                                            timestamp={weekEndDate.getTime() / 1000}
                                             stopAtZero={true}
                                         />
-                                    </div>
-                                    : Date.now() > weekEndDate.getTime() ?
-                                        <p className="text-xs font-boldy">Week has ended</p>
-                                        : <div className="flex text-xs gap-1">
-                                            <RemainingTimeToDate
-                                                timestamp={weekEndDate.getTime() / 1000}
-                                                stopAtZero={true}
-                                            />
-                                            <span className="text-xs font-boldy">left</span>
-                                        </div>}
-                            </div>
+                                        <span className="text-xs font-boldy">left</span>
+                                    </div>}
+                        </div>
+
+                        <div className='flex pt-4 pb-6 border-b mb-4 w-full items-center justify-center relative'>
+                            <Select
+                                selectedClassName='pr-1'
+                                selectedTextClassName='text-2xl font-archivo uppercase'
+                                selected={week}
+                                options={[
+                                    { title: 'Week 1' },
+                                    { title: 'Week 2' },
+                                    { title: 'Week 3' },
+                                    { title: 'Week 4' },
+                                    { title: 'Week 5' },
+                                    { title: 'Week 6' },
+                                    { title: 'Week 7' },
+                                    { title: 'Week 8' },
+                                    { title: 'Week 9' },
+                                    { title: 'Week 10' },
+                                ]}
+                                onSelect={(week: string) => {
+                                    setWeek(week);
+                                }}
+                            />
+
+                            <div className='text-2xl font-archivo uppercase'>Leaderboard</div>
                         </div>
 
                         <ExpanseWeeklyLeaderboard
@@ -103,8 +102,8 @@ export default function Leaderboards() {
                         />
                     </div>
 
-                    <div className='flex flex-col w-[25em] grow max-w-full p-2 pt-4 bg-[#0D1923] border border-white/5 rounded-lg'>
-                        <div className='flex flex-col w-full h-[6em] flex-shrink-0 justify-start items-center pt-4'>
+                    <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg'>
+                        <div className='flex flex-col w-full flex-shrink-0 justify-start items-center pt-4 pb-6 border-b mb-4'>
                             <div className='text-2xl font-archivo uppercase'>Season Leaderboard</div>
                         </div>
 
