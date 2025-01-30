@@ -981,12 +981,12 @@ export default function LongShortTradingInputs({
             </StyledSubSubContainer>
 
             <h5 className="hidden sm:flex items-center ml-4 mt-2 mb-2">
-              Fees
+              Fees (8 bps)
               <span className="ml-1">
                 <Tippy
                   content={
                     <p className="font-medium text-txtfade">
-                      0 BPS entry fees - 12 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
+                      0 bps entry fees - 8 bps exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
                     </p>
                   }
                 >
