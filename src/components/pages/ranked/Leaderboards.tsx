@@ -18,6 +18,10 @@ import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
+function getWeekIndexFromWeek(week: string): number {
+    return Number(week.split(' ')[1]) - 1;
+}
+
 export default function Leaderboards() {
     const [week, setWeek] = useState<string>('Week 1');
     const { allUserProfiles } = useAllUserProfiles();
@@ -29,8 +33,24 @@ export default function Leaderboards() {
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
-    const weekStartDate = useMemo(() => new Date(TRADING_COMPETITION_SEASONS.expanse.startDate.getTime() + ((Number(week.split(' ')[1]) - 1) * ONE_WEEK_IN_MS)), [week]);
+    const weekStartDate = useMemo(() => new Date(TRADING_COMPETITION_SEASONS.expanse.startDate.getTime() + (getWeekIndexFromWeek(week) * ONE_WEEK_IN_MS)), [week]);
     const weekEndDate = useMemo(() => new Date(weekStartDate.getTime() + ONE_WEEK_IN_MS), [weekStartDate]);
+
+    const userWeeklyRank: number | null | false = useMemo(() => {
+        if (!wallet) return null;
+
+        const weekLeaderboard = leaderboardData?.weekLeaderboard[getWeekIndexFromWeek(week)] ?? null;
+
+        if (!weekLeaderboard) return null;
+
+        return weekLeaderboard.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
+    }, [leaderboardData, week]);
+
+    const userSeasonRank: number | null | false = useMemo(() => {
+        if (!wallet || !leaderboardData) return null;
+
+        return leaderboardData.seasonLeaderboard.find((p) => p.wallet.toBase58() === wallet?.walletAddress)?.rank ?? false;
+    }, [leaderboardData]);
 
     if (isMobile === null || isLarge === null) {
         return null;
@@ -66,7 +86,13 @@ export default function Leaderboards() {
                                     </div>}
                         </div>
 
-                        <div className='flex pt-4 pb-6 border-b mb-4 w-full items-center justify-center relative'>
+                        {userWeeklyRank !== null ? <div
+                            className="sm:absolute sm:top-2 sm:right-2 text-sm h-[2em] flex items-center justify-center rounded-full p-2 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5]"
+                        >
+                            {userWeeklyRank === false ? 'Unranked' : `#${userWeeklyRank}`}
+                        </div> : null}
+
+                        <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
                             <Select
                                 selectedClassName='pr-1'
                                 selectedTextClassName='text-xl font-boldy tracking-wider uppercase'
@@ -92,6 +118,8 @@ export default function Leaderboards() {
                             <div className='text-xl font-boldy tracking-wider uppercase'>Leaderboard</div>
                         </div>
 
+                        <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
+
                         <ExpanseWeeklyLeaderboard
                             isMobile={isMobile}
                             isLarge={isLarge}
@@ -103,8 +131,14 @@ export default function Leaderboards() {
                         />
                     </div>
 
-                    <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg'>
-                        <div className='flex flex-col w-full flex-shrink-0 justify-start items-center pt-4 pb-6 border-b mb-4'>
+                    <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
+                        {userWeeklyRank !== null ? <div
+                            className="sm:absolute sm:top-2 sm:right-2 text-sm h-[2em] flex items-center justify-center rounded-full p-2 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5]"
+                        >
+                            {userSeasonRank === false ? 'Unranked' : `#${userSeasonRank}`}
+                        </div> : null}
+
+                        <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
                             <div className='text-xl font-boldy tracking-wider uppercase'>Season Leaderboard</div>
                         </div>
 

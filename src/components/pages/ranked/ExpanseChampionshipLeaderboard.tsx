@@ -25,14 +25,18 @@ export default function ExpanseChampionshipLeaderboard({
     const wallet = useSelector((s) => s.walletState.wallet);
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
-    if (!data) return null;
 
     const dataReady = useMemo(() => {
         if (!data) return [];
 
         return data.map((d, i) => {
+            const filler = d.wallet.equals(PublicKey.default);
+
             return {
                 rowTitle: '',
+                specificRowClassName: twMerge(wallet?.walletAddress === d.wallet.toBase58() ?
+                    'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
+                    : null),
                 values: [
                     <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
                         {d.rank < 4 ? (
@@ -60,7 +64,7 @@ export default function ExpanseChampionshipLeaderboard({
                     </p>,
 
                     <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
-                        {d.avatar ? (
+                        {d.avatar && !filler ? (
                             <Image
                                 src={d.avatar}
                                 width={30}
@@ -69,15 +73,14 @@ export default function ExpanseChampionshipLeaderboard({
                                 className="h-8 w-8 rounded-full opacity-40"
                                 key={`rank-${i}`}
                             />
-                        ) : null}
+                        ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
-                        <div>
-                            {d.username ? (
+                        <div className=''>
+                            {!filler && d.username ? (
                                 <p
                                     key={`trader-${i}`}
                                     className={twMerge(
                                         'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
-                                        wallet?.walletAddress === d.wallet.toBase58() ? 'text-yellow-600 ' : '',
                                     )}
                                     onClick={() => {
                                         onClickUserProfile(d.wallet);
@@ -87,23 +90,28 @@ export default function ExpanseChampionshipLeaderboard({
                                         ? `${d.username.substring(0, 16)}...`
                                         : d.username}
                                 </p>
-                            ) : (
+                            ) : null}
+
+                            {!filler && !d.username ? (
                                 <p
                                     key={`trader-${i}`}
                                     className={twMerge(
                                         'text-xs font-boldy opacity-50',
-                                        wallet?.walletAddress === d.wallet.toBase58() ? 'text-yellow-600' : '',
                                     )}
                                 >
                                     {getAbbrevWalletAddress(d.wallet.toBase58())}
                                 </p>
-                            )}
+                            ) : null}
 
-                            {d.title ? (
+                            {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
+
+                            {!filler && d.title ? (
                                 <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
                                     {d.title}
                                 </div>
                             ) : null}
+
+                            {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
                         </div>
                     </div>,
 
@@ -111,13 +119,15 @@ export default function ExpanseChampionshipLeaderboard({
                         className="flex items-center justify-center grow gap-1"
                         key={`championship-points-${i}`}
                     >
-                        <FormatNumber
-                            nb={d.championshipPoints}
-                            className="text-xs font-boldy text-[#fa6723]"
-                            precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
-                            isDecimalDimmed={false}
-                        />
-                        <div className='text-xs font-boldy text-[#fa6723]'>Points</div>
+                        {!filler ? <>
+                            <FormatNumber
+                                nb={d.championshipPoints}
+                                className="text-xs font-boldy text-[#fa6723]"
+                                precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
+                                isDecimalDimmed={false}
+                            />
+                            <div className='text-xs font-boldy text-[#fa6723]'>Points</div>
+                        </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
                     </div>,
 
                     <Tippy
@@ -186,6 +196,8 @@ export default function ExpanseChampionshipLeaderboard({
             };
         });
     }, [data]);
+
+    if (!data) return null;
 
     return (
         <div className={twMerge('')}>

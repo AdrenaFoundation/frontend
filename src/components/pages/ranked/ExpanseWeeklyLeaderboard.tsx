@@ -62,6 +62,8 @@ export default function ExpanseWeeklyLeaderboard({
         if (!data) return null;
 
         return data.ranks.map((d, i) => {
+            const filler = d.wallet.equals(PublicKey.default);
+
             const values = [
                 <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
                     {d.rank < 4 ? (
@@ -89,7 +91,7 @@ export default function ExpanseWeeklyLeaderboard({
                 </p>,
 
                 <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
-                    {d.avatar ? (
+                    {d.avatar && !filler ? (
                         <Image
                             src={d.avatar}
                             width={30}
@@ -98,16 +100,14 @@ export default function ExpanseWeeklyLeaderboard({
                             className="h-8 w-8 rounded-full opacity-40"
                             key={`rank-${i}`}
                         />
-                    ) : null}
+                    ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
                     <div className=''>
-                        {d.username ? (
-
+                        {!filler && d.username ? (
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
                                     'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
-                                    wallet?.walletAddress === d.wallet.toBase58() ? 'text-yellow-600 ' : '',
                                 )}
                                 onClick={() => {
                                     onClickUserProfile(d.wallet);
@@ -117,27 +117,33 @@ export default function ExpanseWeeklyLeaderboard({
                                     ? `${d.username.substring(0, 16)}...`
                                     : d.username}
                             </p>
-                        ) : (
+                        ) : null}
+
+                        {!filler && !d.username ? (
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
                                     'text-xs font-boldy opacity-50',
-                                    wallet?.walletAddress === d.wallet.toBase58() ? 'text-yellow-600' : '',
                                 )}
                             >
                                 {getAbbrevWalletAddress(d.wallet.toBase58())}
                             </p>
-                        )}
+                        ) : null}
 
-                        {d.title ? (
+                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
+
+                        {!filler && d.title ? (
                             <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
                                 {d.title}
                             </div>
                         ) : null}
+
+                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
                     </div>
                 </div>,
 
                 <Tippy
+                    disabled={filler}
                     key="mutagens"
                     content={
                         <div className="text-xs font-boldy min-w-[15em]">
@@ -226,12 +232,12 @@ export default function ExpanseWeeklyLeaderboard({
                         className={twMerge("flex items-center justify-center grow p-2")}
                         key={`mutagens-${i}`}
                     >
-                        <FormatNumber
+                        {!filler ? <FormatNumber
                             nb={d.totalPoints}
                             className="text-xs font-boldy"
                             precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
                             isDecimalDimmed={false}
-                        />
+                        /> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
                     </div>
                 </Tippy>,
             ];
@@ -241,7 +247,7 @@ export default function ExpanseWeeklyLeaderboard({
                     className="flex flex-col items-center justify-center ml-auto mr-auto"
                     key={`volume-${i}`}
                 >
-                    {d.volume ? (
+                    {!filler && d.volume ? (
                         <FormatNumber
                             nb={d.volume}
                             className="text-xs font-boldy"
@@ -252,6 +258,8 @@ export default function ExpanseWeeklyLeaderboard({
                             isAbbreviateIcon={false}
                         />
                     ) : null}
+
+                    {filler ? <div className="w-10 h-2 bg-gray-800 rounded-xl" /> : null}
                 </div>);
             }
 
@@ -281,6 +289,9 @@ export default function ExpanseWeeklyLeaderboard({
             return {
                 rowTitle: '',
                 values,
+                specificRowClassName: twMerge(wallet?.walletAddress === d.wallet.toBase58() ?
+                    'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
+                    : null),
             };
         });
     }, [data, onClickUserProfile, wallet, isLarge, isMobile]);

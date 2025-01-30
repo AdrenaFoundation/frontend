@@ -120,19 +120,13 @@ export default class DataApiClient {
 
     public static async getSeasonLeaderboards(): Promise<SeasonLeaderboardsData | null> {
         try {
-            // const result = await fetch(
-            //     `https://datapi.adrena.xyz/v2/awakening?season=${season}&show_achievements=${Boolean(
-            //         showAchievements,
-            //     )}&show_trader_divisions=${Boolean(
-            //         showTraderDivisions,
-            //     )}&show_global_stats=${Boolean(
-            //         showGlobalStats,
-            //     )}&show_eligible_jitosol_wallets=${Boolean(
-            //         showEligibleJitosolWallets,
-            //     )}`,
-            // ).then((res) => res.json());
+            const result: SeasonLeaderboardsRawAPI = await fetch(
+                `http://localhost:8080/season?season=interseason1&show_leaderboard=true`,
+            ).then((res) => res.json());
 
-            const result: SeasonLeaderboardsRawAPI = fakeData;
+            // const result: SeasonLeaderboardsRawAPI = fakeData;
+
+            console.log('result', result)
 
             return {
                 startDate: new Date(result.data.start_date),
