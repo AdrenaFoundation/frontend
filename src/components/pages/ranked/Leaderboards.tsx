@@ -1,9 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import React, { useMemo, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import Select from '@/components/common/Select/Select';
+import Loader from '@/components/Loader/Loader';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
@@ -15,7 +17,6 @@ import { UserProfileExtended } from '@/types';
 
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
-import Tippy from '@tippyjs/react';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -27,7 +28,7 @@ export default function Leaderboards() {
     const [week, setWeek] = useState<string>('Week 1');
     const { allUserProfiles } = useAllUserProfiles();
     const wallet = useSelector((s) => s.walletState.wallet);
-    const leaderboardData = useExpanseData({ wallet, allUserProfiles });
+    const leaderboardData = useExpanseData({ allUserProfiles });
     const isMobile = useBetterMediaQuery('(max-width: 25em)');
     const isLarge = useBetterMediaQuery('(min-width: 1500px)');
 
@@ -45,17 +46,18 @@ export default function Leaderboards() {
         if (!weekLeaderboard) return null;
 
         return weekLeaderboard.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
-    }, [leaderboardData, week]);
+    }, [leaderboardData?.weekLeaderboard, wallet, week]);
 
     const userSeasonRank: number | null | false = useMemo(() => {
         if (!wallet || !leaderboardData) return null;
 
         return leaderboardData.seasonLeaderboard.find((p) => p.wallet.toBase58() === wallet?.walletAddress)?.rank ?? false;
-    }, [leaderboardData]);
+    }, [leaderboardData, wallet]);
 
     if (isMobile === null || isLarge === null) {
         return null;
     }
+
 
     return (
         <>
@@ -134,15 +136,15 @@ export default function Leaderboards() {
 
                         <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
 
-                        <ExpanseWeeklyLeaderboard
+                        {leaderboardData ? <ExpanseWeeklyLeaderboard
                             isMobile={isMobile}
                             isLarge={isLarge}
                             onClickUserProfile={(wallet) => {
                                 const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
                                 setActiveProfile(profile ?? null);
                             }}
-                            data={leaderboardData ? leaderboardData.weekLeaderboard[Number(week.split(' ')[1]) - 1] : null}
-                        />
+                            data={leaderboardData.weekLeaderboard[Number(week.split(' ')[1]) - 1]}
+                        /> : <Loader className='self-center mt-8 mb-8' />}
                     </div>
 
                     <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
@@ -173,13 +175,13 @@ export default function Leaderboards() {
 
                         <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
 
-                        <ExpanseChampionshipLeaderboard
-                            data={leaderboardData ? leaderboardData.seasonLeaderboard : null}
+                        {leaderboardData ? <ExpanseChampionshipLeaderboard
+                            data={leaderboardData.seasonLeaderboard}
                             onClickUserProfile={(wallet: PublicKey) => {
                                 const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
                                 setActiveProfile(profile ?? null);
                             }}
-                        />
+                        /> : <Loader className='self-center mt-8 mb-8' />}
                     </div>
                 </div>
             </div>

@@ -6,8 +6,6 @@ import {
   UserProfileExtended,
 } from '@/types';
 
-import { WalletAdapterName } from './useWalletAdapters';
-
 function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allUsernames: Record<string, string>) {
   if (!leaderboardData || !allUsernames) {
     return;
@@ -27,13 +25,8 @@ function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allUsernam
 }
 
 export default function useExpanseData({
-  wallet,
   allUserProfiles,
 }: {
-  wallet: {
-    adapterName: WalletAdapterName;
-    walletAddress: string;
-  } | null;
   allUserProfiles: UserProfileExtended[];
 }): SeasonLeaderboardsData | null {
   const [leaderboardData, setLeaderboardData] = useState<SeasonLeaderboardsData | null>(null);

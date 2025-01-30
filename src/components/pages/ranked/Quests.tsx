@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { QUESTS } from '@/constant';
+import { QuestType } from '@/types';
+
 import QuestComp from './QuestComp';
 import Streak from './Streak';
-import { QuestType } from '@/types';
 
 export default function Quests() {
     return (

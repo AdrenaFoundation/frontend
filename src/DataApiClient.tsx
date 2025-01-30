@@ -1,8 +1,17 @@
-import {
-    GetPositionStatsReturnType, PreSeasonLeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI, SeasonLeaderboardsRawAPI, SeasonLeaderboardsData
-} from './types';
-import * as fakeData from "./pages/ranked/fakeDate.json";
 import { PublicKey } from '@solana/web3.js';
+
+import {
+    GetPositionStatsReturnType,
+    PositionActivityRawAPi,
+    PositionStatsRawApi,
+    PreSeasonLeaderboardReturnTypeAPI,
+    RankedRewards,
+    SeasonLeaderboardsData,
+    SeasonLeaderboardsRawAPI,
+    Token,
+    Trader,
+    TraderDivisionRawAPI
+} from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {

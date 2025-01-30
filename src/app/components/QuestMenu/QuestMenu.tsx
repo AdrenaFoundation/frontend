@@ -8,9 +8,9 @@ import monster10 from '@/../public/images/monster-10.png';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
+import QuestComp from '@/components/pages/ranked/QuestComp';
 import { QUESTS } from '@/constant';
 import { useOnClickOutside } from '@/hooks/onClickOutside';
-import QuestComp from '@/components/pages/ranked/QuestComp';
 import { QuestType } from '@/types';
 
 export default function QuestMenu({

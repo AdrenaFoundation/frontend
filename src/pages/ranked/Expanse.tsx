@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import Quests from '../../components/pages/ranked/Quests';
 import Leaderboards from '../../components/pages/ranked/Leaderboards';
+import Quests from '../../components/pages/ranked/Quests';
 
 export default function Expanse() {
     const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -17,6 +17,7 @@ export default function Expanse() {
         }
 
         setActiveTab(searchParamsView as 'leaderboard' | 'mechanics');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Save in URL
@@ -28,7 +29,7 @@ export default function Expanse() {
             '',
             `${window.location.pathname}?${searchParams.toString()}`
         );
-    }, [activeTab]);
+    }, [activeTab, searchParams]);
 
     return (
         <div className="max-w-[1400px] w-full mx-auto px-4 relative flex flex-col pb-4">

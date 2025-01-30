@@ -4,15 +4,14 @@ import Image from 'next/image';
 import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import firstImage from '@/../public/images/first-place.svg';
+import secondImage from '@/../public/images/second-place.svg';
+import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
-
-import firstImage from '@/../public/images/first-place.svg';
-import secondImage from '@/../public/images/second-place.svg';
-import thirdImage from '@/../public/images/third-place.svg';
 
 export default function ExpanseWeeklyLeaderboard({
     data,

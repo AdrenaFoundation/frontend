@@ -1,16 +1,16 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import timerBg from '@/../../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../../public/images/jito-logo.svg';
 import jtoLogo from '@/../../public/images/jito-logo-2.png';
+import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import useCountDown from '@/hooks/useCountDown';
-import { ImageRef } from '@/types';
 import { useSelector } from '@/store/store';
-import { useMemo } from 'react';
-import FormatNumber from '@/components/Number/FormatNumber';
+import { ImageRef } from '@/types';
 
 export default function CompetitionBanner({
     banner,

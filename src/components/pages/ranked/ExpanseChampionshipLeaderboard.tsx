@@ -1,19 +1,19 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import React, { use, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
 import jtoImage from '@/../../public/images/jito-logo-2.png';
+import firstImage from '@/../public/images/first-place.svg';
+import secondImage from '@/../public/images/second-place.svg';
+import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
-import firstImage from '@/../public/images/first-place.svg';
-import secondImage from '@/../public/images/second-place.svg';
-import thirdImage from '@/../public/images/third-place.svg';
 
 export default function ExpanseChampionshipLeaderboard({
     data,
@@ -195,7 +195,7 @@ export default function ExpanseChampionshipLeaderboard({
                 ],
             };
         });
-    }, [data]);
+    }, [data, onClickUserProfile, tokenPrices, wallet?.walletAddress]);
 
     if (!data) return null;
 

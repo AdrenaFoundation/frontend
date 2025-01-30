@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import adxLogo from '@/../../public/images/adx.svg';
 import discordIcon from '@/../../public/images/discord-black.svg';
 import firstImage from '@/../../public/images/first-place.svg';
+import infoIcon from '@/../../public/images/Icons/info.svg';
 import jitoLogo from '@/../../public/images/jito-logo.svg';
 import jtoImage from '@/../../public/images/jito-logo-2.png';
 import secondImage from '@/../../public/images/second-place.svg';
@@ -17,10 +18,10 @@ import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import Modal from '@/components/common/Modal/Modal';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
-import LeaderboardTable from '@/components/pages/ranked/AwakeningLeaderboardTable';
-import WeeklyReward from '@/components/pages/ranked/AwakeningWeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import LeaderboardTable from '@/components/pages/ranked/AwakeningLeaderboardTable';
+import WeeklyReward from '@/components/pages/ranked/AwakeningWeeklyReward';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
@@ -28,8 +29,6 @@ import useAwakeningV2 from '@/hooks/useAwakeningV2';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserStats } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
-
-import infoIcon from '@/../../public/images/Icons/info.svg';
 
 const CompetitionStats = memo(
     ({
