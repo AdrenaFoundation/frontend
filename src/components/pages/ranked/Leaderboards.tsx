@@ -95,7 +95,9 @@ export default function Leaderboards() {
                                 key="user-rank-week"
                                 content={
                                     <div>
-                                        {userWeeklyRank === false ? 'You are not ranked. Trade and complete quests to earn mutagen and climb the ladder.' : `You are ranked #${userWeeklyRank} in this weekly leaderboard. Trade and complete quests to earn mutagen and climb the ladder.`}
+                                        {userWeeklyRank === false ?
+                                            'You are not ranked. Trade and complete quests to earn mutagen and climb the ladder.' :
+                                            `You are ranked #${userWeeklyRank} in this weekly leaderboard. Trade and complete quests to earn mutagen and climb the ladder.`}
                                     </div>
                                 }>
                                 <div>
@@ -153,7 +155,9 @@ export default function Leaderboards() {
                                     key="user-rank-week"
                                     content={
                                         <div>
-                                            {userSeasonRank === false ? 'You are not ranked. Earn season points in weekly leaderboards to climb the ladder.' : `You are ranked #${userSeasonRank} in the season. Earn season points in weekly leaderboards to climb the ladder.`}
+                                            {userSeasonRank === false ?
+                                                'You are not ranked. Earn season points in weekly leaderboards to climb the ladder.' :
+                                                `You are ranked #${userSeasonRank} in the season. Earn season points in weekly leaderboards to climb the ladder.`}
                                         </div>
                                     }>
                                     <div>
