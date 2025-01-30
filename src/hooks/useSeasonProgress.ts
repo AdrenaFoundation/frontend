@@ -12,6 +12,7 @@ const transformToEnrichedProgress = (
   startDate: response.data.start_date,
   endDate: response.data.end_date,
   streaks: response.data.streaks && {
+    updatedStreakDate: response.data.streaks.updated_streak_date,
     currentDaysStreak: response.data.streaks.current_days_streak,
     longestDaysStreak: response.data.streaks.longest_days_streak,
     monthlyDaysStreak: response.data.streaks.monthly_days_streak,

@@ -34,6 +34,8 @@ export default function QuestMenu({
         return null;
     }
 
+    const classNameTitle = "mt-3 mb-3"
+
     const body = (
         <>
             <div className="relative flex flex-row items-center w-full">
@@ -94,14 +96,14 @@ export default function QuestMenu({
                 </div>
             </div>
 
-            <div className="relative border-t border-white/10">
-                <div className="flex flex-col">
+            <div className="relative border-t border-white/10 overflow-y-auto w-full p-4">
+                <div className="flex flex-col p-2">
                     {userSeasonProgress.quests.dailyQuests.length > 0 && (
                         <>
-                            <h3 className="font-archivo text-lg text-white/30 uppercase mt-6 mb-4">
+                            <h3 className={twMerge(classNameTitle, "mt-0")}>
                                 Daily Quests
                             </h3>
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col gap-5">
                                 {userSeasonProgress.quests.dailyQuests.map(quest => (
                                     <QuestComp
                                         key={quest.id}
@@ -112,13 +114,13 @@ export default function QuestMenu({
                             </div>
                         </>
                     )}
-
+                    <div className="relative border-t border-white/10 mt-4"></div>
                     {userSeasonProgress.quests.weeklyQuests.length > 0 && (
                         <>
-                            <h3 className="font-archivo text-lg text-white/30 uppercase mt-8 mb-4">
+                            <h3 className={classNameTitle}>
                                 Weekly Quests
                             </h3>
-                            <div className="flex flex-col gap-6">
+                            <div className="flex flex-col gap-5">
                                 {userSeasonProgress.quests.weeklyQuests.map(quest => (
                                     <QuestComp
                                         key={quest.id}
@@ -129,10 +131,10 @@ export default function QuestMenu({
                             </div>
                         </>
                     )}
-
+                    <div className="relative border-t border-white/10 mt-4"></div>
                     {userSeasonProgress.mutations.length > 0 && (
                         <>
-                            <h3 className="font-archivo text-lg text-white/30 uppercase mt-6 mb-4">
+                            <h3 className={classNameTitle}>
                                 Mutations
                             </h3>
                             <div className="flex flex-col gap-6">
@@ -146,11 +148,11 @@ export default function QuestMenu({
                             </div>
                         </>
                     )}
-
+                    <div className="relative border-t border-white/10 mt-4"></div>
                     {userSeasonProgress.mutations.length > 0 && (
                         <>
-                            <h3 className="font-archivo text-lg text-white/30 uppercase mt-6 mb-4">
-                                Streak
+                            <h3 className={classNameTitle}>
+                                Streaks
                             </h3>
                             <div className="flex flex-col gap-6">
                                 <StreakComp

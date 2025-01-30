@@ -905,6 +905,7 @@ export type UserSeasonProgressReturnType = {
     start_date: string;
     end_date: string;
     streaks: {
+      updated_streak_date: string;
       current_days_streak: number;
       longest_days_streak: number;
       monthly_days_streak: number;
@@ -934,6 +935,7 @@ export type UserSeasonProgressReturnType = {
 };
 
 export type EnrichedSeasonStreak = {
+  updatedStreakDate: string;
   currentDaysStreak: number;
   longestDaysStreak: number;
   monthlyDaysStreak: number;
