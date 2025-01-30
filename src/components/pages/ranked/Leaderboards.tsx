@@ -142,6 +142,8 @@ export default function Leaderboards() {
                             <div className='text-xl font-boldy tracking-wider uppercase'>Season Leaderboard</div>
                         </div>
 
+                        <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
+
                         <ExpanseChampionshipLeaderboard
                             data={leaderboardData ? leaderboardData.seasonLeaderboard : null}
                             onClickUserProfile={(wallet: PublicKey) => {
