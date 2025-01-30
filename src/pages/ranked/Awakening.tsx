@@ -17,8 +17,8 @@ import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import Modal from '@/components/common/Modal/Modal';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
-import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
-import WeeklyReward from '@/components/pages/competition/WeeklyReward';
+import LeaderboardTable from '@/components/pages/ranked/AwakeningLeaderboardTable';
+import WeeklyReward from '@/components/pages/ranked/AwakeningWeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
@@ -29,7 +29,7 @@ import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserStats } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
-import infoIcon from '../../../../public/images/Icons/info.svg';
+import infoIcon from '@/../../public/images/Icons/info.svg';
 
 const CompetitionStats = memo(
     ({
@@ -466,7 +466,7 @@ const ProfileBanner = memo(
 );
 ProfileBanner.displayName = 'ProfileBanner';
 
-export default function Competition({
+export default function Awakening({
     showFeesInPnl,
 }: {
     showFeesInPnl: boolean;

@@ -4,8 +4,8 @@ import CompetitionBanner from '@/components/pages/ranked/CompetitionBanner';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 
 import Competition from './Awakening';
-import Expanse from './Expanse/Expanse';
-import SeasonNavigator from './SeasonNavigator';
+import Expanse from './Expanse';
+import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
 
 export default function Ranked() {
     const [activeSeason, setActiveSeason] =

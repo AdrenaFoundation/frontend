@@ -11,6 +11,9 @@ import Table from '@/components/pages/monitoring/Table';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
+import firstImage from '@/../public/images/first-place.svg';
+import secondImage from '@/../public/images/second-place.svg';
+import thirdImage from '@/../public/images/third-place.svg';
 
 export default function ExpanseChampionshipLeaderboard({
     data,
@@ -31,11 +34,32 @@ export default function ExpanseChampionshipLeaderboard({
             return {
                 rowTitle: '',
                 values: [
-                    <p className="text-sm text-center w-[40px]" key={`rank-${i}`}>
-                        {d.rank}
+                    <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
+                        {d.rank < 4 ? (
+                            <Image
+                                src={
+                                    d.rank === 1
+                                        ? firstImage
+                                        : d.rank === 2
+                                            ? secondImage
+                                            : d.rank === 3
+                                                ? thirdImage
+                                                : ''
+                                }
+                                width={30}
+                                height={30}
+                                alt="rank"
+                                className='h-6 w-6'
+                                key={`rank-${i}`}
+                            />
+                        ) : (
+                            <p className="text-sm text-center" key={`rank-${i}`}>
+                                {d.rank}
+                            </p>
+                        )}
                     </p>,
 
-                    <div className="flex flex-row gap-2 w-[10em] items-center" key={`rank-${i}`}>
+                    <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
                         {d.avatar ? (
                             <Image
                                 src={d.avatar}
@@ -145,8 +169,9 @@ export default function ExpanseChampionshipLeaderboard({
                                 <div className="flex">
                                     <FormatNumber
                                         format='currency'
+                                        prefix='+'
                                         nb={d.rewardsAdx * (tokenPrices['ADX'] ?? 0) + d.rewardsJto * (tokenPrices['JTO'] ?? 0)}
-                                        className="text-xs font-boldy"
+                                        className="text-xs font-boldy text-green"
                                         isDecimalDimmed={false}
                                     />
                                 </div>
@@ -168,7 +193,7 @@ export default function ExpanseChampionshipLeaderboard({
                 className="bg-transparent gap-1 border-none p-0"
                 columnTitlesClassName="text-sm opacity-50"
                 columnsTitles={[
-                    <span className="ml-4 opacity-50" key="rank">
+                    <span className="ml-[2.2em] opacity-50" key="rank">
                         #
                     </span>,
                     'Trader',

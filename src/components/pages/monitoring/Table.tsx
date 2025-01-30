@@ -127,7 +127,7 @@ export default function Table({
         <div
           key={`page-data-${rowTitle}-${i}`}
           className={twMerge(
-            'flex w-full border border-transparent text-base pl-1',
+            'flex w-full border border-transparent text-base pl-1 relative',
             rowHovering
               ? 'hover:bg-secondary hover:border-bcolor rounded-lg transition duration-300'
               : '',

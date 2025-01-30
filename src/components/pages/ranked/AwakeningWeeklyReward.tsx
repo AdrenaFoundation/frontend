@@ -194,7 +194,7 @@ const RewardCard = memo(({ award, handleProfileView }: { award: Award; handlePro
 ));
 RewardCard.displayName = 'RewardCard';
 
-export default function WeeklyReward({
+export default function AwakeningWeeklyReward({
     allAchievements,
     week,
     wallet,

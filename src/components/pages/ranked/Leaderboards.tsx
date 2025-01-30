@@ -69,7 +69,8 @@ export default function Leaderboards() {
                         <div className='flex pt-4 pb-6 border-b mb-4 w-full items-center justify-center relative'>
                             <Select
                                 selectedClassName='pr-1'
-                                selectedTextClassName='text-2xl font-archivo uppercase'
+                                selectedTextClassName='text-xl font-boldy tracking-wider uppercase'
+                                menuTextClassName='uppercase text-sm'
                                 selected={week}
                                 options={[
                                     { title: 'Week 1' },
@@ -88,7 +89,7 @@ export default function Leaderboards() {
                                 }}
                             />
 
-                            <div className='text-2xl font-archivo uppercase'>Leaderboard</div>
+                            <div className='text-xl font-boldy tracking-wider uppercase'>Leaderboard</div>
                         </div>
 
                         <ExpanseWeeklyLeaderboard
@@ -104,7 +105,7 @@ export default function Leaderboards() {
 
                     <div className='flex flex-col w-[25em] grow max-w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg'>
                         <div className='flex flex-col w-full flex-shrink-0 justify-start items-center pt-4 pb-6 border-b mb-4'>
-                            <div className='text-2xl font-archivo uppercase'>Season Leaderboard</div>
+                            <div className='text-xl font-boldy tracking-wider uppercase'>Season Leaderboard</div>
                         </div>
 
                         <ExpanseChampionshipLeaderboard

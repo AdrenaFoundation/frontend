@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import Quests from '../../../components/pages/ranked/Quests';
-import Leaderboards from '../../../components/pages/ranked/Leaderboards';
+import Quests from '../../components/pages/ranked/Quests';
+import Leaderboards from '../../components/pages/ranked/Leaderboards';
 
 export default function Expanse() {
-
     const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
     const [activeTab, setActiveTab] = useState<'leaderboard' | 'mechanics'>('leaderboard');
@@ -41,7 +40,7 @@ export default function Expanse() {
             </div>
 
             {activeTab === 'leaderboard' ? <>
-                <div className="flex mb-8 mt-8 gap-8">
+                <div className="flex mb-16 gap-8">
                     <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]'>
                         Trade and dominate weekly
                     </div>
