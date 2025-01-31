@@ -33,7 +33,7 @@ export function enrichUserMutagens(
       borrowFees: season.borrow_fees,
       closeFees: season.close_fees,
       fees: season.fees,
-    })),
+    })).reverse(),
   };
 }
 
