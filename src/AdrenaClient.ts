@@ -162,7 +162,7 @@ export class AdrenaClient {
     )[0];
   };
 
-  protected async checkATAAddressInitializedAndCreatePreInstruction({
+  async checkATAAddressInitializedAndCreatePreInstruction({
     mint,
     owner,
     preInstructions,
@@ -788,7 +788,7 @@ export class AdrenaClient {
    * INSTRUCTIONS
    */
 
-  protected async buildAddLiquidityTx({
+  async buildAddLiquidityTx({
     owner,
     mint,
     amountIn,
@@ -1033,7 +1033,7 @@ export class AdrenaClient {
     });
   }
 
-  protected buildOpenOrIncreasePositionWithSwapLong({
+  buildOpenOrIncreasePositionWithSwapLong({
     owner,
     mint,
     price,
@@ -1137,7 +1137,7 @@ export class AdrenaClient {
       });
   }
 
-  protected buildOpenOrIncreasePositionWithSwapShort({
+  buildOpenOrIncreasePositionWithSwapShort({
     owner,
     mint,
     price,
@@ -4664,7 +4664,7 @@ export class AdrenaClient {
   }
 
   // Include a retry system to avoid blockhash expired errors
-  protected simulateTransactionStrong(
+  simulateTransactionStrong(
     args: Parameters<Connection['simulateTransaction']>[0],
   ): Promise<SimulatedTransactionResponse> {
     return new Promise((resolve, reject) => {
@@ -4723,7 +4723,7 @@ export class AdrenaClient {
   }
 
   // Used to bypass "views" to workaround anchor bug with .views having CPI calls
-  protected async simulateInstructions<T>(
+  async simulateInstructions<T>(
     instructions: TransactionInstruction[],
     typeName: string,
   ): Promise<T> {
@@ -4794,7 +4794,7 @@ export class AdrenaClient {
     }
   }
 
-  protected async simulateTransaction({
+  async simulateTransaction({
     payer,
     transaction,
     recentBlockhash,
