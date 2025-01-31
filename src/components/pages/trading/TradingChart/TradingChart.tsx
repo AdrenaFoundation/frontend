@@ -74,11 +74,11 @@ export default function TradingChart({
           symbol: `Crypto.${getTokenSymbol(token.symbol)}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#171B26',
+          toolbar_bg: '#0d1118',
           datafeed,
           loading_screen: {
-            backgroundColor: '#171B26',
-            foregroundColor: '#171B26',
+            backgroundColor: '#0d1118',
+            foregroundColor: '#0d1118',
           },
           favorites: {
             intervals: [
@@ -132,7 +132,7 @@ export default function TradingChart({
           setIsLoading(false);
 
           widget.applyOverrides({
-            'paneProperties.background': '#171B26',
+            'paneProperties.background': '#0d1118',
             'paneProperties.backgroundType': 'solid',
             'paneProperties.legendProperties.showStudyArguments': false,
             'paneProperties.legendProperties.showStudyTitles': false,
