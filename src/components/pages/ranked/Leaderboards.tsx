@@ -17,9 +17,9 @@ import useExpanseData from '@/hooks/useExpanseData';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
+import InfoAnnotationTitle from '../monitoring/InfoAnnotationTitle';
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
-import InfoAnnotationTitle from '../monitoring/InfoAnnotationTitle';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -242,7 +242,7 @@ export default function Leaderboards() {
                                 <InfoAnnotationTitle
                                     text={
                                         <div className='flex flex-col gap-1'>
-                                            Traders are ranked weekly based on Mutagen earned and receive 'season points' accordingly. The season lasts 10 weeks.
+                                            Traders are ranked weekly based on Mutagen earned and receive &apos;season points&apos; accordingly. The season lasts 10 weeks.
                                         </div>
                                     }
                                     className={''}

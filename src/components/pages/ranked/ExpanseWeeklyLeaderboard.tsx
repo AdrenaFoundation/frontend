@@ -16,7 +16,6 @@ export default function ExpanseWeeklyLeaderboard({
     isMobile,
     isLarge,
     startDate,
-    endDate,
 }: {
     data: SeasonLeaderboardsData['weekLeaderboard'][0] | null;
     onClickUserProfile: (wallet: PublicKey) => void;
@@ -279,7 +278,7 @@ export default function ExpanseWeeklyLeaderboard({
 
     const weekHasNotHappened = useMemo(() => {
         return startDate.getTime() <= Date.now();
-    }, [data]);
+    }, [startDate]);
 
     if (!weekHasNotHappened) {
         return <div className='flex w-full items-center justify-center pt-8 pb-8'>
