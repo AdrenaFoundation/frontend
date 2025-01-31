@@ -74,7 +74,7 @@ export default function CompetitionBanner({
                     </h1>
                 </div>
 
-                {startDate && startDate >= new Date() ? (
+                {startDate && startDate.getTime() >= Date.now() ? (
                     <ul className="flex flex-row gap-3 md:gap-9 mt-2 px-6 md:px-9 p-3 bg-black/40 rounded-lg z-10">
                         <li className="flex flex-col items-center justify-center">
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
@@ -155,7 +155,7 @@ export default function CompetitionBanner({
                 <div
                     className={twMerge(
                         'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
-                        startDate && startDate >= new Date() ? 'mt-[2em]' : 'mt-[4em]',
+                        startDate && startDate.getTime() >= Date.now() ? 'mt-[2em]' : 'mt-[4em]',
                     )}
                 >
                     <p className="tracking-[0.2rem] uppercase">Sponsored by</p>
