@@ -66,11 +66,10 @@ export default function Leaderboards() {
         if (!ranks) return null;
 
         return ranks.reduce((acc, rank) => {
-            acc.totalVolume += rank.volume;
-            acc.totalFees += rank.fees;
-            acc.totalMutagen += rank.totalPoints;
-
-            if (rank.wallet.equals(PublicKey.default)) {
+            if (!rank.wallet.equals(PublicKey.default)) {
+                acc.totalVolume += rank.volume;
+                acc.totalFees += rank.fees;
+                acc.totalMutagen += rank.totalPoints;
                 acc.totalUsers += 1;
             }
 
@@ -89,12 +88,16 @@ export default function Leaderboards() {
         if (!ranks) return null;
 
         return ranks.reduce((acc, rank) => {
-            acc.totalVolume += rank.volume;
-            acc.totalFees += rank.fees;
-            acc.totalChampionshipPoint += rank.championshipPoints;
+            if (!rank.wallet.equals(PublicKey.default)) {
+                acc.totalVolume += rank.volume;
+                acc.totalFees += rank.fees;
+                acc.totalChampionshipPoint += rank.championshipPoints;
+                acc.totalUsers += 1;
+            }
+
             return acc;
         }, {
-            totalUsers: ranks.length,
+            totalUsers: 0,
             totalVolume: 0,
             totalFees: 0,
             totalChampionshipPoint: 0,
@@ -382,6 +385,7 @@ export default function Leaderboards() {
 
                             {leaderboardData ? <ExpanseChampionshipLeaderboard
                                 isMobile={isMobile}
+                                isLarge={isLarge}
                                 data={leaderboardData.seasonLeaderboard}
                                 onClickUserProfile={(wallet: PublicKey) => {
                                     const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());

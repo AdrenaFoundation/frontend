@@ -16,14 +16,15 @@ export default function ExpanseChampionshipLeaderboard({
     data,
     onClickUserProfile,
     isMobile,
+    isLarge,
 }: {
     data: SeasonLeaderboardsData['seasonLeaderboard'] | null;
     onClickUserProfile: (wallet: PublicKey) => void;
     isMobile: boolean;
+    isLarge: boolean;
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
     const tokenPrices = useSelector((s) => s.tokenPrices);
-
 
     const dataReady = useMemo(() => {
         if (!data) return [];
@@ -90,6 +91,31 @@ export default function ExpanseChampionshipLeaderboard({
                     </div>
                 </div>,
 
+
+            ];
+
+            if (isLarge) {
+                values.push(
+                    <div
+                        className="flex items-center justify-center grow gap-1"
+                        key={`volume-${i}`}
+                    >
+                        {!filler ? <>
+                            <FormatNumber
+                                nb={d.volume}
+                                className="text-xs font-boldy text-[#fa6723]"
+                                precision={2}
+                                isDecimalDimmed={false}
+                                format='currency'
+                                isAbbreviate={true}
+                                isAbbreviateIcon={false}
+                            />
+                        </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                    </div>
+                );
+            }
+
+            values.push(
                 <div
                     className="flex items-center justify-center grow gap-1"
                     key={`championship-points-${i}`}
@@ -103,8 +129,8 @@ export default function ExpanseChampionshipLeaderboard({
                         />
                         <div className='text-xs font-boldy text-[#fa6723]'>Points</div>
                     </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
-                </div>,
-            ];
+                </div>
+            );
 
             if (!isMobile) {
                 values.push(
@@ -181,7 +207,7 @@ export default function ExpanseChampionshipLeaderboard({
                 values,
             };
         });
-    }, [data, isMobile, onClickUserProfile, tokenPrices, wallet?.walletAddress]);
+    }, [data, isLarge, isMobile, onClickUserProfile, tokenPrices, wallet?.walletAddress]);
 
     const columnsTitles = useMemo(() => {
         const columnsTitles = [
@@ -189,10 +215,19 @@ export default function ExpanseChampionshipLeaderboard({
                 #
             </span>,
             'Trader',
-            <span className="ml-auto mr-auto opacity-50" key="pnl">
-                Season
-            </span>,
         ];
+
+        if (isLarge) {
+            columnsTitles.push(
+                <span className="ml-auto mr-auto opacity-50" key="volume">
+                    Volume
+                </span>
+            );
+        }
+
+        columnsTitles.push(<span className="ml-auto mr-auto opacity-50" key="pnl">
+            Season
+        </span>);
 
         if (!isMobile) {
             columnsTitles.push(
@@ -203,7 +238,7 @@ export default function ExpanseChampionshipLeaderboard({
         }
 
         return columnsTitles;
-    }, [isMobile]);
+    }, [isLarge, isMobile]);
 
     if (!data) return null;
 
