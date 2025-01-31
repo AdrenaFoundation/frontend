@@ -6,6 +6,7 @@ import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { twMerge } from 'tailwind-merge';
 
 import lockIcon from '@/../public/images/Icons/lock.svg';
 import monitorIcon from '@/../public/images/Icons/monitor-icon.svg';
@@ -177,7 +178,7 @@ export default function RootLayout({
       <ViewsWarning />
 
       <div className="w-full grow flex justify-center">
-        <div className="w-full flex flex-col sm:pb-0 max-w-[120em]">
+        <div className={twMerge("w-full flex flex-col max-w-[120em]", !isBigScreen ? 'pb-[100px]' : 'sm:pb-0')}>
           {children}
         </div>
       </div>
@@ -187,7 +188,7 @@ export default function RootLayout({
       <ChatContainer
         userProfile={userProfile}
         wallet={wallet}
-        isMobile={isMobile}
+        isMobile={!isBigScreen}
         isChatOpen={isChatOpen}
         setIsChatOpen={setIsChatOpen}
       />

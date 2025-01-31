@@ -72,6 +72,8 @@ export default function WalletAdapter({
   const connectedWalletAdapterName = wallet?.adapterName;
   const connected = !!connectedWalletAdapterName;
 
+
+
   // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
@@ -123,8 +125,7 @@ export default function WalletAdapter({
                 className,
                 'gap-2 pl-2 pr-3 text-xs w-[15em] border border-white/20',
                 isIconOnly && 'p-0 h-8 w-8',
-                isMobile &&
-                "bg-[url('/images/profile-picture-1.jpg')] bg-no-repeat bg-cover bg-center",
+                "bg-[url('/images/profile-picture-1.jpg')] bg-no-repeat bg-cover bg-center sm:bg-none",
               )}
               title={
                 !isIconOnly

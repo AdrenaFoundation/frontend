@@ -91,7 +91,7 @@ export default function BurgerMenu({
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
-  const isSmallerScreen = useBetterMediaQuery('(max-width: 550px)');
+  const isSmallerScreen = useBetterMediaQuery('(max-width: 640px)');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [alpPrice, setAlpPrice] = useState<number | null>(null);

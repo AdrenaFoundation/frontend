@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -11,7 +10,7 @@ export default function MobileNavbar({
   userVest,
   userDelegatedVest,
 }: {
-  PAGES: { name: string; link: string; icon?: ImageRef, external?: boolean }[]
+  PAGES: { name: string; link: string; icon?: ImageRef; external?: boolean }[];
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
 }) {
@@ -25,7 +24,7 @@ export default function MobileNavbar({
             'Vote',
             'Learn',
             'Profile',
-            ((userVest || userDelegatedVest) ? null : 'Vest'),
+            userVest || userDelegatedVest ? null : 'Vest',
           ].includes(p.name),
       ).map((page) => {
         return (
@@ -33,16 +32,15 @@ export default function MobileNavbar({
             href={page.link}
             className={twMerge(
               'text-sm opacity-50 hover:opacity-100 transition duration-300 hover:grayscale-0 flex items-center justify-center p-3 sm:p-4 border-t-2 border-transparent flex-1',
-              pathname === page.link ? 'grayscale-0 opacity-100 border-t-2 border-t-white' : 'grayscale',
+              pathname === page.link
+                ? 'grayscale-0 opacity-100 border-t-2 border-t-white'
+                : 'grayscale',
             )}
             key={page.name}
           >
-            <div className={'flex flex-col gap-2 items-center'}>
-              {page?.icon ? (
-                <Image src={page.icon} alt="logo" width={14} height={14} />
-              ) : null}
-              <h5 className="whitespace-nowrap font-medium">{page.name === 'Provide Liquidity' ? 'Buy ALP' : page.name}</h5>
-            </div>
+            <h5 className="whitespace-nowrap font-medium">
+              {page.name === 'Provide Liquidity' ? 'Buy ALP' : page.name}
+            </h5>
           </Link>
         );
       })}
