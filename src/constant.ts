@@ -334,7 +334,7 @@ export const TRADING_COMPETITION_SEASONS = {
     img: expanseBanner,
     title: 'The Expanse',
     subTitle: 'new season',
-    startDate: new Date('02/01/2025'),
+    startDate: new Date('2025-01-31T23:59:59.999Z'),
     endDate: new Date('04/12/2025'),
     gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
     primaryColor: '#FA6724',

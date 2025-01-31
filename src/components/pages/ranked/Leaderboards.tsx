@@ -10,7 +10,6 @@ import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useExpanseData from '@/hooks/useExpanseData';
@@ -19,9 +18,6 @@ import { UserProfileExtended } from '@/types';
 
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
-import { title } from 'process';
-
-const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
