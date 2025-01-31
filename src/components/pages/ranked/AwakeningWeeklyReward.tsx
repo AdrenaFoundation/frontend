@@ -8,7 +8,7 @@ import firstImage from '@/../public/images/first-place.svg';
 import ticketImage from '@/../public/images/tickets.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
-import { LeaderboardReturnTypeAPI } from '@/types';
+import { PreSeasonLeaderboardReturnTypeAPI } from '@/types';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 
 type Award = {
@@ -26,7 +26,7 @@ type Award = {
 };
 
 type WeeklyRewardProps = {
-    allAchievements: LeaderboardReturnTypeAPI<{
+    allAchievements: PreSeasonLeaderboardReturnTypeAPI<{
         showAchievements: true;
     }>['achievements'] & {
         feesTickets: {
@@ -194,7 +194,7 @@ const RewardCard = memo(({ award, handleProfileView }: { award: Award; handlePro
 ));
 RewardCard.displayName = 'RewardCard';
 
-export default function WeeklyReward({
+export default function AwakeningWeeklyReward({
     allAchievements,
     week,
     wallet,

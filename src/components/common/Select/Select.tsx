@@ -18,6 +18,7 @@ export default function Select<T extends string>({
   selectedTextClassName,
   menuClassName,
   menuOpenBorderClassName,
+  menuItemClassName,
   menuTextClassName,
   options,
   onSelect,
@@ -29,9 +30,10 @@ export default function Select<T extends string>({
   selectedTextClassName?: string;
   menuClassName?: string;
   menuOpenBorderClassName?: string;
+  menuItemClassName?: string;
   menuTextClassName?: string;
   selected: T;
-  options: { title: T; img?: ImageRef }[];
+  options: { title: T; img?: ImageRef; disabled?: boolean }[];
   onSelect: (opt: T) => void;
 
   // Reverse the image position
@@ -70,9 +72,9 @@ export default function Select<T extends string>({
             <div
               className={twMerge(
                 'flex flex-row gap-x-1 items-center',
-                selectedClassName,
                 options.length > 1 && 'w-full pr-3',
                 align === 'right' && 'justify-between',
+                selectedClassName,
               )}
             >
               {reversed ? img : chevron}
@@ -100,7 +102,8 @@ export default function Select<T extends string>({
                   {!!i && <MenuSeparator key={'sep' + option.title} />}
 
                   <MenuItem
-                    className="flex flex-row items-center justify-end text-center relative overflow-hidden h-14"
+                    disabled={option.disabled}
+                    className={twMerge("flex flex-row items-center justify-end text-center relative overflow-hidden h-14", menuItemClassName)}
                     onMouseEnter={() => setOptionHover(i)}
                     onMouseLeave={() => setOptionHover(null)}
                     onClick={() => {

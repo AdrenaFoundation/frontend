@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import DataApiClient from '@/DataApiClient';
 import {
-  LeaderboardReturnTypeAPI,
+  PreSeasonLeaderboardReturnTypeAPI,
   RankedRewards,
   TradingCompetitionLeaderboardAPI,
   UserProfileExtended,
@@ -82,7 +82,7 @@ const findUserData = (
 };
 
 const processLeaderboardData = (
-  traderDivisions: LeaderboardReturnTypeAPI<{
+  traderDivisions: PreSeasonLeaderboardReturnTypeAPI<{
     showTraderDivisions: true;
   }>['traderDivisions'],
   getUserName: (address: string | null) => string | null,
@@ -128,7 +128,7 @@ const processLeaderboardData = (
 };
 
 const processAchievements = (
-  achievements: LeaderboardReturnTypeAPI<{
+  achievements: PreSeasonLeaderboardReturnTypeAPI<{
     showAchievements: true;
   }>['achievements'],
   getUserName: (address: string | null) => string | null,
@@ -179,10 +179,10 @@ export default function useAwakeningV2({
   const [data, setData] = useState<{
     startDate: string;
     endDate: string;
-    traderDivisions: LeaderboardReturnTypeAPI<{
+    traderDivisions: PreSeasonLeaderboardReturnTypeAPI<{
       showTraderDivisions: true;
     }>['traderDivisions'];
-    achievements: LeaderboardReturnTypeAPI<{
+    achievements: PreSeasonLeaderboardReturnTypeAPI<{
       showAchievements: true;
     }>['achievements'];
     eligibleJitosolWallets: string[];
@@ -209,7 +209,7 @@ export default function useAwakeningV2({
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await DataApiClient.getTradingCompetitionLeaderboard({
+      const response = await DataApiClient.getPreSeasonLeaderboard({
         season: 'preseason',
         showAchievements: true,
         showTraderDivisions: true,

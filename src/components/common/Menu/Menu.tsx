@@ -10,6 +10,7 @@ import { twMerge } from 'tailwind-merge';
 import { useOnClickOutside } from '@/hooks/onClickOutside';
 
 export default function Menu({
+  forceOpen,
   trigger,
   className,
   openMenuClassName,
@@ -21,6 +22,7 @@ export default function Menu({
   isDim = false,
   openMenuTriggerType = 'click',
 }: {
+  forceOpen?: boolean; // Use for dev only
   trigger: ReactNode;
   className?: string;
   openMenuClassName?: string;
@@ -83,7 +85,7 @@ export default function Menu({
           <div
             className={twMerge(
               'flex h-full w-full border border-transparent',
-              isMenuOpen && withBorder
+              (isMenuOpen || forceOpen) && withBorder
                 ? twMerge('bg-secondary', menuOpenBorderClassName)
                 : '',
             )}
@@ -91,7 +93,7 @@ export default function Menu({
             {trigger}
           </div>
 
-          {isMenuOpen ? (
+          {isMenuOpen || forceOpen ? (
             <motion.div
               ref={ref}
               initial="hidden"
@@ -111,7 +113,7 @@ export default function Menu({
         </div>
       </AnimatePresence>
 
-      {isDim && isMenuOpen ? (
+      {isDim && (isMenuOpen || forceOpen) ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

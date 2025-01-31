@@ -581,7 +581,102 @@ export type ConnectedWalletTickets = {
   jito: number | null;
 } | null;
 
-export type LeaderboardReturnTypeAPI<
+type SeasonLeaderboardsRawAPI = {
+  success: boolean;
+  data: {
+    start_date: string; // ISO 8601 Date String
+    end_date: string; // ISO 8601 Date String
+    quests: Record<string, unknown>;
+    mutations: Record<string, unknown>;
+    week_leaderboard: {
+      week_dates_start: string[]; // Array of ISO 8601 Date Strings
+      week_dates_end: string[]; // Array of ISO 8601 Date Strings
+      leaderboard: {
+        user_wallet: string;
+        season_id: number;
+        week_date_id: number;
+        points_trading: number;
+        points_mutations: number;
+        points_streaks: number;
+        points_quests: number;
+        total_points: number;
+        volume: number;
+        pnl: number;
+        borrow_fees: number;
+        close_fees: number;
+        fees: number;
+        rank: number;
+        championship_points: number;
+      }[][];
+    };
+    season_leaderboard: {
+      user_wallet: string;
+      season_id: number;
+      points_trading: number;
+      points_mutations: number;
+      points_streaks: number;
+      points_quests: number;
+      total_points: number;
+      volume: number;
+      pnl: number;
+      borrow_fees: number;
+      close_fees: number;
+      fees: number;
+      rank: number;
+      championship_points: number;
+      rewards_adx: number;
+      rewards_jto: number;
+    }[];
+    name: string;
+    description: string;
+  };
+};
+
+export type SeasonLeaderboardsData = {
+  startDate: Date;
+  endDate: Date;
+  weekLeaderboard: {
+    startDate: Date;
+    endDate: Date;
+    ranks: {
+      wallet: PublicKey;
+      rank: number;
+      championshipPoints: number;
+      totalPoints: number;
+      streaksPoints: number;
+      questsPoints: number;
+      mutationPoints: number;
+      tradingPoints: number;
+      volume: number;
+      pnl: number;
+      fees: number;
+      avatar: string | null;
+      username: string | null;
+      title: string | null;
+    }[];
+  }[];
+
+  seasonLeaderboard: {
+    wallet: PublicKey;
+    rank: number;
+    tradingPoints: number;
+    mutationPoints: number;
+    streaksPoints: number;
+    questsPoints: number;
+    totalPoints: number;
+    volume: number;
+    pnl: number;
+    fees: number;
+    championshipPoints: number;
+    rewardsAdx: number;
+    rewardsJto: number;
+    avatar: string | null;
+    username: string | null;
+    title: string | null;
+  }[];
+};
+
+export type PreSeasonLeaderboardReturnTypeAPI<
   T extends {
     showGlobalStats?: boolean;
     showAchievements?: boolean;
@@ -773,6 +868,7 @@ export type GetPositionStatsReturnType<
 type CheckBoxType = {
   type: 'checkbox';
   description: string;
+  progress: string;
   reward: number | string;
   completed: boolean;
   isActive?: boolean;
@@ -784,6 +880,7 @@ type TextType = {
   title: string;
   description: string;
   task: string;
+  progress: string;
   reward: string;
 };
 
@@ -791,6 +888,7 @@ type ProgressiveType = {
   type: 'progressive';
   description?: string;
   title: string;
+  progress: number;
   levels: {
     description: string;
     multiplier: string;
@@ -803,4 +901,245 @@ export type QuestType = {
   title: string | null;
   description?: string;
   tasks: (CheckBoxType | TextType | ProgressiveType)[];
+};
+
+export type SeasonQuestProgress = {
+  id: number;
+  frequency: 'daily' | 'weekly';
+  name: string;
+  description: string;
+  points: number;
+  completion_points: number;
+  progress: number;
+  completed: number;
+  current_value: number;
+  target_value: number;
+  is_condition: boolean;
+  target_type: string;
+  current_value_2: number | null;
+  target_value_2: number | null;
+  is_condition_2: boolean;
+  target_type_2: string | null;
+  current_value_3: number | null;
+  target_value_3: number | null;
+  is_condition_3: boolean;
+  target_type_3: string | null;
+  current_value_4: number | null;
+  target_value_4: number | null;
+  is_condition_4: boolean;
+  target_type_4: string | null;
+  current_value_5: number | null;
+  target_value_5: number | null;
+  is_condition_5: boolean;
+  target_type_5: string | null;
+  current_value_6: number | null;
+  target_value_6: number | null;
+  is_condition_6: boolean;
+  target_type_6: string | null;
+};
+
+export type EnrichedSeasonQuestProgress = {
+  id: number;
+  frequency: 'daily' | 'weekly';
+  name: string;
+  description: string;
+  points: number;
+  completion_points: number;
+  progress: number;
+  completed: number;
+  currentValue: number;
+  targetValue: number;
+  isCondition: boolean;
+  targetType: string;
+  currentValue2: number | null;
+  targetValue2: number | null;
+  isCondition2: boolean;
+  targetType2: string | null;
+  currentValue3: number | null;
+  targetValue3: number | null;
+  isCondition3: boolean;
+  targetType3: string | null;
+  currentValue4: number | null;
+  targetValue4: number | null;
+  isCondition4: boolean;
+  targetType4: string | null;
+  currentValue5: number | null;
+  targetValue5: number | null;
+  isCondition5: boolean;
+  targetType5: string | null;
+  currentValue6: number | null;
+  targetValue6: number | null;
+  isCondition6: boolean;
+  targetType6: string | null;
+};
+
+export type SeasonMutation = {
+  mutation_date: string;
+  name: string;
+  description: string;
+  points: number;
+  condition_type: string;
+  condition_value: number;
+  comparison: string;
+  calculation_type: string;
+  max_points: number;
+};
+
+export type EnrichedSeasonMutation = {
+  mutationDate: string;
+  name: string;
+  description: string;
+  points: number;
+  conditionType: string;
+  conditionValue: number;
+  comparison: string;
+  calculationType: string;
+  maxPoints: number;
+};
+
+export type UserSeasonProgressReturnType = {
+  success: boolean;
+  data: {
+    start_date: string;
+    end_date: string;
+    streaks: {
+      updated_streak_date: string;
+      current_days_streak: number;
+      longest_days_streak: number;
+      weekly_days_streak: number;
+      monthly_days_streak: number;
+      weeks_completed: number;
+      months_completed: number;
+      points_days: number;
+      points_weeks: number;
+      points_months: number;
+    };
+    quests: {
+      daily_quests: SeasonQuestProgress[];
+      weekly_quests: SeasonQuestProgress[];
+      daily_points_quests: number;
+      weekly_points_quests: number;
+      total_points_quests: number;
+    };
+    mutations: SeasonMutation[];
+    week_leaderboard: {
+      week_dates_start: string[];
+      week_dates_end: string[];
+      leaderboard: [];
+    };
+    season_leaderboard: [];
+    name: string;
+    description: string;
+  };
+};
+
+export type EnrichedSeasonStreak = {
+  updatedStreakDate: string;
+  currentDaysStreak: number;
+  longestDaysStreak: number;
+  monthlyDaysStreak: number;
+  weeklyDaysStreak: number;
+  weeksCompleted: number;
+  monthsCompleted: number;
+  pointsDays: number;
+  pointsWeeks: number;
+  pointsMonths: number;
+};
+
+export type EnrichedUserSeasonProgress = {
+  startDate: string;
+  endDate: string;
+  streaks: EnrichedSeasonStreak;
+  quests: {
+    dailyQuests: EnrichedSeasonQuestProgress[];
+    weeklyQuests: EnrichedSeasonQuestProgress[];
+    dailyPointsQuests: number;
+    weeklyPointsQuests: number;
+    totalPointsQuests: number;
+  };
+  mutations: EnrichedSeasonMutation[];
+  weekLeaderboard: {
+    weekDatesStart: string[];
+    weekDatesEnd: string[];
+    leaderboard: [];
+  };
+  seasonLeaderboard: [];
+  name: string;
+  description: string;
+};
+
+export type MutagenSeason = {
+  season_name: string;
+  points_trading: number;
+  points_mutations: number;
+  points_streaks: number;
+  points_quests: number;
+  total_points: number;
+  volume: number;
+  pnl: number;
+  borrow_fees: number;
+  close_fees: number;
+  fees: number;
+};
+
+export type EnrichedMutagenSeason = {
+  seasonName: string;
+  pointsTrading: number;
+  pointsMutations: number;
+  pointsStreaks: number;
+  pointsQuests: number;
+  totalPoints: number;
+  volume: number;
+  pnl: number;
+  borrowFees: number;
+  closeFees: number;
+  fees: number;
+};
+
+export type UserMutagens = {
+  userWallet: PublicKey;
+  total_points_trading: number;
+  total_points_mutations: number;
+  total_points_streaks: number;
+  total_points_quests: number;
+  total_total_points: number;
+  total_volume: number;
+  total_pnl: number;
+  total_borrow_fees: number;
+  total_close_fees: number;
+  total_fees: number;
+  seasons: MutagenSeason[];
+};
+
+export type EnrichedUserMutagens = {
+  userWallet: PublicKey;
+  totalPointsTrading: number;
+  totalPointsMutations: number;
+  totalPointsStreaks: number;
+  totalPointsQuests: number;
+  totalTotalPoints: number;
+  totalVolume: number;
+  totalPnl: number;
+  totalBorrowFees: number;
+  totalCloseFees: number;
+  totalFees: number;
+  seasons: EnrichedMutagenSeason[];
+};
+
+export type UserMutagensReturnType = {
+  success: boolean;
+  data: {
+    user_wallet: string;
+    total_points_trading: number;
+    total_points_mutations: number;
+    total_points_streaks: number;
+    total_points_quests: number;
+    total_total_points: number;
+    total_volume: number;
+    total_pnl: number;
+    total_borrow_fees: number;
+    total_close_fees: number;
+    total_fees: number;
+    seasons: MutagenSeason[];
+  };
 };
