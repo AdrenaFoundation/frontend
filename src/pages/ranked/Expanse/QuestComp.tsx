@@ -1,216 +1,97 @@
 import Image from 'next/image';
-import React, { Fragment } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import needle from '@/../../public/images/needle.png';
-import wing from '@/../../public/images/wing.svg';
-import Checkbox from '@/components/common/Checkbox/Checkbox';
-import { QuestType } from '@/types';
+import { EnrichedSeasonQuestProgress } from '@/types';
 
 export default function QuestComp({
     quest,
     className,
 }: {
-    quest: QuestType;
+    quest: EnrichedSeasonQuestProgress;
     className?: string;
 }) {
+    const formatMetric = (type: string, currentValue: number, targetValue: number) => {
+        if (type === 'winrate_percentage') {
+            return `win-rate: ${currentValue.toFixed(0)}/${targetValue}`;
+        }
+        if (type === 'volume') {
+            return `${type}: $${currentValue.toFixed(0)} / $${targetValue}`;
+        }
+        return `${type}: ${currentValue}/${targetValue}`;
+    };
+
     return (
         <div
             className={twMerge(
-                'flex flex-col gap-3 bg-[#07131D] border p-5 rounded-lg',
+                'flex flex-col gap-1',
                 className,
             )}
         >
-            {quest.title ? (
-                <div className="flex flex-row items-center">
-                    <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                        <p className="font-archivo text-lg">{quest.title}</p>
-                    </div>
-                    <Image
-                        src={wing}
-                        alt="wing"
-                        className="w-[73px] h-[43px] -translate-x-4"
-                    />
+            <div className="flex justify-between items-center">
+                <div className="flex flex-col">
+                    {quest.name && (
+                        <>
+                            <h3 className={twMerge(
+                                "animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]",
+                                quest.completed === 1 && "animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]"
+                            )}>
+                                {quest.name}
+                            </h3>
+                        </>
+                    )}
+                    {quest.description && (
+                        <span className="text-white/60 text-sm">
+                            {quest.description}
+                        </span>
+                    )}
                 </div>
-            ) : null}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                    <>
+                        {quest.completed === 1 ? (
+                            <span className="font-mono text-sm animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,45%,#FFFA5D,60%,#8DC52E)]">+{quest.completion_points} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
+                        ) : (
+                            <span className="font-mono text-sm animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]">+{quest.points}/{quest.completion_points} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
+                        )}
+                    </>
+                </div>
+            </div>
 
-            {quest.description ? (
-                <p className="font-boldy opacity-50 mb-3">{quest.description}</p>
-            ) : null}
+            <div className="flex gap-4 text-xs text-white/50 font-mono">
+                {[1, 2, 3, 4, 5, 6].map(index => {
+                    const targetType = quest[`targetType${index === 1 ? '' : index}` as keyof EnrichedSeasonQuestProgress];
+                    const isCondition = quest[`isCondition${index === 1 ? '' : index}` as keyof EnrichedSeasonQuestProgress];
+                    const currentValue = quest[`currentValue${index === 1 ? '' : index}` as keyof EnrichedSeasonQuestProgress];
+                    const targetValue = quest[`targetValue${index === 1 ? '' : index}` as keyof EnrichedSeasonQuestProgress];
 
-            <ul className="flex flex-col gap-3">
-                {quest.tasks.map((task, index) => {
-                    if (task.type === 'text') {
+                    if (targetType && !isCondition && currentValue !== null && targetValue !== null) {
+                        const clampedProgress = Math.min(100, Math.max(0, (currentValue as number / (targetValue as number) * 100)))
+
                         return (
-                            <li
+                            <span
                                 key={index}
                                 className={twMerge(
-                                    'flex flex-col gap-3',
-                                    index !== 0 && 'mt-6',
+                                    "font-mono text-xs text-white/100",
+                                    quest.completed === 1 && "text-white/30"
                                 )}
                             >
-                                {task.title ? (
-                                    <div className="flex flex-row items-center">
-                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                                            <p className="font-archivo text-lg">{task.title}</p>
-                                        </div>
-                                        <Image
-                                            src={wing}
-                                            alt="wing"
-                                            className="w-[73px] h-[43px] -translate-x-4"
+                                {formatMetric(targetType as string, currentValue as number, targetValue as number)}
+                                {clampedProgress < 100 ? (
+                                    <div className={twMerge("w-full bg-gray-500/30 rounded-full h-2 mt-1")}>
+                                        <div
+                                            className="animate-text-shimmer text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] h-2 rounded-full transition-all duration-300"
+                                            style={{ width: `${clampedProgress}%` }}
                                         />
                                     </div>
                                 ) : null}
-                                {task.description ? (
-                                    <p className="font-boldy opacity-50 mb-3">
-                                        {task.description}
-                                    </p>
-                                ) : null}{' '}
-                                <div className="flex flex-row gap-6 justify-between items-center">
-                                    <div className="flex flex-row gap-2">
-                                        <input
-                                            type="radio"
-                                            checked={false}
-                                            onChange={() => false}
-                                        />
-                                        <p className="font-boldy opacity-50">{task.task}</p>
-                                    </div>
 
-                                    <p className="font-mono opacity-50 text-right">
-                                        {typeof task.reward === 'string'
-                                            ? <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
-                                            : <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
-                                    </p>
-                                </div>
-                            </li>
+                            </span>
                         );
                     }
-                    if (task.type === 'progressive') {
-                        return (
-                            <li
-                                key={index}
-                                className={twMerge(
-                                    'flex flex-col gap-3',
-                                    index !== 0 && 'mt-6',
-                                )}
-                            >
-                                {task.title ? (
-                                    <div className="flex flex-row items-center">
-                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                                            <p className="font-archivo text-lg">{task.title}</p>
-                                        </div>
-                                        <Image
-                                            src={wing}
-                                            alt="wing"
-                                            className="w-[73px] h-[43px] -translate-x-4"
-                                        />
-                                    </div>
-                                ) : null}
-
-                                {task.description ? (
-                                    <p className="font-boldy opacity-50 mb-3">
-                                        {task.description}
-                                    </p>
-                                ) : null}
-
-                                <ul className="flex flex-col gap-0">
-                                    {task.levels?.map((level, index) => {
-                                        return (
-                                            <Fragment key={index}>
-                                                {index !== 0 ? (
-                                                    <li className="h-[15px] w-[1px] bg-bcolor translate-x-[7px]"></li>
-                                                ) : null}
-                                                <li
-                                                    key={index}
-                                                    className="flex flex-row gap-6 justify-between"
-                                                >
-                                                    <div className="flex flex-row gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            checked={level.completed}
-                                                            onChange={() => false}
-                                                        />
-                                                        <p
-                                                            className={twMerge(
-                                                                'opacity-50 font-boldy',
-                                                                level.completed && 'opacity-100',
-                                                            )}
-                                                        >
-                                                            {level.description}
-                                                        </p>
-                                                    </div>
-
-                                                    {level?.reward ? (
-                                                        <p
-                                                            className={twMerge(
-                                                                'opacity-50 font-mono text-right',
-                                                                level.completed && 'opacity-100',
-                                                            )}
-                                                        >
-                                                            {typeof level.reward === 'string'
-                                                                ? <span>+{level.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
-                                                                : <span>+{level.reward.toFixed(2)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
-                                                        </p>
-                                                    ) : null}
-
-                                                    {level?.multiplier ? (
-                                                        <p
-                                                            className={twMerge(
-                                                                'opacity-50 font-mono text-right',
-                                                                level.completed && 'opacity-100',
-                                                            )}
-                                                        >
-                                                            {level.multiplier}
-                                                        </p>
-                                                    ) : null}
-                                                </li>
-                                            </Fragment>
-                                        );
-                                    })}
-                                </ul>
-                            </li>
-                        );
-                    }
-                    return (
-                        <li
-                            key={index}
-                            className={twMerge(
-                                'flex flex-row gap-4 justify-between items-center',
-                                className,
-                                task?.title && index !== 0 && 'mt-3',
-                            )}
-                        >
-                            <div className="flex flex-row gap-2 items-center">
-                                <Checkbox checked={task.completed} onChange={() => false} />
-                                <div>
-                                    {task?.title ? (
-                                        <p className="font-boldy">{task.title}</p>
-                                    ) : null}
-
-                                    <p
-                                        className={twMerge(
-                                            'opacity-50 font-boldy max-w-[350px]',
-                                            task.completed && 'opacity-100',
-                                        )}
-                                    >
-                                        {task.description}
-                                    </p>
-                                </div>
-                            </div>
-                            <p
-                                className={twMerge(
-                                    'opacity-50 font-mono text-right',
-                                    task.completed && 'opacity-100',
-                                )}
-                            >
-                                {typeof task.reward === 'string'
-                                    ? <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
-                                    : <span>+{task.reward.toFixed(2)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
-                            </p>
-                        </li>
-                    );
+                    return null;
                 })}
-            </ul>
-        </div >
+            </div>
+        </div>
     );
 }

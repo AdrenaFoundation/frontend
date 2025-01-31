@@ -3,7 +3,7 @@ import React from 'react';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { QuestType } from '@/types';
 
-import QuestComp from './QuestComp';
+import QuestCompOld from './QuestCompOld';
 import Streak from './Streak';
 
 export default function Quests() {
@@ -203,10 +203,10 @@ export default function Quests() {
                 titleClassName='text-xl xl:text-2xl font-boldy capitalize'
             />
             <div className="grid lg:grid-cols-2 gap-4 flex-1">
-                <QuestComp quest={QUESTS.daily as QuestType} />
-                <QuestComp quest={QUESTS.weekly as QuestType} />
-                <QuestComp quest={QUESTS.dailyMutations as QuestType} />
-                <QuestComp quest={QUESTS.perpetual as QuestType} className="h-full" />
+                <QuestCompOld quest={QUESTS.daily as QuestType} />
+                <QuestCompOld quest={QUESTS.weekly as QuestType} />
+                <QuestCompOld quest={QUESTS.dailyMutations as QuestType} />
+                <QuestCompOld quest={QUESTS.perpetual as QuestType} className="h-full" />
             </div>
 
             <Streak />

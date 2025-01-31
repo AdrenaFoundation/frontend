@@ -7,10 +7,11 @@ import crossIcon from '@/../public/images/cross.svg';
 import monster10 from '@/../public/images/monster-10.png';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
-import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
-import { QUESTS } from '@/constant';
+import useUserSeasonProgress from '@/hooks/useSeasonProgress';
+import MutationComp from '@/pages/ranked/Expanse/MutationComp';
 import QuestComp from '@/pages/ranked/Expanse/QuestComp';
-import { QuestType } from '@/types';
+import StreakComp from '@/pages/ranked/Expanse/StreakComp';
+import { useSelector } from '@/store/store';
 
 export default function QuestMenu({
     isMobile = false,
@@ -21,10 +22,19 @@ export default function QuestMenu({
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
+    const wallet = useSelector((state) => state.walletState.wallet);
+
+    const { userSeasonProgress } = useUserSeasonProgress({
+        walletAddress: wallet?.walletAddress ?? null,
+    });
+
+    if (!userSeasonProgress) return null;
 
     if (window.location.pathname !== '/trade') {
         return null;
     }
+
+    const classNameTitle = "mt-3 mb-3"
 
     const body = (
         <>
@@ -86,37 +96,72 @@ export default function QuestMenu({
                 </div>
             </div>
 
-            <div className="relative border-t">
-                <div className="absolute top-[calc(50%-3em)] z-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <p className="font-mono text-center text-base opacity-40">
-                        Starts in
-                    </p>
-
-                    <RemainingTimeToDate
-                        timestamp={new Date(Date.UTC(2025, 1, 1)).getTime() / 1000}
-                        className="text-center"
-                        classNameTime="font-thin text-lg opacity-70"
-                    />
-                </div>
-
-                <div className="blur-md select-none">
-                    <QuestComp
-                        quest={QUESTS.daily as QuestType}
-                        className="bg-transparent border-none"
-                    />
-                    <QuestComp
-                        quest={
-                            {
-                                ...QUESTS.dailyMutations,
-                                tasks: QUESTS.dailyMutations.tasks.slice(6),
-                            } as QuestType
-                        }
-                        className="bg-transparent border-none"
-                    />
-                    <QuestComp
-                        quest={QUESTS.weekly as QuestType}
-                        className="bg-transparent border-none"
-                    />
+            <div className="relative border-t border-white/10 overflow-y-auto w-full p-4">
+                <div className="flex flex-col p-2">
+                    {userSeasonProgress.quests.dailyQuests.length > 0 && (
+                        <>
+                            <h3 className={twMerge(classNameTitle, "mt-0")}>
+                                Daily Quests
+                            </h3>
+                            <div className="flex flex-col gap-5">
+                                {userSeasonProgress.quests.dailyQuests.map(quest => (
+                                    <QuestComp
+                                        key={quest.id}
+                                        quest={quest}
+                                        className="bg-transparent"
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    <div className="relative border-t border-white/10 mt-4"></div>
+                    {userSeasonProgress.quests.weeklyQuests.length > 0 && (
+                        <>
+                            <h3 className={classNameTitle}>
+                                Weekly Quests
+                            </h3>
+                            <div className="flex flex-col gap-5">
+                                {userSeasonProgress.quests.weeklyQuests.map(quest => (
+                                    <QuestComp
+                                        key={quest.id}
+                                        quest={quest}
+                                        className="bg-transparent"
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    <div className="relative border-t border-white/10 mt-4"></div>
+                    {userSeasonProgress.mutations.length > 0 && (
+                        <>
+                            <h3 className={classNameTitle}>
+                                Mutations
+                            </h3>
+                            <div className="flex flex-col gap-6">
+                                {userSeasonProgress.mutations.map((mutation, index) => (
+                                    <MutationComp
+                                        key={index}
+                                        mutation={mutation}
+                                        className="bg-transparent"
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    <div className="relative border-t border-white/10 mt-4"></div>
+                    {userSeasonProgress.mutations.length > 0 && (
+                        <>
+                            <h3 className={classNameTitle}>
+                                Streaks
+                            </h3>
+                            <div className="flex flex-col gap-6">
+                                <StreakComp
+                                    streak={userSeasonProgress.streaks}
+                                    className="bg-transparent"
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </>

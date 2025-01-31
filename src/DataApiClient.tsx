@@ -1,4 +1,4 @@
-import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI } from './types';
+import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI, UserSeasonProgressReturnType } from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -359,5 +359,37 @@ export default class DataApiClient {
         const result = await fetch(url).then((res) => res.json());
 
         return result;
+    }
+
+    public static async getUserSeasonProgress({
+        season,
+        userWallet,
+    }: {
+        season?: string;
+        userWallet: string | null;
+    }): Promise<UserSeasonProgressReturnType | null> {
+        console.log('calling API for progress');
+
+        const params = new URLSearchParams();
+
+        if (season) params.append('season', season);
+        if (userWallet) {
+            params.append('user_wallet', userWallet);
+            params.append('show_streaks', 'true');
+        }
+
+        params.append('show_mutations', 'true');
+        params.append('show_quests', 'true');
+
+        try {
+            const response = await fetch(
+                `http://localhost:8080/season?season=expanse&${params.toString()}`
+            );
+
+            return response.json();
+        } catch (e) {
+            console.error('Error fetching user season progress:', e);
+            return null;
+        }
     }
 }
