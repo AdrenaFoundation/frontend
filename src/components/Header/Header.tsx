@@ -94,7 +94,7 @@ export default function Header({
           <Image
             src={logo}
             className={twMerge(
-              'shrink-0 relative hidden lg:block',
+              'shrink-0 relative hidden xl:block',
               window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
             )}
             alt="logo"
@@ -105,7 +105,7 @@ export default function Header({
           <Image
             src={adxLogo}
             className={twMerge(
-              'shrink-0 relative lg:hidden',
+              'shrink-0 relative xl:hidden',
               window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
             )}
             alt="logo"

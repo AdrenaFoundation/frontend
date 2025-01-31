@@ -9,7 +9,6 @@ import { EnrichedMutagenSeason, EnrichedUserMutagens } from '@/types';
 import { formatNumber } from '@/utils';
 
 import needle from '../../../public/images/needle.png';
-import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Modal from '../common/Modal/Modal';
 
@@ -23,13 +22,15 @@ interface MutagenSource {
 const mutagenSources: MutagenSource[] = [
   {
     title: 'Trading Season',
-    description: 'Complete quests, streaks and earn Mutagen, battle against others to win rewards in our 10 weeks long recurring events.',
+    description:
+      'Complete quests, streaks and earn Mutagen, battle against others to win rewards in our 10 weeks long recurring events.',
     comingSoon: true,
-    comingSoonText: 'Starts February 1st'
+    comingSoonText: 'Starts February 1st',
   },
   {
     title: 'Leveraged Trading',
-    description: 'Continuously earn Mutagen by executing leveraged trades on the platform. The higher the size and leverage, the more Mutagen. Mutagen is retro-generated since platform launch for all traders.'
+    description:
+      'Continuously earn Mutagen by executing leveraged trades on the platform. The higher the size and leverage, the more Mutagen. Mutagen is retro-generated since platform launch for all traders.',
   },
 ];
 
@@ -209,17 +210,16 @@ export default function Mutagen({
   if (isMobile) {
     return (
       <AnimatePresence>
-        <Button
-          variant={'lightbg'}
-          rightIcon={needle}
-          title={
-            <div className='flex gap-2'>
-              <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
-            </div>
-          }
-          iconClassName="w-3 h-3"
-          onClick={() => setIsModalOpen(true)}
-        />
+        <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer' onClick={() => setIsModalOpen(true)}>
+          <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
+          <Image
+            src={needle}
+            alt={'needle'}
+            width="30"
+            height="30"
+            className={'w-4 h-4 grayscale'}
+          />
+        </div>
 
         {isModalOpen && (
           <Modal
@@ -235,7 +235,7 @@ export default function Mutagen({
 
   return (
     <Menu
-      openMenuTriggerType='hover'
+      openMenuTriggerType="hover"
       trigger={
         <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
           <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
