@@ -183,8 +183,6 @@ export default function ALPSwapBuy({
 
         setIsMainDataLoading(true);
 
-        console.log('Do calculate!');
-
         try {
             const amountAndFee = await window.adrena.client
                 .getAddLiquidityAmountAndFee({

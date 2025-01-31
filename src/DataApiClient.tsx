@@ -135,10 +135,6 @@ export default class DataApiClient {
                 `https://datapi.adrena.xyz/season?season=expanse&show_leaderboard=true`,
             ).then((res) => res.json());
 
-            // const result: SeasonLeaderboardsRawAPI = fakeData;
-
-            console.log('result', result)
-
             return {
                 startDate: new Date(result.data.start_date),
                 endDate: new Date(result.data.end_date),
