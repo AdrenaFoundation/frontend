@@ -105,9 +105,9 @@ export default function Leaderboards() {
                         </div>
 
                         <div className='flex flex-col gap-1 pb-8 text-sm text-center'>
-                            Battle weekly to rank in the top 100 traders and gain season points.
+                            Battle weekly with mutagen to rank in the top 100 and earn season points.
                             <br />
-                            The ranking is based on the Mutagen earned.
+                            Only trades opened and closed within the weekly period count.
                         </div>
 
                         <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-10 md:pb-14")}>
@@ -155,8 +155,8 @@ export default function Leaderboards() {
                             />
                         </div>
 
-                        <div className='flex flex-col w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
-                            <div className="opacity-30 text-xs absolute left-4 top-[-2.4em]">
+                        <div className='flex flex-col w-full p-2 bg-[#0D1923] justify-between border border-white/5 rounded-lg relative'>
+                            <div className="opacity-30 text-xs absolute top-[-2.4em]">
                                 {weekInfo?.startDate.toLocaleDateString()} – {weekInfo?.endDate.toLocaleDateString()}
                             </div>
 
