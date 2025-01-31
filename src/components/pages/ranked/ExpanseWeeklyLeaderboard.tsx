@@ -81,7 +81,7 @@ export default function ExpanseWeeklyLeaderboard({
                         />
                     ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
-                    <div className=''>
+                    <div id={`user-weekly-${d.wallet.toBase58()}`}>
                         {!filler && d.username ? (
                             <p
                                 key={`trader-${i}`}
