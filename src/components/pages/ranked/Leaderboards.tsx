@@ -42,7 +42,7 @@ export default function Leaderboards() {
         if (!wallet || !weekInfo) return null;
 
         return weekInfo.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
-    }, [wallet]);
+    }, [wallet, weekInfo]);
 
     const userSeasonRank: number | null | false = useMemo(() => {
         if (!wallet || !leaderboardData) return null;
@@ -105,9 +105,9 @@ export default function Leaderboards() {
                         </div>
 
                         <div className='flex flex-col gap-1 pb-8 text-sm text-center'>
-                            Battle weekly to rank in the top 100 traders and gain season points.
+                            Battle weekly with mutagen to rank in the top 100 and earn season points.
                             <br />
-                            The ranking is based on the Mutagen earned.
+                            Only trades opened and closed within the weekly period count.
                         </div>
 
                         <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-10 md:pb-14")}>

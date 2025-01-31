@@ -52,7 +52,7 @@ export default function Modal({
   isWrapped?: boolean;
 }) {
 
-  const isMobile = useBetterMediaQuery('(max-width: 640px)');
+  const isMobile = useBetterMediaQuery('(max-width: 955px)');
   const controls = useDragControls();
 
   function startDrag(event: PointerEvent<Element> | PointerEvent) {

@@ -122,6 +122,9 @@ export default function QuestMenu({
                     <p className="font-archivo text-lg uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
                         COMPLETE QUESTS TO ASCEND
                     </p>
+                    <p className="font-archivo text-xxs animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#fff,40%,#888,60%,#fff)]">
+                        * Only positions opened and closed within the periods count
+                    </p>
                 </div>
             </div>
 
@@ -247,7 +250,7 @@ export default function QuestMenu({
         <div
             className={twMerge(
                 'fixed z-20',
-                isMobile ? 'bottom-[4.2em] left-4' : 'bottom-0 left-0',
+                isMobile ? 'bottom-[7rem] left-4' : 'bottom-0 left-0',
                 className,
             )}
         >
@@ -321,8 +324,8 @@ export default function QuestMenu({
                 ) : null}
 
                 {isMobile && isOpen ? (
-                    <Modal close={() => setIsOpen(!isOpen)} className="p-0" key="modal">
-                        <div>{body}</div>
+                    <Modal close={() => setIsOpen(!isOpen)} className="p-0 w-full" key="modal">
+                        {body}
                     </Modal>
                 ) : null}
             </AnimatePresence>

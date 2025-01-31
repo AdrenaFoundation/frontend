@@ -1143,3 +1143,39 @@ export type UserMutagensReturnType = {
     seasons: MutagenSeason[];
   };
 };
+
+export type MutagenLeaderboardRawAPI = {
+  success: boolean;
+  data: {
+    rank: number;
+    user_wallet: string;
+    points_trading: number;
+    points_mutations: number;
+    points_streaks: number;
+    points_quests: number;
+    total_points: number;
+    total_volume: number;
+    total_pnl: number;
+    total_borrow_fees: number;
+    total_close_fees: number;
+    total_fees: number;
+  }[];
+};
+
+export type MutagenLeaderboardData = {
+  rank: number;
+  userWallet: PublicKey;
+  pointsTrading: number;
+  pointsMutations: number;
+  pointsStreaks: number;
+  pointsQuests: number;
+  totalPoints: number;
+  totalVolume: number;
+  totalPnl: number;
+  totalBorrowFees: number;
+  totalCloseFees: number;
+  totalFees: number;
+  avatar: string | null;
+  username: string | null;
+  title: string | null;
+}[];

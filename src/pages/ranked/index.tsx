@@ -28,6 +28,7 @@ export default function Ranked() {
                     subTitle={data.subTitle}
                     startDate={data.startDate}
                     endDate={data.endDate}
+                    seasonName={activeSeason}
                 />
             </div>
 

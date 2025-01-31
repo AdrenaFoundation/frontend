@@ -2,6 +2,8 @@ import { PublicKey } from '@solana/web3.js';
 
 import {
     GetPositionStatsReturnType,
+    MutagenLeaderboardData,
+    MutagenLeaderboardRawAPI,
     PositionActivityRawAPi,
     PositionStatsRawApi,
     PreSeasonLeaderboardReturnTypeAPI,
@@ -212,7 +214,6 @@ export default class DataApiClient {
                     showEligibleJitosolWallets,
                 )}`,
             ).then((res) => res.json());
-
 
             const rankedRewards: RankedRewards[] = result.data.ranked_divisions.map((division: string, index: number) => ({
                 division,
@@ -461,6 +462,42 @@ export default class DataApiClient {
             return await response.json();
         } catch (e) {
             console.error('Error fetching user season progress:', e);
+            return null;
+        }
+    }
+
+    public static async getMutagenLeaderboard(): Promise<MutagenLeaderboardData | null> {
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/mutagen-leaderboard`
+            );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            const d: MutagenLeaderboardRawAPI = await response.json();
+
+            return d.data.map((data) => ({
+                rank: data.rank,
+                userWallet: new PublicKey(data.user_wallet),
+                pointsTrading: data.points_trading,
+                pointsMutations: data.points_mutations,
+                pointsStreaks: data.points_streaks,
+                pointsQuests: data.points_quests,
+                totalPoints: data.total_points,
+                totalVolume: data.total_volume,
+                totalPnl: data.total_pnl,
+                totalBorrowFees: data.total_borrow_fees,
+                totalCloseFees: data.total_close_fees,
+                totalFees: data.total_fees,
+                avatar: '/images/profile-picture-1.jpg',
+                username: null,
+                title: 'Nameless one',
+            }));
+
+        } catch (e) {
+            console.error('Error fetching user mutagens:', e);
             return null;
         }
     }

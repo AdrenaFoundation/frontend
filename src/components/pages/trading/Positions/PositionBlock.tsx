@@ -64,7 +64,6 @@ export function PositionBlock({
     }
 
     const interval = setInterval(() => {
-      console.log('interval')
       const openedDuration = Date.now() - openedTime;
       const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
 
