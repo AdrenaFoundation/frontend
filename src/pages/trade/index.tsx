@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
-import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Positions from '@/components/pages/trading/Positions/Positions';
@@ -15,6 +14,7 @@ import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
+import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
