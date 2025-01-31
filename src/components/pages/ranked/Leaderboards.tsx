@@ -118,6 +118,10 @@ export default function Leaderboards() {
                             Grind weekly
                         </div>
 
+                        <div className='flex flex-col gap-1 pb-8 text-sm text-center'>
+                            Traders are ranked weekly based on Mutagen earned and receive &apos;season points&apos; accordingly. The season lasts 10 weeks.
+                        </div>
+
                         <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-10 md:pb-14")}>
                             <NumberDisplay
                                 title="Traders"
@@ -238,16 +242,6 @@ export default function Leaderboards() {
                                 />
 
                                 <div className='text-xl font-boldy tracking-wider uppercase'>Leaderboard</div>
-
-                                <InfoAnnotationTitle
-                                    text={
-                                        <div className='flex flex-col gap-1'>
-                                            Traders are ranked weekly based on Mutagen earned and receive &apos;season points&apos; accordingly. The season lasts 10 weeks.
-                                        </div>
-                                    }
-                                    className={''}
-                                    title={''}
-                                />
                             </div>
 
                             <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
@@ -273,10 +267,24 @@ export default function Leaderboards() {
                             become the champion
                         </div>
 
+                        <div className='flex flex-col gap-1 items-center justify-center text-center pb-8 text-sm'>
+                            At the end of the season, rankings are determined by total &apos;season points&apos;, with top 100 traders earning rewards.
+                        </div>
+
                         <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-4 md:pb-14")}>
                             <NumberDisplay
                                 title="Traders"
                                 nb={seasonStats?.totalUsers ?? null}
+                                format="number"
+                                precision={0}
+                                className={numberDisplayClasses}
+                                headerClassName='pb-2'
+                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                            />
+
+                            <NumberDisplay
+                                title="Points"
+                                nb={seasonStats?.totalChampionshipPoint ?? null}
                                 format="number"
                                 precision={0}
                                 className={numberDisplayClasses}
@@ -292,16 +300,6 @@ export default function Leaderboards() {
                                 isAbbreviate={true}
                                 isAbbreviateIcon={false}
                                 isDecimalDimmed={false}
-                                precision={0}
-                                className={numberDisplayClasses}
-                                headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
-                            />
-
-                            <NumberDisplay
-                                title="Points"
-                                nb={seasonStats?.totalChampionshipPoint ?? null}
-                                format="number"
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
@@ -347,16 +345,6 @@ export default function Leaderboards() {
 
                             <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
                                 <div className='text-xl font-boldy tracking-wider uppercase'>Season Leaderboard</div>
-
-                                <InfoAnnotationTitle
-                                    text={
-                                        <div className='flex flex-col gap-1'>
-                                            At the end of the season, rankings are determined by total &apos;season points&apos;, with top 100 traders earning rewards.
-                                        </div>
-                                    }
-                                    className={''}
-                                    title={''}
-                                />
                             </div>
 
                             <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />

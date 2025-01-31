@@ -15,7 +15,6 @@ export default function ExpanseWeeklyLeaderboard({
     onClickUserProfile,
     isMobile,
     isLarge,
-    startDate,
 }: {
     data: SeasonLeaderboardsData['weekLeaderboard'][0] | null;
     onClickUserProfile: (wallet: PublicKey) => void;
@@ -214,7 +213,7 @@ export default function ExpanseWeeklyLeaderboard({
                     >
                         {!filler ? <FormatNumber
                             nb={d.totalPoints}
-                            className="text-xs font-boldy"
+                            className="text-xs font-boldy text-[#e47dbb]"
                             precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
                             isDecimalDimmed={false}
                         /> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
@@ -276,15 +275,16 @@ export default function ExpanseWeeklyLeaderboard({
         });
     }, [data, onClickUserProfile, wallet, isLarge, isMobile]);
 
-    const weekHasNotHappened = useMemo(() => {
-        return startDate.getTime() <= Date.now();
-    }, [startDate]);
+    // const weekHasNotHappened = useMemo(() => {
+    //     return true;
+    //     //  return !startDate.getTime() <= Date.now();
+    // }, [startDate]);
 
-    if (!weekHasNotHappened) {
-        return <div className='flex w-full items-center justify-center pt-8 pb-8'>
-            The week has not started yet
-        </div>;
-    }
+    // if (weekHasNotHappened) {
+    //     return <div className='flex w-full items-center justify-center pt-8 pb-8'>
+    //         The week has not started yet
+    //     </div>;
+    // }
 
     if (!data || !dataReady) {
         return null;
