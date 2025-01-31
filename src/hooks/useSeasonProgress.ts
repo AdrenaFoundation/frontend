@@ -120,6 +120,7 @@ export default function useUserSeasonProgress({
     try {
       const response = await DataApiClient.getUserSeasonProgress({
         userWallet: walletAddress,
+        season: 'expanse',
       });
 
       if (!response) {

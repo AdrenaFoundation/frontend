@@ -132,7 +132,7 @@ export default class DataApiClient {
     public static async getSeasonLeaderboards(): Promise<SeasonLeaderboardsData | null> {
         try {
             const result: SeasonLeaderboardsRawAPI = await fetch(
-                `http://localhost:8080/season?season=interseason1&show_leaderboard=true`,
+                `https://datapi.adrena.xyz/season?season=expanse&show_leaderboard=true`,
             ).then((res) => res.json());
 
             // const result: SeasonLeaderboardsRawAPI = fakeData;
