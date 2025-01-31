@@ -42,7 +42,7 @@ export default function Leaderboards() {
         if (!wallet || !weekInfo) return null;
 
         return weekInfo.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
-    }, [wallet]);
+    }, [wallet, weekInfo]);
 
     const userSeasonRank: number | null | false = useMemo(() => {
         if (!wallet || !leaderboardData) return null;
