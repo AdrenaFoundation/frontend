@@ -19,6 +19,7 @@ import { UserProfileExtended } from '@/types';
 
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
+import { title } from 'process';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -39,20 +40,13 @@ export default function Leaderboards() {
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
-    const currentWeekIndex = useMemo(() => getWeekIndexFromWeek(week), [week]);
-
-    const weekStartDate = useMemo(() => new Date(TRADING_COMPETITION_SEASONS.expanse.startDate.getTime() + (currentWeekIndex * ONE_WEEK_IN_MS)), [currentWeekIndex]);
-    const weekEndDate = useMemo(() => new Date(weekStartDate.getTime() + ONE_WEEK_IN_MS), [weekStartDate]);
+    const weekInfo = useMemo(() => leaderboardData?.weekLeaderboard[getWeekIndexFromWeek(week)] ?? null, [week, leaderboardData]);
 
     const userWeeklyRank: number | null | false = useMemo(() => {
-        if (!wallet) return null;
+        if (!wallet || !weekInfo) return null;
 
-        const weekLeaderboard = leaderboardData?.weekLeaderboard[currentWeekIndex] ?? null;
-
-        if (!weekLeaderboard) return null;
-
-        return weekLeaderboard.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
-    }, [currentWeekIndex, leaderboardData?.weekLeaderboard, wallet]);
+        return weekInfo.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
+    }, [wallet]);
 
     const userSeasonRank: number | null | false = useMemo(() => {
         if (!wallet || !leaderboardData) return null;
@@ -61,11 +55,9 @@ export default function Leaderboards() {
     }, [leaderboardData, wallet]);
 
     const weeklyStats = useMemo(() => {
-        const ranks = leaderboardData?.weekLeaderboard[currentWeekIndex]?.ranks;
+        if (!weekInfo) return null;
 
-        if (!ranks) return null;
-
-        return ranks.reduce((acc, rank) => {
+        return weekInfo.ranks.reduce((acc, rank) => {
             if (!rank.wallet.equals(PublicKey.default)) {
                 acc.totalVolume += rank.volume;
                 acc.totalFees += rank.fees;
@@ -78,7 +70,7 @@ export default function Leaderboards() {
             totalVolume: 0,
             totalFees: 0,
         });
-    }, [currentWeekIndex, leaderboardData?.weekLeaderboard]);
+    }, [weekInfo]);
 
     const seasonStats = useMemo(() => {
         const ranks = leaderboardData?.seasonLeaderboard;
@@ -169,29 +161,29 @@ export default function Leaderboards() {
 
                         <div className='flex flex-col w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
                             <div className="opacity-30 text-xs absolute left-4 top-[-2.4em]">
-                                {weekStartDate.toLocaleDateString()} – {weekEndDate.toLocaleDateString()}
+                                {weekInfo?.startDate.toLocaleDateString()} – {weekInfo?.endDate.toLocaleDateString()}
                             </div>
 
-                            <div className="opacity-30 text-xs absolute right-4 top-[-2.4em]">
-                                {Date.now() <= weekStartDate.getTime() ?
+                            {weekInfo ? <div className="opacity-30 text-xs absolute right-4 top-[-2.4em]">
+                                {Date.now() <= weekInfo.startDate.getTime() ?
                                     <div className="flex text-xs gap-1">
                                         <span className="text-xs font-boldy">Starts in</span>
                                         <RemainingTimeToDate
-                                            timestamp={weekStartDate.getTime() / 1000}
+                                            timestamp={weekInfo.startDate.getTime() / 1000}
                                             stopAtZero={true}
                                         />
                                     </div>
 
-                                    : Date.now() > weekEndDate.getTime() ?
+                                    : Date.now() > weekInfo.endDate.getTime() ?
                                         <p className="text-xs font-boldy">Week has ended</p>
                                         : <div className="flex text-xs gap-1">
                                             <RemainingTimeToDate
-                                                timestamp={weekEndDate.getTime() / 1000}
+                                                timestamp={weekInfo.endDate.getTime() / 1000}
                                                 stopAtZero={true}
                                             />
                                             <span className="text-xs font-boldy">left</span>
                                         </div>}
-                            </div>
+                            </div> : null}
 
                             {userWeeklyRank !== null ? <div
                                 className="z-20 sm:absolute sm:top-2 sm:right-2 text-sm h-[2em] flex items-center justify-center rounded-full p-2 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5]"
@@ -225,18 +217,9 @@ export default function Leaderboards() {
                                     menuTextClassName='uppercase text-sm'
                                     menuItemClassName='h-8'
                                     selected={week}
-                                    options={[
-                                        { title: 'Week 1' },
-                                        { title: 'Week 2' },
-                                        { title: 'Week 3' },
-                                        { title: 'Week 4' },
-                                        { title: 'Week 5' },
-                                        { title: 'Week 6' },
-                                        { title: 'Week 7' },
-                                        { title: 'Week 8' },
-                                        { title: 'Week 9' },
-                                        { title: 'Week 10' },
-                                    ]}
+                                    options={leaderboardData?.weekLeaderboard.map((_, i) => ({
+                                        title: `Week ${i + 1}`,
+                                    })) ?? []}
                                     onSelect={(week: string) => {
                                         setWeek(week);
                                     }}
@@ -247,16 +230,16 @@ export default function Leaderboards() {
 
                             <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
 
-                            {leaderboardData ? <ExpanseWeeklyLeaderboard
+                            {weekInfo ? <ExpanseWeeklyLeaderboard
                                 isMobile={isMobile}
                                 isLarge={isLarge}
                                 onClickUserProfile={(wallet) => {
                                     const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
                                     setActiveProfile(profile ?? null);
                                 }}
-                                data={leaderboardData.weekLeaderboard[Number(week.split(' ')[1]) - 1]}
-                                startDate={weekStartDate}
-                                endDate={weekEndDate}
+                                data={weekInfo}
+                                startDate={weekInfo.startDate}
+                                endDate={weekInfo.endDate}
                             /> : <Loader className='self-center mt-8 mb-8' />}
                         </div>
                     </div>

@@ -90,8 +90,6 @@ export default function ExpanseChampionshipLeaderboard({
                         {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
                     </div>
                 </div>,
-
-
             ];
 
             if (isLarge) {

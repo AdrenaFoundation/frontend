@@ -71,7 +71,7 @@ export default function StreakComp({
             <div className='flex w-full justify-between items-center'>
                 <div>
                     <div className='flex gap-1'>
-                        <div className="text-[0.9em] font-boldy">Trade Monthly</div>
+                        <div className="text-[0.8em] font-boldy">Trade Monthly</div>
 
                         <div className='font-boldy text-xs text-[#e47dbb]'>
                             +2 mutagen
