@@ -7,11 +7,12 @@ import crossIcon from '@/../public/images/cross.svg';
 import monster10 from '@/../public/images/monster-10.png';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import QuestComp from '@/components/QuestMenu/QuestComp';
 import useUserSeasonProgress from '@/hooks/useSeasonProgress';
-import MutationComp from '@/pages/ranked/Expanse/MutationComp';
-import QuestComp from '@/pages/ranked/Expanse/QuestComp';
-import StreakComp from '@/pages/ranked/Expanse/StreakComp';
 import { useSelector } from '@/store/store';
+
+import MutationComp from './MutationComp';
+import StreakComp from './StreakComp';
 
 export default function QuestMenu({
     isMobile = false,

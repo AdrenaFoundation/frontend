@@ -12,7 +12,7 @@ import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 
 import Table from '../monitoring/Table';
 
-export default function LeaderboardTable({
+export default function AwakeningLeaderboardTable({
     division,
     index,
     data,

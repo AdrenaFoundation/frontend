@@ -11,14 +11,17 @@ export default function QuestComp({
 }: {
     quest: EnrichedSeasonQuestProgress;
     className?: string;
+    showProgress?: boolean;
 }) {
     const formatMetric = (type: string, currentValue: number, targetValue: number) => {
         if (type === 'winrate_percentage') {
             return `win-rate: ${currentValue.toFixed(0)}/${targetValue}`;
         }
+
         if (type === 'volume') {
             return `${type}: $${currentValue.toFixed(0)} / $${targetValue}`;
         }
+
         return `${type}: ${currentValue}/${targetValue}`;
     };
 
@@ -84,14 +87,15 @@ export default function QuestComp({
                                             style={{ width: `${clampedProgress}%` }}
                                         />
                                     </div>
-                                ) : null}
+                                ) : null
+                                }
 
-                            </span>
+                            </span >
                         );
                     }
                     return null;
                 })}
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

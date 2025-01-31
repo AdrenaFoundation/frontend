@@ -1,4 +1,18 @@
-import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI, UserSeasonProgressReturnType } from './types';
+import { PublicKey } from '@solana/web3.js';
+
+import {
+    GetPositionStatsReturnType,
+    PositionActivityRawAPi,
+    PositionStatsRawApi,
+    PreSeasonLeaderboardReturnTypeAPI,
+    RankedRewards,
+    SeasonLeaderboardsData,
+    SeasonLeaderboardsRawAPI,
+    Token,
+    Trader,
+    TraderDivisionRawAPI,
+    UserSeasonProgressReturnType
+} from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -114,7 +128,66 @@ export default class DataApiClient {
         return result.data;
     }
 
-    public static async getTradingCompetitionLeaderboard<
+    public static async getSeasonLeaderboards(): Promise<SeasonLeaderboardsData | null> {
+        try {
+            const result: SeasonLeaderboardsRawAPI = await fetch(
+                `http://localhost:8080/season?season=interseason1&show_leaderboard=true`,
+            ).then((res) => res.json());
+
+            // const result: SeasonLeaderboardsRawAPI = fakeData;
+
+            console.log('result', result)
+
+            return {
+                startDate: new Date(result.data.start_date),
+                endDate: new Date(result.data.end_date),
+                weekLeaderboard: result.data.week_leaderboard.leaderboard.map((leaderboard, i) => ({
+                    startDate: new Date(result.data.week_leaderboard.week_dates_start[i]),
+                    endDate: new Date(result.data.week_leaderboard.week_dates_end[i]),
+                    ranks: leaderboard.map((rank) => ({
+                        wallet: new PublicKey(rank.user_wallet),
+                        rank: rank.rank,
+                        championshipPoints: rank.championship_points,
+                        totalPoints: rank.total_points,
+                        streaksPoints: rank.points_streaks,
+                        questsPoints: rank.points_quests,
+                        mutationPoints: rank.points_mutations,
+                        tradingPoints: rank.points_trading,
+                        volume: rank.volume,
+                        pnl: rank.pnl,
+                        fees: rank.fees,
+                        avatar: '/images/profile-picture-1.jpg',
+                        username: null,
+                        title: 'Nameless one',
+                    })),
+                })),
+
+                seasonLeaderboard: result.data.season_leaderboard.map((leaderboard) => ({
+                    wallet: new PublicKey(leaderboard.user_wallet),
+                    rank: leaderboard.rank,
+                    tradingPoints: leaderboard.points_trading,
+                    mutationPoints: leaderboard.points_mutations,
+                    streaksPoints: leaderboard.points_streaks,
+                    questsPoints: leaderboard.points_quests,
+                    totalPoints: leaderboard.total_points,
+                    volume: leaderboard.volume,
+                    pnl: leaderboard.pnl,
+                    fees: leaderboard.fees,
+                    championshipPoints: leaderboard.championship_points,
+                    rewardsAdx: leaderboard.rewards_adx,
+                    rewardsJto: leaderboard.rewards_jto,
+                    avatar: '/images/profile-picture-1.jpg',
+                    username: null,
+                    title: 'Nameless one',
+                })),
+            };
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+
+    public static async getPreSeasonLeaderboard<
         T extends {
             showGlobalStats?: boolean;
             showAchievements?: boolean;
@@ -128,8 +201,8 @@ export default class DataApiClient {
         showTraderDivisions,
         showEligibleJitosolWallets,
     }: {
-        season: 'preseason' | 'season1' | 'season2' | 'season3' | 'season4';
-    } & T): Promise<LeaderboardReturnTypeAPI<T> | null> {
+        season: 'preseason';
+    } & T): Promise<PreSeasonLeaderboardReturnTypeAPI<T> | null> {
         try {
             const result = await fetch(
                 `https://datapi.adrena.xyz/v2/awakening?season=${season}&show_achievements=${Boolean(
@@ -236,7 +309,7 @@ export default class DataApiClient {
                 ...(showEligibleJitosolWallets && {
                     eligibleJitosolWallets: result.data.eligible_jitosol_wallets,
                 }),
-            } as LeaderboardReturnTypeAPI<T>;
+            } as PreSeasonLeaderboardReturnTypeAPI<T>;
 
             return data;
         } catch (e) {

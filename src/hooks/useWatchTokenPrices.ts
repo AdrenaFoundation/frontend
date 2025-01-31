@@ -38,6 +38,7 @@ export default function useWatchTokenPrices() {
 
     const tokens: Token[] = [
       ...window.adrena.client.tokens,
+    
       // Add SOL token here to handle jitoSOL traded as SOL price
       {
         symbol: 'SOL',
@@ -45,12 +46,19 @@ export default function useWatchTokenPrices() {
           (t) => t.symbol === 'SOL',
         )?.pythPriceUpdateV2,
       } as unknown as Token, // Force type as we only need symbol and pythPriceUpdateV2 pubkey
+      
       // Add BTC token here to handle jitoSOL traded as SOL price
       {
         symbol: 'BTC',
         pythPriceUpdateV2: Object.values(window.adrena.config.tokensInfo).find(
           (t) => t.symbol === 'BTC',
         )?.pythPriceUpdateV2,
+      } as unknown as Token, // Force type as we only need symbol and pythPriceUpdateV2 pubkey
+
+      // Add JTO token to calculate Trading competition prize pool
+      {
+        symbol: 'JTO',
+        pythPriceUpdateV2: new PublicKey('7ajR2zA4MGMMTqRAVjghTKqPPn4kbrj3pYkAVRVwTGzP'),
       } as unknown as Token, // Force type as we only need symbol and pythPriceUpdateV2 pubkey
     ];
 

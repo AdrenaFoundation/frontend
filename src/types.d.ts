@@ -581,7 +581,102 @@ export type ConnectedWalletTickets = {
   jito: number | null;
 } | null;
 
-export type LeaderboardReturnTypeAPI<
+type SeasonLeaderboardsRawAPI = {
+  success: boolean;
+  data: {
+    start_date: string; // ISO 8601 Date String
+    end_date: string; // ISO 8601 Date String
+    quests: Record<string, unknown>;
+    mutations: Record<string, unknown>;
+    week_leaderboard: {
+      week_dates_start: string[]; // Array of ISO 8601 Date Strings
+      week_dates_end: string[]; // Array of ISO 8601 Date Strings
+      leaderboard: {
+        user_wallet: string;
+        season_id: number;
+        week_date_id: number;
+        points_trading: number;
+        points_mutations: number;
+        points_streaks: number;
+        points_quests: number;
+        total_points: number;
+        volume: number;
+        pnl: number;
+        borrow_fees: number;
+        close_fees: number;
+        fees: number;
+        rank: number;
+        championship_points: number;
+      }[][];
+    };
+    season_leaderboard: {
+      user_wallet: string;
+      season_id: number;
+      points_trading: number;
+      points_mutations: number;
+      points_streaks: number;
+      points_quests: number;
+      total_points: number;
+      volume: number;
+      pnl: number;
+      borrow_fees: number;
+      close_fees: number;
+      fees: number;
+      rank: number;
+      championship_points: number;
+      rewards_adx: number;
+      rewards_jto: number;
+    }[];
+    name: string;
+    description: string;
+  };
+};
+
+export type SeasonLeaderboardsData = {
+  startDate: Date;
+  endDate: Date;
+  weekLeaderboard: {
+      startDate: Date;
+      endDate: Date;
+      ranks: {
+        wallet: PublicKey;
+        rank: number;
+        championshipPoints: number;
+        totalPoints: number;
+        streaksPoints:  number;
+        questsPoints: number;
+        mutationPoints: number;
+        tradingPoints: number;
+        volume: number;
+        pnl: number;
+        fees: number;
+        avatar: string | null;
+        username: string | null;
+        title: string | null;
+      }[];
+  }[];
+
+  seasonLeaderboard: {
+    wallet: PublicKey;
+    rank: number;
+    tradingPoints: number;
+    mutationPoints: number;
+    streaksPoints: number;
+    questsPoints: number;
+    totalPoints: number;
+    volume: number;
+    pnl: number;
+    fees: number;
+    championshipPoints: number;
+    rewardsAdx: number;
+    rewardsJto: number;
+    avatar: string | null;
+    username: string | null;
+    title: string | null;
+  }[];
+};
+
+export type PreSeasonLeaderboardReturnTypeAPI<
   T extends {
     showGlobalStats?: boolean;
     showAchievements?: boolean;
@@ -773,6 +868,7 @@ export type GetPositionStatsReturnType<
 type CheckBoxType = {
   type: 'checkbox';
   description: string;
+  progress: string;
   reward: number | string;
   completed: boolean;
   isActive?: boolean;
@@ -784,6 +880,7 @@ type TextType = {
   title: string;
   description: string;
   task: string;
+  progress: string;
   reward: string;
 };
 
@@ -791,6 +888,7 @@ type ProgressiveType = {
   type: 'progressive';
   description?: string;
   title: string;
+  progress: number;
   levels: {
     description: string;
     multiplier: string;

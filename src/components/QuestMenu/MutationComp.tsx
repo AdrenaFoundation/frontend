@@ -53,9 +53,6 @@ export default function MutationComp({
             comparison: string;
             calculationType: string;
             maxPoints: number; */}
-
-
-
         </div>
     );
 }

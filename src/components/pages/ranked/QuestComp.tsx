@@ -7,7 +7,7 @@ import wing from '@/../../public/images/wing.svg';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
 import { QuestType } from '@/types';
 
-export default function QuestCompOld({
+export default function QuestComp({
     quest,
     className,
 }: {
