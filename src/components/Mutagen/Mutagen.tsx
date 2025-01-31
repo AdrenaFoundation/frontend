@@ -235,7 +235,6 @@ export default function Mutagen({
 
   return (
     <Menu
-      forceOpen={true}
       openMenuTriggerType='hover'
       trigger={
         <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
