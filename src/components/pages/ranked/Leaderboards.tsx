@@ -19,6 +19,7 @@ import { UserProfileExtended } from '@/types';
 
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
+import InfoAnnotationTitle from '../monitoring/InfoAnnotationTitle';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -109,7 +110,7 @@ export default function Leaderboards() {
 
                     <div className='flex flex-col w-[25em] grow max-w-full'>
                         <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
-                            Fight weekly
+                            Grind weekly
                         </div>
 
                         <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-10 md:pb-14")}>
@@ -197,8 +198,8 @@ export default function Leaderboards() {
                                     content={
                                         <div>
                                             {userWeeklyRank === false ?
-                                                'You are not ranked. Trade and complete quests to earn mutagen and climb the ladder.' :
-                                                `You are ranked #${userWeeklyRank} in this weekly leaderboard. Trade and complete quests to earn mutagen and climb the ladder.`}
+                                                'You are not ranked. Earn Mutagen by trading, completing quests, and maintaining streaks and climb the ladder.' :
+                                                `You are ranked #${userWeeklyRank} in this weekly leaderboard. Earn Mutagen by trading, completing quests, and maintaining streaks and climb the ladder.`}
                                         </div>
                                     }>
                                     <div>
@@ -231,6 +232,16 @@ export default function Leaderboards() {
                                 />
 
                                 <div className='text-xl font-boldy tracking-wider uppercase'>Leaderboard</div>
+
+                                <InfoAnnotationTitle
+                                    text={
+                                        <div className='flex flex-col gap-1'>
+                                            Traders are ranked weekly based on Mutagen earned and receive 'season points' accordingly. The season lasts 10 weeks.
+                                        </div>
+                                    }
+                                    className={''}
+                                    title={''}
+                                />
                             </div>
 
                             <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
@@ -328,6 +339,16 @@ export default function Leaderboards() {
 
                             <div className='flex pt-4 pb-2 w-full items-center justify-center relative'>
                                 <div className='text-xl font-boldy tracking-wider uppercase'>Season Leaderboard</div>
+
+                                <InfoAnnotationTitle
+                                    text={
+                                        <div className='flex flex-col gap-1'>
+                                            At the end of the season, rankings are determined by total "season points", with top 100 traders earning rewards.
+                                        </div>
+                                    }
+                                    className={''}
+                                    title={''}
+                                />
                             </div>
 
                             <div className="h-[1px] bg-bcolor w-full mt-2 mb-2" />
