@@ -155,8 +155,8 @@ export default function Leaderboards() {
                             />
                         </div>
 
-                        <div className='flex flex-col w-full p-2 bg-[#0D1923] justify-between border border-white/5 rounded-lg relative'>
-                            <div className="opacity-30 text-xs absolute top-[-2.4em]">
+                        <div className='flex flex-col w-full p-2 bg-[#0D1923] border border-white/5 rounded-lg relative'>
+                            <div className="opacity-30 text-xs absolute left-4 top-[-2.4em]">
                                 {weekInfo?.startDate.toLocaleDateString()} – {weekInfo?.endDate.toLocaleDateString()}
                             </div>
 
