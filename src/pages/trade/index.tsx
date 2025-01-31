@@ -69,6 +69,8 @@ export default function Trade({
 }: PageProps & {
   showFeesInPnl: boolean;
 }) {
+  const isSmallScreen = useBetterMediaQuery('(max-width: 950px)');
+
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
 
@@ -467,9 +469,11 @@ export default function Trade({
           />
         ) : null}
 
-        <div className='relative w-full sm:hidden'>
-          <QuestMenu isMobile className='sm:hidden' />
+        {/* 651px and 950px */}
 
+        {isSmallScreen ? <QuestMenu isMobile className={twMerge('fixed sm:bottom-[4em]')} /> : null}
+
+        <div className='relative w-full sm:hidden'>
           <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
             <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
               <li>

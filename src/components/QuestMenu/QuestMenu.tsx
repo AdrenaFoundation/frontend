@@ -246,8 +246,8 @@ export default function QuestMenu({
     return (
         <div
             className={twMerge(
-                'fixed  z-20',
-                isMobile ? 'bottom-[7.1875rem] left-4' : 'bottom-0 left-0',
+                'fixed z-20',
+                isMobile ? 'bottom-[7rem] left-4' : 'bottom-0 left-0',
                 className,
             )}
         >
@@ -321,8 +321,8 @@ export default function QuestMenu({
                 ) : null}
 
                 {isMobile && isOpen ? (
-                    <Modal close={() => setIsOpen(!isOpen)} className="p-0" key="modal">
-                        <div>{body}</div>
+                    <Modal close={() => setIsOpen(!isOpen)} className="p-0 w-full" key="modal">
+                        {body}
                     </Modal>
                 ) : null}
             </AnimatePresence>
