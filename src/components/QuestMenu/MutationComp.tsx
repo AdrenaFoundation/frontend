@@ -1,8 +1,6 @@
-import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import needle from '@/../../public/images/needle.png';
 import { EnrichedSeasonMutation } from '@/types';
 import { formatNumber } from '@/utils';
 
@@ -16,43 +14,39 @@ export default function MutationComp({
     return (
         <div
             className={twMerge(
-                'flex flex-col gap-2.5',
+                'flex gap-1',
                 className,
             )}
         >
-            <div className="flex justify-between items-center gap-4">
-                <div className="flex flex-col gap-0.5">
+            <div className="flex items-center justify-between w-full gap-1">
+                <div className="flex flex-col gap-1">
                     {mutation.name && (
-                        <h3 className="animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]">
-                            {mutation.name}
-                        </h3>
+                        <div className='flex gap-1'>
+                            <div className="text-[0.9em] font-boldy">
+                                {mutation.name}
+                            </div>
+
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                                <span className="font-boldy text-xs text-[#e47dbb]">
+                                    {mutation.calculationType === "per_increment" ? (
+                                        <>+{formatNumber(mutation.points, 3)} - {formatNumber(mutation.maxPoints, 3)}  mutagen</>
+                                    ) : (
+                                        <>+{formatNumber(mutation.maxPoints, 3)}  mutagen</>
+                                    )}
+                                </span>
+                            </div>
+                        </div>
                     )}
+
                     {mutation.description && (
-                        <p className="text-white/50 text-sm">
+                        <p className="text-white/50 text-xs">
                             {mutation.description}
                         </p>
                     )}
                 </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
-                    <span className="font-mono text-sm animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]">
-                        {mutation.calculationType === "per_increment" ? (
-                            <>+{formatNumber(mutation.points, 3)} - {formatNumber(mutation.maxPoints, 3)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></>
-                        ) : (
-                            <>+{formatNumber(mutation.maxPoints, 3)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></>
-                        )}
-                    </span>
-                </div>
-            </div>
 
-            {/*    mutationDate: string;
-            name: string;
-            description: string;
-            points: number;
-            conditionType: string;
-            conditionValue: number;
-            comparison: string;
-            calculationType: string;
-            maxPoints: number; */}
+                <div className='text-xs'>Active today</div>
+            </div>
         </div>
     );
 }
