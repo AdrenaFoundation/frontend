@@ -17,7 +17,6 @@ import useExpanseData from '@/hooks/useExpanseData';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
-import InfoAnnotationTitle from '../monitoring/InfoAnnotationTitle';
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
 
@@ -27,7 +26,7 @@ function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
 }
 
-const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-5 pb-5 w-min-[9em] h-[6em]';
+const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
 
 export default function Leaderboards() {
     const [week, setWeek] = useState<string>('Week 1');
@@ -114,7 +113,7 @@ export default function Leaderboards() {
                     {/* WEEKLY LEADERBOARD */}
 
                     <div className='flex flex-col w-[25em] grow max-w-full'>
-                        <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
+                        <div className='w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
                             Grind weekly
                         </div>
 
@@ -132,7 +131,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
 
                             <NumberDisplay
@@ -142,7 +143,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
 
                             <NumberDisplay
@@ -156,7 +159,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
 
                             <NumberDisplay
@@ -170,7 +175,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
                         </div>
 
@@ -265,8 +272,8 @@ export default function Leaderboards() {
                     {/* SEASON LEADERBOARD */}
 
                     <div className='flex flex-col w-[25em] grow max-w-full'>
-                        <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
-                            Become the champion
+                        <div className='w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
+                            become the champion
                         </div>
 
                         <div className='flex flex-col gap-1 items-center justify-center text-center pb-8 text-sm'>
@@ -283,7 +290,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
 
                             <NumberDisplay
@@ -293,7 +302,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
 
                             <NumberDisplay
@@ -307,7 +318,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
 
                             <NumberDisplay
@@ -321,7 +334,9 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
+                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                titleClassName='text-[0.7em] text-base'
                             />
                         </div>
 
