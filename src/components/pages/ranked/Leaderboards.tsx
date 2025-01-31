@@ -351,7 +351,7 @@ export default function Leaderboards() {
                                 <InfoAnnotationTitle
                                     text={
                                         <div className='flex flex-col gap-1'>
-                                            At the end of the season, rankings are determined by total "season points", with top 100 traders earning rewards.
+                                            At the end of the season, rankings are determined by total &apos;season points&apos;, with top 100 traders earning rewards.
                                         </div>
                                     }
                                     className={''}
