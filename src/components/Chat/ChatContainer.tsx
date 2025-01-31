@@ -53,7 +53,7 @@ export default function ChatContainer({
         if (isMobile) return;
 
         setIsOpenCookie('chat-open', isChatOpen);
-    }, [isMobile, isChatOpen, isOpenCookie, setIsOpenCookie]);
+    }, [isMobile, isChatOpen, isOpenCookie, setIsOpenCookie, setIsChatOpen]);
 
     // Add window resize handler
     useEffect(() => {

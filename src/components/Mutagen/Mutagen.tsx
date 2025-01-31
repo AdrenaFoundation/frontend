@@ -1,5 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,7 +12,6 @@ import { formatNumber } from '@/utils';
 import needle from '../../../public/images/needle.png';
 import Menu from '../common/Menu/Menu';
 import Modal from '../common/Modal/Modal';
-import { useRouter } from 'next/router';
 
 interface MutagenSource {
   title: string;
