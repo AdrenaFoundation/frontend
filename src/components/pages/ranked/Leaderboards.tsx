@@ -69,7 +69,6 @@ export default function Leaderboards() {
             if (!rank.wallet.equals(PublicKey.default)) {
                 acc.totalVolume += rank.volume;
                 acc.totalFees += rank.fees;
-                acc.totalMutagen += rank.totalPoints;
                 acc.totalUsers += 1;
             }
 
@@ -78,7 +77,6 @@ export default function Leaderboards() {
             totalUsers: 0,
             totalVolume: 0,
             totalFees: 0,
-            totalMutagen: 0,
         });
     }, [currentWeekIndex, leaderboardData?.weekLeaderboard]);
 
@@ -91,7 +89,6 @@ export default function Leaderboards() {
             if (!rank.wallet.equals(PublicKey.default)) {
                 acc.totalVolume += rank.volume;
                 acc.totalFees += rank.fees;
-                acc.totalChampionshipPoint += rank.championshipPoints;
                 acc.totalUsers += 1;
             }
 
@@ -100,7 +97,6 @@ export default function Leaderboards() {
             totalUsers: 0,
             totalVolume: 0,
             totalFees: 0,
-            totalChampionshipPoint: 0,
         });
     }, [leaderboardData?.seasonLeaderboard]);
 
@@ -134,20 +130,7 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                titleClassName='text-[0.7em] text-base'
-                            />
-
-                            <NumberDisplay
-                                title="Mutagen"
-                                nb={weeklyStats?.totalMutagen ?? null}
-                                format="number"
-                                precision={0}
-                                className={numberDisplayClasses}
-                                headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.8em]'
                                 titleClassName='text-[0.7em] text-base'
                             />
 
@@ -161,9 +144,9 @@ export default function Leaderboards() {
                                 isDecimalDimmed={false}
                                 precision={0}
                                 className={numberDisplayClasses}
+                                prefixClassName="text-[0.9em]"
                                 headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.8em]'
                                 titleClassName='text-[0.7em] text-base'
                             />
 
@@ -177,9 +160,9 @@ export default function Leaderboards() {
                                 isDecimalDimmed={false}
                                 precision={0}
                                 className={numberDisplayClasses}
+                                prefixClassName="text-[0.9em]"
                                 headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.8em]'
                                 titleClassName='text-[0.7em] text-base'
                             />
                         </div>
@@ -299,20 +282,7 @@ export default function Leaderboards() {
                                 precision={0}
                                 className={numberDisplayClasses}
                                 headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                titleClassName='text-[0.7em] text-base'
-                            />
-
-                            <NumberDisplay
-                                title="Points"
-                                nb={seasonStats?.totalChampionshipPoint ?? null}
-                                format="number"
-                                precision={0}
-                                className={numberDisplayClasses}
-                                headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.8em]'
                                 titleClassName='text-[0.7em] text-base'
                             />
 
@@ -325,10 +295,10 @@ export default function Leaderboards() {
                                 isAbbreviateIcon={false}
                                 isDecimalDimmed={false}
                                 precision={0}
+                                prefixClassName="text-[0.9em]"
                                 className={numberDisplayClasses}
+                                bodyClassName='text-[0.8em]'
                                 headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
                                 titleClassName='text-[0.7em] text-base'
                             />
 
@@ -342,9 +312,9 @@ export default function Leaderboards() {
                                 isDecimalDimmed={false}
                                 precision={0}
                                 className={numberDisplayClasses}
+                                prefixClassName="text-[0.9em]"
                                 headerClassName='pb-2'
-                                bodySuffixClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
-                                bodyClassName='text-[0.7em] md:text-[0.8em] lg:text-[0.9em] xl:text-[1em]'
+                                bodyClassName='text-[0.8em]'
                                 titleClassName='text-[0.7em] text-base'
                             />
                         </div>

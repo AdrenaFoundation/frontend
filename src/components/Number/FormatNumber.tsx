@@ -104,7 +104,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
 
 
     if (isAbbreviate) {
-      num = formatNumAbbreviated(Number(nb));
+      num = formatNumAbbreviated(Number(nb), precision);
     }
 
     const integer = num.split('.')[0];

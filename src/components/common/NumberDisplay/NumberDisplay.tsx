@@ -15,6 +15,7 @@ export default function NumberDisplay({
   precision,
   placeholder,
   isDecimalDimmed,
+  prefixClassName,
   prefix,
   suffix,
   className,
@@ -30,6 +31,7 @@ export default function NumberDisplay({
   title?: string;
   nb: number | null;
   format?: 'number' | 'currency' | 'percentage';
+  prefixClassName?: string;
   prefix?: string;
   precision?: number;
   placeholder?: string;
@@ -70,6 +72,7 @@ export default function NumberDisplay({
     >
       <FormatNumber
         nb={nb}
+        prefixClassName={prefixClassName}
         prefix={prefix}
         isAbbreviate={isAbbreviate}
         isAbbreviateIcon={isAbbreviateIcon}
