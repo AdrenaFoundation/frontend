@@ -70,9 +70,14 @@ export default function Leaderboards() {
             acc.totalVolume += rank.volume;
             acc.totalFees += rank.fees;
             acc.totalMutagen += rank.totalPoints;
+
+            if (rank.wallet.equals(PublicKey.default)) {
+                acc.totalUsers += 1;
+            }
+
             return acc;
         }, {
-            totalUsers: ranks.length,
+            totalUsers: 0,
             totalVolume: 0,
             totalFees: 0,
             totalMutagen: 0,
