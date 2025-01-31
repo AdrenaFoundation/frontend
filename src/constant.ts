@@ -416,7 +416,7 @@ export const QUESTS = {
         type: 'checkbox',
         title: 'Regeneration',
         description: 'Bonus mutagen per 0.1% negative trade performance',
-        reward: '0.001 – 0.015',
+        reward: '0.001 - 0.015',
       },
       {
         type: 'checkbox',
@@ -459,7 +459,7 @@ export const QUESTS = {
         type: 'checkbox',
         title: 'Trade Duration',
         description: '10s → 72h',
-        reward: '0 – 0.05',
+        reward: '0 - 0.05',
       },
       {
         type: 'progressive',
