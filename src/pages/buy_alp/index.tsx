@@ -18,7 +18,7 @@ export default function Buy({ connected, mainPool }: PageProps) {
       : 0;
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mt-4 p-[20px] sm:p-[50px] w-full max-w-[1500px] m-auto">
+    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mt-4 pb-[150px] p-[20px] sm:p-[50px] w-full max-w-[1500px] m-auto">
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col justify-center items-start z-10 xl:h-[45em]">

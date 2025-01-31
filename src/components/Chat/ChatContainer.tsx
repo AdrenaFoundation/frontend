@@ -1,51 +1,59 @@
-import { Wallet } from "@coral-xyz/anchor";
-import { AnimatePresence } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
-import { twMerge } from "tailwind-merge";
+import { Wallet } from '@coral-xyz/anchor';
+import { AnimatePresence } from 'framer-motion';
+import { useCallback, useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { twMerge } from 'tailwind-merge';
 
-import { UserProfileExtended } from "@/types";
+import { UserProfileExtended } from '@/types';
 
-import Modal from "../common/Modal/Modal";
-import Chat from "./Chat";
+import Modal from '../common/Modal/Modal';
+import Chat from './Chat';
 
 export default function ChatContainer({
     userProfile,
     wallet,
     isMobile,
+    isChatOpen,
+    setIsChatOpen,
 }: {
     userProfile: UserProfileExtended | null | false;
     wallet: Wallet | null;
     isMobile: boolean;
+    isChatOpen: boolean | null;
+    setIsChatOpen: (isOpen: boolean) => void;
 }) {
-    const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [showUserList, setShowUserList] = useState(false);
     const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
     const [chatHeightCookie, setChatHeightCookie] = useCookies(['chat-height']);
     const [height, setHeight] = useState(() => {
         // Initialize with cookie value or default
-        return chatHeightCookie['chat-height'] || Math.round(window.innerHeight * 0.35);
+        return (
+            chatHeightCookie['chat-height'] || Math.round(window.innerHeight * 0.35)
+        );
     });
     const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
         // Decide if isOpen should be true or not, depending on cookies and if we are in mobile
-        if (isOpen === null) {
+        if (isChatOpen === null) {
             if (isMobile) {
                 // In mobile, not open by default
-                setIsOpen(false);
+                setIsChatOpen(false);
                 return;
             }
 
             // Opened by default on desktop, otherwise follow what the cookie says
-            setIsOpen(typeof isOpenCookie['chat-open'] === 'undefined' || isOpenCookie['chat-open'] === true);
+            setIsChatOpen(
+                typeof isOpenCookie['chat-open'] === 'undefined' ||
+                isOpenCookie['chat-open'] === true,
+            );
             return;
         }
 
         if (isMobile) return;
 
-        setIsOpenCookie('chat-open', isOpen);
-    }, [isMobile, isOpen, isOpenCookie, setIsOpenCookie]);
+        setIsOpenCookie('chat-open', isChatOpen);
+    }, [isMobile, isChatOpen, isOpenCookie, setIsOpenCookie, setIsChatOpen]);
 
     // Add window resize handler
     useEffect(() => {
@@ -68,12 +76,15 @@ export default function ChatContainer({
         setIsDragging(true);
     };
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
-        if (!isDragging || !isOpen) return;
-        const newHeight = window.innerHeight - e.clientY;
-        const clampedHeight = Math.min(Math.max(newHeight, 250), 1000);
-        setHeight(clampedHeight);
-    }, [isDragging, isOpen]);
+    const handleMouseMove = useCallback(
+        (e: MouseEvent) => {
+            if (!isDragging || !isChatOpen) return;
+            const newHeight = window.innerHeight - e.clientY;
+            const clampedHeight = Math.min(Math.max(newHeight, 250), 1000);
+            setHeight(clampedHeight);
+        },
+        [isDragging, isChatOpen],
+    );
 
     const handleMouseUp = useCallback(() => {
         if (isDragging) {
@@ -91,63 +102,59 @@ export default function ChatContainer({
         };
     }, [handleMouseMove, handleMouseUp]);
 
-    if (isOpen === null) return <></>;
+    if (isChatOpen === null) return <></>;
 
     if (isMobile) {
         return (
-            <>
-                <div className="absolute top-[1.45em] left-14 z-40">
-                    <div className="flex flex-col items-center justify-center text-center cursor-pointer opacity-80 hover:opacity-100" onClick={() => {
-                        setIsOpen(!isOpen);
-                    }}>
-                        <div className="text-sm font-archivo uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#ffffff,40%,#808080,60%,#ffffff)]">
-                            Live Chat
-                        </div>
-                    </div>
-                </div>
-
-                {isOpen ? <AnimatePresence>
+            <AnimatePresence>
+                {isChatOpen ? (
                     <Modal
                         title="Live Chat"
-                        close={() => setIsOpen(false)}
+                        close={() => setIsChatOpen(false)}
                         className="flex flex-col w-full h-[85vh] max-h-[85vh]"
                     >
                         <Chat
                             displaySmileys={false}
                             userProfile={userProfile}
                             wallet={wallet}
-                            isOpen={isOpen}
+                            isOpen={isChatOpen}
                             showUserList={showUserList}
                             onToggleUserList={() => setShowUserList(!showUserList)}
-                            clickOnHeader={() => setIsOpen(!isOpen)}
+                            clickOnHeader={() => setIsChatOpen(!isChatOpen)}
                             className="bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full"
                         />
                     </Modal>
-                </AnimatePresence> : null}
-            </>
+                ) : null}
+            </AnimatePresence>
         );
     }
 
-    return <div className='fixed bottom-0 right-4 z-20'>
-        {isOpen && <div
-            className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize select-none"
-            onMouseDown={handleMouseDown}
-            style={{ userSelect: 'none' }}
-        />}
-        <Chat
-            userProfile={userProfile}
-            wallet={wallet}
-            isOpen={isOpen}
-            showUserList={showUserList}
-            onToggleUserList={() => setShowUserList(!showUserList)}
-            clickOnHeader={() => {
-                if (!isDragging) setIsOpen(!isOpen);
-            }}
-            className={twMerge(
-                "bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none",
-                isOpen ? `h-[${height}px]` : 'h-[3em]'
+    return (
+        <div className="fixed bottom-0 right-4 z-20">
+            {isChatOpen && (
+                <div
+                    className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize select-none"
+                    onMouseDown={handleMouseDown}
+                    style={{ userSelect: 'none' }}
+                />
             )}
-            style={isOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined}
-        />
-    </div>;
+            <Chat
+                userProfile={userProfile}
+                wallet={wallet}
+                isOpen={isChatOpen}
+                showUserList={showUserList}
+                onToggleUserList={() => setShowUserList(!showUserList)}
+                clickOnHeader={() => {
+                    if (!isDragging) setIsChatOpen(!isChatOpen);
+                }}
+                className={twMerge(
+                    'bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none',
+                    isChatOpen ? `h-[${height}px]` : 'h-[3em]',
+                )}
+                style={
+                    isChatOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined
+                }
+            />
+        </div>
+    );
 }

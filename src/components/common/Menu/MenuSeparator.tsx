@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge';
 
 export default function MenuSeparator({ className }: { className?: string }) {
-  return <li className={twMerge('w-full h-[1px] bg-secondary', className)} />;
+  return <li className={twMerge('w-full h-[1px] bg-white/10', className)} />;
 }

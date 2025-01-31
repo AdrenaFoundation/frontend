@@ -1,6 +1,5 @@
 import { Switch } from '@mui/material';
 import { Connection } from '@solana/web3.js';
-import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
@@ -33,6 +32,7 @@ export default function Settings({
   isMobile = false,
   showFeesInPnl,
   setShowFeesInPnl,
+  setCloseMobileModal,
 }: {
   activeRpc: {
     name: string;
@@ -55,8 +55,8 @@ export default function Settings({
   isMobile?: boolean;
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
+  setCloseMobileModal?: (close: boolean) => void;
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [, setCookies] = useCookies(['solanaExplorer']);
 
@@ -160,23 +160,12 @@ export default function Settings({
 
   if (isMobile) {
     return (
-      <AnimatePresence>
-        <Button
-          variant={isGenesis ? 'text' : 'lightbg'}
-          leftIcon={settingsIcon}
-          className={'w-7 h-7 p-0'}
-          iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
-          onClick={() => setIsModalOpen(true)}
-        />
-        {isModalOpen && (
-          <Modal
-            close={() => setIsModalOpen(false)}
-            className="flex flex-col w-full p-5 relative overflow-visible"
-          >
-            {content}
-          </Modal>
-        )}
-      </AnimatePresence>
+      <Modal
+        close={() => setCloseMobileModal?.(false)}
+        className="flex flex-col w-full p-5 relative overflow-visible"
+      >
+        {content}
+      </Modal>
     );
   }
   return (

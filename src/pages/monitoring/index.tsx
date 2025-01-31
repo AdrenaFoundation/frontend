@@ -88,7 +88,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
+      <div className="m-1 sm:mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
           className='flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[45em] ml-auto mr-auto'
         >
@@ -140,7 +140,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
       }}
       animate={{ opacity: 1, translateX: 0 }}
       transition={{ duration: 0.3 }}
-      className='min-h-[80vh] z-10'
+      className='min-h-[80vh] z-10 pb-[100px] sm:pb-0'
     >
       <div className='p-2'>
         {getViewComponent(view)}
