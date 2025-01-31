@@ -83,32 +83,6 @@ export default function QuestMenu({
         return null;
     }
 
-    if (userSeasonProgress)
-        userSeasonProgress.mutations = [
-            {
-                mutationDate: "2025-01-29",
-                name: "Tempo",
-                description: "Point bonus for patient trades",
-                points: 0.02,
-                conditionType: "duration",
-                conditionValue: 1800,
-                comparison: "gte",
-                calculationType: "fixed",
-                maxPoints: 0.02,
-            },
-            {
-                mutationDate: "2025-01-29",
-                name: "Tempo",
-                description: "Point bonus for patient trades",
-                points: 0.02,
-                conditionType: "duration",
-                conditionValue: 1800,
-                comparison: "gte",
-                calculationType: "fixed",
-                maxPoints: 0.02,
-            }
-        ];
-
     const classNameTitle = "mt-2 mb-2 animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] "
 
     const body = (
