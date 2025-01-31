@@ -133,15 +133,17 @@ export default function useUserSeasonProgress({
     }
   }, [walletAddress]);
 
-  // Initial load
   useEffect(() => {
     loadUserSeasonProgress();
-  }, [loadUserSeasonProgress]);
 
-  // Polling
-  useEffect(() => {
-    const interval = setInterval(loadUserSeasonProgress, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(async () => {
+      await loadUserSeasonProgress();
+    }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadUserSeasonProgress]);
 
   return {

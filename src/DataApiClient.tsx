@@ -11,6 +11,7 @@ import {
     Token,
     Trader,
     TraderDivisionRawAPI,
+    UserMutagensReturnType,
     UserSeasonProgressReturnType
 } from './types';
 
@@ -441,8 +442,6 @@ export default class DataApiClient {
         season?: string;
         userWallet: string | null;
     }): Promise<UserSeasonProgressReturnType | null> {
-        console.log('calling API for progress');
-
         const params = new URLSearchParams();
 
         if (season) params.append('season', season);
@@ -456,12 +455,37 @@ export default class DataApiClient {
 
         try {
             const response = await fetch(
-                `http://localhost:8080/season?season=expanse&${params.toString()}`
+                `https://datapi.adrena.xyz/season?${params.toString()}`
             );
 
-            return response.json();
+            if (!response.ok) {
+                return null;
+            }
+
+            return await response.json();
         } catch (e) {
             console.error('Error fetching user season progress:', e);
+            return null;
+        }
+    }
+
+    public static async getUserMutagens({
+        userWallet,
+    }: {
+        userWallet: string;
+    }): Promise<UserMutagensReturnType | null> {
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/mutagen?user_wallet=${userWallet}`
+            );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            return await response.json();
+        } catch (e) {
+            console.error('Error fetching user mutagens:', e);
             return null;
         }
     }
