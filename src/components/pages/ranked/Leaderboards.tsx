@@ -26,6 +26,8 @@ function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
 }
 
+const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-5 pb-5 w-min-[9em] h-[6em]';
+
 export default function Leaderboards() {
     const [week, setWeek] = useState<string>('Week 1');
     const { allUserProfiles } = useAllUserProfiles();
@@ -116,7 +118,7 @@ export default function Leaderboards() {
                                 nb={weeklyStats?.totalUsers ?? null}
                                 format="number"
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
@@ -126,7 +128,7 @@ export default function Leaderboards() {
                                 nb={weeklyStats?.totalMutagen ?? null}
                                 format="number"
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
@@ -140,7 +142,7 @@ export default function Leaderboards() {
                                 isAbbreviateIcon={false}
                                 isDecimalDimmed={false}
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
@@ -154,7 +156,7 @@ export default function Leaderboards() {
                                 isAbbreviateIcon={false}
                                 isDecimalDimmed={false}
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
@@ -258,7 +260,7 @@ export default function Leaderboards() {
                                 nb={seasonStats?.totalUsers ?? null}
                                 format="number"
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
@@ -272,7 +274,7 @@ export default function Leaderboards() {
                                 isAbbreviateIcon={false}
                                 isDecimalDimmed={false}
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
@@ -282,7 +284,7 @@ export default function Leaderboards() {
                                 nb={seasonStats?.totalChampionshipPoint ?? null}
                                 format="number"
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
@@ -296,7 +298,7 @@ export default function Leaderboards() {
                                 isAbbreviateIcon={false}
                                 isDecimalDimmed={false}
                                 precision={0}
-                                className='border-0 bg-third pl-4 pr-4 pt-5 pb-5 w-min-[9em]'
+                                className={numberDisplayClasses}
                                 headerClassName='pb-2'
                                 titleClassName='text-[0.7em] sm:text-[0.7em] text-base'
                             />
