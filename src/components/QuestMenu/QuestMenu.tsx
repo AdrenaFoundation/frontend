@@ -122,6 +122,9 @@ export default function QuestMenu({
                     <p className="font-archivo text-lg uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
                         COMPLETE QUESTS TO ASCEND
                     </p>
+                    <p className="font-archivo text-xxs animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#fff,40%,#888,60%,#fff)]">
+                        * Only positions opened and closed within the periods count
+                    </p>
                 </div>
             </div>
 

@@ -11,6 +11,7 @@ import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDa
 import useCountDown from '@/hooks/useCountDown';
 import { useSelector } from '@/store/store';
 import { ImageRef } from '@/types';
+import { formatNumber } from '@/utils';
 
 export default function CompetitionBanner({
     banner,
@@ -19,6 +20,7 @@ export default function CompetitionBanner({
     gradientColor,
     startDate,
     endDate,
+    seasonName,
 }: {
     banner: ImageRef;
     endDate: Date | null;
@@ -26,6 +28,7 @@ export default function CompetitionBanner({
     title?: string;
     subTitle?: string;
     gradientColor?: string;
+    seasonName: string;
 }) {
     const { days, hours, minutes, seconds } = useCountDown(
         new Date(),
@@ -34,9 +37,12 @@ export default function CompetitionBanner({
 
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
+    const adxNumber = seasonName === 'expanse' ? 5000000 : 2270000;
+    const jtoNumber = seasonName === 'expanse' ? 50000 : 25000;
+
     const totalPrize = useMemo(() => {
-        return 5000000 * (tokenPrices['ADX'] ?? 0) + 50000 * (tokenPrices['JTO'] ?? 0);
-    }, [tokenPrices]);
+        return adxNumber * (tokenPrices['ADX'] ?? 0) + jtoNumber * (tokenPrices['JTO'] ?? 0);
+    }, [adxNumber, jtoNumber, tokenPrices]);
 
     return (
         <div className="relative">
@@ -135,7 +141,7 @@ export default function CompetitionBanner({
                                 />
 
                                 <p className="text-md font-boldy text-txtfade">
-                                    5,000,000 ADX
+                                    {formatNumber(adxNumber, 2, 0)} ADX
                                 </p>
                             </div>
 
@@ -145,7 +151,7 @@ export default function CompetitionBanner({
                                 <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
 
                                 <p className="text-md font-boldy text-txtfade">
-                                    50,000 JTO
+                                    {formatNumber(jtoNumber, 2, 0)} JTO
                                 </p>
                             </div>
                         </div>

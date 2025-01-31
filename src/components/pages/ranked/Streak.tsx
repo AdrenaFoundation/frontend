@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
 
-import needle from '@/../../public/images/needle.png';
 import wing from '@/../../public/images/wing.svg';
 
 export default function Streak() {
@@ -21,17 +20,17 @@ export default function Streak() {
             <div className="flex flex-col md:flex-row gap-6 justify-between mt-3">
                 <div className="flex flex-col gap-2 items-center justify-center text-center p-3">
                     <p className="text-lg font-boldy">Trade Daily</p>
-                    <p className="opacity-50">+0.1 <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /> / day</p>
+                    <p className="opacity-50 font-mono text-[#e47dbb]">+0.1 / day</p>
                 </div>
 
                 <div className="flex flex-col gap-2 items-center justify-center text-center p-3">
                     <p className="text-lg font-boldy">Trade for 7 consecutive days</p>
-                    <p className="opacity-50">+1 <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /> / 7 days</p>
+                    <p className="opacity-50 font-mono text-[#e47dbb]">+1 / 7 days</p>
                 </div>
 
                 <div className="flex flex-col gap-2 items-center justify-center text-center p-3">
                     <p className="text-lg font-boldy">Trade for 30 consecutive days</p>
-                    <p className="opacity-50">+2 <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /> / 30 days</p>
+                    <p className="opacity-50 font-mono text-[#e47dbb]">+2 / 30 days</p>
                 </div>
             </div>
         </div>

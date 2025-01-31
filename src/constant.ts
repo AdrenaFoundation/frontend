@@ -329,7 +329,7 @@ export const TRADING_COMPETITION_SEASONS = {
       "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
     ] as string[],
   },
-  
+
   expanse: {
     img: expanseBanner,
     title: 'The Expanse',
@@ -416,7 +416,7 @@ export const QUESTS = {
         type: 'checkbox',
         title: 'Regeneration',
         description: 'Bonus mutagen per 0.1% negative trade performance',
-        reward: '0 – 0.015',
+        reward: '0.001 – 0.015',
       },
       {
         type: 'checkbox',

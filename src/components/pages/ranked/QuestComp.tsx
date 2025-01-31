@@ -2,10 +2,10 @@ import Image from 'next/image';
 import React, { Fragment } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import needle from '@/../../public/images/needle.png';
 import wing from '@/../../public/images/wing.svg';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
 import { QuestType } from '@/types';
+import { formatNumber } from '@/utils';
 
 export default function QuestComp({
     quest,
@@ -78,8 +78,8 @@ export default function QuestComp({
 
                                     <p className="font-mono opacity-50 text-right">
                                         {typeof task.reward === 'string'
-                                            ? <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
-                                            : <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
+                                            ? <span className="font-mono text-[#e47dbb]">+{task.reward}</span>
+                                            : <span className="font-mono text-[#e47dbb]">+{formatNumber(task.reward, 4, 0)} </span>}
                                     </p>
                                 </div>
                             </li>
@@ -148,15 +148,15 @@ export default function QuestComp({
                                                             )}
                                                         >
                                                             {typeof level.reward === 'string'
-                                                                ? <span>+{level.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
-                                                                : <span>+{level.reward.toFixed(2)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
+                                                                ? <span className='font-mono text-[#FAD524]'>+{level.reward}</span>
+                                                                : <span className='font-mono text-[#FAD524]'>+{formatNumber(level.reward, 4, 0)}</span>}
                                                         </p>
                                                     ) : null}
 
                                                     {level?.multiplier ? (
                                                         <p
                                                             className={twMerge(
-                                                                'opacity-50 font-mono text-right',
+                                                                'opacity-50 font-mono text-right text-[#e47dbb]',
                                                                 level.completed && 'opacity-100',
                                                             )}
                                                         >
@@ -204,8 +204,8 @@ export default function QuestComp({
                                 )}
                             >
                                 {typeof task.reward === 'string'
-                                    ? <span>+{task.reward} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>
-                                    : <span>+{task.reward.toFixed(2)} <Image src={needle} alt="needle" className="w-[20px] h-[20px] inline-block" /></span>}
+                                    ? <span className="font-mono text-[#e47dbb]">+{task.reward}</span>
+                                    : <span className="font-mono text-[#e47dbb]">+{formatNumber(task.reward, 4, 0)}</span>}
                             </p>
                         </li>
                     );
