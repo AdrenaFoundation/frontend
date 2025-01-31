@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
-import QuestMenu from '@/app/components/QuestMenu/QuestMenu';
+import QuestMenu from '@/components/QuestMenu/QuestMenu';
 
 import discordLogo from '../../../public/images/discord.png';
 // import discourseLogo from '../../../public/images/discourse.svg';

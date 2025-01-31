@@ -10,11 +10,9 @@ import { QuestType } from '@/types';
 export default function QuestComp({
     quest,
     className,
-    showProgress = false,
 }: {
     quest: QuestType;
     className?: string;
-    showProgress?: boolean;
 }) {
     return (
         <div
@@ -25,13 +23,13 @@ export default function QuestComp({
         >
             {quest.title ? (
                 <div className="flex flex-row items-center">
-                    <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[2.625rem]">
+                    <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
                         <p className="font-archivo text-lg">{quest.title}</p>
                     </div>
                     <Image
                         src={wing}
                         alt="wing"
-                        className="w-[73px] h-[2.6875rem] -translate-x-4"
+                        className="w-[73px] h-[43px] -translate-x-4"
                     />
                 </div>
             ) : null}
@@ -53,13 +51,13 @@ export default function QuestComp({
                             >
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
-                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[2.625rem]">
+                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
                                             <p className="font-archivo text-lg">{task.title}</p>
                                         </div>
                                         <Image
                                             src={wing}
                                             alt="wing"
-                                            className="w-[73px] h-[2.6875rem] -translate-x-4"
+                                            className="w-[73px] h-[43px] -translate-x-4"
                                         />
                                     </div>
                                 ) : null}
@@ -98,13 +96,13 @@ export default function QuestComp({
                             >
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
-                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[2.625rem]">
+                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
                                             <p className="font-archivo text-lg">{task.title}</p>
                                         </div>
                                         <Image
                                             src={wing}
                                             alt="wing"
-                                            className="w-[73px] h-[2.6875rem] -translate-x-4"
+                                            className="w-[73px] h-[43px] -translate-x-4"
                                         />
                                     </div>
                                 ) : null}
@@ -178,7 +176,7 @@ export default function QuestComp({
                             key={index}
                             className={twMerge(
                                 'flex flex-row gap-4 justify-between items-center',
-
+                                className,
                                 task?.title && index !== 0 && 'mt-3',
                             )}
                         >
@@ -192,17 +190,10 @@ export default function QuestComp({
                                     <p
                                         className={twMerge(
                                             'opacity-50 font-boldy max-w-[350px]',
-                                            (task.completed || (task.progress && showProgress)) &&
-                                            'opacity-100',
+                                            task.completed && 'opacity-100',
                                         )}
                                     >
-                                        {task.description}{' '}
-                                        <span className="text-orange font-mono">
-                                            {' '}
-                                            {task.progress && showProgress
-                                                ? ` (${task.progress})`
-                                                : null}
-                                        </span>
+                                        {task.description}
                                     </p>
                                 </div>
                             </div>
