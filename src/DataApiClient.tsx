@@ -383,7 +383,7 @@ export default class DataApiClient {
 
         try {
             const response = await fetch(
-                `http://localhost:8080/season?${params.toString()}`
+                `http://localhost:8080/season?season=expanse&${params.toString()}`
             );
 
             return response.json();
