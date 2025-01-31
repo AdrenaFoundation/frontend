@@ -48,6 +48,35 @@ export default function QuestMenu({
         return () => clearInterval(interval);
     }, [userSeasonProgress]);
 
+    const [nextSaturdayUTC, setNextSaturdayUTC] = useState(getNextSaturdayUTC().getTime() / 1000);
+    const [nextUTC, setNextUTC] = useState(getNextUTCDate().getTime() / 1000);
+
+    useEffect(() => {
+        const now = Date.now();
+        const nextSaturdayMs = nextSaturdayUTC * 1000; // Convert to milliseconds
+        const timeoutDuration = (nextSaturdayMs - now) + 1000; // Time until next Saturday
+
+        const timeout = setTimeout(() => {
+            const next = getNextSaturdayUTC().getTime() / 1000;
+            setNextSaturdayUTC(next);
+        }, timeoutDuration);
+
+        return () => clearTimeout(timeout);
+    }, [nextSaturdayUTC]);
+
+    useEffect(() => {
+        const now = Date.now();
+        const nextMs = nextUTC * 1000; // Convert to milliseconds
+        const timeoutDuration = (nextMs - now) + 1000; // Time until next Saturday
+
+        const timeout = setTimeout(() => {
+            const next = getNextUTCDate().getTime() / 1000;
+            setNextUTC(next);
+        }, timeoutDuration);
+
+        return () => clearTimeout(timeout);
+    }, [nextUTC]);
+
     if (!userSeasonProgress) return null;
 
     if (window.location.pathname !== '/trade') {
@@ -151,7 +180,7 @@ export default function QuestMenu({
                                     </div>
 
                                     <RemainingTimeToDate
-                                        timestamp={getNextUTCDate().getTime() / 1000}
+                                        timestamp={nextUTC}
                                         className="text-center"
                                         classNameTime="font-mono text-xxs"
                                     />
@@ -203,7 +232,7 @@ export default function QuestMenu({
                                     </div>
 
                                     <RemainingTimeToDate
-                                        timestamp={getNextSaturdayUTC().getTime() / 1000}
+                                        timestamp={nextSaturdayUTC}
                                         className="text-center"
                                         classNameTime="font-mono text-xxs"
                                     />
@@ -243,7 +272,7 @@ export default function QuestMenu({
     return (
         <div
             className={twMerge(
-                'fixed',
+                'fixed z-20',
                 isMobile ? 'bottom-[4.2em] left-4' : 'bottom-0 left-0',
                 className,
             )}
