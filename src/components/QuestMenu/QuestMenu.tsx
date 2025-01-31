@@ -40,7 +40,7 @@ export default function QuestMenu({
                     setInSeason(true);
                     clearInterval(interval);
                 } else {
-                    setInSeason(true); // TODO: change to false
+                    setInSeason(false);
                 }
             }
         }, 1000);
