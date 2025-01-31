@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import useUserMutagens from '@/hooks/useUserMutagens';
 import { useSelector } from '@/store/store';
 import { EnrichedMutagenSeason, EnrichedUserMutagens } from '@/types';
+import { formatNumber } from '@/utils';
 
 import needle from '../../../public/images/needle.png';
 import Button from '../common/Button/Button';
@@ -84,7 +85,7 @@ const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h4 className="text-white font-bold uppercase text-xxs tracking-widest">All seasons</h4>
-            <span className="font-mono text-white text-xxs">{userMutagens.totalTotalPoints.toFixed(2)}</span>
+            <span className="font-mono text-white text-xxs">{formatNumber(userMutagens.totalTotalPoints, 2, 2)}</span>
           </div>
           <div className="w-full h-2 bg-[#07131D] rounded-full flex overflow-hidden">
             {stats.map((stat, index) => (
@@ -134,7 +135,7 @@ const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
     <div className="p-4 rounded-lg tracking-widest">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-white font-bold uppercase text-xxs">{season.seasonName}</h4>
-        <span className="font-mono text-white text-xxs">{season.totalPoints.toFixed(2)}</span>
+        <span className="font-mono text-white text-xxs">{formatNumber(season.totalPoints, 2, 2)}</span>
       </div>
 
       <div className="w-full h-1.5 bg-[#07131D] rounded-full flex overflow-hidden">
@@ -180,7 +181,7 @@ export default function Mutagen({
           rightIcon={needle}
           title={
             <div className='flex gap-2'>
-              <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints.toFixed(2) ?? '-'}</div>
+              <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
             </div>
           }
           iconClassName="w-3 h-3"
@@ -204,7 +205,7 @@ export default function Mutagen({
       openMenuTriggerType='hover'
       trigger={
         <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
-          <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints.toFixed(2) ?? '-'}</div>
+          <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
           <Image
             src={needle}
             alt={'needle'}
