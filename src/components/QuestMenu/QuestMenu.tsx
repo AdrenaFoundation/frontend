@@ -321,8 +321,8 @@ export default function QuestMenu({
                 ) : null}
 
                 {isMobile && isOpen ? (
-                    <Modal close={() => setIsOpen(!isOpen)} className="p-0" key="modal">
-                        <div>{body}</div>
+                    <Modal close={() => setIsOpen(!isOpen)} className="p-0 w-full" key="modal">
+                        {body}
                     </Modal>
                 ) : null}
             </AnimatePresence>
