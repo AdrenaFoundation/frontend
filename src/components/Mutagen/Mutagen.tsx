@@ -1,5 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -195,6 +196,7 @@ export default function Mutagen({
 }: {
   isMobile?: boolean;
 }) {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const wallet = useSelector((state) => state.walletState.wallet);
   const { userMutagens } = useUserMutagens({
@@ -234,27 +236,31 @@ export default function Mutagen({
   }
 
   return (
-    <Menu
-      openMenuTriggerType="hover"
-      trigger={
-        <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
-          <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
-          <Image
-            src={needle}
-            alt={'needle'}
-            width='30'
-            height='30'
-            className={'w-4 h-4 grayscale'}
-          />
-        </div>
-      }
-      openMenuClassName={twMerge(
-        'rounded-lg w-[400px] bg-secondary p-3 shadow-lg transition duration-300 right-0',
-      )}
-      disableOnClickInside={false}
-      isDim={false}
-    >
-      {content}
-    </Menu>
+    <div onClick={() => {
+      router.push('/mutagen_leaderboard');
+    }}>
+      <Menu
+        openMenuTriggerType="hover"
+        trigger={
+          <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
+            <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
+            <Image
+              src={needle}
+              alt={'needle'}
+              width='30'
+              height='30'
+              className={'w-4 h-4 grayscale'}
+            />
+          </div>
+        }
+        openMenuClassName={twMerge(
+          'rounded-lg w-[400px] bg-secondary p-3 shadow-lg transition duration-300 right-0',
+        )}
+        disableOnClickInside={false}
+        isDim={false}
+      >
+        {content}
+      </Menu>
+    </div>
   );
 }
