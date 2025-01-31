@@ -220,7 +220,13 @@ export default function Leaderboards() {
                                                 `You are ranked #${userWeeklyRank} in this weekly leaderboard. Earn Mutagen by trading, completing quests, and maintaining streaks and climb the ladder.`}
                                         </div>
                                     }>
-                                    <div>
+                                    <div onClick={() => {
+                                        if (!wallet || userWeeklyRank === false) return;
+                                        const element = document.getElementById(`user-weekly-${wallet.walletAddress}`);
+                                        element?.scrollIntoView({ behavior: 'smooth' });
+                                    }}
+                                        className={twMerge(userWeeklyRank !== false && wallet ? 'cursor-pointer' : '')}
+                                    >
                                         {userWeeklyRank === false ? 'Unranked' : `#${userWeeklyRank}`}
                                     </div>
                                 </Tippy>
@@ -355,7 +361,13 @@ export default function Leaderboards() {
                                                     `You are ranked #${userSeasonRank} in the season. Earn season points in weekly leaderboards to climb the ladder.`}
                                             </div>
                                         }>
-                                        <div>
+                                        <div onClick={() => {
+                                            if (!wallet || userSeasonRank === false) return;
+                                            const element = document.getElementById(`user-season-${wallet.walletAddress}`);
+                                            element?.scrollIntoView({ behavior: 'smooth' });
+                                        }}
+                                            className={twMerge(userSeasonRank !== false && wallet ? 'cursor-pointer' : '')}
+                                        >
                                             {userSeasonRank === false ? 'Unranked' : `#${userSeasonRank}`}
                                         </div>
                                     </Tippy>
