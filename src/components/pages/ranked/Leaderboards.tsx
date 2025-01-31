@@ -119,7 +119,9 @@ export default function Leaderboards() {
                         </div>
 
                         <div className='flex flex-col gap-1 pb-8 text-sm text-center'>
-                            Traders are ranked weekly based on Mutagen earned and receive &apos;season points&apos; accordingly. The season lasts 10 weeks.
+                            Battle weekly to rank in the top 100 traders and gain season points.
+                            <br />
+                            The ranking is based on the Mutagen earned.
                         </div>
 
                         <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-10 md:pb-14")}>
@@ -264,11 +266,13 @@ export default function Leaderboards() {
 
                     <div className='flex flex-col w-[25em] grow max-w-full'>
                         <div className='w-full uppercase text-center text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
-                            become the champion
+                            Become the champion
                         </div>
 
                         <div className='flex flex-col gap-1 items-center justify-center text-center pb-8 text-sm'>
-                            At the end of the season, rankings are determined by total &apos;season points&apos;, with top 100 traders earning rewards.
+                            At the end of the season, the top 100 traders will be crowned champions.
+                            <br />
+                            The ranking is based on the Season Points earned.
                         </div>
 
                         <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-4 md:pb-14")}>
