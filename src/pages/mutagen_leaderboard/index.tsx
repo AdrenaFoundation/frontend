@@ -59,11 +59,16 @@ export default function Index() {
                 </div>
             </div>
 
-            <div className="flex items-center justify-center text-center mt-16 mv-16 pl-4 pr-4 max-w-[60em] ml-auto mr-auto text-xs sm:text-sm lg:text-base">
-                The ALL-TIME leaderboard tracks your total Mutagen earned since launch. Accumulate Mutagen through trading to climb the ranks and maximize your share of the upcoming airdrop. Every position opened and closed contributes!
+            <div className="flex flex-col gap-2 items-center justify-center text-center mt-8 px-4 max-w-[60em] mx-auto">
+                <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90">
+                    The ALL-TIME leaderboard tracks total Mutagen earned since launch.
+                </span>
+                <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90">
+                    Trade to climb the ranks and boost your airdrop share—every closed position counts!
+                </span>
             </div>
 
-            <div className="h-[1px] bg-bcolor w-full mt-16 mb-16" />
+            <div className="h-[1px] bg-bcolor w-full mt-8 mb-16" />
 
             {leaderboardData ? <MutagenLeaderboard
                 className="pb-8"
