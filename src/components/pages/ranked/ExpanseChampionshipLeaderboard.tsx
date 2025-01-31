@@ -32,11 +32,11 @@ export default function ExpanseChampionshipLeaderboard({
             const filler = d.wallet.equals(PublicKey.default);
 
             const values = [
-                <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
-                    <p className="text-sm text-center" key={`rank-${i}`}>
+                <div className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
+                    <div className="text-sm text-center" key={`rank-${i}`}>
                         {d.rank}
-                    </p>
-                </p>,
+                    </div>
+                </div>,
 
                 <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
                     {d.avatar && !filler ? (

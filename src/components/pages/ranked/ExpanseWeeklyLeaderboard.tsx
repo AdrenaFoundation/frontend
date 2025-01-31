@@ -15,11 +15,15 @@ export default function ExpanseWeeklyLeaderboard({
     onClickUserProfile,
     isMobile,
     isLarge,
+    startDate,
+    endDate,
 }: {
     data: SeasonLeaderboardsData['weekLeaderboard'][0] | null;
     onClickUserProfile: (wallet: PublicKey) => void;
     isMobile: boolean;
     isLarge: boolean;
+    startDate: Date;
+    endDate: Date;
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
 
@@ -61,11 +65,11 @@ export default function ExpanseWeeklyLeaderboard({
             const filler = d.wallet.equals(PublicKey.default);
 
             const values = [
-                <p className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
-                    <p className="text-sm text-center" key={`rank-${i}`}>
+                <div className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
+                    <div className="text-sm text-center" key={`rank-${i}`}>
                         {d.rank}
-                    </p>
-                </p>,
+                    </div>
+                </div>,
 
                 <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
                     {d.avatar && !filler ? (
@@ -272,6 +276,16 @@ export default function ExpanseWeeklyLeaderboard({
             };
         });
     }, [data, onClickUserProfile, wallet, isLarge, isMobile]);
+
+    const weekHasNotHappened = useMemo(() => {
+        return startDate.getTime() <= Date.now();
+    }, [data]);
+
+    if (!weekHasNotHappened) {
+        return <div className='flex w-full items-center justify-center pt-8 pb-8'>
+            The week has not started yet
+        </div>;
+    }
 
     if (!data || !dataReady) {
         return null;

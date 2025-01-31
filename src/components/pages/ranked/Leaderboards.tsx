@@ -213,6 +213,7 @@ export default function Leaderboards() {
                                     selectedClassName='pr-1'
                                     selectedTextClassName='text-xl font-boldy tracking-wider uppercase'
                                     menuTextClassName='uppercase text-sm'
+                                    menuItemClassName='h-8'
                                     selected={week}
                                     options={[
                                         { title: 'Week 1' },
@@ -254,6 +255,8 @@ export default function Leaderboards() {
                                     setActiveProfile(profile ?? null);
                                 }}
                                 data={leaderboardData.weekLeaderboard[Number(week.split(' ')[1]) - 1]}
+                                startDate={weekStartDate}
+                                endDate={weekEndDate}
                             /> : <Loader className='self-center mt-8 mb-8' />}
                         </div>
                     </div>
