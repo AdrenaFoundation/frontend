@@ -636,24 +636,24 @@ export type SeasonLeaderboardsData = {
   startDate: Date;
   endDate: Date;
   weekLeaderboard: {
-      startDate: Date;
-      endDate: Date;
-      ranks: {
-        wallet: PublicKey;
-        rank: number;
-        championshipPoints: number;
-        totalPoints: number;
-        streaksPoints:  number;
-        questsPoints: number;
-        mutationPoints: number;
-        tradingPoints: number;
-        volume: number;
-        pnl: number;
-        fees: number;
-        avatar: string | null;
-        username: string | null;
-        title: string | null;
-      }[];
+    startDate: Date;
+    endDate: Date;
+    ranks: {
+      wallet: PublicKey;
+      rank: number;
+      championshipPoints: number;
+      totalPoints: number;
+      streaksPoints: number;
+      questsPoints: number;
+      mutationPoints: number;
+      tradingPoints: number;
+      volume: number;
+      pnl: number;
+      fees: number;
+      avatar: string | null;
+      username: string | null;
+      title: string | null;
+    }[];
   }[];
 
   seasonLeaderboard: {
@@ -1064,4 +1064,80 @@ export type EnrichedUserSeasonProgress = {
   seasonLeaderboard: [];
   name: string;
   description: string;
+};
+
+export type MutagenSeason = {
+  season_name: string;
+  points_trading: number;
+  points_mutations: number;
+  points_streaks: number;
+  points_quests: number;
+  total_points: number;
+  volume: number;
+  pnl: number;
+  borrow_fees: number;
+  close_fees: number;
+  fees: number;
+};
+
+export type EnrichedMutagenSeason = {
+  seasonName: string;
+  pointsTrading: number;
+  pointsMutations: number;
+  pointsStreaks: number;
+  pointsQuests: number;
+  totalPoints: number;
+  volume: number;
+  pnl: number;
+  borrowFees: number;
+  closeFees: number;
+  fees: number;
+};
+
+export type UserMutagens = {
+  userWallet: PublicKey;
+  total_points_trading: number;
+  total_points_mutations: number;
+  total_points_streaks: number;
+  total_points_quests: number;
+  total_total_points: number;
+  total_volume: number;
+  total_pnl: number;
+  total_borrow_fees: number;
+  total_close_fees: number;
+  total_fees: number;
+  seasons: MutagenSeason[];
+};
+
+export type EnrichedUserMutagens = {
+  userWallet: PublicKey;
+  totalPointsTrading: number;
+  totalPointsMutations: number;
+  totalPointsStreaks: number;
+  totalPointsQuests: number;
+  totalTotalPoints: number;
+  totalVolume: number;
+  totalPnl: number;
+  totalBorrowFees: number;
+  totalCloseFees: number;
+  totalFees: number;
+  seasons: EnrichedMutagenSeason[];
+};
+
+export type UserMutagensReturnType = {
+  success: boolean;
+  data: {
+    user_wallet: string;
+    total_points_trading: number;
+    total_points_mutations: number;
+    total_points_streaks: number;
+    total_points_quests: number;
+    total_total_points: number;
+    total_volume: number;
+    total_pnl: number;
+    total_borrow_fees: number;
+    total_close_fees: number;
+    total_fees: number;
+    seasons: MutagenSeason[];
+  };
 };
