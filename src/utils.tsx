@@ -70,20 +70,42 @@ export function getRightArrowElement() {
   );
 }
 
-export function formatNumAbbreviated(num: number): string {
+export function getNextSaturdayUTC(): Date {
+  const now = new Date();
+  const dayOfWeek = now.getUTCDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+  const daysUntilSaturday = (6 - dayOfWeek + 7) % 7 || 7; // Calculate days to next Saturday
+
+  // Get next Saturday at 00:00:00 UTC
+  const nextSaturday = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + daysUntilSaturday,
+    0, 0, 0, 0
+  ));
+
+  return nextSaturday;
+}
+
+export function getNextUTCDate() {
+  const now = new Date();
+
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+}
+
+export function formatNumAbbreviated(num: number, precision = 2): string {
   if (num > 999_999_999) {
-    return (num / 1_000_000_000).toFixed(2) + 'B';
+    return (num / 1_000_000_000).toFixed(precision) + 'B';
   }
 
   if (num > 999_999) {
-    return (num / 1_000_000).toFixed(2) + 'M';
+    return (num / 1_000_000).toFixed(precision) + 'M';
   }
 
   if (num > 999) {
-    return (num / 1_000).toFixed(2) + 'K';
+    return (num / 1_000).toFixed(precision) + 'K';
   }
 
-  return num.toString();
+  return num.toFixed(precision);
 }
 
 export function findATAAddressSync(

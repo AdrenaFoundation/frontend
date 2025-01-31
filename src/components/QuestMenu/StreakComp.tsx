@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { EnrichedSeasonStreak } from '@/types';
@@ -10,26 +10,42 @@ export default function StreakComp({
     streak: EnrichedSeasonStreak;
     className?: string;
 }) {
+
+    const hasCompletedDailyStreak = useMemo(() => {
+        const updatedDateUTC = new Date(streak.updatedStreakDate ?? Date.now()).toISOString().split("T")[0]; // Extract YYYY-MM-DD
+        const todayUTC = new Date().toISOString().split("T")[0]; // Current date in UTC (YYYY-MM-DD)
+
+        return updatedDateUTC === todayUTC;
+    }, [streak.updatedStreakDate]);
+
     return (
         <div className={twMerge('flex flex-col justify-center w-full gap-2.5', className)}>
-            <div>
-                <div className='flex gap-1'>
-                    <div className="text-[0.9em] font-boldy">Trade Daily</div>
+            <div className='flex w-full justify-between items-center'>
 
-                    <div className='font-boldy text-xs text-[#e47dbb]'>
-                        +0.7 mutagen
+                <div>
+                    <div className='flex gap-1'>
+                        <div className="text-[0.8em] font-boldy">Trade Daily</div>
+
+                        <div className='font-boldy text-xs text-[#e47dbb]'>
+                            +0.7 mutagen
+                        </div>
+                    </div>
+
+                    <div className="text-white/60 text-xs">
+                        Trade for two consecutive day
                     </div>
                 </div>
 
-                <div className="text-white/60 text-xs">
-                    Trade for two consecutive day
+                <div className='flex gap-2 text-xs'>
+                    {hasCompletedDailyStreak ? <div className='text-xs'>Completed</div> : <div className='h-4 w-4 rounded-full border-2' />}
                 </div>
             </div>
+
 
             <div className='flex w-full justify-between items-center'>
                 <div>
                     <div className='flex gap-1'>
-                        <div className="text-[0.9em] font-boldy">Trade Weekly</div>
+                        <div className="text-[0.8em] font-boldy">Trade Weekly</div>
 
                         <div className='font-boldy text-xs text-[#e47dbb]'>
                             +1 mutagen

@@ -10,6 +10,7 @@ import Modal from '@/components/common/Modal/Modal';
 import QuestComp from '@/components/QuestMenu/QuestComp';
 import useUserSeasonProgress from '@/hooks/useSeasonProgress';
 import { useSelector } from '@/store/store';
+import { getNextSaturdayUTC, getNextUTCDate } from '@/utils';
 
 import RemainingTimeToDate from '../pages/monitoring/RemainingTimeToDate';
 import MutationComp from './MutationComp';
@@ -39,7 +40,7 @@ export default function QuestMenu({
                     setInSeason(true);
                     clearInterval(interval);
                 } else {
-                    setInSeason(false);
+                    setInSeason(true); // TODO: change to false
                 }
             }
         }, 1000);
@@ -53,7 +54,33 @@ export default function QuestMenu({
         return null;
     }
 
-    const classNameTitle = "ml-4 mt-2 mb-2 animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] "
+    if (userSeasonProgress)
+        userSeasonProgress.mutations = [
+            {
+                mutationDate: "2025-01-29",
+                name: "Tempo",
+                description: "Point bonus for patient trades",
+                points: 0.02,
+                conditionType: "duration",
+                conditionValue: 1800,
+                comparison: "gte",
+                calculationType: "fixed",
+                maxPoints: 0.02,
+            },
+            {
+                mutationDate: "2025-01-29",
+                name: "Tempo",
+                description: "Point bonus for patient trades",
+                points: 0.02,
+                conditionType: "duration",
+                conditionValue: 1800,
+                comparison: "gte",
+                calculationType: "fixed",
+                maxPoints: 0.02,
+            }
+        ];
+
+    const classNameTitle = "mt-2 mb-2 animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] "
 
     const body = (
         <>
@@ -110,16 +137,29 @@ export default function QuestMenu({
                 : null}
 
             <div className={twMerge("relative border-t border-white/10 overflow-y-auto w-full", inSeason ? '' : 'blur-md')}>
-
-
                 <div className="flex flex-col p-4">
                     {userSeasonProgress.quests.dailyQuests.length > 0 && (
                         <>
-                            <h3 className={twMerge(classNameTitle, "mt-0")}>
-                                Daily Quests
-                            </h3>
+                            <div className='flex w-full justify-between'>
+                                <h3 className={twMerge(classNameTitle, "mt-0")}>
+                                    Daily Quests
+                                </h3>
 
-                            <div className="flex flex-col gap-1 pl-4 border-l border-b pb-2">
+                                <div className='flex gap-2 opacity-30'>
+                                    <div className='text-xxs font-mono'>
+                                        reset in
+                                    </div>
+
+                                    <RemainingTimeToDate
+                                        timestamp={getNextUTCDate().getTime() / 1000}
+                                        className="text-center"
+                                        classNameTime="font-mono text-xxs"
+                                    />
+                                </div>
+                            </div>
+
+
+                            <div className="flex flex-col gap-1">
                                 {userSeasonProgress.quests.dailyQuests.map(quest => (
                                     <QuestComp
                                         key={quest.id}
@@ -131,14 +171,46 @@ export default function QuestMenu({
                         </>
                     )}
 
+                    {userSeasonProgress.mutations.length > 0 && (
+                        <div className='mt-2 flex flex-col'>
+                            <h3 className={classNameTitle}>
+                                Mutations
+                            </h3>
+
+                            <div className="flex flex-col gap-1 border-b pb-2">
+                                {userSeasonProgress.mutations.map((mutation, index) => (
+                                    <MutationComp
+                                        key={index}
+                                        mutation={mutation}
+                                        className="bg-transparent"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="relative mt-2"></div>
                     {userSeasonProgress.quests.weeklyQuests.length > 0 && (
                         <>
-                            <h3 className={classNameTitle}>
-                                Weekly Quests
-                            </h3>
+                            <div className='flex w-full justify-between items-center'>
+                                <h3 className={classNameTitle}>
+                                    Weekly Quests
+                                </h3>
 
-                            <div className="flex flex-col gap-2 pl-4 border-l border-b pb-2">
+                                <div className='flex gap-2 opacity-30'>
+                                    <div className='text-xxs font-mono'>
+                                        reset in
+                                    </div>
+
+                                    <RemainingTimeToDate
+                                        timestamp={getNextSaturdayUTC().getTime() / 1000}
+                                        className="text-center"
+                                        classNameTime="font-mono text-xxs"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-2 border-b pb-2">
                                 {userSeasonProgress.quests.weeklyQuests.map(quest => (
                                     <QuestComp
                                         key={quest.id}
@@ -150,34 +222,13 @@ export default function QuestMenu({
                         </>
                     )}
 
-                    {userSeasonProgress.mutations.length > 0 && (
-                        <>
-                            <div className="relative mt-2"></div>
-
-                            <h3 className={classNameTitle}>
-                                Mutations
-                            </h3>
-
-                            <div className="flex flex-col gap-1 pl-4 border-l border-b pb-2">
-                                {userSeasonProgress.mutations.map((mutation, index) => (
-                                    <MutationComp
-                                        key={index}
-                                        mutation={mutation}
-                                        className="bg-transparent"
-                                    />
-                                ))}
-                            </div>
-                        </>
-                    )}
-
-
                     <div className="relative mt-2 flex"></div>
                     <>
                         <h3 className={classNameTitle}>
                             Streaks
                         </h3>
 
-                        <div className="flex flex-col gap-1 pl-4 border-l border-b pb-4">
+                        <div className="flex flex-col gap-1">
                             <StreakComp
                                 streak={userSeasonProgress.streaks}
                                 className="bg-transparent"
@@ -237,14 +288,15 @@ export default function QuestMenu({
                             bottom: 0,
                             backgroundColor: 'transparent',
                             height: 0,
-                            width: '35em',
+                            width: '30em',
                             opacity: 1,
                         }}
                         animate={{
                             left: 10,
                             bottom: 10,
-                            height: '40em',
-                            width: '35em',
+                            height: '45em',
+                            maxHeight: 'calc(100vh - 3.2em)',
+                            width: '30em',
                             opacity: 1,
                             backgroundColor: '#07131D',
                         }}
@@ -252,7 +304,7 @@ export default function QuestMenu({
                             left: 0,
                             bottom: 0,
                             height: 0,
-                            width: '35em',
+                            width: '30em',
                             opacity: 0,
                             backgroundColor: 'transparent',
                         }}

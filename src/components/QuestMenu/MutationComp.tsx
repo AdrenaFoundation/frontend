@@ -22,7 +22,7 @@ export default function MutationComp({
                 <div className="flex flex-col gap-1">
                     {mutation.name && (
                         <div className='flex gap-1'>
-                            <div className="text-[0.9em] font-boldy">
+                            <div className="text-[0.8em] font-boldy">
                                 {mutation.name}
                             </div>
 
@@ -45,7 +45,7 @@ export default function MutationComp({
                     )}
                 </div>
 
-                <div className='text-xs'>Active today</div>
+                <div className='text-xs'>Daily Bonus</div>
             </div>
         </div>
     );

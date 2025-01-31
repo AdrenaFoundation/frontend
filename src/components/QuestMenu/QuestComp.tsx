@@ -2,6 +2,7 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { EnrichedSeasonQuestProgress } from '@/types';
+import { formatNumAbbreviated } from '@/utils';
 
 export default function QuestComp({
     quest,
@@ -17,7 +18,7 @@ export default function QuestComp({
         }
 
         if (type === 'volume') {
-            return `${type}: $${currentValue.toFixed(0)} / $${targetValue}`;
+            return `${type}: $${formatNumAbbreviated(currentValue + 5051.514)} / $${formatNumAbbreviated(targetValue, 0)}`;
         }
 
         return `${type}: ${currentValue}/${targetValue}`;
@@ -34,7 +35,7 @@ export default function QuestComp({
                 <div className="flex flex-col">
                     {quest.name && (
                         <div className='flex gap-1'>
-                            <div className={twMerge("text-[0.9em] font-boldy")}>
+                            <div className={twMerge("text-[0.8em] font-boldy")}>
                                 {quest.name}
                             </div>
 
@@ -54,7 +55,7 @@ export default function QuestComp({
                 </div>
             </div>
 
-            <div className="flex flex-col items-end justify-center gap-2 text-white/50 font-mono">
+            <div className="flex flex-col items-end justify-center gap-2 text-white/50 font-mono min-w-[8em]">
                 {[1, 2, 3, 4, 5, 6].map(index => {
                     const targetType = quest[`targetType${index === 1 ? '' : index}` as keyof EnrichedSeasonQuestProgress];
                     const isCondition = quest[`isCondition${index === 1 ? '' : index}` as keyof EnrichedSeasonQuestProgress];
