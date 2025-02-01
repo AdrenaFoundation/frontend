@@ -12,7 +12,9 @@ export default function StreakComp({
 }) {
 
     const hasCompletedDailyStreak = useMemo(() => {
-        const updatedDateUTC = new Date(streak.updatedStreakDate ?? Date.now()).toISOString().split("T")[0]; // Extract YYYY-MM-DD
+        if (!streak.updatedStreakDate) return false;
+
+        const updatedDateUTC = new Date(streak.updatedStreakDate).toISOString().split("T")[0]; // Extract YYYY-MM-DD
         const todayUTC = new Date().toISOString().split("T")[0]; // Current date in UTC (YYYY-MM-DD)
 
         return updatedDateUTC === todayUTC;
