@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { EnrichedSeasonStreak } from '@/types';
@@ -10,15 +10,6 @@ export default function StreakComp({
     streak: EnrichedSeasonStreak;
     className?: string;
 }) {
-
-    const hasCompletedDailyStreak = useMemo(() => {
-        if (!streak.updatedStreakDate) return false;
-
-        const updatedDateUTC = new Date(streak.updatedStreakDate).toISOString().split("T")[0]; // Extract YYYY-MM-DD
-        const todayUTC = new Date().toISOString().split("T")[0]; // Current date in UTC (YYYY-MM-DD)
-
-        return updatedDateUTC === todayUTC;
-    }, [streak.updatedStreakDate]);
 
     return (
         <div className={twMerge('flex flex-col justify-center w-full gap-2.5', className)}>
@@ -34,12 +25,18 @@ export default function StreakComp({
                     </div>
 
                     <div className="text-white/60 text-xs">
-                        Trade for two consecutive day
+                        Trade for two consecutive days
                     </div>
                 </div>
 
                 <div className='flex gap-2 text-xs'>
-                    {hasCompletedDailyStreak ? <div className='text-xs'>Completed</div> : <div className='h-4 w-4 rounded-full border-2' />}
+                    <div className='text-xs'>{streak.weeklyDaysStreak}/2</div>
+                    <div className={twMerge("w-[4em] bg-gray-500/30 rounded-full h-2 mt-1 text-xs")}>
+                        <div
+                            className="animate-text-shimmer text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${(streak.weeklyDaysStreak / 2) * 100}%` }}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -59,7 +56,7 @@ export default function StreakComp({
                 </div>
 
                 <div className='flex gap-2'>
-                    <div className='text-xs'>daily: {streak.weeklyDaysStreak}/7</div>
+                    <div className='text-xs'>{streak.weeklyDaysStreak}/7</div>
 
                     <div className={twMerge("w-[4em] bg-gray-500/30 rounded-full h-2 mt-1 text-xs")}>
                         <div
@@ -86,7 +83,7 @@ export default function StreakComp({
                 </div>
 
                 <div className='flex gap-2'>
-                    <div className='text-xs'>daily: {streak.monthlyDaysStreak}/30</div>
+                    <div className='text-xs'>{streak.monthlyDaysStreak}/30</div>
 
                     <div className={twMerge("w-[4em] bg-gray-500/30 rounded-full h-2 mt-1 text-xs")}>
                         <div
