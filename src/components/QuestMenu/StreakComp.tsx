@@ -1,25 +1,19 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { EnrichedSeasonStreak } from '@/types';
 
+import RemainingTimeToDate from '../pages/monitoring/RemainingTimeToDate';
+
 export default function StreakComp({
     streak,
     className,
+    nextUTC,
 }: {
     streak: EnrichedSeasonStreak;
     className?: string;
+    nextUTC: number;
 }) {
-
-    const hasCompletedDailyStreak = useMemo(() => {
-        if (!streak.updatedStreakDate) return false;
-
-        const updatedDateUTC = new Date(streak.updatedStreakDate).toISOString().split("T")[0]; // Extract YYYY-MM-DD
-        const todayUTC = new Date().toISOString().split("T")[0]; // Current date in UTC (YYYY-MM-DD)
-
-        return updatedDateUTC === todayUTC;
-    }, [streak.updatedStreakDate]);
-
     return (
         <div className={twMerge('flex flex-col justify-center w-full gap-2.5', className)}>
             <div className='flex w-full justify-between items-center'>
@@ -34,12 +28,46 @@ export default function StreakComp({
                     </div>
 
                     <div className="text-white/60 text-xs">
-                        Trade for two consecutive day
+                        Trade for consecutive days
                     </div>
                 </div>
 
-                <div className='flex gap-2 text-xs'>
-                    {hasCompletedDailyStreak ? <div className='text-xs'>Completed</div> : <div className='h-4 w-4 rounded-full border-2' />}
+                <div className='flex gap-1 text-xs'>
+                    {streak.status === 0 ? (
+                        <>
+                            <div className='text-xs font-boldy'>Initialize your streak before</div>
+                            <RemainingTimeToDate
+                                timestamp={nextUTC}
+                                className="text-center"
+                                classNameTime="font-boldy text-xs text-white/80"
+                            />
+                        </>
+                    ) : streak.status === 1 ? (
+                        <><div className='text-xs font-boldy'>Initialized, start increasing your streak in</div>
+                            <RemainingTimeToDate
+                                timestamp={nextUTC}
+                                className="text-center"
+                                classNameTime="font-boldy text-xs text-white/80"
+                            />
+                        </>
+                    ) : streak.status === 2 ? (
+                        <><div className='text-xs font-boldy'>Current streak: {streak.currentDaysStreak}, increase it in</div>
+                            <RemainingTimeToDate
+                                timestamp={nextUTC}
+                                className="text-center"
+                                classNameTime="font-boldy text-xs text-white/80"
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <div className='text-xs font-boldy text-redbright'>Careful, your {streak.currentDaysStreak} days streak will reset in</div>
+                            <RemainingTimeToDate
+                                timestamp={nextUTC}
+                                className="text-center"
+                                classNameTime="font-boldy text-xs text-white/80"
+                            />
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -96,6 +124,6 @@ export default function StreakComp({
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

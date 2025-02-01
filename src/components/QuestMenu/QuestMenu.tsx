@@ -238,6 +238,7 @@ export default function QuestMenu({
                             <StreakComp
                                 streak={userSeasonProgress.streaks}
                                 className="bg-transparent"
+                                nextUTC={nextUTC}
                             />
                         </div>
                     </>
