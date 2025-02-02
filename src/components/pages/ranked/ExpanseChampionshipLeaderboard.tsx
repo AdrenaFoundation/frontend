@@ -118,15 +118,31 @@ export default function ExpanseChampionshipLeaderboard({
                     className="flex items-center justify-center grow gap-1"
                     key={`championship-points-${i}`}
                 >
-                    {!filler ? <>
+                    {!filler ? <div>
                         <FormatNumber
                             nb={d.championshipPoints}
                             className="text-xs font-boldy text-[#fa6723]"
                             precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
+                            suffixClassName='text-xs font-boldy text-[#fa6723]'
+                            suffix='Points'
                             isDecimalDimmed={false}
                         />
-                        <div className='text-xs font-boldy text-[#fa6723]'>Points</div>
-                    </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                        {(d.rewardsAdx && d.rewardsJto && isMobile) ?
+                            <div className="flex">
+                                <FormatNumber
+                                    format='currency'
+                                    prefix='+'
+                                    nb={d.rewardsAdx * (tokenPrices['ADX'] ?? 0) + d.rewardsJto * (tokenPrices['JTO'] ?? 0)}
+                                    className="text-xs font-boldy text-green"
+                                    isDecimalDimmed={false}
+                                />
+                            </div>
+                            : null}
+
+                        {(d.rewardsAdx === 0 && d.rewardsJto === 0 && isMobile) ? (
+                            <span className="h-[2.64em]">--</span>
+                        ) : null}
+                    </div> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
                 </div>
             );
 
