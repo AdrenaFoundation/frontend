@@ -79,10 +79,6 @@ export default function QuestMenu({
 
     if (!userSeasonProgress) return null;
 
-    if (window.location.pathname !== '/trade') {
-        return null;
-    }
-
     const classNameTitle = "mt-2 mb-2 animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] "
 
     const body = (
@@ -151,7 +147,7 @@ export default function QuestMenu({
                                     Daily Quests
                                 </h3>
 
-                                <div className='flex gap-2 opacity-30'>
+                                <div className='flex gap-2 opacity-30 mt-1'>
                                     <div className='text-xxs font-mono'>
                                         reset in
                                     </div>
@@ -230,9 +226,23 @@ export default function QuestMenu({
 
                     <div className="relative mt-2 flex"></div>
                     <>
-                        <h3 className={classNameTitle}>
-                            Streaks
-                        </h3>
+                        <div className='flex w-full justify-between'>
+                            <h3 className={classNameTitle}>
+                                Streaks
+                            </h3>
+
+                            <div className='flex gap-2 opacity-30 mt-3'>
+                                <div className='text-xxs font-mono'>
+                                    reset in
+                                </div>
+
+                                <RemainingTimeToDate
+                                    timestamp={nextUTC}
+                                    className="text-center"
+                                    classNameTime="font-mono text-xxs"
+                                />
+                            </div>
+                        </div>
 
                         <div className="flex flex-col gap-1">
                             <StreakComp
@@ -250,7 +260,7 @@ export default function QuestMenu({
         <div
             className={twMerge(
                 'fixed z-20',
-                isMobile ? 'bottom-[7rem] left-4' : 'bottom-0 left-0',
+                isMobile ? window.location.pathname === '/trade' ? 'bottom-[7.7rem] left-4' : 'bottom-[3.6rem] left-4' : 'bottom-0 left-0',
                 className,
             )}
         >
@@ -284,11 +294,11 @@ export default function QuestMenu({
                     </motion.div>
                 ) : null}
 
-                {isOpen && !isMobile ? (
+                {(isOpen && !isMobile) ? (
                     <motion.div
                         key="open-state"
                         ref={ref}
-                        className="fixed flex flex-col items-center rounded-lg overflow-hidden border shadow-2xl"
+                        className="fixed flex flex-col items-center rounded-lg overflow-hidden border shadow-2xl z-30"
                         initial={{
                             left: 0,
                             bottom: 0,
@@ -323,7 +333,7 @@ export default function QuestMenu({
                     </motion.div>
                 ) : null}
 
-                {isMobile && isOpen ? (
+                {(isMobile && isOpen) ? (
                     <Modal close={() => setIsOpen(!isOpen)} className="p-0 w-full" key="modal">
                         {body}
                     </Modal>

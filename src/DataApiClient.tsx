@@ -1,10 +1,12 @@
 import { PublicKey } from '@solana/web3.js';
 
 import {
+    EnrichedPositionApi,
     GetPositionStatsReturnType,
     MutagenLeaderboardData,
     MutagenLeaderboardRawAPI,
     PositionActivityRawAPi,
+    PositionApiRawData,
     PositionStatsRawApi,
     PreSeasonLeaderboardReturnTypeAPI,
     RankedRewards,
@@ -520,6 +522,89 @@ export default class DataApiClient {
         } catch (e) {
             console.error('Error fetching user mutagens:', e);
             return null;
+        }
+    }
+
+    public static async getPositions({
+        walletAddress,
+        tokens,
+    }: {
+        walletAddress: string;
+        tokens: Token[];
+    }): Promise<EnrichedPositionApi[]> {
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/position?user_wallet=${walletAddress
+                }&status=liquidate&status=close`,
+            );
+
+            if (!response.ok) {
+                console.log('API response was not ok');
+                return [];
+            }
+
+            const apiBody = await response.json();
+
+            const apiData: PositionApiRawData[] | undefined = apiBody.data;
+
+            if (typeof apiData === 'undefined' || (apiData && apiData.length === 0))
+                return [];
+
+            return apiData
+                .map((data) => {
+                    const token = tokens.find(
+                        (t) =>
+                            t.mint.toBase58() === data.token_account_mint &&
+                            t.symbol.toUpperCase() === data.symbol.toUpperCase(),
+                    );
+
+                    if (typeof token === 'undefined') {
+                        return null;
+                    }
+
+                    return {
+                        positionId: data.position_id,
+                        userId: data.user_id,
+                        side: data.side,
+                        status: data.status,
+                        pubkey: new PublicKey(data.pubkey),
+                        entryLeverage: data.entry_leverage,
+                        lowestLeverage: data.lowest_leverage,
+                        entryCollateralAmount: data.entry_collateral_amount,
+                        collateralAmount: data.collateral_amount,
+                        closedBySlTp: data.closed_by_sl_tp,
+                        volume: data.volume,
+                        duration: data.duration,
+                        pnlVolumeRatio: data.pnl_volume_ratio,
+                        pointsPnlVolumeRatio: data.points_pnl_volume_ratio,
+                        pointsDuration: data.points_duration,
+                        closeSizeMultiplier: data.close_size_multiplier,
+                        pointsMutations: data.points_mutations,
+                        totalPoints: data.total_points,
+                        entrySize: data.entry_size,
+                        increaseSize: data.increase_size,
+                        exitSize: data.exit_size,
+                        entryPrice: data.entry_price,
+                        exitPrice: data.exit_price,
+                        entryDate: new Date(data.entry_date),
+                        exitDate: data.exit_date ? new Date(data.exit_date) : null,
+                        pnl: data.pnl,
+                        fees: data.fees,
+                        borrowFees: data.borrow_fees,
+                        exitFees: data.exit_fees,
+                        createdAt: new Date(data.created_at),
+                        updatedAt: data.updated_at ? new Date(data.updated_at) : null,
+                        symbol: data.symbol,
+                        tokenAccountMint: data.token_account_mint,
+                        token,
+                        lastIx: data.last_ix,
+                        finalCollateralAmount: data.collateral_amount,
+                    } as EnrichedPositionApi;
+                })
+                .filter((data) => data !== null) as EnrichedPositionApi[];
+        } catch (e) {
+            console.error('Error fetching positions:', e);
+            return [];
         }
     }
 }

@@ -1,94 +1,34 @@
-import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
-import { PositionHistoryApi, PositionHistoryExtended } from '@/types';
+import DataApiClient from '@/DataApiClient';
+import { EnrichedPositionApi } from '@/types';
 
 export default function usePositionsHistory({
   walletAddress,
 }: {
   walletAddress: string | null;
 }): {
-  positionsHistory: PositionHistoryExtended[] | null;
+  positionsHistory: EnrichedPositionApi[];
   triggerPositionsReload: () => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
   const [positionsHistory, setPositionsHistory] = useState<
-    PositionHistoryExtended[] | null
-  >(null);
+    EnrichedPositionApi[]
+  >([]);
 
   const loadPositionsHistory = useCallback(
     async () => {
       if (!walletAddress) {
-        return setPositionsHistory(null);
+        return;
       }
 
-      async function fetchPositionsHistory(): Promise<
-        PositionHistoryExtended[] | null
-      > {
-        if (!walletAddress) return null;
+      async function fetchPositionsHistory(): Promise<EnrichedPositionApi[]> {
+        if (!walletAddress) return [];
 
-        const tokens = window.adrena.client.tokens;
-
-        const response = await fetch(
-          `https://datapi.adrena.xyz/position?user_wallet=${
-            walletAddress
-          }&status=liquidate&status=close`,
-        );
-
-        if (!response.ok) {
-          console.log('API response was not ok');
-        }
-
-        const apiBody = await response.json();
-
-        const apiData: PositionHistoryApi[] | undefined = apiBody.data;
-
-        if (typeof apiData === 'undefined' || (apiData && apiData.length === 0))
-          return [];
-
-        const enrichedDataWithTokens: PositionHistoryExtended[] = apiData
-          .map((data) => {
-            const token = tokens.find(
-              (t) =>
-                t.mint.toBase58() === data.token_account_mint &&
-                t.symbol.toUpperCase() === data.symbol.toUpperCase(),
-            );
-
-            if (typeof token === 'undefined') {
-              return null;
-            }
-
-            return {
-              position_id: data.position_id,
-              user_id: data.user_id,
-              side: data.side,
-              status: data.status,
-              pubkey: new PublicKey(data.pubkey),
-              entry_leverage: data.entry_leverage,
-              entry_collateral_amount: data.entry_collateral_amount,
-              size: data.size,
-              exit_size: data.exit_size,
-              entry_price: data.entry_price,
-              exit_price: data.exit_price,
-              entry_date: new Date(data.entry_date),
-              exit_date: data.exit_date ? new Date(data.exit_date) : null,
-              pnl: data.pnl,
-              fees: data.fees,
-              borrow_fees: data.borrow_fees,
-              exit_fees: data.exit_fees,
-              created_at: new Date(data.created_at),
-              updated_at: data.updated_at ? new Date(data.updated_at) : null,
-              profile: data.profile,
-              symbol: data.symbol,
-              token_account_mint: data.token_account_mint,
-              token,
-              last_tx: data.last_ix,
-              final_collateral_amount: data.collateral_amount,
-            } as PositionHistoryExtended;
-          })
-          .filter((data) => data !== null) as PositionHistoryExtended[];
-
-        return enrichedDataWithTokens;
+        return DataApiClient.getPositions({
+          walletAddress,
+          tokens: window.adrena.client.tokens,
+        });
       }
 
       try {

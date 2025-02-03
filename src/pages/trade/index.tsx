@@ -14,7 +14,6 @@ import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
-import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
@@ -69,7 +68,6 @@ export default function Trade({
 }: PageProps & {
   showFeesInPnl: boolean;
 }) {
-  const isSmallScreen = useBetterMediaQuery('(max-width: 950px)');
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
@@ -470,8 +468,6 @@ export default function Trade({
         ) : null}
 
         {/* 651px and 950px */}
-
-        {isSmallScreen ? <QuestMenu isMobile className={twMerge('fixed sm:bottom-[4em]')} /> : null}
 
         <div className='relative w-full sm:hidden'>
           <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">

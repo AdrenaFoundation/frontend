@@ -439,33 +439,6 @@ export type Trader = {
   pnl_volatility: number;
 };
 
-export type PositionHistoryApi = {
-  position_id: number;
-  user_id: number;
-  side: 'long' | 'short';
-  status: 'open' | 'close' | 'liquidate';
-  pubkey: string;
-  entry_price: number | null;
-  exit_price: number | null;
-  pnl: number;
-  entry_leverage: number;
-  entry_collateral_amount: number;
-  size: number;
-  exit_size: number;
-  entry_date: string; // ISO date string
-  exit_date: string | null; // ISO date string
-  fees: number;
-  borrow_fees: number;
-  exit_fees: number;
-  created_at: string; // ISO date string
-  updated_at: string | null; // ISO date string
-  profile: string;
-  symbol: string;
-  token_account_mint: string;
-  last_ix: string;
-  collateral_amount: number;
-};
-
 export type RechartsData = {
   [key: string]: number | string | boolean;
 };
@@ -1003,6 +976,7 @@ export type UserSeasonProgressReturnType = {
     start_date: string;
     end_date: string;
     streaks: {
+      status: number;
       updated_streak_date: string;
       current_days_streak: number;
       longest_days_streak: number;
@@ -1034,6 +1008,7 @@ export type UserSeasonProgressReturnType = {
 };
 
 export type EnrichedSeasonStreak = {
+  status: number;
   updatedStreakDate: string;
   currentDaysStreak: number;
   longestDaysStreak: number;
@@ -1179,3 +1154,78 @@ export type MutagenLeaderboardData = {
   username: string | null;
   title: string | null;
 }[];
+
+export type PositionApiRawData = {
+  position_id: number;
+  user_id: number;
+  symbol: string;
+  token_account_mint: string;
+  side: 'long' | 'short';
+  status: 'open' | 'close' | 'liquidate';
+  pubkey: string;
+  entry_price: number;
+  exit_price: number;
+  entry_size: number;
+  increase_size: number;
+  exit_size: number;
+  pnl: number;
+  entry_leverage: number;
+  lowest_leverage: number;
+  entry_date: string; // ISO date string
+  exit_date: string | null; // ISO date string
+  fees: number;
+  borrow_fees: number;
+  exit_fees: number;
+  last_ix: string;
+  entry_collateral_amount: number;
+  collateral_amount: number;
+  closed_by_sl_tp: boolean;
+  volume: number;
+  duration: number;
+  pnl_volume_ratio: number;
+  points_pnl_volume_ratio: number;
+  points_duration: number;
+  close_size_multiplier: number;
+  points_mutations: number;
+  total_points: number;
+  created_at: string; // ISO date string
+  updated_at: string | null; // ISO date string
+};
+
+export type EnrichedPositionApi = {
+  positionId: number;
+  userId: number;
+  symbol: string;
+  tokenAccountMint: string;
+  side: 'long' | 'short';
+  status: 'open' | 'close' | 'liquidate';
+  pubkey: PublicKey;
+  entryPrice: number;
+  exitPrice: number;
+  entrySize: number;
+  increaseSize: number;
+  exitSize: number;
+  pnl: number;
+  entryLeverage: number;
+  lowestLeverage: number;
+  entryDate: Date;
+  exitDate: Date | null;
+  fees: number;
+  borrowFees: number;
+  exitFees: number;
+  lastIx: string;
+  entryCollateralAmount: number;
+  collateralAmount: number;
+  closedBySlTp: boolean;
+  volume: number;
+  duration: number;
+  pnlVolumeRatio: number;
+  pointsPnlVolumeRatio: number;
+  pointsDuration: number;
+  closeSizeMultiplier: number;
+  pointsMutations: number;
+  totalPoints: number;
+  token: Token;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
