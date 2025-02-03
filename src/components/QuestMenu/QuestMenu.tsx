@@ -151,7 +151,7 @@ export default function QuestMenu({
                                     Daily Quests
                                 </h3>
 
-                                <div className='flex gap-2 opacity-30'>
+                                <div className='flex gap-2 opacity-30 mt-1'>
                                     <div className='text-xxs font-mono'>
                                         reset in
                                     </div>
@@ -230,15 +230,28 @@ export default function QuestMenu({
 
                     <div className="relative mt-2 flex"></div>
                     <>
-                        <h3 className={classNameTitle}>
-                            Streaks
-                        </h3>
+                        <div className='flex w-full justify-between'>
+                            <h3 className={classNameTitle}>
+                                Streaks
+                            </h3>
+
+                            <div className='flex gap-2 opacity-30 mt-3'>
+                                <div className='text-xxs font-mono'>
+                                    reset in
+                                </div>
+
+                                <RemainingTimeToDate
+                                    timestamp={nextUTC}
+                                    className="text-center"
+                                    classNameTime="font-mono text-xxs"
+                                />
+                            </div>
+                        </div>
 
                         <div className="flex flex-col gap-1">
                             <StreakComp
                                 streak={userSeasonProgress.streaks}
                                 className="bg-transparent"
-                                nextUTC={nextUTC}
                             />
                         </div>
                     </>

@@ -3,16 +3,12 @@ import { twMerge } from 'tailwind-merge';
 
 import { EnrichedSeasonStreak } from '@/types';
 
-import RemainingTimeToDate from '../pages/monitoring/RemainingTimeToDate';
-
 export default function StreakComp({
     streak,
     className,
-    nextUTC,
 }: {
     streak: EnrichedSeasonStreak;
     className?: string;
-    nextUTC: number;
 }) {
     return (
         <div className={twMerge('flex flex-col justify-center w-full gap-2.5', className)}>
@@ -32,41 +28,15 @@ export default function StreakComp({
                     </div>
                 </div>
 
-                <div className='flex gap-1 text-xs'>
+                <div className='flex'>
                     {streak.status === 0 ? (
-                        <>
-                            <div className='text-xs font-boldy'>Initialize your streak before</div>
-                            <RemainingTimeToDate
-                                timestamp={nextUTC}
-                                className="text-center"
-                                classNameTime="font-mono text-xs text-white/80"
-                            />
-                        </>
+                        <div className='text-xs font-boldy'>Initialize your streak before reset</div>
                     ) : streak.status === 1 ? (
-                        <><div className='text-xs font-boldy'>Initialized, start increasing your streak in</div>
-                            <RemainingTimeToDate
-                                timestamp={nextUTC}
-                                className="text-center"
-                                classNameTime="font-mono text-xs text-white/80"
-                            />
-                        </>
+                        <div className='text-xs font-boldy text-green'>Streak initialized</div>
                     ) : streak.status === 2 ? (
-                        <><div className='text-xs font-boldy'>Current streak: {streak.currentDaysStreak}, increase it in</div>
-                            <RemainingTimeToDate
-                                timestamp={nextUTC}
-                                className="text-center"
-                                classNameTime="font-mono text-xs text-white/80"
-                            />
-                        </>
+                        <div className='text-xs font-boldy text-green'>Current streak: {streak.currentDaysStreak} days</div>
                     ) : (
-                        <>
-                            <div className='text-xs font-boldy text-redbright'>Careful, your {streak.currentDaysStreak} days streak will reset in</div>
-                            <RemainingTimeToDate
-                                timestamp={nextUTC}
-                                className="text-center"
-                                classNameTime="font-mono text-xs text-white/80"
-                            />
-                        </>
+                        <div className='text-xs font-boldy text-redbright'>Careful, your will lose your {streak.currentDaysStreak} days streak</div>
                     )}
                 </div>
             </div>
