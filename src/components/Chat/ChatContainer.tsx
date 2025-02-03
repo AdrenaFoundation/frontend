@@ -4,11 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import React from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
+import collapseIcon from '../../../public/images/collapse-all.svg';
+import groupIcon from '../../../public/images/group.svg';
 
 import { UserProfileExtended } from '@/types';
 
 import Modal from '../common/Modal/Modal';
 import Chat from './Chat';
+import LiveIcon from '../common/LiveIcon/LiveIcon';
+import Image from 'next/image';
 
 function ChatContainer({
     userProfile,
@@ -23,6 +27,8 @@ function ChatContainer({
     isChatOpen: boolean | null;
     setIsChatOpen: (isOpen: boolean) => void;
 }) {
+    const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
+    const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [showUserList, setShowUserList] = useState(false);
     const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
 
