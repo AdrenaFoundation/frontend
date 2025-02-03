@@ -43,7 +43,7 @@ function CustomRechartsToolTip({
             <th className='text-xs font-boldy'>Name</th>
             <th className='text-xs font-boldy'>Date</th>
             <th className='text-xs font-boldy'>Traders</th>
-            <th className='text-xs font-boldy'>Start diff</th>
+            <th className='text-xs font-boldy'>Retention</th>
           </thead>
 
           <tbody>
