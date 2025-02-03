@@ -43,17 +43,17 @@ function PositionsHistory({
 
     const keys = [
       'position_id',
-      'entry_date',
-      'exit_date',
+      'entryDate',
+      'exitDate',
       'symbol',
-      'entry_price',
-      'exit_price',
+      'entryPrice',
+      'exitPrice',
       'pnl',
-      'final_collateral_amount',
-      'exit_size',
+      'finalCollateralAmount',
+      'exitSize',
       'fees',
-      'borrow_fees',
-      'exit_fees',
+      'borrowFees',
+      'exitFees',
     ];
 
     const csvRows = positionsHistory
@@ -63,7 +63,7 @@ function PositionsHistory({
             let value = position[key as keyof typeof positionsHistory[0]];
 
             // Format the date field if it's `transaction_date`
-            if ((key === 'entry_date' || key === 'exit_date') && value instanceof Date) {
+            if ((key === 'entryDate' || key === 'exitDate') && value instanceof Date) {
               value = (value as Date).toISOString(); // Format to ISO 8601
             }
 
@@ -103,7 +103,7 @@ function PositionsHistory({
                   <div className="flex flex-col gap-3 grow">
                     {paginatedPositions.map((positionHistory) => (
                       <PositionHistoryBlock
-                        key={positionHistory.position_id}
+                        key={positionHistory.positionId}
                         positionHistory={positionHistory}
                         showShareButton={showShareButton}
                         showFeesInPnl={showFeesInPnl}
