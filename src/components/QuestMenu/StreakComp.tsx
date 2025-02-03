@@ -39,7 +39,7 @@ export default function StreakComp({
                             <RemainingTimeToDate
                                 timestamp={nextUTC}
                                 className="text-center"
-                                classNameTime="font-boldy text-xs text-white/80"
+                                classNameTime="font-mono text-xs text-white/80"
                             />
                         </>
                     ) : streak.status === 1 ? (
@@ -47,7 +47,7 @@ export default function StreakComp({
                             <RemainingTimeToDate
                                 timestamp={nextUTC}
                                 className="text-center"
-                                classNameTime="font-boldy text-xs text-white/80"
+                                classNameTime="font-mono text-xs text-white/80"
                             />
                         </>
                     ) : streak.status === 2 ? (
@@ -55,7 +55,7 @@ export default function StreakComp({
                             <RemainingTimeToDate
                                 timestamp={nextUTC}
                                 className="text-center"
-                                classNameTime="font-boldy text-xs text-white/80"
+                                classNameTime="font-mono text-xs text-white/80"
                             />
                         </>
                     ) : (
@@ -64,7 +64,7 @@ export default function StreakComp({
                             <RemainingTimeToDate
                                 timestamp={nextUTC}
                                 className="text-center"
-                                classNameTime="font-boldy text-xs text-white/80"
+                                classNameTime="font-mono text-xs text-white/80"
                             />
                         </>
                     )}
