@@ -22,6 +22,7 @@ module.exports = {
         orange: '#f77f00',
         blue: '#3a86ff',
         purpleColor: '#9333ea',
+        mutagen: '#e47dbb',
       },
       fontSize: {
         xxs: '0.6rem', // Extra Extra Small

@@ -12,10 +12,11 @@ import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PositionExtended, PositionHistoryExtended } from '@/types';
-import { formatDate, formatTimeDifference, getFullTimeDifference, getTokenImage, getTokenSymbol, getTxExplorer } from '@/utils';
+import { EnrichedPositionApi, PositionExtended } from '@/types';
+import { formatDate, formatTimeDifferenceFromTotalSeconds, getTokenImage, getTokenSymbol, getTxExplorer } from '@/utils';
 
 import FeesPaidTooltip from './FeesPaidTooltip';
+import MutagenTooltip from './MutagenTooltip';
 import SharePositionModal from './SharePositionModal';
 
 interface LeverageDisplayProps {
@@ -80,7 +81,7 @@ const PositionHistoryBlock = ({
 }: {
   bodyClassName?: string;
   borderColor?: string;
-  positionHistory: PositionHistoryExtended;
+  positionHistory: EnrichedPositionApi;
   showShareButton?: boolean;
   showFeesInPnl: boolean;
 }) => {
@@ -94,7 +95,7 @@ const PositionHistoryBlock = ({
     ? positionHistory.pnl
     : positionHistory.pnl + positionHistory.fees;
 
-  const totalFees = positionHistory.exit_fees + positionHistory.borrow_fees;
+  const totalFees = positionHistory.fees;
 
   const positionName = (
     <div className="flex items-center justify-center h-full">
@@ -122,13 +123,13 @@ const PositionHistoryBlock = ({
             {positionHistory.side}
           </div>
           <LeverageDisplay
-            leverage={positionHistory.entry_leverage}
-            positionSize={positionHistory.entry_collateral_amount * positionHistory.entry_leverage}
-            entryCollateral={positionHistory.entry_collateral_amount}
-            finalCollateral={positionHistory.final_collateral_amount}
+            leverage={positionHistory.entryLeverage}
+            positionSize={positionHistory.entryCollateralAmount * positionHistory.entryLeverage}
+            entryCollateral={positionHistory.entryCollateralAmount}
+            finalCollateral={positionHistory.collateralAmount}
           />
         </div>
-        <p className="text-xxs opacity-50">{formatDate(positionHistory.entry_date)}</p>
+        <p className="text-xxs opacity-50">{formatDate(positionHistory.entryDate)}</p>
       </div>
     </div>
   );
@@ -157,7 +158,7 @@ const PositionHistoryBlock = ({
           isDecimalDimmed={false}
         />
         <FormatNumber
-          nb={(pnlValue / positionHistory.entry_collateral_amount) * 100}
+          nb={(pnlValue / positionHistory.entryCollateralAmount) * 100}
           format="percentage"
           prefix="("
           suffix=")"
@@ -196,18 +197,13 @@ const PositionHistoryBlock = ({
         <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
           <InfoBlock label="Time Opened">
             <div className="text-xs text-gray-400">
-              {formatTimeDifference(
-                getFullTimeDifference(
-                  positionHistory.entry_date,
-                  positionHistory.exit_date ?? new Date()
-                )
-              )}
+              {formatTimeDifferenceFromTotalSeconds(positionHistory.duration)}
             </div>
           </InfoBlock>
 
           <InfoBlock label="Entry Price">
             <FormatNumber
-              nb={positionHistory.entry_price}
+              nb={positionHistory.entryPrice}
               format="currency"
               className="text-xs"
               isDecimalDimmed={false}
@@ -216,7 +212,7 @@ const PositionHistoryBlock = ({
 
           <InfoBlock label="Exit Price">
             <FormatNumber
-              nb={positionHistory.exit_price}
+              nb={positionHistory.exitPrice}
               format="currency"
               className="text-xs"
               isDecimalDimmed={false}
@@ -230,7 +226,7 @@ const PositionHistoryBlock = ({
               ) : (
                 <span className="text-blue text-xs">Closed</span>
               )}
-              <Link href={getTxExplorer(positionHistory.last_tx)} target="_blank">
+              <Link href={getTxExplorer(positionHistory.lastIx)} target="_blank">
                 <Image src={externalLinkLogo} alt="View transaction" width={12} height={12} />
               </Link>
             </div>
@@ -239,8 +235,8 @@ const PositionHistoryBlock = ({
           <InfoBlock label="Fees Paid">
             <FeesPaidTooltip
               entryFees={0}
-              exitFees={positionHistory.exit_fees}
-              borrowFees={positionHistory.borrow_fees}
+              exitFees={positionHistory.exitFees}
+              borrowFees={positionHistory.borrowFees}
             >
               <div className="flex items-center border-b border-dotted border-gray-400">
                 <FormatNumber
@@ -251,6 +247,25 @@ const PositionHistoryBlock = ({
                 />
               </div>
             </FeesPaidTooltip>
+          </InfoBlock>
+
+          <InfoBlock label="Mutagen">
+            <MutagenTooltip
+              pointsPnlVolumeRatio={positionHistory.pointsPnlVolumeRatio}
+              pointsDuration={positionHistory.pointsDuration}
+              closeSizeMultiplier={positionHistory.closeSizeMultiplier}
+              pointsMutations={positionHistory.pointsMutations}
+            >
+              <div className="flex items-center border-b border-dotted border-gray-400">
+                <FormatNumber
+                  nb={positionHistory.totalPoints}
+                  className="text-xs text-mutagen"
+                  isDecimalDimmed={false}
+                  minimumFractionDigits={0}
+                  precisionIfPriceDecimalsBelow={12}
+                />
+              </div>
+            </MutagenTooltip>
           </InfoBlock>
 
           {showShareButton && (
@@ -295,15 +310,15 @@ const PositionHistoryBlock = ({
                 pnl: pnlValue,
                 token: positionHistory.token,
                 side: positionHistory.side,
-                price: positionHistory.entry_price,
+                price: positionHistory.entryPrice,
                 fees: -totalFees,
-                exitFeeUsd: positionHistory.exit_fees,
-                borrowFeeUsd: positionHistory.borrow_fees,
-                collateralUsd: positionHistory.entry_collateral_amount,
-                sizeUsd: positionHistory.entry_collateral_amount * positionHistory.entry_leverage,
-                exitPrice: positionHistory.exit_price,
+                exitFeeUsd: positionHistory.exitFees,
+                borrowFeeUsd: positionHistory.borrowFees,
+                collateralUsd: positionHistory.entryCollateralAmount,
+                sizeUsd: positionHistory.entryCollateralAmount * positionHistory.entryLeverage,
+                exitPrice: positionHistory.exitPrice,
                 nativeObject: {
-                  openTime: new Date(positionHistory.entry_date).getTime() / 1000,
+                  openTime: new Date(positionHistory.entryDate).getTime() / 1000,
                 }
               } as unknown as PositionExtended}
             />
