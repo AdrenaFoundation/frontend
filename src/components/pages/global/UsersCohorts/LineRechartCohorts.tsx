@@ -14,7 +14,7 @@ import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipCont
 import { DataKey } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaEvent, RechartsData } from '@/types';
+import { RechartsData } from '@/types';
 import { formatNumber, formatNumberShort, formatPercentage, formatPriceInfo, formatToWeekOf } from '@/utils';
 
 function CustomRechartsToolTip({
@@ -25,7 +25,6 @@ function CustomRechartsToolTip({
   precision = 2,
   format = 'currency',
   labelCustomization,
-  events,
   totalColor = 'red',
 }: TooltipProps<ValueType, NameType> & {
   data: RechartsData[];
@@ -33,11 +32,8 @@ function CustomRechartsToolTip({
   format?: 'currency' | 'percentage' | 'number';
   labelCustomization?: (label: string) => string;
   totalColor?: string;
-  events?: AdrenaEvent[];
 }) {
   if (active && payload && payload.length) {
-    const activeEvents = (events || []).filter(event => event.time === label);
-
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
         {label && <p className="text-lg mb-2 font-mono">{labelCustomization ? labelCustomization(label) : label}</p>}
@@ -47,7 +43,7 @@ function CustomRechartsToolTip({
             <th className='text-xs font-boldy'>Name</th>
             <th className='text-xs font-boldy'>Date</th>
             <th className='text-xs font-boldy'>Traders</th>
-            <th className='text-xs font-boldy'>start diff</th>
+            <th className='text-xs font-boldy'>Start diff</th>
           </thead>
 
           <tbody>
@@ -116,16 +112,6 @@ function CustomRechartsToolTip({
             })}
           </tbody>
         </table>
-
-
-        {activeEvents.length > 0 ? <div className='mt-2 text-xs underline mb-1 opacity-90'>Event{activeEvents.length > 1 ? 's' : ''}:</div> : null}
-
-        <div className='flex flex-col gap-1'>
-          {activeEvents.map((event, i) =>
-            <div key={event.label + '-' + i} className={twMerge('flex text-xs opacity-90 max-w-[20em]')}>
-              {event.description}
-            </div>)}
-        </div>
       </div >
     );
   }
