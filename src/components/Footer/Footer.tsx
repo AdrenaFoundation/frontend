@@ -2,8 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
-import QuestMenu from '@/components/QuestMenu/QuestMenu';
-
 import discordLogo from '../../../public/images/discord.png';
 // import discourseLogo from '../../../public/images/discourse.svg';
 import githubLogo from '../../../public/images/github.svg';
@@ -13,13 +11,10 @@ export default function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={twMerge(
-        'hidden sm:flex flex-col w-full border-t border-bcolor justify-center items-center bg-main h-14 shrink-0 max-h-14 min-h-14',
-        window.location.pathname === '/trade' && 'hidden sm:flex',
+        'hidden sm:flex flex-col w-full border-t border-bcolor justify-center items-center bg-main h-14 shrink-0 max-h-14 min-h-14 z-10',
         className,
       )}
     >
-      <QuestMenu />
-
       <div className="flex w-full justify-center items-center gap-x-6">
         <Link href="https://discord.gg/adrena" target="_blank">
           <Image
