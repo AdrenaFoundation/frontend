@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { EnrichedSeasonStreak } from '@/types';
@@ -10,16 +10,6 @@ export default function StreakComp({
     streak: EnrichedSeasonStreak;
     className?: string;
 }) {
-
-    const hasCompletedDailyStreak = useMemo(() => {
-        if (!streak.updatedStreakDate) return false;
-
-        const updatedDateUTC = new Date(streak.updatedStreakDate).toISOString().split("T")[0]; // Extract YYYY-MM-DD
-        const todayUTC = new Date().toISOString().split("T")[0]; // Current date in UTC (YYYY-MM-DD)
-
-        return updatedDateUTC === todayUTC;
-    }, [streak.updatedStreakDate]);
-
     return (
         <div className={twMerge('flex flex-col justify-center w-full gap-2.5', className)}>
             <div className='flex w-full justify-between items-center'>
@@ -34,12 +24,20 @@ export default function StreakComp({
                     </div>
 
                     <div className="text-white/60 text-xs">
-                        Trade for two consecutive day
+                        Trade for consecutive days
                     </div>
                 </div>
 
-                <div className='flex gap-2 text-xs'>
-                    {hasCompletedDailyStreak ? <div className='text-xs'>Completed</div> : <div className='h-4 w-4 rounded-full border-2' />}
+                <div className='flex'>
+                    {streak.status === 0 ? (
+                        <div className='text-xs font-boldy'>Initialize your streak before reset</div>
+                    ) : streak.status === 1 ? (
+                        <div className='text-xs font-boldy text-green'>Streak initialized</div>
+                    ) : streak.status === 2 ? (
+                        <div className='text-xs font-boldy text-green'>Current streak: {streak.currentDaysStreak} days</div>
+                    ) : (
+                        <div className='text-xs font-boldy text-redbright'>Careful, your will lose your {streak.currentDaysStreak} days streak</div>
+                    )}
                 </div>
             </div>
 
@@ -96,6 +94,6 @@ export default function StreakComp({
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
