@@ -16,6 +16,7 @@ import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
+import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   ImageRef,
@@ -178,7 +179,12 @@ export default function RootLayout({
       <ViewsWarning />
 
       <div className="w-full grow flex justify-center">
-        <div className={twMerge("w-full flex flex-col max-w-[120em]", !isBigScreen ? 'pb-[100px]' : 'sm:pb-0')}>
+        <div
+          className={twMerge(
+            'w-full flex flex-col max-w-[120em]',
+            !isBigScreen ? 'pb-[100px]' : 'sm:pb-0',
+          )}
+        >
           {children}
         </div>
       </div>
@@ -200,8 +206,10 @@ export default function RootLayout({
           userDelegatedVest={userDelegatedVest}
         />
       ) : (
-        <Footer className="z-10" />
+        <Footer />
       )}
+
+      <QuestMenu isMobile={!isBigScreen} />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

@@ -121,7 +121,9 @@ export default function BurgerMenu({
     <div className="z-30">
       <div className="py-3 p-4 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
         <div className="flex flex-row gap-3 items-center">
-          <Image src={adrenaLogo} alt="logo" width={28} height={28} />
+          <Link href="/trade">
+            <Image src={adrenaLogo} alt="logo" width={28} height={28} />
+          </Link>
 
           <div className="flex flex-row gap-3">
             <Link
