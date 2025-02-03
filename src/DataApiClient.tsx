@@ -534,7 +534,7 @@ export default class DataApiClient {
     }): Promise<EnrichedPositionApi[]> {
         try {
             const response = await fetch(
-                `http://localhost:8080/position?user_wallet=${walletAddress
+                `https://datapi.adrena.xyz/position?user_wallet=${walletAddress
                 }&status=liquidate&status=close`,
             );
 
