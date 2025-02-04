@@ -1,5 +1,5 @@
 import { BN, Wallet } from '@coral-xyz/anchor';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Transaction } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { kv } from '@vercel/kv';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -142,6 +142,19 @@ export default function LongShortTradingInputs({
     newOverallLeverage: number;
   } | null>(null);
 
+  const [stopLossInput, setStopLossInput] = useState<number | null>(null);
+  const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
+  const [stopLossError, setStopLossError] = useState<boolean>(false);
+  const [takeProfitError, setTakeProfitError] = useState<boolean>(false);
+
+  const usdcMint =
+    window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
+  const usdcCustody =
+    usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
+  const usdcPrice = tokenPrices['USDC'];
+
+  const availableLiquidityShort = (custody && (custody.maxCumulativeShortPositionSizeUsd - (custody.oiShortUsd ?? 0))) ?? 0;
+
   const calculateIncreasePositionInfo = useCallback(() => {
     if (!openedPosition || !newPositionInfo) {
       setIncreasePositionInfo(null);
@@ -211,6 +224,152 @@ export default function LongShortTradingInputs({
     calculateIncreasePositionInfo()
   }, [calculateIncreasePositionInfo]);
 
+  // Validate SL/TP inputs
+  useEffect(() => {
+    if (!tokenPriceBTrade || !newPositionInfo) {
+      setStopLossError(false);
+      setTakeProfitError(false);
+      return;
+    }
+
+    // Validate Stop Loss
+    if (stopLossInput !== null) {
+      if (side === 'long') {
+        if (stopLossInput >= tokenPriceBTrade) {
+          setStopLossError(true);
+        } else if (newPositionInfo.liquidationPrice && stopLossInput <= newPositionInfo.liquidationPrice) {
+          setStopLossError(true);
+        } else {
+          setStopLossError(false);
+        }
+      } else {
+        if (stopLossInput <= tokenPriceBTrade) {
+          setStopLossError(true);
+        } else if (newPositionInfo.liquidationPrice && stopLossInput >= newPositionInfo.liquidationPrice) {
+          setStopLossError(true);
+        } else {
+          setStopLossError(false);
+        }
+      }
+    } else {
+      setStopLossError(false);
+    }
+
+    // Validate Take Profit
+    if (takeProfitInput !== null) {
+      if (side === 'long') {
+        if (takeProfitInput <= tokenPriceBTrade) {
+          setTakeProfitError(true);
+        } else {
+          setTakeProfitError(false);
+        }
+      } else {
+        if (takeProfitInput >= tokenPriceBTrade) {
+          setTakeProfitError(true);
+        } else {
+          setTakeProfitError(false);
+        }
+      }
+    } else {
+      setTakeProfitError(false);
+    }
+  }, [side, stopLossInput, takeProfitInput, tokenPriceBTrade, newPositionInfo]);
+
+  // Update error message to include SL/TP validation
+  useEffect(() => {
+    if (!inputA || !connected) {
+      setErrorMessage(null);
+      setInsufficientAmount(false);
+      return;
+    }
+
+    const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
+
+    if (!walletTokenABalance || inputA > walletTokenABalance) {
+      setInsufficientAmount(true);
+    } else {
+      setInsufficientAmount(false);
+    }
+
+    // Check for minimum collateral value
+    const tokenAPrice = tokenPrices[tokenA.symbol];
+    if (tokenAPrice && !openedPosition) {
+      const collateralValue = inputA * tokenAPrice;
+      if (collateralValue < 9.5) {
+        return setErrorMessage('Collateral value must be at least $10');
+      }
+    }
+
+    if (!tokenB || !inputB) {
+      return;
+    }
+
+    const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
+
+    const tokenPriceBTrade = tokenPrices[getTokenSymbol(tokenB.symbol)];
+
+    if (!tokenPriceBTrade) {
+      return setErrorMessage(`Missing ${getTokenSymbol(tokenB.symbol)} price`);
+    }
+
+    const projectedSize = openedPosition ? (inputB - openedPosition.size) : inputB;
+    // In the case of an increase, this is different from the fullProjectedSizeUsd
+    const projectedSizeUsd = projectedSize * tokenPriceBTrade;
+    const fullProjectedSizeUsd = inputB * tokenPriceBTrade;
+
+    if (side === "long" && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
+      return setErrorMessage(`Position Exceeds Max Size`);
+
+    if (side === "short" && usdcCustody && projectedSizeUsd > usdcCustody.maxPositionLockedUsd)
+      return setErrorMessage(`Position Exceeds Max Size`);
+
+    // If custody doesn't have enough liquidity, tell user
+    if (side === 'long' && projectedSize > custody.liquidity)
+      return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
+
+    if (side === 'short' && usdcCustody) {
+      if (projectedSizeUsd > usdcCustody.liquidity)
+        return setErrorMessage(`Insufficient USDC liquidity`);
+
+      if (projectedSizeUsd > availableLiquidityShort)
+        return setErrorMessage(`Position Exceeds Max Size`);
+    }
+
+    // Validate SL/TP
+    if (stopLossError) {
+      if (side === 'long') {
+        return setErrorMessage('Stop Loss must be below current price and above liquidation price');
+      } else {
+        return setErrorMessage('Stop Loss must be above current price and below liquidation price');
+      }
+    }
+
+    if (takeProfitError) {
+      if (side === 'long') {
+        return setErrorMessage('Take Profit must be above current price');
+      } else {
+        return setErrorMessage('Take Profit must be below current price');
+      }
+    }
+
+    return setErrorMessage(null);
+  }, [
+    usdcCustody,
+    inputA,
+    inputB,
+    tokenA.symbol,
+    tokenB,
+    tokenPriceBTrade,
+    tokenPrices,
+    walletTokenBalances,
+    connected,
+    side,
+    availableLiquidityShort,
+    stopLossError,
+    takeProfitError,
+  ]);
+
+  // Update handleExecuteButton to include SL/TP
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
       dispatch(openCloseConnectionModalAction(true));
@@ -278,6 +437,14 @@ export default function LongShortTradingInputs({
     try {
       const referrerPublicKey = await referrer;
 
+      // First open the position
+      const principalCustody = window.adrena.client.findCustodyAddress(tokenB.mint);
+      const positionPubkey = window.adrena.client.findPositionAddress(
+        new PublicKey(wallet.publicKey),
+        principalCustody,
+        side
+      );
+
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
           owner: new PublicKey(wallet.publicKey),
@@ -300,6 +467,61 @@ export default function LongShortTradingInputs({
           referrer: referrerPublicKey,
         }));
 
+      // If SL/TP are set, create a new transaction to set them
+      if ((stopLossInput && !stopLossError) || (takeProfitInput && !takeProfitError)) {
+        const transaction = new Transaction();
+
+        if (stopLossInput && !stopLossError) {
+          const stopLossIx = await (side === 'long'
+            ? window.adrena.client.buildSetStopLossLongIx({
+              position: {
+                pubkey: positionPubkey,
+                custody: principalCustody,
+                owner: new PublicKey(wallet.publicKey),
+              } as PositionExtended,
+              stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
+              closePositionPrice: new BN(stopLossInput * 0.99 * 10 ** PRICE_DECIMALS),
+            })
+            : window.adrena.client.buildSetStopLossShortIx({
+              position: {
+                pubkey: positionPubkey,
+                custody: principalCustody,
+                owner: new PublicKey(wallet.publicKey),
+              } as PositionExtended,
+              stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
+              closePositionPrice: new BN(stopLossInput * 1.01 * 10 ** PRICE_DECIMALS),
+            }));
+          transaction.add(stopLossIx);
+        }
+
+        if (takeProfitInput && !takeProfitError) {
+          const takeProfitIx = await (side === 'long'
+            ? window.adrena.client.buildSetTakeProfitLongIx({
+              position: {
+                pubkey: positionPubkey,
+                custody: principalCustody,
+                owner: new PublicKey(wallet.publicKey),
+              } as PositionExtended,
+              takeProfitLimitPrice: new BN(takeProfitInput * 10 ** PRICE_DECIMALS),
+            })
+            : window.adrena.client.buildSetTakeProfitShortIx({
+              position: {
+                pubkey: positionPubkey,
+                custody: principalCustody,
+                owner: new PublicKey(wallet.publicKey),
+              } as PositionExtended,
+              takeProfitLimitPrice: new BN(takeProfitInput * 10 ** PRICE_DECIMALS),
+            }));
+          transaction.add(takeProfitIx);
+        }
+
+        // Execute SL/TP transaction
+        await window.adrena.client.signAndExecuteTxAlternative({
+          transaction,
+          notification,
+        });
+      }
+
       dispatch(fetchWalletTokenBalances());
 
       setInputA(null);
@@ -310,6 +532,8 @@ export default function LongShortTradingInputs({
       setPriceB(null);
       setNewPositionInfo(null);
       setIncreasePositionInfo(null);
+      setStopLossInput(null);
+      setTakeProfitInput(null);
     } catch (error) {
       console.log('Error', error);
     }
@@ -471,78 +695,6 @@ export default function LongShortTradingInputs({
     tokenB && tokenPrices[tokenB.symbol],
     newPositionInfo,
   ]);
-
-  const usdcMint =
-    window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
-  const usdcCustody =
-    usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
-  const usdcPrice = tokenPrices['USDC'];
-
-  const availableLiquidityShort = (custody && (custody.maxCumulativeShortPositionSizeUsd - (custody.oiShortUsd ?? 0))) ?? 0;
-
-  useEffect(() => {
-    if (!inputA || !connected) {
-      setErrorMessage(null);
-      setInsufficientAmount(false);
-      return;
-    }
-
-    const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
-
-    if (!walletTokenABalance || inputA > walletTokenABalance) {
-      setInsufficientAmount(true);
-    } else {
-      setInsufficientAmount(false);
-    }
-
-    // Check for minimum collateral value
-    const tokenAPrice = tokenPrices[tokenA.symbol];
-    if (tokenAPrice && !openedPosition) {
-      const collateralValue = inputA * tokenAPrice;
-      if (collateralValue < 9.5) {
-        return setErrorMessage('Collateral value must be at least $10');
-      }
-    }
-
-    if (!tokenB || !inputB) {
-      return;
-    }
-
-    const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
-
-    const tokenPriceBTrade = tokenPrices[getTokenSymbol(tokenB.symbol)];
-
-    if (!tokenPriceBTrade) {
-      return setErrorMessage(`Missing ${getTokenSymbol(tokenB.symbol)} price`);
-    }
-
-    const projectedSize = openedPosition ? (inputB - openedPosition.size) : inputB;
-    // In the case of an increase, this is different from the fullProjectedSizeUsd
-    const projectedSizeUsd = projectedSize * tokenPriceBTrade;
-    const fullProjectedSizeUsd = inputB * tokenPriceBTrade;
-
-    if (side === "long" && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
-      return setErrorMessage(`Position Exceeds Max Size`);
-
-    if (side === "short" && usdcCustody && projectedSizeUsd > usdcCustody.maxPositionLockedUsd)
-      return setErrorMessage(`Position Exceeds Max Size`);
-
-    // If custody doesn't have enough liquidity, tell user
-    if (side === 'long' && projectedSize > custody.liquidity)
-      return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
-
-    if (side === 'short' && usdcCustody) {
-      if (projectedSizeUsd > usdcCustody.liquidity)
-        return setErrorMessage(`Insufficient USDC liquidity`);
-
-      if (projectedSizeUsd > availableLiquidityShort)
-        return setErrorMessage(`Position Exceeds Max Size`);
-    }
-
-    return setErrorMessage(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
-
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
@@ -1117,6 +1269,82 @@ export default function LongShortTradingInputs({
                 )}
               </StyledSubSubContainer>
             </PositionFeesTooltip>
+
+            {/* Add SL/TP Section */}
+            <h5 className="flex items-center ml-4 mt-2 mb-2">
+              Stop Loss / Take Profit
+            </h5>
+
+            <StyledSubSubContainer className="flex flex-col gap-3 p-4">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Stop Loss</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      className={twMerge(
+                        "w-32 px-2 py-1 bg-inputcolor border rounded text-right",
+                        stopLossError && "border-red"
+                      )}
+                      placeholder={`${side === 'long' ? '↓' : '↑'} Price`}
+                      value={stopLossInput ?? ''}
+                      onChange={(e) => setStopLossInput(e.target.value ? Number(e.target.value) : null)}
+                    />
+                    {tokenPriceBTrade && (
+                      <button
+                        className="text-xs text-txtfade hover:text-white transition-colors"
+                        onClick={() => {
+                          const price = side === 'long'
+                            ? tokenPriceBTrade * 0.95 // 5% below market price for long
+                            : tokenPriceBTrade * 1.05; // 5% above market price for short
+                          setStopLossInput(Number(price.toFixed(tokenB.displayPriceDecimalsPrecision)));
+                        }}
+                      >
+                        5%
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Take Profit</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      className={twMerge(
+                        "w-32 px-2 py-1 bg-inputcolor border rounded text-right",
+                        takeProfitError && "border-red"
+                      )}
+                      placeholder={`${side === 'long' ? '↑' : '↓'} Price`}
+                      value={takeProfitInput ?? ''}
+                      onChange={(e) => setTakeProfitInput(e.target.value ? Number(e.target.value) : null)}
+                    />
+                    {tokenPriceBTrade && (
+                      <button
+                        className="text-xs text-txtfade hover:text-white transition-colors"
+                        onClick={() => {
+                          const price = side === 'long'
+                            ? tokenPriceBTrade * 1.1 // 10% above market price for long
+                            : tokenPriceBTrade * 0.9; // 10% below market price for short
+                          setTakeProfitInput(Number(price.toFixed(tokenB.displayPriceDecimalsPrecision)));
+                        }}
+                      >
+                        10%
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {tokenPriceBTrade && (
+                  <div className="flex justify-between text-xs text-txtfade mt-1">
+                    <span>Mark Price:</span>
+                    <span>
+                      {formatNumber(tokenPriceBTrade, tokenB.displayPriceDecimalsPrecision)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </StyledSubSubContainer>
           </>
         ) : null}
       </div>
