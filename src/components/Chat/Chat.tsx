@@ -5,6 +5,7 @@ import Tippy from "@tippyjs/react";
 import { kv } from "@vercel/kv";
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
@@ -99,7 +100,7 @@ interface ChatProps {
     onToggleUserList?: () => void;
 }
 
-export default function Chat({
+function Chat({
     userProfile,
     wallet,
     className,
@@ -266,6 +267,102 @@ export default function Chat({
         return connectedUsers.filter(user => !user.nickname).length;
     }, [connectedUsers]);
 
+    const messagesDOM = useMemo(() => {
+        if (!isOpen) return null;
+
+        return messages.map((msg) => {
+            return <div key={`message-${msg.id}`} className="flex gap-2 mb-1">
+                <div className="text-xs opacity-20 font-mono mt-[2px] shrink-0">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                <div className="flex gap-2 min-w-0">
+                    <Tippy
+                        className="relative tippy-no-padding border-2"
+                        trigger="click"
+                        interactive={true}
+                        content={
+                            <>
+                                <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
+
+                                <div className="text-xs font-boldy p-2">
+                                    {!msg.wallet ? <div className="relative flex text-[1.2em] p-4">
+                                        Anonymous
+                                    </div> : null}
+
+                                    {msg.wallet && profileCache[msg.wallet] ?
+                                        <div className="w-[25em] h-[9em] relative flex">
+                                            <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
+
+                                            <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
+                                                <div className="w-full flex flex-col items-center">
+                                                    <div className="text-base truncate max-w-full">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
+                                                    <div className="h-[1px] w-full bg-white opacity-90 mt-1 mb-1" />
+                                                </div>
+
+                                                <div className="flex flex-col w-full gap-1">
+                                                    <div className="flex justify-between items-center w-full">
+                                                        <div className="text-xs font-boldy">Trading Volume</div>
+                                                        <FormatNumber
+                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
+                                                            format="currency"
+                                                            precision={0}
+                                                            isDecimalDimmed={false}
+                                                            className='border-0 text-xs'
+                                                            isAbbreviate={true}
+                                                        />
+                                                    </div>
+
+                                                    <div className="flex justify-between items-center w-full">
+                                                        <div className="text-xs font-boldy">PnL</div>
+                                                        <FormatNumber
+                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
+                                                            format="currency"
+                                                            precision={0}
+                                                            isDecimalDimmed={false}
+                                                            className='border-0 text-xs'
+                                                        />
+                                                    </div>
+
+                                                    <div className="flex justify-between items-center w-full">
+                                                        <div className="text-xs font-boldy">Fees Paid</div>
+                                                        <FormatNumber
+                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
+                                                            format="currency"
+                                                            precision={0}
+                                                            isDecimalDimmed={false}
+                                                            className='border-0 text-xs'
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        : msg.wallet && profileCache[msg.wallet] === false ?
+                                            <div className="relative flex text-[1.2em] p-4">
+                                                No profile
+                                            </div> : <Loader />}
+                                </div>
+                            </>
+                        }
+                    >
+                        <div
+                            className="text-sm font-boldy cursor-pointer hover:underline shrink-0"
+                            style={{
+                                color: msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
+                                    ? '#e1aa2a'
+                                    : msg.wallet
+                                        ? generateColorFromString(msg.wallet)
+                                        : '#9ca3af'
+                            }}
+                            onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
+                        >
+                            {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
+                        </div>
+                    </Tippy>
+
+                    <div className="text-sm font-regular text-txtfade break-words min-w-0">{msg.text}</div>
+                </div>
+            </div>;
+        });
+    }, [isOpen, loadProfile, messages, profileCache, wallet]);
+
     return (
         <>
             <div className={className} style={style}>
@@ -311,98 +408,7 @@ export default function Chat({
                         "p-4 flex flex-col h-[calc(100% - 9em)] max-h-[calc(100% - 9em)] flex-grow w-full overflow-auto custom-chat-scrollbar transition-all duration-300",
                         showUserList && "w-[calc(100%-160px)] blur-[2px]"
                     )} ref={containerRef}>
-                        {messages.map((msg, i) => (
-                            <div key={i} className="flex gap-2 mb-1">
-                                <div className="text-xs opacity-20 font-mono mt-[2px] shrink-0">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                                <div className="flex gap-2 min-w-0">
-                                    <Tippy
-                                        className="relative tippy-no-padding border-2"
-                                        trigger="click"
-                                        interactive={true}
-                                        content={
-                                            <>
-                                                <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
-
-                                                <div className="text-xs font-boldy p-2">
-                                                    {!msg.wallet ? <div className="relative flex text-[1.2em] p-4">
-                                                        Anonymous
-                                                    </div> : null}
-
-                                                    {msg.wallet && profileCache[msg.wallet] ?
-                                                        <div className="w-[25em] h-[9em] relative flex">
-                                                            <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
-
-                                                            <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
-                                                                <div className="w-full flex flex-col items-center">
-                                                                    <div className="text-base truncate max-w-full">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
-                                                                    <div className="h-[1px] w-full bg-white opacity-90 mt-1 mb-1" />
-                                                                </div>
-
-                                                                <div className="flex flex-col w-full gap-1">
-                                                                    <div className="flex justify-between items-center w-full">
-                                                                        <div className="text-xs font-boldy">Trading Volume</div>
-                                                                        <FormatNumber
-                                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
-                                                                            format="currency"
-                                                                            precision={0}
-                                                                            isDecimalDimmed={false}
-                                                                            className='border-0 text-xs'
-                                                                            isAbbreviate={true}
-                                                                        />
-                                                                    </div>
-
-                                                                    <div className="flex justify-between items-center w-full">
-                                                                        <div className="text-xs font-boldy">PnL</div>
-                                                                        <FormatNumber
-                                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
-                                                                            format="currency"
-                                                                            precision={0}
-                                                                            isDecimalDimmed={false}
-                                                                            className='border-0 text-xs'
-                                                                        />
-                                                                    </div>
-
-                                                                    <div className="flex justify-between items-center w-full">
-                                                                        <div className="text-xs font-boldy">Fees Paid</div>
-                                                                        <FormatNumber
-                                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
-                                                                            format="currency"
-                                                                            precision={0}
-                                                                            isDecimalDimmed={false}
-                                                                            className='border-0 text-xs'
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        : msg.wallet && profileCache[msg.wallet] === false ?
-                                                            <div className="relative flex text-[1.2em] p-4">
-                                                                No profile
-                                                            </div> : <Loader />}
-                                                </div>
-                                            </>
-                                        }
-                                        key={i}
-                                    >
-                                        <div
-                                            className="text-sm font-boldy cursor-pointer hover:underline shrink-0"
-                                            style={{
-                                                color: msg.wallet && wallet && msg.wallet === wallet.publicKey.toBase58()
-                                                    ? '#e1aa2a'
-                                                    : msg.wallet
-                                                        ? generateColorFromString(msg.wallet)
-                                                        : '#9ca3af'
-                                            }}
-                                            onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
-                                        >
-                                            {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
-                                        </div>
-                                    </Tippy>
-
-                                    <div className="text-sm font-regular text-txtfade break-words min-w-0">{msg.text}</div>
-                                </div>
-                            </div>
-                        ))}
+                        {messagesDOM}
                     </div>
 
                     <div className={twMerge(
@@ -477,8 +483,8 @@ export default function Chat({
                                                 </>
                                             }
                                         >
-                                            <div 
-                                                className="text-xs truncate cursor-pointer hover:underline" 
+                                            <div
+                                                className="text-xs truncate cursor-pointer hover:underline"
                                                 style={{ color: generateColorFromString(user.wallet) }}
                                                 onMouseEnter={() => loadProfile(user.wallet)}
                                             >
@@ -531,3 +537,5 @@ export default function Chat({
         </>
     );
 }
+
+export default React.memo(Chat);
