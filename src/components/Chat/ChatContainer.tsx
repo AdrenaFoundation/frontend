@@ -1,6 +1,7 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
@@ -9,7 +10,7 @@ import { UserProfileExtended } from '@/types';
 import Modal from '../common/Modal/Modal';
 import Chat from './Chat';
 
-export default function ChatContainer({
+function ChatContainer({
     userProfile,
     wallet,
     isMobile,
@@ -23,17 +24,22 @@ export default function ChatContainer({
     setIsChatOpen: (isOpen: boolean) => void;
 }) {
     const [showUserList, setShowUserList] = useState(false);
-    const [isOpenCookie, setIsOpenCookie] = useCookies(['chat-open']);
-    const [chatHeightCookie, setChatHeightCookie] = useCookies(['chat-height']);
+    const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
+
+    const chatHeightCookie = cookies['chat-height'];
+    const isOpenCookie = cookies['chat-open'];
+
     const [height, setHeight] = useState(() => {
         // Initialize with cookie value or default
         return (
-            chatHeightCookie['chat-height'] || Math.round(window.innerHeight * 0.35)
+            chatHeightCookie || Math.round(window.innerHeight * 0.35)
         );
     });
+
     const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
+        console.log('11')
         // Decide if isOpen should be true or not, depending on cookies and if we are in mobile
         if (isChatOpen === null) {
             if (isMobile) {
@@ -44,16 +50,16 @@ export default function ChatContainer({
 
             // Opened by default on desktop, otherwise follow what the cookie says
             setIsChatOpen(
-                typeof isOpenCookie['chat-open'] === 'undefined' ||
-                isOpenCookie['chat-open'] === true,
+                typeof isOpenCookie === 'undefined' ||
+                isOpenCookie === true,
             );
             return;
         }
 
         if (isMobile) return;
 
-        setIsOpenCookie('chat-open', isChatOpen);
-    }, [isMobile, isChatOpen, isOpenCookie, setIsOpenCookie, setIsChatOpen]);
+        setCookie('chat-open', isChatOpen);
+    }, [isMobile, isChatOpen, isOpenCookie, setIsChatOpen, setCookie]);
 
     // Add window resize handler
     useEffect(() => {
@@ -88,10 +94,10 @@ export default function ChatContainer({
 
     const handleMouseUp = useCallback(() => {
         if (isDragging) {
-            setChatHeightCookie('chat-height', height, { path: '/' });
+            setCookie('chat-height', height, { path: '/' });
         }
         setIsDragging(false);
-    }, [isDragging, height, setChatHeightCookie]);
+    }, [isDragging, setCookie, height]);
 
     useEffect(() => {
         document.addEventListener('mousemove', handleMouseMove);
@@ -158,3 +164,5 @@ export default function ChatContainer({
         </div>
     );
 }
+
+export default React.memo(ChatContainer);
