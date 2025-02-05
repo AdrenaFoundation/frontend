@@ -305,11 +305,19 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   },
   {
     label: '',
-    time: '01/05',
+    time: '1/5',
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Adrena is now supported by Solana AgentKit from SendAI.`,
     type: 'Trading',
+  },
+  {
+    label: '',
+    time: '2/1',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Season 1: Expanse trading competition starts.`,
+    type: 'Global',
   },
 ];
 

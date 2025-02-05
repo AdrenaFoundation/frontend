@@ -79,6 +79,7 @@ export type PageProps = {
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
   triggerUserVestReload: () => void;
+  showFeesInPnl: boolean;
 };
 
 export type CustodyExtended = {

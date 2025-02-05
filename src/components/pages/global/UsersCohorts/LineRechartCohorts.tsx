@@ -23,15 +23,15 @@ function CustomRechartsToolTip({
   payload,
   label,
   precision = 2,
-  format = 'currency',
   labelCustomization,
   totalColor = 'red',
+  type,
 }: TooltipProps<ValueType, NameType> & {
   data: RechartsData[];
   precision?: number;
-  format?: 'currency' | 'percentage' | 'number';
   labelCustomization?: (label: string) => string;
   totalColor?: string;
+  type: 'users' | 'volumes' | 'trades';
 }) {
   if (active && payload && payload.length) {
     return (
@@ -42,8 +42,20 @@ function CustomRechartsToolTip({
           <thead>
             <th className='text-xs font-boldy'>Name</th>
             <th className='text-xs font-boldy'>Date</th>
-            <th className='text-xs font-boldy'>Traders</th>
-            <th className='text-xs font-boldy'>Retention</th>
+            <th className='text-xs font-boldy'>
+              {{
+                users: 'Users',
+                volumes: 'Volume',
+                trades: 'Trades',
+              }[type]}
+            </th>
+            <th className='text-xs font-boldy'>
+              {{
+                users: 'Retention',
+                volumes: 'Change',
+                trades: 'Change',
+              }[type]}
+            </th>
           </thead>
 
           <tbody>
@@ -64,11 +76,9 @@ function CustomRechartsToolTip({
                 {(() => {
                   const v = payload.reduce((acc, item) => acc + Number(item.value), 0);
 
-                  return format === 'currency'
+                  return type === 'volumes'
                     ? formatPriceInfo(Number(v), precision, precision)
-                    : format === 'percentage'
-                      ? formatPercentage(Number(v), precision)
-                      : formatNumber(Number(v), precision)
+                    : formatNumber(Number(v), precision)
                 })()}
               </td>
 
@@ -97,11 +107,9 @@ function CustomRechartsToolTip({
                     className={twMerge('font-mono')}
                     style={{ color: item.color }}
                   >
-                    {format === 'currency'
+                    {type === 'volumes'
                       ? formatPriceInfo(Number(item.value), precision, precision)
-                      : format === 'percentage'
-                        ? formatPercentage(Number(item.value), precision)
-                        : formatNumber(Number(item.value), precision)}
+                      : formatNumber(Number(item.value), precision)}
                   </span>
                 </td>
 
@@ -122,14 +130,14 @@ function CustomRechartsToolTip({
 export default function LineRechartCohorts({
   data,
   labels,
-  format,
+  type,
 }: {
   data: RechartsData[];
   labels: {
     name: string;
     color?: string;
   }[];
-  format: 'currency' | 'number';
+  type: 'users' | 'volumes' | 'trades';
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -156,7 +164,7 @@ export default function LineRechartCohorts({
               labelCustomization={(label: string) => {
                 return `from ${formatToWeekOf(label)} to ${formatToWeekOf(label, 1)}`;
               }}
-              format={format}
+              type={type}
             />
           }
           cursor={false}
