@@ -61,6 +61,7 @@ export default function ViewProfileModal({
                     userProfile={profile}
                     livePositionsNb={positions === null ? null : positions.length}
                     className="gap-y-4 pt-4 pb-4"
+                    showFeesInPnl={showFeesInPnl}
                 />
                 <StakingStats
                     stakingAccounts={stakingAccounts}

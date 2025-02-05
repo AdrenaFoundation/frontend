@@ -24,6 +24,7 @@ export default function Profile({
   readonly,
   wallet,
   userVest,
+  showFeesInPnl,
 }: PageProps & {
   readonly?: boolean;
 }) {
@@ -179,6 +180,7 @@ export default function Profile({
                   userProfile={userProfile}
                   livePositionsNb={positions === null ? null : positions.length}
                   className="gap-y-4 pt-4 pb-4"
+                  showFeesInPnl={showFeesInPnl}
                 />
 
                 <StakingStats
