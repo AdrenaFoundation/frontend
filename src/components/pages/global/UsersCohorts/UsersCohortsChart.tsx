@@ -139,7 +139,6 @@ export default function UsersCohortsChart() {
       type={type}
       data={chartData}
       labels={cohortsInfo ?? []}
-      format={type === 'volumes' ? 'currency' : 'number'}
     />
   </div>;
 }
