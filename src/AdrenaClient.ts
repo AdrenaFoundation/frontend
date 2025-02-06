@@ -50,6 +50,7 @@ import {
   ExitPriceAndFee,
   GenesisLock,
   ImageRef,
+  LimitOrderBookExtended,
   LockedStakeExtended,
   NewPositionPricesAndFee,
   OpenPositionWithSwapAmountAndFees,
@@ -399,6 +400,49 @@ export class AdrenaClient {
     return (
       this.readonlyAdrenaProgram || this.adrenaProgram
     ).account.vestRegistry.fetch(AdrenaClient.vestRegistryPda);
+  }
+
+  public async loadLimitOrderBook({
+    wallet,
+  }: {
+    wallet: PublicKey;
+  }): Promise<LimitOrderBookExtended | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    const limitOrderBook = await (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.limitOrderBook.fetchNullable(this.getLimitOrderBookPda(wallet));
+
+    if (!limitOrderBook) return null;
+
+    const collateralToken = this.tokens.find((t) =>
+      t.mint.equals(limitOrderBook.limitOrders[0].collateralCustody),
+    );
+
+    if (!collateralToken) return null;
+
+    const limitOrderBookExtended: LimitOrderBookExtended = {
+      initialized: limitOrderBook.initialized,
+      registeredLimitOrderCount: limitOrderBook.registeredLimitOrderCount,
+      owner: limitOrderBook.owner,
+      limitOrders: limitOrderBook.limitOrders.map((order) => ({
+        id: order.id.toNumber(),
+        triggerPrice: nativeToUi(order.triggerPrice, PRICE_DECIMALS),
+        limitPrice: order.limitPrice
+          ? nativeToUi(order.limitPrice, PRICE_DECIMALS)
+          : null,
+        custody: order.custody,
+        collateralCustody: order.collateralCustody,
+        side: order.side === 1 ? 'long' : 'short',
+        initialized: order.initialized,
+        amount: nativeToUi(order.amount, collateralToken.decimals),
+        leverage: order.leverage / BPS,
+      })),
+      escrowedLamports: nativeToUi(limitOrderBook.escrowedLamports, 9), // SOL has 9 decimals
+      pubkey: this.getLimitOrderBookPda(wallet),
+    };
+
+    return limitOrderBookExtended;
   }
 
   // Provide alternative user if you wanna get the profile of a specific user

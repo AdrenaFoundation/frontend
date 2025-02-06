@@ -259,12 +259,34 @@ export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
 export type GenesisLock = Accounts['genesisLock'];
 export type UserProfile = Accounts['userProfile'];
+export type LimitOrderBook = Accounts['limitOrderBook'];
 
 export type LockedStake = UserStaking['lockedStakes'][0];
 
 export type LockedStakeExtended = UserStaking['lockedStakes'][0] & {
   index: number;
   tokenSymbol: 'ADX' | 'ALP';
+};
+
+export type LimitOrder = {
+  id: number;
+  triggerPrice: number;
+  limitPrice: number | null;
+  custody: PublicKey;
+  collateralCustody: PublicKey;
+  side: 'long' | 'short';
+  initialized: number;
+  amount: number;
+  leverage: number;
+};
+
+export type LimitOrderBookExtended = {
+  initialized: number;
+  registeredLimitOrderCount: number;
+  owner: PublicKey;
+  limitOrders: LimitOrder[];
+  escrowedLamports: number;
+  pubkey: PublicKey;
 };
 
 export type GreaterThanOrEqual = 'gte';

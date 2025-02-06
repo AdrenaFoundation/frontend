@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import LimitOrder from '@/components/pages/trading/LimitOrder/LimitOrder';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
@@ -393,7 +394,7 @@ export default function Trade({
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
+                    view === 'history' ? 'opacity-100' : 'opacity-40',
                   )}
                   onClick={() => setView('history')}
                 >
@@ -426,12 +427,8 @@ export default function Trade({
 
               {view === 'limitOrder' ? (
                 <div className="flex flex-col w-full p-4">
-                  <Positions
-                    connected={connected}
-                    positions={positions}
-                    triggerUserProfileReload={triggerUserProfileReload}
-                    isBigScreen={isBigScreen}
-                    showFeesInPnl={showFeesInPnl}
+                  <LimitOrder
+                    selectedToken={tokenB}
                   />
                 </div>
               ) : null}
@@ -448,7 +445,7 @@ export default function Trade({
                   )}
                   onClick={() => setView('positions')}
                 >
-                  Positions
+                  Open positions
                 </span>
 
                 <span className="opacity-20">|</span>
@@ -468,11 +465,11 @@ export default function Trade({
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    view === "history" ? 'opacity-100' : 'opacity-40',
+                    view === 'history' ? 'opacity-100' : 'opacity-40',
                   )}
                   onClick={() => setView('history')}
                 >
-                  History
+                  Trade history
                 </span>
 
               </div>
@@ -489,12 +486,8 @@ export default function Trade({
 
               {view === 'limitOrder' ? (
                 <div className="mt-1 w-full p-4">
-                  <Positions
-                    connected={connected}
-                    positions={positions}
-                    triggerUserProfileReload={triggerUserProfileReload}
-                    isBigScreen={isBigScreen}
-                    showFeesInPnl={showFeesInPnl}
+                  <LimitOrder
+                    selectedToken={tokenB}
                   />
                 </div>
               ) : null}
