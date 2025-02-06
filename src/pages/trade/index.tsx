@@ -65,9 +65,7 @@ export default function Trade({
   activeRpc,
   adapters,
   showFeesInPnl,
-}: PageProps & {
-  showFeesInPnl: boolean;
-}) {
+}: PageProps) {
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
