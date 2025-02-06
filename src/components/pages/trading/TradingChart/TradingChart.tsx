@@ -8,11 +8,13 @@ import { PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
+  ChartPropertiesOverrides,
   EntityId,
   IChartingLibraryWidget,
   ISymbolValueFormatter,
   ResolutionString,
   SupportedLineTools,
+  Timezone,
 } from '../../../../../public/charting_library/charting_library';
 import datafeed from './datafeed';
 
@@ -61,6 +63,8 @@ export default function TradingChart({
 
   // Retrieve saved resolution or default to 'H'
   const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || 'H';
+  const savedTimezone =
+    localStorage.getItem('trading_chart_timezone') || 'Etc/UTC';
 
   useEffect(() => {
     function createWidget() {
@@ -109,6 +113,25 @@ export default function TradingChart({
             'header_fullscreen_button',
             'header_settings',
           ],
+          settings_adapter: {
+            initialSettings: {
+              timezone: savedTimezone as Timezone,
+            },
+            setValue: function (_, value) {
+              const chartprops = JSON.parse(value) as ChartPropertiesOverrides;
+              const currentTimezone = chartprops.timezone;
+              console.log(
+                `current value: ${currentTimezone}, saved value: ${savedTimezone}`,
+              );
+
+              if (!currentTimezone || currentTimezone === savedTimezone) {
+                return;
+              }
+
+              localStorage.setItem('trading_chart_timezone', currentTimezone);
+            },
+            removeValue: function () { },
+          },
           custom_css_url: '/tradingview.css',
           theme: 'dark',
           interval: SUPPORTED_RESOLUTIONS.includes(
@@ -141,6 +164,7 @@ export default function TradingChart({
             'paneProperties.legendProperties.showBarChange': false,
             'paneProperties.legendProperties.showSeriesOHLC': true,
             'mainSeriesProperties.priceLineColor': '#FFFF05',
+            timezone: savedTimezone as Timezone,
           });
 
           // Note: this event is triggered before positionLines array is updated in the react state
@@ -258,7 +282,12 @@ export default function TradingChart({
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary select-none">
-      <Loader className={twMerge('mt-[20%] ml-auto mr-auto', isLoading ? '' : 'hidden')} />
+      <Loader
+        className={twMerge(
+          'mt-[20%] ml-auto mr-auto',
+          isLoading ? '' : 'hidden',
+        )}
+      />
       <div
         id="wrapper-trading-chart"
         className={twMerge(
