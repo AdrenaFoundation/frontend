@@ -29,15 +29,15 @@ export default function LimitOrder({
         walletAddress: walletAddress?.walletAddress ?? null,
     });
 
-    if (isLoading) {
-        return (
-            <div className="flex h-full w-full items-center justify-center">
-                <Loader
-                    className="h-12 w-12"
-                />
-            </div>
-        );
-    }
+    /*  if (isLoading) {
+         return (
+             <div className="flex h-full w-full items-center justify-center">
+                 <Loader
+                     className="h-12 w-12"
+                 />
+             </div>
+         );
+     } */
 
     // Filter orders based on selected token, considering token mapping
     const filteredOrders = limitOrderBook?.limitOrders.filter(order => {
