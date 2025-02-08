@@ -26,7 +26,7 @@ function getWeekIndexFromWeek(week: string): number {
 const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
 
 export default function Leaderboards() {
-    const [week, setWeek] = useState<string>('Week 1');
+    const [week, setWeek] = useState<string>('Week 2');
     const { allUserProfiles } = useAllUserProfiles();
     const wallet = useSelector((s) => s.walletState.wallet);
     const leaderboardData = useExpanseData({ allUserProfiles });
