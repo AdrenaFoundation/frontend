@@ -71,7 +71,7 @@ export default function OwnerBloc({
     try {
       if (!walletPubkey) return notification.currentStepErrored('Wallet not connected');
 
-      await window.adrena.client.editUserProfile({
+      await window.adrena.client.editUserProfileNickname({
         nickname: trimmedNickname,
         notification,
       });

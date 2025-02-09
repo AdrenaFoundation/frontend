@@ -618,6 +618,78 @@ export type Adrena = {
       "args": []
     },
     {
+      "name": "migrateUserProfileFromV1ToV2",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1",
+            "Wallet related to the user profile"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2",
+            "Account paying for the reallocation"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "userNickname",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4",
+            "Use PDA to make nicknames unique"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "MigrateUserProfileFromV1ToV2Params"
+          }
+        }
+      ]
+    },
+    {
       "name": "claimVest",
       "accounts": [
         {
@@ -2579,7 +2651,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#12"
           ]
@@ -2721,7 +2792,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#13"
           ]
@@ -2959,7 +3029,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#25"
           ]
@@ -3213,7 +3282,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#27"
           ]
@@ -3871,7 +3939,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#21"
           ]
@@ -4077,7 +4144,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#22"
           ]
@@ -4267,7 +4333,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#20"
           ]
@@ -4465,7 +4530,6 @@ export type Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#21"
           ]
@@ -5546,11 +5610,20 @@ export type Adrena = {
           ]
         },
         {
+          "name": "userNickname",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4",
+            "Use PDA to make nicknames unique"
+          ]
+        },
+        {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -5558,7 +5631,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         }
       ],
@@ -5612,6 +5685,93 @@ export type Adrena = {
           "name": "params",
           "type": {
             "defined": "EditUserProfileParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "editUserProfileNickname",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "fundingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "oldUserNickname",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "userNickname",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7",
+            "Use PDA to make nicknames unique"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "EditUserProfileNicknameParams"
           }
         }
       ]
@@ -9378,7 +9538,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "userProfile",
+      "name": "userProfileV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -9387,11 +9547,15 @@ export type Adrena = {
             "type": "u8"
           },
           {
+            "name": "version",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                7
+                6
               ]
             }
           },
@@ -9431,6 +9595,99 @@ export type Adrena = {
             "name": "longStats",
             "type": {
               "defined": "TradingStats"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "userProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "profilePicture",
+            "type": "u8"
+          },
+          {
+            "name": "wallpaper",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "nickname",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "swapCount",
+            "type": "u64"
+          },
+          {
+            "name": "swapVolumeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "swapFeePaidUsd",
+            "type": "u64"
+          },
+          {
+            "name": "shortStats",
+            "type": {
+              "defined": "TradingStats"
+            }
+          },
+          {
+            "name": "longStats",
+            "type": {
+              "defined": "TradingStats"
+            }
+          },
+          {
+            "name": "achievements",
+            "type": {
+              "array": [
+                "u8",
+                256
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
             }
           }
         ]
@@ -10467,7 +10724,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "EditUserProfileParams",
+      "name": "EditUserProfileNicknameParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -10479,7 +10736,51 @@ export type Adrena = {
       }
     },
     {
+      "name": "EditUserProfileParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "profilePicture",
+            "type": "u8"
+          },
+          {
+            "name": "wallpaper",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "InitUserProfileParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nickname",
+            "type": "string"
+          },
+          {
+            "name": "profilePicture",
+            "type": "u8"
+          },
+          {
+            "name": "wallpaper",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MigrateUserProfileFromV1ToV2Params",
       "type": {
         "kind": "struct",
         "fields": [
@@ -11666,6 +11967,77 @@ export type Adrena = {
       }
     },
     {
+      "name": "Title",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Zero"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Wallpaper",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Zero"
+          },
+          {
+            "name": "One"
+          },
+          {
+            "name": "Two"
+          },
+          {
+            "name": "Three"
+          },
+          {
+            "name": "Four"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProfilePicture",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Zero"
+          },
+          {
+            "name": "One"
+          },
+          {
+            "name": "Two"
+          },
+          {
+            "name": "Three"
+          },
+          {
+            "name": "Four"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserProfileVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
+          }
+        ]
+      }
+    },
+    {
       "name": "VestVersion",
       "type": {
         "kind": "enum",
@@ -12541,6 +12913,16 @@ export type Adrena = {
     },
     {
       "code": 6071,
+      "name": "InvalidWallpaperOrProfilePictureOrTitle",
+      "msg": "Wallpaper or Profile Picture or Title is invalid"
+    },
+    {
+      "code": 6072,
+      "name": "InvalidVersion",
+      "msg": "Invalid version"
+    },
+    {
+      "code": 6073,
       "name": "InvalidVestVersion",
       "msg": "Invalid vest version"
     }
@@ -13167,6 +13549,78 @@ export const IDL: Adrena = {
       "args": []
     },
     {
+      "name": "migrateUserProfileFromV1ToV2",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1",
+            "Wallet related to the user profile"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2",
+            "Account paying for the reallocation"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "userNickname",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4",
+            "Use PDA to make nicknames unique"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "MigrateUserProfileFromV1ToV2Params"
+          }
+        }
+      ]
+    },
+    {
       "name": "claimVest",
       "accounts": [
         {
@@ -15128,7 +15582,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#12"
           ]
@@ -15270,7 +15723,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#13"
           ]
@@ -15508,7 +15960,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#25"
           ]
@@ -15762,7 +16213,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#27"
           ]
@@ -16420,7 +16870,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#21"
           ]
@@ -16626,7 +17075,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#22"
           ]
@@ -16816,7 +17264,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#20"
           ]
@@ -17014,7 +17461,6 @@ export const IDL: Adrena = {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "isOptional": true,
           "docs": [
             "#21"
           ]
@@ -18095,11 +18541,20 @@ export const IDL: Adrena = {
           ]
         },
         {
+          "name": "userNickname",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4",
+            "Use PDA to make nicknames unique"
+          ]
+        },
+        {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -18107,7 +18562,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         }
       ],
@@ -18161,6 +18616,93 @@ export const IDL: Adrena = {
           "name": "params",
           "type": {
             "defined": "EditUserProfileParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "editUserProfileNickname",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "fundingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "oldUserNickname",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "userNickname",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7",
+            "Use PDA to make nicknames unique"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "EditUserProfileNicknameParams"
           }
         }
       ]
@@ -21927,7 +22469,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "userProfile",
+      "name": "userProfileV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -21936,11 +22478,15 @@ export const IDL: Adrena = {
             "type": "u8"
           },
           {
+            "name": "version",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                7
+                6
               ]
             }
           },
@@ -21980,6 +22526,99 @@ export const IDL: Adrena = {
             "name": "longStats",
             "type": {
               "defined": "TradingStats"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "userProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "profilePicture",
+            "type": "u8"
+          },
+          {
+            "name": "wallpaper",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "nickname",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "swapCount",
+            "type": "u64"
+          },
+          {
+            "name": "swapVolumeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "swapFeePaidUsd",
+            "type": "u64"
+          },
+          {
+            "name": "shortStats",
+            "type": {
+              "defined": "TradingStats"
+            }
+          },
+          {
+            "name": "longStats",
+            "type": {
+              "defined": "TradingStats"
+            }
+          },
+          {
+            "name": "achievements",
+            "type": {
+              "array": [
+                "u8",
+                256
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
             }
           }
         ]
@@ -23016,7 +23655,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "EditUserProfileParams",
+      "name": "EditUserProfileNicknameParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -23028,7 +23667,51 @@ export const IDL: Adrena = {
       }
     },
     {
+      "name": "EditUserProfileParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "profilePicture",
+            "type": "u8"
+          },
+          {
+            "name": "wallpaper",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "InitUserProfileParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nickname",
+            "type": "string"
+          },
+          {
+            "name": "profilePicture",
+            "type": "u8"
+          },
+          {
+            "name": "wallpaper",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MigrateUserProfileFromV1ToV2Params",
       "type": {
         "kind": "struct",
         "fields": [
@@ -24215,6 +24898,77 @@ export const IDL: Adrena = {
       }
     },
     {
+      "name": "Title",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Zero"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Wallpaper",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Zero"
+          },
+          {
+            "name": "One"
+          },
+          {
+            "name": "Two"
+          },
+          {
+            "name": "Three"
+          },
+          {
+            "name": "Four"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProfilePicture",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Zero"
+          },
+          {
+            "name": "One"
+          },
+          {
+            "name": "Two"
+          },
+          {
+            "name": "Three"
+          },
+          {
+            "name": "Four"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserProfileVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
+          }
+        ]
+      }
+    },
+    {
       "name": "VestVersion",
       "type": {
         "kind": "enum",
@@ -25090,6 +25844,16 @@ export const IDL: Adrena = {
     },
     {
       "code": 6071,
+      "name": "InvalidWallpaperOrProfilePictureOrTitle",
+      "msg": "Wallpaper or Profile Picture or Title is invalid"
+    },
+    {
+      "code": 6072,
+      "name": "InvalidVersion",
+      "msg": "Invalid version"
+    },
+    {
+      "code": 6073,
       "name": "InvalidVestVersion",
       "msg": "Invalid vest version"
     }

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import DataApiClient from '@/DataApiClient';
 import {
   MutagenLeaderboardData,
-  UserProfileExtended,
+  UserProfileMetadata,
 } from '@/types';
 
 function applyProfile(leaderboardData: MutagenLeaderboardData | null, allUsernames: Record<string, string>) {
@@ -19,16 +19,16 @@ function applyProfile(leaderboardData: MutagenLeaderboardData | null, allUsernam
 }
 
 export default function useMutagenLeaderboardData({
-  allUserProfiles,
+  allUserProfilesMetadata,
 }: {
-  allUserProfiles: UserProfileExtended[];
+  allUserProfilesMetadata: UserProfileMetadata[];
 }): MutagenLeaderboardData | null {
   const [leaderboardData, setLeaderboardData] = useState<MutagenLeaderboardData | null>(null);
 
-  const allUsernames = useMemo(() => allUserProfiles.reduce((acc, profile) => {
+  const allUsernames = useMemo(() => allUserProfilesMetadata.reduce((acc, profile) => {
     acc[profile.owner.toBase58()] = profile.nickname;
     return acc;
-  }, {} as Record<string, string>), [allUserProfiles]);
+  }, {} as Record<string, string>), [allUserProfilesMetadata]);
 
   useEffect(() => {
     if (!allUsernames) return;

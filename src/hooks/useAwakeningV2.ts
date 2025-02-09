@@ -5,7 +5,7 @@ import {
   PreSeasonLeaderboardReturnTypeAPI,
   RankedRewards,
   TradingCompetitionLeaderboardAPI,
-  UserProfileExtended,
+  UserProfileMetadata,
 } from '@/types';
 import { calculateWeeksPassed } from '@/utils';
 
@@ -168,13 +168,13 @@ const processAchievements = (
 
 export default function useAwakeningV2({
   wallet,
-  allUserProfiles,
+  allUserProfilesMetadata,
 }: {
   wallet: {
     adapterName: WalletAdapterName;
     walletAddress: string;
   } | null;
-  allUserProfiles: UserProfileExtended[];
+  allUserProfilesMetadata: UserProfileMetadata[];
 }) {
   const [data, setData] = useState<{
     startDate: string;
@@ -190,14 +190,14 @@ export default function useAwakeningV2({
   } | null>(null);
 
   const userProfilesMap = useMemo(() => {
-    return allUserProfiles.reduce(
+    return allUserProfilesMetadata.reduce(
       (acc, profile) => {
         acc[profile.owner.toBase58()] = profile.nickname;
         return acc;
       },
       {} as Record<string, string>,
     );
-  }, [allUserProfiles]);
+  }, [allUserProfilesMetadata]);
 
   const getUserName = useCallback(
     (address: string | null) => {

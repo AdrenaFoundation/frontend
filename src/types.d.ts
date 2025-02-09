@@ -210,6 +210,15 @@ export interface Token {
   pythPriceUpdateV2?: PublicKey;
 }
 
+export type UserProfileMetadata = {
+  owner: PublicKey;
+  nickname: string;
+  profilePicture: number;
+  wallpaper: number;
+  title: number;
+};
+
+// Abstraction to work for all UserProfile versions and that fit frontend needs
 export type UserProfileExtended = {
   pubkey: PublicKey;
   nickname: string;
@@ -243,7 +252,7 @@ export type UserProfileExtended = {
     lossesUsd: number;
     feePaidUsd: number;
   };
-  nativeObject: UserProfile;
+  // nativeObject: UserProfile;
 };
 
 //
@@ -263,6 +272,7 @@ export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
 export type GenesisLock = Accounts['genesisLock'];
 export type UserProfile = Accounts['userProfile'];
+export type UserProfileV1 = Accounts['userProfileV1'];
 
 export type LockedStake = UserStaking['lockedStakes'][0];
 

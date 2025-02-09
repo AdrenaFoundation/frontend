@@ -24,7 +24,7 @@ import LeaderboardTable from '@/components/pages/ranked/AwakeningLeaderboardTabl
 import WeeklyReward from '@/components/pages/ranked/AwakeningWeeklyReward';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useAwakeningV2 from '@/hooks/useAwakeningV2';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserStats } from '@/types';
@@ -476,8 +476,8 @@ export default function Awakening({
 
     // hooks
     const wallet = useSelector((state) => state.walletState.wallet);
-    const { allUserProfiles } = useAllUserProfiles();
-    const awakeningData = useAwakeningV2({ wallet, allUserProfiles });
+    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+    const awakeningData = useAwakeningV2({ wallet, allUserProfilesMetadata });
 
     // effects
     useEffect(() => {
@@ -498,7 +498,7 @@ export default function Awakening({
         },
     };
 
-    const userProfile = allUserProfiles.find(
+    const userProfile = allUserProfilesMetadata.find(
         (p) => p.owner.toBase58() === wallet?.walletAddress,
     );
 
@@ -515,13 +515,16 @@ export default function Awakening({
     const hasProfile = userProfile !== undefined;
 
     const handleProfileView = useCallback(
-        (username: string) => {
-            const profile = allUserProfiles.find((p) => p.nickname === username);
+        async (username: string) => {
+            const profile = allUserProfilesMetadata.find((p) => p.nickname === username);
+
             if (profile) {
-                setProfile(profile);
+                const p = await window.adrena.client.loadUserProfile(profile.owner);
+
+                setProfile(p !== false ? p : null);
             }
         },
-        [allUserProfiles],
+        [allUserProfilesMetadata],
     );
 
     if (awakeningData === null)

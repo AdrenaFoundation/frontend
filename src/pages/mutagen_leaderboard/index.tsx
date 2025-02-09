@@ -9,13 +9,13 @@ import Modal from "@/components/common/Modal/Modal";
 import Loader from "@/components/Loader/Loader";
 import MutagenLeaderboard from "@/components/pages/mutagen_leaderboard/MutagenLeaderboard";
 import ViewProfileModal from "@/components/pages/profile/ViewProfileModal";
-import { useAllUserProfiles } from "@/hooks/useAllUserProfiles";
+import { useAllUserProfilesMetadata } from "@/hooks/useAllUserProfilesMetadata";
 import useMutagenLeaderboardData from "@/hooks/useMutagenLeaderboardData";
 import { UserProfileExtended } from "@/types";
 
 export default function Index() {
-    const { allUserProfiles } = useAllUserProfiles();
-    const leaderboardData = useMutagenLeaderboardData({ allUserProfiles });
+    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+    const leaderboardData = useMutagenLeaderboardData({ allUserProfilesMetadata });
 
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
@@ -73,9 +73,10 @@ export default function Index() {
             {leaderboardData ? <MutagenLeaderboard
                 className="pb-8"
                 data={leaderboardData}
-                onClickUserProfile={(wallet: PublicKey) => {
-                    const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
-                    setActiveProfile(profile ?? null);
+                onClickUserProfile={async (wallet: PublicKey) => {
+                    const p = await window.adrena.client.loadUserProfile(wallet);
+
+                    setActiveProfile(p !== false ? p : null);
                 }}
             /> : <Loader className="flex w-full items-center justify-center mb-8 mt-8" />}
         </div>

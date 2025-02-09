@@ -10,7 +10,7 @@ import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useExpanseData from '@/hooks/useExpanseData';
 import { useSelector } from '@/store/store';
@@ -27,9 +27,9 @@ const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111
 
 export default function Leaderboards() {
     const [week, setWeek] = useState<string>('Week 2');
-    const { allUserProfiles } = useAllUserProfiles();
+    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
     const wallet = useSelector((s) => s.walletState.wallet);
-    const leaderboardData = useExpanseData({ allUserProfiles });
+    const leaderboardData = useExpanseData({ allUserProfilesMetadata });
     const isMobile = useBetterMediaQuery('(max-width: 25em)');
     const isLarge = useBetterMediaQuery('(min-width: 1500px)');
 
@@ -229,9 +229,10 @@ export default function Leaderboards() {
                             {weekInfo ? <ExpanseWeeklyLeaderboard
                                 isMobile={isMobile}
                                 isLarge={isLarge}
-                                onClickUserProfile={(wallet) => {
-                                    const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
-                                    setActiveProfile(profile ?? null);
+                                onClickUserProfile={async (wallet: PublicKey) => {
+                                    const p = await window.adrena.client.loadUserProfile(wallet);
+
+                                    setActiveProfile(p !== false ? p : null);
                                 }}
                                 data={weekInfo}
                                 startDate={weekInfo.startDate}
@@ -336,9 +337,10 @@ export default function Leaderboards() {
                                 isMobile={isMobile}
                                 isLarge={isLarge}
                                 data={leaderboardData.seasonLeaderboard}
-                                onClickUserProfile={(wallet: PublicKey) => {
-                                    const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
-                                    setActiveProfile(profile ?? null);
+                                onClickUserProfile={async (wallet: PublicKey) => {
+                                    const p = await window.adrena.client.loadUserProfile(wallet);
+
+                                    setActiveProfile(p !== false ? p : null);
                                 }}
                             /> : <Loader className='self-center mt-8 mb-8' />}
                         </div>

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import DataApiClient from '@/DataApiClient';
 import {
   SeasonLeaderboardsData,
-  UserProfileExtended,
+  UserProfileMetadata,
 } from '@/types';
 
 function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allUsernames: Record<string, string>) {
@@ -25,16 +25,16 @@ function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allUsernam
 }
 
 export default function useExpanseData({
-  allUserProfiles,
+  allUserProfilesMetadata,
 }: {
-  allUserProfiles: UserProfileExtended[];
+  allUserProfilesMetadata: UserProfileMetadata[];
 }): SeasonLeaderboardsData | null {
   const [leaderboardData, setLeaderboardData] = useState<SeasonLeaderboardsData | null>(null);
 
-  const allUsernames = useMemo(() => allUserProfiles.reduce((acc, profile) => {
+  const allUsernames = useMemo(() => allUserProfilesMetadata.reduce((acc, profile) => {
     acc[profile.owner.toBase58()] = profile.nickname;
     return acc;
-  }, {} as Record<string, string>), [allUserProfiles]);
+  }, {} as Record<string, string>), [allUserProfilesMetadata]);
 
   useEffect(() => {
     if (!allUsernames) return;

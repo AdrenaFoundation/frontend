@@ -28,6 +28,15 @@ export default function Profile({
 }: PageProps & {
   readonly?: boolean;
 }) {
+  const [profileMetadata, setProfileMetadata] = useState<{
+    profilePicture: number;
+    wallpaper: number;
+    title: number;
+  }>({
+    profilePicture: 0,
+    wallpaper: 0,
+    title: 0,
+  });
   const [nickname, setNickname] = useState<string | null>(null);
   const walletAddress = useSelector(selectWalletAddress);
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
@@ -122,6 +131,9 @@ export default function Profile({
       await window.adrena.client.initUserProfile({
         nickname: trimmedNickname,
         notification,
+        profilePicture: profileMetadata.profilePicture,
+        wallpaper: profileMetadata.wallpaper,
+        title: profileMetadata.title,
       });
 
       await kv.set(trimmedNickname, wallet.publicKey.toBase58());
