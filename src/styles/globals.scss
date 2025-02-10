@@ -157,8 +157,8 @@
     @apply border-b border-dashed border-[#8C8D97];
   }
   .underline-dashed {
-    border-bottom: 1px dashed currentColor;
-    padding-bottom: 0.02rem;
+    border-bottom: 1px dashed gray;
+    width: fit-content;
   }
 }
 

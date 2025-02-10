@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { memo, useRef, useState, useEffect } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -56,7 +56,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
     if (!token || !collateralToken) return null;
 
     const columnClasses = twMerge(
-        "flex flex-col gap-1.5",
+        "flex flex-col gap-0.5",
         isBig ? "flex-1" : "",
         isCompact ? "flex-1" : "",
         isMedium ? "flex-1 min-w-[9em]" : "",
@@ -99,15 +99,15 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                 <div className="grow shrink basis-0 h-9 justify-between items-center flex">
                     <div className="justify-start items-center gap-2.5 flex">
                         <Image
-                            className="w-7 h-7 rounded-full"
+                            className="w-8 h-8 rounded-full"
                             src={getTokenImage(token)}
-                            width={36}
-                            height={36}
+                            width={200}
+                            height={200}
                             alt={`${getTokenSymbol(token.symbol)} logo`}
                         />
                         <div className="flex-col justify-start items-start gap-0.5 inline-flex">
                             <div className="justify-start items-center gap-2 inline-flex">
-                                <div className="text-center text-whiteLabel text-lg font-black font-mono">
+                                <div className="text-center text-whiteLabel text-lg font-black font-mono tracking-wider">
                                     {getTokenSymbol(token.symbol)}
                                 </div>
                                 <div className={`px-2 py-1 rounded-lg justify-center items-center gap-2 flex ${order.side === 'long' ? 'bg-greenSide/10' : 'bg-redSide/10'}`}>

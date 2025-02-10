@@ -1,7 +1,6 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Loader from '@/components/Loader/Loader';
 import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -28,16 +27,6 @@ export default function LimitOrder({
     const { limitOrderBook, isLoading } = useLimitOrderBook({
         walletAddress: walletAddress?.walletAddress ?? null,
     });
-
-    /*  if (isLoading) {
-         return (
-             <div className="flex h-full w-full items-center justify-center">
-                 <Loader
-                     className="h-12 w-12"
-                 />
-             </div>
-         );
-     } */
 
     // Filter orders based on selected token, considering token mapping
     const filteredOrders = limitOrderBook?.limitOrders.filter(order => {
@@ -69,7 +58,7 @@ export default function LimitOrder({
     return (
         <div
             className={twMerge(
-                'flex flex-col gap-3 mt-3 h-full w-full items-center',
+                'flex flex-col gap-3 h-full w-full items-center',
                 className,
             )}
         >
