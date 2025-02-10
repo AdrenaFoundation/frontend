@@ -87,7 +87,6 @@ export function PositionBlock({
     }
 
     const interval = setInterval(() => {
-      console.log('interval')
       const openedDuration = Date.now() - openedTime;
       const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
 
@@ -181,7 +180,7 @@ export function PositionBlock({
             <ValueColumn
               label="Time Open"
               value={formatTimeDifference(getFullTimeDifference(position.openDate, new Date(Date.now())))}
-              valueClassName={POSITION_BLOCK_STYLES.text.gray}
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
               columnClasses={columnClasses}
             />
 
@@ -271,11 +270,11 @@ export function PositionBlock({
                   nb={tradeTokenPrice}
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
-                  className={POSITION_BLOCK_STYLES.text.gray}
+                  className={POSITION_BLOCK_STYLES.text.white}
                   isDecimalDimmed={false}
                 />
               }
-              valueClassName={POSITION_BLOCK_STYLES.text.gray}
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
               columnClasses={columnClasses}
             />
 
