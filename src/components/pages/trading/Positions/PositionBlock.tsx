@@ -175,7 +175,7 @@ export function PositionBlock({
             (isMedium) && "grid grid-cols-3 gap-2 justify-items-center",
             (isCompact) && "grid grid-cols-4 gap-2 justify-items-center",
             (isBig) && "grid grid-cols-7 gap-2 justify-items-center",
-            (isBiggest) && "justify-around gap-2"
+            (isBiggest) && "justify-between gap-2"
           )}>
             <ValueColumn
               label="Time Open"
