@@ -1,5 +1,5 @@
 export type Adrena = {
-  "version": "1.1.8",
+  "version": "1.1.9",
   "name": "adrena",
   "instructions": [
     {
@@ -2562,9 +2562,19 @@ export type Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -2572,7 +2582,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -2580,7 +2590,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -2588,7 +2598,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -2596,7 +2606,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -2604,7 +2614,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -2612,7 +2622,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -2620,7 +2630,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -2628,7 +2638,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -2636,7 +2646,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -2644,7 +2654,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -2652,7 +2662,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -2660,7 +2670,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -2668,7 +2678,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         },
         {
@@ -2676,7 +2686,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#16"
           ]
         }
       ],
@@ -2695,9 +2705,19 @@ export type Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -2705,7 +2725,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -7899,9 +7919,19 @@ export type Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -7909,7 +7939,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -7917,7 +7947,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -7925,7 +7955,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -7933,7 +7963,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -7941,7 +7971,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -7949,7 +7979,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -7957,7 +7987,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -7965,7 +7995,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -7973,7 +8003,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -7981,7 +8011,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -7989,7 +8019,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -7997,7 +8027,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -8005,7 +8035,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         }
       ],
@@ -8086,9 +8116,19 @@ export type Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -8096,7 +8136,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -8104,7 +8144,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -8112,7 +8152,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -8120,7 +8160,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -8128,7 +8168,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -8136,7 +8176,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -8144,7 +8184,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -8152,7 +8192,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -8160,7 +8200,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -8168,7 +8208,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -8176,7 +8216,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -8184,7 +8224,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -8192,7 +8232,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         },
         {
@@ -8200,7 +8240,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#16"
           ]
         }
       ],
@@ -8813,6 +8853,569 @@ export type Adrena = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "initLimitOrderBook",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "addLimitOrder",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "fundingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "collateralCustodyMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "AddLimitOrderParams"
+          }
+        }
+      ],
+      "returns": "u64"
+    },
+    {
+      "name": "cancelLimitOrder",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "receivingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "collateralCustodyMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "CancelLimitOrderParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "executeLimitOrderLong",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "custodyOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "custodyTradeOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "custodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "ExecuteLimitOrderLongParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "executeLimitOrderShort",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "custodyTradeOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "collateralCustodyOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#17"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "ExecuteLimitOrderShortParams"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -9152,6 +9755,54 @@ export type Adrena = {
       }
     },
     {
+      "name": "limitOrderBook",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "initialized",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "registeredLimitOrderCount",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "limitOrders",
+            "type": {
+              "array": [
+                {
+                  "defined": "LimitOrder"
+                },
+                16
+              ]
+            }
+          },
+          {
+            "name": "escrowedLamports",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "pool",
       "type": {
         "kind": "struct",
@@ -9232,9 +9883,13 @@ export type Adrena = {
             "type": {
               "array": [
                 "u8",
-                16
+                8
               ]
             }
+          },
+          {
+            "name": "uniqueLimitOrderIdCounter",
+            "type": "u64"
           },
           {
             "name": "aumUsd",
@@ -10374,6 +11029,72 @@ export type Adrena = {
       }
     },
     {
+      "name": "AddLimitOrderParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "triggerPrice",
+            "type": "u64"
+          },
+          {
+            "name": "limitPrice",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "leverage",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CancelLimitOrderParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExecuteLimitOrderLongParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExecuteLimitOrderShortParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "SetStopLossLongParams",
       "type": {
         "kind": "struct",
@@ -11484,6 +12205,70 @@ export type Adrena = {
               "array": [
                 "u8",
                 8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LimitOrder",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "triggerPrice",
+            "type": "u64"
+          },
+          {
+            "name": "limitPrice",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "custody",
+            "type": "publicKey"
+          },
+          {
+            "name": "collateralCustody",
+            "type": "publicKey"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "initialized",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "leverage",
+            "type": "u32"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                4
               ]
             }
           }
@@ -12913,16 +13698,21 @@ export type Adrena = {
     },
     {
       "code": 6071,
+      "name": "InvalidLimitOrderState",
+      "msg": "Invalid limit order state"
+    },
+    {
+      "code": 6072,
       "name": "InvalidWallpaperOrProfilePictureOrTitle",
       "msg": "Wallpaper or Profile Picture or Title is invalid"
     },
     {
-      "code": 6072,
+      "code": 6073,
       "name": "InvalidVersion",
       "msg": "Invalid version"
     },
     {
-      "code": 6073,
+      "code": 6074,
       "name": "InvalidVestVersion",
       "msg": "Invalid vest version"
     }
@@ -12930,7 +13720,7 @@ export type Adrena = {
 };
 
 export const IDL: Adrena = {
-  "version": "1.1.8",
+  "version": "1.1.9",
   "name": "adrena",
   "instructions": [
     {
@@ -15493,9 +16283,19 @@ export const IDL: Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -15503,7 +16303,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -15511,7 +16311,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -15519,7 +16319,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -15527,7 +16327,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -15535,7 +16335,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -15543,7 +16343,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -15551,7 +16351,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -15559,7 +16359,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -15567,7 +16367,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -15575,7 +16375,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -15583,7 +16383,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -15591,7 +16391,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -15599,7 +16399,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         },
         {
@@ -15607,7 +16407,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#16"
           ]
         }
       ],
@@ -15626,9 +16426,19 @@ export const IDL: Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -15636,7 +16446,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -20830,9 +21640,19 @@ export const IDL: Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -20840,7 +21660,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -20848,7 +21668,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -20856,7 +21676,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -20864,7 +21684,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -20872,7 +21692,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -20880,7 +21700,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -20888,7 +21708,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -20896,7 +21716,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -20904,7 +21724,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -20912,7 +21732,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -20920,7 +21740,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -20928,7 +21748,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -20936,7 +21756,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         }
       ],
@@ -21017,9 +21837,19 @@ export const IDL: Adrena = {
         {
           "name": "owner",
           "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#1 Must be signer or not depending",
+            "if the caller is the transfer_authority (internal call for limit order) or the owner",
+            ""
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
           "isSigner": true,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -21027,7 +21857,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -21035,7 +21865,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -21043,7 +21873,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -21051,7 +21881,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -21059,7 +21889,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -21067,7 +21897,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -21075,7 +21905,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -21083,7 +21913,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -21091,7 +21921,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -21099,7 +21929,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -21107,7 +21937,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -21115,7 +21945,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -21123,7 +21953,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         },
         {
@@ -21131,7 +21961,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#16"
           ]
         }
       ],
@@ -21744,6 +22574,569 @@ export const IDL: Adrena = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "initLimitOrderBook",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "addLimitOrder",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "fundingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "collateralCustodyMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "AddLimitOrderParams"
+          }
+        }
+      ],
+      "returns": "u64"
+    },
+    {
+      "name": "cancelLimitOrder",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "receivingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "collateralCustodyMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "CancelLimitOrderParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "executeLimitOrderLong",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "custodyOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "custodyTradeOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "custodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "ExecuteLimitOrderLongParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "executeLimitOrderShort",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "collateralEscrow",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "custodyTradeOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "collateralCustodyOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "userProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "limitOrderBook",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#17"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "ExecuteLimitOrderShortParams"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -22083,6 +23476,54 @@ export const IDL: Adrena = {
       }
     },
     {
+      "name": "limitOrderBook",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "initialized",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "registeredLimitOrderCount",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "limitOrders",
+            "type": {
+              "array": [
+                {
+                  "defined": "LimitOrder"
+                },
+                16
+              ]
+            }
+          },
+          {
+            "name": "escrowedLamports",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "pool",
       "type": {
         "kind": "struct",
@@ -22163,9 +23604,13 @@ export const IDL: Adrena = {
             "type": {
               "array": [
                 "u8",
-                16
+                8
               ]
             }
+          },
+          {
+            "name": "uniqueLimitOrderIdCounter",
+            "type": "u64"
           },
           {
             "name": "aumUsd",
@@ -23305,6 +24750,72 @@ export const IDL: Adrena = {
       }
     },
     {
+      "name": "AddLimitOrderParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "triggerPrice",
+            "type": "u64"
+          },
+          {
+            "name": "limitPrice",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "leverage",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CancelLimitOrderParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExecuteLimitOrderLongParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExecuteLimitOrderShortParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "SetStopLossLongParams",
       "type": {
         "kind": "struct",
@@ -24415,6 +25926,70 @@ export const IDL: Adrena = {
               "array": [
                 "u8",
                 8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LimitOrder",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "triggerPrice",
+            "type": "u64"
+          },
+          {
+            "name": "limitPrice",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "custody",
+            "type": "publicKey"
+          },
+          {
+            "name": "collateralCustody",
+            "type": "publicKey"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "initialized",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "leverage",
+            "type": "u32"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                4
               ]
             }
           }
@@ -25844,16 +27419,21 @@ export const IDL: Adrena = {
     },
     {
       "code": 6071,
+      "name": "InvalidLimitOrderState",
+      "msg": "Invalid limit order state"
+    },
+    {
+      "code": 6072,
       "name": "InvalidWallpaperOrProfilePictureOrTitle",
       "msg": "Wallpaper or Profile Picture or Title is invalid"
     },
     {
-      "code": 6072,
+      "code": 6073,
       "name": "InvalidVersion",
       "msg": "Invalid version"
     },
     {
-      "code": 6073,
+      "code": 6074,
       "name": "InvalidVestVersion",
       "msg": "Invalid vest version"
     }
