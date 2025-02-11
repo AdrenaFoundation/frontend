@@ -203,7 +203,7 @@ export default function OwnerBloc({
             <span className='text-sm font-archivoblack'>Nameless One</span>
             <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
 
-            {canUpdateNickname ? (
+            {canUpdateNickname && userProfile.version > 1 ? (
               <Tippy
                 content={
                   <div className="text-sm">Coming soon</div>
@@ -225,8 +225,7 @@ export default function OwnerBloc({
           />
         </> : null}
 
-        {!readonly ? <div className="absolute top-2 right-4 z-20 ">
-
+        {!readonly && userProfile.version > 1 ? <div className="absolute top-2 right-4 z-20 ">
           <div
             className='text-xs opacity-70 cursor-pointer flex hover:opacity-100'
             onClick={() => setIsUpdatingMetadata(true)}
@@ -242,9 +241,22 @@ export default function OwnerBloc({
           close={() => {
             setNicknameUpdating(false);
           }}
-          className="max-w-[100%] w-[30em] pl-8 pr-8 pt-8"
+          className="max-w-[100%] w-[30em] pl-8 pr-8 pt-5"
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
+            <div className="text-sm flex w-full items-center justify-between">
+              <div className='font-thin text-base'>Cost </div>
+
+              <div className='flex items-center gap-2 text-base'>
+                <Image
+                  src={adxLogo}
+                  alt="ADX logo"
+                  className="w-[1.2em] h-[1.2em]"
+                />
+
+                500 ADX
+              </div>
+            </div>
 
             <InputString
               className="font-boldy text-xl relative p-3 border rounded-lg text-center"
@@ -273,22 +285,6 @@ export default function OwnerBloc({
                 null}
             </div>
 
-            {userProfile.version > 1 ? <>
-              <div className="text-sm flex gap-2 w-full items-center justify-between">
-                <div className='font-thin text-base'>Cost </div>
-
-                <div className='flex items-center gap-2 text-base'>
-                  <Image
-                    src={adxLogo}
-                    alt="ADX logo"
-                    className="w-[1.2em] h-[1.2em]"
-                  />
-
-                  500 ADX
-                </div>
-              </div>
-            </> : null}
-
             <div className='w-full h-[1px] bg-bcolor mt-1' />
 
             <div className='flex items-center justify-center gap-8 pb-6 pt-2'>
@@ -302,7 +298,7 @@ export default function OwnerBloc({
               />
 
               <Button
-                title={userProfile.version > 1 ? "Pay & Save" : "Save"}
+                title={"Pay and Update"}
                 variant='primary'
                 onClick={() => editNickname()}
                 className="w-60"

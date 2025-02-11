@@ -109,14 +109,6 @@ export default function Profile({
       );
     }
 
-    const newRedisProfile = await kv.get(trimmedNickname);
-
-    if (newRedisProfile !== null) {
-      return notification.currentStepErrored(
-        'Nickname already exists',
-      );
-    }
-
     try {
       if (!wallet) return notification.currentStepErrored('Wallet not connected');
 
@@ -126,14 +118,6 @@ export default function Profile({
         profilePicture: 0,
         wallpaper: 0,
         title: 0,
-      });
-
-      await kv.set(trimmedNickname, wallet.publicKey.toBase58());
-
-      // faster than tracking onchain change
-      setRedisProfile({
-        nickname: trimmedNickname,
-        owner: wallet.publicKey.toBase58(),
       });
 
       triggerUserProfileReload();
