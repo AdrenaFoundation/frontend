@@ -63,8 +63,10 @@ export default function TradingChart({
 
   // Retrieve saved resolution or default to 'H'
   const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || 'H';
+
+  // Retrieve saved timezone or default to locale timezone
   const savedTimezone =
-    localStorage.getItem('trading_chart_timezone') || 'Etc/UTC';
+    localStorage.getItem('trading_chart_timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   useEffect(() => {
     function createWidget() {
@@ -115,14 +117,21 @@ export default function TradingChart({
           ],
           settings_adapter: {
             initialSettings: {
+              'paneProperties.background': '#0d1118',
+              'paneProperties.backgroundType': 'solid',
+              'paneProperties.legendProperties.showStudyArguments': 'false',
+              'paneProperties.legendProperties.showStudyTitles': 'false',
+              'paneProperties.legendProperties.showStudyValues': 'false',
+              'paneProperties.legendProperties.showSeriesTitle': 'false',
+              'paneProperties.legendProperties.showBarChange': 'false',
+              'paneProperties.legendProperties.showSeriesOHLC': 'true',
+              'mainSeriesProperties.priceLineColor': '#FFFF05',
+              'scalesProperties.textColor': '#B3B5BE',
               timezone: savedTimezone as Timezone,
             },
             setValue: function (_, value) {
               const chartprops = JSON.parse(value) as ChartPropertiesOverrides;
               const currentTimezone = chartprops.timezone;
-              console.log(
-                `current value: ${currentTimezone}, saved value: ${savedTimezone}`,
-              );
 
               if (!currentTimezone || currentTimezone === savedTimezone) {
                 return;
@@ -164,6 +173,7 @@ export default function TradingChart({
             'paneProperties.legendProperties.showBarChange': false,
             'paneProperties.legendProperties.showSeriesOHLC': true,
             'mainSeriesProperties.priceLineColor': '#FFFF05',
+            'scalesProperties.textColor': '#B3B5BE',
             timezone: savedTimezone as Timezone,
           });
 
