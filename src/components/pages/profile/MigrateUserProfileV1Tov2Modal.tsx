@@ -95,7 +95,7 @@ export default function MigrateUserProfileV1Tov2Modal({
             className="flex flex-col overflow-y-auto w-full"
         >
             <div className="font-boldy text-white/80 pl-4 pr-4 sm:max-w-[30em] self-center text-center pt-6 pb-6 relative">
-                Hello! A new version of the Profile is live, and all existing profiles need to migrate. Please set your nickname below and click on "Migrate" button.
+                Hello! A new version of the Profile is live, and all existing profiles need to migrate. Please set your nickname below and click on &quot;Migrate&quot; button.
 
                 <div className="absolute w-full h-full left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')] -z-10" />
             </div>

@@ -12,6 +12,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
+  AccountInfo,
   Blockhash,
   ComputeBudgetProgram,
   Connection,
@@ -386,16 +387,7 @@ export class AdrenaClient {
     ).account.vestRegistry.fetch(AdrenaClient.vestRegistryPda);
   }
 
-  // Load a single user profile from onchain, and convert to a more usable format
-  protected async loadUserProfileAnyVersion(userProfilePda: PublicKey): Promise<false | UserProfile | UserProfileV1> {
-      // Fetch raw account data
-      const accountInfo = await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(userProfilePda, 'processed');
-
-      // If no data, profile doesn't exist
-      if (!accountInfo || !accountInfo.data) {
-        return false;
-      }
-    
+  protected decodeUserProfileAnyVersion(accountInfo: AccountInfo<Buffer>): false | UserProfile | UserProfileV1 {
       try {
         // Try parsing as V2 first
         const p = this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode('userProfile', accountInfo.data);
@@ -421,25 +413,7 @@ export class AdrenaClient {
     }
   }
 
-  // Provide alternative user if you wanna get the profile of a specific user
-  // null = not ready
-  // false = profile not initialized
-  public async loadUserProfile(
-    user: PublicKey,
-  ): Promise<UserProfileExtended | null | false> {
-    if (!this.readonlyAdrenaProgram) return null;
-
-    const userProfilePda = this.getUserProfilePda(user);
-
-    const p =
-      await this.loadUserProfileAnyVersion(
-        userProfilePda,
-      );
-
-    if (p === false) {
-      return false;
-    }
-
+  protected extendUserProfileInfo(p: UserProfile | UserProfileV1, userProfilePda: PublicKey): UserProfileExtended {
     // Both profile v1 and v2 have the same fields
     const shortOpeningSizeUsd = nativeToUi(p.shortStats.openingSizeUsd, USD_DECIMALS);
     const longOpeningSizeUsd = nativeToUi(p.longStats.openingSizeUsd, USD_DECIMALS);
@@ -505,6 +479,35 @@ export class AdrenaClient {
       wallpaper: 'wallpaper' in p ? p.wallpaper as Wallpaper : 0,
       title: 'title' in p ? p.title as Title : 0,
     };
+  }
+
+  // Provide alternative user if you wanna get the profile of a specific user
+  // null = not ready
+  // false = profile not initialized
+  public async loadUserProfile(
+    user: PublicKey,
+  ): Promise<UserProfileExtended | null | false> {
+    if (!this.readonlyAdrenaProgram) return null;
+
+    const userProfilePda = this.getUserProfilePda(user);
+
+    // Fetch raw account data
+    const accountInfo = await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(userProfilePda, 'processed');
+
+    // If no data, profile doesn't exist
+    if (!accountInfo || !accountInfo.data) {
+      return false;
+    }
+
+    const p = this.decodeUserProfileAnyVersion(
+        accountInfo,
+      );
+
+    if (p === false) {
+      return false;
+    }
+
+    return this.extendUserProfileInfo(p, userProfilePda);
   }
 
   public async loadStakingAccount(address: PublicKey): Promise<Staking | null> {
@@ -4418,6 +4421,51 @@ export class AdrenaClient {
       pubkey: staking.publicKey,
       ...staking.account,
     }));
+  }
+
+  public async loadAllUserProfile(): Promise<UserProfileExtended[] | null> {
+    if (!this.readonlyConnection) return null;
+
+     // Fetch both UserProfileV1 and UserProfileV2 concurrently
+     const [userProfilesV1, userProfilesV2] = await Promise.all([
+      this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 216 }, // Ensure correct size for V1
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([0])) } }, // Version == 0 (V1)
+        ],
+      }),
+      this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 456 }, // Ensure correct size for V2
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+        ],
+      }),
+    ]);
+
+    // If no data, profile doesn't exist
+    if (!userProfilesV1.length && !userProfilesV2.length) {
+      return [];
+    }
+
+    return [
+      ...userProfilesV1.map((account) => {
+        const p = this.decodeUserProfileAnyVersion(account.account);
+
+        if (!p) return null;
+        
+        return this.extendUserProfileInfo(p, account.pubkey);
+      }).filter((p) => p) as UserProfileExtended[],
+
+      ...userProfilesV2.map((account) => {
+        const p = this.decodeUserProfileAnyVersion(account.account);
+
+        if (!p) return null;
+        
+        return this.extendUserProfileInfo(p, account.pubkey);
+      }).filter((p) => p) as UserProfileExtended[],
+    ];
   }
 
   public async loadAllUserProfileMetadata(): Promise<UserProfileMetadata[]> {

@@ -8,7 +8,7 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
+import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { UserProfileExtended } from '@/types';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
@@ -29,7 +29,7 @@ export default function AllUserProfiles({
     view: string;
 }) {
     const { allUserProfiles, triggerAllUserProfilesReload } =
-        useAllUserProfilesMetadata();
+        useAllUserProfiles();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [sortConfigs, setSortConfigs] = useState<{
