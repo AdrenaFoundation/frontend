@@ -255,12 +255,12 @@ export type UserProfileExtended = {
   };
   profilePicture: ProfilePicture;
   wallpaper: Wallpaper;
-  title: Title;
+  title: UserProfileTitle;
 };
 
 export type ProfilePicture = 0 | 1 | 2;
 export type Wallpaper = 0 | 1 | 2;
-export type Title = 0 | 1 | 2;
+export type UserProfileTitle = 0 | 1 | 2;
 
 //
 // Accounts
@@ -641,9 +641,9 @@ export type SeasonLeaderboardsData = {
       volume: number;
       pnl: number;
       fees: number;
-      avatar: string | null;
-      username: string | null;
-      title: string | null;
+      profilePicture: ProfilePicture | null;
+      nickname: string | null;
+      title: UserProfileTitle | null;
     }[];
   }[];
 
@@ -661,9 +661,9 @@ export type SeasonLeaderboardsData = {
     championshipPoints: number;
     rewardsAdx: number;
     rewardsJto: number;
-    avatar: string | null;
-    username: string | null;
-    title: string | null;
+    profilePicture: ProfilePicture | null;
+    nickname: string | null;
+    title: UserProfileTitle | null;
   }[];
 };
 
@@ -1168,9 +1168,9 @@ export type MutagenLeaderboardData = {
   totalBorrowFees: number;
   totalCloseFees: number;
   totalFees: number;
-  avatar: string | null;
-  username: string | null;
-  title: string | null;
+  profilePicture: ProfilePicture | null;
+  nickname: string | null;
+  title: UserProfileTitle | null;
 }[];
 
 export type PositionApiRawData = {

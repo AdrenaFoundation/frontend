@@ -62,7 +62,7 @@ import {
   ProfitAndLoss,
   Staking,
   SwapAmountAndFees,
-  Title,
+  UserProfileTitle,
   Token,
   TokenSymbol,
   UserProfile,
@@ -477,7 +477,7 @@ export class AdrenaClient {
       },
       profilePicture: 'profilePicture' in p ? p.profilePicture as ProfilePicture : 0,
       wallpaper: 'wallpaper' in p ? p.wallpaper as Wallpaper : 0,
-      title: 'title' in p ? p.title as Title : 0,
+      title: 'title' in p ? p.title as UserProfileTitle : 0,
     };
   }
 

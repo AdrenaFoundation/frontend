@@ -10,9 +10,9 @@ import {
   AlpLockPeriod,
   ProfilePicture,
   SupportedCluster,
+  UserProfileTitle,
   Wallpaper,
 } from './types';
-
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;
@@ -523,6 +523,10 @@ export const QUESTS = {
     ],
   },
 };
+
+export const USER_PROFILE_TITLES = {
+  0: 'Nameless One',
+} as Record<UserProfileTitle, string>;
 
 export const PROFILE_PICTURES = {
   0: '/images/profile-picture-1.jpg',

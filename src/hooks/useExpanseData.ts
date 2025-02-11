@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 
 import DataApiClient from '@/DataApiClient';
 import {
+  ProfilePicture,
   SeasonLeaderboardsData,
+  UserProfileTitle,
   UserProfileMetadata,
 } from '@/types';
 
-function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allUsernames: Record<string, string>) {
-  if (!leaderboardData || !allUsernames) {
+function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allMetadata: Record<string, UserProfileMetadata>) {
+  if (!leaderboardData || !allMetadata) {
     return;
   }
 
@@ -15,12 +17,24 @@ function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allUsernam
 
   leaderboardDataExtended.weekLeaderboard.forEach((week) => {
     week.ranks.forEach((rank) => {
-      rank.username = allUsernames[rank.wallet.toBase58()] ?? null;
+      const metadata = allMetadata[rank.wallet.toBase58()];
+
+      if (metadata) {
+        rank.nickname = metadata.nickname;
+        rank.profilePicture = metadata.profilePicture as ProfilePicture;
+        rank.title = metadata.title as UserProfileTitle;
+      }
     });
   });
 
   leaderboardDataExtended.seasonLeaderboard.forEach((rank) => {
-    rank.username = allUsernames[rank.wallet.toBase58()] ?? null;
+    const metadata = allMetadata[rank.wallet.toBase58()];
+
+    if (metadata) {
+      rank.nickname = metadata.nickname;
+      rank.profilePicture = metadata.profilePicture as ProfilePicture;
+      rank.title = metadata.title as UserProfileTitle;
+    }
   });
 }
 
@@ -31,17 +45,17 @@ export default function useExpanseData({
 }): SeasonLeaderboardsData | null {
   const [leaderboardData, setLeaderboardData] = useState<SeasonLeaderboardsData | null>(null);
 
-  const allUsernames = useMemo(() => allUserProfilesMetadata.reduce((acc, profile) => {
-    acc[profile.owner.toBase58()] = profile.nickname;
+  const allMetadata = useMemo(() => allUserProfilesMetadata.reduce((acc, profile) => {
+    acc[profile.owner.toBase58()] = profile;
     return acc;
-  }, {} as Record<string, string>), [allUserProfilesMetadata]);
+  }, {} as Record<string, UserProfileMetadata>), [allUserProfilesMetadata]);
 
   useEffect(() => {
-    if (!allUsernames) return;
+    if (!allMetadata) return;
 
     DataApiClient.getSeasonLeaderboards()
       .then((data) => {
-          applyProfile(data, allUsernames);
+          applyProfile(data, allMetadata);
           setLeaderboardData(data);
       }).catch((error) => {
           console.log(error);
@@ -49,7 +63,7 @@ export default function useExpanseData({
 
     const interval = setInterval(() => {
         DataApiClient.getSeasonLeaderboards().then((data) => {
-          applyProfile(data, allUsernames);
+          applyProfile(data, allMetadata);
           setLeaderboardData(data);
         }).catch((error) => {
             console.log(error);
@@ -57,7 +71,7 @@ export default function useExpanseData({
     }, 20_000);
 
     return () => clearInterval(interval);
-  }, [allUsernames]);
+  }, [allMetadata]);
 
   return leaderboardData;
 }
