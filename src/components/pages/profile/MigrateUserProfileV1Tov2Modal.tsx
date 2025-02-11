@@ -100,17 +100,16 @@ export default function MigrateUserProfileV1Tov2Modal({
                 <div className="absolute w-full h-full left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')] -z-10" />
             </div>
 
-
             <div className="h-[1px] w-full bg-bcolor mb-4" />
 
             <div className='self-center font-archivo text-txtfade'>Nickname</div>
 
             <InputString
-                className="font-boldy text-2xl relative p-1 border border-bcolor rounded-lg text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
+                className="font-boldy text-xl relative p-3 border border-bcolor rounded-lg text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
                 value={updatedNickname ?? ''}
                 onChange={setUpdatedNickname}
                 placeholder="The Best Trader"
-                inputFontSize="1.1em"
+                inputFontSize="1em"
                 maxLength={24}
             />
 

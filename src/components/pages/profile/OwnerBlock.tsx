@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react';
 import { kv } from '@vercel/kv';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
@@ -39,8 +39,10 @@ export default function OwnerBloc({
   duplicatedRedis: boolean;
   readonly?: boolean;
 }) {
+  const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<Record<string, boolean>>({});
   const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
-  const [updatedNickname, setUpdatedNickname] = useState<string | null>(null);
+  const [updatedNickname, setUpdatedNickname] = useState<string | null>(userProfile.nickname);
+  const [trimmedUpdatedNickname, setTrimmedUpdatedNickname] = useState<string>(updatedNickname ?? '');
   const [isUpdatingMetadata, setIsUpdatingMetadata] = useState<boolean>(false);
   const [updatingMetadata, setUpdatingMetadata] = useState<{
     profilePicture: ProfilePicture;
@@ -50,13 +52,15 @@ export default function OwnerBloc({
     wallpaper: userProfile.wallpaper,
   });
 
-  const editNickname = useCallback(async () => {
-    const trimmedNickname = (updatedNickname ?? '').trim();
+  useEffect(() => {
+    setTrimmedUpdatedNickname((updatedNickname ?? '').trim());
+  }, [updatedNickname]);
 
+  const editNickname = useCallback(async () => {
     const notification =
       MultiStepNotification.newForRegularTransaction('Edit Nickname').fire();
 
-    if (trimmedNickname.length < 3 || trimmedNickname.length > 24) {
+    if (trimmedUpdatedNickname.length < 3 || trimmedUpdatedNickname.length > 24) {
       return notification.currentStepErrored(
         'Nickname must be between 3 to 24 characters long',
       );
@@ -66,17 +70,9 @@ export default function OwnerBloc({
       'You must be connected to edit your nickname',
     );
 
-    if (trimmedNickname === userProfile.nickname) {
+    if (trimmedUpdatedNickname === userProfile.nickname) {
       return notification.currentStepErrored(
         'Nickname is already set',
-      );
-    }
-
-    const newRedisProfile = await kv.get(trimmedNickname);
-
-    if (newRedisProfile !== null) {
-      return notification.currentStepErrored(
-        'Nickname already exists, please choose a different one',
       );
     }
 
@@ -84,26 +80,14 @@ export default function OwnerBloc({
       if (!walletPubkey) return notification.currentStepErrored('Wallet not connected');
 
       await window.adrena.client.editUserProfileNickname({
-        nickname: trimmedNickname,
+        nickname: trimmedUpdatedNickname,
         notification,
-      });
-
-      await kv.set(trimmedNickname, walletPubkey.toBase58());
-
-      if (redisProfile && redisProfile.nickname !== trimmedNickname) {
-        await kv.del(redisProfile.nickname);
-      }
-
-      // pre-shot the onchain change as we know it's coming
-      setRedisProfile({
-        nickname: trimmedNickname,
-        owner: walletPubkey.toBase58(),
       });
 
       triggerUserProfileReload();
 
       // pre-shot the onchain change as we know it's coming
-      userProfile.nickname = trimmedNickname;
+      userProfile.nickname = trimmedUpdatedNickname;
 
       setNicknameUpdating(false);
     } catch (error) {
@@ -139,6 +123,24 @@ export default function OwnerBloc({
   }, [triggerUserProfileReload, updatingMetadata.profilePicture, updatingMetadata.wallpaper, userProfile, walletPubkey]);
 
   const [profilePictureHovering, setProfilePictureHovering] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (trimmedUpdatedNickname.length < 3 || trimmedUpdatedNickname.length > 24 || !window.adrena.client.readonlyConnection) {
+      return;
+    }
+
+    const userNicknamePda = window.adrena.client.getUserNicknamePda(trimmedUpdatedNickname);
+
+    window.adrena.client.readonlyConnection.getAccountInfo(userNicknamePda)
+      .then((acc) => {
+        setAlreadyTakenNicknames((prev) => ({
+          ...prev,
+          [trimmedUpdatedNickname]: !!(acc && acc.lamports > 0),
+        }));
+      }).catch(() => {
+        //Ignore
+      });
+  }, [trimmedUpdatedNickname]);
 
   return (
     <>
@@ -191,7 +193,7 @@ export default function OwnerBloc({
                 {userProfile.nickname}
               </div>
 
-              {canUpdateNickname ? (<div onClick={() => {
+              {canUpdateNickname && userProfile.version > 1 ? (<div onClick={() => {
                 setNicknameUpdating(true);
               }} className='text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100'>Edit</div>) : null}
             </div>
@@ -245,32 +247,52 @@ export default function OwnerBloc({
         >
           <div className="flex flex-col gap-4">
 
-            {userProfile.version > 1 ? <>
-              <div className="text-sm flex gap-2 w-full items-center justify-center">
-                <div className='font-thin text-xl'>Cost 500 ADX</div>
-
-                <Image
-                  src={adxLogo}
-                  alt="ADX logo"
-                  className="w-[2em] h-[2em]"
-                />
-              </div>
-
-              <div className='w-full h-[1px] bg-bcolor mt-2 mb-4' />
-            </> : null}
-
             <InputString
-              className="font-boldy text-3xl relative p-1 bg-transparent border-b border-white text-center"
+              className="font-boldy text-xl relative p-3 border rounded-lg text-center"
               value={updatedNickname ?? ''}
               onChange={setUpdatedNickname}
               placeholder="The Great Trader"
-              inputFontSize="1.2em"
+              inputFontSize="1em"
               maxLength={24}
             />
 
-            <div className='w-full h-[1px] bg-bcolor mt-2' />
+            <div className='h-[1em]'>
+              {(trimmedUpdatedNickname && trimmedUpdatedNickname.length < 3) || !trimmedUpdatedNickname ?
+                <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Nickname must be at least 3 characters</div> :
+                null}
 
-            <div className='flex items-center justify-center gap-8 pb-8 pt-4'>
+              {trimmedUpdatedNickname && typeof alreadyTakenNicknames[trimmedUpdatedNickname] === 'undefined' && trimmedUpdatedNickname.length > 3 ?
+                <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Checking nickname availability...</div> :
+                null}
+
+              {trimmedUpdatedNickname && alreadyTakenNicknames[trimmedUpdatedNickname] === true ?
+                <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">Nickname is already taken</div> :
+                null}
+
+              {trimmedUpdatedNickname && alreadyTakenNicknames[trimmedUpdatedNickname] === false ?
+                <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">Nickname is available</div> :
+                null}
+            </div>
+
+            {userProfile.version > 1 ? <>
+              <div className="text-sm flex gap-2 w-full items-center justify-between">
+                <div className='font-thin text-base'>Cost </div>
+
+                <div className='flex items-center gap-2 text-base'>
+                  <Image
+                    src={adxLogo}
+                    alt="ADX logo"
+                    className="w-[1.2em] h-[1.2em]"
+                  />
+
+                  500 ADX
+                </div>
+              </div>
+            </> : null}
+
+            <div className='w-full h-[1px] bg-bcolor mt-1' />
+
+            <div className='flex items-center justify-center gap-8 pb-6 pt-2'>
               <Button
                 title="Cancel"
                 variant='outline'
