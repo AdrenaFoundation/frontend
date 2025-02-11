@@ -1,4 +1,3 @@
-import { kv } from '@vercel/kv';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -32,10 +31,8 @@ export default function Profile({
   const [nickname, setNickname] = useState<string | null>(null);
   const walletAddress = useSelector(selectWalletAddress);
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
-  const [redisProfile, setRedisProfile] = useState<Record<string, string> | null>(null);
   const positions = usePositions(walletAddress);
 
-  const [duplicatedRedis, setDuplicatedRedis] = useState<boolean>(false);
   const {
     activityCalendarData,
     bubbleBy,
@@ -51,49 +48,6 @@ export default function Profile({
     triggerUserProfileReload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const fetchRedisProfile = async () => {
-      if (userProfile === null || userProfile === false || userProfile.nickname === '') return;
-
-      try {
-        if (redisProfile !== null &&
-          redisProfile.nickname === userProfile.nickname &&
-          redisProfile.owner === userProfile.owner.toBase58()) return;
-
-        const newRedisProfile = {
-          nickname: userProfile.nickname,
-          owner: await kv.get(userProfile.nickname),
-        };
-
-        if (typeof newRedisProfile.owner === 'undefined' || newRedisProfile.owner === null || newRedisProfile.owner === '') {
-          await kv.set(newRedisProfile.nickname, userProfile.owner.toBase58());
-          setRedisProfile({
-            nickname: newRedisProfile.nickname,
-            owner: userProfile.owner.toBase58(),
-          });
-          return;
-        }
-
-        if (newRedisProfile.owner !== userProfile.owner.toBase58()) {
-          setRedisProfile({
-            nickname: newRedisProfile.nickname,
-            owner: userProfile.owner.toBase58(),
-          });
-          setDuplicatedRedis(true);
-          return;
-        }
-
-        if (setDuplicatedRedis) setDuplicatedRedis(false);
-        setRedisProfile(newRedisProfile as Record<string, string>);
-      } catch (error) {
-        console.log('error fetching redis profile', error);
-      }
-    };
-
-    fetchRedisProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userProfile ? userProfile.nickname : '']);
 
   const initUserProfile = async () => {
     const trimmedNickname = (nickname ?? '').trim();
@@ -163,9 +117,6 @@ export default function Profile({
                 canUpdateNickname={!readonly}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={wallet?.publicKey}
-                redisProfile={redisProfile ?? {}}
-                setRedisProfile={setRedisProfile}
-                duplicatedRedis={duplicatedRedis}
               />
 
               <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl'>

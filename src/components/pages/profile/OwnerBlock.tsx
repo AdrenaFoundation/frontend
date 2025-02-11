@@ -23,9 +23,6 @@ export default function OwnerBloc({
   triggerUserProfileReload,
   canUpdateNickname = true,
   walletPubkey,
-  redisProfile,
-  setRedisProfile,
-  duplicatedRedis,
   readonly = false,
 }: {
   userProfile: UserProfileExtended;
@@ -33,9 +30,6 @@ export default function OwnerBloc({
   triggerUserProfileReload: () => void;
   canUpdateNickname?: boolean;
   walletPubkey?: PublicKey;
-  redisProfile: Record<string, string> | null;
-  setRedisProfile: (redisProfile: Record<string, string>) => void;
-  duplicatedRedis: boolean;
   readonly?: boolean;
 }) {
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<Record<string, boolean>>({});
@@ -92,7 +86,7 @@ export default function OwnerBloc({
     } catch (error) {
       console.error('error', error);
     }
-  }, [redisProfile, setRedisProfile, triggerUserProfileReload, updatedNickname, userProfile, walletPubkey]);
+  }, [triggerUserProfileReload, trimmedUpdatedNickname, userProfile, walletPubkey]);
 
   const updateProfile = useCallback(async () => {
     const notification =
@@ -220,8 +214,6 @@ export default function OwnerBloc({
           <Referral
             className='h-auto w-auto flex absolute right-0 bottom-0 z-20'
             userProfile={userProfile}
-            redisProfile={redisProfile}
-            duplicatedRedis={duplicatedRedis}
           />
         </> : null}
 

@@ -50,9 +50,6 @@ export default function ViewProfileModal({
                 canUpdateNickname={false}
                 className="flex w-full w-min-[30em] border "
                 walletPubkey={profile.owner}
-                redisProfile={null}
-                setRedisProfile={() => { }}
-                duplicatedRedis={false}
                 readonly={true}
             />
 

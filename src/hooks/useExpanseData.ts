@@ -4,8 +4,8 @@ import DataApiClient from '@/DataApiClient';
 import {
   ProfilePicture,
   SeasonLeaderboardsData,
-  UserProfileTitle,
   UserProfileMetadata,
+  UserProfileTitle,
 } from '@/types';
 
 function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allMetadata: Record<string, UserProfileMetadata>) {

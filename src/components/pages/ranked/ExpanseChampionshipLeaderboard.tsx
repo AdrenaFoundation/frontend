@@ -8,10 +8,10 @@ import adxLogo from '@/../../public/images/adx.svg';
 import jtoImage from '@/../../public/images/jito-logo-2.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
+import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
-import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 
 export default function ExpanseChampionshipLeaderboard({
     data,

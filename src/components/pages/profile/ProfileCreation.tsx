@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
+
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
-import { useEffect, useState } from 'react';
 
 export default function ProfileCreation({
   initUserProfile,

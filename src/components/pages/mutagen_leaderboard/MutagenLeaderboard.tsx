@@ -4,13 +4,13 @@ import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from "@/components/Number/FormatNumber";
+import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { MutagenLeaderboardData } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import Table from "../monitoring/Table";
-import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 
 export default function MutagenLeaderboard({
     data,
