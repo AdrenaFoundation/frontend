@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
-import { kv } from '@vercel/kv';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
