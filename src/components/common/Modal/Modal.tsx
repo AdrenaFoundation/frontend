@@ -121,7 +121,7 @@ export default function Modal({
             style={{ touchAction: 'none' }}
           >
             {!isMobile && (
-              <div className="flex text-lg uppercase text-white/90 font-special h-full items-center justify-center opacity-80">
+              <div className="flex text-md text-white/90 font-special h-full items-center justify-center opacity-80">
                 <Image
                   className="relative top-[0.1em]"
                   alt="adrena logo"
@@ -129,7 +129,8 @@ export default function Modal({
                   width={30}
                   height={30}
                 />
-                {title && <h2 className="ml-4 text-[1.50em]">{title}</h2>}
+                {title && <div className="ml-4 text-xl font-archivo">{title}</div>}
+
                 {customTitle}
               </div>
             )}

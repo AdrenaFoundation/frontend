@@ -8,8 +8,11 @@ import {
   AdrenaEvent,
   AdxLockPeriod,
   AlpLockPeriod,
+  ProfilePicture,
   SupportedCluster,
+  Wallpaper,
 } from './types';
+
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;
@@ -520,3 +523,19 @@ export const QUESTS = {
     ],
   },
 };
+
+export const PROFILE_PICTURES = {
+  0: '/images/profile-picture-1.jpg',
+  1: '/images/profile-picture-2.jpg',
+  2: '/images/profile-picture-3.jpg',
+  3: '/images/profile-picture-4.jpg',
+  4: '/images/profile-picture-5.jpg',
+} as Record<ProfilePicture, string>;
+
+export const WALLPAPER = {
+  0: '/images/wallpaper-1.jpg',
+  1: '/images/wallpaper-2.jpg',
+  2: '/images/wallpaper-3.jpg',
+  3: '/images/wallpaper-4.jpg',
+  4: '/images/wallpaper-5.jpg',
+} as Record<Wallpaper, string>;

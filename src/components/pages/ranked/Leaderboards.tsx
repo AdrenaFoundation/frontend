@@ -100,7 +100,7 @@ export default function Leaderboards() {
                     {/* WEEKLY LEADERBOARD */}
 
                     <div className='flex flex-col w-[25em] grow max-w-full'>
-                        <div className='w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
+                        <div className='w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
                             Grind weekly
                         </div>
 
@@ -244,7 +244,7 @@ export default function Leaderboards() {
                     {/* SEASON LEADERBOARD */}
 
                     <div className='flex flex-col w-[25em] grow max-w-full'>
-                        <div className='w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
+                        <div className='w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4'>
                             become the champion
                         </div>
 

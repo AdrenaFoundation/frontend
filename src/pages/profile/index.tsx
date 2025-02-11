@@ -10,6 +10,7 @@ import StakingStats from '@/components/pages/profile/StakingStats';
 import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import { WALLPAPER } from '@/constant';
 import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -28,15 +29,6 @@ export default function Profile({
 }: PageProps & {
   readonly?: boolean;
 }) {
-  const [profileMetadata, setProfileMetadata] = useState<{
-    profilePicture: number;
-    wallpaper: number;
-    title: number;
-  }>({
-    profilePicture: 0,
-    wallpaper: 0,
-    title: 0,
-  });
   const [nickname, setNickname] = useState<string | null>(null);
   const walletAddress = useSelector(selectWalletAddress);
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
@@ -131,9 +123,9 @@ export default function Profile({
       await window.adrena.client.initUserProfile({
         nickname: trimmedNickname,
         notification,
-        profilePicture: profileMetadata.profilePicture,
-        wallpaper: profileMetadata.wallpaper,
-        title: profileMetadata.title,
+        profilePicture: 0,
+        wallpaper: 0,
+        title: 0,
       });
 
       await kv.set(trimmedNickname, wallet.publicKey.toBase58());
@@ -162,7 +154,12 @@ export default function Profile({
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]" />
+      <div
+        className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: userProfile ? `url(${WALLPAPER[userProfile.wallpaper]})` : "url('/images/wallpaper-1.jpg')",
+        }}
+      />
 
       <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
         <div className="z-20 w-full min-h-full flex flex-col rounded-xl">

@@ -220,6 +220,7 @@ export type UserProfileMetadata = {
 
 // Abstraction to work for all UserProfile versions and that fit frontend needs
 export type UserProfileExtended = {
+  version: number;
   pubkey: PublicKey;
   nickname: string;
   createdAt: number;
@@ -252,8 +253,14 @@ export type UserProfileExtended = {
     lossesUsd: number;
     feePaidUsd: number;
   };
-  // nativeObject: UserProfile;
+  profilePicture: ProfilePicture;
+  wallpaper: Wallpaper;
+  title: Title;
 };
+
+export type ProfilePicture = 0 | 1 | 2;
+export type Wallpaper = 0 | 1 | 2;
+export type Title = 0 | 1 | 2;
 
 //
 // Accounts

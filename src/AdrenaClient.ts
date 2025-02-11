@@ -57,9 +57,11 @@ import {
   Position,
   PositionExtended,
   PriorityFeeOption,
+  ProfilePicture,
   ProfitAndLoss,
   Staking,
   SwapAmountAndFees,
+  Title,
   Token,
   TokenSymbol,
   UserProfile,
@@ -71,6 +73,7 @@ import {
   VestExtended,
   VestRegistry,
   WalletAdapterExtended,
+  Wallpaper,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -462,6 +465,7 @@ export class AdrenaClient {
       (longOpeningAverageLeverage + shortOpeningAverageLeverage) / 2;
 
     return {
+      version: 'version' in p ? p.version : 1,
       pubkey: userProfilePda,
       // Transform the buffer of bytes to a string
       nickname: p.nickname.value
@@ -497,7 +501,9 @@ export class AdrenaClient {
         lossesUsd: longLossesUsd,
         feePaidUsd: longFeePaidUsd,
       },
-      // nativeObject: p,
+      profilePicture: 'profilePicture' in p ? p.profilePicture as ProfilePicture : 0,
+      wallpaper: 'wallpaper' in p ? p.wallpaper as Wallpaper : 0,
+      title: 'title' in p ? p.title as Title : 0,
     };
   }
 
@@ -1989,6 +1995,44 @@ export class AdrenaClient {
     });
   }
 
+  public async migrateUserProfileFromV1ToV2({
+    notification,
+    nickname,
+  }: {
+    nickname: string;
+    notification: MultiStepNotification;
+  }) {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    if (!wallet.publicKey) throw new Error('user not connected');
+
+    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+
+    const transaction = await this.adrenaProgram.methods
+      .migrateUserProfileFromV1ToV2({
+        nickname,
+      })
+      .accountsStrict({
+        systemProgram: SystemProgram.programId,
+        userProfile: userProfilePda,
+        owner: wallet.publicKey,
+        userNickname: this.getUserNicknamePda(nickname),
+        payer: wallet.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        rent: SYSVAR_RENT_PUBKEY,
+      })
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+  }
+
   public async editUserProfileNickname({
     notification,
     nickname: nicknameParams,
@@ -2006,15 +2050,21 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const userProfileAccount = await this.readonlyAdrenaProgram.account.userProfile.fetch(
-      userProfilePda,
-    );
+    const nickname = await (async () =>  {
+      if (typeof nicknameParams !== 'undefined') {
+        return nicknameParams;
+      } 
+      
+      const userProfileAccount = await this.loadUserProfile(
+        wallet.publicKey,
+      );
 
-    // Transform the buffer of bytes to a string
-    const nickname = typeof nicknameParams !== 'undefined' ? nicknameParams: userProfileAccount.nickname.value
-      .map((byte) => String.fromCharCode(byte))
-      .join('')
-      .replace(/\0/g, '');
+      if (!userProfileAccount) {
+        throw new Error('User profile not found');
+      }
+
+      return userProfileAccount.nickname;
+    })();
 
     const transaction = await this.adrenaProgram.methods
       .editUserProfileNickname({

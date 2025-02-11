@@ -348,7 +348,7 @@ const ProfileBanner = memo(
         return (
             <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
                 <div className="flex items-center">
-                    <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+                    <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                         {userName}
                     </div>
 
@@ -384,7 +384,7 @@ const ProfileBanner = memo(
                     </span>
 
                     <span
-                        className={`text-base flex items-center justify-center font-archivo ${DIVISIONS[currentUserData.division]?.color ?? 'default-text-color'}`}
+                        className={`text-base flex items-center justify-center font-archivoblack ${DIVISIONS[currentUserData.division]?.color ?? 'default-text-color'}`}
                     >
                         {currentUserData.division}
                     </span>

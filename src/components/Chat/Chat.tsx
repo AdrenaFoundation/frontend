@@ -378,7 +378,7 @@ function Chat({
                     />
 
                     <div className="flex gap-2">
-                        <div className="text-sm font-archivo uppercase">Live Chat</div><div className="text-xxs font-thin uppercase">{"beta"}</div>
+                        <div className="text-sm font-archivoblack uppercase">Live Chat</div><div className="text-xxs font-thin uppercase">{"beta"}</div>
                     </div>
 
                     <div className="flex gap-2">
@@ -390,7 +390,7 @@ function Chat({
                                 onToggleUserList?.();
                             }}
                         >
-                            <div className="text-xs flex mt-[0.1em] font-archivo text-txtfade">
+                            <div className="text-xs flex mt-[0.1em] font-archivoblack text-txtfade">
                                 {nbConnectedUsers === null ? '-' : nbConnectedUsers}
                             </div>
                             <Image
@@ -417,7 +417,7 @@ function Chat({
                     )}>
                         <div className="flex flex-col h-full">
                             <div className="p-3 border-b border-gray-800">
-                                <h3 className="text-xs font-archivo uppercase text-gray-400">Online Users</h3>
+                                <h3 className="text-xs font-archivoblack uppercase text-gray-400">Online Users</h3>
                             </div>
                             <div className="p-3 overflow-y-auto custom-chat-scrollbar flex-grow">
                                 {anonymousCount > 0 && (

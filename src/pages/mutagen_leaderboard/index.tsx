@@ -48,7 +48,7 @@ export default function Index() {
                     <div className="z-10 text-center">
                         <h1
                             className={twMerge(
-                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
                             )}
                         >
