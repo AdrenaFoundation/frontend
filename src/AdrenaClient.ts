@@ -2038,9 +2038,9 @@ export class AdrenaClient {
 
   public async editUserProfileNickname({
     notification,
-    nickname: nicknameParams,
+    nickname,
   }: {
-    nickname?: string;
+    nickname: string;
     notification: MultiStepNotification;
   }) {
     if (!this.connection || !this.adrenaProgram) {
@@ -2053,21 +2053,15 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const nickname = await (async () =>  {
-      if (typeof nicknameParams !== 'undefined') {
-        return nicknameParams;
-      } 
-      
-      const userProfileAccount = await this.loadUserProfile(
-        wallet.publicKey,
-      );
+    const userProfileAccount = await this.loadUserProfile(
+      wallet.publicKey,
+    );
 
-      if (!userProfileAccount) {
-        throw new Error('User profile not found');
-      }
+    if (!userProfileAccount) {
+      throw new Error('User profile not found');
+    }
 
-      return userProfileAccount.nickname;
-    })();
+    const oldUserNicknamePda = userProfileAccount.nickname.length ? this.getUserNicknamePda(userProfileAccount.nickname): null;
 
     const transaction = await this.adrenaProgram.methods
       .editUserProfileNickname({
@@ -2082,7 +2076,7 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         userNickname: this.getUserNicknamePda(nickname),
         fundingAccount: findATAAddressSync(wallet.publicKey, this.lmTokenMint),
-        oldUserNickname: null
+        oldUserNickname: oldUserNicknamePda
       })
       .transaction();
 
