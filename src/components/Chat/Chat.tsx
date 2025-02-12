@@ -283,9 +283,9 @@ function Chat({
                             <>
                                 <div className="h-full w-full absolute top-0 left-0 opacity-40"
                                     style={{
-                                        background: `url(${WALLPAPER[msg.wallet ? (profileCache[msg.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
                                         backgroundSize: 'cover',
                                         backgroundRepeat: 'no-repeat',
+                                        backgroundImage: `url(${WALLPAPER[msg.wallet ? (profileCache[msg.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
                                     }} />
 
                                 <div className="text-xs font-boldy p-2">
@@ -296,7 +296,8 @@ function Chat({
                                     {msg.wallet && profileCache[msg.wallet] ?
                                         <div className="w-[25em] h-[9em] relative flex">
                                             <div className={twMerge("h-[9em] w-[9em] rounded-full overflow-hidden z-20 border-bcolor border-2")} style={{
-                                                background: `url(${PROFILE_PICTURES[(profileCache[msg.wallet] as UserProfileExtended).profilePicture]})`,
+                                                backgroundImage: `url(${PROFILE_PICTURES[(profileCache[msg.wallet] as UserProfileExtended).profilePicture]})`,
+                                                backgroundRepeat: 'no-repeat',
                                                 backgroundSize: 'cover',
                                             }} />
 
@@ -445,7 +446,7 @@ function Chat({
                                                 <>
                                                     <div className="h-full w-full absolute top-0 left-0 opacity-40"
                                                         style={{
-                                                            background: `url(${WALLPAPER[user.wallet ? (profileCache[user.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
+                                                            backgroundImage: `url(${WALLPAPER[user.wallet ? (profileCache[user.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
                                                             backgroundSize: 'cover',
                                                             backgroundRepeat: 'no-repeat',
                                                         }}
