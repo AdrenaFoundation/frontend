@@ -1,10 +1,14 @@
 import {
   AnchorProvider,
   BN,
+  BorshCoder,
+  EventData,
+  EventParser,
   Program,
   ProgramAccount,
   Wallet,
 } from '@coral-xyz/anchor';
+import { IdlEventField } from '@coral-xyz/anchor/dist/cjs/idl';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountIdempotentInstruction,
@@ -1396,10 +1400,17 @@ export class AdrenaClient {
     position,
     price,
     notification,
+    getTransactionLogs,
   }: {
     position: PositionExtended;
     price: BN;
     notification: MultiStepNotification;
+    getTransactionLogs?: (
+      logs: {
+        raw: string[];
+        events?: EventData<IdlEventField, Record<string, never>>;
+      } | null,
+    ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1486,6 +1497,7 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      getTransactionLogs,
       notification,
     });
   }
@@ -1494,10 +1506,17 @@ export class AdrenaClient {
     position,
     price,
     notification,
+    getTransactionLogs,
   }: {
     position: PositionExtended;
     price: BN;
     notification: MultiStepNotification;
+    getTransactionLogs?: (
+      logs: {
+        raw: string[];
+        events?: EventData<IdlEventField, Record<string, never>>;
+      } | null,
+    ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1589,6 +1608,7 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      getTransactionLogs,
       notification,
     });
   }
@@ -2359,7 +2379,7 @@ export class AdrenaClient {
       ...vest,
     };
   }
-  
+
   // Load vest delegated to this user
   public async loadUserDelegatedVest(
     walletAddress: PublicKey,
@@ -2368,21 +2388,26 @@ export class AdrenaClient {
       return null;
     }
 
-    const accounts = await this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-      filters: [
-        {
-          memcmp: {
-            offset: 80 + 8,
-            bytes: walletAddress.toBase58(),
+    const accounts = await this.readonlyConnection.getProgramAccounts(
+      AdrenaClient.programId,
+      {
+        filters: [
+          {
+            memcmp: {
+              offset: 80 + 8,
+              bytes: walletAddress.toBase58(),
+            },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     if (!accounts || !accounts.length) return false;
 
     try {
-      const vest = await this.readonlyAdrenaProgram.account.vest.fetch(accounts[0].pubkey);
+      const vest = await this.readonlyAdrenaProgram.account.vest.fetch(
+        accounts[0].pubkey,
+      );
 
       if (!vest) return false;
 
@@ -2390,7 +2415,7 @@ export class AdrenaClient {
         pubkey: accounts[0].pubkey,
         ...vest,
       };
-    } catch(e) {
+    } catch (e) {
       console.log('e', e);
       return null;
     }
@@ -2410,7 +2435,7 @@ export class AdrenaClient {
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
-    return this.signAndExecuteTxAlternative({ 
+    return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .setVestDelegate({
           delegate,
@@ -2424,8 +2449,8 @@ export class AdrenaClient {
           caller: owner,
         })
         .transaction(),
-        notification,
-     });
+      notification,
+    });
   }
 
   public async claimUserVest({
@@ -2445,8 +2470,9 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const owner = paramOwner ?? (this.adrenaProgram.provider as AnchorProvider).wallet
-      .publicKey;
+    const owner =
+      paramOwner ??
+      (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
 
     const receivingAccount =
       await this.checkATAAddressInitializedAndCreatePreInstruction({
@@ -4909,9 +4935,16 @@ export class AdrenaClient {
   public async signAndExecuteTxAlternative({
     transaction,
     notification,
+    getTransactionLogs = undefined,
   }: {
     transaction: Transaction;
     notification?: MultiStepNotification;
+    getTransactionLogs?: (
+      logs: {
+        raw: string[];
+        events?: EventData<IdlEventField, Record<string, never>>;
+      } | null,
+    ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -5078,6 +5111,48 @@ export class AdrenaClient {
           maxRetries: 0,
         },
       );
+
+      if (getTransactionLogs) {
+        await this.connection.confirmTransaction(
+          {
+            signature: txSignatureBase58,
+            blockhash: latestBlockHash.blockhash,
+            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+          },
+          'confirmed',
+        );
+
+        const txInfo = await this.connection.getTransaction(txSignatureBase58, {
+          commitment: 'confirmed',
+          maxSupportedTransactionVersion: 0,
+        });
+
+        let eventData;
+
+        const eventCoder = new BorshCoder(this.adrenaProgram.idl);
+
+        const eventParser = new EventParser(
+          this.adrenaProgram.programId,
+          eventCoder,
+        );
+
+        const logMessages = txInfo?.meta?.logMessages
+          ? txInfo.meta.logMessages
+          : null;
+
+        if (logMessages) {
+          const generatedEvents = eventParser.parseLogs(logMessages);
+
+          for (const event of generatedEvents) {
+            eventData = event.data;
+          }
+
+          getTransactionLogs({
+            raw: logMessages,
+            events: eventData,
+          });
+        }
+      }
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
@@ -5171,7 +5246,6 @@ export class AdrenaClient {
 
       notification?.setTxHash(txSignatureBase58);
       notification?.currentStepSucceeded();
-
       return txSignatureBase58;
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);

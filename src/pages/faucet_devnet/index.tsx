@@ -120,7 +120,7 @@ export default function FaucetDevnet({
         LAMPORTS_PER_SOL,
       );
 
-      const signatureResult = await connection.confirmTransaction(txHash);
+      const signatureResult = await connection.confirmTransaction({ signature: txHash, blockhash: (await connection.getLatestBlockhash('confirmed')).blockhash, lastValidBlockHeight: (await connection.getLatestBlockhash('confirmed')).lastValidBlockHeight });
 
       if (signatureResult.value.err) {
         throw signatureResult.value.err;

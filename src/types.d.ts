@@ -1,6 +1,7 @@
 import { IdlAccounts, Program, Wallet } from '@coral-xyz/anchor';
 import {
   AllInstructionsMap,
+  IdlEvents,
   IdlTypes,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
 import { Adapter } from '@solana/wallet-adapter-base';
@@ -258,6 +259,14 @@ export type UserProfileExtended = {
 export type ProfilePicture = 0 | 1 | 2;
 export type Wallpaper = 0 | 1 | 2;
 export type UserProfileTitle = 0 | 1 | 2;
+
+//
+// Events
+//
+
+type Events = IdlEvents<Adrena>;
+
+export type ClosePositionEvent = Events['ClosePositionEvent'];
 
 //
 // Accounts
