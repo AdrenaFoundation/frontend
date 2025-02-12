@@ -443,7 +443,13 @@ function Chat({
                                             interactive={true}
                                             content={
                                                 <>
-                                                    <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
+                                                    <div className="h-full w-full absolute top-0 left-0 opacity-40"
+                                                        style={{
+                                                            background: `url(${WALLPAPER[user.wallet ? (profileCache[user.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
+                                                            backgroundSize: 'cover',
+                                                            backgroundRepeat: 'no-repeat',
+                                                        }}
+                                                    />
                                                     <div className="text-xs font-boldy p-2">
                                                         {profileCache[user.wallet] ? (
                                                             <div className="w-[25em] h-[9em] relative flex">
