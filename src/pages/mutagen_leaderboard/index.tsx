@@ -9,13 +9,13 @@ import Modal from "@/components/common/Modal/Modal";
 import Loader from "@/components/Loader/Loader";
 import MutagenLeaderboard from "@/components/pages/mutagen_leaderboard/MutagenLeaderboard";
 import ViewProfileModal from "@/components/pages/profile/ViewProfileModal";
-import { useAllUserProfiles } from "@/hooks/useAllUserProfiles";
+import { useAllUserProfilesMetadata } from "@/hooks/useAllUserProfilesMetadata";
 import useMutagenLeaderboardData from "@/hooks/useMutagenLeaderboardData";
 import { UserProfileExtended } from "@/types";
 
 export default function Index() {
-    const { allUserProfiles } = useAllUserProfiles();
-    const leaderboardData = useMutagenLeaderboardData({ allUserProfiles });
+    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+    const leaderboardData = useMutagenLeaderboardData({ allUserProfilesMetadata });
 
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
@@ -48,7 +48,7 @@ export default function Index() {
                     <div className="z-10 text-center">
                         <h1
                             className={twMerge(
-                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
                             )}
                         >
@@ -73,9 +73,10 @@ export default function Index() {
             {leaderboardData ? <MutagenLeaderboard
                 className="pb-8"
                 data={leaderboardData}
-                onClickUserProfile={(wallet: PublicKey) => {
-                    const profile = allUserProfiles.find((p) => p.owner.toBase58() === wallet.toBase58());
-                    setActiveProfile(profile ?? null);
+                onClickUserProfile={async (wallet: PublicKey) => {
+                    const p = await window.adrena.client.loadUserProfile(wallet);
+
+                    setActiveProfile(p !== false ? p : null);
                 }}
             /> : <Loader className="flex w-full items-center justify-center mb-8 mt-8" />}
         </div>

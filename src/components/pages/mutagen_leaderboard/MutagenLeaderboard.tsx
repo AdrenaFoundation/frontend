@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from "@/components/Number/FormatNumber";
+import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { MutagenLeaderboardData } from '@/types';
@@ -40,9 +41,9 @@ export default function MutagenLeaderboard({
                 </div>,
 
                 <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
-                    {d.avatar ? (
+                    {d.profilePicture !== null ? (
                         <Image
-                            src={d.avatar}
+                            src={PROFILE_PICTURES[d.profilePicture]}
                             width={30}
                             height={30}
                             alt="rank"
@@ -52,7 +53,7 @@ export default function MutagenLeaderboard({
                     ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
                     <div id={`user-mutagen-${d.userWallet.toBase58()}`}>
-                        {d.username ? (
+                        {d.nickname ? (
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
@@ -62,9 +63,9 @@ export default function MutagenLeaderboard({
                                     onClickUserProfile(d.userWallet);
                                 }}
                             >
-                                {d.username.length > 16
-                                    ? `${d.username.substring(0, 16)}...`
-                                    : d.username}
+                                {d.nickname.length > 16
+                                    ? `${d.nickname.substring(0, 16)}...`
+                                    : d.nickname}
                             </p>
                         ) : <p
                             key={`trader-${i}`}
@@ -75,9 +76,9 @@ export default function MutagenLeaderboard({
                             {getAbbrevWalletAddress(d.userWallet.toBase58())}
                         </p>}
 
-                        {d.title ? (
+                        {d.title !== null ? (
                             <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
-                                {d.title}
+                                {USER_PROFILE_TITLES[d.title]}
                             </div>
                         ) : null}
                     </div>

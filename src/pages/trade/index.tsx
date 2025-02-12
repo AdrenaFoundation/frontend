@@ -69,7 +69,6 @@ export default function Trade({
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
-
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );

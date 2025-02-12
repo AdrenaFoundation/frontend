@@ -22,13 +22,13 @@ export default function Buy({ connected, mainPool }: PageProps) {
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col justify-center items-start z-10 xl:h-[45em]">
-        <h1 className="font-archivo text-[2.6rem] lg:text-[4rem] uppercase max-w-[840px] -translate-y-6">
+        <h1 className="font-archivoblack text-[2.6rem] lg:text-[4rem] uppercase max-w-[840px] -translate-y-6">
           Buy ALP, receive 70% of all revenues
         </h1>
 
         <div className="w-full">
           <div className="flex flex-row gap-2 items-center">
-            <h2 className="font-archivo">TOTAL VALUE LOCKED</h2>{' '}
+            <h2 className="font-archivoblack">TOTAL VALUE LOCKED</h2>{' '}
             <Tippy
               content={
                 <p className="font-medium">

@@ -114,22 +114,23 @@ export default function Modal({
         >
           <div
             className={twMerge(
-              'h-16 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
+              'h-12 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
               !isWrapped && 'sm:hidden',
             )}
             onPointerDown={isMobile ? startDrag : undefined}
             style={{ touchAction: 'none' }}
           >
             {!isMobile && (
-              <div className="flex text-lg uppercase text-white/90 font-special h-full items-center justify-center opacity-80">
+              <div className="flex text-md text-white/90 font-special h-full items-center justify-center opacity-80">
                 <Image
-                  className="relative top-[0.1em]"
+                  className="relative h-[1.4em] w-[1.4em]"
                   alt="adrena logo"
                   src={adrenaLogo}
-                  width={30}
-                  height={30}
+                  width={40}
+                  height={40}
                 />
-                {title && <h2 className="ml-4 text-[1.50em]">{title}</h2>}
+                {title && <div className="ml-4 text-xl font-archivo">{title}</div>}
+
                 {customTitle}
               </div>
             )}

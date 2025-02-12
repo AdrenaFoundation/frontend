@@ -115,7 +115,7 @@ export default function SharePositionModal({
               alt="Adrena Logo"
               height={20}
             />
-            <h2 className="font-archivo">
+            <h2 className="font-archivoblack">
               {getTokenSymbol(position.token.symbol)}
             </h2>
           </div>
@@ -128,7 +128,7 @@ export default function SharePositionModal({
           >
             <p
               className={twMerge(
-                'text-sm font-archivo capitalize',
+                'text-sm font-archivoblack capitalize',
                 position.side === 'long' ? 'text-[#49d7ad]' : 'text-red',
               )}
             >
@@ -141,7 +141,7 @@ export default function SharePositionModal({
           nb={isPnlUsd ? pnlUsd : pnlPercentage}
           format={isPnlUsd ? 'currency' : 'percentage'}
           className={twMerge(
-            'text-[60px] sm:text-[70px] font-archivo relative z-10',
+            'text-[60px] sm:text-[70px] font-archivoblack relative z-10',
             pnlPercentage && pnlPercentage < 99 && 'sm:text-[85px]',
             pnlPercentage && pnlPercentage < 0
               ? 'bg-gradient-to-r from-[#F2485F]  to-red inline-block text-transparent bg-clip-text'
@@ -154,7 +154,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Entry Price
             </span>
-            <span className="font-archivo text-sm sm:text-lg">
+            <span className="font-archivoblack text-sm sm:text-lg">
               {formatPriceInfo(
                 position.price,
                 position.token.displayPriceDecimalsPrecision,
@@ -165,7 +165,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               {position?.exitPrice ? 'Exit Price' : 'Mark Price'}
             </span>
-            <span className="font-archivo text-sm sm:text-lg">
+            <span className="font-archivoblack text-sm sm:text-lg">
               {position?.exitPrice
                 ? formatPriceInfo(
                   position.exitPrice,
@@ -180,7 +180,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Opened on
             </span>
-            <span className="font-archivo text-sm sm:text-lg">{openedOn}</span>
+            <span className="font-archivoblack text-sm sm:text-lg">{openedOn}</span>
           </li>
         </ul>
 

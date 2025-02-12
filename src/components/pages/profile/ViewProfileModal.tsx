@@ -50,9 +50,6 @@ export default function ViewProfileModal({
                 canUpdateNickname={false}
                 className="flex w-full w-min-[30em] border "
                 walletPubkey={profile.owner}
-                redisProfile={null}
-                setRedisProfile={() => { }}
-                duplicatedRedis={false}
                 readonly={true}
             />
 
@@ -63,6 +60,7 @@ export default function ViewProfileModal({
                     className="gap-y-4 pt-4 pb-4"
                     showFeesInPnl={showFeesInPnl}
                 />
+
                 <StakingStats
                     stakingAccounts={stakingAccounts}
                     className="gap-y-4 pb-4"

@@ -8,6 +8,7 @@ import adxLogo from '@/../../public/images/adx.svg';
 import jtoImage from '@/../../public/images/jito-logo-2.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
+import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
@@ -40,9 +41,9 @@ export default function ExpanseChampionshipLeaderboard({
                 </div>,
 
                 <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
-                    {d.avatar && !filler ? (
+                    {d.profilePicture !== null && !filler ? (
                         <Image
-                            src={d.avatar}
+                            src={PROFILE_PICTURES[d.profilePicture]}
                             width={30}
                             height={30}
                             alt="rank"
@@ -52,7 +53,7 @@ export default function ExpanseChampionshipLeaderboard({
                     ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
                     <div id={`user-season-${d.wallet.toBase58()}`}>
-                        {!filler && d.username ? (
+                        {!filler && d.nickname ? (
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
@@ -62,13 +63,13 @@ export default function ExpanseChampionshipLeaderboard({
                                     onClickUserProfile(d.wallet);
                                 }}
                             >
-                                {d.username.length > 16
-                                    ? `${d.username.substring(0, 16)}...`
-                                    : d.username}
+                                {d.nickname.length > 16
+                                    ? `${d.nickname.substring(0, 16)}...`
+                                    : d.nickname}
                             </p>
                         ) : null}
 
-                        {!filler && !d.username ? (
+                        {!filler && !d.nickname ? (
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
@@ -81,9 +82,9 @@ export default function ExpanseChampionshipLeaderboard({
 
                         {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
 
-                        {!filler && d.title ? (
+                        {!filler && d.title !== null ? (
                             <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
-                                {d.title}
+                                {USER_PROFILE_TITLES[d.title]}
                             </div>
                         ) : null}
 

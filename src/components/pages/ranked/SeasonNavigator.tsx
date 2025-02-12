@@ -31,7 +31,7 @@ export default function SeasonNavigator({
                     key={season}
                     onClick={() => setActiveSeason(season)}
                 >
-                    <p className="relative z-20 font-archivo tracking-widest text-md uppercase">
+                    <p className="relative z-20 font-archivoblack tracking-widest text-md uppercase">
                         {TRADING_COMPETITION_SEASONS[season].title}
                     </p>
 
