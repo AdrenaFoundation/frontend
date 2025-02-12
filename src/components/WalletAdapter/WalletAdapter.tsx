@@ -129,7 +129,7 @@ export default function WalletAdapter({
                 isIconOnly && 'p-0 h-8 w-8',
               )}
               style={!isBreak ? {
-                background: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
+                backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
                 backgroundPositionY: 'center',
