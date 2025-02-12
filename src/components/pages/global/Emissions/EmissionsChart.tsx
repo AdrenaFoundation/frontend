@@ -32,8 +32,8 @@ const adxLmPerMonth = 8600000;
 const secondsPerMonth = 2592000;
 
 // There are 4 rounds of 6 hours per day
-const alpLmPerDay = (alpLmPerMonth / secondsPerMonth) * 21600;
-const adxLmPerDay = (adxLmPerMonth / secondsPerMonth) * 21600;
+const alpLmPerDay = (alpLmPerMonth / secondsPerMonth) * 21600 * 4;
+const adxLmPerDay = (adxLmPerMonth / secondsPerMonth) * 21600 * 4;
 const startOfLmLpMonthCounter = new Date(1726591514000);
 
 const vestingStart = new Date(1734696000000);

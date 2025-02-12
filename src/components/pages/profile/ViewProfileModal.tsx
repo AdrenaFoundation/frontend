@@ -60,6 +60,7 @@ export default function ViewProfileModal({
                     className="gap-y-4 pt-4 pb-4"
                     showFeesInPnl={showFeesInPnl}
                 />
+
                 <StakingStats
                     stakingAccounts={stakingAccounts}
                     className="gap-y-4 pb-4"

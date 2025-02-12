@@ -414,30 +414,6 @@ export class AdrenaClient {
   }
 
   protected extendUserProfileInfo(p: UserProfile | UserProfileV1, userProfilePda: PublicKey): UserProfileExtended {
-    // Both profile v1 and v2 have the same fields
-    const shortOpeningSizeUsd = nativeToUi(p.shortStats.openingSizeUsd, USD_DECIMALS);
-    const longOpeningSizeUsd = nativeToUi(p.longStats.openingSizeUsd, USD_DECIMALS);
-    const shortProfitsUsd = nativeToUi(p.shortStats.profitsUsd, USD_DECIMALS);
-    const longProfitsUsd = nativeToUi(p.longStats.profitsUsd, USD_DECIMALS);
-    const shortLossesUsd = nativeToUi(p.shortStats.lossesUsd, USD_DECIMALS);
-    const longLossesUsd = nativeToUi(p.longStats.lossesUsd, USD_DECIMALS);
-    const swapFeePaidUsd = nativeToUi(p.swapFeePaidUsd, USD_DECIMALS);
-    const longFeePaidUsd = nativeToUi(p.longStats.feePaidUsd, USD_DECIMALS);
-    const shortFeePaidUsd = nativeToUi(p.shortStats.feePaidUsd, USD_DECIMALS);
-
-    const longOpeningAverageLeverage =
-      p.longStats.openingAverageLeverage.toNumber() / 10_000;
-    const shortOpeningAverageLeverage =
-      p.shortStats.openingAverageLeverage.toNumber() / 10_000;
-
-    const totalTradeVolumeUsd = longOpeningSizeUsd + shortOpeningSizeUsd;
-    const totalPnlUsd =
-      longProfitsUsd - longLossesUsd + shortProfitsUsd - shortLossesUsd;
-
-    const totalFeesPaidUsd = swapFeePaidUsd + longFeePaidUsd + shortFeePaidUsd;
-    const openingAverageLeverage =
-      (longOpeningAverageLeverage + shortOpeningAverageLeverage) / 2;
-
     return {
       version: 'version' in p ? p.version : 1,
       pubkey: userProfilePda,
@@ -448,36 +424,36 @@ export class AdrenaClient {
         .replace(/\0/g, ''),
       createdAt: p.createdAt.toNumber(),
       owner: p.owner,
-      swapCount: p.swapCount.toNumber(),
-      swapVolumeUsd: nativeToUi(p.swapVolumeUsd, USD_DECIMALS),
-      swapFeePaidUsd: swapFeePaidUsd,
-      totalPnlUsd,
-      totalTradeVolumeUsd,
-      openingAverageLeverage,
-      totalFeesPaidUsd,
-      shortStats: {
-        openedPositionCount: p.shortStats.openedPositionCount.toNumber(),
-        liquidatedPositionCount:
-          p.shortStats.liquidatedPositionCount.toNumber(),
-        // From BPS to regular number
-        openingAverageLeverage: shortOpeningAverageLeverage,
-        openingSizeUsd: shortOpeningSizeUsd,
-        profitsUsd: shortProfitsUsd,
-        lossesUsd: shortLossesUsd,
-        feePaidUsd: shortFeePaidUsd,
-      },
-      longStats: {
-        openedPositionCount: p.longStats.openedPositionCount.toNumber(),
-        liquidatedPositionCount: p.longStats.liquidatedPositionCount.toNumber(),
-        openingAverageLeverage: longOpeningAverageLeverage,
-        openingSizeUsd: longOpeningSizeUsd,
-        profitsUsd: longProfitsUsd,
-        lossesUsd: longLossesUsd,
-        feePaidUsd: longFeePaidUsd,
-      },
       profilePicture: 'profilePicture' in p ? p.profilePicture as ProfilePicture : 0,
       wallpaper: 'wallpaper' in p ? p.wallpaper as Wallpaper : 0,
       title: 'title' in p ? p.title as UserProfileTitle : 0,
+
+      // TODO: feed theses data with the offchain API
+      // Aggregates
+      totalPnlUsd: 0,
+      // Only accounts for opens
+      totalTradeVolumeUsd: 0,
+      totalFeesPaidUsd:  0,
+      openingAverageLeverage: 0,
+      //
+      shortStats: {
+        openedPositionCount: 0,
+        liquidatedPositionCount: 0,
+        openingAverageLeverage: 0,
+        openingSizeUsd: 0,
+        profitsUsd: 0,
+        lossesUsd: 0,
+        feePaidUsd: 0,
+      },
+      longStats: {
+        openedPositionCount: 0,
+        liquidatedPositionCount: 0,
+        openingAverageLeverage: 0,
+        openingSizeUsd: 0,
+        profitsUsd: 0,
+        lossesUsd: 0,
+        feePaidUsd: 0,
+      },
     };
   }
 
@@ -1124,8 +1100,6 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = this.getUserProfilePda(owner);
-
     // TODO
     // Think and use proper slippage, for now use 0.3%
     const priceWithSlippage = applySlippage(price, 0.3);
@@ -1162,7 +1136,6 @@ export class AdrenaClient {
         lmStakingRewardTokenVault,
         lpStakingRewardTokenVault,
         lpTokenMint: this.lpTokenMint,
-        userProfile,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
@@ -1244,8 +1217,6 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = this.getUserProfilePda(owner);
-
     // TODO
     // Think and use proper slippage, for now use 0.3%
     const priceWithSlippage = applySlippage(price, -0.3);
@@ -1285,7 +1256,6 @@ export class AdrenaClient {
         lpStakingRewardTokenVault,
         lpTokenMint: this.lpTokenMint,
         protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        userProfile,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
@@ -1340,8 +1310,6 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = this.getUserProfilePda(owner);
-
     return this.adrenaProgram.methods
       .swap({
         amountIn,
@@ -1372,7 +1340,6 @@ export class AdrenaClient {
         lpStakingRewardTokenVault,
         lpTokenMint: this.lpTokenMint,
         protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        userProfile,
         adrenaProgram: this.adrenaProgram.programId,
       });
   }
@@ -1481,8 +1448,6 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = this.getUserProfilePda(position.owner);
-
     console.log('Close long position:', {
       position: position.pubkey.toBase58(),
       price: price.toString(),
@@ -1516,7 +1481,6 @@ export class AdrenaClient {
           lpTokenMint: this.lpTokenMint,
           protocolFeeRecipient: this.cortex.protocolFeeRecipient,
           adrenaProgram: this.adrenaProgram.programId,
-          userProfile,
           caller: position.owner,
         })
         .preInstructions(preInstructions)
@@ -1591,8 +1555,6 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = this.getUserProfilePda(position.owner);
-
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .closePositionShort({
@@ -1622,7 +1584,6 @@ export class AdrenaClient {
           adrenaProgram: this.adrenaProgram.programId,
           collateralCustodyOracle,
           collateralCustodyTokenAccount,
-          userProfile,
           caller: position.owner,
         })
         .preInstructions(preInstructions)
@@ -4432,11 +4393,13 @@ export class AdrenaClient {
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
         commitment: "processed",
         filters: [
-          { dataSize: 8 + 456 }, // Ensure correct size for V2
+          { dataSize: 8 + 400 }, // Ensure correct size for V2
           { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
         ],
       }),
     ]);
+
+    console.log('Loaded user profiles', userProfilesV1, userProfilesV2);
 
     // If no data, profile doesn't exist
     if (!userProfilesV1.length && !userProfilesV2.length) {

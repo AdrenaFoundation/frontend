@@ -1741,20 +1741,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#23"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#23"
           ]
         },
         {
@@ -1762,7 +1753,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#25"
+            "#24"
           ]
         }
       ],
@@ -2658,19 +2649,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -2678,7 +2661,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -2686,7 +2669,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -2809,19 +2792,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -2829,7 +2804,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -2837,7 +2812,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -3046,19 +3021,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#25"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#26"
+            "#25"
           ]
         },
         {
@@ -3066,7 +3033,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#26"
           ]
         },
         {
@@ -3074,7 +3041,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#27"
           ]
         }
       ],
@@ -3299,19 +3266,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#27"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#27"
           ]
         },
         {
@@ -3319,7 +3278,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#29"
+            "#28"
           ]
         },
         {
@@ -3327,7 +3286,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#30"
+            "#29"
           ]
         }
       ],
@@ -3956,19 +3915,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         },
         {
@@ -3976,7 +3927,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         }
       ],
@@ -4161,19 +4112,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         },
         {
@@ -4181,7 +4124,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#23"
           ]
         }
       ],
@@ -4350,19 +4293,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#20"
           ]
         },
         {
@@ -4370,7 +4305,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         }
       ],
@@ -4547,19 +4482,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         },
         {
@@ -4567,7 +4494,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         }
       ],
@@ -8976,19 +8903,11 @@
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#11"
           ]
         },
         {
@@ -8996,7 +8915,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#12"
           ]
         },
         {
@@ -9004,7 +8923,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         }
       ],
@@ -9219,7 +9138,7 @@
           ]
         },
         {
-          "name": "userProfile",
+          "name": "limitOrderBook",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -9227,19 +9146,11 @@
           ]
         },
         {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -9247,7 +9158,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -9255,7 +9166,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -9368,7 +9279,7 @@
           ]
         },
         {
-          "name": "userProfile",
+          "name": "limitOrderBook",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -9376,19 +9287,11 @@
           ]
         },
         {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -9396,7 +9299,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         },
         {
@@ -9404,7 +9307,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#16"
           ]
         }
       ],
@@ -10302,30 +10205,6 @@
           {
             "name": "owner",
             "type": "publicKey"
-          },
-          {
-            "name": "swapCount",
-            "type": "u64"
-          },
-          {
-            "name": "swapVolumeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "swapFeePaidUsd",
-            "type": "u64"
-          },
-          {
-            "name": "shortStats",
-            "type": {
-              "defined": "TradingStats"
-            }
-          },
-          {
-            "name": "longStats",
-            "type": {
-              "defined": "TradingStats"
-            }
           },
           {
             "name": "achievements",
@@ -12245,11 +12124,15 @@
             "type": "u8"
           },
           {
+            "name": "isLimitPriceSet",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                6
+                5
               ]
             }
           },

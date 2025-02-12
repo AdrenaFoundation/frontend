@@ -66,7 +66,7 @@ export default function AllUserProfiles({
     const [initialRankedProfiles, setInitialRankedProfiles] = useState<
         UserProfileExtended[]
     >([]);
-    const [hideZeroTradeVolume, setHideZeroTradeVolume] = useState(true);
+    const [hideZeroTradeVolume, setHideZeroTradeVolume] = useState(false);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 

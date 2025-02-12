@@ -1741,20 +1741,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#23"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#23"
           ]
         },
         {
@@ -1762,7 +1753,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#25"
+            "#24"
           ]
         }
       ],
@@ -2658,19 +2649,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -2678,7 +2661,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -2686,7 +2669,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -2809,19 +2792,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -2829,7 +2804,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -2837,7 +2812,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -3046,19 +3021,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#25"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#26"
+            "#25"
           ]
         },
         {
@@ -3066,7 +3033,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#26"
           ]
         },
         {
@@ -3074,7 +3041,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#27"
           ]
         }
       ],
@@ -3299,19 +3266,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#27"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#27"
           ]
         },
         {
@@ -3319,7 +3278,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#29"
+            "#28"
           ]
         },
         {
@@ -3327,7 +3286,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#30"
+            "#29"
           ]
         }
       ],
@@ -3956,19 +3915,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         },
         {
@@ -3976,7 +3927,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         }
       ],
@@ -4161,19 +4112,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         },
         {
@@ -4181,7 +4124,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#23"
           ]
         }
       ],
@@ -4350,19 +4293,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#20"
           ]
         },
         {
@@ -4370,7 +4305,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         }
       ],
@@ -4547,19 +4482,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         },
         {
@@ -4567,7 +4494,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         }
       ],
@@ -8976,19 +8903,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#11"
           ]
         },
         {
@@ -8996,7 +8915,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#12"
           ]
         },
         {
@@ -9004,7 +8923,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         }
       ],
@@ -9219,7 +9138,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
+          "name": "limitOrderBook",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -9227,19 +9146,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -9247,7 +9158,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -9255,7 +9166,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -9368,7 +9279,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "userProfile",
+          "name": "limitOrderBook",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -9376,19 +9287,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -9396,7 +9299,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         },
         {
@@ -9404,7 +9307,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#16"
           ]
         }
       ],
@@ -10302,30 +10205,6 @@ export type Adrena = {
           {
             "name": "owner",
             "type": "publicKey"
-          },
-          {
-            "name": "swapCount",
-            "type": "u64"
-          },
-          {
-            "name": "swapVolumeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "swapFeePaidUsd",
-            "type": "u64"
-          },
-          {
-            "name": "shortStats",
-            "type": {
-              "defined": "TradingStats"
-            }
-          },
-          {
-            "name": "longStats",
-            "type": {
-              "defined": "TradingStats"
-            }
           },
           {
             "name": "achievements",
@@ -12226,9 +12105,7 @@ export type Adrena = {
           },
           {
             "name": "limitPrice",
-            "type": {
-              "option": "u64"
-            }
+            "type": "u64"
           },
           {
             "name": "custody",
@@ -12247,11 +12124,15 @@ export type Adrena = {
             "type": "u8"
           },
           {
+            "name": "isLimitPriceSet",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                6
+                5
               ]
             }
           },
@@ -15462,20 +15343,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#23"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#23"
           ]
         },
         {
@@ -15483,7 +15355,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#25"
+            "#24"
           ]
         }
       ],
@@ -16379,19 +16251,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -16399,7 +16263,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -16407,7 +16271,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -16530,19 +16394,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -16550,7 +16406,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -16558,7 +16414,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -16767,19 +16623,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#25"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#26"
+            "#25"
           ]
         },
         {
@@ -16787,7 +16635,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#26"
           ]
         },
         {
@@ -16795,7 +16643,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#27"
           ]
         }
       ],
@@ -17020,19 +16868,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#27"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#27"
           ]
         },
         {
@@ -17040,7 +16880,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#29"
+            "#28"
           ]
         },
         {
@@ -17048,7 +16888,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#30"
+            "#29"
           ]
         }
       ],
@@ -17677,19 +17517,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         },
         {
@@ -17697,7 +17529,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         }
       ],
@@ -17882,19 +17714,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         },
         {
@@ -17902,7 +17726,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#23"
           ]
         }
       ],
@@ -18071,19 +17895,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#20"
           ]
         },
         {
@@ -18091,7 +17907,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         }
       ],
@@ -18268,19 +18084,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#21"
           ]
         },
         {
@@ -18288,7 +18096,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#22"
           ]
         }
       ],
@@ -22697,19 +22505,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#11"
           ]
         },
         {
@@ -22717,7 +22517,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#12"
           ]
         },
         {
@@ -22725,7 +22525,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         }
       ],
@@ -22940,7 +22740,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
+          "name": "limitOrderBook",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -22948,19 +22748,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -22968,7 +22760,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -22976,7 +22768,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         }
       ],
@@ -23089,7 +22881,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "userProfile",
+          "name": "limitOrderBook",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -23097,19 +22889,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -23117,7 +22901,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#15"
           ]
         },
         {
@@ -23125,7 +22909,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#16"
           ]
         }
       ],
@@ -24023,30 +23807,6 @@ export const IDL: Adrena = {
           {
             "name": "owner",
             "type": "publicKey"
-          },
-          {
-            "name": "swapCount",
-            "type": "u64"
-          },
-          {
-            "name": "swapVolumeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "swapFeePaidUsd",
-            "type": "u64"
-          },
-          {
-            "name": "shortStats",
-            "type": {
-              "defined": "TradingStats"
-            }
-          },
-          {
-            "name": "longStats",
-            "type": {
-              "defined": "TradingStats"
-            }
           },
           {
             "name": "achievements",
@@ -25947,9 +25707,7 @@ export const IDL: Adrena = {
           },
           {
             "name": "limitPrice",
-            "type": {
-              "option": "u64"
-            }
+            "type": "u64"
           },
           {
             "name": "custody",
@@ -25968,11 +25726,15 @@ export const IDL: Adrena = {
             "type": "u8"
           },
           {
+            "name": "isLimitPriceSet",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                6
+                5
               ]
             }
           },

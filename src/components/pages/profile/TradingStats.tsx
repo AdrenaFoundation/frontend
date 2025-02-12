@@ -31,7 +31,7 @@ export default function TradingStats({
   }, [showAfterFees, userProfile.longStats.feePaidUsd, userProfile.longStats.lossesUsd, userProfile.longStats.profitsUsd, userProfile.shortStats.feePaidUsd, userProfile.shortStats.lossesUsd, userProfile.shortStats.profitsUsd]);
 
   return (
-    <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4", className)}>
+    <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 blur-md", className)}>
       <NumberDisplay
         title={
           <div className='flex'>

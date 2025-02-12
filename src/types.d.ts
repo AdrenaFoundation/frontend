@@ -225,9 +225,6 @@ export type UserProfileExtended = {
   nickname: string;
   createdAt: number;
   owner: PublicKey;
-  swapCount: number;
-  swapVolumeUsd: number;
-  swapFeePaidUsd: number;
   // Aggregates
   totalPnlUsd: number;
   // Only accounts for opens

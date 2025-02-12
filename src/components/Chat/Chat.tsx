@@ -297,7 +297,8 @@ function Chat({
                                                     <div className="h-[1px] w-full bg-white opacity-90 mt-1 mb-1" />
                                                 </div>
 
-                                                <div className="flex flex-col w-full gap-1">
+                                                {/* TODO: reactivate once we have plugged in offchain API data */}
+                                                {/* <div className="flex flex-col w-full gap-1">
                                                     <div className="flex justify-between items-center w-full">
                                                         <div className="text-xs font-boldy">Trading Volume</div>
                                                         <FormatNumber
@@ -331,7 +332,7 @@ function Chat({
                                                             className='border-0 text-xs'
                                                         />
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                         : msg.wallet && profileCache[msg.wallet] === false ?

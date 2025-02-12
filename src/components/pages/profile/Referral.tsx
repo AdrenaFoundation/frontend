@@ -25,9 +25,7 @@ export default function Referral({
     }
 
     if (userProfile.version < 2) {
-        return <div>
-            Migrate to profile v2 to access referral link
-        </div>
+        return <div></div>
     }
 
     const link = `https://app.adrena.xyz/trade?referral=${encodeURIComponent(userProfile.nickname)}`;
