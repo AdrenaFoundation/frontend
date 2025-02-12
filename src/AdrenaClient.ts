@@ -5033,7 +5033,11 @@ export class AdrenaClient {
 
       if (getTransactionLogs) {
         await this.connection.confirmTransaction(
-          txSignatureBase58,
+          {
+            signature: txSignatureBase58,
+            blockhash: latestBlockHash.blockhash,
+            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+          },
           'confirmed',
         );
 
