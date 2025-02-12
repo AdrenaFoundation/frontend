@@ -4468,7 +4468,7 @@ export class AdrenaClient {
         commitment: "processed",
         dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
         filters: [
-          { dataSize: 8 + 456 }, // Ensure correct size for V2
+          { dataSize: 8 + 400 }, // Ensure correct size for V2
           { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
         ],
       }),
