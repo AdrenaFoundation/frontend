@@ -369,7 +369,7 @@ export default function WalletDigger({
                     <TradingStats
                         userProfile={userProfile}
                         livePositionsNb={positions === null ? null : positions.length}
-                        className="gap-y-4 mt-2 mb-2"
+                        className="gap-y-4 mb-2"
                         showFeesInPnl={showFeesInPnl}
                     />
 

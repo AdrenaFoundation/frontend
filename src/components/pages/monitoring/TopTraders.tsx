@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -7,21 +8,21 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { Trader, UserProfileExtended } from '@/types';
+import { Trader, UserProfileExtended, UserProfileMetadata } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
 
 interface TopTradersProps {
     startDate: string;
     endDate: string;
-    allUserProfiles: UserProfileExtended[];
+    allUserProfilesMetadata: UserProfileMetadata[];
     setProfile: (profile: UserProfileExtended | null) => void;
 }
 
 type SortField = 'average_trade_time' | 'pnl_minus_fees' | 'volume' | 'fees' | 'volume_weighted_pnl_percentage' | 'win_rate_percentage' | 'pnl_volatility' | 'shortest_trade_time' | 'number_positions' | 'number_transactions';
 type SortDirection = 'asc' | 'desc';
 
-export default function TopTraders({ startDate, endDate, allUserProfiles, setProfile }: TopTradersProps) {
+export default function TopTraders({ startDate, endDate, allUserProfilesMetadata, setProfile }: TopTradersProps) {
     const [traders, setTraders] = useState<Trader[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -33,14 +34,14 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
     const numberTraders = 100;
 
     const userProfilesMap = useMemo(() => {
-        return allUserProfiles.reduce(
+        return allUserProfilesMetadata.reduce(
             (acc, profile) => {
                 acc[profile.owner.toBase58()] = profile.nickname;
                 return acc;
             },
             {} as Record<string, string>,
         );
-    }, [allUserProfiles]);
+    }, [allUserProfilesMetadata]);
 
     useEffect(() => {
         const fetchTraders = async () => {
@@ -68,11 +69,10 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
         fetchTraders();
     }, [startDate, endDate]);
 
-    const handleProfileView = (pubkey: string) => {
-        const profile = allUserProfiles.find((p) => p.owner.toBase58() === pubkey);
-        if (profile) {
-            setProfile(profile);
-        }
+    const handleProfileView = async (pubkey: string) => {
+        const p = await window.adrena.client.loadUserProfile(new PublicKey(pubkey));
+
+        setProfile(p !== false ? p : null);
     };
     const handleSort = (field: SortField) => {
         if (sortField === field) {

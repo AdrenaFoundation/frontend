@@ -1,10 +1,14 @@
 import {
   AnchorProvider,
   BN,
+  BorshCoder,
+  EventData,
+  EventParser,
   Program,
   ProgramAccount,
   Wallet,
 } from '@coral-xyz/anchor';
+import { IdlEventField } from '@coral-xyz/anchor/dist/cjs/idl';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountIdempotentInstruction,
@@ -12,6 +16,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
+  AccountInfo,
   Blockhash,
   ComputeBudgetProgram,
   Connection,
@@ -57,6 +62,7 @@ import {
   Position,
   PositionExtended,
   PriorityFeeOption,
+  ProfilePicture,
   ProfitAndLoss,
   Staking,
   SwapAmountAndFees,
@@ -64,11 +70,15 @@ import {
   TokenSymbol,
   UserProfile,
   UserProfileExtended,
+  UserProfileMetadata,
+  UserProfileTitle,
+  UserProfileV1,
   UserStakingExtended,
   Vest,
   VestExtended,
   VestRegistry,
   WalletAdapterExtended,
+  Wallpaper,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -271,6 +281,13 @@ export class AdrenaClient {
     )[0];
   };
 
+  public getUserNicknamePda = (nickname: string) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('nickname'), Buffer.from(nickname)],
+      AdrenaClient.programId,
+    )[0];
+  };
+
   public governanceGoverningTokenHolding = PublicKey.findProgramAddressSync(
     [
       Buffer.from('governance'),
@@ -374,6 +391,76 @@ export class AdrenaClient {
     ).account.vestRegistry.fetch(AdrenaClient.vestRegistryPda);
   }
 
+  protected decodeUserProfileAnyVersion(accountInfo: AccountInfo<Buffer>): false | UserProfile | UserProfileV1 {
+      try {
+        // Try parsing as V2 first
+        const p = this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode('userProfile', accountInfo.data);
+      
+        if (!p || p.createdAt.isZero()) {
+          throw new Error('Invalid data');
+        }
+      
+        return p;
+      } catch {
+        try {
+          // Try parsing as V1 (legacy)
+          const p = this.readonlyAdrenaProgram.account.userProfileV1.coder.accounts.decodeUnchecked('userProfileV1', accountInfo.data);
+      
+          if (!p || p.createdAt.isZero()) {
+            throw new Error('Invalid data');
+          }
+        
+          return p;
+        } catch {
+          return false; // Unreadable data (either corrupted or unknown version)
+        }
+    }
+  }
+
+  protected extendUserProfileInfo(p: UserProfile | UserProfileV1, userProfilePda: PublicKey): UserProfileExtended {
+    return {
+      version: 'version' in p ? p.version : 1,
+      pubkey: userProfilePda,
+      // Transform the buffer of bytes to a string
+      nickname: p.nickname.value
+        .map((byte) => String.fromCharCode(byte))
+        .join('')
+        .replace(/\0/g, ''),
+      createdAt: p.createdAt.toNumber(),
+      owner: p.owner,
+      profilePicture: 'profilePicture' in p ? p.profilePicture as ProfilePicture : 0,
+      wallpaper: 'wallpaper' in p ? p.wallpaper as Wallpaper : 0,
+      title: 'title' in p ? p.title as UserProfileTitle : 0,
+
+      // TODO: feed theses data with the offchain API
+      // Aggregates
+      totalPnlUsd: 0,
+      // Only accounts for opens
+      totalTradeVolumeUsd: 0,
+      totalFeesPaidUsd:  0,
+      openingAverageLeverage: 0,
+      //
+      shortStats: {
+        openedPositionCount: 0,
+        liquidatedPositionCount: 0,
+        openingAverageLeverage: 0,
+        openingSizeUsd: 0,
+        profitsUsd: 0,
+        lossesUsd: 0,
+        feePaidUsd: 0,
+      },
+      longStats: {
+        openedPositionCount: 0,
+        liquidatedPositionCount: 0,
+        openingAverageLeverage: 0,
+        openingSizeUsd: 0,
+        profitsUsd: 0,
+        lossesUsd: 0,
+        feePaidUsd: 0,
+      },
+    };
+  }
+
   // Provide alternative user if you wanna get the profile of a specific user
   // null = not ready
   // false = profile not initialized
@@ -384,97 +471,23 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(user);
 
-    const p =
-      await this.readonlyAdrenaProgram.account.userProfile.fetchNullable(
-        userProfilePda,
-        'processed',
-      );
+    // Fetch raw account data
+    const accountInfo = await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(userProfilePda, 'processed');
 
-    if (p === null || p.createdAt.isZero()) {
+    // If no data, profile doesn't exist
+    if (!accountInfo || !accountInfo.data) {
       return false;
     }
 
-    const shortOpeningSizeUsd = p.shortStats.openingSizeUsd
-      ? nativeToUi(p.shortStats.openingSizeUsd, USD_DECIMALS)
-      : 0;
-    const longOpeningSizeUsd = p.longStats.openingSizeUsd
-      ? nativeToUi(p.longStats.openingSizeUsd, USD_DECIMALS)
-      : 0;
+    const p = this.decodeUserProfileAnyVersion(
+        accountInfo,
+      );
 
-    const shortProfitsUsd = p.shortStats.profitsUsd
-      ? nativeToUi(p.shortStats.profitsUsd, USD_DECIMALS)
-      : 0;
-    const longProfitsUsd = p.longStats.profitsUsd
-      ? nativeToUi(p.longStats.profitsUsd, USD_DECIMALS)
-      : 0;
-    const shortLossesUsd = p.shortStats.lossesUsd
-      ? nativeToUi(p.shortStats.lossesUsd, USD_DECIMALS)
-      : 0;
-    const longLossesUsd = p.longStats.lossesUsd
-      ? nativeToUi(p.longStats.lossesUsd, USD_DECIMALS)
-      : 0;
+    if (p === false) {
+      return false;
+    }
 
-    const swapFeePaidUsd = p.swapFeePaidUsd
-      ? nativeToUi(p.swapFeePaidUsd, USD_DECIMALS)
-      : 0;
-    const longFeePaidUsd = p.longStats.feePaidUsd
-      ? nativeToUi(p.longStats.feePaidUsd, USD_DECIMALS)
-      : 0;
-    const shortFeePaidUsd = p.shortStats.feePaidUsd
-      ? nativeToUi(p.shortStats.feePaidUsd, USD_DECIMALS)
-      : 0;
-
-    const longOpeningAverageLeverage =
-      p.longStats.openingAverageLeverage.toNumber() / 10_000;
-    const shortOpeningAverageLeverage =
-      p.shortStats.openingAverageLeverage.toNumber() / 10_000;
-
-    const totalTradeVolumeUsd = longOpeningSizeUsd + shortOpeningSizeUsd;
-    const totalPnlUsd =
-      longProfitsUsd - longLossesUsd + shortProfitsUsd - shortLossesUsd;
-
-    const totalFeesPaidUsd = swapFeePaidUsd + longFeePaidUsd + shortFeePaidUsd;
-    const openingAverageLeverage =
-      (longOpeningAverageLeverage + shortOpeningAverageLeverage) / 2;
-
-    return {
-      pubkey: userProfilePda,
-      // Transform the buffer of bytes to a string
-      nickname: p.nickname.value
-        .map((byte) => String.fromCharCode(byte))
-        .join('')
-        .replace(/\0/g, ''),
-      createdAt: p.createdAt.toNumber(),
-      owner: p.owner,
-      swapCount: p.swapCount.toNumber(),
-      swapVolumeUsd: nativeToUi(p.swapVolumeUsd, USD_DECIMALS),
-      swapFeePaidUsd: swapFeePaidUsd,
-      totalPnlUsd,
-      totalTradeVolumeUsd,
-      openingAverageLeverage,
-      totalFeesPaidUsd,
-      shortStats: {
-        openedPositionCount: p.shortStats.openedPositionCount.toNumber(),
-        liquidatedPositionCount:
-          p.shortStats.liquidatedPositionCount.toNumber(),
-        // From BPS to regular number
-        openingAverageLeverage: shortOpeningAverageLeverage,
-        openingSizeUsd: shortOpeningSizeUsd,
-        profitsUsd: shortProfitsUsd,
-        lossesUsd: shortLossesUsd,
-        feePaidUsd: shortFeePaidUsd,
-      },
-      longStats: {
-        openedPositionCount: p.longStats.openedPositionCount.toNumber(),
-        liquidatedPositionCount: p.longStats.liquidatedPositionCount.toNumber(),
-        openingAverageLeverage: longOpeningAverageLeverage,
-        openingSizeUsd: longOpeningSizeUsd,
-        profitsUsd: longProfitsUsd,
-        lossesUsd: longLossesUsd,
-        feePaidUsd: longFeePaidUsd,
-      },
-      nativeObject: p,
-    };
+    return this.extendUserProfileInfo(p, userProfilePda);
   }
 
   public async loadStakingAccount(address: PublicKey): Promise<Staking | null> {
@@ -1040,7 +1053,6 @@ export class AdrenaClient {
     collateralMint,
     collateralAmount,
     leverage,
-    userProfile,
     referrer,
   }: {
     owner: PublicKey;
@@ -1049,7 +1061,6 @@ export class AdrenaClient {
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
-    userProfile?: PublicKey;
     referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
@@ -1129,7 +1140,6 @@ export class AdrenaClient {
         lmStakingRewardTokenVault,
         lpStakingRewardTokenVault,
         lpTokenMint: this.lpTokenMint,
-        userProfile: userProfile ?? null,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
@@ -1144,7 +1154,6 @@ export class AdrenaClient {
     collateralMint,
     collateralAmount,
     leverage,
-    userProfile,
     referrer,
   }: {
     owner: PublicKey;
@@ -1153,7 +1162,6 @@ export class AdrenaClient {
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
-    userProfile?: PublicKey;
     referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
@@ -1252,7 +1260,6 @@ export class AdrenaClient {
         lpStakingRewardTokenVault,
         lpTokenMint: this.lpTokenMint,
         protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        userProfile: userProfile ?? null,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
@@ -1266,7 +1273,6 @@ export class AdrenaClient {
     minAmountOut,
     mintA,
     mintB,
-    userProfile,
     receivingAccount,
   }: {
     owner: PublicKey;
@@ -1274,7 +1280,6 @@ export class AdrenaClient {
     minAmountOut: BN;
     mintA: PublicKey;
     mintB: PublicKey;
-    userProfile?: PublicKey;
     receivingAccount: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
@@ -1339,7 +1344,6 @@ export class AdrenaClient {
         lpStakingRewardTokenVault,
         lpTokenMint: this.lpTokenMint,
         protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        userProfile: userProfile ?? null,
         adrenaProgram: this.adrenaProgram.programId,
       });
   }
@@ -1374,15 +1378,12 @@ export class AdrenaClient {
         preInstructions,
       });
 
-    const userProfile = await this.loadUserProfile(owner);
-
     const transaction = await this.buildSwapTx({
       owner,
       amountIn,
       minAmountOut,
       mintA,
       mintB,
-      userProfile: userProfile ? userProfile.pubkey : undefined,
       receivingAccount,
     })
       .preInstructions(preInstructions)
@@ -1399,10 +1400,17 @@ export class AdrenaClient {
     position,
     price,
     notification,
+    getTransactionLogs,
   }: {
     position: PositionExtended;
     price: BN;
     notification: MultiStepNotification;
+    getTransactionLogs?: (
+      logs: {
+        raw: string[];
+        events?: EventData<IdlEventField, Record<string, never>>;
+      } | null,
+    ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1451,8 +1459,6 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = await this.loadUserProfile(position.owner);
-
     console.log('Close long position:', {
       position: position.pubkey.toBase58(),
       price: price.toString(),
@@ -1486,12 +1492,12 @@ export class AdrenaClient {
           lpTokenMint: this.lpTokenMint,
           protocolFeeRecipient: this.cortex.protocolFeeRecipient,
           adrenaProgram: this.adrenaProgram.programId,
-          userProfile: userProfile ? userProfile.pubkey : null,
           caller: position.owner,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      getTransactionLogs,
       notification,
     });
   }
@@ -1500,10 +1506,17 @@ export class AdrenaClient {
     position,
     price,
     notification,
+    getTransactionLogs,
   }: {
     position: PositionExtended;
     price: BN;
     notification: MultiStepNotification;
+    getTransactionLogs?: (
+      logs: {
+        raw: string[];
+        events?: EventData<IdlEventField, Record<string, never>>;
+      } | null,
+    ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1561,8 +1574,6 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = await this.loadUserProfile(position.owner);
-
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .closePositionShort({
@@ -1592,12 +1603,12 @@ export class AdrenaClient {
           adrenaProgram: this.adrenaProgram.programId,
           collateralCustodyOracle,
           collateralCustodyTokenAccount,
-          userProfile: userProfile ? userProfile.pubkey : null,
           caller: position.owner,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      getTransactionLogs,
       notification,
     });
   }
@@ -1693,8 +1704,6 @@ export class AdrenaClient {
       preInstructions,
     });
 
-    const userProfile = await this.loadUserProfile(owner);
-
     const openPositionWithSwapIx =
       await this.buildOpenOrIncreasePositionWithSwapShort({
         owner,
@@ -1703,7 +1712,6 @@ export class AdrenaClient {
         collateralMint,
         collateralAmount,
         leverage,
-        userProfile: userProfile ? userProfile.pubkey : undefined,
         referrer,
       }).instruction();
 
@@ -1867,8 +1875,6 @@ export class AdrenaClient {
       preInstructions,
     });
 
-    const userProfile = await this.loadUserProfile(owner);
-
     const openPositionWithSwapIx =
       await this.buildOpenOrIncreasePositionWithSwapLong({
         owner,
@@ -1877,7 +1883,6 @@ export class AdrenaClient {
         collateralMint,
         collateralAmount,
         leverage,
-        userProfile: userProfile ? userProfile.pubkey : undefined,
         referrer,
       }).instruction();
 
@@ -1931,9 +1936,15 @@ export class AdrenaClient {
   public async initUserProfile({
     nickname,
     notification,
+    profilePicture,
+    wallpaper,
+    title,
   }: {
     nickname: string;
     notification: MultiStepNotification;
+    profilePicture: number;
+    wallpaper: number;
+    title: number;
   }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1948,6 +1959,9 @@ export class AdrenaClient {
     const transaction = await this.adrenaProgram.methods
       .initUserProfile({
         nickname,
+        profilePicture,
+        wallpaper,
+        title,
       })
       .accountsStrict({
         payer: wallet.publicKey,
@@ -1955,6 +1969,7 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         userProfile: userProfilePda,
         user: wallet.publicKey,
+        userNickname: this.getUserNicknamePda(nickname),
       })
       .transaction();
 
@@ -1964,9 +1979,9 @@ export class AdrenaClient {
     });
   }
 
-  public async editUserProfile({
-    nickname,
+  public async migrateUserProfileFromV1ToV2({
     notification,
+    nickname,
   }: {
     nickname: string;
     notification: MultiStepNotification;
@@ -1982,8 +1997,106 @@ export class AdrenaClient {
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
     const transaction = await this.adrenaProgram.methods
-      .editUserProfile({
+      .migrateUserProfileFromV1ToV2({
         nickname,
+      })
+      .accountsStrict({
+        systemProgram: SystemProgram.programId,
+        userProfile: userProfilePda,
+        owner: wallet.publicKey,
+        userNickname: this.getUserNicknamePda(nickname),
+        payer: wallet.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        rent: SYSVAR_RENT_PUBKEY,
+      })
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+  }
+
+  public async editUserProfileNickname({
+    notification,
+    nickname,
+  }: {
+    nickname: string;
+    notification: MultiStepNotification;
+  }) {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    if (!wallet.publicKey) throw new Error('user not connected');
+
+    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+
+    const userProfileAccount = await this.loadUserProfile(
+      wallet.publicKey,
+    );
+
+    if (!userProfileAccount) {
+      throw new Error('User profile not found');
+    }
+
+    const oldUserNicknamePda = userProfileAccount.nickname.length ? this.getUserNicknamePda(userProfileAccount.nickname): null;
+
+    const transaction = await this.adrenaProgram.methods
+      .editUserProfileNickname({
+        nickname,
+      })
+      .accountsStrict({
+        systemProgram: SystemProgram.programId,
+        userProfile: userProfilePda,
+        owner: wallet.publicKey,
+        cortex: AdrenaClient.cortexPda,
+        lmTokenMint: this.lmTokenMint,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        userNickname: this.getUserNicknamePda(nickname),
+        fundingAccount: findATAAddressSync(wallet.publicKey, this.lmTokenMint),
+        oldUserNickname: oldUserNicknamePda
+      })
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+  }
+
+  public async editUserProfile({
+    notification,
+    profilePicture,
+    wallpaper,
+    title,
+  }: {
+    notification: MultiStepNotification;
+    profilePicture?: number;
+    wallpaper?: number;
+    title?: number;
+  }) {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    if (!wallet.publicKey) throw new Error('user not connected');
+
+    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+
+    const userProfileAccount = await this.readonlyAdrenaProgram.account.userProfile.fetch(
+      userProfilePda,
+    );
+
+    const transaction = await this.adrenaProgram.methods
+      .editUserProfile({
+        profilePicture: typeof profilePicture !== 'undefined' ? profilePicture : userProfileAccount.profilePicture,
+        wallpaper: typeof wallpaper !== 'undefined' ? wallpaper : userProfileAccount.wallpaper,
+        title: typeof title !== 'undefined' ? title : userProfileAccount.title,
       })
       .accountsStrict({
         systemProgram: SystemProgram.programId,
@@ -2266,7 +2379,7 @@ export class AdrenaClient {
       ...vest,
     };
   }
-  
+
   // Load vest delegated to this user
   public async loadUserDelegatedVest(
     walletAddress: PublicKey,
@@ -2275,21 +2388,26 @@ export class AdrenaClient {
       return null;
     }
 
-    const accounts = await this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-      filters: [
-        {
-          memcmp: {
-            offset: 80 + 8,
-            bytes: walletAddress.toBase58(),
+    const accounts = await this.readonlyConnection.getProgramAccounts(
+      AdrenaClient.programId,
+      {
+        filters: [
+          {
+            memcmp: {
+              offset: 80 + 8,
+              bytes: walletAddress.toBase58(),
+            },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     if (!accounts || !accounts.length) return false;
 
     try {
-      const vest = await this.readonlyAdrenaProgram.account.vest.fetch(accounts[0].pubkey);
+      const vest = await this.readonlyAdrenaProgram.account.vest.fetch(
+        accounts[0].pubkey,
+      );
 
       if (!vest) return false;
 
@@ -2297,7 +2415,7 @@ export class AdrenaClient {
         pubkey: accounts[0].pubkey,
         ...vest,
       };
-    } catch(e) {
+    } catch (e) {
       console.log('e', e);
       return null;
     }
@@ -2317,7 +2435,7 @@ export class AdrenaClient {
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
-    return this.signAndExecuteTxAlternative({ 
+    return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .setVestDelegate({
           delegate,
@@ -2331,8 +2449,8 @@ export class AdrenaClient {
           caller: owner,
         })
         .transaction(),
-        notification,
-     });
+      notification,
+    });
   }
 
   public async claimUserVest({
@@ -2352,8 +2470,9 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const owner = paramOwner ?? (this.adrenaProgram.provider as AnchorProvider).wallet
-      .publicKey;
+    const owner =
+      paramOwner ??
+      (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
 
     const receivingAccount =
       await this.checkATAAddressInitializedAndCreatePreInstruction({
@@ -4285,131 +4404,119 @@ export class AdrenaClient {
     }));
   }
 
-  public async loadAllUserProfiles(): Promise<UserProfileExtended[]> {
-    const userProfiles =
-      (await this.readonlyAdrenaProgram.account.userProfile.all()) as ProgramAccount<UserProfile>[];
+  public async loadAllUserProfile(): Promise<UserProfileExtended[] | null> {
+    if (!this.readonlyConnection) return null;
 
-    return userProfiles.reduce<UserProfileExtended[]>(
-      (
-        acc: UserProfileExtended[],
-        userProfile: ProgramAccount<UserProfile>,
-      ) => {
-        if (!userProfile) {
-          return acc;
-        }
+     // Fetch both UserProfileV1 and UserProfileV2 concurrently
+     const [userProfilesV1, userProfilesV2] = await Promise.all([
+      this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 216 }, // Ensure correct size for V1
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([0])) } }, // Version == 0 (V1)
+        ],
+      }),
+      this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 400 }, // Ensure correct size for V2
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+        ],
+      }),
+    ]);
 
-        if (!this.readonlyAdrenaProgram) return acc;
+    console.log('Loaded user profiles', userProfilesV1, userProfilesV2);
 
-        if (userProfile.account.createdAt.isZero()) {
-          return acc;
-        }
+    // If no data, profile doesn't exist
+    if (!userProfilesV1.length && !userProfilesV2.length) {
+      return [];
+    }
 
-        const shortOpeningSizeUsd = userProfile.account.shortStats
-          .openingSizeUsd
-          ? nativeToUi(
-              userProfile.account.shortStats.openingSizeUsd,
-              USD_DECIMALS,
-            )
-          : 0;
-        const longOpeningSizeUsd = userProfile.account.longStats.openingSizeUsd
-          ? nativeToUi(
-              userProfile.account.longStats.openingSizeUsd,
-              USD_DECIMALS,
-            )
-          : 0;
+    return [
+      ...userProfilesV1.map((account) => {
+        const p = this.decodeUserProfileAnyVersion(account.account);
 
-        const shortProfitsUsd = userProfile.account.shortStats.profitsUsd
-          ? nativeToUi(userProfile.account.shortStats.profitsUsd, USD_DECIMALS)
-          : 0;
-        const longProfitsUsd = userProfile.account.longStats.profitsUsd
-          ? nativeToUi(userProfile.account.longStats.profitsUsd, USD_DECIMALS)
-          : 0;
-        const shortLossesUsd = userProfile.account.shortStats.lossesUsd
-          ? nativeToUi(userProfile.account.shortStats.lossesUsd, USD_DECIMALS)
-          : 0;
-        const longLossesUsd = userProfile.account.longStats.lossesUsd
-          ? nativeToUi(userProfile.account.longStats.lossesUsd, USD_DECIMALS)
-          : 0;
+        if (!p) return null;
+        
+        return this.extendUserProfileInfo(p, account.pubkey);
+      }).filter((p) => p) as UserProfileExtended[],
 
-        const swapFeePaidUsd = userProfile.account.swapFeePaidUsd
-          ? nativeToUi(userProfile.account.swapFeePaidUsd, USD_DECIMALS)
-          : 0;
-        const longFeePaidUsd = userProfile.account.longStats.feePaidUsd
-          ? nativeToUi(userProfile.account.longStats.feePaidUsd, USD_DECIMALS)
-          : 0;
-        const shortFeePaidUsd = userProfile.account.shortStats.feePaidUsd
-          ? nativeToUi(userProfile.account.shortStats.feePaidUsd, USD_DECIMALS)
-          : 0;
+      ...userProfilesV2.map((account) => {
+        const p = this.decodeUserProfileAnyVersion(account.account);
 
-        const longOpeningAverageLeverage =
-          userProfile.account.longStats.openingAverageLeverage.toNumber() /
-          10_000;
-        const shortOpeningAverageLeverage =
-          userProfile.account.shortStats.openingAverageLeverage.toNumber() /
-          10_000;
+        if (!p) return null;
+        
+        return this.extendUserProfileInfo(p, account.pubkey);
+      }).filter((p) => p) as UserProfileExtended[],
+    ];
+  }
 
-        const totalFeesPaidUsd =
-          swapFeePaidUsd + longFeePaidUsd + shortFeePaidUsd;
-        const totalTradeVolumeUsd = longOpeningSizeUsd + shortOpeningSizeUsd;
+  public async loadAllUserProfileMetadata(): Promise<UserProfileMetadata[]> {
+    if (!this.readonlyConnection) return [];
 
-        const totalPnlUsd =
-          longProfitsUsd -
-          longLossesUsd +
-          shortProfitsUsd -
-          shortLossesUsd +
-          totalFeesPaidUsd;
-        const openingAverageLeverage =
-          (longOpeningAverageLeverage + shortOpeningAverageLeverage) / 2;
+    // Fetch both UserProfileV1 and UserProfileV2 concurrently
+    const [userProfilesV1, userProfilesV2] = await Promise.all([
+      this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
+        commitment: "processed",
+        dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
+        filters: [
+          { dataSize: 8 + 216 }, // Ensure correct size for V1
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([0])) } }, // Version == 0 (V1)
+        ],
+      }),
+      this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
+        commitment: "processed",
+        dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
+        filters: [
+          { dataSize: 8 + 456 }, // Ensure correct size for V2
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+        ],
+      }),
+    ]);
 
-        return [
-          ...acc,
-          {
-            pubkey: userProfile.publicKey,
-            // Transform the buffer of bytes to a string
-            nickname: userProfile.account.nickname.value
-              .map((byte) => String.fromCharCode(byte))
-              .join('')
-              .replace(/\0/g, ''),
-            createdAt: userProfile.account.createdAt.toNumber(),
-            owner: userProfile.account.owner,
-            swapCount: userProfile.account.swapCount.toNumber(),
-            swapVolumeUsd: nativeToUi(
-              userProfile.account.swapVolumeUsd,
-              USD_DECIMALS,
-            ),
-            swapFeePaidUsd: swapFeePaidUsd,
-            totalPnlUsd,
-            totalTradeVolumeUsd,
-            totalFeesPaidUsd,
-            openingAverageLeverage,
-            shortStats: {
-              openedPositionCount:
-                userProfile.account.shortStats.openedPositionCount.toNumber(),
-              liquidatedPositionCount:
-                userProfile.account.shortStats.liquidatedPositionCount.toNumber(),
-              openingAverageLeverage: shortOpeningAverageLeverage,
-              openingSizeUsd: shortOpeningSizeUsd,
-              profitsUsd: shortProfitsUsd,
-              lossesUsd: shortLossesUsd,
-              feePaidUsd: shortFeePaidUsd,
-            },
-            longStats: {
-              openedPositionCount:
-                userProfile.account.longStats.openedPositionCount.toNumber(),
-              liquidatedPositionCount:
-                userProfile.account.longStats.liquidatedPositionCount.toNumber(),
-              openingAverageLeverage: longOpeningAverageLeverage,
-              openingSizeUsd: longOpeningSizeUsd,
-              profitsUsd: longProfitsUsd,
-              lossesUsd: longLossesUsd,
-              feePaidUsd: longFeePaidUsd,
-            },
-            nativeObject: userProfile.account,
-          },
-        ];
-      },
-      [],
-    );
+    // Decode UserProfileV1 (nickname + owner)
+    const parsedUserProfilesV1 = userProfilesV1.map((account) => {
+      const data = account.account.data;
+
+      // Extract nickname correctly using LimitedString format
+      const nicknameBytes = data.slice(8, 39);
+      const nicknameLength = data[8 + 31]; // Last byte is the length
+      const nickname = Buffer.from(Uint8Array.from(nicknameBytes.slice(0, nicknameLength))).toString("utf-8");
+
+      // Extract owner (32 bytes)
+      const owner = new PublicKey(data.slice(48, 48 + 32));
+
+      return {
+        nickname,
+        owner,
+        profilePicture: 0,
+        wallpaper: 0,
+        title: 0,
+      };
+    });
+
+    // Decode UserProfileV2 (nickname + profile picture + wallpaper + title + owner)
+    const parsedUserProfilesV2 = userProfilesV2.map((account) => {
+      const data = account.account.data;
+
+      // Extract nickname correctly using LimitedString format
+      const nicknameBytes = data.slice(8, 39);
+      const nicknameLength = data[8 + 31]; // Last byte is the length
+      const nickname = Buffer.from(Uint8Array.from(nicknameBytes.slice(0, nicknameLength))).toString("utf-8");
+
+      // Extract owner (32 bytes)
+      const owner = new PublicKey(data.slice(48, 48 + 32));
+
+      return {
+        nickname,
+        owner,
+        profilePicture: data[2],
+        wallpaper: data[3],
+        title: data[4],
+      };
+    });
+
+    return [...parsedUserProfilesV1, ...parsedUserProfilesV2];
   }
 
   public async getAssetsUnderManagement(): Promise<BN | null> {
@@ -4828,9 +4935,16 @@ export class AdrenaClient {
   public async signAndExecuteTxAlternative({
     transaction,
     notification,
+    getTransactionLogs = undefined,
   }: {
     transaction: Transaction;
     notification?: MultiStepNotification;
+    getTransactionLogs?: (
+      logs: {
+        raw: string[];
+        events?: EventData<IdlEventField, Record<string, never>>;
+      } | null,
+    ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -4997,6 +5111,48 @@ export class AdrenaClient {
           maxRetries: 0,
         },
       );
+
+      if (getTransactionLogs) {
+        await this.connection.confirmTransaction(
+          {
+            signature: txSignatureBase58,
+            blockhash: latestBlockHash.blockhash,
+            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+          },
+          'confirmed',
+        );
+
+        const txInfo = await this.connection.getTransaction(txSignatureBase58, {
+          commitment: 'confirmed',
+          maxSupportedTransactionVersion: 0,
+        });
+
+        let eventData;
+
+        const eventCoder = new BorshCoder(this.adrenaProgram.idl);
+
+        const eventParser = new EventParser(
+          this.adrenaProgram.programId,
+          eventCoder,
+        );
+
+        const logMessages = txInfo?.meta?.logMessages
+          ? txInfo.meta.logMessages
+          : null;
+
+        if (logMessages) {
+          const generatedEvents = eventParser.parseLogs(logMessages);
+
+          for (const event of generatedEvents) {
+            eventData = event.data;
+          }
+
+          getTransactionLogs({
+            raw: logMessages,
+            events: eventData,
+          });
+        }
+      }
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
@@ -5090,7 +5246,6 @@ export class AdrenaClient {
 
       notification?.setTxHash(txSignatureBase58);
       notification?.currentStepSucceeded();
-
       return txSignatureBase58;
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);

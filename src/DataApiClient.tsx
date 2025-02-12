@@ -157,9 +157,9 @@ export default class DataApiClient {
                         volume: rank.volume,
                         pnl: rank.pnl,
                         fees: rank.fees,
-                        avatar: '/images/profile-picture-1.jpg',
-                        username: null,
-                        title: 'Nameless one',
+                        profilePicture: null,
+                        nickname: null,
+                        title: null,
                     })),
                 })),
 
@@ -177,9 +177,9 @@ export default class DataApiClient {
                     championshipPoints: leaderboard.championship_points,
                     rewardsAdx: leaderboard.rewards_adx,
                     rewardsJto: leaderboard.rewards_jto,
-                    avatar: '/images/profile-picture-1.jpg',
-                    username: null,
-                    title: 'Nameless one',
+                    profilePicture: null,
+                    nickname: null,
+                    title: null,
                 })),
             };
         } catch (e) {
@@ -493,9 +493,9 @@ export default class DataApiClient {
                 totalBorrowFees: data.total_borrow_fees,
                 totalCloseFees: data.total_close_fees,
                 totalFees: data.total_fees,
-                avatar: '/images/profile-picture-1.jpg',
-                username: null,
-                title: 'Nameless one',
+                profilePicture: null,
+                nickname: null,
+                title: null,
             }));
 
         } catch (e) {

@@ -1,6 +1,7 @@
 import { IdlAccounts, Program, Wallet } from '@coral-xyz/anchor';
 import {
   AllInstructionsMap,
+  IdlEvents,
   IdlTypes,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
 import { Adapter } from '@solana/wallet-adapter-base';
@@ -210,14 +211,21 @@ export interface Token {
   pythPriceUpdateV2?: PublicKey;
 }
 
+export type UserProfileMetadata = {
+  owner: PublicKey;
+  nickname: string;
+  profilePicture: number;
+  wallpaper: number;
+  title: number;
+};
+
+// Abstraction to work for all UserProfile versions and that fit frontend needs
 export type UserProfileExtended = {
+  version: number;
   pubkey: PublicKey;
   nickname: string;
   createdAt: number;
   owner: PublicKey;
-  swapCount: number;
-  swapVolumeUsd: number;
-  swapFeePaidUsd: number;
   // Aggregates
   totalPnlUsd: number;
   // Only accounts for opens
@@ -243,8 +251,22 @@ export type UserProfileExtended = {
     lossesUsd: number;
     feePaidUsd: number;
   };
-  nativeObject: UserProfile;
+  profilePicture: ProfilePicture;
+  wallpaper: Wallpaper;
+  title: UserProfileTitle;
 };
+
+export type ProfilePicture = 0 | 1 | 2;
+export type Wallpaper = 0 | 1 | 2;
+export type UserProfileTitle = 0 | 1 | 2;
+
+//
+// Events
+//
+
+type Events = IdlEvents<Adrena>;
+
+export type ClosePositionEvent = Events['ClosePositionEvent'];
 
 //
 // Accounts
@@ -263,6 +285,7 @@ export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
 export type GenesisLock = Accounts['genesisLock'];
 export type UserProfile = Accounts['userProfile'];
+export type UserProfileV1 = Accounts['userProfileV1'];
 
 export type LockedStake = UserStaking['lockedStakes'][0];
 
@@ -624,9 +647,9 @@ export type SeasonLeaderboardsData = {
       volume: number;
       pnl: number;
       fees: number;
-      avatar: string | null;
-      username: string | null;
-      title: string | null;
+      profilePicture: ProfilePicture | null;
+      nickname: string | null;
+      title: UserProfileTitle | null;
     }[];
   }[];
 
@@ -644,9 +667,9 @@ export type SeasonLeaderboardsData = {
     championshipPoints: number;
     rewardsAdx: number;
     rewardsJto: number;
-    avatar: string | null;
-    username: string | null;
-    title: string | null;
+    profilePicture: ProfilePicture | null;
+    nickname: string | null;
+    title: UserProfileTitle | null;
   }[];
 };
 
@@ -1151,9 +1174,9 @@ export type MutagenLeaderboardData = {
   totalBorrowFees: number;
   totalCloseFees: number;
   totalFees: number;
-  avatar: string | null;
-  username: string | null;
-  title: string | null;
+  profilePicture: ProfilePicture | null;
+  nickname: string | null;
+  title: UserProfileTitle | null;
 }[];
 
 export type PositionApiRawData = {

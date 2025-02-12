@@ -24,7 +24,7 @@ export default function QuestComp({
             {quest.title ? (
                 <div className="flex flex-row items-center">
                     <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                        <p className="font-archivo text-lg">{quest.title}</p>
+                        <p className="font-archivoblack text-lg">{quest.title}</p>
                     </div>
                     <Image
                         src={wing}
@@ -52,7 +52,7 @@ export default function QuestComp({
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
                                         <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                                            <p className="font-archivo text-lg">{task.title}</p>
+                                            <p className="font-archivoblack text-lg">{task.title}</p>
                                         </div>
                                         <Image
                                             src={wing}
@@ -97,7 +97,7 @@ export default function QuestComp({
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
                                         <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                                            <p className="font-archivo text-lg">{task.title}</p>
+                                            <p className="font-archivoblack text-lg">{task.title}</p>
                                         </div>
                                         <Image
                                             src={wing}

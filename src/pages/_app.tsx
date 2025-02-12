@@ -15,6 +15,7 @@ import { Provider } from 'react-redux';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
+import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
 import { SOLANA_EXPLORERS_OPTIONS } from '@/constant';
@@ -318,6 +319,17 @@ function AppComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRpc.name]);
 
+  const [isUserProfileMigrationV1Tov2Open, setIsUserProfileMigrationV1ToV2Open] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (userProfile && userProfile.version < 2 && !isTermsAndConditionModalOpen) {
+      setIsUserProfileMigrationV1ToV2Open(true);
+    } else {
+      setIsUserProfileMigrationV1ToV2Open(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTermsAndConditionModalOpen, !!userProfile]);
+
   return (
     <>
       <Head>
@@ -383,6 +395,15 @@ function AppComponent({
             }}
             readonly={false}
           />
+        }
+
+        {
+          // Handle user profile creation
+          isUserProfileMigrationV1Tov2Open && userProfile ? (
+            <MigrateUserProfileV1Tov2Modal userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} walletPubkey={wallet?.publicKey} close={() => {
+              setIsUserProfileMigrationV1ToV2Open(false);
+            }} />
+          ) : null
         }
 
         <Component

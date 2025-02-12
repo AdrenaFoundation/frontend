@@ -7,16 +7,14 @@ export function useAllUserProfiles(): {
     triggerAllUserProfilesReload: () => void;
 } {
     const [trickReload, triggerReload] = useState<number>(0);
-    const [allUserProfiles, setAllUserProfiles] = useState<UserProfileExtended[]>(
-        [],
-    );
+    const [allUserProfiles, setAllUserProfiles] = useState<UserProfileExtended[]>([]);
 
     useEffect(() => {
         const loadAllUserProfiles = async () => {
             try {
-                const profiles = await window.adrena.client.loadAllUserProfiles();
+                const profiles = await window.adrena.client.loadAllUserProfile();
 
-                setAllUserProfiles(profiles);
+                setAllUserProfiles(profiles !== null ? profiles : []);
             } catch (e) {
                 console.log('Error loading user profiles', e);
             }

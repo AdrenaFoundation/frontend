@@ -14,7 +14,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import TopTraders from '@/components/pages/monitoring/TopTraders';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended, UserProfileExtended } from '@/types';
 
@@ -43,7 +43,7 @@ export default function Flow({
   } = usePositionStats();
 
   const [selectedRange, setSelectedRange] = useState('All Time');
-  const { allUserProfiles } = useAllUserProfiles();
+  const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
 
   if (view !== 'flows') return <></>;
@@ -283,7 +283,7 @@ export default function Flow({
         <TopTraders
           startDate={startDate}
           endDate={endDate}
-          allUserProfiles={allUserProfiles}
+          allUserProfilesMetadata={allUserProfilesMetadata}
           setProfile={setProfile}
         />
 

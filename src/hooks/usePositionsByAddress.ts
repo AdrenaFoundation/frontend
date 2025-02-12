@@ -22,8 +22,6 @@ export default function usePositionsByAddress({
         new PublicKey(walletAddress),
       );
 
-      console.log('Loaded positions', freshPositions);
-
       setPositions(freshPositions);
     } catch (e) {
       console.log('Error loading positions', e, String(e));

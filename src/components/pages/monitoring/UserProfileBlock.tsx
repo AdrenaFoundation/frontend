@@ -19,10 +19,6 @@ export function getLeverageColorClass(leverage: number): string {
 }
 
 export default function UserProfileBlock({ profile, setActiveProfile, className }: UserProfileBlockProps) {
-    const leverageColorClass = getLeverageColorClass(profile.openingAverageLeverage);
-
-    const longShortRatio = profile.longStats.openedPositionCount / (profile.longStats.openedPositionCount + profile.shortStats.openedPositionCount) * 100;
-
     return (
         <div className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden p-3 ${className}`}>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-row gap-6 justify-between items-center">
@@ -42,28 +38,13 @@ export default function UserProfileBlock({ profile, setActiveProfile, className 
                     />
                 </div>
 
-                <div className="flex flex-1 flex-col">
-                    <div className="flex w-full font-mono text-xxs text-txtfade">
-                        Average Leverage
-                    </div>
-                    <div className="flex">
-                        <FormatNumber
-                            nb={profile.openingAverageLeverage}
-                            format="number"
-                            className={`text-xs lowercase ${leverageColorClass}`}
-                            suffix="x"
-                            isDecimalDimmed={leverageColorClass === 'text-white'}
-                        />
-                    </div>
-                </div>
-
-                <div className="flex flex-1 flex-col">
+                <div className="flex flex-1 flex-col blur-md">
                     <div className="flex w-full font-mono text-xxs text-txtfade">
                         Total Fees Paid
                     </div>
                     <div className="flex">
                         <FormatNumber
-                            nb={profile.totalFeesPaidUsd}
+                            nb={null}
                             format="currency"
                             className="text-gray-400 text-xs lowercase"
                             isDecimalDimmed={true}
@@ -71,13 +52,13 @@ export default function UserProfileBlock({ profile, setActiveProfile, className 
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col">
+                <div className="flex flex-1 flex-col blur-md">
                     <div className="flex w-full font-mono text-xxs text-txtfade">
                         Total Open Volume
                     </div>
                     <div className="flex">
                         <FormatNumber
-                            nb={profile.totalTradeVolumeUsd}
+                            nb={null}
                             format="currency"
                             className="text-gray-400 text-xs lowercase"
                             isDecimalDimmed={true}
@@ -85,35 +66,19 @@ export default function UserProfileBlock({ profile, setActiveProfile, className 
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col">
-                    <div className="flex w-full font-mono text-xxs text-txtfade">
-                        Long/Short Ratio
-                    </div>
-                    <div className="flex">
-                        <FormatNumber
-                            nb={longShortRatio}
-                            format="percentage"
-                            className="text-gray-400 text-xs lowercase"
-                            isDecimalDimmed={true}
-                            suffix="%"
-                        />
-                    </div>
-                </div>
-
-                <div className="flex flex-1 flex-col mt-2 sm:mt-0">
+                <div className="flex flex-1 flex-col mt-2 sm:mt-0 blur-md">
                     <div className="flex w-full font-mono text-xxs text-txtfade">
                         Total PnL
                     </div>
                     <div className="flex">
                         <FormatNumber
-                            nb={profile.totalPnlUsd}
+                            nb={null}
                             format="currency"
-                            className={`text-gray-400 text-xs lowercase ${profile.totalPnlUsd > 0 ? 'text-green' : 'text-red'}`}
+                            className={`text-gray-400 text-xs lowercase ${0 > 0 ? 'text-green' : 'text-red'}`}
                             isDecimalDimmed={false}
                         />
                     </div>
                 </div>
-
             </div>
         </div>
     );

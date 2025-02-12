@@ -24,7 +24,7 @@ import LeaderboardTable from '@/components/pages/ranked/AwakeningLeaderboardTabl
 import WeeklyReward from '@/components/pages/ranked/AwakeningWeeklyReward';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useAwakeningV2 from '@/hooks/useAwakeningV2';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserStats } from '@/types';
@@ -348,7 +348,7 @@ const ProfileBanner = memo(
         return (
             <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
                 <div className="flex items-center">
-                    <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+                    <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                         {userName}
                     </div>
 
@@ -384,7 +384,7 @@ const ProfileBanner = memo(
                     </span>
 
                     <span
-                        className={`text-base flex items-center justify-center font-archivo ${DIVISIONS[currentUserData.division]?.color ?? 'default-text-color'}`}
+                        className={`text-base flex items-center justify-center font-archivoblack ${DIVISIONS[currentUserData.division]?.color ?? 'default-text-color'}`}
                     >
                         {currentUserData.division}
                     </span>
@@ -476,8 +476,8 @@ export default function Awakening({
 
     // hooks
     const wallet = useSelector((state) => state.walletState.wallet);
-    const { allUserProfiles } = useAllUserProfiles();
-    const awakeningData = useAwakeningV2({ wallet, allUserProfiles });
+    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+    const awakeningData = useAwakeningV2({ wallet, allUserProfilesMetadata });
 
     // effects
     useEffect(() => {
@@ -498,7 +498,7 @@ export default function Awakening({
         },
     };
 
-    const userProfile = allUserProfiles.find(
+    const userProfile = allUserProfilesMetadata.find(
         (p) => p.owner.toBase58() === wallet?.walletAddress,
     );
 
@@ -515,13 +515,16 @@ export default function Awakening({
     const hasProfile = userProfile !== undefined;
 
     const handleProfileView = useCallback(
-        (username: string) => {
-            const profile = allUserProfiles.find((p) => p.nickname === username);
+        async (username: string) => {
+            const profile = allUserProfilesMetadata.find((p) => p.nickname === username);
+
             if (profile) {
-                setProfile(profile);
+                const p = await window.adrena.client.loadUserProfile(profile.owner);
+
+                setProfile(p !== false ? p : null);
             }
         },
-        [allUserProfiles],
+        [allUserProfilesMetadata],
     );
 
     if (awakeningData === null)
