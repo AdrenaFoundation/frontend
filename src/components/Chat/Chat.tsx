@@ -9,6 +9,7 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
+import { PROFILE_PICTURES, WALLPAPER } from "@/constant";
 import { useDispatch } from "@/store/store";
 import { UserProfileExtended } from "@/types";
 
@@ -280,7 +281,12 @@ function Chat({
                         interactive={true}
                         content={
                             <>
-                                <div className="h-full w-full absolute top-0 left-0 bg-[url('/images/wallpaper-1.jpg')] bg-no-repeat bg-cover opacity-40" />
+                                <div className="h-full w-full absolute top-0 left-0 opacity-40"
+                                    style={{
+                                        background: `url(${WALLPAPER[msg.wallet ? (profileCache[msg.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
+                                        backgroundSize: 'cover',
+                                        backgroundRepeat: 'no-repeat',
+                                    }} />
 
                                 <div className="text-xs font-boldy p-2">
                                     {!msg.wallet ? <div className="relative flex text-[1.2em] p-4">
@@ -289,7 +295,10 @@ function Chat({
 
                                     {msg.wallet && profileCache[msg.wallet] ?
                                         <div className="w-[25em] h-[9em] relative flex">
-                                            <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
+                                            <div className={twMerge("h-[9em] w-[9em] rounded-full overflow-hidden z-20 border-bcolor border-2")} style={{
+                                                background: `url(${PROFILE_PICTURES[(profileCache[msg.wallet] as UserProfileExtended).profilePicture]})`,
+                                                backgroundSize: 'cover',
+                                            }} />
 
                                             <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
                                                 <div className="w-full flex flex-col items-center">
@@ -438,7 +447,11 @@ function Chat({
                                                     <div className="text-xs font-boldy p-2">
                                                         {profileCache[user.wallet] ? (
                                                             <div className="w-[25em] h-[9em] relative flex">
-                                                                <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-[url('/images/profile-picture-1.jpg')] bg-cover border-bcolor border-2" />
+                                                                <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-cover border-bcolor border-2"
+                                                                    style={{
+                                                                        background: `url(${PROFILE_PICTURES[(profileCache[user.wallet] as UserProfileExtended).profilePicture]})`,
+                                                                    }}
+                                                                />
                                                                 <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
                                                                     <div className="w-full flex flex-col items-center">
                                                                         <div className="text-base truncate max-w-full">{(profileCache[user.wallet] as UserProfileExtended).nickname}</div>
