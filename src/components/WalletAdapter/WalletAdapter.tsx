@@ -8,6 +8,8 @@ import {
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
+import { PROFILE_PICTURES } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
@@ -72,7 +74,7 @@ export default function WalletAdapter({
   const connectedWalletAdapterName = wallet?.adapterName;
   const connected = !!connectedWalletAdapterName;
 
-
+  const isBreak = useBetterMediaQuery('(min-width: 640px)');
 
   // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
@@ -125,8 +127,13 @@ export default function WalletAdapter({
                 className,
                 'gap-2 pl-2 pr-3 text-xs w-[15em] border border-white/20',
                 isIconOnly && 'p-0 h-8 w-8',
-                "bg-[url('/images/profile-picture-1.jpg')] bg-no-repeat bg-cover bg-center sm:bg-none",
               )}
+              style={!isBreak ? {
+                backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPositionY: 'center',
+              } : {}}
               title={
                 !isIconOnly
                   ? userProfile
