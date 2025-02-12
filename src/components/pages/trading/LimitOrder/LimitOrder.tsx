@@ -50,11 +50,6 @@ export default function LimitOrder({
         return false;
     }) ?? [];
 
-    // Get display symbol for the message
-    const displaySymbol = selectedToken ?
-        TOKEN_MAPPING[getTokenSymbol(selectedToken.symbol)] ||
-        getTokenSymbol(selectedToken.symbol) : '';
-
     return (
         <div
             className={twMerge(
@@ -62,18 +57,11 @@ export default function LimitOrder({
                 className,
             )}
         >
-            {filteredOrders && filteredOrders.length > 0 ? (
-                <LimitOrderBlocks
-                    connected={!!walletAddress}
-                    limitOrders={filteredOrders}
-                    isLoading={isLoading}
-                />
-            ) : (
-                <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
-                    No limit orders
-                    {selectedToken ? ` for ${displaySymbol}` : ''}
-                </div>
-            )}
+            <LimitOrderBlocks
+                connected={!!walletAddress}
+                limitOrders={filteredOrders}
+                isLoading={isLoading}
+            />
         </div>
     );
 }

@@ -5,6 +5,7 @@ import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { LimitOrder } from '@/types';
 
 import LimitOrderBlock from './LimitOrderBlock';
+import Loader from '@/components/Loader/Loader';
 
 export function LimitOrderBlocks({
     connected,
@@ -19,10 +20,8 @@ export function LimitOrderBlocks({
 }) {
     if (isLoading) {
         return (
-            <div className="flex overflow-hidden bg-main/90 w-full border rounded-lg mt-4 h-[15em] items-center justify-center">
-                <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
-                    Loading ...
-                </div>
+            <div className="flex overflow-hidden w-full mt-4 h-[15em] items-center justify-center">
+                <Loader className='ml-auto mr-auto' />
             </div>
         );
     }

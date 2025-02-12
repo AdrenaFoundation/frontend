@@ -136,7 +136,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                     <div className="text-grayLabel text-xxs font-normal font-mono">
                         Collateral
                     </div>
-                    <div className="flex items-start gap-1.5">
+                    <div className="flex items-start gap-1">
                         <FormatNumber
                             nb={order.amount}
                             precision={token.displayAmountDecimalsPrecision}
@@ -160,7 +160,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                         nb={tradeTokenPrice}
                         format="currency"
                         precision={token.displayPriceDecimalsPrecision}
-                        className="text-grayLabel text-xs font-medium font-mono"
+                        className="text-whiteLabel text-xs font-medium font-mono leading-3"
                         isDecimalDimmed={false}
                     />
                 </div>
@@ -173,7 +173,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                         nb={order.triggerPrice}
                         format="currency"
                         precision={token.displayPriceDecimalsPrecision}
-                        className="text-whiteLabel text-xs font-medium font-mono"
+                        className="text-whiteLabel text-xs font-medium font-mono leading-3"
                         isDecimalDimmed={false}
                     />
                 </div>
@@ -187,7 +187,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                             nb={order.limitPrice}
                             format="currency"
                             precision={token.displayPriceDecimalsPrecision}
-                            className="text-whiteLabel text-xs font-medium font-mono"
+                            className="text-whiteLabel text-xs font-medium font-mono leading-3"
                             isDecimalDimmed={false}
                         />
                     ) : (
@@ -214,7 +214,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                                 size="xs"
                                 className={buttonClasses}
                                 onClick={onCancel}
-                                title="Close"
+                                title="Cancel"
                                 rounded={false}
                             />
                         </div>
@@ -234,7 +234,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                     size="xs"
                     className={buttonClasses}
                     onClick={onCancel}
-                    title="Close"
+                    title="Cancel"
                     rounded={false}
                 />
             </div>

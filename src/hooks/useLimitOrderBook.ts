@@ -197,8 +197,6 @@ export const useLimitOrderBook = ({
     }
 
     try {
-      setIsLoading(true);
-
       // For testing, use mock data instead of actual API call
       // const limitOrderBook = await window.adrena.client.loadLimitOrderBook({
       //   wallet: publicKey,
@@ -216,6 +214,7 @@ export const useLimitOrderBook = ({
   }, [walletAddress]);
 
   useEffect(() => {
+    setIsLoading(true);
     loadLimitOrderBook();
 
     const interval = setInterval(() => {

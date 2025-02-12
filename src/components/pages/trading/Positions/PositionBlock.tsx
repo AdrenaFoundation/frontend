@@ -260,6 +260,7 @@ export function PositionBlock({
                   isDecimalDimmed={false}
                 />
               }
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
               columnClasses={columnClasses}
             />
 
