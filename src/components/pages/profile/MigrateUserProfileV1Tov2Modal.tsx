@@ -95,7 +95,7 @@ export default function MigrateUserProfileV1Tov2Modal({
             className="flex flex-col overflow-y-auto w-full"
         >
             <div className="font-boldy text-white/80 pl-4 pr-4 sm:max-w-[30em] self-center text-center pt-6 pb-6 relative">
-                Hello! A new version of the Profile is live, and all existing profiles need to migrate. Please set your nickname below and click on &quot;Migrate&quot; button.
+                Profiles V2 are live! <br /> Pick a unique nickname and migrate your existing profile.
 
                 <div className="absolute w-full h-full left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')] -z-10" />
             </div>
@@ -115,7 +115,7 @@ export default function MigrateUserProfileV1Tov2Modal({
 
             <div className='h-[2em]'>
                 {(trimmedUpdatedNickname && trimmedUpdatedNickname.length < 3) || !trimmedUpdatedNickname ?
-                    <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Nickname must be at least 3 characters</div> :
+                    <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Must be at least 3 characters long</div> :
                     null}
 
                 {trimmedUpdatedNickname && typeof alreadyTakenNicknames[trimmedUpdatedNickname] === 'undefined' && trimmedUpdatedNickname.length > 3 ?
@@ -123,11 +123,11 @@ export default function MigrateUserProfileV1Tov2Modal({
                     null}
 
                 {trimmedUpdatedNickname && alreadyTakenNicknames[trimmedUpdatedNickname] === true ?
-                    <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">Nickname is already taken</div> :
+                    <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">Nickname already taken</div> :
                     null}
 
                 {trimmedUpdatedNickname && alreadyTakenNicknames[trimmedUpdatedNickname] === false ?
-                    <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">Nickname is available</div> :
+                    <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">Nickname available</div> :
                     null}
             </div>
 
@@ -150,12 +150,11 @@ export default function MigrateUserProfileV1Tov2Modal({
             <div className="p-3 w-full flex flex-col items-center">
                 {isFaqVisible ? <div className='flex flex-col sm:max-w-[30em] text-center gap-4 pb-4'>
                     <div className='flex flex-col gap-1'>
-                        <div className="text-sm font-boldy">Why do I need to migrate manually?</div>
+                        <div className="text-sm font-boldy">Why do I need to migrate?</div>
 
                         <div className="text-sm text-txtfade">
-                            Profile V2 introduces new features, including unique nicknames.
-                            We&apos;re letting users migrate themselves so they can choose their nickname.
-                            Once migrated, changing your nickname will cost ADX.
+                            Profile V2 is the first step toward new features on the profile. Among other things, Nicknames are now unique, hence you having to migrate.
+                            After this migration, you&apos;ll be able to change your nickname, but that will cost ADX.
                         </div>
                     </div>
 
