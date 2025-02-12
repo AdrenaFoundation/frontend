@@ -7,8 +7,9 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
-import { ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
+import { ClosePositionEvent, ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol, nativeToUi } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
@@ -103,9 +104,20 @@ export default function ClosePosition({
           position,
           price: priceWithSlippage,
           notification,
+          getTransactionLogs: (logs) => {
+            if (!logs) return;
+
+            const events = logs.events as ClosePositionEvent
+
+            const profit = nativeToUi(events.profitUsd, USD_DECIMALS);
+            const loss = nativeToUi(events.lossUsd, USD_DECIMALS);
+            const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
+            const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
+
+            setShareClosePosition({ ...position, pnl: (profit - loss), exitFeeUsd, borrowFeeUsd });
+          },
         });
 
-      setShareClosePosition(position);
       triggerUserProfileReload();
 
       onClose();
