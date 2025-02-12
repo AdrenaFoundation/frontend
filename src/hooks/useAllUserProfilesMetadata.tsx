@@ -16,9 +16,6 @@ export function useAllUserProfilesMetadata(): {
             try {
                 const profiles = await window.adrena.client.loadAllUserProfileMetadata();
 
-
-                console.log('profiles', profiles);
-
                 setAllUserProfilesMetadata(profiles);
             } catch (e) {
                 console.log('Error loading user profiles', e);

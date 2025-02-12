@@ -77,7 +77,7 @@ export default function ExpanseWeeklyLeaderboard({
                             width={30}
                             height={30}
                             alt="rank"
-                            className="h-8 w-8 rounded-full opacity-40"
+                            className="h-8 w-8 rounded-full opacity-80"
                             key={`rank-${i}`}
                         />
                     ) : <div className='h-8 w-8 bg-third rounded-full' />}
