@@ -1,11 +1,11 @@
 import { memo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { LimitOrder } from '@/types';
 
 import LimitOrderBlock from './LimitOrderBlock';
-import Loader from '@/components/Loader/Loader';
 
 export function LimitOrderBlocks({
     connected,
