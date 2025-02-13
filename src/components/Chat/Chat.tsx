@@ -518,56 +518,38 @@ function Chat({
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="flex flex-col h-[6em] w-full items-center justify-between flex-shrink-0">
-                <InputString
-                    onChange={(value: string | null) => setInput(value ?? '')}
-                    placeholder="Send a message"
-                    value={input}
-                    className={twMerge("pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-lg w-[90%] text-txtfade placeholder:text-txtfade", wallet ? '' : 'opacity-40')}
-                    inputFontSize="0.8em"
-                    onEnterKeyPressed={sendMessage}
-                    disabled={!wallet}
-                />
+                <div className="flex flex-col h-[6em] w-full items-center justify-between flex-shrink-0">
+                    <InputString
+                        onChange={(value: string | null) => setInput(value ?? '')}
+                        placeholder="Send a message"
+                        value={input}
+                        className={twMerge("pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-lg w-[90%] text-txtfade placeholder:text-txtfade", wallet ? '' : 'opacity-40')}
+                        inputFontSize="0.8em"
+                        onEnterKeyPressed={sendMessage}
+                        disabled={!wallet}
+                    />
 
-                <div className="flex w-full justify-between">
-                    {displaySmileys ? <div className="flex gap-2 pl-8 grow relative bottom-2">
-                        {smileys.map((emoji, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setInput((prev) => `${prev}${emoji}`)}
-                                className="text-xl hover:scale-110 transition-transform"
-                            >
-                                {emoji}
-                            </button>
-                        ))}
-                    </div> : null}
+                    <div className="flex w-full justify-between">
+                        {displaySmileys ? <div className="flex gap-2 pl-8 grow relative bottom-2">
+                            {smileys.map((emoji, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setInput((prev) => `${prev}${emoji}`)}
+                                    className="text-xl hover:scale-110 transition-transform"
+                                >
+                                    {emoji}
+                                </button>
+                            ))}
+                        </div> : null}
 
-                    <div className={twMerge("flex", displaySmileys ? '' : 'ml-auto')}>
-                        {
-                            wallet ?
-                                <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" disabled={!wallet} /> :
-                                <Button title="Connect Wallet" onClick={handleConnectionClick} className="w-25 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" />
-                        }
-                    </div>
-                    ) : null}
-
-                    <div className={twMerge('flex', displaySmileys ? '' : 'ml-auto')}>
-                        {wallet ? (
-                            <Button
-                                title="Send"
-                                onClick={sendMessage}
-                                className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5"
-                                disabled={!wallet}
-                            />
-                        ) : (
-                            <Button
-                                title="Connect Wallet"
-                                onClick={handleConnectionClick}
-                                className="w-25 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5"
-                            />
-                        )}
+                        <div className={twMerge("flex", displaySmileys ? '' : 'ml-auto')}>
+                            {
+                                wallet ?
+                                    <Button title="Send" onClick={sendMessage} className="w-16 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" disabled={!wallet} /> :
+                                    <Button title="Connect Wallet" onClick={handleConnectionClick} className="w-25 ml-auto rounded-lg font-boldy bg-[#E2464A] text-white text-[0.8em] mb-4 mr-5" />
+                            }
+                        </div>
                     </div>
 
 

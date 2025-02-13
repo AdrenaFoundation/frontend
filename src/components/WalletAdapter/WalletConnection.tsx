@@ -3,16 +3,11 @@ import { useDispatch } from '@/store/store';
 
 import phantomLogo from '../../../public/images/phantom.svg';
 import Button from '../common/Button/Button';
-import { twMerge } from 'tailwind-merge';
 
 export default function WalletConnection({
   connected,
-  className,
-  disableSubtext = false,
 }: {
   connected?: boolean;
-  className?: string;
-  disableSubtext?: boolean;
 }) {
   const dispatch = useDispatch();
 
@@ -24,18 +19,18 @@ export default function WalletConnection({
   };
 
   return (
-    <div className={twMerge("flex flex-col h-full items-center justify-center", className)}>
+    <div className="flex flex-col h-full items-center justify-center">
       <Button
         title="Connect wallet"
         variant="secondary"
         rightIcon={phantomLogo}
-        className={twMerge(!disableSubtext && "mb-2")}
+        className="mb-2"
         onClick={handleClick}
       />
 
-      {disableSubtext ? null : <p className="text-sm opacity-50 font-normal">
+      <p className="text-sm opacity-50 font-normal">
         Waiting for wallet connection
-      </p>}
+      </p>
     </div>
   );
 }
