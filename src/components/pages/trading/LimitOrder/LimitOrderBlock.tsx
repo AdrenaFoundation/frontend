@@ -8,6 +8,7 @@ import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPri
 import { useSelector } from '@/store/store';
 import { LimitOrder } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
+
 import { POSITION_BLOCK_STYLES } from '../Positions/PositionBlockComponents/PositionBlockStyles';
 import { ValueColumn } from '../Positions/PositionBlockComponents/ValueColumn';
 
