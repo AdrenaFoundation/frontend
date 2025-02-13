@@ -8,11 +8,13 @@ import { PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
+  ChartPropertiesOverrides,
   EntityId,
   IChartingLibraryWidget,
   ISymbolValueFormatter,
   ResolutionString,
   SupportedLineTools,
+  Timezone,
 } from '../../../../../public/charting_library/charting_library';
 import datafeed from './datafeed';
 
@@ -62,6 +64,10 @@ export default function TradingChart({
   // Retrieve saved resolution or default to 'H'
   const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || 'H';
 
+  // Retrieve saved timezone or default to locale timezone
+  const savedTimezone =
+    localStorage.getItem('trading_chart_timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   useEffect(() => {
     function createWidget() {
       if (document.getElementById('chart-area') && 'TradingView' in window) {
@@ -74,11 +80,11 @@ export default function TradingChart({
           symbol: `Crypto.${getTokenSymbol(token.symbol)}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#171B26',
+          toolbar_bg: '#0d1118',
           datafeed,
           loading_screen: {
-            backgroundColor: '#171B26',
-            foregroundColor: '#171B26',
+            backgroundColor: '#0d1118',
+            foregroundColor: '#0d1118',
           },
           favorites: {
             intervals: [
@@ -109,6 +115,32 @@ export default function TradingChart({
             'header_fullscreen_button',
             'header_settings',
           ],
+          settings_adapter: {
+            initialSettings: {
+              'paneProperties.background': '#0d1118',
+              'paneProperties.backgroundType': 'solid',
+              'paneProperties.legendProperties.showStudyArguments': 'false',
+              'paneProperties.legendProperties.showStudyTitles': 'false',
+              'paneProperties.legendProperties.showStudyValues': 'false',
+              'paneProperties.legendProperties.showSeriesTitle': 'false',
+              'paneProperties.legendProperties.showBarChange': 'false',
+              'paneProperties.legendProperties.showSeriesOHLC': 'true',
+              'mainSeriesProperties.priceLineColor': '#FFFF05',
+              'scalesProperties.textColor': '#B3B5BE',
+              timezone: savedTimezone as Timezone,
+            },
+            setValue: function (_, value) {
+              const chartprops = JSON.parse(value) as ChartPropertiesOverrides;
+              const currentTimezone = chartprops.timezone;
+
+              if (!currentTimezone || currentTimezone === savedTimezone) {
+                return;
+              }
+
+              localStorage.setItem('trading_chart_timezone', currentTimezone);
+            },
+            removeValue: function () { },
+          },
           custom_css_url: '/tradingview.css',
           theme: 'dark',
           interval: SUPPORTED_RESOLUTIONS.includes(
@@ -132,7 +164,7 @@ export default function TradingChart({
           setIsLoading(false);
 
           widget.applyOverrides({
-            'paneProperties.background': '#171B26',
+            'paneProperties.background': '#0d1118',
             'paneProperties.backgroundType': 'solid',
             'paneProperties.legendProperties.showStudyArguments': false,
             'paneProperties.legendProperties.showStudyTitles': false,
@@ -141,6 +173,8 @@ export default function TradingChart({
             'paneProperties.legendProperties.showBarChange': false,
             'paneProperties.legendProperties.showSeriesOHLC': true,
             'mainSeriesProperties.priceLineColor': '#FFFF05',
+            'scalesProperties.textColor': '#B3B5BE',
+            timezone: savedTimezone as Timezone,
           });
 
           // Note: this event is triggered before positionLines array is updated in the react state
@@ -258,7 +292,12 @@ export default function TradingChart({
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary select-none">
-      <Loader className={twMerge('mt-[20%] ml-auto mr-auto', isLoading ? '' : 'hidden')} />
+      <Loader
+        className={twMerge(
+          'mt-[20%] ml-auto mr-auto',
+          isLoading ? '' : 'hidden',
+        )}
+      />
       <div
         id="wrapper-trading-chart"
         className={twMerge(

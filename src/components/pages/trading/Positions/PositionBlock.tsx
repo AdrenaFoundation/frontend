@@ -5,7 +5,8 @@ import { twMerge } from 'tailwind-merge';
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
+import { MINIMUM_POSITION_OPEN_TIME, RATE_DECIMALS } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -71,6 +72,7 @@ export function PositionBlock({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const borrowRate = useSelector((s) => s.borrowRates[position.side === 'long' ? position.custody.toBase58() : position.collateralCustody.toBase58()]);
   const tradeTokenPrice = useSelector((s) =>
     selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol))
   );

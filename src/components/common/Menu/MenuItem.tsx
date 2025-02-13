@@ -12,7 +12,9 @@ export default function MenuItem({
   selected,
   href,
   target,
+  id,
 }: {
+  id?: string;
   className?: string;
   linkClassName?: string;
   children: ReactNode;
@@ -22,11 +24,12 @@ export default function MenuItem({
   target?: string;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  disabled?: boolean;
 }) {
   const item = (
     <li
       className={twMerge(
-        'text-sm bg-third hover:bg-secondary duration-300 cursor-pointer w-full whitespace-nowrap',
+        'font-boldy text-sm bg-third hover:bg-secondary duration-300 cursor-pointer w-full whitespace-nowrap',
         selected && 'bg-main',
         href ? 'p-0' : 'p-1 px-3',
         className,
@@ -34,6 +37,7 @@ export default function MenuItem({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
+      id={id}
     >
       {!href && children}
       {href && (

@@ -129,6 +129,7 @@ export default function LongShortTradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [isLimitOrder, setIsLimitOrder] = useState(false);
+  const borrowRates = useSelector((s) => s.borrowRates);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
@@ -1188,9 +1189,39 @@ export default function LongShortTradingInputs({
                     <div className="w-0 h-4 bg-gray-800 rounded-xl" />
 
                     <div className="h-full w-[1px] bg-gray-800" />
-
                     <div className="w-0 h-4 bg-gray-800 rounded-xl" />
                   </div>
+//
+            <h5 className="hidden sm:flex items-center ml-4 mt-2 mb-2">
+              Fees (8 bps)
+              <span className="ml-1">
+                <Tippy
+                  content={
+                    <p className="font-medium text-txtfade">
+                      0 bps entry fees - 8 bps exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
+                    </p>
+                  }
+                >
+                  <Image
+                    src={infoIcon}
+                    width={14}
+                    height={14}
+                    alt="info icon"
+                  />
+                </Tippy>
+              </span>
+            </h5>
+
+            <PositionFeesTooltip
+              borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
+              positionInfos={newPositionInfo}
+              openedPosition={openedPosition}
+            >
+              <StyledSubSubContainer
+                className={twMerge(
+                  'flex items-center justify-center mt-2 sm:mt-0',
+                  openedPosition ? 'h-[13em]' : 'h-[10em]',
+// feature/limitOrderRebase
                 )}
               </StyledSubSubContainer>
 
@@ -1313,6 +1344,7 @@ export default function LongShortTradingInputs({
                         title="Dynamic Borrow Rate"
                         className="flex-col"
                       >
+<!--// limit-order
                         <FormatNumber
                           // Multiply by 100 to be displayed as %
                           nb={((side === "long" ? custody?.borrowFee : usdcCustody?.borrowFee) ?? 0) * 100}
@@ -1343,6 +1375,39 @@ export default function LongShortTradingInputs({
           disabled={limitOrderTriggerPrice === null || inputA === null}
           onClick={handleAddLimitOrder}
         />}
+-->
+                        <div className='text-xs text-orange font-boldy underline-dashed'>warning: high swap fees</div>
+                      </Tippy>
+                      : null}
+
+                    <span className="text-base ml-1 mr-1 mb-6">+</span>
+
+                    <TextExplainWrapper
+                      title="Dynamic Borrow Rate"
+                      className="flex-col"
+                    >
+                      <FormatNumber
+                        // Multiply by 100 to be displayed as %
+                        nb={((custody && usdcCustody && (borrowRates[side === "long" ? custody.pubkey.toBase58() : usdcCustody.pubkey.toBase58()])) ?? 0) * 100}
+                        precision={RATE_DECIMALS}
+                        minimumFractionDigits={4}
+                        suffix="%/hr"
+                        isDecimalDimmed={false}
+                        className="text-base"
+                      />
+                    </TextExplainWrapper>
+                  </AutoScalableDiv>
+                ) : (
+                  <div className="flex h-full justify-center items-center">
+                    <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+                  </div>
+                )}
+              </StyledSubSubContainer>
+            </PositionFeesTooltip>
+          </>
+        ) : null}
+      </div>
+<!--// limit-order -->
     </div >
   );
 }

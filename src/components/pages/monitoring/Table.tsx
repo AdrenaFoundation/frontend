@@ -33,10 +33,12 @@ export default function Table({
   data: (
     | {
       rowTitle: ReactNode;
+      specificRowClassName?: string;
       values: ReactNode[];
     }
     | {
       rowTitle: ReactNode;
+      specificRowClassName?: string;
       value: ReactNode;
     }
   )[];
@@ -60,10 +62,12 @@ export default function Table({
       | {
         rowTitle: ReactNode;
         values: ReactNode[];
+        specificRowClassName?: string;
       }
       | {
         rowTitle: ReactNode;
         value: ReactNode;
+        specificRowClassName?: string;
       }
     )[]
   >([]);
@@ -119,15 +123,16 @@ export default function Table({
         ))}
       </div>
 
-      {pageData.map(({ rowTitle, ...v }, i) => (
+      {pageData.map(({ rowTitle, specificRowClassName, ...v }, i) => (
         <div
           key={`page-data-${rowTitle}-${i}`}
           className={twMerge(
-            'flex w-full border border-transparent text-base pl-1',
+            'flex w-full border border-transparent text-base pl-1 relative',
             rowHovering
               ? 'hover:bg-secondary hover:border-bcolor rounded-lg transition duration-300'
               : '',
             rowClassName,
+            specificRowClassName,
           )}
         >
           <div

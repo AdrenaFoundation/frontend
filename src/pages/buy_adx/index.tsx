@@ -1,11 +1,9 @@
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import React from 'react';
 
 import ADXFeeStreamAnimation from '@/components/buy_adx/ADXFeeStreamAnimation';
 import ADXVoteAnimation from '@/components/buy_adx/ADXVoteAnimation';
 import Button from '@/components/common/Button/Button';
 import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps } from '@/types';
 
 import jupIcon from '../../../public/images/jup-logo.png';
@@ -13,18 +11,9 @@ import jupIcon from '../../../public/images/jup-logo.png';
 export default function BuyADX({ }: PageProps) {
   return (
     <div className="px-7">
-      <div className="relative flex flex-col justify-center items-start w-full  mb-[150px] sm:mb-0">
-        <RiveAnimation
-          animation="mid-monster"
-          layout={
-            new Layout({
-              fit: Fit.Contain,
-              alignment: Alignment.TopRight,
-            })
-          }
-          imageClassName="absolute w-full max-w-[1200px] top-0 right-0 opacity-20"
-        />
-        <div className="absolute w-[50px] h-full top-0 right-0 bg-gradient-to-r from-[#050f1900] to-[#050f19] z-10" />
+      <div className="relative flex flex-col justify-center items-start w-full mb-[150px] sm:mb-0">
+
+        <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
         <div className="flex flex-col lg:flex-row items-center justify-between pt-[50px] mb-[150px] lg:mb-0 lg:h-[800px] w-full z-10">
           <div>

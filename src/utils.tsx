@@ -70,20 +70,48 @@ export function getRightArrowElement() {
   );
 }
 
-export function formatNumAbbreviated(num: number): string {
+export function getNextSaturdayUTC(): Date {
+  const now = new Date();
+  const dayOfWeek = now.getUTCDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+  const daysUntilSaturday = (6 - dayOfWeek + 7) % 7 || 7; // Calculate days to next Saturday
+
+  // Get next Saturday at 00:00:00 UTC
+  const nextSaturday = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + daysUntilSaturday,
+    0, 0, 0, 0
+  ));
+
+  return nextSaturday;
+}
+
+export function chunkArray<T>(array: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
+    array.slice(i * size, i * size + size)
+  );
+}
+
+export function getNextUTCDate() {
+  const now = new Date();
+
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+}
+
+export function formatNumAbbreviated(num: number, precision = 2): string {
   if (num > 999_999_999) {
-    return (num / 1_000_000_000).toFixed(2) + 'B';
+    return (num / 1_000_000_000).toFixed(precision) + 'B';
   }
 
   if (num > 999_999) {
-    return (num / 1_000_000).toFixed(2) + 'M';
+    return (num / 1_000_000).toFixed(precision) + 'M';
   }
 
   if (num > 999) {
-    return (num / 1_000).toFixed(2) + 'K';
+    return (num / 1_000).toFixed(precision) + 'K';
   }
 
-  return num.toString();
+  return num.toFixed(precision);
 }
 
 export function findATAAddressSync(
@@ -928,6 +956,23 @@ export function getFullTimeDifference(date1: Date, date2: Date) {
     minutes: getMinutesBetweenDates(date1, date2),
     seconds: getSecondsBetweenDates(date1, date2)
   };
+}
+
+export function formatTimeDifferenceFromTotalSeconds(totalSeconds: number) {
+  const days = Math.floor(totalSeconds / (24 * 60 * 60));
+  const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+
+  if (days > 0) {
+    return `${days.toString().padStart(2, '0')}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
+  }
+
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+  }
+
+  return `${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
 }
 
 export function formatTimeDifference(diff: {

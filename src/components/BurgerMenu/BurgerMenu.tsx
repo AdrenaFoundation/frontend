@@ -6,21 +6,22 @@ import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  VestExtended,
   WalletAdapterExtended,
 } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
+import chatIcon from '../../../public/images/chat-text.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import competitionIcon from '../../../public/images/competition.svg';
 import githubLogo from '../../../public/images/github.svg';
-import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
-import crossIcon from '../../../public/images/Icons/cross.svg';
 import logo from '../../../public/images/logo.svg';
 import twitterLogo from '../../../public/images/x.svg';
 import Button from '../common/Button/Button';
@@ -28,6 +29,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import Mutagen from '../Mutagen/Mutagen';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
@@ -41,6 +43,8 @@ export default function BurgerMenu({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  userVest,
+  userDelegatedVest,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
@@ -52,6 +56,8 @@ export default function BurgerMenu({
   adapters,
   showFeesInPnl,
   setShowFeesInPnl,
+  isChatOpen,
+  setIsChatOpen,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
@@ -67,6 +73,8 @@ export default function BurgerMenu({
   autoRpcMode: boolean;
   customRpcUrl: string | null;
   favoriteRpc: string | null;
+  userVest: VestExtended | null | false;
+  userDelegatedVest: VestExtended | null | false;
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
@@ -78,14 +86,19 @@ export default function BurgerMenu({
   adapters: WalletAdapterExtended[];
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
+  isChatOpen: boolean | null;
+  setIsChatOpen: (isChatOpen: boolean | null) => void;
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
-  const isSmallerScreen = useBetterMediaQuery('(max-width: 550px)');
+  const isSmallerScreen = useBetterMediaQuery('(max-width: 640px)');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [adxPrice, setAdxPrice] = useState<number | null>(null);
+
+  const [isPriorityFeeModalOpen, setIsPriorityFeeModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -106,33 +119,24 @@ export default function BurgerMenu({
 
   return (
     <div className="z-30">
-      <div className="p-4 z-50 flex flex-row justify-between items-center w-full bg-bcolor/85 backdrop-blur-md border-b">
-        <div
-          className="flex items-center justify-center p-1 border w-9 h-8 rounded-md hover:bg-bcolor transition duration-300 cursor-pointer"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <Image
-            className="cursor-pointer opacity-75"
-            src={isOpen ? crossIcon : burgerMenuIcon}
-            alt="burger menu icon"
-            width={16}
-            height={16}
-          />
-        </div>
+      <div className="py-3 p-4 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
+        <div className="flex flex-row gap-3 items-center">
+          <Link href="/trade">
+            <Image src={adrenaLogo} alt="logo" width={28} height={28} />
+          </Link>
 
-        <div className="flex flex-row items-center gap-3">
-          <div className="flex gap-1">
+          <div className="flex flex-row gap-3">
             <Link
               href="/buy_alp"
               className={twMerge(
-                'ml-2 items-center justify-center flex hover:opacity-100',
-                isSmallScreen ? 'flex-col' : 'flex-row',
+                'flex-col sm:flex-row gap-1 items-center justify-center flex hover:opacity-100',
+
                 pathname !== '/buy_alp' && 'opacity-50',
               )}
             >
               <div
                 className={twMerge(
-                  'text-sm font-boldy',
+                  'text-xs font-boldy',
                   isSmallScreen ? 'mr-0' : 'mr-2',
                 )}
               >
@@ -140,7 +144,7 @@ export default function BurgerMenu({
               </div>
 
               {alpPrice ? (
-                <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
+                <div className="w-[3em] border bg-third p-1 px-2 rounded">
                   <div className="text-xxs font-mono flex items-center justify-center">
                     {formatPriceInfo(
                       alpPrice,
@@ -159,14 +163,13 @@ export default function BurgerMenu({
             <Link
               href="/buy_adx"
               className={twMerge(
-                'ml-2 items-center justify-center flex hover:opacity-100',
-                isSmallScreen ? 'flex-col' : 'flex-row',
+                'flex-col sm:flex-row gap-1 items-center justify-center flex hover:opacity-100',
                 pathname !== '/buy_adx' && 'opacity-50',
               )}
             >
               <div
                 className={twMerge(
-                  'text-sm font-boldy',
+                  'text-xs font-boldy',
                   isSmallScreen ? 'mr-0' : 'mr-2',
                 )}
               >
@@ -174,7 +177,7 @@ export default function BurgerMenu({
               </div>
 
               {adxPrice ? (
-                <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
+                <div className="w-[3em] border bg-third p-1 px-2 rounded">
                   <div className="text-xxs font-mono flex items-center justify-center">
                     {formatPriceInfo(
                       adxPrice,
@@ -190,36 +193,61 @@ export default function BurgerMenu({
               )}
             </Link>
           </div>
+        </div>
+
+        <div className="flex flex-row gap-3 items-center">
+          <Mutagen isMobile />
+          <Button
+            className="gap-1 text-xs p-0 h-8 w-8 border border-white/20"
+            leftIcon={chatIcon}
+            alt="chat icon"
+            leftIconClassName="w-[0.875rem] h-[0.875rem]"
+            variant="lightbg"
+            onClick={() => setIsChatOpen(!isChatOpen)}
+          />
+
+          <AnimatePresence>
+            {isPriorityFeeModalOpen ? (
+              <PriorityFeeSetting
+                priorityFeeOption={priorityFeeOption}
+                setPriorityFeeOption={setPriorityFeeOption}
+                maxPriorityFee={maxPriorityFee}
+                setMaxPriorityFee={setMaxPriorityFee}
+                setCloseMobileModal={setIsPriorityFeeModalOpen}
+                isMobile
+              />
+            ) : null}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {isSettingsModalOpen ? (
+              <Settings
+                activeRpc={activeRpc}
+                rpcInfos={rpcInfos}
+                autoRpcMode={autoRpcMode}
+                customRpcUrl={customRpcUrl}
+                customRpcLatency={customRpcLatency}
+                favoriteRpc={favoriteRpc}
+                setAutoRpcMode={setAutoRpcMode}
+                setCustomRpcUrl={setCustomRpcUrl}
+                setFavoriteRpc={setFavoriteRpc}
+                preferredSolanaExplorer={preferredSolanaExplorer}
+                showFeesInPnl={showFeesInPnl}
+                setShowFeesInPnl={setShowFeesInPnl}
+                setCloseMobileModal={setIsSettingsModalOpen}
+                isMobile
+              />
+            ) : null}
+          </AnimatePresence>
 
           <WalletAdapter
             className="w-full"
             userProfile={userProfile}
             isIconOnly={isSmallerScreen === true}
             adapters={adapters}
-          />
-
-          <PriorityFeeSetting
-            priorityFeeOption={priorityFeeOption}
-            setPriorityFeeOption={setPriorityFeeOption}
-            maxPriorityFee={maxPriorityFee}
-            setMaxPriorityFee={setMaxPriorityFee}
+            setIsPriorityFeeModalOpen={setIsPriorityFeeModalOpen}
+            setIsSettingsModalOpen={setIsSettingsModalOpen}
             isMobile
-          />
-
-          <Settings
-            activeRpc={activeRpc}
-            rpcInfos={rpcInfos}
-            autoRpcMode={autoRpcMode}
-            customRpcUrl={customRpcUrl}
-            customRpcLatency={customRpcLatency}
-            favoriteRpc={favoriteRpc}
-            setAutoRpcMode={setAutoRpcMode}
-            setCustomRpcUrl={setCustomRpcUrl}
-            setFavoriteRpc={setFavoriteRpc}
-            preferredSolanaExplorer={preferredSolanaExplorer}
-            isMobile
-            showFeesInPnl={showFeesInPnl}
-            setShowFeesInPnl={setShowFeesInPnl}
           />
         </div>
       </div>
@@ -234,12 +262,16 @@ export default function BurgerMenu({
           >
             <div>
               <ul className="flex flex-col gap-3 mt-4">
-                {PAGES.map((page) => {
+                {PAGES.filter(
+                  (p) => p.name !== 'Vest' || userVest || userDelegatedVest,
+                ).map((page) => {
                   return (
                     <li
                       className={twMerge(
                         'flex flex-row gap-1 items-center font-normal text-xl opacity-50 hover:opacity-100 hover:grayscale-0 transition duration-300',
-                        pathname === page.link ? 'grayscale-0 opacity-100' : 'grayscale',
+                        pathname === page.link
+                          ? 'grayscale-0 opacity-100'
+                          : 'grayscale',
                       )}
                       key={page.name}
                     >

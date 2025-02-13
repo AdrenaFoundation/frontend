@@ -10,6 +10,7 @@ import { twMerge } from 'tailwind-merge';
 import { useOnClickOutside } from '@/hooks/onClickOutside';
 
 export default function Menu({
+  forceOpen,
   trigger,
   className,
   openMenuClassName,
@@ -19,7 +20,9 @@ export default function Menu({
   disabled,
   disableOnClickInside = false,
   isDim = false,
+  openMenuTriggerType = 'click',
 }: {
+  forceOpen?: boolean; // Use for dev only
   trigger: ReactNode;
   className?: string;
   openMenuClassName?: string;
@@ -29,6 +32,7 @@ export default function Menu({
   disabled?: boolean;
   disableOnClickInside?: boolean;
   isDim?: boolean;
+  openMenuTriggerType?: 'click' | 'hover';
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -59,12 +63,29 @@ export default function Menu({
       <AnimatePresence>
         <div
           className={twMerge('relative', className)}
-          onClick={() => !disabled && setIsMenuOpen(!isMenuOpen)}
+          onClick={() => {
+            if (openMenuTriggerType !== 'click') return;
+            if (disabled) return;
+
+            setIsMenuOpen(!isMenuOpen);
+          }}
+          onMouseEnter={() => {
+            if (openMenuTriggerType !== 'hover') return;
+            if (disabled) return;
+
+            setIsMenuOpen(true);
+          }}
+          onMouseLeave={() => {
+            if (openMenuTriggerType !== 'hover') return;
+            if (disabled) return;
+
+            setIsMenuOpen(false);
+          }}
         >
           <div
             className={twMerge(
               'flex h-full w-full border border-transparent',
-              isMenuOpen && withBorder
+              (isMenuOpen || forceOpen) && withBorder
                 ? twMerge('bg-secondary', menuOpenBorderClassName)
                 : '',
             )}
@@ -72,7 +93,7 @@ export default function Menu({
             {trigger}
           </div>
 
-          {isMenuOpen ? (
+          {isMenuOpen || forceOpen ? (
             <motion.div
               ref={ref}
               initial="hidden"
@@ -91,7 +112,8 @@ export default function Menu({
           ) : null}
         </div>
       </AnimatePresence>
-      {isDim && isMenuOpen && (
+
+      {isDim && (isMenuOpen || forceOpen) ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -99,7 +121,7 @@ export default function Menu({
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="absolute top-0 left-0 w-full h-full bg-black/75 z-30"
         />
-      )}
+      ) : null}
     </>
   );
 }

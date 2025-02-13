@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -7,6 +8,8 @@ import {
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
+import { PROFILE_PICTURES } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
@@ -17,6 +20,7 @@ import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
+import MenuSeparator from '../common/Menu/MenuSeparator';
 import WalletSelectionModal from './WalletSelectionModal';
 
 export default function WalletAdapter({
@@ -24,17 +28,28 @@ export default function WalletAdapter({
   userProfile,
   isIconOnly,
   adapters,
+  isMobile = false,
+  setIsPriorityFeeModalOpen,
+  setIsSettingsModalOpen,
 }: {
   className?: string;
   userProfile: UserProfileExtended | null | false;
   isIconOnly?: boolean;
   adapters: WalletAdapterExtended[];
+  isMobile?: boolean;
+  setIsSettingsModalOpen?: (isOpen: boolean) => void;
+  setIsPriorityFeeModalOpen?: (isOpen: boolean) => void;
 }) {
   const dispatch = useDispatch();
+  const router = useRouter();
+
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
-  const connectedAdapter = useMemo(() => wallet && adapters.find(x => x.name === wallet.adapterName), [wallet, adapters]);
+  const connectedAdapter = useMemo(
+    () => wallet && adapters.find((x) => x.name === wallet.adapterName),
+    [wallet, adapters],
+  );
 
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
@@ -49,7 +64,7 @@ export default function WalletAdapter({
   if (lastConnectedWalletRef.current === null) {
     const adapterName = localStorage.getItem('lastConnectedWallet');
 
-    if (adapterName && adapters.find(x => x.name === adapterName)) {
+    if (adapterName && adapters.find((x) => x.name === adapterName)) {
       lastConnectedWalletRef.current = adapterName as WalletAdapterName;
     } else {
       lastConnectedWalletRef.current = null;
@@ -59,10 +74,14 @@ export default function WalletAdapter({
   const connectedWalletAdapterName = wallet?.adapterName;
   const connected = !!connectedWalletAdapterName;
 
+  const isBreak = useBetterMediaQuery('(min-width: 640px)');
+
   // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
-      const adapter = adapters.find(x => x.name === lastConnectedWalletRef.current);
+      const adapter = adapters.find(
+        (x) => x.name === lastConnectedWalletRef.current,
+      );
       if (!adapter) return;
 
       dispatch(autoConnectWalletAction(adapter));
@@ -79,7 +98,7 @@ export default function WalletAdapter({
   useEffect(() => {
     if (!connectedWalletAdapterName) return;
 
-    const adapter = adapters.find(x => x.name === connectedWalletAdapterName);
+    const adapter = adapters.find((x) => x.name === connectedWalletAdapterName);
 
     if (!adapter) return;
 
@@ -106,9 +125,15 @@ export default function WalletAdapter({
             <Button
               className={twMerge(
                 className,
-                'gap-2 pl-2 pr-3 text-xs w-[15em]',
-                isIconOnly && 'p-0 h-7 w-7',
+                'gap-2 pl-2 pr-3 text-xs w-[15em] border border-white/20',
+                isIconOnly && 'p-0 h-8 w-8',
               )}
+              style={!isBreak ? {
+                backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPositionY: 'center',
+              } : {}}
               title={
                 !isIconOnly
                   ? userProfile
@@ -116,17 +141,48 @@ export default function WalletAdapter({
                     : getAbbrevWalletAddress(wallet.walletAddress)
                   : null
               }
-              leftIcon={connectedAdapter?.iconOverride ?? connectedAdapter?.icon}
-              leftIconClassName='w-3 h-3'
+              leftIcon={
+                connectedAdapter?.iconOverride ?? connectedAdapter?.icon
+              }
+              leftIconClassName="hidden sm:block w-4 h-4"
               variant="lightbg"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}
             />
           }
-          openMenuClassName="w-[120px] right-0"
+          openMenuClassName="w-[150px] right-0 border border-white/10 shadow-xl"
         >
           <MenuItems>
+            {isMobile ? (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    router.push('/profile');
+                  }}
+                  className="py-2"
+                >
+                  Profile
+                </MenuItem>
+                <MenuSeparator />
+                <MenuItem
+                  className="py-2"
+                  onClick={() => setIsPriorityFeeModalOpen?.(true)}
+                >
+                  Priority Fee
+                </MenuItem>
+                <MenuSeparator />
+                <MenuItem
+                  className="py-2"
+                  onClick={() => {
+                    setIsSettingsModalOpen?.(true);
+                  }}
+                >
+                  Settings
+                </MenuItem>
+                <MenuSeparator />
+              </>
+            ) : null}
             <MenuItem
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
@@ -135,6 +191,7 @@ export default function WalletAdapter({
 
                 dispatch(disconnectWalletAction(connectedAdapter));
               }}
+              className="py-2"
             >
               Disconnect
             </MenuItem>
@@ -144,8 +201,8 @@ export default function WalletAdapter({
         <Button
           className={twMerge(
             className,
-            'gap-1 pl-2 pr-3 text-xs w-[15em]',
-            isIconOnly && 'p-0 h-7 w-7',
+            'gap-1 pl-2 pr-3 text-xs w-[15em] border border-white/20',
+            isIconOnly && 'p-0 h-8 w-8',
           )}
           title={!isIconOnly ? 'Connect wallet' : null}
           leftIcon={walletIcon}

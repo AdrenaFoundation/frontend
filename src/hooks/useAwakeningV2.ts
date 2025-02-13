@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import DataApiClient from '@/DataApiClient';
 import {
-  LeaderboardReturnTypeAPI,
+  PreSeasonLeaderboardReturnTypeAPI,
   RankedRewards,
   TradingCompetitionLeaderboardAPI,
-  UserProfileExtended,
+  UserProfileMetadata,
 } from '@/types';
 import { calculateWeeksPassed } from '@/utils';
 
@@ -82,7 +82,7 @@ const findUserData = (
 };
 
 const processLeaderboardData = (
-  traderDivisions: LeaderboardReturnTypeAPI<{
+  traderDivisions: PreSeasonLeaderboardReturnTypeAPI<{
     showTraderDivisions: true;
   }>['traderDivisions'],
   getUserName: (address: string | null) => string | null,
@@ -128,7 +128,7 @@ const processLeaderboardData = (
 };
 
 const processAchievements = (
-  achievements: LeaderboardReturnTypeAPI<{
+  achievements: PreSeasonLeaderboardReturnTypeAPI<{
     showAchievements: true;
   }>['achievements'],
   getUserName: (address: string | null) => string | null,
@@ -168,21 +168,21 @@ const processAchievements = (
 
 export default function useAwakeningV2({
   wallet,
-  allUserProfiles,
+  allUserProfilesMetadata,
 }: {
   wallet: {
     adapterName: WalletAdapterName;
     walletAddress: string;
   } | null;
-  allUserProfiles: UserProfileExtended[];
+  allUserProfilesMetadata: UserProfileMetadata[];
 }) {
   const [data, setData] = useState<{
     startDate: string;
     endDate: string;
-    traderDivisions: LeaderboardReturnTypeAPI<{
+    traderDivisions: PreSeasonLeaderboardReturnTypeAPI<{
       showTraderDivisions: true;
     }>['traderDivisions'];
-    achievements: LeaderboardReturnTypeAPI<{
+    achievements: PreSeasonLeaderboardReturnTypeAPI<{
       showAchievements: true;
     }>['achievements'];
     eligibleJitosolWallets: string[];
@@ -190,14 +190,14 @@ export default function useAwakeningV2({
   } | null>(null);
 
   const userProfilesMap = useMemo(() => {
-    return allUserProfiles.reduce(
+    return allUserProfilesMetadata.reduce(
       (acc, profile) => {
         acc[profile.owner.toBase58()] = profile.nickname;
         return acc;
       },
       {} as Record<string, string>,
     );
-  }, [allUserProfiles]);
+  }, [allUserProfilesMetadata]);
 
   const getUserName = useCallback(
     (address: string | null) => {
@@ -209,7 +209,7 @@ export default function useAwakeningV2({
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await DataApiClient.getTradingCompetitionLeaderboard({
+      const response = await DataApiClient.getPreSeasonLeaderboard({
         season: 'preseason',
         showAchievements: true,
         showTraderDivisions: true,

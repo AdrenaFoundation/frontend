@@ -1,4 +1,3 @@
-import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,72 +8,18 @@ import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
-import Switch from '@/components/common/Switch/Switch';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PositionExtended, PositionHistoryExtended } from '@/types';
-import { formatDate, formatTimeDifference, getFullTimeDifference, getTokenImage, getTokenSymbol, getTxExplorer } from '@/utils';
+import { formatTimeDifference, getFullTimeDifference, getTxExplorer } from '@/utils';
 
 import FeesPaidTooltip from './FeesPaidTooltip';
-import SharePositionModal from './SharePositionModal';
-import { ValueColumn } from './PositionBlockComponents/ValueColumn';
+import { PnL } from './PositionBlockComponents/PnL';
 import { POSITION_BLOCK_STYLES } from './PositionBlockComponents/PositionBlockStyles';
 import { PositionHeader } from './PositionBlockComponents/PositionHeader';
 import { PositionName } from './PositionBlockComponents/PositionName';
-import { PnL } from './PositionBlockComponents/PnL';
-
-interface LeverageDisplayProps {
-  leverage: number;
-  positionSize: number;
-  entryCollateral: number;
-  finalCollateral: number;
-}
-
-const LeverageDisplay: React.FC<LeverageDisplayProps> = ({ leverage, positionSize, entryCollateral, finalCollateral }) => (
-  <Tippy
-    content={
-      <>
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-xs mr-2">Size:</span>
-          <FormatNumber
-            nb={positionSize}
-            format="currency"
-            minimumFractionDigits={2}
-            precision={2}
-            className="text-xs"
-          />
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-xs mr-2">Entry Collateral:</span>
-          <FormatNumber
-            nb={entryCollateral}
-            format="currency"
-            minimumFractionDigits={2}
-            precision={2}
-            className="text-xs"
-          />
-        </div>
-        {finalCollateral !== entryCollateral && (
-          <div className="flex justify-between items-center mt-1">
-            <span className="text-xs mr-2">Final Collateral:</span>
-            <FormatNumber
-              nb={finalCollateral}
-              format="currency"
-              minimumFractionDigits={2}
-              precision={2}
-              className="text-xs"
-            />
-          </div>
-        )}
-      </>
-    }
-    placement="auto"
-  >
-    <div className="text-xs ml-1 text-gray-400 border-b border-dotted border-gray-400 cursor-help">
-      {leverage}x
-    </div>
-  </Tippy>
-);
+import { ValueColumn } from './PositionBlockComponents/ValueColumn';
+import SharePositionModal from './SharePositionModal';
 
 const PositionHistoryBlock = ({
   bodyClassName,

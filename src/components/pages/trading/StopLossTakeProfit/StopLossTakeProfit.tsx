@@ -159,11 +159,6 @@ export default function StopLossTakeProfit({
         position.stopLossLimitPrice &&
         position.stopLossLimitPrice > 0;
 
-      const slippageMultiplier = position.side === 'long' ? 0.99 : 1.01;
-      const adjustedStopLossPrice = stopLossInput
-        ? stopLossInput * slippageMultiplier
-        : null;
-
       // Create Stop loss if not set or if it changed
       if (
         (!stopLossSet && stopLossInput !== null) ||
@@ -182,10 +177,7 @@ export default function StopLossTakeProfit({
             ))({
               position,
               stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
-              closePositionPrice: new BN(
-                (adjustedStopLossPrice ? adjustedStopLossPrice : stopLossInput) *
-                10 ** PRICE_DECIMALS,
-              ),
+              closePositionPrice: null, // No slippage
             }),
         );
       }

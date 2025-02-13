@@ -1,4 +1,23 @@
-import { GetPositionStatsReturnType, LeaderboardReturnTypeAPI, PositionActivityRawAPi, PositionStatsRawApi, RankedRewards, Token, Trader, TraderDivisionRawAPI } from './types';
+import { PublicKey } from '@solana/web3.js';
+
+import {
+    EnrichedPositionApi,
+    GetPositionStatsReturnType,
+    MutagenLeaderboardData,
+    MutagenLeaderboardRawAPI,
+    PositionActivityRawAPi,
+    PositionApiRawData,
+    PositionStatsRawApi,
+    PreSeasonLeaderboardReturnTypeAPI,
+    RankedRewards,
+    SeasonLeaderboardsData,
+    SeasonLeaderboardsRawAPI,
+    Token,
+    Trader,
+    TraderDivisionRawAPI,
+    UserMutagensReturnType,
+    UserSeasonProgressReturnType
+} from './types';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -11,7 +30,7 @@ export default class DataApiClient {
                 `https://datapi.adrena.xyz/last-price`,
             ).then((res) => res.json());
 
-            if (result === null || typeof result === 'undefined') {
+            if (result === null || typeof result === 'undefined' || !result.data || !result.data.adx || !result.data.alp) {
                 return null;
             }
 
@@ -114,7 +133,62 @@ export default class DataApiClient {
         return result.data;
     }
 
-    public static async getTradingCompetitionLeaderboard<
+    public static async getSeasonLeaderboards(): Promise<SeasonLeaderboardsData | null> {
+        try {
+            const result: SeasonLeaderboardsRawAPI = await fetch(
+                `https://datapi.adrena.xyz/season?season=expanse&show_leaderboard=true`,
+            ).then((res) => res.json());
+
+            return {
+                startDate: new Date(result.data.start_date),
+                endDate: new Date(result.data.end_date),
+                weekLeaderboard: result.data.week_leaderboard.leaderboard.map((leaderboard, i) => ({
+                    startDate: new Date(result.data.week_leaderboard.week_dates_start[i]),
+                    endDate: new Date(result.data.week_leaderboard.week_dates_end[i]),
+                    ranks: leaderboard.map((rank) => ({
+                        wallet: new PublicKey(rank.user_wallet),
+                        rank: rank.rank,
+                        championshipPoints: rank.championship_points,
+                        totalPoints: rank.total_points,
+                        streaksPoints: rank.points_streaks,
+                        questsPoints: rank.points_quests,
+                        mutationPoints: rank.points_mutations,
+                        tradingPoints: rank.points_trading,
+                        volume: rank.volume,
+                        pnl: rank.pnl,
+                        fees: rank.fees,
+                        profilePicture: null,
+                        nickname: null,
+                        title: null,
+                    })),
+                })),
+
+                seasonLeaderboard: result.data.season_leaderboard.map((leaderboard) => ({
+                    wallet: new PublicKey(leaderboard.user_wallet),
+                    rank: leaderboard.rank,
+                    tradingPoints: leaderboard.points_trading,
+                    mutationPoints: leaderboard.points_mutations,
+                    streaksPoints: leaderboard.points_streaks,
+                    questsPoints: leaderboard.points_quests,
+                    totalPoints: leaderboard.total_points,
+                    volume: leaderboard.volume,
+                    pnl: leaderboard.pnl,
+                    fees: leaderboard.fees,
+                    championshipPoints: leaderboard.championship_points,
+                    rewardsAdx: leaderboard.rewards_adx,
+                    rewardsJto: leaderboard.rewards_jto,
+                    profilePicture: null,
+                    nickname: null,
+                    title: null,
+                })),
+            };
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+
+    public static async getPreSeasonLeaderboard<
         T extends {
             showGlobalStats?: boolean;
             showAchievements?: boolean;
@@ -128,8 +202,8 @@ export default class DataApiClient {
         showTraderDivisions,
         showEligibleJitosolWallets,
     }: {
-        season: 'preseason' | 'season1' | 'season2' | 'season3' | 'season4';
-    } & T): Promise<LeaderboardReturnTypeAPI<T> | null> {
+        season: 'preseason';
+    } & T): Promise<PreSeasonLeaderboardReturnTypeAPI<T> | null> {
         try {
             const result = await fetch(
                 `https://datapi.adrena.xyz/v2/awakening?season=${season}&show_achievements=${Boolean(
@@ -142,7 +216,6 @@ export default class DataApiClient {
                     showEligibleJitosolWallets,
                 )}`,
             ).then((res) => res.json());
-
 
             const rankedRewards: RankedRewards[] = result.data.ranked_divisions.map((division: string, index: number) => ({
                 division,
@@ -236,7 +309,7 @@ export default class DataApiClient {
                 ...(showEligibleJitosolWallets && {
                     eligibleJitosolWallets: result.data.eligible_jitosol_wallets,
                 }),
-            } as LeaderboardReturnTypeAPI<T>;
+            } as PreSeasonLeaderboardReturnTypeAPI<T>;
 
             return data;
         } catch (e) {
@@ -359,5 +432,179 @@ export default class DataApiClient {
         const result = await fetch(url).then((res) => res.json());
 
         return result;
+    }
+
+    public static async getUserSeasonProgress({
+        season,
+        userWallet,
+    }: {
+        season?: string;
+        userWallet: string | null;
+    }): Promise<UserSeasonProgressReturnType | null> {
+        const params = new URLSearchParams();
+
+        if (season) params.append('season', season);
+        if (userWallet) {
+            params.append('user_wallet', userWallet);
+            params.append('show_streaks', 'true');
+        }
+
+        params.append('show_mutations', 'true');
+        params.append('show_quests', 'true');
+
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/season?${params.toString()}`
+            );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            return await response.json();
+        } catch (e) {
+            console.error('Error fetching user season progress:', e);
+            return null;
+        }
+    }
+
+    public static async getMutagenLeaderboard(): Promise<MutagenLeaderboardData | null> {
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/mutagen-leaderboard`
+            );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            const d: MutagenLeaderboardRawAPI = await response.json();
+
+            return d.data.map((data) => ({
+                rank: data.rank,
+                userWallet: new PublicKey(data.user_wallet),
+                pointsTrading: data.points_trading,
+                pointsMutations: data.points_mutations,
+                pointsStreaks: data.points_streaks,
+                pointsQuests: data.points_quests,
+                totalPoints: data.total_points,
+                totalVolume: data.total_volume,
+                totalPnl: data.total_pnl,
+                totalBorrowFees: data.total_borrow_fees,
+                totalCloseFees: data.total_close_fees,
+                totalFees: data.total_fees,
+                profilePicture: null,
+                nickname: null,
+                title: null,
+            }));
+
+        } catch (e) {
+            console.error('Error fetching user mutagens:', e);
+            return null;
+        }
+    }
+
+    public static async getUserMutagens({
+        userWallet,
+    }: {
+        userWallet: string;
+    }): Promise<UserMutagensReturnType | null> {
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/mutagen?user_wallet=${userWallet}`
+            );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            return await response.json();
+        } catch (e) {
+            console.error('Error fetching user mutagens:', e);
+            return null;
+        }
+    }
+
+    public static async getPositions({
+        walletAddress,
+        tokens,
+    }: {
+        walletAddress: string;
+        tokens: Token[];
+    }): Promise<EnrichedPositionApi[]> {
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/position?user_wallet=${walletAddress
+                }&status=liquidate&status=close`,
+            );
+
+            if (!response.ok) {
+                console.log('API response was not ok');
+                return [];
+            }
+
+            const apiBody = await response.json();
+
+            const apiData: PositionApiRawData[] | undefined = apiBody.data;
+
+            if (typeof apiData === 'undefined' || (apiData && apiData.length === 0))
+                return [];
+
+            return apiData
+                .map((data) => {
+                    const token = tokens.find(
+                        (t) =>
+                            t.mint.toBase58() === data.token_account_mint &&
+                            t.symbol.toUpperCase() === data.symbol.toUpperCase(),
+                    );
+
+                    if (typeof token === 'undefined') {
+                        return null;
+                    }
+
+                    return {
+                        positionId: data.position_id,
+                        userId: data.user_id,
+                        side: data.side,
+                        status: data.status,
+                        pubkey: new PublicKey(data.pubkey),
+                        entryLeverage: data.entry_leverage,
+                        lowestLeverage: data.lowest_leverage,
+                        entryCollateralAmount: data.entry_collateral_amount,
+                        collateralAmount: data.collateral_amount,
+                        closedBySlTp: data.closed_by_sl_tp,
+                        volume: data.volume,
+                        duration: data.duration,
+                        pnlVolumeRatio: data.pnl_volume_ratio,
+                        pointsPnlVolumeRatio: data.points_pnl_volume_ratio,
+                        pointsDuration: data.points_duration,
+                        closeSizeMultiplier: data.close_size_multiplier,
+                        pointsMutations: data.points_mutations,
+                        totalPoints: data.total_points,
+                        entrySize: data.entry_size,
+                        increaseSize: data.increase_size,
+                        exitSize: data.exit_size,
+                        entryPrice: data.entry_price,
+                        exitPrice: data.exit_price,
+                        entryDate: new Date(data.entry_date),
+                        exitDate: data.exit_date ? new Date(data.exit_date) : null,
+                        pnl: data.pnl,
+                        fees: data.fees,
+                        borrowFees: data.borrow_fees,
+                        exitFees: data.exit_fees,
+                        createdAt: new Date(data.created_at),
+                        updatedAt: data.updated_at ? new Date(data.updated_at) : null,
+                        symbol: data.symbol,
+                        tokenAccountMint: data.token_account_mint,
+                        token,
+                        lastIx: data.last_ix,
+                        finalCollateralAmount: data.collateral_amount,
+                    } as EnrichedPositionApi;
+                })
+                .filter((data) => data !== null) as EnrichedPositionApi[];
+        } catch (e) {
+            console.error('Error fetching positions:', e);
+            return [];
+        }
     }
 }

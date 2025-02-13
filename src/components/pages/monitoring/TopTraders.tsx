@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -7,40 +8,40 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { Trader, UserProfileExtended } from '@/types';
+import { Trader, UserProfileExtended, UserProfileMetadata } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
 
 interface TopTradersProps {
     startDate: string;
     endDate: string;
-    allUserProfiles: UserProfileExtended[];
+    allUserProfilesMetadata: UserProfileMetadata[];
     setProfile: (profile: UserProfileExtended | null) => void;
 }
 
 type SortField = 'average_trade_time' | 'pnl_minus_fees' | 'volume' | 'fees' | 'volume_weighted_pnl_percentage' | 'win_rate_percentage' | 'pnl_volatility' | 'shortest_trade_time' | 'number_positions' | 'number_transactions';
 type SortDirection = 'asc' | 'desc';
 
-export default function TopTraders({ startDate, endDate, allUserProfiles, setProfile }: TopTradersProps) {
+export default function TopTraders({ startDate, endDate, allUserProfilesMetadata, setProfile }: TopTradersProps) {
     const [traders, setTraders] = useState<Trader[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [sortField, setSortField] = useState<SortField>('pnl_minus_fees');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const isExtraLargeScreen = useBetterMediaQuery('(min-width: 1500px)');
-    const isLargeScreen = useBetterMediaQuery('(min-width: 1024px)');
+    // const isLargeScreen = useBetterMediaQuery('(min-width: 1024px)');
 
     const numberTraders = 100;
 
     const userProfilesMap = useMemo(() => {
-        return allUserProfiles.reduce(
+        return allUserProfilesMetadata.reduce(
             (acc, profile) => {
                 acc[profile.owner.toBase58()] = profile.nickname;
                 return acc;
             },
             {} as Record<string, string>,
         );
-    }, [allUserProfiles]);
+    }, [allUserProfilesMetadata]);
 
     useEffect(() => {
         const fetchTraders = async () => {
@@ -68,11 +69,10 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
         fetchTraders();
     }, [startDate, endDate]);
 
-    const handleProfileView = (pubkey: string) => {
-        const profile = allUserProfiles.find((p) => p.owner.toBase58() === pubkey);
-        if (profile) {
-            setProfile(profile);
-        }
+    const handleProfileView = async (pubkey: string) => {
+        const p = await window.adrena.client.loadUserProfile(new PublicKey(pubkey));
+
+        setProfile(p !== false ? p : null);
     };
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -286,17 +286,17 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
                                             nb={trader.pnl_minus_fees}
                                             format="currency"
                                             className={twMerge('text-xs font-boldy', trader.pnl_minus_fees >= 0 ? 'text-green' : 'text-red')}
-                                            isAbbreviate={isLargeScreen ? true : false}
                                             precision={trader.pnl_minus_fees >= 50 ? 0 : 2}
                                             isDecimalDimmed={false}
                                             minimumFractionDigits={trader.pnl_minus_fees >= 50 ? 0 : 2}
+                                            isAbbreviate={trader.pnl_minus_fees > 1000 ? true : false}
                                         />
                                     </div>,
                                     <div className='flex items-center justify-end lg:justify-center grow' key={`volume-${i}`}>
                                         <FormatNumber
                                             nb={trader.volume}
                                             isDecimalDimmed={false}
-                                            isAbbreviate={isLargeScreen ? true : false}
+                                            isAbbreviate={trader.volume > 1000 ? true : false}
                                             className='text-xs'
                                             format="currency"
                                             isAbbreviateIcon={false}
@@ -330,7 +330,7 @@ export default function TopTraders({ startDate, endDate, allUserProfiles, setPro
                                                 <FormatNumber
                                                     nb={trader.fees}
                                                     isDecimalDimmed={false}
-                                                    isAbbreviate={trader.fees > 1000 && isLargeScreen ? true : false}
+                                                    isAbbreviate={trader.fees > 1000}
                                                     className='text-xs'
                                                     format="currency"
                                                 />

@@ -45,14 +45,8 @@ export async function getMeanPrioritizationFeeByPercentile(
   // NOTE:In case an user sets a custom RPC endpoint, we can't guarantee the fees will be available, we would use fallback fees in that case
 
   if (typeof recentMeanPrioritizationFees !== 'number') {
-    const fee = fallbackDefaultFee(config);
-
-    console.log('[Priority Fee] Falling back to default fee:', fee);
-
-    return fee;
+    return fallbackDefaultFee(config);
   }
-
-  console.log('[Priority Fee] Mean fee:', recentMeanPrioritizationFees);
 
   return recentMeanPrioritizationFees;
 }

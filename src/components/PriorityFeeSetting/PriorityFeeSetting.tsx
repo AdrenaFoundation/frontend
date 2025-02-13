@@ -1,5 +1,4 @@
-import { AnimatePresence } from 'framer-motion';
-import React, { useState } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { SOL_DECIMALS } from '@/constant';
@@ -19,20 +18,20 @@ export default function PriorityFeeSetting({
   setPriorityFeeOption,
   maxPriorityFee,
   setMaxPriorityFee,
+  setCloseMobileModal,
   isMobile = false,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
+  setCloseMobileModal?: (close: boolean) => void;
   isMobile?: boolean;
 }) {
   const priorityFeeAmounts = usePriorityFee();
 
   const currentPriorityFeeValue =
     priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const content = (
     <div className="flex flex-col mb-3">
@@ -181,23 +180,12 @@ export default function PriorityFeeSetting({
 
   if (isMobile) {
     return (
-      <AnimatePresence>
-        <Button
-          variant={'lightbg'}
-          leftIcon={prioFeeSettingsIcon}
-          className={'w-7 h-7 p-0'}
-          iconClassName="w-3 h-3 opacity-75 hover:opacity-100"
-          onClick={() => setIsModalOpen(true)}
-        />
-        {isModalOpen && (
-          <Modal
-            close={() => setIsModalOpen(false)}
-            className="flex flex-col w-full p-5 relative overflow-visible"
-          >
-            {content}
-          </Modal>
-        )}
-      </AnimatePresence>
+      <Modal
+        close={() => setCloseMobileModal?.(false)}
+        className="flex flex-col w-full p-5 relative overflow-visible"
+      >
+        {content}
+      </Modal>
     );
   }
 

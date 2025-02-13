@@ -13,8 +13,8 @@ import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import TopTraders from '@/components/pages/monitoring/TopTraders';
-import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended, UserProfileExtended } from '@/types';
 
@@ -43,7 +43,7 @@ export default function Flow({
   } = usePositionStats();
 
   const [selectedRange, setSelectedRange] = useState('All Time');
-  const { allUserProfiles } = useAllUserProfiles();
+  const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
 
   if (view !== 'flows') return <></>;
@@ -283,7 +283,7 @@ export default function Flow({
         <TopTraders
           startDate={startDate}
           endDate={endDate}
-          allUserProfiles={allUserProfiles}
+          allUserProfilesMetadata={allUserProfilesMetadata}
           setProfile={setProfile}
         />
 
@@ -299,11 +299,12 @@ export default function Flow({
       <AnimatePresence>
         {profile && (
           <Modal
-            className="h-[85vh] sm:h-[40em] overflow-y-auto max-h-[85vh] w-full"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
+            className="h-[80vh] w-full overflow-y-auto"
+            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]"
+            isWrapped={false}
             close={() => setProfile(null)}
           >
-            <ViewProfileModal profile={profile} showFeesInPnl={true} />
+            <ViewProfileModal profile={profile} showFeesInPnl={true} close={() => setProfile(null)} />
           </Modal>
         )}
       </AnimatePresence>

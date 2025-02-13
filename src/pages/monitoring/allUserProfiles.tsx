@@ -7,7 +7,7 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
-import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { UserProfileExtended } from '@/types';
 
@@ -60,20 +60,15 @@ export default function AllUserProfiles({
     const [paginatedProfiles, setPaginatedProfiles] = useState<
         UserProfileExtended[]
     >([]);
+    const [usernameFilter, setUsernameFilter] = useState('');
     const [ownerFilter, setOwnerFilter] = useState('');
     const [pnlFilter, setPnlFilter] = useState('all');
     const [initialRankedProfiles, setInitialRankedProfiles] = useState<
         UserProfileExtended[]
     >([]);
-    const [hideZeroTradeVolume, setHideZeroTradeVolume] = useState(true);
+    const [hideZeroTradeVolume, setHideZeroTradeVolume] = useState(false);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
-
-    // const resetFilters = () => {
-    //     setOwnerFilter('');
-    //     setPnlFilter('all');
-    //     setCurrentPage(1);
-    // };
 
     useEffect(() => {
         if (view !== 'userProfiles') return;
@@ -91,7 +86,10 @@ export default function AllUserProfiles({
                 (pnlFilter === 'loss' && profile.totalPnlUsd < 0);
             const tradeVolumeCondition =
                 !hideZeroTradeVolume || profile.totalTradeVolumeUsd > 0;
-            return ownerCondition && pnlCondition && tradeVolumeCondition;
+
+            const usernameCondition = usernameFilter === '' || profile.nickname.toLowerCase().includes(usernameFilter.toLowerCase());
+
+            return usernameCondition && ownerCondition && pnlCondition && tradeVolumeCondition;
         });
 
         const sortedByPnl = [...filteredProfiles].sort(
@@ -128,6 +126,7 @@ export default function AllUserProfiles({
         pnlFilter,
         hideZeroTradeVolume,
         ownerFilter,
+        usernameFilter,
         view,
     ]);
 
@@ -159,11 +158,15 @@ export default function AllUserProfiles({
                 <StyledContainer className="p-0">
                     <div className="flex flex-col md:flex-row md:gap-3">
                         <FilterSidebar
-                            search={{
+                            searches={[{
                                 value: ownerFilter,
                                 placeholder: 'Filter by owner (pubkey)',
                                 handleChange: setOwnerFilter,
-                            }}
+                            }, {
+                                value: usernameFilter,
+                                placeholder: 'Filter by username',
+                                handleChange: setUsernameFilter,
+                            }]}
                             filterOptions={[
                                 {
                                     type: 'radio',
@@ -230,17 +233,20 @@ export default function AllUserProfiles({
                     </div>
                 </StyledContainer>
             </div>
+
             <AnimatePresence>
                 {activeProfile && (
                     <Modal
-                        className="h-[80vh] overflow-y-scroll w-full"
-                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0"
+                        className="h-[80vh] w-full overflow-y-auto"
+                        wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]"
                         title=""
                         close={() => setActiveProfile(null)}
+                        isWrapped={false}
                     >
                         <ViewProfileModal
                             profile={activeProfile}
                             showFeesInPnl={showFeesInPnl}
+                            close={() => setActiveProfile(null)}
                         />
                     </Modal>
                 )}

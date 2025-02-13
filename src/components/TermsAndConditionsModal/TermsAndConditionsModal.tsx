@@ -62,7 +62,7 @@ export default function TermsAndConditionsModal({
         <div className="flex mt-4 items-center justify-center w-full">
           <Checkbox
             checked={acceptedTermsAndConditions}
-            className="h-6 w-6 shrink-0 rounded"
+            className="h-6 w-6 shrink-0 rounded border-white"
             onChange={(checked: boolean): void => {
               setAcceptedTermsAndConditions(checked);
             }}
@@ -76,7 +76,7 @@ export default function TermsAndConditionsModal({
               target="_blank"
               className="ml-1 underline flex gap-1 items-center"
             >
-              Terms of Service
+              Terms of Service*
 
               <Image
                 src={externalLinkLogo}
@@ -92,7 +92,7 @@ export default function TermsAndConditionsModal({
         <div className="flex mt-4 items-center justify-center w-full">
           <Checkbox
             checked={acceptedTokenTermsAndConditions}
-            className="h-6 w-6 shrink-0 rounded"
+            className="h-6 w-6 shrink-0 rounded border-white"
             onChange={(checked: boolean): void => {
               setAcceptedTokenTermsAndConditions(checked);
             }}
@@ -106,7 +106,7 @@ export default function TermsAndConditionsModal({
               target="_blank"
               className="ml-1 underline flex gap-1 items-center"
             >
-              Token Terms and Conditions
+              Token Terms and Conditions*
 
               <Image
                 src={externalLinkLogo}
@@ -120,6 +120,7 @@ export default function TermsAndConditionsModal({
         </div>
       </div>
 
+      <p className='text-xxs opacity-50 text-center'>*Please check the boxes to agree to the terms and conditions before continuing.</p>
       <div className="flex w-full flex-row gap-3 mt-6 border-t border-grey max-w-full flex-wrap">
         {readonly ? (
           <>

@@ -11,8 +11,7 @@ export default function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={twMerge(
-        'flex flex-col w-full border-t border-bcolor justify-center items-center bg-main h-14 shrink-0 max-h-14 min-h-14',
-        window.location.pathname === '/trade' && 'hidden sm:flex',
+        'hidden sm:flex flex-col w-full border-t border-bcolor justify-center items-center bg-main h-14 shrink-0 max-h-14 min-h-14 z-10',
         className,
       )}
     >

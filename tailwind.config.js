@@ -22,11 +22,11 @@ module.exports = {
         orange: '#f77f00',
         blue: '#3a86ff',
         purpleColor: '#9333ea',
-
         greenSide: '#64f58d',
         redSide: '#f56464',
         grayLabel: '#7e7d85',
         whiteLabel: '#e3e6ea',
+        mutagen: '#e47dbb',
       },
       fontSize: {
         xxs: '0.6rem', // Extra Extra Small
@@ -57,14 +57,18 @@ module.exports = {
       regular: ['regular', 'sans-serif'],
       boldy: ['boldy', 'sans-serif'],
       special: ['special', 'sans-serif'],
-      archivo: ['Archivo Black', 'sans-serif'],
+      archivo: ['Archivo Regular', 'sans-serif'],
+      archivoblack: ['Archivo Black', 'sans-serif'],
+      cursive: ['cursive', 'sans-serif'],
     },
     fontFamily: {
       regular: ['regular'],
       special: ['special'],
       boldy: ['boldy'],
       mono: 'Roboto Mono',
-      archivo: 'Archivo Black',
+      archivo: 'Archivo Regular',
+      archivoblack: 'Archivo Black',
+      cursive: 'cursive',
     },
   },
   plugins: [],

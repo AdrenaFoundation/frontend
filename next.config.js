@@ -11,6 +11,11 @@ module.exports = (phase, { defaultConfig }) => {
           destination: '/trade',
           permanent: true,
         },
+        {
+          source: '/my_dashboard',
+          destination: '/profile',
+          permanent: true,
+        },
       ];
     },
 
@@ -31,6 +36,8 @@ module.exports = (phase, { defaultConfig }) => {
       KV_REST_API_READ_ONLY_TOKEN: process.env.KV_REST_API_READ_ONLY_TOKEN,
       KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,
       KV_REST_API_URL: process.env.KV_REST_API_URL,
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     },
   };
 };

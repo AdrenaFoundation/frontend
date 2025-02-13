@@ -8,13 +8,14 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
+import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
 import { SOLANA_EXPLORERS_OPTIONS } from '@/constant';
@@ -24,12 +25,13 @@ import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWalletAdapters from '@/hooks/useWalletAdapters';
+import useWatchBorrowRates from '@/hooks/useWatchBorrowRates';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import initializeApp, {
   createReadOnlyAdrenaProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { PriorityFeeOption, SolanaExplorerOptions } from '@/types';
+import { PriorityFeeOption, SolanaExplorerOptions, VestExtended } from '@/types';
 import {
   DEFAULT_MAX_PRIORITY_FEE,
   DEFAULT_PRIORITY_FEE_OPTION,
@@ -182,6 +184,7 @@ function AppComponent({
   const { userProfile, triggerUserProfileReload } = useUserProfile(walletAddress ?? null);
 
   useWatchTokenPrices();
+  useWatchBorrowRates();
 
   // Fetch token balances for the connected wallet:
   // on initial mount of the app & on account change.
@@ -207,9 +210,33 @@ function AppComponent({
 
   const [showFeesInPnl, setShowFeesInPnl] = useState<boolean>(true);
 
+  const [userVest, setUserVest] = useState<VestExtended | null | false>(null);
+  const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null | false>(null);
+
+  const getUserVesting = useCallback(async () => {
+    try {
+      if (!wallet?.publicKey) return;
+
+      const [delegatedVest, vest] = await Promise.all([
+        window.adrena.client.loadUserDelegatedVest(wallet.publicKey),
+        window.adrena.client.loadUserVest(wallet.publicKey),
+      ]);
+
+      setUserVest(vest);
+      setUserDelegatedVest(delegatedVest);
+    } catch (error) {
+      console.log('failed to load vesting', error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!wallet]);
+
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
+
+  useEffect(() => {
+    getUserVesting();
+  }, [getUserVesting]);
 
   useEffect(() => {
     const acceptanceDate = cookies['terms-and-conditions-acceptance'];
@@ -292,6 +319,17 @@ function AppComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRpc.name]);
 
+  const [isUserProfileMigrationV1Tov2Open, setIsUserProfileMigrationV1ToV2Open] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (userProfile && userProfile.version < 2 && !isTermsAndConditionModalOpen) {
+      setIsUserProfileMigrationV1ToV2Open(true);
+    } else {
+      setIsUserProfileMigrationV1ToV2Open(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTermsAndConditionModalOpen, !!userProfile]);
+
   return (
     <>
       <Head>
@@ -299,6 +337,9 @@ function AppComponent({
       </Head>
 
       <RootLayout
+        wallet={wallet}
+        userVest={userVest}
+        userDelegatedVest={userDelegatedVest}
         priorityFeeOption={priorityFeeOption}
         setPriorityFeeOption={(p: PriorityFeeOption) => {
           setCookie('priority-fee', p, {
@@ -356,10 +397,22 @@ function AppComponent({
           />
         }
 
+        {
+          // Handle user profile creation
+          isUserProfileMigrationV1Tov2Open && userProfile ? (
+            <MigrateUserProfileV1Tov2Modal userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} walletPubkey={wallet?.publicKey} close={() => {
+              setIsUserProfileMigrationV1ToV2Open(false);
+            }} />
+          ) : null
+        }
+
         <Component
           {...pageProps}
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
+          userVest={userVest}
+          userDelegatedVest={userDelegatedVest}
+          triggerUserVestReload={getUserVesting}
           mainPool={mainPool}
           custodies={custodies}
           wallet={wallet}
