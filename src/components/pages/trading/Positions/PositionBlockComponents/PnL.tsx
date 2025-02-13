@@ -1,15 +1,15 @@
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PositionExtended } from '@/types';
+import { PositionExtended, PositionHistoryExtended } from '@/types';
 
 interface PnLProps {
-    position: PositionExtended;
+    position: PositionExtended | PositionHistoryExtended;
     showAfterFees: boolean;
     setShowAfterFees: (show: boolean) => void;
 }
 
 export const PnL = ({ position, showAfterFees, setShowAfterFees }: PnLProps) => {
-    const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
+    const fees = -(('exitFees' in position ? position.exitFees : position.exitFeeUsd) + ('borrowFees' in position ? position.borrowFees : position.borrowFeeUsd ?? 0));
 
     return (
         <div className="flex flex-col items-center">
@@ -37,7 +37,7 @@ export const PnL = ({ position, showAfterFees, setShowAfterFees }: PnLProps) => 
                         isDecimalDimmed={false}
                     />
                     <FormatNumber
-                        nb={((showAfterFees ? position.pnl : position.pnl - fees) / position.collateralUsd) * 100}
+                        nb={((showAfterFees ? position.pnl : position.pnl - fees) / ('entryCollateralAmount' in position ? position.entryCollateralAmount : position.collateralUsd)) * 100}
                         format="percentage"
                         prefix="("
                         suffix=")"

@@ -860,6 +860,16 @@ export function formatDate(date: string | number | Date) {
   return `${month} ${day},${hour}:${minute}${ampm}`;
 }
 
+export function formatDate2Digits(date: string | number | Date) {
+  const d = new Date(date);
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  const day = d.getDate();
+  const hour = d.getHours().toString().padStart(2, '0');
+  const minute = d.getMinutes().toString().padStart(2, '0');
+
+  return `${month} ${day},${hour}:${minute}`;
+}
+
 // Utility for encoding object to Base64 URL-safe
 export const encodeBase64Url = (params: {
   [key: string]: string | number | boolean;

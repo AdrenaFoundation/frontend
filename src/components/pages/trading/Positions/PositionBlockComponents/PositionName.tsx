@@ -2,17 +2,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PositionExtended } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { PositionExtended, PositionHistoryExtended } from '@/types';
+import { formatDate2Digits, getTokenImage, getTokenSymbol } from '@/utils';
 
 import OnchainAccountInfo from '../../../monitoring/OnchainAccountInfo';
 
 interface PositionNameProps {
-    position: PositionExtended;
+    position: PositionExtended | PositionHistoryExtended;
+    isHistory?: boolean;
     readOnly: boolean;
 }
 
-export const PositionName = ({ position, readOnly }: PositionNameProps) => (
+export const PositionName = ({ position, readOnly, isHistory }: PositionNameProps) => (
     <div className="justify-start items-center gap-2.5 flex">
         <Image
             className="w-8 h-8 rounded-full"
@@ -53,18 +54,28 @@ export const PositionName = ({ position, readOnly }: PositionNameProps) => (
 
                 <div className="text-center text-whiteLabel text-sm font-extrabold font-mono">
                     <FormatNumber
-                        nb={position.initialLeverage}
+                        nb={
+                            'initialLeverage' in position
+                                ? position.initialLeverage
+                                : position.entryLeverage
+                        }
                         format="number"
                         precision={0}
                         isDecimalDimmed={false}
                     />x
                 </div>
-                <OnchainAccountInfo
-                    address={position.pubkey}
-                    shorten={true}
-                    className="text-xs font-mono mt-1"
-                    iconClassName="w-2 h-2"
-                />
+                {isHistory ? (
+                    <div className="mt-1 text-xxs opacity-50">
+                        {formatDate2Digits('entryDate' in position ? position.entryDate : '-')}
+                    </div>
+                ) : (
+                    <OnchainAccountInfo
+                        address={position.pubkey}
+                        shorten={true}
+                        className="text-xs font-mono mt-1"
+                        iconClassName="w-2 h-2"
+                    />
+                )}
             </div>
         </div>
     </div>

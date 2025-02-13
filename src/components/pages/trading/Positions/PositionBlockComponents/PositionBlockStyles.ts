@@ -13,6 +13,7 @@ export const POSITION_BLOCK_STYLES = {
     orange: 'text-orange text-xs font-medium font-mono',
     purple: 'text-purpleColor text-xs font-medium font-mono',
     blue: 'text-blue text-xs font-medium font-mono',
+    red: 'text-redbright text-xs font-medium font-mono',
   },
   column: {
     base: 'flex flex-col',

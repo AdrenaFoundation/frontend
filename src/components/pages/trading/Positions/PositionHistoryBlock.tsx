@@ -2,7 +2,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { memo, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
@@ -17,6 +17,11 @@ import { formatDate, formatTimeDifference, getFullTimeDifference, getTokenImage,
 
 import FeesPaidTooltip from './FeesPaidTooltip';
 import SharePositionModal from './SharePositionModal';
+import { ValueColumn } from './PositionBlockComponents/ValueColumn';
+import { POSITION_BLOCK_STYLES } from './PositionBlockComponents/PositionBlockStyles';
+import { PositionHeader } from './PositionBlockComponents/PositionHeader';
+import { PositionName } from './PositionBlockComponents/PositionName';
+import { PnL } from './PositionBlockComponents/PnL';
 
 interface LeverageDisplayProps {
   leverage: number;
@@ -87,195 +92,186 @@ const PositionHistoryBlock = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl);
 
-  const symbol = getTokenSymbol(positionHistory.token.symbol);
-  const img = getTokenImage(positionHistory.token);
+  const blockRef = useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = useState(false);
+  const [isMini, setIsMini] = useState(false);
+  const [isMedium, setIsMedium] = useState(false);
+  const [isBig, setIsBig] = useState(false);
+  const [isBiggest, setIsBiggest] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (blockRef.current) {
+        const width = blockRef.current.offsetWidth;
+
+        // Adjusted breakpoints to avoid edge cases
+        setIsBig(width >= 699 && width < 1200);
+        setIsCompact(width < 699 && width > 482);
+        setIsMedium(width <= 482 && width > 370);
+        setIsMini(width <= 370);
+        setIsBiggest(width >= 1200);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const pnlValue = showAfterFees
     ? positionHistory.pnl
     : positionHistory.pnl + positionHistory.fees;
 
-  const totalFees = positionHistory.exit_fees + positionHistory.borrow_fees;
+  const totalFees = positionHistory.exitFees + positionHistory.borrowFees;
 
-  const positionName = (
-    <div className="flex items-center justify-center h-full">
-      <Image
-        className="w-[2em] h-[2em] mr-2"
-        src={img}
-        width={200}
-        height={200}
-        alt={`${symbol} logo`}
-      />
-      <div className="flex flex-col">
-        <div className="flex items-center justify-center">
-          {window.location.pathname !== '/trade' ? (
-            <Link href={`/trade?pair=USDC_${symbol}&action=${positionHistory.side}`} target="">
-              <div className="uppercase underline font-boldy text-sm lg:text-xl">
-                {symbol}
-              </div>
-            </Link>
-          ) : (
-            <div className="uppercase font-boldy text-sm lg:text-lg">
-              {symbol}
-            </div>
-          )}
-          <div className={`uppercase font-boldy text-sm lg:text-lg ml-1 ${positionHistory.side === 'long' ? 'text-green' : 'text-red'}`}>
-            {positionHistory.side}
-          </div>
-          <LeverageDisplay
-            leverage={positionHistory.entry_leverage}
-            positionSize={positionHistory.entry_collateral_amount * positionHistory.entry_leverage}
-            entryCollateral={positionHistory.entry_collateral_amount}
-            finalCollateral={positionHistory.final_collateral_amount}
-          />
-        </div>
-        <p className="text-xxs opacity-50">{formatDate(positionHistory.entry_date)}</p>
-      </div>
-    </div>
+  const columnClasses = twMerge(
+    POSITION_BLOCK_STYLES.column.base,
+    POSITION_BLOCK_STYLES.column.sizes.big
   );
 
-  const pnl = (
-    <div className="flex flex-col items-center min-w-[10em] w-[10em]">
-      <div className="flex flex-row gap-2 w-full font-mono text-xxs text-txtfade justify-center items-center">
-        PnL
-        <label className="flex items-center cursor-pointer">
-          <Switch
-            className="mr-0.5"
-            checked={showAfterFees}
-            onChange={() => setShowAfterFees(!showAfterFees)}
-            size="small"
-          />
-          <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-            {showAfterFees ? 'w/ fees' : 'w/o fees'}
-          </span>
-        </label>
-      </div>
-      <div className="flex items-center">
-        <FormatNumber
-          nb={pnlValue}
-          format="currency"
-          className={`mr-0.5 font-bold text-${pnlValue > 0 ? 'green' : 'redbright'}`}
-          isDecimalDimmed={false}
-        />
-        <FormatNumber
-          nb={(pnlValue / positionHistory.entry_collateral_amount) * 100}
-          format="percentage"
-          prefix="("
-          suffix=")"
-          suffixClassName={`ml-0 text-${pnlValue > 0 ? 'green' : 'redbright'}`}
-          precision={2}
-          isDecimalDimmed={false}
-          className={`text-xs text-${pnlValue > 0 ? 'green' : 'redbright'}`}
-        />
-      </div>
-    </div>
-  );
-
-  const InfoBlock = ({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) => (
-    <div className={`flex flex-col items-center min-w-[5em] w-[5em] ${className}`}>
-      <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center mb-1">
-        {label}
-      </div>
-      {children}
-    </div>
+  const contentClasses = twMerge(
+    POSITION_BLOCK_STYLES.base.content,
+    isMini && "gap-2 flex flex-wrap",
+    isMedium && "gap-2 flex flex-wrap",
+    isCompact && "gap-2 flex flex-wrap",
+    isBig && "gap-2 flex flex-wrap",
+    isBiggest && "flex flex-wrap justify-start"
   );
 
   return (
     <>
       <div className={twMerge(
-        'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary overflow-hidden',
+        POSITION_BLOCK_STYLES.base.container,
+        'p-[1.1em]',
         bodyClassName,
-        borderColor,
-      )}>
+        borderColor
+      )} ref={blockRef}>
+        <PositionHeader
+          isHistory={true}
+          isMini={isMini}
+          isMedium={isMedium}
+          readOnly={true}
+          positionName={<PositionName position={positionHistory} readOnly={true} isHistory={true} />}
+          pnl={
+            <PnL
+              position={positionHistory}
+              showAfterFees={showAfterFees}
+              setShowAfterFees={setShowAfterFees}
+            />
+          }
+        />
 
-        <div className="flex border-b p-3 items-center w-full relative">
-          <div className="flex items-center">{positionName}</div>
-          <div className="ml-auto lg:absolute lg:left-1/2 lg:-translate-x-1/2">{pnl}</div>
-        </div>
-
-
-        <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
-          <InfoBlock label="Time Opened">
-            <div className="text-xs text-gray-400">
-              {formatTimeDifference(
+        <div className={contentClasses}>
+          <div className={twMerge(
+            "flex flex-wrap flex-1 justify-between gap-2",
+            isMini && "grid grid-cols-2 gap-2 justify-items-center",
+            isMedium && "grid grid-cols-3 gap-2 justify-items-center",
+            isCompact && "grid grid-cols-3 gap-2 justify-items-center",
+            isBig && "justify-between gap-2",
+            isBiggest && "justify-between gap-2"
+          )}>
+            <ValueColumn
+              label="Time Opened"
+              value={formatTimeDifference(
                 getFullTimeDifference(
-                  positionHistory.entry_date,
-                  positionHistory.exit_date ?? new Date()
+                  positionHistory.entryDate,
+                  positionHistory.exitDate ?? new Date()
                 )
               )}
-            </div>
-          </InfoBlock>
-
-          <InfoBlock label="Entry Price">
-            <FormatNumber
-              nb={positionHistory.entry_price}
-              format="currency"
-              className="text-xs"
-              isDecimalDimmed={false}
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
+              columnClasses={columnClasses}
             />
-          </InfoBlock>
 
-          <InfoBlock label="Exit Price">
-            <FormatNumber
-              nb={positionHistory.exit_price}
-              format="currency"
-              className="text-xs"
-              isDecimalDimmed={false}
-            />
-          </InfoBlock>
-
-          <InfoBlock label="Status">
-            <div className="flex items-center gap-1">
-              {positionHistory.status === 'liquidate' ? (
-                <span className="text-orange text-xs">Liquidated</span>
-              ) : (
-                <span className="text-blue text-xs">Closed</span>
-              )}
-              <Link href={getTxExplorer(positionHistory.last_tx)} target="_blank">
-                <Image src={externalLinkLogo} alt="View transaction" width={12} height={12} />
-              </Link>
-            </div>
-          </InfoBlock>
-
-          <InfoBlock label="Fees Paid">
-            <FeesPaidTooltip
-              entryFees={0}
-              exitFees={positionHistory.exit_fees}
-              borrowFees={positionHistory.borrow_fees}
-            >
-              <div className="flex items-center border-b border-dotted border-gray-400">
+            <ValueColumn
+              label="Entry Price"
+              value={
                 <FormatNumber
-                  nb={totalFees}
+                  nb={positionHistory.entryPrice}
                   format="currency"
-                  className="text-xs text-redbright"
                   isDecimalDimmed={false}
+                  className={POSITION_BLOCK_STYLES.text.white}
                 />
-              </div>
-            </FeesPaidTooltip>
-          </InfoBlock>
+              }
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
+              columnClasses={columnClasses}
+            />
 
-          {showShareButton && (
-            <>
-              <Button
-                leftIcon={shareIcon}
-                variant='secondary'
-                className='hidden lg:block opacity-50 hover:opacity-100'
-                onClick={() => {
-                  setIsOpen(true);
-                }}
-              />
-              <div className="lg:hidden flex flex-col justify-center items-center w-full border-t">
+            <ValueColumn
+              label="Exit Price"
+              value={
+                <FormatNumber
+                  nb={positionHistory.exitPrice}
+                  format="currency"
+                  isDecimalDimmed={false}
+                  className={POSITION_BLOCK_STYLES.text.white}
+                />
+              }
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
+              columnClasses={columnClasses}
+            />
+
+            <ValueColumn
+              label="Status"
+              value={
+                <div className="flex items-center gap-1">
+                  <span className={positionHistory.status === 'liquidate'
+                    ? POSITION_BLOCK_STYLES.text.orange
+                    : POSITION_BLOCK_STYLES.text.blue
+                  }>
+                    {positionHistory.status === 'liquidate' ? 'Liquidated' : 'Closed'}
+                  </span>
+                  <Link href={getTxExplorer(positionHistory.lastTx)} target="_blank">
+                    <Image src={externalLinkLogo} alt="View transaction" width={12} height={12} />
+                  </Link>
+                </div>
+              }
+              columnClasses={columnClasses}
+            />
+
+            <ValueColumn
+              label="Fees Paid"
+              value={
+                <FeesPaidTooltip
+                  entryFees={0}
+                  exitFees={positionHistory.exitFees}
+                  borrowFees={positionHistory.borrowFees}
+                >
+                  <FormatNumber
+                    nb={totalFees}
+                    format="currency"
+                    className={POSITION_BLOCK_STYLES.text.red}
+                    isDecimalDimmed={false}
+                  />
+                </FeesPaidTooltip>
+              }
+              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.red, "underline-dashed")}
+              columnClasses={columnClasses}
+            />
+
+            {showShareButton && (
+              <>
                 <Button
-                  size="xs"
-                  className="text-txtfade border-bcolor border-t border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
                   leftIcon={shareIcon}
-                  rounded={false}
+                  variant='secondary'
+                  className={twMerge(POSITION_BLOCK_STYLES.button.base, "hidden lg:block")}
                   onClick={() => {
                     setIsOpen(true);
                   }}
                 />
-              </div>
-            </>
-          )}
+                <div className="lg:hidden flex flex-col justify-center items-center w-full">
+                  <Button
+                    size="xs"
+                    className={twMerge(POSITION_BLOCK_STYLES.button.base, 'w-[5em]')}
+                    leftIcon={shareIcon}
+                    rounded={false}
+                    onClick={() => {
+                      setIsOpen(true);
+                    }}
+                  />
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -295,15 +291,15 @@ const PositionHistoryBlock = ({
                 pnl: pnlValue,
                 token: positionHistory.token,
                 side: positionHistory.side,
-                price: positionHistory.entry_price,
+                price: positionHistory.entryPrice,
                 fees: -totalFees,
-                exitFeeUsd: positionHistory.exit_fees,
-                borrowFeeUsd: positionHistory.borrow_fees,
-                collateralUsd: positionHistory.entry_collateral_amount,
-                sizeUsd: positionHistory.entry_collateral_amount * positionHistory.entry_leverage,
-                exitPrice: positionHistory.exit_price,
+                exitFeeUsd: positionHistory.exitFees,
+                borrowFeeUsd: positionHistory.borrowFees,
+                collateralUsd: positionHistory.entryCollateralAmount,
+                sizeUsd: positionHistory.entryCollateralAmount * positionHistory.entryLeverage,
+                exitPrice: positionHistory.exitPrice,
                 nativeObject: {
-                  openTime: new Date(positionHistory.entry_date).getTime() / 1000,
+                  openTime: new Date(positionHistory.entryDate).getTime() / 1000,
                 }
               } as unknown as PositionExtended}
             />

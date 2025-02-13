@@ -7,7 +7,8 @@ interface PositionHeaderProps {
     positionName: React.ReactNode;
     ownerInfo?: React.ReactNode;
     pnl: React.ReactNode;
-    netValue: React.ReactNode;
+    netValue?: React.ReactNode;
+    isHistory?: boolean;
     isMini?: boolean;
     isMedium?: boolean;
     isCompact?: boolean;
@@ -19,16 +20,17 @@ export const PositionHeader = ({
     ownerInfo,
     pnl,
     netValue,
+    isHistory,
     isMini,
     isMedium,
-    isCompact
+    isCompact,
 }: PositionHeaderProps) => {
     const isSmallScreen = isMini || isMedium || isCompact;
 
     if (isSmallScreen) {
         return (
             <div className="flex flex-col w-full items-center">
-                {readOnly ? (
+                {readOnly && !history ? (
                     <div className="border-b flex-1 flex w-full justify-between pb-3">
                         {positionName}
                         {ownerInfo}
@@ -38,14 +40,22 @@ export const PositionHeader = ({
                         {positionName}
                     </div>
                 )}
-                <div className="border-b flex-1 flex w-full p-2">
-                    <div className="flex flex-col">
-                        {pnl}
+                {!isHistory ? (
+                    <div className="border-b flex-1 flex w-full p-2">
+                        <div className="flex flex-col">
+                            {pnl}
+                        </div>
+                        <div className="flex flex-col ml-auto">
+                            {netValue}
+                        </div>
                     </div>
-                    <div className="flex flex-col ml-auto">
-                        {netValue}
+                ) : (
+                    <div className="border-b flex-1 flex w-full p-2 justify-center">
+                        <div className="flex flex-col">
+                            {pnl}
+                        </div>
                     </div>
-                </div>
+                )}
             </div >
         );
     }
@@ -55,7 +65,7 @@ export const PositionHeader = ({
         readOnly ? "justify-between" : "items-center"
     );
 
-    if (readOnly) {
+    if (readOnly && !isHistory) {
         return (
             <div className={headerClasses}>
                 {positionName}

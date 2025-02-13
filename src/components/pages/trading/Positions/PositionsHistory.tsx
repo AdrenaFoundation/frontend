@@ -103,7 +103,7 @@ function PositionsHistory({
                   <div className="flex flex-col gap-3 grow">
                     {paginatedPositions.map((positionHistory) => (
                       <PositionHistoryBlock
-                        key={positionHistory.position_id}
+                        key={positionHistory.positionId}
                         positionHistory={positionHistory}
                         showShareButton={showShareButton}
                         showFeesInPnl={showFeesInPnl}
