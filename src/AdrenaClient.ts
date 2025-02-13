@@ -11,6 +11,7 @@ import {
 import { IdlEventField } from '@coral-xyz/anchor/dist/cjs/idl';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createAssociatedTokenAccountInstruction,
   TOKEN_PROGRAM_ID,
@@ -54,6 +55,7 @@ import {
   ExitPriceAndFee,
   GenesisLock,
   ImageRef,
+  LimitOrderBookExtended,
   LockedStakeExtended,
   NewPositionPricesAndFee,
   OpenPositionWithSwapAmountAndFees,
@@ -243,6 +245,32 @@ export class AdrenaClient {
     )[0];
   };
 
+  public getLimitOrderBookPda = (wallet: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('limit_order_book'),
+        wallet.toBuffer(),
+        this.mainPool.pubkey.toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getCollateralEscrowPda = (
+    wallet: PublicKey,
+    collateralMint: PublicKey,
+  ) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('escrow_account'),
+        wallet.toBuffer(),
+        this.mainPool.pubkey.toBuffer(),
+        collateralMint.toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
   public getStakingStakedTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
       [Buffer.from('staking_staked_token_vault'), stakingPda.toBuffer()],
@@ -391,7 +419,79 @@ export class AdrenaClient {
     ).account.vestRegistry.fetch(AdrenaClient.vestRegistryPda);
   }
 
-  protected decodeUserProfileAnyVersion(accountInfo: AccountInfo<Buffer>): false | UserProfile | UserProfileV1 {
+  public async loadLimitOrderBook({
+    wallet,
+  }: {
+    wallet: PublicKey;
+  }): Promise<LimitOrderBookExtended | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    const limitOrderBook = await (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.limitOrderBook.fetchNullable(this.getLimitOrderBookPda(wallet));
+
+    if (!limitOrderBook) return null;
+
+    const collateralToken = this.tokens.find((t) =>
+      t.mint.equals(limitOrderBook.limitOrders[0].collateralCustody),
+    );
+
+    if (!collateralToken) return null;
+
+    const limitOrderBookExtended: LimitOrderBookExtended = {
+      initialized: limitOrderBook.initialized,
+      registeredLimitOrderCount: limitOrderBook.registeredLimitOrderCount,
+      owner: limitOrderBook.owner,
+      limitOrders: limitOrderBook.limitOrders.map((order) => ({
+        id: order.id.toNumber(),
+        triggerPrice: nativeToUi(order.triggerPrice, PRICE_DECIMALS),
+        limitPrice: order.limitPrice
+          ? nativeToUi(order.limitPrice, PRICE_DECIMALS)
+          : null,
+        custody: order.custody,
+        collateralCustody: order.collateralCustody,
+        side: order.side === 1 ? 'long' : 'short',
+        initialized: order.initialized,
+        amount: nativeToUi(order.amount, collateralToken.decimals),
+        leverage: order.leverage / BPS,
+      })),
+      escrowedLamports: nativeToUi(limitOrderBook.escrowedLamports, 9), // SOL has 9 decimals
+      pubkey: this.getLimitOrderBookPda(wallet),
+    };
+
+    return limitOrderBookExtended;
+  }
+
+  // Provide alternative user if you wanna get the profile of a specific user
+  // null = not ready
+  // false = profile not initialized
+  public async loadUserProfile(
+    user: PublicKey,
+  ): Promise<UserProfileExtended | null | false> {
+    if (!this.readonlyAdrenaProgram) return null;
+
+    const userProfilePda = this.getUserProfilePda(user);
+
+    // Fetch raw account data
+    const accountInfo = await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(userProfilePda, 'processed');
+
+    // If no data, profile doesn't exist
+    if (!accountInfo || !accountInfo.data) {
+      return false;
+    }
+
+    const p = this.decodeUserProfileAnyVersion(
+        accountInfo,
+      );
+
+    if (p === false) {
+      return false;
+    }
+
+    return this.extendUserProfileInfo(p, userProfilePda);
+  }
+  
+ protected decodeUserProfileAnyVersion(accountInfo: AccountInfo<Buffer>): false | UserProfile | UserProfileV1 {
       try {
         // Try parsing as V2 first
         const p = this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode('userProfile', accountInfo.data);
@@ -3348,6 +3448,122 @@ export class AdrenaClient {
     const genesisLockPda = this.getGenesisLockPda();
 
     return this.readonlyAdrenaProgram.account.genesisLock.fetch(genesisLockPda);
+  }
+
+  public async cancelLimitOrder({
+    id,
+    notification,
+    collateralMint,
+  }: {
+    id: number;
+    notification?: MultiStepNotification;
+    collateralMint: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+    const receivingAccount = findATAAddressSync(owner, collateralMint);
+    const transferAuthority = AdrenaClient.transferAuthorityAddress;
+    const cortex = AdrenaClient.cortexPda;
+    const pool = this.mainPool.pubkey;
+    const collateralCustody = this.getCustodyByMint(collateralMint);
+
+    const limitOrderBook = this.getLimitOrderBookPda(owner);
+    const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
+
+    const transaction = await this.adrenaProgram.methods
+      .cancelLimitOrder({
+        id: new BN(id),
+      })
+      .accountsStrict({
+        owner,
+        receivingAccount,
+        transferAuthority,
+        cortex,
+        pool,
+        limitOrderBook,
+        collateralEscrow,
+        collateralCustodyMint: collateralCustody.mint,
+        collateralCustody: collateralCustody.pubkey,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+  }
+
+  public async addLimitOrder({
+    triggerPrice,
+    limitPrice,
+    side,
+    collateralAmount,
+    leverage,
+    notification,
+    mint,
+    collateralMint,
+  }: {
+    triggerPrice: number;
+    limitPrice: number;
+    side: 'long' | 'short';
+    collateralAmount: BN;
+    leverage: number;
+    notification?: MultiStepNotification;
+    mint: PublicKey;
+    collateralMint: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+    const fundingAccount = findATAAddressSync(owner, collateralMint);
+    const transferAuthority = AdrenaClient.transferAuthorityAddress;
+    const cortex = AdrenaClient.cortexPda;
+    const pool = this.mainPool.pubkey;
+    const custody = this.getCustodyByMint(mint);
+    const collateralCustody = this.getCustodyByMint(collateralMint);
+
+    const limitOrderBook = this.getLimitOrderBookPda(owner);
+    const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
+
+    const transaction = await this.adrenaProgram.methods
+      .addLimitOrder({
+        triggerPrice: uiToNative(triggerPrice, PRICE_DECIMALS),
+        limitPrice: uiToNative(limitPrice, PRICE_DECIMALS),
+        side: side === 'long' ? 1 : 2,
+        amount: collateralAmount,
+        leverage,
+      })
+      .accountsStrict({
+        owner,
+        fundingAccount,
+        transferAuthority,
+        cortex,
+        pool,
+        limitOrderBook,
+        collateralEscrow,
+        collateralCustodyMint: collateralCustody.mint,
+        custody: custody.pubkey,
+        collateralCustody: collateralCustody.pubkey,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
   }
 
   public async addGenesisLiquidity({
