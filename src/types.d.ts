@@ -408,32 +408,32 @@ export type AdxLockPeriod = 0 | 90 | 180 | 360 | 540;
 export type AlpLockPeriod = 0 | 90 | 180 | 360 | 540;
 
 export type PositionHistoryExtended = {
-  position_id: number;
-  user_id: number;
-  custody_id: number;
+  positionId: number;
+  userId: number;
+  custodyId: number;
   side: 'long' | 'short';
   status: 'open' | 'close' | 'liquidate';
   pubkey: PublicKey;
-  entry_price: number | null;
-  exit_price: number | null;
+  entryPrice: number | null;
+  exitPrice: number | null;
   pnl: number;
-  entry_leverage: number;
-  entry_collateral_amount: number;
+  entryLeverage: number;
+  entryCollateralAmount: number;
   size: number;
-  exit_size: number;
-  entry_date: Date;
-  exit_date: Date | null;
+  exitSize: number;
+  entryDate: Date;
+  exitDate: Date | null;
   fees: number;
-  borrow_fees: number;
-  exit_fees: number;
-  created_at: Date;
-  updated_at: Date | null;
+  borrowFees: number;
+  exitFees: number;
+  createdAt: Date;
+  updatedAt: Date | null;
   profile: string;
   symbol: string;
-  token_account_mint: string;
+  tokenAccountMint: string;
   token: Token;
-  last_tx: string; // the close or liquidate tx
-  final_collateral_amount: number; // Final collateral amount before close
+  lastTx: string; // the close or liquidate tx
+  finalCollateralAmount: number; // Final collateral amount before close
 };
 
 export type Trader = {
