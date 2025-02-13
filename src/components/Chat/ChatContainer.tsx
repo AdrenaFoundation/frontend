@@ -42,16 +42,24 @@ function ChatContainer({
         console.log('11')
         // Decide if isOpen should be true or not, depending on cookies and if we are in mobile
         if (isChatOpen === null) {
+            if (isMobile) {
+                // In mobile, not open by default
+                setIsChatOpen(false);
+                return;
+            }
+
             // Opened by default on desktop, otherwise follow what the cookie says
             setIsChatOpen(
-                (typeof isOpenCookie === 'undefined' && !isMobile) ||
+                typeof isOpenCookie === 'undefined' ||
                 isOpenCookie === true,
             );
             return;
         }
 
+        if (isMobile) return;
+
         setCookie('chat-open', isChatOpen);
-    }, [isChatOpen, isOpenCookie]);
+    }, [isMobile, isChatOpen, isOpenCookie, setIsChatOpen, setCookie]);
 
     // Add window resize handler
     useEffect(() => {
