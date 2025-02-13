@@ -473,16 +473,18 @@ export class AdrenaClient {
     const userProfilePda = this.getUserProfilePda(user);
 
     // Fetch raw account data
-    const accountInfo = await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(userProfilePda, 'processed');
+    const accountInfo =
+      await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(
+        userProfilePda,
+        'processed',
+      );
 
     // If no data, profile doesn't exist
     if (!accountInfo || !accountInfo.data) {
       return false;
     }
 
-    const p = this.decodeUserProfileAnyVersion(
-        accountInfo,
-      );
+    const p = this.decodeUserProfileAnyVersion(accountInfo);
 
     if (p === false) {
       return false;
@@ -490,34 +492,47 @@ export class AdrenaClient {
 
     return this.extendUserProfileInfo(p, userProfilePda);
   }
-  
- protected decodeUserProfileAnyVersion(accountInfo: AccountInfo<Buffer>): false | UserProfile | UserProfileV1 {
+
+  protected decodeUserProfileAnyVersion(
+    accountInfo: AccountInfo<Buffer>,
+  ): false | UserProfile | UserProfileV1 {
+    try {
+      // Try parsing as V2 first
+      const p =
+        this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode(
+          'userProfile',
+          accountInfo.data,
+        );
+
+      if (!p || p.createdAt.isZero()) {
+        throw new Error('Invalid data');
+      }
+
+      return p;
+    } catch {
       try {
-        // Try parsing as V2 first
-        const p = this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode('userProfile', accountInfo.data);
-      
+        // Try parsing as V1 (legacy)
+        const p =
+          this.readonlyAdrenaProgram.account.userProfileV1.coder.accounts.decodeUnchecked(
+            'userProfileV1',
+            accountInfo.data,
+          );
+
         if (!p || p.createdAt.isZero()) {
           throw new Error('Invalid data');
         }
-      
+
         return p;
       } catch {
-        try {
-          // Try parsing as V1 (legacy)
-          const p = this.readonlyAdrenaProgram.account.userProfileV1.coder.accounts.decodeUnchecked('userProfileV1', accountInfo.data);
-      
-          if (!p || p.createdAt.isZero()) {
-            throw new Error('Invalid data');
-          }
-        
-          return p;
-        } catch {
-          return false; // Unreadable data (either corrupted or unknown version)
-        }
+        return false; // Unreadable data (either corrupted or unknown version)
+      }
     }
   }
 
-  protected extendUserProfileInfo(p: UserProfile | UserProfileV1, userProfilePda: PublicKey): UserProfileExtended {
+  protected extendUserProfileInfo(
+    p: UserProfile | UserProfileV1,
+    userProfilePda: PublicKey,
+  ): UserProfileExtended {
     return {
       version: 'version' in p ? p.version : 1,
       pubkey: userProfilePda,
@@ -528,16 +543,17 @@ export class AdrenaClient {
         .replace(/\0/g, ''),
       createdAt: p.createdAt.toNumber(),
       owner: p.owner,
-      profilePicture: 'profilePicture' in p ? p.profilePicture as ProfilePicture : 0,
-      wallpaper: 'wallpaper' in p ? p.wallpaper as Wallpaper : 0,
-      title: 'title' in p ? p.title as UserProfileTitle : 0,
+      profilePicture:
+        'profilePicture' in p ? (p.profilePicture as ProfilePicture) : 0,
+      wallpaper: 'wallpaper' in p ? (p.wallpaper as Wallpaper) : 0,
+      title: 'title' in p ? (p.title as UserProfileTitle) : 0,
 
       // TODO: feed theses data with the offchain API
       // Aggregates
       totalPnlUsd: 0,
       // Only accounts for opens
       totalTradeVolumeUsd: 0,
-      totalFeesPaidUsd:  0,
+      totalFeesPaidUsd: 0,
       openingAverageLeverage: 0,
       //
       shortStats: {
@@ -559,35 +575,6 @@ export class AdrenaClient {
         feePaidUsd: 0,
       },
     };
-  }
-
-  // Provide alternative user if you wanna get the profile of a specific user
-  // null = not ready
-  // false = profile not initialized
-  public async loadUserProfile(
-    user: PublicKey,
-  ): Promise<UserProfileExtended | null | false> {
-    if (!this.readonlyAdrenaProgram) return null;
-
-    const userProfilePda = this.getUserProfilePda(user);
-
-    // Fetch raw account data
-    const accountInfo = await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(userProfilePda, 'processed');
-
-    // If no data, profile doesn't exist
-    if (!accountInfo || !accountInfo.data) {
-      return false;
-    }
-
-    const p = this.decodeUserProfileAnyVersion(
-        accountInfo,
-      );
-
-    if (p === false) {
-      return false;
-    }
-
-    return this.extendUserProfileInfo(p, userProfilePda);
   }
 
   public async loadStakingAccount(address: PublicKey): Promise<Staking | null> {
@@ -2134,15 +2121,15 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const userProfileAccount = await this.loadUserProfile(
-      wallet.publicKey,
-    );
+    const userProfileAccount = await this.loadUserProfile(wallet.publicKey);
 
     if (!userProfileAccount) {
       throw new Error('User profile not found');
     }
 
-    const oldUserNicknamePda = userProfileAccount.nickname.length ? this.getUserNicknamePda(userProfileAccount.nickname): null;
+    const oldUserNicknamePda = userProfileAccount.nickname.length
+      ? this.getUserNicknamePda(userProfileAccount.nickname)
+      : null;
 
     const transaction = await this.adrenaProgram.methods
       .editUserProfileNickname({
@@ -2157,7 +2144,7 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         userNickname: this.getUserNicknamePda(nickname),
         fundingAccount: findATAAddressSync(wallet.publicKey, this.lmTokenMint),
-        oldUserNickname: oldUserNicknamePda
+        oldUserNickname: oldUserNicknamePda,
       })
       .transaction();
 
@@ -2188,14 +2175,21 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const userProfileAccount = await this.readonlyAdrenaProgram.account.userProfile.fetch(
-      userProfilePda,
-    );
+    const userProfileAccount =
+      await this.readonlyAdrenaProgram.account.userProfile.fetch(
+        userProfilePda,
+      );
 
     const transaction = await this.adrenaProgram.methods
       .editUserProfile({
-        profilePicture: typeof profilePicture !== 'undefined' ? profilePicture : userProfileAccount.profilePicture,
-        wallpaper: typeof wallpaper !== 'undefined' ? wallpaper : userProfileAccount.wallpaper,
+        profilePicture:
+          typeof profilePicture !== 'undefined'
+            ? profilePicture
+            : userProfileAccount.profilePicture,
+        wallpaper:
+          typeof wallpaper !== 'undefined'
+            ? wallpaper
+            : userProfileAccount.wallpaper,
         title: typeof title !== 'undefined' ? title : userProfileAccount.title,
       })
       .accountsStrict({
@@ -4623,17 +4617,17 @@ export class AdrenaClient {
   public async loadAllUserProfile(): Promise<UserProfileExtended[] | null> {
     if (!this.readonlyConnection) return null;
 
-     // Fetch both UserProfileV1 and UserProfileV2 concurrently
-     const [userProfilesV1, userProfilesV2] = await Promise.all([
+    // Fetch both UserProfileV1 and UserProfileV2 concurrently
+    const [userProfilesV1, userProfilesV2] = await Promise.all([
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: "processed",
+        commitment: 'processed',
         filters: [
           { dataSize: 8 + 216 }, // Ensure correct size for V1
           { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([0])) } }, // Version == 0 (V1)
         ],
       }),
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: "processed",
+        commitment: 'processed',
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
           { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
@@ -4649,21 +4643,25 @@ export class AdrenaClient {
     }
 
     return [
-      ...userProfilesV1.map((account) => {
-        const p = this.decodeUserProfileAnyVersion(account.account);
+      ...(userProfilesV1
+        .map((account) => {
+          const p = this.decodeUserProfileAnyVersion(account.account);
 
-        if (!p) return null;
-        
-        return this.extendUserProfileInfo(p, account.pubkey);
-      }).filter((p) => p) as UserProfileExtended[],
+          if (!p) return null;
 
-      ...userProfilesV2.map((account) => {
-        const p = this.decodeUserProfileAnyVersion(account.account);
+          return this.extendUserProfileInfo(p, account.pubkey);
+        })
+        .filter((p) => p) as UserProfileExtended[]),
 
-        if (!p) return null;
-        
-        return this.extendUserProfileInfo(p, account.pubkey);
-      }).filter((p) => p) as UserProfileExtended[],
+      ...(userProfilesV2
+        .map((account) => {
+          const p = this.decodeUserProfileAnyVersion(account.account);
+
+          if (!p) return null;
+
+          return this.extendUserProfileInfo(p, account.pubkey);
+        })
+        .filter((p) => p) as UserProfileExtended[]),
     ];
   }
 
@@ -4673,7 +4671,7 @@ export class AdrenaClient {
     // Fetch both UserProfileV1 and UserProfileV2 concurrently
     const [userProfilesV1, userProfilesV2] = await Promise.all([
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: "processed",
+        commitment: 'processed',
         dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
         filters: [
           { dataSize: 8 + 216 }, // Ensure correct size for V1
@@ -4681,7 +4679,7 @@ export class AdrenaClient {
         ],
       }),
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: "processed",
+        commitment: 'processed',
         dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
@@ -4697,7 +4695,9 @@ export class AdrenaClient {
       // Extract nickname correctly using LimitedString format
       const nicknameBytes = data.slice(8, 39);
       const nicknameLength = data[8 + 31]; // Last byte is the length
-      const nickname = Buffer.from(Uint8Array.from(nicknameBytes.slice(0, nicknameLength))).toString("utf-8");
+      const nickname = Buffer.from(
+        Uint8Array.from(nicknameBytes.slice(0, nicknameLength)),
+      ).toString('utf-8');
 
       // Extract owner (32 bytes)
       const owner = new PublicKey(data.slice(48, 48 + 32));
@@ -4718,7 +4718,9 @@ export class AdrenaClient {
       // Extract nickname correctly using LimitedString format
       const nicknameBytes = data.slice(8, 39);
       const nicknameLength = data[8 + 31]; // Last byte is the length
-      const nickname = Buffer.from(Uint8Array.from(nicknameBytes.slice(0, nicknameLength))).toString("utf-8");
+      const nickname = Buffer.from(
+        Uint8Array.from(nicknameBytes.slice(0, nicknameLength)),
+      ).toString('utf-8');
 
       // Extract owner (32 bytes)
       const owner = new PublicKey(data.slice(48, 48 + 32));
