@@ -201,7 +201,7 @@ const PositionHistoryBlock = ({
                   closeSizeMultiplier={positionHistory.closeSizeMultiplier}
                   pointsMutations={positionHistory.pointsMutations}
                 >
-                  <div className="flex items-center border-b border-dotted border-gray-400">
+                  <div className="flex items-center">
                     <FormatNumber
                       nb={positionHistory.totalPoints}
                       className="text-xs text-mutagen"
