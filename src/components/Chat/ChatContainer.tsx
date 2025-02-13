@@ -24,13 +24,10 @@ function ChatContainer({
     setIsChatOpen: (isOpen: boolean) => void;
 }) {
     const [showUserList, setShowUserList] = useState(false);
-    const [cookies, setCookie] = useCookies(['chat-open', 'chat-height', 'test-cookie']);
+    const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
 
     const chatHeightCookie = cookies['chat-height'];
     const isOpenCookie = cookies['chat-open'];
-
-    const testCookie = cookies['test-cookie'];
-    const testLocalStorage = localStorage.getItem('test-local-storage');
 
     const [height, setHeight] = useState(() => {
         // Initialize with cookie value or default
