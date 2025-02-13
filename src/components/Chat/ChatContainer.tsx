@@ -65,8 +65,8 @@ function ChatContainer({
     useEffect(() => {
         const handleResize = () => {
             if (!isDragging) {
-                if (chatHeightCookie['chat-height']) {
-                    setHeight(chatHeightCookie['chat-height']);
+                if (chatHeightCookie) {
+                    setHeight(chatHeightCookie);
                 } else {
                     setHeight(Math.round(window.innerHeight * 0.35));
                 }
