@@ -22,6 +22,10 @@ module.exports = {
         orange: '#f77f00',
         blue: '#3a86ff',
         purpleColor: '#9333ea',
+        greenSide: '#64f58d',
+        redSide: '#f56464',
+        grayLabel: '#7e7d85',
+        whiteLabel: '#e3e6ea',
         mutagen: '#e47dbb',
       },
       fontSize: {

@@ -39,7 +39,6 @@ function ChatContainer({
     const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
-        console.log('11')
         // Decide if isOpen should be true or not, depending on cookies and if we are in mobile
         if (isChatOpen === null) {
             if (isMobile) {

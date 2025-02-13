@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import LimitOrder from '@/components/pages/trading/LimitOrder/LimitOrder';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
@@ -99,7 +100,7 @@ export default function Trade({
   );
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
-  const [history, setHistory] = useState<boolean>(false);
+  const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>('positions');
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -341,24 +342,40 @@ export default function Trade({
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    !history ? 'opacity-100' : 'opacity-40',
+                    view === 'positions' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(false)}
+                  onClick={() => setView('positions')}
                 >
                   Open positions
                 </span>
+
                 <span className="opacity-20">|</span>
+
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    history ? 'opacity-100' : 'opacity-40',
+                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(true)}
+                  onClick={() => setView('limitOrder')}
+                >
+                  Limit orders
+                </span>
+
+                <span className="opacity-20">|</span>
+
+                <span
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    view === 'history' ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setView('history')}
                 >
                   Trade history
                 </span>
+
               </div>
-              {history ? (
+
+              {view === 'history' ? (
                 <div className="flex flex-col w-full p-4">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
@@ -366,7 +383,9 @@ export default function Trade({
                     showFeesInPnl={showFeesInPnl}
                   />
                 </div>
-              ) : (
+              ) : null}
+
+              {view === 'positions' ? (
                 <div className="flex flex-col w-full p-4">
                   <Positions
                     connected={connected}
@@ -376,7 +395,15 @@ export default function Trade({
                     showFeesInPnl={showFeesInPnl}
                   />
                 </div>
-              )}
+              ) : null}
+
+              {view === 'limitOrder' ? (
+                <div className="flex flex-col w-full p-4">
+                  <LimitOrder
+                    selectedToken={tokenB}
+                  />
+                </div>
+              ) : null}
             </div>
           </>
         ) : (
@@ -386,24 +413,40 @@ export default function Trade({
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    !history ? 'opacity-100' : 'opacity-40',
+                    view === 'positions' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(false)}
+                  onClick={() => setView('positions')}
                 >
-                  Positions
+                  Open positions
                 </span>
+
                 <span className="opacity-20">|</span>
+
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    history ? 'opacity-100' : 'opacity-40',
+                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(true)}
+                  onClick={() => setView('limitOrder')}
                 >
-                  History
+                  Limit orders
                 </span>
+
+                <span className="opacity-20">|</span>
+
+                <span
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    view === 'history' ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setView('history')}
+                >
+                  Trade history
+                </span>
+
               </div>
-              {history ? (
+
+              {view === 'history' ? (
                 <div className="mt-1 w-full p-4 flex grow">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
@@ -411,7 +454,17 @@ export default function Trade({
                     showFeesInPnl={showFeesInPnl}
                   />
                 </div>
-              ) : (
+              ) : null}
+
+              {view === 'limitOrder' ? (
+                <div className="mt-1 w-full p-4">
+                  <LimitOrder
+                    selectedToken={tokenB}
+                  />
+                </div>
+              ) : null}
+
+              {view === 'positions' ? (
                 <div className="mt-1 w-full p-4">
                   <Positions
                     connected={connected}
@@ -421,8 +474,9 @@ export default function Trade({
                     showFeesInPnl={showFeesInPnl}
                   />
                 </div>
-              )}
+              ) : null}
             </div>
+
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
