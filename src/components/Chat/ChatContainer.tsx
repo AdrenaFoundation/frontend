@@ -13,6 +13,8 @@ import Modal from '../common/Modal/Modal';
 import Chat from './Chat';
 import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Image from 'next/image';
+import TabSelect from '../common/TabSelect/TabSelect';
+import AI4A from '../AI4A/AI4A';
 
 function ChatContainer({
     userProfile,
@@ -28,7 +30,8 @@ function ChatContainer({
     setIsChatOpen: (isOpen: boolean) => void;
 }) {
     const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
-    const [isOpen, setIsOpen] = useState<boolean | null>(null);
+    const [activeTab, setActiveTab] = useState('ai');
+
     const [showUserList, setShowUserList] = useState(false);
     const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
 
@@ -115,6 +118,56 @@ function ChatContainer({
 
     if (isChatOpen === null) return <></>;
 
+    const header = (
+        <div>
+            <TabSelect
+                tabs={[{ title: 'ai' }, { title: 'live chat' }]}
+                selected={activeTab}
+                onClick={(tab) => {
+                    setActiveTab(tab);
+                }}
+                className="z-30 py-3"
+            />
+
+            {activeTab === 'ai' ? null : (
+                <div
+                    className="bg-secondary h-[3em] flex gap-2 items-center justify-between pl-4 pr-4 border-b flex-shrink-0 cursor-pointer"
+                    onClick={() => {
+                        if (!isDragging) setIsChatOpen(!isChatOpen);
+                    }}
+                >
+                    <Image
+                        src={collapseIcon}
+                        alt="collapse logo"
+                        width={10}
+                        height={10}
+                    />
+
+                    <div className="flex gap-2">
+                        <div className="text-sm font-archivo uppercase">Live Chat</div>
+                        <div className="text-xxs font-thin uppercase">{'beta'}</div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <LiveIcon />
+                        <div
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowUserList(!showUserList);
+                            }}
+                        >
+                            <div className="text-xs flex mt-[0.1em] font-archivo text-txtfade">
+                                {nbConnectedUsers === null ? '-' : nbConnectedUsers}
+                            </div>
+                            <Image src={groupIcon} alt="group logo" width={18} height={18} />
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
     if (isMobile) {
         return (
             <AnimatePresence>
@@ -124,16 +177,21 @@ function ChatContainer({
                         close={() => setIsChatOpen(false)}
                         className="flex flex-col w-full h-[85vh] max-h-[85vh]"
                     >
-                        <Chat
-                            displaySmileys={false}
-                            userProfile={userProfile}
-                            wallet={wallet}
-                            isOpen={isChatOpen}
-                            showUserList={showUserList}
-                            onToggleUserList={() => setShowUserList(!showUserList)}
-                            clickOnHeader={() => setIsChatOpen(!isChatOpen)}
-                            className="bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full"
-                        />
+                        <div className="bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full">
+                            {header}
+                            {activeTab === 'ai' ? (
+                                <AI4A />
+                            ) : (
+                                <Chat
+                                    displaySmileys={false}
+                                    userProfile={userProfile}
+                                    wallet={wallet}
+                                    isOpen={isChatOpen}
+                                    showUserList={showUserList}
+                                    setNbConnectedUsers={setNbConnectedUsers}
+                                />
+                            )}
+                        </div>
                     </Modal>
                 ) : null}
             </AnimatePresence>
@@ -149,23 +207,32 @@ function ChatContainer({
                     style={{ userSelect: 'none' }}
                 />
             )}
-            <Chat
-                userProfile={userProfile}
-                wallet={wallet}
-                isOpen={isChatOpen}
-                showUserList={showUserList}
-                onToggleUserList={() => setShowUserList(!showUserList)}
-                clickOnHeader={() => {
-                    if (!isDragging) setIsChatOpen(!isChatOpen);
-                }}
+
+            <div
                 className={twMerge(
                     'bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none',
-                    isChatOpen ? `h-[${height}px]` : 'h-[3em]',
+                    isChatOpen ? `h-[${height}px]` : 'h-[6em]',
                 )}
                 style={
-                    isChatOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined
+                    isChatOpen
+                        ? { height, userSelect: 'none', marginTop: '4px' }
+                        : undefined
                 }
-            />
+            >
+                {header}
+
+                {activeTab === 'ai' ? (
+                    <AI4A />
+                ) : (
+                    <Chat
+                        userProfile={userProfile}
+                        wallet={wallet}
+                        isOpen={isChatOpen}
+                        showUserList={showUserList}
+                        setNbConnectedUsers={setNbConnectedUsers}
+                    />
+                )}
+            </div>
         </div>
     );
 }
