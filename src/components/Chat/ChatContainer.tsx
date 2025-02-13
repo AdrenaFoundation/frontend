@@ -44,7 +44,7 @@ function ChatContainer({
         if (isChatOpen === null) {
             // Opened by default on desktop, otherwise follow what the cookie says
             setIsChatOpen(
-                typeof isOpenCookie === 'undefined' ||
+                (typeof isOpenCookie === 'undefined' && !isMobile) ||
                 isOpenCookie === true,
             );
             return;
