@@ -2,13 +2,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PositionExtended, PositionHistoryExtended } from '@/types';
+import { EnrichedPositionApi, PositionExtended } from '@/types';
 import { formatDate2Digits, getTokenImage, getTokenSymbol } from '@/utils';
 
 import OnchainAccountInfo from '../../../monitoring/OnchainAccountInfo';
 
 interface PositionNameProps {
-    position: PositionExtended | PositionHistoryExtended;
+    position: PositionExtended | EnrichedPositionApi;
     isHistory?: boolean;
     readOnly: boolean;
 }

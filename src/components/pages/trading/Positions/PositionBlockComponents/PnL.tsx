@@ -1,9 +1,9 @@
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PositionExtended, PositionHistoryExtended } from '@/types';
+import { EnrichedPositionApi, PositionExtended } from '@/types';
 
 interface PnLProps {
-    position: PositionExtended | PositionHistoryExtended;
+    position: PositionExtended | EnrichedPositionApi;
     showAfterFees: boolean;
     setShowAfterFees: (show: boolean) => void;
 }

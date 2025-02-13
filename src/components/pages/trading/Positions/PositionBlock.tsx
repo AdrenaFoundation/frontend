@@ -57,7 +57,6 @@ export function PositionBlock({
       if (blockRef.current) {
         const width = blockRef.current.offsetWidth;
 
-        // Adjusted breakpoints to avoid edge cases
         setIsBig(width >= 699 && width < 1200);
         setIsCompact(width < 699 && width > 482);
         setIsMedium(width <= 482 && width > 370);

@@ -36,9 +36,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
         const handleResize = () => {
             if (containerRef.current) {
                 const width = containerRef.current.offsetWidth;
-                console.log('containerRef.current.offsetWidth', width);
 
-                // Adjusted breakpoints to avoid edge cases
                 setIsBig(width >= 601);
                 setIsCompact(width <= 600 && width > 482);
                 setIsMedium(width <= 482 && width > 370);

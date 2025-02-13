@@ -10,7 +10,7 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PositionExtended, PositionHistoryExtended } from '@/types';
+import { EnrichedPositionApi, PositionExtended } from '@/types';
 import { formatTimeDifference, getFullTimeDifference, getTxExplorer } from '@/utils';
 
 import FeesPaidTooltip from './FeesPaidTooltip';
@@ -30,7 +30,7 @@ const PositionHistoryBlock = ({
 }: {
   bodyClassName?: string;
   borderColor?: string;
-  positionHistory: PositionHistoryExtended;
+  positionHistory: EnrichedPositionApi;
   showShareButton?: boolean;
   showFeesInPnl: boolean;
 }) => {
@@ -49,7 +49,6 @@ const PositionHistoryBlock = ({
       if (blockRef.current) {
         const width = blockRef.current.offsetWidth;
 
-        // Adjusted breakpoints to avoid edge cases
         setIsBig(width >= 699 && width < 1200);
         setIsCompact(width < 699 && width > 482);
         setIsMedium(width <= 482 && width > 370);
@@ -165,7 +164,7 @@ const PositionHistoryBlock = ({
                   }>
                     {positionHistory.status === 'liquidate' ? 'Liquidated' : 'Closed'}
                   </span>
-                  <Link href={getTxExplorer(positionHistory.lastTx)} target="_blank">
+                  <Link href={getTxExplorer(positionHistory.lastIx)} target="_blank">
                     <Image src={externalLinkLogo} alt="View transaction" width={12} height={12} />
                   </Link>
                 </div>
