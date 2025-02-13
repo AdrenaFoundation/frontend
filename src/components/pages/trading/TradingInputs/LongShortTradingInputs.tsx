@@ -173,12 +173,13 @@ export default function LongShortTradingInputs({
   }, [calculateIncreasePositionInfo]);
 
   const handleAddLimitOrder = async (): Promise<void> => {
-    if (!connected || !dispatch || !wallet || inputState.inputA === null || inputState.limitOrderTriggerPrice === null) {
+    if (!connected || !dispatch || !wallet) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
 
-    if (!tokenA || !tokenB || !inputState.inputA || !inputState.inputB || !inputState.leverage) {
+    if (!tokenA || !tokenB || !inputState.inputA || !inputState.inputB || !inputState.leverage ||
+      inputState.inputA === null || inputState.limitOrderTriggerPrice === null) {
       return addNotification({
         type: 'info',
         title: 'Cannot open position',
