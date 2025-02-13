@@ -14,6 +14,7 @@ import { EnrichedPositionApi, PositionExtended } from '@/types';
 import { formatTimeDifference, getFullTimeDifference, getTxExplorer } from '@/utils';
 
 import FeesPaidTooltip from './FeesPaidTooltip';
+import MutagenTooltip from './MutagenTooltip';
 import { PnL } from './PositionBlockComponents/PnL';
 import { POSITION_BLOCK_STYLES } from './PositionBlockComponents/PositionBlockStyles';
 import { PositionHeader } from './PositionBlockComponents/PositionHeader';
@@ -109,8 +110,8 @@ const PositionHistoryBlock = ({
           <div className={twMerge(
             "flex flex-wrap flex-1 justify-between gap-2",
             isMini && "grid grid-cols-2 gap-2 justify-items-center",
-            isMedium && "grid grid-cols-3 gap-2 justify-items-center",
-            isCompact && "grid grid-cols-3 gap-2 justify-items-center",
+            isMedium && "grid grid-cols-4 gap-2 justify-items-center",
+            isCompact && "grid gap-2 justify-items-center",
             isBig && "justify-between gap-2",
             isBiggest && "justify-between gap-2"
           )}>
@@ -192,20 +193,51 @@ const PositionHistoryBlock = ({
               columnClasses={columnClasses}
             />
 
+            <ValueColumn label="Mutagen"
+              value={
+                <MutagenTooltip
+                  pointsPnlVolumeRatio={positionHistory.pointsPnlVolumeRatio}
+                  pointsDuration={positionHistory.pointsDuration}
+                  closeSizeMultiplier={positionHistory.closeSizeMultiplier}
+                  pointsMutations={positionHistory.pointsMutations}
+                >
+                  <div className="flex items-center border-b border-dotted border-gray-400">
+                    <FormatNumber
+                      nb={positionHistory.totalPoints}
+                      className="text-xs text-mutagen"
+                      isDecimalDimmed={false}
+                      minimumFractionDigits={0}
+                      precisionIfPriceDecimalsBelow={12}
+                    />
+                  </div>
+                </MutagenTooltip>}
+              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.red, "underline-dashed")}
+              columnClasses={columnClasses}
+            />
+
             {showShareButton && (
-              <>
-                <Button
-                  leftIcon={shareIcon}
-                  variant='secondary'
-                  className={twMerge(POSITION_BLOCK_STYLES.button.base, "hidden lg:block")}
-                  onClick={() => {
-                    setIsOpen(true);
-                  }}
-                />
+              <div className={twMerge(
+                "flex flex-col justify-center items-center",
+                isMini && "col-span-1 col-start-2 row-start-4 mt-1 w-full",
+                isMedium && "col-span-1 col-start-4 row-start-2 w-full",
+                isCompact && "col-span-1 col-start-4 row-start-2 w-full",
+                isBig && "flex-row justify-center items-center",
+                isBiggest && "flex-row justify-center items-center"
+              )}>
+                <div className="lg:block hidden flex flex-col justify-center items-center w-full">
+                  <Button
+                    leftIcon={shareIcon}
+                    variant='secondary'
+                    className={twMerge(POSITION_BLOCK_STYLES.button.filled)}
+                    onClick={() => {
+                      setIsOpen(true);
+                    }}
+                  />
+                </div>
                 <div className="lg:hidden flex flex-col justify-center items-center w-full">
                   <Button
                     size="xs"
-                    className={twMerge(POSITION_BLOCK_STYLES.button.base, 'w-[5em]')}
+                    className={twMerge(POSITION_BLOCK_STYLES.button.filled)}
                     leftIcon={shareIcon}
                     rounded={false}
                     onClick={() => {
@@ -213,7 +245,7 @@ const PositionHistoryBlock = ({
                     }}
                   />
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>

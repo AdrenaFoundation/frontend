@@ -40,7 +40,6 @@ export const ButtonGroup = ({
         isCompact && "col-span-2 col-start-3 row-start-3 w-full items-center",
         isBig && "col-span-2 col-start-6 row-start-2 w-full grid grid-cols-4 gap-2 items-center",
         isBiggest && "flex-row justify-center items-center"
-
     );
 
     const buttonClasses = twMerge(

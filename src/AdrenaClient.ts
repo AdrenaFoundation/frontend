@@ -3517,6 +3517,17 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
+    console.log(
+      'addLimitOrder',
+      triggerPrice,
+      limitPrice,
+      side,
+      collateralAmount,
+      leverage,
+      mint,
+      collateralMint,
+    );
+
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
     const fundingAccount = findATAAddressSync(owner, collateralMint);
