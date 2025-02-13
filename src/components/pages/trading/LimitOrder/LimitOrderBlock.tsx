@@ -8,6 +8,8 @@ import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPri
 import { useSelector } from '@/store/store';
 import { LimitOrder } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
+import { POSITION_BLOCK_STYLES } from '../Positions/PositionBlockComponents/PositionBlockStyles';
+import { ValueColumn } from '../Positions/PositionBlockComponents/ValueColumn';
 
 interface LimitOrderBlocProps {
     order: LimitOrder;
@@ -49,46 +51,14 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    //console.log('order', order);
-
     if (!token || !collateralToken) return null;
 
     const columnClasses = twMerge(
-        "flex flex-col gap-0.5",
-        isBig ? "flex-1" : "",
-        isCompact ? "flex-1" : "",
-        isMedium ? "flex-1 min-w-[9em]" : "",
-        isMini ? "flex-1 min-w-[6.4em]" : ""
-    );
-
-    const limitPriceColumnClasses = twMerge(
-        columnClasses,
-        isCompact && "flex-none ml-auto"
-    );
-
-    const buttonColumnClasses = twMerge(
-        columnClasses,
-        isBig && "flex-none ml-auto"
-    );
-
-    const priceContainerClasses = twMerge(
-        isBig ? "w-full flex gap-4" : "",
-        isCompact ? "w-full flex" : "",
-        isMedium ? "w-full flex gap-4 flex-wrap" : "",
-        isMini ? "w-full flex gap-4 flex-row flex-wrap" : ""
-    );
-
-    const buttonContainerClasses = twMerge(
-        "flex gap-2",
-        isBig ? "hidden" : "",
-        isCompact ? "w-full flex-row" : "",
-        isMedium ? "w-full flex-col" : "",
-        isMini ? "w-full flex-col" : "",
-    );
-
-    const buttonClasses = twMerge(
-        "px-2.5 py-1.5 bg-whiteLabel/5 rounded-md text-grayLabel font-normal font-mono",
-        isCompact ? "w-full" : "",
+        POSITION_BLOCK_STYLES.column.base,
+        isBig && POSITION_BLOCK_STYLES.column.sizes.big,
+        isCompact && POSITION_BLOCK_STYLES.column.sizes.compact,
+        isMedium && POSITION_BLOCK_STYLES.column.sizes.medium,
+        isMini && POSITION_BLOCK_STYLES.column.sizes.mini
     );
 
     return (
@@ -129,112 +99,105 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                     </div>
                 </div>
             </div>
-            <div className={priceContainerClasses}>
-                <div className={columnClasses}>
-                    <div className="text-grayLabel text-xxs font-normal font-mono">
-                        Collateral
-                    </div>
-                    <div className="flex items-start gap-1">
+            <div className={twMerge(
+                "flex flex-wrap flex-1 gap-2 w-full",
+                isMini && "grid grid-cols-2",
+                isMedium && "grid grid-cols-3",
+                isCompact && "grid grid-cols-3",
+                isBig && "grid grid-cols-5",
+            )}>
+                <ValueColumn
+                    label="Collateral"
+                    value={
+                        <div className="flex items-start gap-1">
+                            <FormatNumber
+                                nb={order.amount}
+                                precision={token.displayAmountDecimalsPrecision}
+                                className={POSITION_BLOCK_STYLES.text.white}
+                            />
+                            <Image
+                                className="w-3 h-3 rounded-full"
+                                src={collateralToken.image}
+                                width={13}
+                                height={13}
+                                alt={`${collateralToken.symbol} logo`}
+                            />
+                        </div>
+                    }
+                    columnClasses={columnClasses}
+                />
+
+                <ValueColumn
+                    label="Market Price"
+                    value={
                         <FormatNumber
-                            nb={order.amount}
-                            precision={token.displayAmountDecimalsPrecision}
-                            className="text-whiteLabel text-xs font-medium font-mono leading-3"
-                        />
-                        <Image
-                            className="w-3 h-3 rounded-full"
-                            src={collateralToken.image}
-                            width={13}
-                            height={13}
-                            alt={`${collateralToken.symbol} logo`}
-                        />
-                    </div>
-                </div>
-
-                <div className={columnClasses}>
-                    <div className="text-grayLabel text-xxs font-normal font-mono">
-                        Market Price
-                    </div>
-                    <FormatNumber
-                        nb={tradeTokenPrice}
-                        format="currency"
-                        precision={token.displayPriceDecimalsPrecision}
-                        className="text-whiteLabel text-xs font-medium font-mono leading-3"
-                        isDecimalDimmed={false}
-                    />
-                </div>
-
-                <div className={columnClasses}>
-                    <div className="text-grayLabel text-xxs font-normal font-mono">
-                        Trigger Price
-                    </div>
-                    <FormatNumber
-                        nb={order.triggerPrice}
-                        format="currency"
-                        precision={token.displayPriceDecimalsPrecision}
-                        className="text-whiteLabel text-xs font-medium font-mono leading-3"
-                        isDecimalDimmed={false}
-                    />
-                </div>
-
-                <div className={limitPriceColumnClasses}>
-                    <div className="text-grayLabel text-xxs font-normal font-mono">
-                        Limit Price
-                    </div>
-                    {order.limitPrice ? (
-                        <FormatNumber
-                            nb={order.limitPrice}
+                            nb={tradeTokenPrice}
                             format="currency"
                             precision={token.displayPriceDecimalsPrecision}
-                            className="text-whiteLabel text-xs font-medium font-mono leading-3"
+                            className={POSITION_BLOCK_STYLES.text.white}
                             isDecimalDimmed={false}
                         />
-                    ) : (
-                        <span className="text-whiteLabel text-base font-medium font-mono">
-                            -
-                        </span>
-                    )}
+                    }
+                    valueClassName={POSITION_BLOCK_STYLES.text.white}
+                    columnClasses={columnClasses}
+                />
+
+                <ValueColumn
+                    label="Trigger Price"
+                    value={
+                        <FormatNumber
+                            nb={order.triggerPrice}
+                            format="currency"
+                            precision={token.displayPriceDecimalsPrecision}
+                            className={POSITION_BLOCK_STYLES.text.white}
+                            isDecimalDimmed={false}
+                        />
+                    }
+                    valueClassName={POSITION_BLOCK_STYLES.text.white}
+                    columnClasses={columnClasses}
+                />
+
+                <ValueColumn
+                    label="Limit Price"
+                    value={
+                        order.limitPrice ? (
+                            <FormatNumber
+                                nb={order.limitPrice}
+                                format="currency"
+                                precision={token.displayPriceDecimalsPrecision}
+                                className={POSITION_BLOCK_STYLES.text.white}
+                                isDecimalDimmed={false}
+                            />
+                        ) : (
+                            <span className="text-whiteLabel text-base font-medium font-mono">-</span>
+                        )
+                    }
+                    valueClassName={POSITION_BLOCK_STYLES.text.white}
+                    columnClasses={columnClasses}
+                />
+
+                <div className={twMerge(
+                    "flex gap-2 items-center",
+                    isMini && "col-span-2 col-start-1 row-start-3 w-1/2 justify-self-end",
+                    isMedium && "col-span-2 col-start-2 row-start-2 w-1/2 justify-self-end",
+                    isCompact && "col-span-2 col-start-2 row-start-2 w-1/2 justify-self-end",
+                    isBig && "col-span-1 col-start-5 row-start-1 w-full justify-end"
+                )}>
+                    <Button
+                        size="xs"
+                        className={isBig ? POSITION_BLOCK_STYLES.button.base : POSITION_BLOCK_STYLES.button.filled}
+                        onClick={onCancel}
+                        title="Edit"
+                        rounded={false}
+                    />
+                    <Button
+                        size="xs"
+                        className={isBig ? POSITION_BLOCK_STYLES.button.base : POSITION_BLOCK_STYLES.button.filled}
+                        onClick={onCancel}
+                        title="Cancel"
+                        rounded={false}
+                    />
                 </div>
-
-                {isBig && (
-                    <div className={buttonColumnClasses}>
-                        <div className="text-grayLabel text-xxs font-normal font-mono">
-
-                        </div>
-                        <div className="flex gap-2">
-                            <Button
-                                size="xs"
-                                className={buttonClasses}
-                                onClick={onCancel}
-                                title="Edit"
-                                rounded={false}
-                            />
-                            <Button
-                                size="xs"
-                                className={buttonClasses}
-                                onClick={onCancel}
-                                title="Cancel"
-                                rounded={false}
-                            />
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            <div className={buttonContainerClasses}>
-                <Button
-                    size="xs"
-                    className={buttonClasses}
-                    onClick={onCancel}
-                    title="Edit"
-                    rounded={false}
-                />
-                <Button
-                    size="xs"
-                    className={buttonClasses}
-                    onClick={onCancel}
-                    title="Cancel"
-                    rounded={false}
-                />
             </div>
         </div>
     );

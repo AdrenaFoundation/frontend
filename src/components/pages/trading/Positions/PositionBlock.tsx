@@ -171,10 +171,10 @@ export function PositionBlock({
         <div className={contentClasses}>
           <div className={twMerge(
             "flex flex-wrap flex-1",
-            (isMini) && "grid grid-cols-2 gap-2 justify-items-center",
-            (isMedium) && "grid grid-cols-3 gap-2 justify-items-center",
-            (isCompact) && "grid grid-cols-4 gap-2 justify-items-center",
-            (isBig) && "grid grid-cols-7 gap-2 justify-items-center",
+            (isMini) && "grid grid-cols-2 gap-2",
+            (isMedium) && "grid grid-cols-3 gap-2",
+            (isCompact) && "grid grid-cols-4 gap-2",
+            (isBig) && "grid grid-cols-7 gap-2",
             (isBiggest) && "justify-between gap-2"
           )}>
             <ValueColumn

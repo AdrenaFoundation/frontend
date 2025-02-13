@@ -109,9 +109,9 @@ const PositionHistoryBlock = ({
         <div className={contentClasses}>
           <div className={twMerge(
             "flex flex-wrap flex-1 justify-between gap-2",
-            isMini && "grid grid-cols-2 gap-2 justify-items-center",
-            isMedium && "grid grid-cols-4 gap-2 justify-items-center",
-            isCompact && "grid gap-2 justify-items-center",
+            isMini && "grid grid-cols-2 gap-2",
+            isMedium && "grid grid-cols-4 gap-2",
+            isCompact && "grid gap-2",
             isBig && "justify-between gap-2",
             isBiggest && "justify-between gap-2"
           )}>
@@ -218,7 +218,7 @@ const PositionHistoryBlock = ({
             {showShareButton && (
               <div className={twMerge(
                 "flex flex-col justify-center items-center",
-                isMini && "col-span-1 col-start-2 row-start-4 mt-1 w-full",
+                isMini && "col-span-1 col-start-2 row-start-4 mt-1 w-1/2 justify-self-end",
                 isMedium && "col-span-1 col-start-4 row-start-2 w-full",
                 isCompact && "col-span-1 col-start-4 row-start-2 w-full",
                 isBig && "flex-row justify-center items-center",
