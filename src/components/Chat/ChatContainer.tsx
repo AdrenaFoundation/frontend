@@ -64,11 +64,6 @@ function ChatContainer({
         setCookie('chat-open', isChatOpen);
     }, [isMobile, isChatOpen, isOpenCookie, setIsChatOpen, setCookie]);
 
-    useEffect(() => {
-        setCookie('test-cookie', 200);
-        localStorage.setItem('test-local-storage', '200');
-    }, []);
-
     // Add window resize handler
     useEffect(() => {
         const handleResize = () => {
@@ -127,8 +122,6 @@ function ChatContainer({
                         close={() => setIsChatOpen(false)}
                         className="flex flex-col w-full h-[85vh] max-h-[85vh]"
                     >
-                        <p className='font-mono'>test local: {testLocalStorage ?? '...'}</p>
-                        <p className='font-mono'>test cookie: {testCookie ?? '...'}</p>
                         <Chat
                             displaySmileys={false}
                             userProfile={userProfile}
@@ -147,8 +140,6 @@ function ChatContainer({
 
     return (
         <div className="fixed bottom-0 right-4 z-20">
-            <p className='font-mono'>test local: {testLocalStorage ?? '...'}</p>
-            <p className='font-mono'>test cookie: {testCookie ?? '...'}</p>
             {isChatOpen && (
                 <div
                     className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize select-none"
