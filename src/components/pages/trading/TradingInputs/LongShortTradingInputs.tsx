@@ -187,6 +187,22 @@ export default function LongShortTradingInputs({
       });
     }
 
+    if (side === 'short' && tokenA.symbol !== 'USDC') {
+      return addNotification({
+        type: 'info',
+        title: 'Cannot open position',
+        message: 'Only USDC is allowed as collateral for short positions',
+      });
+    }
+
+    if (side === 'long' && tokenA.symbol !== tokenB.symbol) {
+      return addNotification({
+        type: 'info',
+        title: 'Cannot open position',
+        message: `You must provide ${tokenB.symbol} as collateral`,
+      });
+    }
+
     const tokenBPrice = tokenPrices[tokenB.symbol];
     if (!tokenBPrice) {
       return addNotification({
@@ -758,6 +774,8 @@ export default function LongShortTradingInputs({
             onSlippageChange={(slippage) => setInputState(prev => ({ ...prev, limitOrderSlippage: slippage }))}
             errorMessage={positionInfo.errorMessage}
             insufficientAmount={positionInfo.insufficientAmount}
+            tokenA={tokenA}
+            tokenB={tokenB}
             onAddLimitOrder={handleAddLimitOrder}
           />
         ) : (

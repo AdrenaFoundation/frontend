@@ -34,7 +34,7 @@ export function LimitOrderBlocks({
         );
     }
 
-    if (!limitOrders.length) {
+    if (!limitOrders || limitOrders.length === 0) {
         return (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
                 <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
@@ -56,7 +56,10 @@ export function LimitOrderBlocks({
                     key={order.id}
                     order={order}
                     onCancel={() => {
-                        // Will implement cancel handler later
+                        window.adrena.client.cancelLimitOrder({
+                            id: order.id,
+                            collateralCustody: order.collateralCustody,
+                        });
                     }}
                 />
             ))}

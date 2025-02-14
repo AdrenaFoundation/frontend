@@ -25,10 +25,10 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
     const [isBig, setIsBig] = useState(false);
 
     const token = window.adrena.client.tokens.find((t) =>
-        t.mint.equals(order.custody)
+        t.custody?.equals(order.custody)
     );
     const collateralToken = window.adrena.client.tokens.find((t) =>
-        t.mint.equals(order.collateralCustody)
+        t.custody?.equals(order.collateralCustody)
     );
 
     const tradeTokenPrice = useSelector((s) =>
@@ -113,14 +113,14 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                         <div className="flex items-start gap-1">
                             <FormatNumber
                                 nb={order.amount}
-                                precision={token.displayAmountDecimalsPrecision}
+                                precision={collateralToken.displayAmountDecimalsPrecision}
                                 className={POSITION_BLOCK_STYLES.text.white}
                             />
                             <Image
-                                className="w-3 h-3 rounded-full"
+                                className="w-3.5 h-3.5 rounded-full"
                                 src={collateralToken.image}
-                                width={13}
-                                height={13}
+                                width={200}
+                                height={200}
                                 alt={`${collateralToken.symbol} logo`}
                             />
                         </div>
@@ -184,13 +184,6 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                     isCompact && "col-span-2 col-start-2 row-start-2 w-1/2 justify-self-end",
                     isBig && "col-span-1 col-start-5 row-start-1 w-full justify-end"
                 )}>
-                    <Button
-                        size="xs"
-                        className={isBig ? POSITION_BLOCK_STYLES.button.base : POSITION_BLOCK_STYLES.button.filled}
-                        onClick={onCancel}
-                        title="Edit"
-                        rounded={false}
-                    />
                     <Button
                         size="xs"
                         className={isBig ? POSITION_BLOCK_STYLES.button.base : POSITION_BLOCK_STYLES.button.filled}

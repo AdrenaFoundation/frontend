@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import InputNumber from '@/components/common/InputNumber/InputNumber';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { Token } from '@/types';
 
 import { ErrorDisplay } from './ErrorDisplay';
 import { calculateLimitOrderTriggerPrice } from './utils';
@@ -17,6 +18,8 @@ interface LimitOrderContentProps {
     limitOrderSlippage: number | null;
     insufficientAmount: boolean;
     errorMessage: string | null;
+    tokenA: Token;
+    tokenB: Token;
     onTriggerPriceChange: (price: number | null) => void;
     onSlippageChange: (slippage: number | null) => void;
     onAddLimitOrder: () => void;
@@ -29,6 +32,8 @@ export const LimitOrderContent = ({
     limitOrderSlippage,
     insufficientAmount,
     errorMessage,
+    tokenA,
+    tokenB,
     onTriggerPriceChange,
     onSlippageChange,
     onAddLimitOrder,
@@ -115,7 +120,13 @@ export const LimitOrderContent = ({
             ))}
         </div>
 
-        {errorMessage && <ErrorDisplay errorMessage={errorMessage} />}
+        {
+            side === 'short' && tokenA.symbol !== 'USDC' ?
+                <ErrorDisplay errorMessage="Only USDC is allowed as collateral for short positions" /> :
+                side === 'long' && tokenA.symbol !== tokenB.symbol ?
+                    <ErrorDisplay errorMessage="You must provide the same token as collateral for long positions" /> :
+                    errorMessage && <ErrorDisplay errorMessage={errorMessage} />
+        }
 
         <Button
             className={twMerge(
@@ -124,7 +135,7 @@ export const LimitOrderContent = ({
             )}
             size="lg"
             title="Add Limit Order"
-            disabled={limitOrderTriggerPrice === null || insufficientAmount || errorMessage !== null}
+            disabled={limitOrderTriggerPrice === null || insufficientAmount || errorMessage !== null || (side === 'short' && tokenA.symbol !== 'USDC') || (side === 'long' && tokenA.symbol !== tokenB.symbol)}
             onClick={onAddLimitOrder}
         />
     </>

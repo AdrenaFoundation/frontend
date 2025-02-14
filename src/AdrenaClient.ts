@@ -432,29 +432,39 @@ export class AdrenaClient {
 
     if (!limitOrderBook) return null;
 
-    const collateralToken = this.tokens.find((t) =>
-      t.mint.equals(limitOrderBook.limitOrders[0].collateralCustody),
+    const custodyToken = this.tokens.find((t) =>
+      t.custody?.equals(limitOrderBook.limitOrders[0].custody),
     );
 
-    if (!collateralToken) return null;
+    if (!custodyToken) return null;
 
     const limitOrderBookExtended: LimitOrderBookExtended = {
       initialized: limitOrderBook.initialized,
       registeredLimitOrderCount: limitOrderBook.registeredLimitOrderCount,
       owner: limitOrderBook.owner,
-      limitOrders: limitOrderBook.limitOrders.map((order) => ({
-        id: order.id.toNumber(),
-        triggerPrice: nativeToUi(order.triggerPrice, PRICE_DECIMALS),
-        limitPrice: order.limitPrice
-          ? nativeToUi(order.limitPrice, PRICE_DECIMALS)
-          : null,
-        custody: order.custody,
-        collateralCustody: order.collateralCustody,
-        side: order.side === 1 ? 'long' : 'short',
-        initialized: order.initialized,
-        amount: nativeToUi(order.amount, collateralToken.decimals),
-        leverage: order.leverage / BPS,
-      })),
+      limitOrders: limitOrderBook.limitOrders
+        .filter(
+          (order) =>
+            order.custody.toBase58() !== PublicKey.default.toBase58() &&
+            order.collateralCustody.toBase58() !== PublicKey.default.toBase58(),
+        )
+        .map((order) => ({
+          id: order.id.toNumber(),
+          triggerPrice: nativeToUi(order.triggerPrice, PRICE_DECIMALS),
+          limitPrice: order.limitPrice
+            ? nativeToUi(order.limitPrice, PRICE_DECIMALS)
+            : null,
+          custody: order.custody,
+          collateralCustody: order.collateralCustody,
+          side: order.side === 1 ? 'long' : 'short',
+          initialized: order.initialized,
+          amount: nativeToUi(
+            order.amount,
+            this.tokens.find((t) => t.custody?.equals(order.collateralCustody))
+              ?.decimals ?? 0,
+          ),
+          leverage: order.leverage / BPS,
+        })),
       escrowedLamports: nativeToUi(limitOrderBook.escrowedLamports, 9), // SOL has 9 decimals
       pubkey: this.getLimitOrderBookPda(wallet),
     };
@@ -3447,11 +3457,11 @@ export class AdrenaClient {
   public async cancelLimitOrder({
     id,
     notification,
-    collateralMint,
+    collateralCustody,
   }: {
     id: number;
     notification?: MultiStepNotification;
-    collateralMint: PublicKey;
+    collateralCustody: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3459,14 +3469,36 @@ export class AdrenaClient {
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
-    const receivingAccount = findATAAddressSync(owner, collateralMint);
+    const collateralCustodyInfos = this.getCustodyByPubkey(collateralCustody);
+
+    if (!collateralCustodyInfos) {
+      throw new Error('Collateral custody not found');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
+        owner,
+        mint: collateralCustodyInfos.mint,
+        preInstructions,
+      });
+
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const cortex = AdrenaClient.cortexPda;
     const pool = this.mainPool.pubkey;
-    const collateralCustody = this.getCustodyByMint(collateralMint);
 
     const limitOrderBook = this.getLimitOrderBookPda(owner);
-    const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
+
+    console.log('limitOrderBook', limitOrderBook.toBase58());
+
+    const collateralEscrow = this.getCollateralEscrowPda(
+      owner,
+      collateralCustodyInfos.mint,
+    );
+
+    console.log('collateralEscrow', collateralEscrow.toBase58());
+    console.log('preInstructions', preInstructions);
 
     const transaction = await this.adrenaProgram.methods
       .cancelLimitOrder({
@@ -3480,12 +3512,13 @@ export class AdrenaClient {
         pool,
         limitOrderBook,
         collateralEscrow,
-        collateralCustodyMint: collateralCustody.mint,
-        collateralCustody: collateralCustody.pubkey,
+        collateralCustodyMint: collateralCustodyInfos.mint,
+        collateralCustody: collateralCustodyInfos.pubkey,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
+      .preInstructions(preInstructions)
       .transaction();
 
     return this.signAndExecuteTxAlternative({
@@ -3524,21 +3557,46 @@ export class AdrenaClient {
       side,
       collateralAmount,
       leverage,
-      mint,
-      collateralMint,
+      mint.toBase58(),
+      collateralMint.toBase58(),
     );
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
-    const fundingAccount = findATAAddressSync(owner, collateralMint);
+
+    const usdcToken = this.getUsdcToken();
+    const fundingAccount = findATAAddressSync(
+      owner,
+      side === 'long' ? mint : usdcToken?.mint,
+    );
+
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const cortex = AdrenaClient.cortexPda;
     const pool = this.mainPool.pubkey;
     const custody = this.getCustodyByMint(mint);
     const collateralCustody = this.getCustodyByMint(collateralMint);
-
     const limitOrderBook = this.getLimitOrderBookPda(owner);
     const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
+
+    const limitOrderBookAccount =
+      await this.adrenaProgram.account.limitOrderBook.fetchNullable(
+        limitOrderBook,
+      );
+    const preInstructions: TransactionInstruction[] = [];
+
+    if (!limitOrderBookAccount) {
+      const initLimitOrderBookIx = await this.adrenaProgram.methods
+        .initLimitOrderBook()
+        .accountsStrict({
+          owner,
+          pool,
+          limitOrderBook,
+          systemProgram: SystemProgram.programId,
+        })
+        .instruction();
+
+      preInstructions.push(initLimitOrderBookIx);
+    }
 
     const transaction = await this.adrenaProgram.methods
       .addLimitOrder({
@@ -3563,6 +3621,7 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
+      .preInstructions(preInstructions)
       .transaction();
 
     return this.signAndExecuteTxAlternative({
