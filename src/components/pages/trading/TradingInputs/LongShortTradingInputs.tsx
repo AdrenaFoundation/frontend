@@ -239,7 +239,7 @@ export default function LongShortTradingInputs({
     try {
       await window.adrena.client.addLimitOrder({
         triggerPrice: inputState.limitOrderTriggerPrice,
-        limitPrice: inputState.limitOrderSlippage === null ? inputState.limitOrderTriggerPrice : calculateLimitOrderLimitPrice({
+        limitPrice: inputState.limitOrderSlippage === null ? null : calculateLimitOrderLimitPrice({
           limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
           percent: inputState.limitOrderSlippage,
           side,

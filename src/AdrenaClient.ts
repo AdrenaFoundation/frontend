@@ -3538,7 +3538,7 @@ export class AdrenaClient {
     collateralMint,
   }: {
     triggerPrice: number;
-    limitPrice: number;
+    limitPrice: number | null;
     side: 'long' | 'short';
     collateralAmount: BN;
     leverage: number;
@@ -3549,17 +3549,6 @@ export class AdrenaClient {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
-
-    console.log(
-      'addLimitOrder',
-      triggerPrice,
-      limitPrice,
-      side,
-      collateralAmount,
-      leverage,
-      mint.toBase58(),
-      collateralMint.toBase58(),
-    );
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
@@ -3601,7 +3590,7 @@ export class AdrenaClient {
     const transaction = await this.adrenaProgram.methods
       .addLimitOrder({
         triggerPrice: uiToNative(triggerPrice, PRICE_DECIMALS),
-        limitPrice: uiToNative(limitPrice, PRICE_DECIMALS),
+        limitPrice: limitPrice ? uiToNative(limitPrice, PRICE_DECIMALS) : null,
         side: side === 'long' ? 1 : 2,
         amount: collateralAmount,
         leverage,
