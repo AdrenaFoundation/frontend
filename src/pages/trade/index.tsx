@@ -399,9 +399,7 @@ export default function Trade({
 
               {view === 'limitOrder' ? (
                 <div className="flex flex-col w-full p-4">
-                  <LimitOrder
-                    selectedToken={tokenB}
-                  />
+                  <LimitOrder />
                 </div>
               ) : null}
             </div>
@@ -458,9 +456,7 @@ export default function Trade({
 
               {view === 'limitOrder' ? (
                 <div className="mt-1 w-full p-4">
-                  <LimitOrder
-                    selectedToken={tokenB}
-                  />
+                  <LimitOrder />
                 </div>
               ) : null}
 
