@@ -151,6 +151,19 @@ export function PositionBlock({
     </div>
   );
 
+  const editIcon = !readOnly && (
+    <svg
+      className="w-2.5 h-2.5 opacity-70 group-hover:opacity-100 transition-opacity ml-0.5 mt-[0.14rem]"
+      viewBox="0 0 24 24"
+    >
+      <path
+        fill="currentColor"
+        d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"
+      />
+    </svg>
+  )
+
+
   return (
     <>
       <div
@@ -227,11 +240,20 @@ export function PositionBlock({
             <ValueColumn
               label="Collateral"
               value={
-                <FormatNumber
-                  nb={position.collateralUsd}
-                  format="currency"
-                  className={POSITION_BLOCK_STYLES.text.white}
-                />
+                <div
+                  className={twMerge(
+                    "flex rounded w-fit",
+                    !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                  )}
+                  onClick={!readOnly ? () => triggerEditPositionCollateral?.(position) : undefined}
+                >
+                  <FormatNumber
+                    nb={position.collateralUsd}
+                    format="currency"
+                    className={POSITION_BLOCK_STYLES.text.white}
+                  />
+                  {editIcon}
+                </div>
               }
               tooltip={
                 <FormatNumber
@@ -295,6 +317,7 @@ export function PositionBlock({
                     className={POSITION_BLOCK_STYLES.text.orange}
                     isDecimalDimmed={false}
                   />
+                  {editIcon}
                 </div>
               }
               columnClasses={columnClasses}
@@ -328,14 +351,15 @@ export function PositionBlock({
                   {position.takeProfitIsSet &&
                     position.takeProfitLimitPrice &&
                     position.takeProfitLimitPrice > 0 ? (
-                    <span className="flex">
+                    <>
                       <FormatNumber
                         nb={position.takeProfitLimitPrice}
                         format="currency"
                         className={POSITION_BLOCK_STYLES.text.blue}
                         isDecimalDimmed={false}
                       />
-                    </span>
+                      {editIcon}
+                    </>
                   ) : (
                     <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
                   )}
@@ -357,15 +381,17 @@ export function PositionBlock({
                   {position.stopLossIsSet &&
                     position.stopLossLimitPrice &&
                     position.stopLossLimitPrice > 0 ? (
-                    <span className="flex">
+                    <>
                       <FormatNumber
                         nb={position.stopLossLimitPrice}
                         format="currency"
                         className={POSITION_BLOCK_STYLES.text.blue}
                         precision={position.token.displayPriceDecimalsPrecision}
                         minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                        isDecimalDimmed={false}
                       />
-                    </span>
+                      {editIcon}
+                    </>
                   ) : (
                     <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
                   )}
