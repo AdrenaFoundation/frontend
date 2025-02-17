@@ -1,11 +1,9 @@
 import Tippy from '@tippyjs/react';
-import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 
-import infoIcon from '../../../../public/images/Icons/info.svg';
 import StyledContainer from '../StyledContainer/StyledContainer';
 
 export default function NumberDisplay({
@@ -60,9 +58,8 @@ export default function NumberDisplay({
           }
           placement="auto"
         >
-          <div className='flex gap-1'>
+          <div className={twMerge("text-xs sm:text-sm text-txtfade font-boldy border-b border-dashed border-white/20 cursor-help", titleClassName)}>
             {title}
-            <Image src={infoIcon} width={12} height={12} alt="info icon" />
           </div>
         </Tippy> : title
       }
