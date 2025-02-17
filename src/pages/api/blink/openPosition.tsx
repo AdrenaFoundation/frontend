@@ -261,6 +261,8 @@ export default async function handler(
             hour: 'numeric',
         });
 
+        const CTA_AMOUNTS = [formatNumber(10 / Number(mark), 2), formatNumber(100 / Number(mark), 2), formatNumber(1000 / Number(mark), 2)];
+
         res.writeHead(200, ACTIONS_CORS_HEADERS).json({
             type: 'action',
             icon: `https://app.adrena.xyz/api/og?opt=${opt}&pnl=${pnl}&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&mark=${mark}&price=${price}&opened=${opened}&size=${size}&leverage=${leverage}exitPrice=${exitPrice}&collateral=${collateralUsd}`,
@@ -279,22 +281,22 @@ export default async function handler(
             links: {
                 actions: [
                     {
-                        label: '1 JITOSOL',
+                        label: `${CTA_AMOUNTS[0]} JITOSOL`,
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
                     },
                     {
-                        label: '5 JITOSOL',
+                        label: `${CTA_AMOUNTS[1]} JITOSOL`,
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
                     },
                     {
-                        label: '10 JITOSOL',
+                        label: `${CTA_AMOUNTS[2]} JITOSOL`,
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
                     },
                     {
-                        label: 'Open trade',
+                        label: `Open Trade with ${formatNumber(Number(collateralAmount), 2)} ${tokenSymbolA}`,
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
 
