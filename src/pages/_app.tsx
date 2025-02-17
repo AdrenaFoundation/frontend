@@ -1,7 +1,7 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
-import { Connection } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { AppProps } from 'next/app';
@@ -40,6 +40,7 @@ import {
 
 import logo from '../../public/images/logo.svg';
 import store, { useDispatch, useSelector } from '../store/store';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 
 function Loader(): JSX.Element {
   return (
