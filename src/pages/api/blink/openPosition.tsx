@@ -281,17 +281,17 @@ export default async function handler(
             links: {
                 actions: [
                     {
-                        label: `${CTA_AMOUNTS[0]} JITOSOL`,
+                        label: `${CTA_AMOUNTS[0]} ${tokenSymbolA}`,
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
                     },
                     {
-                        label: `${CTA_AMOUNTS[1]} JITOSOL`,
+                        label: `${CTA_AMOUNTS[1]} ${tokenSymbolA}`,
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
                     },
                     {
-                        label: `${CTA_AMOUNTS[2]} JITOSOL`,
+                        label: `${CTA_AMOUNTS[2]} ${tokenSymbolA}`,
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
                     },
