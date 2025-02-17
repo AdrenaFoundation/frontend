@@ -261,7 +261,7 @@ export default async function handler(
             hour: 'numeric',
         });
 
-        const CTA_AMOUNTS = [formatNumber(10 / Number(mark), 2), formatNumber(100 / Number(mark), 2), formatNumber(1000 / Number(mark), 2)];
+        const CTA_AMOUNTS = [formatNumber(10 / Number(mark), ['WBTC', 'BONK'].includes(tokenSymbolA as string) ? 4 : 2), formatNumber(100 / Number(mark), ['WBTC', 'BONK'].includes(tokenSymbolA as string) ? 4 : 2), formatNumber(1000 / Number(mark), ['WBTC', 'BONK'].includes(tokenSymbolA as string) ? 4 : 2)];
 
         res.writeHead(200, ACTIONS_CORS_HEADERS).json({
             type: 'action',
