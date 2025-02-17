@@ -360,6 +360,10 @@ export default function Stake({
         owner,
         stakedTokenMint,
         notification,
+        // TODO: replace this with a proper system allowing the user to claim on a TA instead of the ATA, but pretty niche usecase tbh
+        // Special override for a user that has a different reward token account following a hack
+        overrideRewardTokenAccount: owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs' ?
+          new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
       });
 
       const optimisticClaim = {
