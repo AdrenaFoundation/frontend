@@ -361,7 +361,15 @@ export function PositionBlock({
                       {editIcon}
                     </>
                   ) : (
-                    <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
+                    <>
+                      <div className={twMerge(
+                        "flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 gap-0.5",
+                      )}
+                      >
+                        <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
+                        {editIcon}
+                      </div>
+                    </>
                   )}
                 </div>
               }
@@ -393,7 +401,15 @@ export function PositionBlock({
                       {editIcon}
                     </>
                   ) : (
-                    <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
+                    <>
+                      <div className={twMerge(
+                        "flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 gap-0.5",
+                      )}
+                      >
+                        <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
+                        {editIcon}
+                      </div>
+                    </>
                   )}
                 </div>
               }
