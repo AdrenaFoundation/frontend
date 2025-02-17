@@ -64,7 +64,6 @@ export default function TradingStats({
         footer={
           <div className='text-xxs flex items-center justify-center text-txtfade mt-1'>{showAfterFees ? 'with fees' : 'without fees'}</div>
         }
-      //  tippyInfo='This is the sum of all your profits and losses over all trades. Does not include fees.'
       />
 
       <NumberDisplay

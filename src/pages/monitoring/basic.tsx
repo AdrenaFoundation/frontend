@@ -118,7 +118,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="ALP Rolling 7D fees APR"
+              title="ALP Rolling 7D APR"
               nb={aprs?.lp ?? null}
               format="percentage"
               precision={2}
@@ -126,11 +126,12 @@ export default function BasicMonitoring({
               className='border-0 min-w-[12em]'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
-              titleClassName='text-[0.7em] sm:text-[0.7em]'
+              titleClassName='text-[0.85em] sm:text-[0.85em]'
+              tippyInfo='Average yield for 180d staked ALP in the last 7 days'
             />
 
             <NumberDisplay
-              title="ADX Rolling 7D fees APR"
+              title="ADX Rolling 7D APR"
               nb={aprs?.lm ?? null}
               format="percentage"
               precision={2}
@@ -138,7 +139,8 @@ export default function BasicMonitoring({
               className='border-0 min-w-[12em]'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
-              titleClassName='text-[0.7em] sm:text-[0.7em]'
+              titleClassName='text-[0.85em] sm:text-[0.85em]'
+              tippyInfo='Average yield for 540d staked ADX in the last 7 days'
             />
           </div>
         </StyledContainer>
