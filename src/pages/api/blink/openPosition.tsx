@@ -279,9 +279,25 @@ export default async function handler(
             links: {
                 actions: [
                     {
+                        label: '1 JITOSOL',
+                        href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
+                        type: 'transaction',
+                    },
+                    {
+                        label: '5 JITOSOL',
+                        href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
+                        type: 'transaction',
+                    },
+                    {
+                        label: '10 JITOSOL',
+                        href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
+                        type: 'transaction',
+                    },
+                    {
                         label: 'Open trade',
                         href: `/api/blink/openPosition?tokenSymbolA=${tokenSymbolA}&tokenSymbolB=${tokenSymbolB}&leverage=${leverage}&collateralAmount=${collateralAmount}&side=${side}&referrer=${referrer}`,
                         type: 'transaction',
+
                         // parameters: [
                         //     {
                         //         label: `Leverage (current: ${Number(leverage).toFixed(2)})`,
