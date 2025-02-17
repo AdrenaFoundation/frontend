@@ -3045,19 +3045,25 @@ export class AdrenaClient {
     owner,
     stakedTokenMint,
     notification,
+    caller = owner,
+    overrideRewardTokenAccount,
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
     notification: MultiStepNotification;
+    caller?: PublicKey;
+    overrideRewardTokenAccount?: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
-    const builder = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction({
       owner,
       stakedTokenMint,
-    );
+      caller,
+      overrideRewardTokenAccount,
+    });
     const transaction = await builder.transaction();
 
     return this.signAndExecuteTxAlternative({
@@ -3067,10 +3073,17 @@ export class AdrenaClient {
   }
 
   // Simulation for getting pending rewards
-  public async simulateClaimStakes(
-    owner: PublicKey,
-    stakedTokenMint: PublicKey,
-  ): Promise<{
+  public async simulateClaimStakes({
+    owner,
+    stakedTokenMint,
+    caller = owner,
+    overrideRewardTokenAccount,
+  }: {
+    owner: PublicKey;
+    stakedTokenMint: PublicKey;
+    caller?: PublicKey;
+    overrideRewardTokenAccount?: PublicKey;
+  }): Promise<{
     pendingUsdcRewards: number;
     pendingAdxRewards: number;
     pendingGenesisAdxRewards: number;
@@ -3082,10 +3095,12 @@ export class AdrenaClient {
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
       .wallet;
 
-    const builder = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction({
       owner,
       stakedTokenMint,
-    );
+      caller,
+      overrideRewardTokenAccount,
+    });
 
     builder.preInstructions([
       ComputeBudgetProgram.setComputeUnitLimit({
@@ -5338,10 +5353,17 @@ export class AdrenaClient {
     return this.tokens.find((token) => token.symbol === symbol) ?? null;
   }
 
-  private async buildClaimStakesInstruction(
-    owner: PublicKey,
-    stakedTokenMint: PublicKey,
-  ) {
+  private async buildClaimStakesInstruction({
+    owner,
+    stakedTokenMint,
+    caller = owner,
+    overrideRewardTokenAccount,
+  }: {
+    owner: PublicKey;
+    stakedTokenMint: PublicKey;
+    caller: PublicKey;
+    overrideRewardTokenAccount?: PublicKey;
+  }) {
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
     const adrenaProgram = this.adrenaProgram;
 
@@ -5354,12 +5376,15 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const rewardTokenAccount =
+    const rewardTokenAccount = typeof overrideRewardTokenAccount === 'undefined' ?
       await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: stakingRewardTokenMint,
         preInstructions,
-      });
+      }): overrideRewardTokenAccount;
+
+    console.log('>>> REWARD TOKEN ACCOUNT', rewardTokenAccount.toBase58());
+
     const lmTokenAccount =
       await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
@@ -5373,8 +5398,8 @@ export class AdrenaClient {
       this.getStakingLmRewardTokenVaultPda(staking);
 
     const accounts = {
-      caller: owner,
-      payer: owner,
+      caller,
+      payer: caller,
       owner,
       rewardTokenAccount,
       lmTokenAccount,
