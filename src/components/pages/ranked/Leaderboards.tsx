@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -26,12 +26,25 @@ function getWeekIndexFromWeek(week: string): number {
 const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
 
 export default function Leaderboards() {
-    const [week, setWeek] = useState<string>('Week 2');
+    const [week, setWeek] = useState<string>('Week 1');
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
     const wallet = useSelector((s) => s.walletState.wallet);
     const leaderboardData = useExpanseData({ allUserProfilesMetadata });
     const isMobile = useBetterMediaQuery('(max-width: 25em)');
     const isLarge = useBetterMediaQuery('(min-width: 1500px)');
+
+    useEffect(() => {
+        if (!leaderboardData) return;
+
+        const week = leaderboardData.weekLeaderboard.findIndex((week) => {
+            return new Date(week.startDate).getTime() <= Date.now() && new Date(week.endDate).getTime() >= Date.now();
+        });
+
+        if (week !== -1) {
+            setWeek(`Week ${week + 1}`);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [!!leaderboardData]);
 
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
