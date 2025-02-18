@@ -15,7 +15,12 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatTimeDifference, getFullTimeDifference, getTokenImage, getTokenSymbol } from '@/utils';
+import {
+  formatTimeDifference,
+  getFullTimeDifference,
+  getTokenImage,
+  getTokenSymbol,
+} from '@/utils';
 
 import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
@@ -102,7 +107,8 @@ export function PositionBlock({
     )
       return;
 
-    if (position.side === 'long') return tradeTokenPrice < position.liquidationPrice;
+    if (position.side === 'long')
+      return tradeTokenPrice < position.liquidationPrice;
 
     // Short
     return tradeTokenPrice > position.liquidationPrice;
@@ -194,11 +200,7 @@ export function PositionBlock({
       {position.pnl ? (
         <div className="flex items-center">
           <FormatNumber
-            nb={
-              showAfterFees
-                ? position.pnl
-                : position.pnl - fees
-            }
+            nb={showAfterFees ? position.pnl : position.pnl - fees}
             format="currency"
             minimumFractionDigits={2}
             className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
@@ -284,29 +286,31 @@ export function PositionBlock({
                 {positionName}
                 {ownerInfo}
               </div>
-            ) : <div className="border-b flex-1 flex w-full justify-center p-3">
-              {positionName}
-            </div>}
+            ) : (
+              <div className="border-b flex-1 flex w-full justify-center p-3">
+                {positionName}
+              </div>
+            )}
             <div className="border-b flex-1 flex w-full justify-between p-3">
               {pnl}
               {netValue}
             </div>
           </div>
+        ) : readOnly ? (
+          <div className="flex border-b p-3 justify-between items-center flex-wrap w-full">
+            {positionName}
+            {ownerInfo}
+            {pnl}
+            {netValue}
+          </div>
         ) : (
-          readOnly ? (
-            <div className="flex border-b p-3 justify-between items-center flex-wrap w-full">
-              {positionName}
-              {ownerInfo}
+          <div className="flex border-b p-3 items-center w-full relative">
+            <div className="flex items-center">{positionName}</div>
+            <div className="ml-auto lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               {pnl}
-              {netValue}
             </div>
-          ) : (
-            <div className="flex border-b p-3 items-center w-full relative">
-              <div className="flex items-center">{positionName}</div>
-              <div className="ml-auto lg:absolute lg:left-1/2 lg:-translate-x-1/2">{pnl}</div>
-              <div className="ml-auto">{netValue}</div>
-            </div>
-          )
+            <div className="ml-auto">{netValue}</div>
+          </div>
         )}
 
         <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
@@ -317,7 +321,12 @@ export function PositionBlock({
 
             <div className="flex">
               <p className="font-mono text-gray-400 text-xs mt-1">
-                {formatTimeDifference(getFullTimeDifference(position.openDate, new Date(Date.now())))}
+                {formatTimeDifference(
+                  getFullTimeDifference(
+                    position.openDate,
+                    new Date(Date.now()),
+                  ),
+                )}
               </p>
             </div>
           </div>
@@ -333,7 +342,7 @@ export function PositionBlock({
                 format="number"
                 className="text-gray-400 text-xs mt-1"
                 suffix="x"
-                suffixClassName='text-xs'
+                suffixClassName="text-xs"
                 isDecimalDimmed={false}
               />
             </div>
@@ -348,7 +357,11 @@ export function PositionBlock({
               <Tippy
                 content={
                   <FormatNumber
-                    nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+                    nb={
+                      position.side === 'long'
+                        ? position.size
+                        : position.sizeUsd / position.price
+                    }
                     format="number"
                     className="text-gray-400 text-xs"
                     precision={position.token.displayAmountDecimalsPrecision}
@@ -436,11 +449,16 @@ export function PositionBlock({
 
             <div
               className={twMerge(
-                "flex mt-1 rounded",
-                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                'flex mt-1 rounded',
+                !readOnly &&
+                'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
               )}
-              onClick={!readOnly ? () => triggerEditPositionCollateral?.(position) : undefined}
-              role={!readOnly ? "button" : undefined}
+              onClick={
+                !readOnly
+                  ? () => triggerEditPositionCollateral?.(position)
+                  : undefined
+              }
+              role={!readOnly ? 'button' : undefined}
               tabIndex={!readOnly ? 0 : undefined}
             >
               <FormatNumber
@@ -475,11 +493,16 @@ export function PositionBlock({
             </div>
             <div
               className={twMerge(
-                "flex mt-1 rounded",
-                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                'flex mt-1 rounded',
+                !readOnly &&
+                'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
               )}
-              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
-              role={!readOnly ? "button" : undefined}
+              onClick={
+                !readOnly
+                  ? () => triggerStopLossTakeProfit?.(position)
+                  : undefined
+              }
+              role={!readOnly ? 'button' : undefined}
               tabIndex={!readOnly ? 0 : undefined}
             >
               {position.takeProfitIsSet &&
@@ -503,11 +526,16 @@ export function PositionBlock({
             </div>
             <div
               className={twMerge(
-                "flex mt-1 rounded",
-                !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                'flex mt-1 rounded',
+                !readOnly &&
+                'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
               )}
-              onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
-              role={!readOnly ? "button" : undefined}
+              onClick={
+                !readOnly
+                  ? () => triggerStopLossTakeProfit?.(position)
+                  : undefined
+              }
+              role={!readOnly ? 'button' : undefined}
               tabIndex={!readOnly ? 0 : undefined}
             >
               {position.stopLossIsSet &&
@@ -573,7 +601,11 @@ export function PositionBlock({
             <Button
               size="xs"
               className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-              title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
+              title={
+                closableIn === 0 || closableIn === null
+                  ? 'Close'
+                  : `Close (${Math.floor(closableIn / 1000)}s)`
+              }
               rounded={false}
               disabled={closableIn !== 0}
               onClick={() => {
@@ -598,18 +630,22 @@ export function PositionBlock({
             <h2 className="text-red text-xs">Liquidable</h2>
           </div>
         ) : null}
-      </div >
+      </div>
 
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Share PnL" close={() => setIsOpen(false)} className="overflow-y-auto"
-            wrapperClassName="h-[80vh] sm:h-auto">
+          <Modal
+            title="Share PnL"
+            close={() => setIsOpen(false)}
+            className="overflow-y-auto"
+            wrapperClassName="h-[80vh] sm:h-auto"
+          >
             <div className="absolute top-0 w-[300px]">
               {(() => {
-                const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
-                const pnlUsd = position.pnl
-                  ? position.pnl - fees
-                  : null;
+                const fees = -(
+                  (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0)
+                );
+                const pnlUsd = position.pnl ? position.pnl - fees : null;
 
                 if (!pnlUsd || pnlUsd < 0) return;
 
