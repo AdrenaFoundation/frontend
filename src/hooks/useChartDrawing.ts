@@ -35,7 +35,7 @@ export type PositionChartLine = {
   value: number;
 };
 
-function drawHorizontalLine({
+async function drawHorizontalLine({
   chart,
   price,
   text,
@@ -53,7 +53,7 @@ function drawHorizontalLine({
   linestyle?: number;
   linewidth?: number;
   horzLabelsAlign?: 'left' | 'middle ' | 'right';
-}): EntityId {
+}): Promise<EntityId> {
   if (chart === null) {
     throw new Error('Chart is not ready');
   }
@@ -83,7 +83,7 @@ function drawHorizontalLine({
         },
         text,
       },
-    ) as EntityId;
+    );
   } catch (e) {
     console.error('[CHART] ERROR CREATING LINE', e);
     throw new Error(`Error drawing line: ${e}`);
@@ -111,7 +111,7 @@ function deleteDetachedPositionLines(
   });
 }
 
-function handlePositionLine({
+async function handlePositionLine({
   chart,
   position,
   text,
@@ -135,7 +135,7 @@ function handlePositionLine({
   linestyle: number;
   linewidth: number;
   horzLabelsAlign?: 'left' | 'middle ' | 'right';
-}): PositionChartLine[] {
+}): Promise<PositionChartLine[]> {
   const existingLineIndex = positionChartLines.findIndex(
     (line) =>
       line.position === position.pubkey.toBase58() && line.type === type,
@@ -165,7 +165,7 @@ function handlePositionLine({
     chart.removeEntity(positionChartLines[existingLineIndex].id);
   }
 
-  const id = drawHorizontalLine({
+  const id = await drawHorizontalLine({
     chart,
     text,
     price,
@@ -200,7 +200,7 @@ function handlePositionEntryPriceLine(params: {
   position: PositionExtended;
   toggleSizeUsdInChart: boolean;
   positionChartLines: PositionChartLine[];
-}): PositionChartLine[] {
+}): Promise<PositionChartLine[]> {
   return handlePositionLine({
     ...params,
     type: 'entry',
@@ -222,7 +222,7 @@ function handlePositionLiquidationLine(params: {
   position: PositionExtended;
   toggleSizeUsdInChart: boolean;
   positionChartLines: PositionChartLine[];
-}): PositionChartLine[] {
+}): Promise<PositionChartLine[]> {
   return handlePositionLine({
     ...params,
     type: 'liquidation',
@@ -244,7 +244,7 @@ function handlePositionTakeProfitLine(params: {
   position: PositionExtended;
   toggleSizeUsdInChart: boolean;
   positionChartLines: PositionChartLine[];
-}): PositionChartLine[] {
+}): Promise<PositionChartLine[]> {
   return handlePositionLine({
     ...params,
     type: 'takeProfit',
@@ -266,7 +266,7 @@ function handlePositionStopLossLine(params: {
   position: PositionExtended;
   toggleSizeUsdInChart: boolean;
   positionChartLines: PositionChartLine[];
-}): PositionChartLine[] {
+}): Promise<PositionChartLine[]> {
   return handlePositionLine({
     ...params,
     type: 'stopLoss',
@@ -287,7 +287,7 @@ function handlePositionBreakEvenLine(params: {
   symbol: string;
   position: PositionExtended;
   positionChartLines: PositionChartLine[];
-}): PositionChartLine[] {
+}): Promise<PositionChartLine[]> {
   return handlePositionLine({
     ...params,
     type: 'breakEven',
@@ -405,7 +405,7 @@ export function useChartDrawing({
       }
 
       // Draw lines for each position
-      positions.forEach((position) => {
+      for (const position of positions) {
         // Ignore positions that's not related to the current chart symbol
         if (
           getTokenSymbol(position.token.symbol).toLowerCase() !==
@@ -414,48 +414,54 @@ export function useChartDrawing({
           return;
         }
 
-        updatedPositionChartLines = handlePositionEntryPriceLine({
+        handlePositionEntryPriceLine({
           chart,
           position,
           toggleSizeUsdInChart,
           positionChartLines: updatedPositionChartLines,
           symbol,
-        });
-
-        updatedPositionChartLines = handlePositionLiquidationLine({
+        })
+        .then((updatedPositionChartLines) => handlePositionLiquidationLine({
+            chart,
+            position,
+            toggleSizeUsdInChart,
+            positionChartLines: updatedPositionChartLines,
+            symbol,
+          }))
+        .then((updatedPositionChartLines) => handlePositionTakeProfitLine({
           chart,
           position,
           toggleSizeUsdInChart,
           positionChartLines: updatedPositionChartLines,
           symbol,
-        });
-
-        updatedPositionChartLines = handlePositionTakeProfitLine({
+        }))
+        .then((updatedPositionChartLines) => handlePositionStopLossLine({
           chart,
           position,
           toggleSizeUsdInChart,
           positionChartLines: updatedPositionChartLines,
           symbol,
-        });
+        }))
+        .then((updatedPositionChartLines) => {
+          if (!showBreakEvenLine) {
+            return updatedPositionChartLines;
+          }
 
-        updatedPositionChartLines = handlePositionStopLossLine({
-          chart,
-          position,
-          toggleSizeUsdInChart,
-          positionChartLines: updatedPositionChartLines,
-          symbol,
-        });
-
-        if (showBreakEvenLine)
-          updatedPositionChartLines = handlePositionBreakEvenLine({
+          return handlePositionBreakEvenLine({
             chart,
             position,
             positionChartLines: updatedPositionChartLines,
             symbol,
           });
-      });
-
-      setPositionChartLines(updatedPositionChartLines);
+        })
+        .then((updatedPositionChartLines) => {
+          setPositionChartLines(updatedPositionChartLines);
+        })
+        .catch((e) => {
+          console.log('Chart error', e);
+          drawingErrorCallback();
+        });
+      }
     } catch {
       drawingErrorCallback();
     }
