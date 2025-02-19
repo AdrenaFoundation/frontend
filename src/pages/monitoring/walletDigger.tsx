@@ -409,6 +409,7 @@ export default function WalletDigger({
                             walletAddress={targetWalletPubkey?.toBase58() ?? null}
                             connected={true}
                             showFeesInPnl={showFeesInPnl}
+                            exportButtonPosition='bottom-left'
                         />
                     </div></> : null}
 

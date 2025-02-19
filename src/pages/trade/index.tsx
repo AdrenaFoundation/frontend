@@ -364,6 +364,7 @@ export default function Trade({
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
                     showFeesInPnl={showFeesInPnl}
+                    exportButtonPosition='top-right'
                   />
                 </div>
               ) : (
@@ -409,6 +410,7 @@ export default function Trade({
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
                     showFeesInPnl={showFeesInPnl}
+                    exportButtonPosition='top-right'
                   />
                 </div>
               ) : (
