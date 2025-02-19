@@ -302,6 +302,7 @@ export type LimitOrder = {
   limitPrice: number | null;
   custody: PublicKey;
   collateralCustody: PublicKey;
+  custodySymbol: TokenSymbol;
   side: 'long' | 'short';
   initialized: number;
   amount: number;

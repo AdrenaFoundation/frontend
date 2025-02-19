@@ -88,6 +88,7 @@ import {
   DEFAULT_PRIORITY_FEE_OPTION,
   DEFAULT_PRIORITY_FEES,
   findATAAddressSync,
+  getTokenSymbol,
   isAccountInitialized,
   nativeToUi,
   parseTransactionError,
@@ -432,39 +433,44 @@ export class AdrenaClient {
 
     if (!limitOrderBook) return null;
 
-    const custodyToken = this.tokens.find((t) =>
-      t.custody?.equals(limitOrderBook.limitOrders[0].custody),
-    );
-
-    if (!custodyToken) return null;
-
     const limitOrderBookExtended: LimitOrderBookExtended = {
       initialized: limitOrderBook.initialized,
       registeredLimitOrderCount: limitOrderBook.registeredLimitOrderCount,
       owner: limitOrderBook.owner,
-      limitOrders: limitOrderBook.limitOrders
-        .filter(
-          (order) =>
-            order.custody.toBase58() !== PublicKey.default.toBase58() &&
-            order.collateralCustody.toBase58() !== PublicKey.default.toBase58(),
-        )
-        .map((order) => ({
-          id: order.id.toNumber(),
-          triggerPrice: nativeToUi(order.triggerPrice, PRICE_DECIMALS),
-          limitPrice: order.limitPrice
-            ? nativeToUi(order.limitPrice, PRICE_DECIMALS)
-            : null,
-          custody: order.custody,
-          collateralCustody: order.collateralCustody,
-          side: order.side === 1 ? 'long' : 'short',
-          initialized: order.initialized,
-          amount: nativeToUi(
-            order.amount,
-            this.tokens.find((t) => t.custody?.equals(order.collateralCustody))
-              ?.decimals ?? 0,
-          ),
-          leverage: order.leverage / BPS,
-        })),
+      limitOrders:
+        limitOrderBook.limitOrders.length > 0
+          ? limitOrderBook.limitOrders
+              .filter(
+                (order) =>
+                  order.custody.toBase58() !== PublicKey.default.toBase58() &&
+                  order.collateralCustody.toBase58() !==
+                    PublicKey.default.toBase58(),
+              )
+              .map((order) => {
+                const custodyToken = this.tokens.find((t) =>
+                  t.custody?.equals(order.custody),
+                );
+
+                if (!custodyToken) return null;
+
+                return {
+                  id: order.id.toNumber(),
+                  triggerPrice: nativeToUi(order.triggerPrice, PRICE_DECIMALS),
+                  limitPrice: order.limitPrice
+                    ? nativeToUi(order.limitPrice, PRICE_DECIMALS)
+                    : null,
+                  custody: order.custody,
+                  collateralCustody: order.collateralCustody,
+                  custodySymbol: getTokenSymbol(custodyToken.symbol),
+                  side:
+                    order.side === 1 ? ('long' as const) : ('short' as const),
+                  initialized: order.initialized,
+                  amount: nativeToUi(order.amount, custodyToken.decimals),
+                  leverage: order.leverage / BPS,
+                };
+              })
+              .filter((order) => !!order)
+          : [],
       escrowedLamports: nativeToUi(limitOrderBook.escrowedLamports, 9), // SOL has 9 decimals
       pubkey: this.getLimitOrderBookPda(wallet),
     };

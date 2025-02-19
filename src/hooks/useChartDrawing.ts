@@ -8,6 +8,7 @@ import {
   redColor,
 } from '@/constant';
 import {
+  LimitOrder,
   PositionExtended,
   TokenSymbol,
   TradingViewChartSavedDrawing,
@@ -25,13 +26,16 @@ export type LineType =
   | 'takeProfit'
   | 'stopLoss'
   | 'entry'
-  | 'breakEven';
+  | 'breakEven'
+  | 'limitOrderTrigger'
+  | 'limitOrderLimit';
 
 export type PositionChartLine = {
   id: EntityId;
   type: LineType;
   symbol: TokenSymbol;
   position: string;
+  orderId?: number;
   value: number;
 };
 
@@ -94,20 +98,52 @@ function getChartSymbol(chart: IChartWidgetApi): TokenSymbol {
   return chart.symbol().split('.')[1].split('/')[0];
 }
 
-// Delete all the lines that are not attached to an existing position
-function deleteDetachedPositionLines(
+function deleteDetachedLines(
   chart: IChartWidgetApi,
-  PositionChartLines: PositionChartLine[],
+  chartLines: PositionChartLine[],
   positions: PositionExtended[],
+  limitOrders: LimitOrder[],
 ): PositionChartLine[] {
-  return PositionChartLines.filter((line) => {
-    // If the drawn line is not related to an existing position, delete it
-    if (!positions.some((p) => p.pubkey.toBase58() == line.position)) {
-      chart.removeEntity(line.id);
+  return chartLines.filter((line) => {
+    try {
+      // Check if the shape still exists before trying to remove it
+      const shape = chart.getShapeById(line.id);
+      if (!shape) {
+        return false;
+      }
+
+      if (
+        line.type === 'limitOrderTrigger' ||
+        line.type === 'limitOrderLimit'
+      ) {
+        if (
+          !limitOrders.some(
+            (order) => order.id === Number(line.position.replace('limit-', '')),
+          )
+        ) {
+          try {
+            chart.removeEntity(line.id);
+          } catch {
+            console.warn('Shape already removed:', line.id);
+          }
+          return false;
+        }
+        return true;
+      }
+
+      if (!positions.some((p) => p.pubkey.toBase58() === line.position)) {
+        try {
+          chart.removeEntity(line.id);
+        } catch {
+          console.warn('Shape already removed:', line.id);
+        }
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.warn('Error checking shape:', line.id, e);
       return false;
     }
-
-    return true;
   });
 }
 
@@ -300,6 +336,67 @@ function handlePositionBreakEvenLine(params: {
   });
 }
 
+function handleLimitOrderLine({
+  chart,
+  order,
+  positionChartLines,
+  price,
+  symbol,
+  type,
+}: {
+  chart: IChartWidgetApi;
+  order: LimitOrder;
+  positionChartLines: PositionChartLine[];
+  price: number;
+  symbol: string;
+  type: 'limitOrderTrigger' | 'limitOrderLimit';
+}): PositionChartLine[] {
+  const existingLineIndex = positionChartLines.findIndex(
+    (line) => line.orderId === order.id && line.type === type,
+  );
+
+  console.log('existingLineIndex', existingLineIndex);
+
+  if (existingLineIndex !== -1) {
+    chart.removeEntity(positionChartLines[existingLineIndex].id);
+  }
+
+  const time = new Date();
+  const text = `${order.side} ${type === 'limitOrderTrigger' ? 'trigger' : 'limit'} @ ${formatPriceInfo(price)}`;
+
+  console.log('Creating limit order line with text:', text);
+
+  const id = drawHorizontalLine({
+    chart,
+    price,
+    text,
+    time,
+    color: order.side === 'long' ? greenColor : redColor,
+    linestyle: 2,
+    linewidth: 1,
+    horzLabelsAlign: 'right',
+  });
+
+  if (existingLineIndex !== -1) {
+    positionChartLines[existingLineIndex].id = id;
+    positionChartLines[existingLineIndex].value = price;
+    positionChartLines[existingLineIndex].position = `limit-${order.id}`;
+    positionChartLines[existingLineIndex].orderId = order.id;
+    return positionChartLines;
+  }
+
+  positionChartLines.push({
+    id,
+    type,
+    symbol,
+    position: `limit-${order.id}`,
+    orderId: order.id,
+    value: price,
+  });
+
+  return positionChartLines;
+}
+
 export function useChartDrawing({
   tokenSymbol,
   widget,
@@ -307,6 +404,7 @@ export function useChartDrawing({
   positions,
   showBreakEvenLine,
   toggleSizeUsdInChart,
+  limitOrders,
   // called every time a drawing fails
   drawingErrorCallback,
 }: {
@@ -316,6 +414,7 @@ export function useChartDrawing({
   positions: PositionExtended[] | null;
   showBreakEvenLine: boolean;
   toggleSizeUsdInChart: boolean;
+  limitOrders: LimitOrder[] | null;
   drawingErrorCallback: () => void;
 }): PositionChartLine[] {
   const [positionChartLines, setPositionChartLines] = useState<
@@ -326,14 +425,16 @@ export function useChartDrawing({
 
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
-  useEffect(() => {
-    // Means chart got reset
-    if (!widgetReady) {
-      setPositionChartLines([]);
-    }
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [widgetReady]);
+  useEffect(
+    () => {
+      // Means chart got reset
+      if (!widgetReady) {
+        setPositionChartLines([]);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [widgetReady],
+  );
 
   // Redraw what was saved in local storage
   useEffect(() => {
@@ -379,15 +480,15 @@ export function useChartDrawing({
 
     try {
       const symbol = getChartSymbol(chart);
-
-      // Delete lines that are not attached to an existing position
-      let updatedPositionChartLines = deleteDetachedPositionLines(
+      // Delete lines that are not attached to existing positions/orders
+      let updatedPositionChartLines = deleteDetachedLines(
         chart,
         positionChartLines,
         positions ?? [],
+        limitOrders ?? [],
       );
 
-      if (!positions) {
+      if (!positions && !limitOrders) {
         setPositionChartLines(updatedPositionChartLines);
         return;
       }
@@ -405,55 +506,84 @@ export function useChartDrawing({
       }
 
       // Draw lines for each position
-      positions.forEach((position) => {
-        // Ignore positions that's not related to the current chart symbol
-        if (
-          getTokenSymbol(position.token.symbol).toLowerCase() !==
-          symbol.toLowerCase()
-        ) {
-          return;
-        }
+      if (positions) {
+        positions.forEach((position) => {
+          // Ignore positions that's not related to the current chart symbol
+          if (
+            getTokenSymbol(position.token.symbol).toLowerCase() !==
+            symbol.toLowerCase()
+          ) {
+            return;
+          }
 
-        updatedPositionChartLines = handlePositionEntryPriceLine({
-          chart,
-          position,
-          toggleSizeUsdInChart,
-          positionChartLines: updatedPositionChartLines,
-          symbol,
-        });
-
-        updatedPositionChartLines = handlePositionLiquidationLine({
-          chart,
-          position,
-          toggleSizeUsdInChart,
-          positionChartLines: updatedPositionChartLines,
-          symbol,
-        });
-
-        updatedPositionChartLines = handlePositionTakeProfitLine({
-          chart,
-          position,
-          toggleSizeUsdInChart,
-          positionChartLines: updatedPositionChartLines,
-          symbol,
-        });
-
-        updatedPositionChartLines = handlePositionStopLossLine({
-          chart,
-          position,
-          toggleSizeUsdInChart,
-          positionChartLines: updatedPositionChartLines,
-          symbol,
-        });
-
-        if (showBreakEvenLine)
-          updatedPositionChartLines = handlePositionBreakEvenLine({
+          updatedPositionChartLines = handlePositionEntryPriceLine({
             chart,
             position,
+            toggleSizeUsdInChart,
             positionChartLines: updatedPositionChartLines,
             symbol,
           });
-      });
+
+          updatedPositionChartLines = handlePositionLiquidationLine({
+            chart,
+            position,
+            toggleSizeUsdInChart,
+            positionChartLines: updatedPositionChartLines,
+            symbol,
+          });
+
+          updatedPositionChartLines = handlePositionTakeProfitLine({
+            chart,
+            position,
+            toggleSizeUsdInChart,
+            positionChartLines: updatedPositionChartLines,
+            symbol,
+          });
+
+          updatedPositionChartLines = handlePositionStopLossLine({
+            chart,
+            position,
+            toggleSizeUsdInChart,
+            positionChartLines: updatedPositionChartLines,
+            symbol,
+          });
+
+          if (showBreakEvenLine)
+            updatedPositionChartLines = handlePositionBreakEvenLine({
+              chart,
+              position,
+              positionChartLines: updatedPositionChartLines,
+              symbol,
+            });
+        });
+      }
+
+      // Handle limit order lines
+      if (limitOrders) {
+        limitOrders.forEach((order) => {
+          if (order.custodySymbol.toLowerCase() === symbol.toLowerCase()) {
+            updatedPositionChartLines = handleLimitOrderLine({
+              chart,
+              order,
+              positionChartLines: updatedPositionChartLines,
+              symbol,
+              type: 'limitOrderTrigger',
+              price: order.triggerPrice,
+            });
+
+            /*  updatedPositionChartLines = order.limitPrice
+              ? handleLimitOrderLine({
+                  chart,
+                  order,
+                  positionChartLines: updatedPositionChartLines,
+                  symbol,
+                  type: 'limitOrderLimit',
+                  price: order.limitPrice,
+                })
+              : updatedPositionChartLines; */
+          }
+        });
+      }
 
       setPositionChartLines(updatedPositionChartLines);
     } catch {
@@ -466,7 +596,7 @@ export function useChartDrawing({
     if (!chart) return;
 
     // Delete all lines to be redrawn
-    deleteDetachedPositionLines(chart, positionChartLines, []);
+    deleteDetachedLines(chart, positionChartLines, [], []);
 
     setPositionChartLines([]);
 

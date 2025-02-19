@@ -271,6 +271,7 @@ export default function Trade({
               <TradingChart
                 token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                 positions={positions}
+                limitOrders={limitOrderBook?.limitOrders ?? null}
                 showBreakEvenLine={showBreakEvenLine}
                 toggleSizeUsdInChart={toggleSizeUsdInChart}
               />
