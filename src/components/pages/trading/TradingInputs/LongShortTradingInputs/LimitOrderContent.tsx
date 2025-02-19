@@ -79,6 +79,7 @@ export const LimitOrderContent = ({
                         if (!tokenPriceBTrade) return;
                         onTriggerPriceChange(calculateLimitOrderTriggerPrice({
                             tokenPriceBTrade,
+                            tokenDecimals: tokenB.displayPriceDecimalsPrecision,
                             percent,
                             side,
                         }));

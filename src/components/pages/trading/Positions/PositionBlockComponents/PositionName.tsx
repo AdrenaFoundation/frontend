@@ -32,12 +32,12 @@ export const PositionName = ({ position, readOnly, isHistory }: PositionNameProp
                         )}&action=${position.side}`}
                         target=""
                     >
-                        <div className="text-center text-whiteLabel text-lg font-black font-mono tracking-wide">
+                        <div className="text-center text-whiteLabel text-lg font-black font-mono tracking-wider">
                             {getTokenSymbol(position.token.symbol)}
                         </div>
                     </Link>
                 ) : (
-                    <div className="text-center text-whiteLabel text-lg font-black font-mono tracking-wide">
+                    <div className="text-center text-whiteLabel text-lg font-black font-mono tracking-wider">
                         {getTokenSymbol(position.token.symbol)}
                     </div>
                 )}

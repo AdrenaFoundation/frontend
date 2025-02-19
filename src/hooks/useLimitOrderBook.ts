@@ -12,12 +12,12 @@ export const useLimitOrderBook = ({
 }) => {
   const [limitOrderBook, setLimitOrderBook] =
     useState<LimitOrderBookExtended | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
   const loadLimitOrderBook = useCallback(async () => {
     if (!walletAddress) {
       setLimitOrderBook(null);
-      setIsLoading(false);
+      // setIsLoading(false);
       return;
     }
 
@@ -30,12 +30,12 @@ export const useLimitOrderBook = ({
     } catch (err) {
       console.log('Error loading limit order book:', err);
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   }, [walletAddress]);
 
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     loadLimitOrderBook();
 
     const interval = setInterval(() => {
@@ -49,7 +49,7 @@ export const useLimitOrderBook = ({
 
   return {
     limitOrderBook,
-    isLoading,
+    // isLoading,
     reload: loadLimitOrderBook,
   };
 };

@@ -64,7 +64,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
 
     return (
         <div ref={containerRef} className="min-w-[250px] w-full flex flex-col p-4 rounded-lg border border-white/10 justify-start items-start gap-2.5">
-            <div className="w-full pb-3 border-b border-white/10 justify-start items-center gap-2.5 inline-flex">
+            <div className="w-full pb-[0.7em] border-b border-white/10 justify-start items-center gap-2.5 inline-flex">
                 <div className="grow shrink basis-0 h-9 justify-between items-center flex">
                     <div className="justify-start items-center gap-2.5 flex">
                         <Image
@@ -170,7 +170,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                                 isDecimalDimmed={false}
                             />
                         ) : (
-                            <span className="text-whiteLabel text-base font-medium font-mono">-</span>
+                            <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
                         )
                     }
                     valueClassName={POSITION_BLOCK_STYLES.text.white}

@@ -16,6 +16,7 @@ import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
 import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
@@ -101,6 +102,10 @@ export default function Trade({
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
   const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>('positions');
+
+  const { limitOrderBook, reload } = useLimitOrderBook({
+    walletAddress: wallet?.publicKey.toBase58() ?? null,
+  });
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -399,7 +404,11 @@ export default function Trade({
 
               {view === 'limitOrder' ? (
                 <div className="flex flex-col w-full p-4">
-                  <LimitOrder />
+                  <LimitOrder
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    limitOrderBook={limitOrderBook}
+                    reload={reload}
+                  />
                 </div>
               ) : null}
             </div>
@@ -456,7 +465,11 @@ export default function Trade({
 
               {view === 'limitOrder' ? (
                 <div className="mt-1 w-full p-4">
-                  <LimitOrder />
+                  <LimitOrder
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    limitOrderBook={limitOrderBook}
+                    reload={reload}
+                  />
                 </div>
               ) : null}
 
@@ -488,6 +501,7 @@ export default function Trade({
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
                 adapters={adapters}
+                onLimitOrderAdded={reload}
               />
             </div>
           </div>
@@ -511,6 +525,7 @@ export default function Trade({
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
             adapters={adapters}
+            onLimitOrderAdded={reload}
           />
         ) : null}
 
@@ -583,6 +598,7 @@ export default function Trade({
                       activeRpc={activeRpc}
                       terminalId="integrated-terminal-3"
                       adapters={adapters}
+                      onLimitOrderAdded={reload}
                     />
                   </div>
                 </Modal>

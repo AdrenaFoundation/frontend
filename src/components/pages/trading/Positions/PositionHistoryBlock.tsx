@@ -87,7 +87,7 @@ const PositionHistoryBlock = ({
     <>
       <div className={twMerge(
         POSITION_BLOCK_STYLES.base.container,
-        'p-[1.1em]',
+        '-[0.9em]',
         bodyClassName,
         borderColor
       )} ref={blockRef}>

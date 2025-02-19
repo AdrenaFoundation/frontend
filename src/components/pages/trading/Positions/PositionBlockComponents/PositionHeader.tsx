@@ -62,10 +62,21 @@ export const PositionHeader = ({
 
     const headerClasses = twMerge(
         POSITION_BLOCK_STYLES.base.header,
+        isHistory && "mt-0.5 pb-[0.8em]",
         readOnly ? "justify-between" : "items-center"
     );
 
-    if (readOnly && !isHistory) {
+    if (isHistory) {
+        return (
+            <div className={headerClasses}>
+                <div className="flex items-center">{positionName}</div>
+                <div className="ml-auto 2xl:absolute 2xl:left-1/2 2xl:-translate-x-1/2">{pnl}</div>
+                <div className="ml-auto">{netValue}</div>
+            </div>
+        );
+    }
+
+    if (readOnly) {
         return (
             <div className={headerClasses}>
                 {positionName}

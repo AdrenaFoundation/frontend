@@ -1,21 +1,21 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
-import { useSelector } from '@/store/store';
+import { LimitOrderBookExtended } from '@/types';
 
 import LimitOrderBlocks from './LimitOrderBlocks';
 
 export default function LimitOrder({
     className,
+    walletAddress,
+    limitOrderBook,
+    reload,
 }: {
     className?: string;
+    walletAddress: string | null;
+    limitOrderBook: LimitOrderBookExtended | null;
+    reload: () => void;
 }) {
-    const walletAddress = useSelector((s) => s.walletState.wallet);
-    const { limitOrderBook, isLoading } = useLimitOrderBook({
-        walletAddress: walletAddress?.walletAddress ?? null,
-    });
-
     return (
         <div
             className={twMerge(
@@ -26,7 +26,8 @@ export default function LimitOrder({
             <LimitOrderBlocks
                 connected={!!walletAddress}
                 limitOrders={limitOrderBook ? limitOrderBook?.limitOrders : []}
-                isLoading={isLoading}
+                // isLoading={isLoading}
+                reload={reload}
             />
         </div>
     );

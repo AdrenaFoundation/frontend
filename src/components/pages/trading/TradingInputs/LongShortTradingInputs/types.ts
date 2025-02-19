@@ -14,6 +14,7 @@ export interface TradingInputsProps {
   connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
+  onLimitOrderAdded: () => void;
 }
 
 export interface TradingInputState {

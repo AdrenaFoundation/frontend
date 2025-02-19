@@ -48,6 +48,7 @@ export default function LongShortTradingInputs({
   connected,
   setTokenA,
   setTokenB,
+  onLimitOrderAdded,
 }: TradingInputsProps) {
   const { query } = useRouter();
   const dispatch = useDispatch();
@@ -221,16 +222,6 @@ export default function LongShortTradingInputs({
         message: `Missing ${tokenA.symbol} price`,
       });
     }
-    if (tokenAPrice && !openedPosition) {
-      const collateralValue = inputState.inputA * tokenAPrice;
-      if (collateralValue < 9.5) {
-        return addNotification({
-          type: 'info',
-          title: 'Cannot open position',
-          message: 'Collateral value must be at least $10',
-        });
-      }
-    }
 
     const notification = MultiStepNotification.newForRegularTransaction(
       side + ' Add Limit Order',
@@ -241,6 +232,7 @@ export default function LongShortTradingInputs({
         triggerPrice: inputState.limitOrderTriggerPrice,
         limitPrice: inputState.limitOrderSlippage === null ? null : calculateLimitOrderLimitPrice({
           limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
+          tokenDecimals: tokenB.displayPriceDecimalsPrecision,
           percent: inputState.limitOrderSlippage,
           side,
         }),
@@ -253,6 +245,7 @@ export default function LongShortTradingInputs({
       });
 
       dispatch(fetchWalletTokenBalances());
+      onLimitOrderAdded();
 
       setInputState((prev) => ({
         ...prev,
@@ -575,7 +568,7 @@ export default function LongShortTradingInputs({
 
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
-    if (tokenAPrice && !openedPosition) {
+    if (!inputState.isLimitOrder && tokenAPrice && !openedPosition) {
       const collateralValue = inputState.inputA * tokenAPrice;
       if (collateralValue < 9.5) {
         setPositionInfo(prev => ({
@@ -645,6 +638,7 @@ export default function LongShortTradingInputs({
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    inputState.isLimitOrder,
     inputState.inputA,
     walletTokenBalances,
     tokenA.symbol,
@@ -756,6 +750,7 @@ export default function LongShortTradingInputs({
                 ...prev,
                 limitOrderTriggerPrice: calculateLimitOrderTriggerPrice({
                   tokenPriceBTrade,
+                  tokenDecimals: tokenB.displayPriceDecimalsPrecision,
                   percent: 1,
                   side,
                 }),
