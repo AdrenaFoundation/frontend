@@ -210,12 +210,10 @@ export default function TradingChart({
                   .getShapeById(line.id)
                   .getProperties();
 
-                console.log('line', line, 'shape', shape);
-
                 // Uses text to filter out our drawings
                 if (
-                  shape.options.text.includes('long') ||
-                  shape.options.text.includes('short')
+                  shape.text.includes('long') ||
+                  shape.text.includes('short')
                 ) {
                   return null;
                 }
