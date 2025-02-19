@@ -1,0 +1,1 @@
+(self.webpackChunktradingview=self.webpackChunktradingview||[]).push([[6113],{6113:a=>{a.exports={en:["Do you really want to delete Chart Template '{name}' ?"],ms_MY:["Adakah anda benar-benar ingin memadamkan Templat Carta '{name}' ?"]}}}]);
