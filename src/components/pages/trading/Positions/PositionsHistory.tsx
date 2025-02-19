@@ -110,7 +110,7 @@ function PositionsHistory({
                       />
                     ))}
 
-                    <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute bottom-2 left-2' onClick={() => {
+                    <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute -top-[2.5em] right-0' onClick={() => {
                       downloadPositionHistory();
                     }}>
                       <div className='text-xs tracking-wider' >Export</div>
