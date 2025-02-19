@@ -344,27 +344,32 @@ export default function Trade({
           <>
             <div className="bg-secondary mt-4 border rounded-lg relative">
               <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
-                <span
+                <div
                   className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300 flex items-center gap-2',
                     view === 'positions' ? 'opacity-100' : 'opacity-40',
                   )}
                   onClick={() => setView('positions')}
                 >
-                  Open positions ({positions?.length ?? 0})
-                </span>
+                  Open positions
+
+                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{positions?.length ?? 0}</div>
+                </div>
 
                 <span className="opacity-20">|</span>
 
-                <span
+                <div
                   className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300 flex gap-2 items-center',
                     view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
                   )}
                   onClick={() => setView('limitOrder')}
                 >
-                  Limit orders ({limitOrderBook?.limitOrders.length ?? 0})
-                </span>
+                  Limit orders
+
+                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{limitOrderBook?.limitOrders.length ?? 0}</div>
+                </div>
+
 
                 <span className="opacity-20">|</span>
 

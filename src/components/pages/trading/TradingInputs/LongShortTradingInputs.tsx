@@ -537,6 +537,14 @@ export default function LongShortTradingInputs({
     tokenPrices
   ]);
 
+  useEffect(() => {
+    setInputState((prev) => ({
+      ...prev,
+      limitOrderTriggerPrice: tokenPriceBTrade,
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenB.symbol]);
+
   const usdcMint = window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
   const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
