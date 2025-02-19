@@ -93,7 +93,10 @@ export const LimitOrderContent = ({
                 Trigger price must be {side === 'long' ? 'below' : 'above'}
             </div>
 
-            <div className='flex relative bottom-[0.15em]'>
+            <div className='flex relative bottom-[0.15em] cursor-pointer' onClick={() => {
+                if (!tokenPriceBTrade) return;
+                onTriggerPriceChange(tokenPriceBTrade);
+            }}>
                 <FormatNumber
                     nb={tokenPriceBTrade}
                     format="currency"
