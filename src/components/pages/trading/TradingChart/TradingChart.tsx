@@ -129,15 +129,17 @@ export default function TradingChart({
               'scalesProperties.textColor': '#B3B5BE',
               timezone: savedTimezone as Timezone,
             },
-            setValue: function (_, value) {
-              const chartprops = JSON.parse(value) as ChartPropertiesOverrides;
-              const currentTimezone = chartprops.timezone;
+            setValue: function (key, value) {
+              if (key === 'chartproperties') {
+                const chartprops = JSON.parse(value) as ChartPropertiesOverrides;
+                const currentTimezone = chartprops.timezone;
 
-              if (!currentTimezone || currentTimezone === savedTimezone) {
-                return;
+                if (!currentTimezone || currentTimezone === savedTimezone) {
+                  return;
+                }
+
+                localStorage.setItem('trading_chart_timezone', currentTimezone);
               }
-
-              localStorage.setItem('trading_chart_timezone', currentTimezone);
             },
             removeValue: function () { },
           },
