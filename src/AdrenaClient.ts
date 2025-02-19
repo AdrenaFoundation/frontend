@@ -4440,8 +4440,6 @@ export class AdrenaClient {
       }),
     ]);
 
-    console.log('Loaded user profiles', userProfilesV1, userProfilesV2);
-
     // If no data, profile doesn't exist
     if (!userProfilesV1.length && !userProfilesV2.length) {
       return [];

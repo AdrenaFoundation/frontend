@@ -100,10 +100,12 @@ export default function ViewProfileModal({
 
                         {selectedTab === 'Positions History' ? (
                             <PositionsHistory
+                                className='pb-4'
                                 connected={true}
                                 walletAddress={profile.owner.toBase58()}
                                 showShareButton={false}
                                 showFeesInPnl={showFeesInPnl}
+                                exportButtonPosition='bottom-left'
                             />
                         ) : null}
                     </div>
