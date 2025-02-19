@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Pagination from '@/components/common/Pagination/Pagination';
 import Loader from '@/components/Loader/Loader';
@@ -14,12 +15,15 @@ function PositionsHistory({
   walletAddress,
   showShareButton = true,
   showFeesInPnl,
+  exportButtonPosition = 'top-right',
+  className,
 }: {
   connected: boolean;
   className?: string;
   walletAddress: string | null;
   showShareButton?: boolean;
   showFeesInPnl: boolean;
+  exportButtonPosition: 'top-right' | 'bottom-left';
 }) {
   const { positionsHistory } = usePositionsHistory({ walletAddress });
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,7 +92,7 @@ function PositionsHistory({
   }, [positionsHistory]);
 
   return (
-    <div className="w-full h-full flex flex-col relative">
+    <div className={twMerge("w-full h-full flex flex-col relative", className)}>
       <div
         className="flex flex-col justify-center grow"
         style={{
@@ -110,7 +114,10 @@ function PositionsHistory({
                       />
                     ))}
 
-                    <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute -top-[2.5em] right-0' onClick={() => {
+
+                    <div className={twMerge('w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute',
+                      exportButtonPosition === "top-right" ? "-top-[2.5em] right-0" : 'bottom-0 left-2'
+                    )} onClick={() => {
                       downloadPositionHistory();
                     }}>
                       <div className='text-xs tracking-wider' >Export</div>
@@ -164,7 +171,7 @@ function PositionsHistory({
           </select>
         )}
       </div>
-    </div>
+    </div >
   );
 }
 
