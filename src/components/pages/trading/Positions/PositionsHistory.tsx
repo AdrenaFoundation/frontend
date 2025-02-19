@@ -114,6 +114,7 @@ function PositionsHistory({
                       />
                     ))}
 
+
                     <div className={twMerge('w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute',
                       exportButtonPosition === "top-right" ? "-top-[2.5em] right-0" : 'bottom-0 left-2'
                     )} onClick={() => {
