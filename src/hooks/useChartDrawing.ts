@@ -355,7 +355,12 @@ function handleLimitOrderLine({
     (line) => line.orderId === order.id && line.type === type,
   );
 
-  console.log('existingLineIndex', existingLineIndex);
+  if (
+    existingLineIndex !== -1 &&
+    positionChartLines[existingLineIndex].value === price
+  ) {
+    return positionChartLines;
+  }
 
   if (existingLineIndex !== -1) {
     chart.removeEntity(positionChartLines[existingLineIndex].id);
