@@ -351,7 +351,7 @@ export default function Trade({
                   )}
                   onClick={() => setView('positions')}
                 >
-                  Open positions
+                  Open positions ({positions?.length ?? 0})
                 </span>
 
                 <span className="opacity-20">|</span>
@@ -363,7 +363,7 @@ export default function Trade({
                   )}
                   onClick={() => setView('limitOrder')}
                 >
-                  Limit orders
+                  Limit orders ({limitOrderBook?.limitOrders.length ?? 0})
                 </span>
 
                 <span className="opacity-20">|</span>
