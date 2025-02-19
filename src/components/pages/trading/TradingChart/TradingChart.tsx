@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import Loader from '@/components/Loader/Loader';
 import { SUPPORTED_RESOLUTIONS } from '@/constant';
 import { useChartDrawing } from '@/hooks/useChartDrawing';
-import { PositionExtended, Token, TokenSymbol } from '@/types';
+import { LimitOrder, PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
@@ -27,11 +27,13 @@ const STORAGE_KEY_RESOLUTION = 'trading_chart_resolution';
 export default function TradingChart({
   token,
   positions,
+  limitOrders,
   showBreakEvenLine,
   toggleSizeUsdInChart,
 }: {
   token: Token;
   positions: PositionExtended[] | null;
+  limitOrders: LimitOrder[] | null;
   showBreakEvenLine: boolean;
   toggleSizeUsdInChart: boolean;
 }) {
@@ -47,6 +49,7 @@ export default function TradingChart({
     widget,
     widgetReady,
     positions,
+    limitOrders,
     showBreakEvenLine,
     toggleSizeUsdInChart,
     drawingErrorCallback: () => {
@@ -188,6 +191,7 @@ export default function TradingChart({
               .symbol()
               .split('.')[1]
               .split('/')[0] as TokenSymbol;
+
             const parsedChartShapes = JSON.parse(
               localStorage.getItem('chart_drawings') ?? '{}',
             );
@@ -205,6 +209,8 @@ export default function TradingChart({
                   .activeChart()
                   .getShapeById(line.id)
                   .getProperties();
+
+                console.log('line', line, 'shape', shape);
 
                 // Uses text to filter out our drawings
                 if (
