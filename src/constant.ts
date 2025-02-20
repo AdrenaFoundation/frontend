@@ -543,3 +543,15 @@ export const WALLPAPER = {
   3: '/images/wallpaper-4.jpg',
   4: '/images/wallpaper-5.jpg',
 } as Record<Wallpaper, string>;
+
+export const TOKEN_SYMBOL_IMG: { [key: string]: string } = {
+  JITOSOL:
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/jitosol.png',
+  USDC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/usdc.svg',
+  BONK: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/bonk.png',
+  WBTC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wbtc.png',
+  SOL: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/sol.png',
+  BTC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/btc.svg',
+  ADX: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adx.svg',
+  ALP: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/alp.svg',
+};

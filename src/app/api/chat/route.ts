@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { streamText, tool } from 'ai';
+import { streamText } from 'ai';
 import { z } from 'zod';
 
 export const maxDuration = 30;
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const checkWalletConnectionMessage =
     'check if the user has connected their wallet. if connected, proceed to the next step.';
 
-  const checkBalanceMessage = `check if the user has enough balance to perform this action. use the getUserWalletBalance tool to get the user's wallet balance.`;
+  // const checkBalanceMessage = `check if the user has enough balance to perform this action. use the getUserWalletBalance tool to get the user's wallet balance.`;
 
   // todo: add safety checks for the tools eg. check if the user has enough balance to perform the action
 
@@ -38,14 +38,14 @@ export async function POST(req: Request) {
         parameters: z.object({}),
       },
 
-      checkBalance: {
-        description: `Check if the user has enough balance to perform this action. Use the getUserWalletBalance tool to get the user's wallet balance. ${checkWalletConnectionMessage}`,
-        parameters: z.object({
-          hasEnoughBalance: z
-            .boolean()
-            .describe('If the user has enough balance'),
-        }),
-      },
+      // checkBalance: {
+      //   description: `Check if the user has enough balance to perform this action. Use the getUserWalletBalance tool to get the user's wallet balance. ${checkWalletConnectionMessage}`,
+      //   parameters: z.object({
+      //     hasEnoughBalance: z
+      //       .boolean()
+      //       .describe('If the user has enough balance'),
+      //   }),
+      // },
 
       getUserWalletBalance: {
         description: `Get the user's wallet balance. ${checkWalletConnectionMessage}. Dont include tokens if the balance is 0 or null`,
@@ -69,20 +69,31 @@ export async function POST(req: Request) {
         }),
       },
 
-      stakeADX: {
-        description: `Stake ADX tokens on Adrena. ${checkWalletConnectionMessage}. Always ask for amount to stake if not stated already. If not stated, ask them to choose how many days they want to stake and lock ADX for. always ask the user for confirmation before using this tool, use the askForConfirmation tool.`,
+      askHowManyDaysToStakeALP: {
+        description: `Ask how many days they want to stake and lock their ALP token.`,
+        parameters: z.object({
+          days: z
+            .number()
+            .describe('The number of days to lock your staked ALP.'),
+        }),
+      },
+
+      stake: {
+        description: `Stake ADX or ALP tokens on Adrena. ${checkWalletConnectionMessage}. Always ask for amount to stake if not stated already. always ask for which token they want to stake, it can only be between ALP or ADX. always ask them to choose how many days they want to stake and lock the preferred token for.`,
         parameters: z.object({
           amount: z
             .number()
-            .nullable()
             .describe(
-              'The amount of ADX to stake. if not stated, ask how much',
+              'The amount of ADX or ALP to stake. if not stated, ask how much',
             ),
           days: z
             .number()
             .describe(
-              'The number of days to lock your staked ADX. if not stated, use tool askHowManyDaysToStakeADX and ask them to choose how many days. you can only stake for either 0 days, 90 days, 180 days, 360 day and 540 days.',
+              'The number of days to lock your stake. if the token to stake is adx then use tool askHowManyDaysToStakeADX and ask them to choose how many days. if its ALP use askHowManyDaysToStakeALP. you can only stake for either 90 days, 180 days, 360 day and 540 days. for ADX you can also lock for 0 days.',
             ),
+          stakedToken: z
+            .string()
+            .describe('The token to stake. its either ADX or ALP'),
         }),
       },
 
@@ -91,17 +102,72 @@ export async function POST(req: Request) {
         parameters: z.object({}),
       },
 
-      getAllPositionPubkeys: {
-        description: `Get all the position ids of the user. ${checkWalletConnectionMessage}`,
+      //
+      // ALP
+      //
+
+      addLiquidity: {
+        description: `Add liquidity to a pool and receive ALP. You can only buy ALP with either USDC, JITOSOL, WBTC or BONK. ${checkWalletConnectionMessage}. Always ask for the preferred token and amount to add liquidity with, if not stated already. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
         parameters: z.object({
-          positionIds: z.array(z.string()).describe('The position ids'),
+          collateralInput: z
+            .number()
+            .describe('The amount of token to add liquidity with.'),
+          collateralToken: z
+            .string()
+            .describe('The token to add liquidity with.'),
+        }),
+      },
+
+      //
+      // Position
+      //
+
+      openPosition: {
+        description: `Open a long position. ${checkWalletConnectionMessage}. Always ask for the amount, side, traded token and collateral token to open position with if not stated already. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
+        parameters: z.object({
+          collateralAmount: z
+            .number()
+            .describe('The amount to open position with.'),
+          side: z.string().describe('The side of the position.'),
+          tradedTokenSymbol: z.string().describe('The token to trade.'),
+          collateralTokenSymbol: z.string().describe('The collateral token.'),
+          leverage: z
+            .number()
+            .optional()
+            .nullable()
+            .default(1.1)
+            .describe('The leverage to use.'),
+        }),
+      },
+
+      getAllUserPositions: {
+        description: `Get all the positions of the user. the pubkey is the position pubkey. and the user can perform different action with this key ${checkWalletConnectionMessage}`,
+        parameters: z.object({
+          positions: z.array(z.string()).describe('The positions details'),
+        }),
+      },
+
+      // getAllPositionPubkeys: {
+      //   description: `Get all the position ids of the user. ${checkWalletConnectionMessage}`,
+      //   parameters: z.object({
+      //     positionIds: z.array(z.string()).describe('The position ids'),
+      //   }),
+      // },
+
+      setTakeProfit: {
+        description: `Set a take profit for a position. Always ask for the price to set take profit at, if not stated already. Always ask to provide pubkey for which position to set take profit on if not stated already. ${checkWalletConnectionMessage}. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
+        parameters: z.object({
+          positionPubkey: z.string().describe('The position pubkey'),
+          takeProfitPrice: z
+            .number()
+            .describe('The take profit price for the position'),
         }),
       },
 
       setStopLoss: {
-        description: `Set a stop loss for a position. Always ask for the price to set stop loss at, if not stated alreadt. Always ask to provide pubkey for which position to set stop loss on if not stated already. ${checkWalletConnectionMessage}. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
+        description: `Set a stop loss for a position. Always ask for the price to set stop loss at, if not stated already. Always ask to provide pubkey for which position to set stop loss on if not stated already. ${checkWalletConnectionMessage}. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
         parameters: z.object({
-          positionPubkey: z.string().describe('The position id'),
+          positionPubkey: z.string().describe('The position pubkey'),
           stopLossPrice: z
             .number()
             .describe('The stop loss price for the position'),

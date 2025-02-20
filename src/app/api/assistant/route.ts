@@ -1,5 +1,6 @@
-import { openai } from '@/config/openai';
 import { AssistantResponse } from 'ai';
+
+import { openai } from '@/config/openai';
 
 export async function POST(req: Request) {
   const input: {

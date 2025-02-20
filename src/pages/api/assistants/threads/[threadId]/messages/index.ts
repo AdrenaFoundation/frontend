@@ -1,7 +1,8 @@
-import { assistantId } from '@/config/assistant-config';
-import { openai } from '@/config/openai';
 import { AssistantResponse } from 'ai';
 import { NextApiRequest, NextApiResponse } from 'next';
+
+import { assistantId } from '@/config/assistant-config';
+import { openai } from '@/config/openai';
 
 // Send a new message to a thread
 export default async function handler(
