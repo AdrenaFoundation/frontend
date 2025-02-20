@@ -108,7 +108,7 @@ export const LimitOrderContent = ({
 
         <h5 className='ml-4 mt-4 flex'>Slippage</h5>
 
-        <div className="flex flex-row rounded-bl-lg rounded-br-lg h-7 gap-2 mt-3 pl-6 pr-6 mb-2">
+        <div className={`flex flex-row flex-wrap rounded-bl-lg rounded-br-lg h-7 gap-2 mt-3 mb-2`}>
             {limitOrderSlippagePresets.map((percent, i) => (
                 <Button
                     key={i}

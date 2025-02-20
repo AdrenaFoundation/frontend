@@ -722,6 +722,27 @@ export default function LongShortTradingInputs({
     handleInputAChange(userWalletAmount);
   };
 
+  const handleModeChange = (isLimit: boolean) => {
+    setInputState((prev) => ({
+      ...prev,
+      isLimitOrder: isLimit,
+      limitOrderTriggerPrice: null,
+    }));
+
+    if (isLimit && tokenPriceBTrade) {
+      // Default limit order price of 1%
+      setInputState((prev) => ({
+        ...prev,
+        limitOrderTriggerPrice: calculateLimitOrderTriggerPrice({
+          tokenPriceBTrade,
+          tokenDecimals: tokenB.displayPriceDecimalsPrecision,
+          percent: 1,
+          side,
+        }),
+      }));
+    }
+  };
+
   return (
     <>
       <div className={twMerge('flex flex-col', className)}>
@@ -745,26 +766,7 @@ export default function LongShortTradingInputs({
 
         <ExecutionModeSelector
           isLimitOrder={inputState.isLimitOrder}
-          onModeChange={(isLimit) => {
-            setInputState((prev) => ({
-              ...prev,
-              isLimitOrder: isLimit,
-              limitOrderTriggerPrice: null,
-            }));
-
-            if (isLimit && tokenPriceBTrade) {
-              // Default limit order price of 1%
-              setInputState((prev) => ({
-                ...prev,
-                limitOrderTriggerPrice: calculateLimitOrderTriggerPrice({
-                  tokenPriceBTrade,
-                  tokenDecimals: tokenB.displayPriceDecimalsPrecision,
-                  percent: 1,
-                  side,
-                }),
-              }));
-            }
-          }}
+          onModeChange={handleModeChange}
         />
 
         {inputState.isLimitOrder ? (
