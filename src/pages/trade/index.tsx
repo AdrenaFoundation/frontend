@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import LimitOrder from '@/components/pages/trading/LimitOrder/LimitOrder';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
@@ -15,6 +16,7 @@ import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
 import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
@@ -99,7 +101,11 @@ export default function Trade({
   );
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
-  const [history, setHistory] = useState<boolean>(false);
+  const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>('positions');
+
+  const { limitOrderBook, reload } = useLimitOrderBook({
+    walletAddress: wallet?.publicKey.toBase58() ?? null,
+  });
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -265,6 +271,7 @@ export default function Trade({
               <TradingChart
                 token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                 positions={positions}
+                limitOrders={limitOrderBook?.limitOrders ?? null}
                 showBreakEvenLine={showBreakEvenLine}
                 toggleSizeUsdInChart={toggleSizeUsdInChart}
               />
@@ -338,27 +345,48 @@ export default function Trade({
           <>
             <div className="bg-secondary mt-4 border rounded-lg relative">
               <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
-                <span
+                <div
                   className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    !history ? 'opacity-100' : 'opacity-40',
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300 flex items-center gap-2',
+                    view === 'positions' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(false)}
+                  onClick={() => setView('positions')}
                 >
                   Open positions
-                </span>
+
+                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{positions?.length ?? 0}</div>
+                </div>
+
                 <span className="opacity-20">|</span>
+
+                <div
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300 flex gap-2 items-center',
+                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setView('limitOrder')}
+                >
+                  Limit orders
+
+                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{limitOrderBook?.limitOrders.length ?? 0}</div>
+                </div>
+
+
+                <span className="opacity-20">|</span>
+
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    history ? 'opacity-100' : 'opacity-40',
+                    view === 'history' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(true)}
+                  onClick={() => setView('history')}
                 >
                   Trade history
                 </span>
+
               </div>
-              {history ? (
+
+              {view === 'history' ? (
                 <div className="flex flex-col w-full p-4">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
@@ -367,7 +395,9 @@ export default function Trade({
                     exportButtonPosition='top-right'
                   />
                 </div>
-              ) : (
+              ) : null}
+
+              {view === 'positions' ? (
                 <div className="flex flex-col w-full p-4">
                   <Positions
                     connected={connected}
@@ -377,7 +407,17 @@ export default function Trade({
                     showFeesInPnl={showFeesInPnl}
                   />
                 </div>
-              )}
+              ) : null}
+
+              {view === 'limitOrder' ? (
+                <div className="flex flex-col w-full p-4">
+                  <LimitOrder
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    limitOrderBook={limitOrderBook}
+                    reload={reload}
+                  />
+                </div>
+              ) : null}
             </div>
           </>
         ) : (
@@ -387,24 +427,49 @@ export default function Trade({
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    !history ? 'opacity-100' : 'opacity-40',
+                    view === 'positions' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(false)}
+                  onClick={() => setView('positions')}
                 >
-                  Positions
+                  Open positions
+
                 </span>
+                <div className={twMerge(
+                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
+                  view === 'positions' ? 'opacity-100' : 'opacity-40'
+                )}>{positions?.length ?? 0}</div>
+
                 <span className="opacity-20">|</span>
+
                 <span
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    history ? 'opacity-100' : 'opacity-40',
+                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => setHistory(true)}
+                  onClick={() => setView('limitOrder')}
                 >
-                  History
+                  Limit orders
                 </span>
+                <div className={twMerge(
+                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
+                  view === 'limitOrder' ? 'opacity-100' : 'opacity-40'
+                )}>{limitOrderBook?.limitOrders.length ?? 0}</div>
+
+                <span className="opacity-20">|</span>
+
+                <span
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    view === 'history' ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setView('history')}
+                >
+                  Trade history
+                </span>
+
               </div>
-              {history ? (
+
+              {view === 'history' ? (
                 <div className="mt-1 w-full p-4 flex grow">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
@@ -413,7 +478,19 @@ export default function Trade({
                     exportButtonPosition='top-right'
                   />
                 </div>
-              ) : (
+              ) : null}
+
+              {view === 'limitOrder' ? (
+                <div className="mt-1 w-full p-4">
+                  <LimitOrder
+                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    limitOrderBook={limitOrderBook}
+                    reload={reload}
+                  />
+                </div>
+              ) : null}
+
+              {view === 'positions' ? (
                 <div className="mt-1 w-full p-4">
                   <Positions
                     connected={connected}
@@ -423,8 +500,9 @@ export default function Trade({
                     showFeesInPnl={showFeesInPnl}
                   />
                 </div>
-              )}
+              ) : null}
             </div>
+
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
@@ -440,6 +518,7 @@ export default function Trade({
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
                 adapters={adapters}
+                onLimitOrderAdded={reload}
               />
             </div>
           </div>
@@ -463,6 +542,7 @@ export default function Trade({
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
             adapters={adapters}
+            onLimitOrderAdded={reload}
           />
         ) : null}
 
@@ -535,6 +615,7 @@ export default function Trade({
                       activeRpc={activeRpc}
                       terminalId="integrated-terminal-3"
                       adapters={adapters}
+                      onLimitOrderAdded={reload}
                     />
                   </div>
                 </Modal>

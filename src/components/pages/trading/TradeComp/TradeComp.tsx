@@ -26,6 +26,7 @@ export default function TradeComp({
   activeRpc,
   terminalId,
   adapters,
+  onLimitOrderAdded,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -44,6 +45,7 @@ export default function TradeComp({
   };
   terminalId: string;
   adapters: WalletAdapterExtended[];
+  onLimitOrderAdded: () => void;
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
   const [isWhitelistedSwapper, setIsWhitelistedSwapper] = useState(false);
@@ -92,6 +94,7 @@ export default function TradeComp({
                 setTokenB={setTokenB}
                 wallet={wallet}
                 connected={connected}
+                onLimitOrderAdded={onLimitOrderAdded}
               />
             ) : (
               <>

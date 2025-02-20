@@ -94,7 +94,7 @@ function PositionsHistory({
   return (
     <div className={twMerge("w-full h-full flex flex-col relative", className)}>
       <div
-        className="flex flex-col justify-center grow"
+        className="flex flex-col justify-center"
         style={{
           minHeight: `${itemsPerPage * 49}px`,
         }}
@@ -104,7 +104,7 @@ function PositionsHistory({
             {positionsHistory ? (
               <>
                 {paginatedPositions.length > 0 ? (
-                  <div className="flex flex-col gap-3 grow">
+                  <div className="flex flex-col gap-3">
                     {paginatedPositions.map((positionHistory) => (
                       <PositionHistoryBlock
                         key={positionHistory.positionId}
