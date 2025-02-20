@@ -120,8 +120,8 @@ export default function TradingChart({
           ],
           settings_adapter: {
             initialSettings: {
-              'paneProperties.background': '#0d1118',
               'paneProperties.backgroundType': 'solid',
+              'paneProperties.background': '#0d1118',
               'paneProperties.legendProperties.showStudyArguments': 'false',
               'paneProperties.legendProperties.showStudyTitles': 'false',
               'paneProperties.legendProperties.showStudyValues': 'false',
@@ -169,8 +169,8 @@ export default function TradingChart({
           setIsLoading(false);
 
           widget.applyOverrides({
-            'paneProperties.background': '#0d1118',
             'paneProperties.backgroundType': 'solid',
+            'paneProperties.background': '#0d1118',
             'paneProperties.legendProperties.showStudyArguments': false,
             'paneProperties.legendProperties.showStudyTitles': false,
             'paneProperties.legendProperties.showStudyValues': false,

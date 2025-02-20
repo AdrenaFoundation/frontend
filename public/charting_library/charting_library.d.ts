@@ -7,8 +7,6 @@
 
 /* eslint-disable jsdoc/require-jsdoc */
 declare const dateFormatFunctions: {
-	readonly "qq 'yy": (date: Date, local: boolean) => string;
-	readonly "qq yyyy": (date: Date, local: boolean) => string;
 	readonly "dd MMM 'yy": (date: Date, local: boolean) => string;
 	readonly "MMM 'yy": (date: Date, local: boolean) => string;
 	readonly "MMM dd, yyyy": (date: Date, local: boolean) => string;
@@ -27,10 +25,6 @@ declare const dateFormatFunctions: {
 	readonly "MM/dd/yyyy": (date: Date, local: boolean) => string;
 };
 /* eslint-enable jsdoc/require-jsdoc */
-declare enum ColorType {
-	Solid = "solid",
-	Gradient = "gradient"
-}
 declare enum DisconnectType {
 	LogOut = 0,
 	FailedRestoring = 1,
@@ -41,8 +35,7 @@ declare enum DisconnectType {
 	TimeOutForAuthorization = 6,
 	OauthError = 7,
 	BrokenConnection = 8,
-	Reconnect = 9,
-	FailedSignIn = 10
+	FailedSignIn = 9
 }
 declare enum PlotSymbolSize {
 	Auto = "auto",
@@ -115,7 +108,6 @@ export declare enum ActionId {
 	ChartLinesToggleSeriesPriceLineVisibility = "Chart.Lines.ToggleSeriesPriceLineVisibility",
 	ChartLineToolBarsPatternToggleFlipped = "Chart.LineTool.BarsPattern.ToggleFlipped",
 	ChartLineToolBarsPatternToggleMirrored = "Chart.LineTool.BarsPattern.ToggleMirrored",
-	ChartLineToolRiskRewardReverse = "Chart.LineTool.RiskReward.Reverse",
 	ChartLineToolClone = "Chart.LineTool.Clone",
 	ChartLineToolCreateLimitOrderFromState = "Chart.LineTool.CreateLimitOrderFromState",
 	ChartLineToolElliotChangeDegreeProperty = "Chart.LineTool.Elliot.ChangeDegreeProperty",
@@ -182,12 +174,7 @@ export declare enum ActionId {
 	ChartSelectedObjectRemove = "Chart.SelectedObject.Remove",
 	ChartSelectedObjectShow = "Chart.SelectedObject.Show",
 	ChartSelectedObjectShowSettingsDialog = "Chart.SelectedObject.ShowSettingsDialog",
-	ChartSelectedObjectInsertRowTable = "Chart.SelectedObject.InsertRowTable",
-	ChartSelectedObjectInsertColumnTable = "Chart.SelectedObject.InsertColumnTable",
-	ChartSelectedObjectRemoveRowTable = "Chart.SelectedObject.RemoveRowTable",
-	ChartSelectedObjectRemoveColumnTable = "Chart.SelectedObject.RemoveColumnTable",
 	ChartSelectedObjectToggleLocked = "Chart.SelectedObject.ToggleLocked",
-	ChartSelectedObjectToggleAnchored = "Chart.SelectedObject.ToggleAnchored",
 	ChartSeriesPriceScaleToggleAutoScale = "Chart.Series.PriceScale.ToggleAutoScale",
 	ChartSeriesPriceScaleToggleIndexedTo100 = "Chart.Series.PriceScale.ToggleIndexedTo100",
 	ChartSeriesPriceScaleToggleInvertPriceScale = "Chart.Series.PriceScale.ToggleInvertPriceScale",
@@ -827,7 +814,7 @@ export interface AccountManagerInfo {
 	 * An array of data objects that create columns for the [History](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/account-manager/#history) page where all orders from previous sessions are shown.
 	 * Note that this page is only shown
 	 * if you set the {@link BrokerConfigFlags.supportOrdersHistory} to `true`
-	 * and implement the [`ordersHistory`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerTerminal#ordershistory) method.
+	 * and implement the [`ordersHistory`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerWithoutRealtime#ordershistory) method.
 	 */
 	historyColumns?: AccountManagerColumn[];
 	/** Optional sorting of the table on the [History](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/account-manager/#history) page. */
@@ -873,7 +860,7 @@ export interface AccountManagerSummaryField {
 	/** Text to display for the summary field */
 	text: string;
 	/** A WatchedValue object that can be used to read the state of field. */
-	wValue: IWatchedValueReadonly<any>;
+	wValue: AccountManagerInfoWatchedValue;
 	/**
 	 * Name of the formatter to be used for data formatting. If `formatter` is not
 	 * set the value is displayed as is. Formatter can be a default or a custom one.
@@ -881,8 +868,6 @@ export interface AccountManagerSummaryField {
 	formatter?: StandardFormatterName;
 	/** Optional parameter which can be set to display the field by default. */
 	isDefault?: boolean;
-	/** An optional parameter with text explaining the contents of this field. */
-	informerMessage?: string;
 }
 /**
  * Account Summary table meta-info
@@ -1935,6 +1920,8 @@ export interface BollingerBandsBIndicatorOverrides {
 	"lowerlimit.visible": boolean;
 	/** Default value: `0` */
 	"lowerlimit.value": number;
+	/** Default value: `15` */
+	"plot.display": number;
 	/** Default value: `0` */
 	"plot.linestyle": number;
 	/** Default value: `1` */
@@ -1945,8 +1932,6 @@ export interface BollingerBandsBIndicatorOverrides {
 	"plot.trackprice": boolean;
 	/** Default value: `0` */
 	"plot.transparency": number;
-	/** Default value: `true` */
-	"plot.visible": boolean;
 	/** Default value: `#22AB94` */
 	"plot.color": string;
 	[key: string]: StudyOverrideValueType;
@@ -1963,6 +1948,8 @@ export interface BollingerBandsIndicatorOverrides {
 	"plots background.transparency": number;
 	/** Default value: `true` */
 	"plots background.visible": boolean;
+	/** Default value: `15` */
+	"median.display": number;
 	/** Default value: `0` */
 	"median.linestyle": number;
 	/** Default value: `1` */
@@ -1973,10 +1960,10 @@ export interface BollingerBandsIndicatorOverrides {
 	"median.trackprice": boolean;
 	/** Default value: `0` */
 	"median.transparency": number;
-	/** Default value: `true` */
-	"median.visible": boolean;
 	/** Default value: `#FF6D00` */
 	"median.color": string;
+	/** Default value: `15` */
+	"upper.display": number;
 	/** Default value: `0` */
 	"upper.linestyle": number;
 	/** Default value: `1` */
@@ -1987,10 +1974,10 @@ export interface BollingerBandsIndicatorOverrides {
 	"upper.trackprice": boolean;
 	/** Default value: `0` */
 	"upper.transparency": number;
-	/** Default value: `true` */
-	"upper.visible": boolean;
 	/** Default value: `#2196F3` */
 	"upper.color": string;
+	/** Default value: `15` */
+	"lower.display": number;
 	/** Default value: `0` */
 	"lower.linestyle": number;
 	/** Default value: `1` */
@@ -2001,8 +1988,6 @@ export interface BollingerBandsIndicatorOverrides {
 	"lower.trackprice": boolean;
 	/** Default value: `0` */
 	"lower.transparency": number;
-	/** Default value: `true` */
-	"lower.visible": boolean;
 	/** Default value: `#2196F3` */
 	"lower.color": string;
 	[key: string]: StudyOverrideValueType;
@@ -2062,13 +2047,6 @@ export interface BrokerConfigFlags {
 	 */
 	supportOrderBrackets?: boolean;
 	/**
-	 * Enables stop loss orders. If this flag is set to `true`, the library displays stop loss orders and a user can place a stop loss order using the Order Ticket.
-	 * If you set this flag to `false`, the {@link BrokerConfigFlags.supportTrailingStop} and/or {@link BrokerConfigFlags.supportGuaranteedStop} flag should be set to `true`.
-	 * If the `supportStopLoss`, `supportTrailingStop`, and `supportGuaranteedStop` flags are set to `false`, the default value will be used.
-	 * @default true
-	 */
-	supportStopLoss?: boolean;
-	/**
 	 * Enables trailing stop orders.
 	 * If you set this flag to `true`, the library displays trailing stop orders and a user can place a trailing stop order using the Order Ticket.
 	 * @default false
@@ -2082,7 +2060,7 @@ export interface BrokerConfigFlags {
 	supportGuaranteedStop?: boolean;
 	/**
 	 * Enables [positions](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions).
-	 * This flag requires the [`positions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerTerminal#positions) method to be implemented.
+	 * This flag requires the [`positions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerWithoutRealtime#positions) method to be implemented.
 	 * If you set `supportPositions` to `false`, the _Positions_ tab in the [Account Manager](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/account-manager/) will be hidden.
 	 * @default true
 	 */
@@ -2090,20 +2068,20 @@ export interface BrokerConfigFlags {
 	/**
 	 * Enables position brackets: take-profit and stop-loss orders.
 	 * If you set `supportPositionBrackets` to `true`, the library displays an _Edit_ button for positions and _Edit position..._ in the position's context menu.
-	 * This flag requires the {@link IBrokerTerminal.editPositionBrackets} method to be implemented.
+	 * This flag requires the {@link IBrokerWithoutRealtime.editPositionBrackets} method to be implemented.
 	 * @default false
 	 */
 	supportPositionBrackets?: boolean;
 	/**
 	 * Enables brackets for individual positions: take-profit and stop-loss orders.
 	 * If you set this flag to `true`, the library displays an _Edit_ button for individual positions and _Edit position..._ in the individual position's context menu.
-	 * This flag requires the {@link IBrokerTerminal.editIndividualPositionBrackets} method to be implemented.
+	 * This flag requires the {@link IBrokerWithoutRealtime.editIndividualPositionBrackets} method to be implemented.
 	 * @default false
 	 */
 	supportIndividualPositionBrackets?: boolean;
 	/**
 	 * Enables [position netting](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#position-netting).
-	 * This flag requires the [`positions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerTerminal#positions) and [`individualPositions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerTerminal#individualpositions) method to be implemented.
+	 * This flag requires the [`positions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerWithoutRealtime#positions) and [`individualPositions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerWithoutRealtime#individualpositions) method to be implemented.
 	 *
 	 * If you set this flag to `true`, the [Account Manager](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/account-manager/) will have two tabs: _Individual Positions_ and _Net Positions_.
 	 *
@@ -2112,14 +2090,14 @@ export interface BrokerConfigFlags {
 	supportPositionNetting?: boolean;
 	/**
 	 * Enables [position closing](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#close-positions).
-	 * - If `supportClosePosition` is set to `false`, positions are closed using [market orders](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/orders#order-types) of the opposite side. The library calls the {@link IBrokerTerminal.placeOrder} method, passing the `isClose` property set to `true` in the `PreOrder` object.
-	 * - If `supportClosePosition` is set to `true`, the library calls the {@link IBrokerTerminal.closePosition} method.
+	 * - If `supportClosePosition` is set to `false`, positions are closed using [market orders](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/orders#order-types) of the opposite side. The library calls the {@link IBrokerWithoutRealtime.placeOrder} method, passing the `isClose` property set to `true` in the `PreOrder` object.
+	 * - If `supportClosePosition` is set to `true`, the library calls the {@link IBrokerWithoutRealtime.closePosition} method.
 	 * @default false
 	 */
 	supportClosePosition?: boolean;
 	/**
 	 * Enables individual [position closing](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#close-positions).
-	 * This flag requires the {@link IBrokerTerminal.closeIndividualPosition} method to be implemented.
+	 * This flag requires the {@link IBrokerWithoutRealtime.closeIndividualPosition} method to be implemented.
 	 * @default false
 	 */
 	supportCloseIndividualPosition?: boolean;
@@ -2171,7 +2149,7 @@ export interface BrokerConfigFlags {
 	 */
 	supportReversePosition?: boolean;
 	/**
-	 * Enables [native](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#native-reversal) position reversing. You should implement the {@link IBrokerTerminal.reversePosition} method to process reversing on your backend side.
+	 * Enables [native](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#native-reversal) position reversing. You should implement the {@link IBrokerWithoutRealtime.reversePosition} method to process reversing on your backend side.
 	 * Note that the {@link supportReversePosition} flag should be set to `true` to enable the reverse option in the UI.
 	 *
 	 * If `supportNativeReversePosition` is set to `false`, the library handles reversing using the built-in mechanism. For more information, refer to the [Default reversal](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#default-reversal) section.
@@ -2225,7 +2203,7 @@ export interface BrokerConfigFlags {
 	supportModifyTrailingStop?: boolean;
 	/**
 	 * Allows margin.
-	 * If `supportMargin` is set to `true`, you should call {@link IBrokerConnectionAdapterHost.marginAvailableUpdate} when the Trading Platform subscribes to margin available updates using {@link IBrokerTerminal.subscribeMarginAvailable}.
+	 * If `supportMargin` is set to `true`, you should call {@link IBrokerConnectionAdapterHost.marginAvailableUpdate} when the Trading Platform subscribes to margin available updates using {@link IBrokerWithoutRealtime.subscribeMarginAvailable}.
 	 * @default false
 	 */
 	supportMargin?: boolean;
@@ -2233,7 +2211,7 @@ export interface BrokerConfigFlags {
 	 * Allows providing the estimated commission, fees, margin, and other order information before placing the order without actually placing it.
 	 * This information will be displayed in the _Order confirmation_ dialog.
 	 *
-	 * This flag requires the {@link IBrokerTerminal.previewOrder} method to be implemented and `confirmId` parameter to be passed in the {@link IBrokerTerminal.placeOrder} method.
+	 * This flag requires the {@link IBrokerWithoutRealtime.previewOrder} method to be implemented and `confirmId` parameter to be passed in the {@link IBrokerWithoutRealtime.placeOrder} method.
 	 * Refer to [Enable order preview](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/order-ticket#add-custom-fields) for more information.
 	 * @default false
 	 */
@@ -2242,14 +2220,14 @@ export interface BrokerConfigFlags {
 	 * Allows providing the estimated commission, fees, margin, and other order information before modifying the order without actually modifying it.
 	 * This information will be displayed in the _Order confirmation_ dialog.
 	 *
-	 * This flag requires the {@link IBrokerTerminal.previewOrder} method to be implemented and `confirmId` parameter to be passed in the {@link IBrokerTerminal.modifyOrder} method.
+	 * This flag requires the {@link IBrokerWithoutRealtime.previewOrder} method to be implemented and `confirmId` parameter to be passed in the {@link IBrokerWithoutRealtime.modifyOrder} method.
 	 * Refer to [Enable order preview](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/order-ticket#add-custom-fields) for more information.
 	 * @default false
 	 */
 	supportModifyOrderPreview?: boolean;
 	/**
 	 * Enables trading with leverage.
-	 * If the flag is set to `true`, you should calculate the leverage using the {@link IBrokerTerminal.leverageInfo} method.
+	 * If the flag is set to `true`, you should calculate the leverage using the {@link IBrokerWithoutRealtime.leverageInfo} method.
 	 * @default false
 	 */
 	supportLeverage?: boolean;
@@ -2264,7 +2242,7 @@ export interface BrokerConfigFlags {
 	/**
 	 * Enables orders history.
 	 * If `supportOrdersHistory` is set to `true`, the [Account Manager](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/account-manager/) will have an additional tab: _Orders History_.
-	 * This flag requires the [`ordersHistory`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerTerminal#ordershistory) method to be implemented.
+	 * This flag requires the [`ordersHistory`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerWithoutRealtime#ordershistory) method to be implemented.
 	 * The method should return a list of orders with the `filled`, `cancelled`, and `rejected` statuses from previous trade sessions.
 	 * @default false
 	 */
@@ -2306,13 +2284,13 @@ export interface BrokerConfigFlags {
 	positionPLInInstrumentCurrency?: boolean;
 	/**
 	 * Enables [partial position closing](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#partial-closing).
-	 * This flag requires the {@link IBrokerTerminal.closePosition} method to be implemented.
+	 * This flag requires the {@link IBrokerWithoutRealtime.closePosition} method to be implemented.
 	 * @default false
 	 */
 	supportPartialClosePosition?: boolean;
 	/**
 	 * Enables [partial individual position closing](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/positions#partial-closing).
-	 * This flag requires the {@link IBrokerTerminal.closeIndividualPosition} method to be implemented.
+	 * This flag requires the {@link IBrokerWithoutRealtime.closeIndividualPosition} method to be implemented.
 	 * @default false
 	 */
 	supportPartialCloseIndividualPosition?: boolean;
@@ -2322,7 +2300,7 @@ export interface BrokerConfigFlags {
 	 * When set to `false`, the text will include the ID of the singular bracket order being cancelled.
 	 *
 	 * Note that the library does not cancel orders itself.
-	 * You should implement the {@link IBrokerTerminal.cancelOrder} or {@link IBrokerTerminal.cancelOrders } method.
+	 * You should implement the {@link IBrokerWithoutRealtime.cancelOrder} or {@link IBrokerWithoutRealtime.cancelOrders } method.
 	 * @default false
 	 */
 	supportCancellingBothBracketsOnly?: boolean;
@@ -2354,7 +2332,7 @@ export interface BrokerConfigFlags {
 	supportStrictCheckingLimitOrderPrice?: boolean;
 	/**
 	 * If set to `true`, executions are displayed on the chart.
-	 * This flag requires the [`executions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerTerminal#executions) method to be implemented.
+	 * This flag requires the [`executions`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IBrokerWithoutRealtime#executions) method to be implemented.
 	 * @default false
 	 */
 	supportExecutions?: boolean;
@@ -2368,11 +2346,6 @@ export interface BrokerConfigFlags {
 	 * @default false
 	 */
 	requiresFIFOCloseIndividualPositions?: boolean;
-	/**
-	 * Allows brokers to add their own parameters that will be displayed in Order info.
-	 * @default false
-	 */
-	supportCustomOrderInfo?: boolean;
 }
 export interface BrokerCustomUI {
 	/**
@@ -2395,403 +2368,9 @@ export interface BrokerCustomUI {
 	showCancelOrderDialog?: (order: Order) => Promise<boolean>;
 	/**
 	 * Shows the Close Position Dialog.
-	 * @param  {Position|IndividualPosition} position - position to be closed
+	 * @param  {Position} position - position to be closed
 	 */
-	showClosePositionDialog?: (position: Position | IndividualPosition) => Promise<boolean>;
-}
-/**
- * Override properties that can be used within {@link TradingCustomization.brokerOrder} of the {@link TradingTerminalWidgetOptions.trading_customization} object.
- *
- * In a property name, "normal" indicates the line is active and visible in the UI, while "disabled" means the line is inactive, such as when another dialog is open.
- */
-export interface BrokerOrderOverrides {
-	"buy.normal.anchor.backgroundColor": string;
-	"buy.normal.anchor.borderColor": string;
-	"buy.normal.anchor.shadowColor": string;
-	"buy.normal.borderBackgroundColor": string;
-	"buy.normal.borderColor": string;
-	"buy.normal.close.activeColor": string;
-	"buy.normal.close.backgroundColor": string;
-	"buy.normal.close.iconColor": string;
-	"buy.normal.confirm.activeColor": string;
-	"buy.normal.confirm.backgroundColor": string;
-	"buy.normal.confirm.borderColor": string;
-	"buy.normal.confirm.disableBackgroundColor": string;
-	"buy.normal.confirm.disableTextColor": string;
-	"buy.normal.confirm.textColor": string;
-	"buy.normal.disabledLineColor": string;
-	"buy.normal.informer.backgroundColor": string;
-	"buy.normal.informer.iconColor": string;
-	"buy.normal.labelTickColor": string;
-	"buy.normal.lineColor": string;
-	"buy.normal.negativePlColor": string;
-	"buy.normal.pointBackgroundColor": string;
-	"buy.normal.pointShadowColor": string;
-	"buy.normal.positivePlColor": string;
-	"buy.normal.qty.activeColor": string;
-	"buy.normal.qty.backgroundColor": string;
-	"buy.normal.qty.dividerColor": string;
-	"buy.normal.qty.textColor": string;
-	"buy.normal.text.backgroundColor": string;
-	"buy.normal.text.buttonTextColor": string;
-	"buy.normal.text.dividerColor": string;
-	"buy.normal.text.textColor": string;
-	"buy.normal.text.activeColor": string;
-	"buy.disabled.anchor.backgroundColor": string;
-	"buy.disabled.anchor.borderColor": string;
-	"buy.disabled.anchor.shadowColor": string;
-	"buy.disabled.borderBackgroundColor": string;
-	"buy.disabled.borderColor": string;
-	"buy.disabled.close.activeColor": string;
-	"buy.disabled.close.backgroundColor": string;
-	"buy.disabled.close.iconColor": string;
-	"buy.disabled.confirm.activeColor": string;
-	"buy.disabled.confirm.backgroundColor": string;
-	"buy.disabled.confirm.borderColor": string;
-	"buy.disabled.confirm.disableBackgroundColor": string;
-	"buy.disabled.confirm.disableTextColor": string;
-	"buy.disabled.confirm.textColor": string;
-	"buy.disabled.disabledLineColor": string;
-	"buy.disabled.informer.backgroundColor": string;
-	"buy.disabled.informer.iconColor": string;
-	"buy.disabled.labelTickColor": string;
-	"buy.disabled.lineColor": string;
-	"buy.disabled.negativePlColor": string;
-	"buy.disabled.pointBackgroundColor": string;
-	"buy.disabled.pointShadowColor": string;
-	"buy.disabled.positivePlColor": string;
-	"buy.disabled.qty.activeColor": string;
-	"buy.disabled.qty.backgroundColor": string;
-	"buy.disabled.qty.dividerColor": string;
-	"buy.disabled.qty.textColor": string;
-	"buy.disabled.text.backgroundColor": string;
-	"buy.disabled.text.buttonTextColor": string;
-	"buy.disabled.text.dividerColor": string;
-	"buy.disabled.text.textColor": string;
-	"buy.disabled.text.activeColor": string;
-	"sell.normal.anchor.backgroundColor": string;
-	"sell.normal.anchor.borderColor": string;
-	"sell.normal.anchor.shadowColor": string;
-	"sell.normal.borderBackgroundColor": string;
-	"sell.normal.borderColor": string;
-	"sell.normal.close.activeColor": string;
-	"sell.normal.close.backgroundColor": string;
-	"sell.normal.close.iconColor": string;
-	"sell.normal.confirm.activeColor": string;
-	"sell.normal.confirm.backgroundColor": string;
-	"sell.normal.confirm.borderColor": string;
-	"sell.normal.confirm.disableBackgroundColor": string;
-	"sell.normal.confirm.disableTextColor": string;
-	"sell.normal.confirm.textColor": string;
-	"sell.normal.disabledLineColor": string;
-	"sell.normal.informer.backgroundColor": string;
-	"sell.normal.informer.iconColor": string;
-	"sell.normal.labelTickColor": string;
-	"sell.normal.lineColor": string;
-	"sell.normal.negativePlColor": string;
-	"sell.normal.pointBackgroundColor": string;
-	"sell.normal.pointShadowColor": string;
-	"sell.normal.positivePlColor": string;
-	"sell.normal.qty.activeColor": string;
-	"sell.normal.qty.backgroundColor": string;
-	"sell.normal.qty.dividerColor": string;
-	"sell.normal.qty.textColor": string;
-	"sell.normal.text.backgroundColor": string;
-	"sell.normal.text.buttonTextColor": string;
-	"sell.normal.text.dividerColor": string;
-	"sell.normal.text.textColor": string;
-	"sell.normal.text.activeColor": string;
-	"sell.disabled.anchor.backgroundColor": string;
-	"sell.disabled.anchor.borderColor": string;
-	"sell.disabled.anchor.shadowColor": string;
-	"sell.disabled.borderBackgroundColor": string;
-	"sell.disabled.borderColor": string;
-	"sell.disabled.close.activeColor": string;
-	"sell.disabled.close.backgroundColor": string;
-	"sell.disabled.close.iconColor": string;
-	"sell.disabled.confirm.activeColor": string;
-	"sell.disabled.confirm.backgroundColor": string;
-	"sell.disabled.confirm.borderColor": string;
-	"sell.disabled.confirm.disableBackgroundColor": string;
-	"sell.disabled.confirm.disableTextColor": string;
-	"sell.disabled.confirm.textColor": string;
-	"sell.disabled.disabledLineColor": string;
-	"sell.disabled.informer.backgroundColor": string;
-	"sell.disabled.informer.iconColor": string;
-	"sell.disabled.labelTickColor": string;
-	"sell.disabled.lineColor": string;
-	"sell.disabled.negativePlColor": string;
-	"sell.disabled.pointBackgroundColor": string;
-	"sell.disabled.pointShadowColor": string;
-	"sell.disabled.positivePlColor": string;
-	"sell.disabled.qty.activeColor": string;
-	"sell.disabled.qty.backgroundColor": string;
-	"sell.disabled.qty.dividerColor": string;
-	"sell.disabled.qty.textColor": string;
-	"sell.disabled.text.backgroundColor": string;
-	"sell.disabled.text.buttonTextColor": string;
-	"sell.disabled.text.dividerColor": string;
-	"sell.disabled.text.textColor": string;
-	"sell.disabled.text.activeColor": string;
-	"takeProfit.normal.anchor.backgroundColor": string;
-	"takeProfit.normal.anchor.borderColor": string;
-	"takeProfit.normal.anchor.shadowColor": string;
-	"takeProfit.normal.borderBackgroundColor": string;
-	"takeProfit.normal.borderColor": string;
-	"takeProfit.normal.close.activeColor": string;
-	"takeProfit.normal.close.backgroundColor": string;
-	"takeProfit.normal.close.iconColor": string;
-	"takeProfit.normal.confirm.activeColor": string;
-	"takeProfit.normal.confirm.backgroundColor": string;
-	"takeProfit.normal.confirm.borderColor": string;
-	"takeProfit.normal.confirm.disableBackgroundColor": string;
-	"takeProfit.normal.confirm.disableTextColor": string;
-	"takeProfit.normal.confirm.textColor": string;
-	"takeProfit.normal.disabledLineColor": string;
-	"takeProfit.normal.informer.backgroundColor": string;
-	"takeProfit.normal.informer.iconColor": string;
-	"takeProfit.normal.labelTickColor": string;
-	"takeProfit.normal.lineColor": string;
-	"takeProfit.normal.negativePlColor": string;
-	"takeProfit.normal.pointBackgroundColor": string;
-	"takeProfit.normal.pointShadowColor": string;
-	"takeProfit.normal.positivePlColor": string;
-	"takeProfit.normal.qty.activeColor": string;
-	"takeProfit.normal.qty.backgroundColor": string;
-	"takeProfit.normal.qty.dividerColor": string;
-	"takeProfit.normal.qty.textColor": string;
-	"takeProfit.normal.text.backgroundColor": string;
-	"takeProfit.normal.text.buttonTextColor": string;
-	"takeProfit.normal.text.dividerColor": string;
-	"takeProfit.normal.text.textColor": string;
-	"takeProfit.normal.text.activeColor": string;
-	"takeProfit.disabled.anchor.backgroundColor": string;
-	"takeProfit.disabled.anchor.borderColor": string;
-	"takeProfit.disabled.anchor.shadowColor": string;
-	"takeProfit.disabled.borderBackgroundColor": string;
-	"takeProfit.disabled.borderColor": string;
-	"takeProfit.disabled.close.activeColor": string;
-	"takeProfit.disabled.close.backgroundColor": string;
-	"takeProfit.disabled.close.iconColor": string;
-	"takeProfit.disabled.confirm.activeColor": string;
-	"takeProfit.disabled.confirm.backgroundColor": string;
-	"takeProfit.disabled.confirm.borderColor": string;
-	"takeProfit.disabled.confirm.disableBackgroundColor": string;
-	"takeProfit.disabled.confirm.disableTextColor": string;
-	"takeProfit.disabled.confirm.textColor": string;
-	"takeProfit.disabled.disabledLineColor": string;
-	"takeProfit.disabled.informer.backgroundColor": string;
-	"takeProfit.disabled.informer.iconColor": string;
-	"takeProfit.disabled.labelTickColor": string;
-	"takeProfit.disabled.lineColor": string;
-	"takeProfit.disabled.negativePlColor": string;
-	"takeProfit.disabled.pointBackgroundColor": string;
-	"takeProfit.disabled.pointShadowColor": string;
-	"takeProfit.disabled.positivePlColor": string;
-	"takeProfit.disabled.qty.activeColor": string;
-	"takeProfit.disabled.qty.backgroundColor": string;
-	"takeProfit.disabled.qty.dividerColor": string;
-	"takeProfit.disabled.qty.textColor": string;
-	"takeProfit.disabled.text.backgroundColor": string;
-	"takeProfit.disabled.text.buttonTextColor": string;
-	"takeProfit.disabled.text.dividerColor": string;
-	"takeProfit.disabled.text.textColor": string;
-	"takeProfit.disabled.text.activeColor": string;
-	"stopLoss.normal.anchor.backgroundColor": string;
-	"stopLoss.normal.anchor.borderColor": string;
-	"stopLoss.normal.anchor.shadowColor": string;
-	"stopLoss.normal.borderBackgroundColor": string;
-	"stopLoss.normal.borderColor": string;
-	"stopLoss.normal.close.activeColor": string;
-	"stopLoss.normal.close.backgroundColor": string;
-	"stopLoss.normal.close.iconColor": string;
-	"stopLoss.normal.confirm.activeColor": string;
-	"stopLoss.normal.confirm.backgroundColor": string;
-	"stopLoss.normal.confirm.borderColor": string;
-	"stopLoss.normal.confirm.disableBackgroundColor": string;
-	"stopLoss.normal.confirm.disableTextColor": string;
-	"stopLoss.normal.confirm.textColor": string;
-	"stopLoss.normal.disabledLineColor": string;
-	"stopLoss.normal.informer.backgroundColor": string;
-	"stopLoss.normal.informer.iconColor": string;
-	"stopLoss.normal.labelTickColor": string;
-	"stopLoss.normal.lineColor": string;
-	"stopLoss.normal.negativePlColor": string;
-	"stopLoss.normal.pointBackgroundColor": string;
-	"stopLoss.normal.pointShadowColor": string;
-	"stopLoss.normal.positivePlColor": string;
-	"stopLoss.normal.qty.activeColor": string;
-	"stopLoss.normal.qty.backgroundColor": string;
-	"stopLoss.normal.qty.dividerColor": string;
-	"stopLoss.normal.qty.textColor": string;
-	"stopLoss.normal.text.backgroundColor": string;
-	"stopLoss.normal.text.buttonTextColor": string;
-	"stopLoss.normal.text.dividerColor": string;
-	"stopLoss.normal.text.textColor": string;
-	"stopLoss.normal.text.activeColor": string;
-	"stopLoss.disabled.anchor.backgroundColor": string;
-	"stopLoss.disabled.anchor.borderColor": string;
-	"stopLoss.disabled.anchor.shadowColor": string;
-	"stopLoss.disabled.borderBackgroundColor": string;
-	"stopLoss.disabled.borderColor": string;
-	"stopLoss.disabled.close.activeColor": string;
-	"stopLoss.disabled.close.backgroundColor": string;
-	"stopLoss.disabled.close.iconColor": string;
-	"stopLoss.disabled.confirm.activeColor": string;
-	"stopLoss.disabled.confirm.backgroundColor": string;
-	"stopLoss.disabled.confirm.borderColor": string;
-	"stopLoss.disabled.confirm.disableBackgroundColor": string;
-	"stopLoss.disabled.confirm.disableTextColor": string;
-	"stopLoss.disabled.confirm.textColor": string;
-	"stopLoss.disabled.disabledLineColor": string;
-	"stopLoss.disabled.informer.backgroundColor": string;
-	"stopLoss.disabled.informer.iconColor": string;
-	"stopLoss.disabled.labelTickColor": string;
-	"stopLoss.disabled.lineColor": string;
-	"stopLoss.disabled.negativePlColor": string;
-	"stopLoss.disabled.pointBackgroundColor": string;
-	"stopLoss.disabled.pointShadowColor": string;
-	"stopLoss.disabled.positivePlColor": string;
-	"stopLoss.disabled.qty.activeColor": string;
-	"stopLoss.disabled.qty.backgroundColor": string;
-	"stopLoss.disabled.qty.dividerColor": string;
-	"stopLoss.disabled.qty.textColor": string;
-	"stopLoss.disabled.text.backgroundColor": string;
-	"stopLoss.disabled.text.buttonTextColor": string;
-	"stopLoss.disabled.text.dividerColor": string;
-	"stopLoss.disabled.text.textColor": string;
-	"stopLoss.disabled.text.activeColor": string;
-}
-/**
- * Override properties that can be used within {@link TradingCustomization.brokerPosition} of the {@link TradingTerminalWidgetOptions.trading_customization} object.
- *
- * In a property name, "normal" indicates the line is active and visible in the UI, while "disabled" means the line is inactive, such as when another dialog is open.
- */
-export interface BrokerPositionOverrides {
-	"buy.normal.borderBackgroundColor": string;
-	"buy.normal.borderColor": string;
-	"buy.normal.close.activeColor": string;
-	"buy.normal.close.backgroundColor": string;
-	"buy.normal.close.iconColor": string;
-	"buy.normal.confirm.activeColor": string;
-	"buy.normal.confirm.backgroundColor": string;
-	"buy.normal.confirm.borderColor": string;
-	"buy.normal.confirm.disableBackgroundColor": string;
-	"buy.normal.confirm.disableTextColor": string;
-	"buy.normal.confirm.textColor": string;
-	"buy.normal.disabledLineColor": string;
-	"buy.normal.informer.backgroundColor": string;
-	"buy.normal.informer.iconColor": string;
-	"buy.normal.lineColor": string;
-	"buy.normal.negativePlColor": string;
-	"buy.normal.pointBackgroundColor": string;
-	"buy.normal.pointShadowColor": string;
-	"buy.normal.positivePlColor": string;
-	"buy.normal.qty.activeColor": string;
-	"buy.normal.qty.backgroundColor": string;
-	"buy.normal.qty.dividerColor": string;
-	"buy.normal.qty.textColor": string;
-	"buy.normal.reverse.activeColor": string;
-	"buy.normal.reverse.backgroundColor": string;
-	"buy.normal.reverse.borderColor": string;
-	"buy.normal.reverse.iconColor": string;
-	"buy.normal.text.backgroundColor": string;
-	"buy.normal.text.dividerColor": string;
-	"buy.normal.text.textColor": string;
-	"buy.normal.text.activeColor": string;
-	"buy.disabled.borderBackgroundColor": string;
-	"buy.disabled.borderColor": string;
-	"buy.disabled.close.activeColor": string;
-	"buy.disabled.close.backgroundColor": string;
-	"buy.disabled.close.iconColor": string;
-	"buy.disabled.confirm.activeColor": string;
-	"buy.disabled.confirm.backgroundColor": string;
-	"buy.disabled.confirm.borderColor": string;
-	"buy.disabled.confirm.disableBackgroundColor": string;
-	"buy.disabled.confirm.disableTextColor": string;
-	"buy.disabled.confirm.textColor": string;
-	"buy.disabled.disabledLineColor": string;
-	"buy.disabled.informer.backgroundColor": string;
-	"buy.disabled.informer.iconColor": string;
-	"buy.disabled.lineColor": string;
-	"buy.disabled.negativePlColor": string;
-	"buy.disabled.pointBackgroundColor": string;
-	"buy.disabled.pointShadowColor": string;
-	"buy.disabled.positivePlColor": string;
-	"buy.disabled.qty.activeColor": string;
-	"buy.disabled.qty.backgroundColor": string;
-	"buy.disabled.qty.dividerColor": string;
-	"buy.disabled.qty.textColor": string;
-	"buy.disabled.reverse.activeColor": string;
-	"buy.disabled.reverse.backgroundColor": string;
-	"buy.disabled.reverse.borderColor": string;
-	"buy.disabled.reverse.iconColor": string;
-	"buy.disabled.text.backgroundColor": string;
-	"buy.disabled.text.dividerColor": string;
-	"buy.disabled.text.textColor": string;
-	"buy.disabled.text.activeColor": string;
-	"sell.normal.borderBackgroundColor": string;
-	"sell.normal.borderColor": string;
-	"sell.normal.close.activeColor": string;
-	"sell.normal.close.backgroundColor": string;
-	"sell.normal.close.iconColor": string;
-	"sell.normal.confirm.activeColor": string;
-	"sell.normal.confirm.backgroundColor": string;
-	"sell.normal.confirm.borderColor": string;
-	"sell.normal.confirm.disableBackgroundColor": string;
-	"sell.normal.confirm.disableTextColor": string;
-	"sell.normal.confirm.textColor": string;
-	"sell.normal.disabledLineColor": string;
-	"sell.normal.informer.backgroundColor": string;
-	"sell.normal.informer.iconColor": string;
-	"sell.normal.lineColor": string;
-	"sell.normal.negativePlColor": string;
-	"sell.normal.pointBackgroundColor": string;
-	"sell.normal.pointShadowColor": string;
-	"sell.normal.positivePlColor": string;
-	"sell.normal.qty.activeColor": string;
-	"sell.normal.qty.backgroundColor": string;
-	"sell.normal.qty.dividerColor": string;
-	"sell.normal.qty.textColor": string;
-	"sell.normal.reverse.activeColor": string;
-	"sell.normal.reverse.backgroundColor": string;
-	"sell.normal.reverse.borderColor": string;
-	"sell.normal.reverse.iconColor": string;
-	"sell.normal.text.backgroundColor": string;
-	"sell.normal.text.dividerColor": string;
-	"sell.normal.text.textColor": string;
-	"sell.normal.text.activeColor": string;
-	"sell.disabled.borderBackgroundColor": string;
-	"sell.disabled.borderColor": string;
-	"sell.disabled.close.activeColor": string;
-	"sell.disabled.close.backgroundColor": string;
-	"sell.disabled.close.iconColor": string;
-	"sell.disabled.confirm.activeColor": string;
-	"sell.disabled.confirm.backgroundColor": string;
-	"sell.disabled.confirm.borderColor": string;
-	"sell.disabled.confirm.disableBackgroundColor": string;
-	"sell.disabled.confirm.disableTextColor": string;
-	"sell.disabled.confirm.textColor": string;
-	"sell.disabled.disabledLineColor": string;
-	"sell.disabled.informer.backgroundColor": string;
-	"sell.disabled.informer.iconColor": string;
-	"sell.disabled.lineColor": string;
-	"sell.disabled.negativePlColor": string;
-	"sell.disabled.pointBackgroundColor": string;
-	"sell.disabled.pointShadowColor": string;
-	"sell.disabled.positivePlColor": string;
-	"sell.disabled.qty.activeColor": string;
-	"sell.disabled.qty.backgroundColor": string;
-	"sell.disabled.qty.dividerColor": string;
-	"sell.disabled.qty.textColor": string;
-	"sell.disabled.reverse.activeColor": string;
-	"sell.disabled.reverse.backgroundColor": string;
-	"sell.disabled.reverse.borderColor": string;
-	"sell.disabled.reverse.iconColor": string;
-	"sell.disabled.text.backgroundColor": string;
-	"sell.disabled.text.dividerColor": string;
-	"sell.disabled.text.textColor": string;
-	"sell.disabled.text.activeColor": string;
+	showClosePositionDialog?: (position: Position) => Promise<boolean>;
 }
 /**
  * Override properties for the Brush drawing tool.
@@ -3204,7 +2783,7 @@ export interface ChartPropertiesOverrides {
 	/**
 	 * Pane separator color.
 	 *
-	 * @default '#EBEBEB'
+	 * @default '#E0E3EB'
 	 */
 	"paneProperties.separatorColor": string;
 	/**
@@ -4774,8 +4353,6 @@ export interface ChartingLibraryWidgetOptions {
 	/**
 	 * Set this parameter to `true` if you want the library to load the last saved chart for a user. You should implement [save/load](https://www.tradingview.com/charting-library-docs/latest/saving_loading/) first to make it work.
 	 *
-	 * Note that the {@link symbol} property takes precedence over `load_last_chart`. If `symbol` is specified, its value is displayed on the chart instead of the saved symbol. To avoid this issue, consider removing the `symbol` property when `load_last_chart` is enabled.
-	 *
 	 * ```javascript
 	 * load_last_chart: true,
 	 * ```
@@ -5680,7 +5257,7 @@ export interface CreateShapeOptions<TOverrides extends object> extends CreateSha
 	/**
 	 * A drawing to create.
 	 */
-	shape?: "arrow_up" | "arrow_down" | "flag" | "vertical_line" | "horizontal_line" | "long_position" | "short_position" | "icon" | "emoji" | "sticker" | "text" | "anchored_text" | "note" | "anchored_note";
+	shape?: "arrow_up" | "arrow_down" | "flag" | "vertical_line" | "horizontal_line" | "long_position" | "short_position" | "icon" | "emoji" | "sticker" | "anchored_text" | "anchored_note";
 	/**
 	 * The ID of an indicator that the drawing is attached to.
 	 * For more information, refer to the [Attach drawing to indicator](https://www.tradingview.com/charting-library-docs/latest/ui_elements/drawings/drawings-api#attach-drawing-to-indicator) section.
@@ -5895,10 +5472,6 @@ export interface CurrencyInfo {
 	 * Available currencies for the price scale provided by the datafeed.
 	 */
 	currencies: string[];
-	/**
-	 * Symbols on the price scale
-	 */
-	symbols: string[];
 }
 export interface CurrencyItem {
 	/** Unique ID */
@@ -7169,7 +6742,7 @@ export interface FibchannelLineToolOverrides {
 	"linetoolfibchannel.labelFontSize": number;
 	/** Default value: `0` */
 	"linetoolfibchannel.level1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibchannel.level1.color": string;
 	/** Default value: `true` */
 	"linetoolfibchannel.level1.visible": boolean;
@@ -7223,7 +6796,7 @@ export interface FibchannelLineToolOverrides {
 	"linetoolfibchannel.level17.visible": boolean;
 	/** Default value: `3.272` */
 	"linetoolfibchannel.level18.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibchannel.level18.color": string;
 	/** Default value: `false` */
 	"linetoolfibchannel.level18.visible": boolean;
@@ -7295,7 +6868,7 @@ export interface FibchannelLineToolOverrides {
 	"linetoolfibchannel.level6.visible": boolean;
 	/** Default value: `1` */
 	"linetoolfibchannel.level7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibchannel.level7.color": string;
 	/** Default value: `true` */
 	"linetoolfibchannel.level7.visible": boolean;
@@ -7404,7 +6977,7 @@ export interface FibcirclesLineToolOverrides {
 	"linetoolfibcircles.level5.visible": boolean;
 	/** Default value: `1` */
 	"linetoolfibcircles.level6.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibcircles.level6.color": string;
 	/** Default value: `0` */
 	"linetoolfibcircles.level6.linestyle": number;
@@ -7446,7 +7019,7 @@ export interface FibcirclesLineToolOverrides {
 	"linetoolfibcircles.showCoeffs": boolean;
 	/** Default value: `80` */
 	"linetoolfibcircles.transparency": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibcircles.trendline.color": string;
 	/** Default value: `2` */
 	"linetoolfibcircles.trendline.linestyle": number;
@@ -7477,7 +7050,7 @@ export interface FibretracementLineToolOverrides {
 	"linetoolfibretracement.labelFontSize": number;
 	/** Default value: `0` */
 	"linetoolfibretracement.level1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibretracement.level1.color": string;
 	/** Default value: `undefined` */
 	"linetoolfibretracement.level1.text": string;
@@ -7549,7 +7122,7 @@ export interface FibretracementLineToolOverrides {
 	"linetoolfibretracement.level17.visible": boolean;
 	/** Default value: `3.272` */
 	"linetoolfibretracement.level18.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibretracement.level18.color": string;
 	/** Default value: `undefined` */
 	"linetoolfibretracement.level18.text": string;
@@ -7645,7 +7218,7 @@ export interface FibretracementLineToolOverrides {
 	"linetoolfibretracement.level6.visible": boolean;
 	/** Default value: `1` */
 	"linetoolfibretracement.level7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibretracement.level7.color": string;
 	/** Default value: `undefined` */
 	"linetoolfibretracement.level7.text": string;
@@ -7681,7 +7254,7 @@ export interface FibretracementLineToolOverrides {
 	"linetoolfibretracement.showText": boolean;
 	/** Default value: `80` */
 	"linetoolfibretracement.transparency": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibretracement.trendline.color": string;
 	/** Default value: `2` */
 	"linetoolfibretracement.trendline.linestyle": number;
@@ -7774,7 +7347,7 @@ export interface FibspeedresistancearcsLineToolOverrides {
 	"linetoolfibspeedresistancearcs.level5.visible": boolean;
 	/** Default value: `1` */
 	"linetoolfibspeedresistancearcs.level6.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibspeedresistancearcs.level6.color": string;
 	/** Default value: `0` */
 	"linetoolfibspeedresistancearcs.level6.linestyle": number;
@@ -7816,7 +7389,7 @@ export interface FibspeedresistancearcsLineToolOverrides {
 	"linetoolfibspeedresistancearcs.showCoeffs": boolean;
 	/** Default value: `80` */
 	"linetoolfibspeedresistancearcs.transparency": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibspeedresistancearcs.trendline.color": string;
 	/** Default value: `2` */
 	"linetoolfibspeedresistancearcs.trendline.linestyle": number;
@@ -7841,7 +7414,7 @@ export interface FibspeedresistancefanLineToolOverrides {
 	"linetoolfibspeedresistancefan.grid.visible": boolean;
 	/** Default value: `0` */
 	"linetoolfibspeedresistancefan.hlevel1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibspeedresistancefan.hlevel1.color": string;
 	/** Default value: `true` */
 	"linetoolfibspeedresistancefan.hlevel1.visible": boolean;
@@ -7877,7 +7450,7 @@ export interface FibspeedresistancefanLineToolOverrides {
 	"linetoolfibspeedresistancefan.hlevel6.visible": boolean;
 	/** Default value: `1` */
 	"linetoolfibspeedresistancefan.hlevel7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibspeedresistancefan.hlevel7.color": string;
 	/** Default value: `true` */
 	"linetoolfibspeedresistancefan.hlevel7.visible": boolean;
@@ -7899,7 +7472,7 @@ export interface FibspeedresistancefanLineToolOverrides {
 	"linetoolfibspeedresistancefan.transparency": number;
 	/** Default value: `0` */
 	"linetoolfibspeedresistancefan.vlevel1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibspeedresistancefan.vlevel1.color": string;
 	/** Default value: `true` */
 	"linetoolfibspeedresistancefan.vlevel1.visible": boolean;
@@ -7935,7 +7508,7 @@ export interface FibspeedresistancefanLineToolOverrides {
 	"linetoolfibspeedresistancefan.vlevel6.visible": boolean;
 	/** Default value: `1` */
 	"linetoolfibspeedresistancefan.vlevel7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibspeedresistancefan.vlevel7.color": string;
 	/** Default value: `true` */
 	"linetoolfibspeedresistancefan.vlevel7.visible": boolean;
@@ -7950,7 +7523,7 @@ export interface FibtimezoneLineToolOverrides {
 	"linetoolfibtimezone.horzLabelsAlign": string;
 	/** Default value: `0` */
 	"linetoolfibtimezone.level1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibtimezone.level1.color": string;
 	/** Default value: `0` */
 	"linetoolfibtimezone.level1.linestyle": number;
@@ -8151,7 +7724,7 @@ export interface FibwedgeLineToolOverrides {
 	"linetoolfibwedge.level5.visible": boolean;
 	/** Default value: `1` */
 	"linetoolfibwedge.level6.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolfibwedge.level6.color": string;
 	/** Default value: `0` */
 	"linetoolfibwedge.level6.linestyle": number;
@@ -8561,7 +8134,7 @@ export interface GanncomplexLineToolOverrides {
 	"linetoolganncomplex.fanlines.10.x": number;
 	/** Default value: `8` */
 	"linetoolganncomplex.fanlines.10.y": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolganncomplex.fanlines.2.color": string;
 	/** Default value: `false` */
 	"linetoolganncomplex.fanlines.2.visible": boolean;
@@ -8649,7 +8222,7 @@ export interface GanncomplexLineToolOverrides {
 	"linetoolganncomplex.labelsStyle.fontSize": number;
 	/** Default value: `false` */
 	"linetoolganncomplex.labelsStyle.italic": boolean;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolganncomplex.levels.0.color": string;
 	/** Default value: `true` */
 	"linetoolganncomplex.levels.0.visible": boolean;
@@ -8679,7 +8252,7 @@ export interface GanncomplexLineToolOverrides {
 	"linetoolganncomplex.levels.4.visible": boolean;
 	/** Default value: `2` */
 	"linetoolganncomplex.levels.4.width": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolganncomplex.levels.5.color": string;
 	/** Default value: `true` */
 	"linetoolganncomplex.levels.5.visible": boolean;
@@ -8961,7 +8534,7 @@ export interface GannfixedLineToolOverrides {
 	"linetoolgannfixed.fanlines.10.x": number;
 	/** Default value: `8` */
 	"linetoolgannfixed.fanlines.10.y": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolgannfixed.fanlines.2.color": string;
 	/** Default value: `false` */
 	"linetoolgannfixed.fanlines.2.visible": boolean;
@@ -9043,7 +8616,7 @@ export interface GannfixedLineToolOverrides {
 	"linetoolgannfixed.fanlines.9.y": number;
 	/** Default value: `false` */
 	"linetoolgannfixed.fillBackground": boolean;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolgannfixed.levels.0.color": string;
 	/** Default value: `true` */
 	"linetoolgannfixed.levels.0.visible": boolean;
@@ -9073,7 +8646,7 @@ export interface GannfixedLineToolOverrides {
 	"linetoolgannfixed.levels.4.visible": boolean;
 	/** Default value: `2` */
 	"linetoolgannfixed.levels.4.width": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolgannfixed.levels.5.color": string;
 	/** Default value: `true` */
 	"linetoolgannfixed.levels.5.visible": boolean;
@@ -9088,7 +8661,7 @@ export interface GannfixedLineToolOverrides {
 export interface GannsquareLineToolOverrides {
 	/** Default value: `rgba(21, 56, 153, 0.8)` */
 	"linetoolgannsquare.color": string;
-	/** Default value: `#9C9C9C` */
+	/** Default value: `#9598A1` */
 	"linetoolgannsquare.fans.color": string;
 	/** Default value: `false` */
 	"linetoolgannsquare.fans.visible": boolean;
@@ -9098,7 +8671,7 @@ export interface GannsquareLineToolOverrides {
 	"linetoolgannsquare.fillVertBackground": boolean;
 	/** Default value: `0` */
 	"linetoolgannsquare.hlevel1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolgannsquare.hlevel1.color": string;
 	/** Default value: `true` */
 	"linetoolgannsquare.hlevel1.visible": boolean;
@@ -9134,7 +8707,7 @@ export interface GannsquareLineToolOverrides {
 	"linetoolgannsquare.hlevel6.visible": boolean;
 	/** Default value: `1` */
 	"linetoolgannsquare.hlevel7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolgannsquare.hlevel7.color": string;
 	/** Default value: `true` */
 	"linetoolgannsquare.hlevel7.visible": boolean;
@@ -9158,7 +8731,7 @@ export interface GannsquareLineToolOverrides {
 	"linetoolgannsquare.vertTransparency": number;
 	/** Default value: `0` */
 	"linetoolgannsquare.vlevel1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolgannsquare.vlevel1.color": string;
 	/** Default value: `true` */
 	"linetoolgannsquare.vlevel1.visible": boolean;
@@ -9194,7 +8767,7 @@ export interface GannsquareLineToolOverrides {
 	"linetoolgannsquare.vlevel6.visible": boolean;
 	/** Default value: `1` */
 	"linetoolgannsquare.vlevel7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolgannsquare.vlevel7.color": string;
 	/** Default value: `true` */
 	"linetoolgannsquare.vlevel7.visible": boolean;
@@ -9225,7 +8798,7 @@ export interface GhostfeedLineToolOverrides {
 	"linetoolghostfeed.candleStyle.drawWick": boolean;
 	/** Default value: `#ACE5DC` */
 	"linetoolghostfeed.candleStyle.upColor": string;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolghostfeed.candleStyle.wickColor": string;
 	/** Default value: `50` */
 	"linetoolghostfeed.transparency": number;
@@ -9842,11 +9415,8 @@ export interface IBrokerCommon {
 	getOrderDialogOptions?(symbol: string): Promise<OrderDialogOptions | undefined>;
 	/**
 	 * Implement this method if you want to customize the position dialog.
-	 *
-	 * Use the `symbol` parameter to return customization options for a particular symbol.
-	 * @param  {string} symbol - symbol identifier
 	 */
-	getPositionDialogOptions?(symbol: string): Promise<PositionDialogOptions | undefined>;
+	getPositionDialogOptions?(): PositionDialogOptions | undefined;
 	/**
 	 * Implement this method if you want to have custom options available for different symbols.
 	 * @param  {string} symbol - symbol identifier
@@ -9988,7 +9558,7 @@ export interface IBrokerConnectionAdapterHost {
 	plUpdate(positionId: string, pl: number): void;
 	/**
 	 * Call this method when a broker connection has a `pipValue` update.
-	 * The library subscribes to `pipValue` updates using {@link IBrokerTerminal.subscribePipValue}.
+	 * The library subscribes to `pipValue` updates using {@link IBrokerWithoutRealtime.subscribePipValue}.
 	 * @param  {string} symbol - symbol with updated pip values
 	 * @param  {PipValues} pipValues - updated pip values
 	 */
@@ -10008,7 +9578,7 @@ export interface IBrokerConnectionAdapterHost {
 	 * Call this method when a broker connection has received a margin available update.
 	 * This method is required by the standard Order Ticket to display the margin meter.
 	 * This method should be used when {@link BrokerConfigFlags.supportMargin} is set to `true` in {@link SingleBrokerMetaInfo.configFlags}.
-	 * The Trading Platform subscribes to margin available updates using {@link IBrokerTerminal.subscribeMarginAvailable}.
+	 * The Trading Platform subscribes to margin available updates using {@link IBrokerWithoutRealtime.subscribeMarginAvailable}.
 	 * @param  {number} marginAvailable - updated available margin
 	 */
 	marginAvailableUpdate(marginAvailable: number): void;
@@ -10170,12 +9740,34 @@ export interface IBrokerConnectionAdapterHost {
 	 */
 	setOrderTicketSetting<K extends keyof OrderTicketSettings>(settingName: K, value: OrderTicketSettings[K]): Promise<void>;
 }
+export interface IBrokerTerminal extends IBrokerWithoutRealtime {
+	/**
+	 * Library is requesting that realtime updates should be supplied for this symbol.
+	 * @param  {string} symbol - symbol identifier
+	 */
+	subscribeRealtime(symbol: string): void;
+	/**
+	 * Library is notifying that realtime updates are no longer required for this symbol.
+	 * @param  {string} symbol - symbol identifier
+	 */
+	unsubscribeRealtime(symbol: string): void;
+}
 /**
  * The Broker API is a key component that enables trading.
  * Its main purpose is to connect TradingView charts with your trading logic.
  * Refer to the [Core trading concepts](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/) article for more information.
  */
-export interface IBrokerTerminal extends IBrokerCommon, IBrokerAccountInfo {
+export interface IBrokerWithoutRealtime extends IBrokerCommon, IBrokerAccountInfo {
+	/**
+	 * Library is requesting that realtime DOM (Depth of Market) updates should be supplied for this symbol
+	 * @param  {string} symbol - symbol identifier
+	 */
+	subscribeDOM?(symbol: string): void;
+	/**
+	 * Library is notifying that realtime DOM (Depth of Market) updates are no longer required for this symbol.
+	 * @param  {string} symbol - symbol identifier
+	 */
+	unsubscribeDOM?(symbol: string): void;
 	/**
 	 * The library calls `placeOrder` to request placing an order pre-filled with partial or complete information.
 	 * You should handle this request on your backend side. For more information, refer to [Order creation](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/#1-order-creation).
@@ -10479,9 +10071,8 @@ export interface IChartWidgetApi {
 	 *
 	 * @param symbol A symbol.
 	 * @param options Optional object of options for the new symbol or optional callback that is called when the data for the new symbol has loaded.
-	 * * @returns A promise that resolves with a boolean value. It's `true` when the symbol has been set and `false` when setting the symbol is not possible.
 	 */
-	setSymbol(symbol: string, options?: SetSymbolOptions | (() => void)): Promise<boolean>;
+	setSymbol(symbol: string, options?: SetSymbolOptions | (() => void)): void;
 	/**
 	 * Change the chart's interval (resolution).
 	 *
@@ -10522,16 +10113,15 @@ export interface IChartWidgetApi {
 	 */
 	resetData(): void;
 	/**
-	 * Execute an action by ID.
-	 * See [Chart methods](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Chart#execute-action-by-id) for more information.
+	 * Execute an action.
 	 *
 	 * **Example**
 	 * ```javascript
-	 * // Undoes the last applied action
+	 * // ...
 	 * widget.activeChart().executeActionById("undo");
-	 *
-	 * // Opens or hides the drawing toolbar
-	 * widget.activeChart().executeActionById("drawingToolbarAction");
+	 * // ...
+	 * widget.activeChart().executeActionById("drawingToolbarAction"); // Hides or shows the drawing toolbar
+	 * // ...
 	 * ```
 	 *
 	 * @param actionId An action ID.
@@ -10788,9 +10378,9 @@ export interface IChartWidgetApi {
 	 *
 	 * @param point A point. The location of the new drawing.
 	 * @param options An options object for the new drawing.
-	 * @returns Promise of the ID for the new drawing if it was created successfully.
+	 * @returns The ID of the new drawing if it was created successfully, or null otherwise.
 	 */
-	createShape<TOverrides extends object>(point: ShapePoint, options: CreateShapeOptions<TOverrides>): Promise<EntityId>;
+	createShape<TOverrides extends object>(point: ShapePoint, options: CreateShapeOptions<TOverrides>): EntityId | null;
 	/**
 	 * Create a new multi point drawing.
 	 *
@@ -10815,9 +10405,9 @@ export interface IChartWidgetApi {
 	 *
 	 * @param points An array of points that define the drawing.
 	 * @param options An options object for the new drawing.
-	 * @returns Promise of the ID for the new drawing if it was created successfully.
+	 * @returns The ID of the new drawing if it was created successfully, or null otherwise.
 	 */
-	createMultipointShape<TOverrides extends object>(points: ShapePoint[], options: CreateMultipointShapeOptions<TOverrides>): Promise<EntityId>;
+	createMultipointShape<TOverrides extends object>(points: ShapePoint[], options: CreateMultipointShapeOptions<TOverrides>): EntityId | null;
 	/**
 	 * Create a new anchored drawing. Anchored drawings maintain their position when the chart's visible range changes.
 	 *
@@ -10831,7 +10421,7 @@ export interface IChartWidgetApi {
 	 * @param position Percent-based x and y position of the new drawing, relative to the top left of the chart.
 	 * @param options An options object for the new drawing.
 	 */
-	createAnchoredShape<TOverrides extends object>(position: PositionPercents, options: CreateAnchoredShapeOptions<TOverrides>): Promise<EntityId>;
+	createAnchoredShape<TOverrides extends object>(position: PositionPercents, options: CreateAnchoredShapeOptions<TOverrides>): EntityId | null;
 	/**
 	 * Get a drawing by ID.
 	 *
@@ -10925,13 +10515,13 @@ export interface IChartWidgetApi {
 	 */
 	applyStudyTemplate(template: object): void;
 	/**
-	 * Creates a new trading order on the chart.
-	 * Starting from version 29, this method is only available in [Trading Platform](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/).
+	 * @deprecated Starting from version 29, this method will only be available in Trading Platform.
+	 *
+	 * Create a new trading order on the chart.
 	 *
 	 * **Example**
 	 * ```javascript
-	 * const orderLine = widget.activeChart().createOrderLine();
-	 * orderLine
+	 * widget.activeChart().createOrderLine()
 	 *     .setTooltip("Additional order information")
 	 *     .setModifyTooltip("Modify order")
 	 *     .setCancelTooltip("Cancel order")
@@ -10948,17 +10538,18 @@ export interface IChartWidgetApi {
 	 *     .setQuantity("2");
 	 * ```
 	 *
+	 * @param options Optional undo options.
 	 * @returns An API object for interacting with the order.
 	 */
-	createOrderLine(): Promise<IOrderLineAdapter>;
+	createOrderLine(options?: UndoOptions): IOrderLineAdapter;
 	/**
+	 * @deprecated Starting from version 29, this method will only be available in Trading Platform.
+	 *
 	 * Creates a new trading position on the chart.
-	 * Starting from version 29, this method is only available in [Trading Platform](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/).
 	 *
 	 * **Example**
 	 * ```javascript
-	 * const positionLine = await widget.chart().createPositionLine();
-	 * positionLine
+	 * widget.chart().createPositionLine()
 	 *     .onModify(function() {
 	 *         this.setText("onModify called");
 	 *     })
@@ -10980,16 +10571,18 @@ export interface IChartWidgetApi {
 	 *     .setLineLength(25);
 	 * ```
 	 *
+	 * @param options Optional undo options.
 	 * @returns An API object for interacting with the position.
 	 */
-	createPositionLine(): Promise<IPositionLineAdapter>;
+	createPositionLine(options?: UndoOptions): IPositionLineAdapter;
 	/**
+	 * @deprecated Starting from version 29, this method will only be available in Trading Platform.
+	 *
 	 * Creates a new trade execution on the chart.
-	 * Starting from version 29, this method is only available in [Trading Platform](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/).
+	 *
 	 * **Example**
 	 * ```javascript
-	 * const executionLine = widget.activeChart().createExecutionShape();
-	 * executionLine
+	 * widget.activeChart().createExecutionShape()
 	 *     .setText("@1,320.75 Limit Buy 1")
 	 *     .setTooltip("@1,320.75 Limit Buy 1")
 	 *     .setTextColor("rgba(0,255,0,0.5)")
@@ -10999,9 +10592,10 @@ export interface IChartWidgetApi {
 	 *     .setPrice(160);
 	 * ```
 	 *
+	 * @param options Optional undo options.
 	 * @returns An API object for interacting with the execution.
 	 */
-	createExecutionShape(): Promise<IExecutionLineAdapter>;
+	createExecutionShape(options?: UndoOptions): IExecutionLineAdapter;
 	/**
 	 * Get the name of the current symbol.
 	 *
@@ -11375,34 +10969,34 @@ export interface IChartingLibraryWidget {
 	 * @param linetool An icon drawing tool.
 	 * @param options An optional object with options.
 	 */
-	selectLineTool(linetool: "icon", options?: IconOptions): Promise<void>;
+	selectLineTool(linetool: "icon", options?: IconOptions): void;
 	/**
 	 * Select a drawing or a cursor. It's the same as clicking on the corresponding button in the left toolbar.
 	 *
 	 * @param linetool A drawing or cursor to select (excluding 'icon')
 	 */
-	selectLineTool(linetool: Omit<"icon", SupportedLineTools>): Promise<void>;
+	selectLineTool(linetool: Omit<"icon", SupportedLineTools>): void;
 	/**
 	 * Select the Icon line tool. It's the same as clicking on the corresponding button in the left toolbar.
 	 *
 	 * @param linetool Icon line tool.
 	 * @param options An optional object with options. Currently only used for the 'icon' drawing.
 	 */
-	selectLineTool(linetool: "icon", options?: IconOptions): Promise<void>;
+	selectLineTool(linetool: "icon", options?: IconOptions): void;
 	/**
 	 * Select the Emoji line tool. It's the same as clicking on the corresponding button in the left toolbar.
 	 *
 	 * @param linetool Emoji line tool.
 	 * @param options Options for the Emoji line tool
 	 */
-	selectLineTool(linetool: "emoji", options?: EmojiOptions): Promise<void>;
+	selectLineTool(linetool: "emoji", options?: EmojiOptions): void;
 	/**
 	 * Select a drawing, icon, or a cursor. It's the same as clicking on the corresponding button in the left toolbar.
 	 *
 	 * @param linetool A drawing or cursor to select.
 	 * @param options An optional object with options.
 	 */
-	selectLineTool(linetool: SupportedLineTools, options?: IconOptions | EmojiOptions): Promise<void>;
+	selectLineTool(linetool: SupportedLineTools, options?: IconOptions | EmojiOptions): void;
 	/**
 	 * Get the currently selected drawing or cursor.
 	 *
@@ -11422,7 +11016,7 @@ export interface IChartingLibraryWidget {
 	 * @param state A chart state object to load.
 	 * @param extendedData A optional object of information about the saved state.
 	 */
-	load(state: object, extendedData?: SavedStateMetaInfo): Promise<void>;
+	load(state: object, extendedData?: SavedStateMetaInfo): void;
 	/**
 	 * Get a list of chart descriptions saved to the server for the current user.
 	 *
@@ -11434,7 +11028,7 @@ export interface IChartingLibraryWidget {
 	 *
 	 * @param chartRecord A chart information object (returned by {@link getSavedCharts}).
 	 */
-	loadChartFromServer(chartRecord: SaveLoadChartRecord): Promise<void>;
+	loadChartFromServer(chartRecord: SaveLoadChartRecord): void;
 	/**
 	 * Save the current chart to the server.
 	 *
@@ -11976,7 +11570,7 @@ export interface IChartingLibraryWidget {
 	 */
 	getCSSCustomPropertyValue(customPropertyName: string): string;
 	/**
-	 * Get a promise that resolves with an API object for interacting with the custom themes. For more information on custom themes, refer to the [Custom themes API](https://www.tradingview.com/charting-library-docs/latest/customization/styles/custom-themes) article.
+	 * Get a promise that resolves with an API object for interacting with the custom themes.
 	 *
 	 * @returns An API object for interacting with the custom themes.
 	 */
@@ -12202,14 +11796,13 @@ export interface ICustomSymbolStatusApi {
 	hideAll(): void;
 }
 /**
- * An API for controlling custom themes. To retrieve this interface, call the {@link IChartingLibraryWidget.customThemes} method.
- * For more information on custom themes, refer to the [Custom Themes API](https://www.tradingview.com/charting-library-docs/latest/customization/styles/custom-themes) article.
+ * An API for controlling custom themes.
  */
 export interface ICustomThemesApi {
 	/**
-	 * Apply custom theme color definitions to the library widget after the widget is created.
+	 * Apply custom theme color definitions to the charting library widget.
 	 *
-	 * You can also specify a custom theme using the {@link ChartingLibraryWidgetOptions.custom_themes} property in the Widget Constructor.
+	 * This has the same effect as using the widget constructor option but can be applied after the widget is created.
 	 *
 	 * @param customThemes Custom theme color definitions
 	 */
@@ -12692,13 +12285,13 @@ export interface ILineDataSourceApi {
 	 * Get all the properties of the drawing.
 	 * @returns properties of the drawing
 	 */
-	getProperties<P extends Record<string, any> = Record<string, any>>(): P;
+	getProperties(): Record<string, any>;
 	/**
 	 * Sets the properties of the drawing.
 	 * @param  {object} newProperties - Drawing properties to be set on the drawing. It should have the same structure as an object from {@link ILineDataSourceApi.getProperties}. It can only include the properties that you want to override.
 	 * @param  {boolean} saveDefaults - If `true`, the properties will be saved as defaults for the drawing. Defaults are used when the drawing is created.
 	 */
-	setProperties<P extends Record<string, any> = Record<string, any>>(newProperties: P, saveDefaults?: boolean): void;
+	setProperties(newProperties: object, saveDefaults?: boolean): void;
 	/**
 	 * Returns the points of the drawing.
 	 */
@@ -12973,7 +12566,7 @@ export interface IOrderLineAdapter {
 	 *
 	 * **Example**
 	 * ```javascript
-	 * orderLine.setPrice(170).setBodyFont("bold 12px Verdana")
+	 * widget.activeChart().createOrderLine().setPrice(170).setBodyFont("bold 12px Verdana")
 	 * ```
 	 *
 	 * @param value The new body font.
@@ -12988,7 +12581,7 @@ export interface IOrderLineAdapter {
 	 *
 	 * **Example**
 	 * ```javascript
-	 * orderLine.setPrice(170).setQuantityFont("bold 12px Verdana")
+	 * widget.activeChart().createOrderLine().setPrice(170).setQuantityFont("bold 12px Verdana")
 	 * ```
 	 *
 	 * @param value The new quantity font.
@@ -13133,12 +12726,6 @@ export interface IPaneApi {
 	collapse(): void;
 	/** Restore the size of a previously collapsed pane */
 	restore(): void;
-	/** Returns the pane's collapsed state */
-	isCollapsed(): boolean;
-	/** Change the maximized state of the pane */
-	setMaximized(value: boolean): void;
-	/** Returns the maximized state of the pane */
-	isMaximized(): boolean;
 }
 export interface IPineSeries {
 	/**
@@ -13382,7 +12969,7 @@ export interface IPositionLineAdapter {
 	 *
 	 * **Example**
 	 * ```javascript
-	 * positionLine.setPrice(170).setBodyFont("bold 12px Verdana")
+	 * widget.activeChart().createPositionLine().setPrice(170).setBodyFont("bold 12px Verdana")
 	 * ```
 	 *
 	 * @param value The new body font.
@@ -13397,7 +12984,7 @@ export interface IPositionLineAdapter {
 	 *
 	 * **Example**
 	 * ```javascript
-	 * positionLine.setPrice(170).setQuantityFont("bold 12px Verdana")
+	 * widget.activeChart().createPositionLine().setPrice(170).setQuantityFont("bold 12px Verdana")
 	 * ```
 	 *
 	 * @param value The new quantity font.
@@ -13732,7 +13319,7 @@ export interface ISeriesApi {
 	/** Returns properties for a specific chart style */
 	chartStyleProperties<T extends ChartStyle>(chartStyle: T): SeriesPreferencesMap[T];
 	/** Sets properties for a specific chart style */
-	setChartStyleProperties<T extends ChartStyle>(chartStyle: T, newPrefs: DeepPartial<SeriesPreferencesMap[T]>): void;
+	setChartStyleProperties<T extends ChartStyle>(chartStyle: T, newPrefs: Partial<SeriesPreferencesMap[T]>): void;
 }
 /**
  * Properties of the {@link ChartingLibraryWidgetOptions.settings_adapter} property that allows saving [user settings](https://www.tradingview.com/charting-library-docs/latest/saving_loading/user-settings) to your preferred storage, including server-side.
@@ -13940,12 +13527,6 @@ export interface IStudyApi {
 	 * Unmerge the study into the pane below, if possible.
 	 */
 	unmergeDown(): void;
-	/**
-	 * Get the index of the pane that the study is attached to.
-	 *
-	 * @returns The pane index.
-	 */
-	paneIndex(): number;
 	/**
 	 * Change the price scale that the study is attached to.
 	 *
@@ -15107,8 +14688,7 @@ export interface LibrarySymbolInfo {
 	 * It is an unique identifier for a particular symbol in your [symbology](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology).
 	 * If you specify this property, its value will be used for all data requests for this symbol.
 	 * `ticker` will be treated the same as {@link LibrarySymbolInfo.name} if not specified explicitly.
-	 *
-	 * You should avoid using colons (":") in ticker values unless you are following the TradingView format: "NYSE:IBM". Using colons may cause unexpected behaviour and display bugs.
+	 * Note that it should not contain the exchange name.
 	 */
 	ticker?: string;
 	/**
@@ -15255,7 +14835,7 @@ export interface LibrarySymbolInfo {
 	 * An array of [resolutions](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Resolution) which should be enabled in the _Resolution_ drop-down menu for this symbol.
 	 * Each item of the array is expected to be a string that has a specific [format](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Resolution#resolution-format).
 	 *
-	 * If one changes the symbol and the new symbol does not support the selected resolution, an error message will be shown on the chart.
+	 * If one changes the symbol and the new symbol does not support the selected resolution, the resolution will be switched to the first available one in the list.
 	 *
 	 * **Resolution availability logic (pseudocode):**
 	 * ```
@@ -15529,12 +15109,6 @@ export interface LineBreakStylePreferences {
 	borderDownColorProjection: string;
 }
 export interface LineStylePreferences {
-	/** Color type {@link ColorType} */
-	colorType?: ColorType;
-	/** Line gradient start color */
-	gradientStartColor?: string;
-	/** Line gradient end color */
-	gradientEndColor?: string;
 	/** Line color */
 	color: string;
 	/** Line Style {@link LineStyle} */
@@ -16664,9 +16238,9 @@ export interface OrderPreviewResult {
 	/** Confirmation ID. A unique identifier that should be passed to `placeOrder` method */
 	confirmId?: string;
 	/** Warning messages */
-	warnings?: OrderPreviewMessage[];
+	warnings?: (string | MarkupText)[];
 	/** Error messages */
-	errors?: OrderPreviewMessage[];
+	errors?: (string | MarkupText)[];
 }
 /**
  * Describes a single order preview section.
@@ -16697,9 +16271,7 @@ export interface OrderRule {
  * Input value of the Order Ticket.
  * This information is not sufficient to place an order.
  */
-export interface OrderTemplate extends OrderTemplateBase {
-}
-export interface OrderTemplateBase {
+export interface OrderTemplate {
 	/** Symbol identifier */
 	symbol: string;
 	/** Order Type */
@@ -16710,8 +16282,6 @@ export interface OrderTemplateBase {
 	qty?: number;
 	/** Type of Stop Order */
 	stopType?: StopType;
-	/** Current Quotes */
-	currentQuotes?: AskBid;
 	/** Order stop price */
 	stopPrice?: number;
 	/** Order limit price */
@@ -18342,7 +17912,7 @@ export interface PositiveBaseInputFieldValidatorResult extends BaseInputFieldVal
  * Output value of the Order Ticket and input value of the broker's place order command.
  * This information is sufficient to place an order.
  */
-export interface PreOrder extends OrderTemplateBase {
+export interface PreOrder extends OrderTemplate {
 	/** @inheritDoc */
 	symbol: string;
 	/** @inheritDoc */
@@ -18351,6 +17921,8 @@ export interface PreOrder extends OrderTemplateBase {
 	side: Side;
 	/** @inheritDoc */
 	qty: number;
+	/** Current Quotes */
+	currentQuotes?: AskBid;
 	/**
 	 * It is set to `true`, if the order closes a position.
 	 */
@@ -18549,7 +18121,7 @@ export interface ProjectionLineToolOverrides {
 	"linetoolprojection.showCoeffs": boolean;
 	/** Default value: `80` */
 	"linetoolprojection.transparency": number;
-	/** Default value: `#9C9C9C` */
+	/** Default value: `#9598A1` */
 	"linetoolprojection.trendline.color": string;
 	/** Default value: `0` */
 	"linetoolprojection.trendline.linestyle": number;
@@ -18783,8 +18355,6 @@ export interface RawStudyMetaInfoBase {
 	readonly financialPeriod?: FinancialPeriod;
 	/** Key for grouping studies */
 	readonly groupingKey?: string;
-	/** Define should be study on series level or not */
-	readonly behind_chart?: boolean;
 }
 /**
  * Override properties for the Ray drawing tool.
@@ -18840,6 +18410,47 @@ export interface RayLineToolOverrides {
 	"linetoolray.textcolor": string;
 	/** Default value: `bottom` */
 	"linetoolray.vertLabelsAlign": string;
+}
+/**
+ * Override properties for the Rectangle drawing tool.
+ */
+export interface RectangleLineToolOverrides {
+	/** Default value: `rgba(156, 39, 176, 0.2)` */
+	"linetoolrectangle.backgroundColor": string;
+	/** Default value: `false` */
+	"linetoolrectangle.bold": boolean;
+	/** Default value: `#9c27b0` */
+	"linetoolrectangle.color": string;
+	/** Default value: `false` */
+	"linetoolrectangle.extendLeft": boolean;
+	/** Default value: `false` */
+	"linetoolrectangle.extendRight": boolean;
+	/** Default value: `true` */
+	"linetoolrectangle.fillBackground": boolean;
+	/** Default value: `14` */
+	"linetoolrectangle.fontSize": number;
+	/** Default value: `center` */
+	"linetoolrectangle.horzLabelsAlign": string;
+	/** Default value: `false` */
+	"linetoolrectangle.italic": boolean;
+	/** Default value: `2` */
+	"linetoolrectangle.linewidth": number;
+	/** Default value: `#9c27b0` */
+	"linetoolrectangle.middleLine.lineColor": string;
+	/** Default value: `2` */
+	"linetoolrectangle.middleLine.lineStyle": number;
+	/** Default value: `1` */
+	"linetoolrectangle.middleLine.lineWidth": number;
+	/** Default value: `false` */
+	"linetoolrectangle.middleLine.showLine": boolean;
+	/** Default value: `false` */
+	"linetoolrectangle.showLabel": boolean;
+	/** Default value: `#9c27b0` */
+	"linetoolrectangle.textColor": string;
+	/** Default value: `50` */
+	"linetoolrectangle.transparency": number;
+	/** Default value: `middle` */
+	"linetoolrectangle.vertLabelsAlign": string;
 }
 /**
  * Overrides for the 'Regression Trend' indicator.
@@ -19104,8 +18715,6 @@ export interface RiskrewardlongLineToolOverrides {
 	"linetoolriskrewardlong.borderColor": string;
 	/** Default value: `false` */
 	"linetoolriskrewardlong.compact": boolean;
-	/** Default value: `NONE` */
-	"linetoolriskrewardlong.currency": string;
 	/** Default value: `false` */
 	"linetoolriskrewardlong.drawBorder": boolean;
 	/** Default value: `true` */
@@ -19116,7 +18725,7 @@ export interface RiskrewardlongLineToolOverrides {
 	"linetoolriskrewardlong.fontsize": number;
 	/** Default value: `#585858` */
 	"linetoolriskrewardlong.labelBackgroundColor": string;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolriskrewardlong.linecolor": string;
 	/** Default value: `1` */
 	"linetoolriskrewardlong.linewidth": number;
@@ -19151,8 +18760,6 @@ export interface RiskrewardshortLineToolOverrides {
 	"linetoolriskrewardshort.borderColor": string;
 	/** Default value: `false` */
 	"linetoolriskrewardshort.compact": boolean;
-	/** Default value: `NONE` */
-	"linetoolriskrewardshort.currency": string;
 	/** Default value: `false` */
 	"linetoolriskrewardshort.drawBorder": boolean;
 	/** Default value: `true` */
@@ -19163,7 +18770,7 @@ export interface RiskrewardshortLineToolOverrides {
 	"linetoolriskrewardshort.fontsize": number;
 	/** Default value: `#585858` */
 	"linetoolriskrewardshort.labelBackgroundColor": string;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetoolriskrewardshort.linecolor": string;
 	/** Default value: `1` */
 	"linetoolriskrewardshort.linewidth": number;
@@ -19559,13 +19166,7 @@ export interface SearchSymbolResultItem {
 	description: string;
 	/** Exchange name */
 	exchange: string;
-	/**
-	 * It is a unique identifier for a particular symbol in your [symbology](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology).
-	 *
-	 * You should avoid using colons (":") in ticker values unless you are following the TradingView format: "NYSE:IBM". Using colons may cause unexpected behaviour and display bugs.
-	 *
-	 * Corresponds with {@link LibrarySymbolInfo.ticker}.
-	 */
+	/** Symbol ticker name. Should be an unique id */
 	ticker?: string;
 	/**
 	 * Type of symbol
@@ -19781,7 +19382,7 @@ export interface SingleBrokerMetaInfo {
 	 *     showOrderDialog?: (order: Order, focus?: OrderTicketFocusControl) => Promise<boolean>;
 	 *     showPositionDialog?: (position: Position | IndividualPosition, brackets: Brackets, focus?: OrderTicketFocusControl) => Promise<boolean>;
 	 *     showCancelOrderDialog?: (order: Order) => Promise<boolean>;
-	 *     showClosePositionDialog?: (position: Position | IndividualPosition) => Promise<boolean>;
+	 *     showClosePositionDialog?: (position: Position) => Promise<boolean>;
 	 * }
 	 * ```
 	 */
@@ -20219,7 +19820,7 @@ export interface StudyBandBackgroundPreferences {
 	/** Background color for the Band area */
 	backgroundColor: string;
 	/** Transparency of the band area */
-	transparency?: number;
+	transparency: number;
 	/** Whether the background area should be filled with the `backgroundColor` */
 	fillBackground: boolean;
 }
@@ -20546,7 +20147,7 @@ export interface StudyFilledAreaStyleBase {
 	 * @min 0
 	 * @max 100
 	 */
-	transparency?: number;
+	transparency: number;
 }
 export interface StudyGraphicsDefaults {
 	/** Defaults for the horizontal lines study graphics */
@@ -21093,13 +20694,6 @@ export interface StudyOverrides {
 	"average price.plot.transparency": number;
 	/** Default value: `#2196F3` */
 	"average price.plot.color": string;
-	/**
-	 * - Default value: `undefined`
-	 * - Input type: `symbol`
-	 * - Optional: `true`
-	 * - IsHidden: `false`
-	 */
-	"average price.other symbol": string;
 	/** Default value: `15` */
 	"average true range.plot.display": number;
 	/** Default value: `0` */
@@ -21155,6 +20749,8 @@ export interface StudyOverrides {
 	"bollinger bands.plots background.transparency": number;
 	/** Default value: `true` */
 	"bollinger bands.plots background.visible": boolean;
+	/** Default value: `15` */
+	"bollinger bands.median.display": number;
 	/** Default value: `0` */
 	"bollinger bands.median.linestyle": number;
 	/** Default value: `1` */
@@ -21165,10 +20761,10 @@ export interface StudyOverrides {
 	"bollinger bands.median.trackprice": boolean;
 	/** Default value: `0` */
 	"bollinger bands.median.transparency": number;
-	/** Default value: `true` */
-	"bollinger bands.median.visible": boolean;
 	/** Default value: `#FF6D00` */
 	"bollinger bands.median.color": string;
+	/** Default value: `15` */
+	"bollinger bands.upper.display": number;
 	/** Default value: `0` */
 	"bollinger bands.upper.linestyle": number;
 	/** Default value: `1` */
@@ -21179,10 +20775,10 @@ export interface StudyOverrides {
 	"bollinger bands.upper.trackprice": boolean;
 	/** Default value: `0` */
 	"bollinger bands.upper.transparency": number;
-	/** Default value: `true` */
-	"bollinger bands.upper.visible": boolean;
 	/** Default value: `#2196F3` */
 	"bollinger bands.upper.color": string;
+	/** Default value: `15` */
+	"bollinger bands.lower.display": number;
 	/** Default value: `0` */
 	"bollinger bands.lower.linestyle": number;
 	/** Default value: `1` */
@@ -21193,8 +20789,6 @@ export interface StudyOverrides {
 	"bollinger bands.lower.trackprice": boolean;
 	/** Default value: `0` */
 	"bollinger bands.lower.transparency": number;
-	/** Default value: `true` */
-	"bollinger bands.lower.visible": boolean;
 	/** Default value: `#2196F3` */
 	"bollinger bands.lower.color": string;
 	/**
@@ -21211,13 +20805,6 @@ export interface StudyOverrides {
 	 * - Max: `50`
 	 */
 	"bollinger bands.mult": number;
-	/**
-	 * - Default value: `undefined`
-	 * - Input type: `symbol`
-	 * - Optional: `true`
-	 * - IsHidden: `false`
-	 */
-	"bollinger bands.other symbol": string;
 	/** Default value: `#26A69A` */
 	"bollinger bands %b.hlines background.color": string;
 	/** Default value: `90` */
@@ -21244,6 +20831,8 @@ export interface StudyOverrides {
 	"bollinger bands %b.lowerlimit.visible": boolean;
 	/** Default value: `0` */
 	"bollinger bands %b.lowerlimit.value": number;
+	/** Default value: `15` */
+	"bollinger bands %b.plot.display": number;
 	/** Default value: `0` */
 	"bollinger bands %b.plot.linestyle": number;
 	/** Default value: `1` */
@@ -21254,8 +20843,6 @@ export interface StudyOverrides {
 	"bollinger bands %b.plot.trackprice": boolean;
 	/** Default value: `0` */
 	"bollinger bands %b.plot.transparency": number;
-	/** Default value: `true` */
-	"bollinger bands %b.plot.visible": boolean;
 	/** Default value: `#22AB94` */
 	"bollinger bands %b.plot.color": string;
 	/**
@@ -22685,13 +22272,6 @@ export interface StudyOverrides {
 	/** Default value: `#FAA1A4` */
 	"ichimoku cloud.leading span b.color": string;
 	/**
-	 * - Default value: `undefined`
-	 * - Input type: `symbol`
-	 * - Optional: `true`
-	 * - IsHidden: `false`
-	 */
-	"ichimoku cloud.another symbol": string;
-	/**
 	 * - Default value: `9`
 	 * - Input type: `integer`
 	 * - Min: `1`
@@ -23158,14 +22738,14 @@ export interface StudyOverrides {
 	 * - Min: `1`
 	 * - Max: `2000`
 	 */
-	"macd.fast length": number;
+	"macd.fastlength": number;
 	/**
 	 * - Default value: `26`
 	 * - Input type: `integer`
 	 * - Min: `1`
 	 * - Max: `2000`
 	 */
-	"macd.slow length": number;
+	"macd.slowlength": number;
 	/**
 	 * - Default value: `close`
 	 * - Input type: `source`
@@ -23178,19 +22758,7 @@ export interface StudyOverrides {
 	 * - Min: `1`
 	 * - Max: `50`
 	 */
-	"macd.signal length": number;
-	/**
-	 * - Default value: `EMA`
-	 * - Input type: `text`
-	 * - Options: `["SMA","EMA","WMA"]`
-	 */
-	"macd.oscillator ma type": string;
-	/**
-	 * - Default value: `EMA`
-	 * - Input type: `text`
-	 * - Options: `["SMA","EMA","WMA"]`
-	 */
-	"macd.signal line ma type": string;
+	"macd.signallength": number;
 	/** Default value: `15` */
 	"majority rule.majority rule.display": number;
 	/** Default value: `0` */
@@ -23528,13 +23096,6 @@ export interface StudyOverrides {
 	"moving average double.plot 2.transparency": number;
 	/** Default value: `#2196F3` */
 	"moving average double.plot 2.color": string;
-	/**
-	 * - Default value: `undefined`
-	 * - Input type: `symbol`
-	 * - Optional: `true`
-	 * - IsHidden: `false`
-	 */
-	"moving average double.another symbol": string;
 	/**
 	 * - Default value: `14`
 	 * - Input type: `integer`
@@ -23970,13 +23531,6 @@ export interface StudyOverrides {
 	 * - Max: `1000000000000`
 	 */
 	"parabolic sar.maximum": number;
-	/**
-	 * - Default value: `undefined`
-	 * - Input type: `symbol`
-	 * - Optional: `true`
-	 * - IsHidden: `false`
-	 */
-	"parabolic sar.other symbol": string;
 	/**
 	 * - Default value: `Traditional`
 	 * - Input type: `text`
@@ -25803,7 +25357,6 @@ export interface StudyOverrides {
 	"columnStyle.upColor": string;
 	"columnStyle.downColor": string;
 	"columnStyle.barColorsOnPrevClose": boolean;
-	"columnStyle.baselinePosition": string;
 	"lineWithMarkersStyle.highLineColor": string;
 	"lineWithMarkersStyle.highLineStyle": number;
 	"lineWithMarkersStyle.highLineWidth": number;
@@ -25914,7 +25467,7 @@ export interface StudyPlotBasePreferences {
 	 *
 	 * @example 80
 	 */
-	transparency?: number;
+	transparency: number;
 	/**
 	 * Display mode. See {@link StudyPlotDisplayMode}.
 	 *
@@ -26163,7 +25716,7 @@ export interface StudyStylesInfo {
 	/**
 	 * Size of characters on the chart. Possible values are: `auto`, `tiny`, `small`, `normal`, `large`,`huge`. Applicable to `chars` and `shapes` plot types.
 	 */
-	readonly size?: PlotSymbolSize | number;
+	readonly size?: PlotSymbolSize;
 	/**
 	 * Char to display with the plot. Applicable only to chars plot types.
 	 */
@@ -26526,11 +26079,11 @@ export interface SubscribeEventsMap {
 	/**
 	 * Panes' size has changed.
 	 */
-	panes_height_changed: EmptyCallback;
+	panes_height_changed: () => void;
 	/**
 	 * Panes' order has changed.
 	 */
-	panes_order_changed: EmptyCallback;
+	panes_order_changed: () => void;
 	/**
 	 * Chart's widget bar is shown/hidden.
 	 * @param  {boolean} isVisible - if the widget bar is currently hidden
@@ -26695,11 +26248,6 @@ export interface SymbolSpecificTradingOptions {
 	 */
 	supportOrderBrackets?: boolean;
 	/**
-	 * Whether brackets could be set in ticks/pips.
-	 * @default true
-	 */
-	supportBracketsInPips?: boolean;
-	/**
 	 * Using this flag you can disable adding brackets to the existing order.
 	 */
 	supportAddBracketsToExistingOrder?: boolean;
@@ -26727,14 +26275,6 @@ export interface SymbolSpecificTradingOptions {
 	 * A symbol-specific message that can be used to warn users.
 	 */
 	warningMessage?: string;
-	/**
-	 * Whether the integration supports the modification of existing position brackets.
-	 */
-	supportModifyPositionBrackets?: boolean;
-	/**
-	 * Whether the integration supports the modification of existing order brackets.
-	 */
-	supportModifyOrderBrackets?: boolean;
 }
 export interface SymbolValueFormatterFormatOptions extends FormatterFormatOptions {
 	/** Add plus sign to result string */
@@ -27052,18 +26592,11 @@ export interface TradeContext {
 	/** Previous value */
 	last: number;
 }
-/**
- * Represents the structure of {@link TradingTerminalWidgetOptions.trading_customization}.
- */
 export interface TradingCustomization {
 	/** Overrides for position lines created using the {@link IChartWidgetApi.createPositionLine} method. */
 	position?: Partial<PositionLineToolOverrides>;
 	/** Overrides for order lines created using the {@link IChartWidgetApi.createOrderLine} method. */
 	order?: Partial<OrderLineToolOverrides>;
-	/** Overrides for order lines created using the [Broker API](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/#broker-api). */
-	brokerOrder?: Partial<BrokerOrderOverrides>;
-	/** Overrides for position lines created using the [Broker API](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/#broker-api). */
-	brokerPosition?: Partial<BrokerPositionOverrides>;
 }
 export interface TradingDialogOptions {
 	/** Custom fields that are displayed in the Order Ticket.
@@ -27202,7 +26735,7 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 * ```
 	 */
 	news_provider?: GetNewsFunction;
-	/** Overrides order and position lines created either using the [Broker API](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/#broker-api) or {@link IChartWidgetApi.createOrderLine} and {@link IChartWidgetApi.createPositionLine} methods. */
+	/** Overrides order and position lines created using the [`createOrderLine`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IChartWidgetApi#createorderline) and [`createPositionLine`](https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.IChartWidgetApi#createpositionline) methods. */
 	trading_customization?: TradingCustomization;
 	/**
 	 * Use this field to pass the function that returns a new object which implements Broker API. This is a function that accepts the Trading Host ({@link IBrokerConnectionAdapterHost}).
@@ -27213,7 +26746,7 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 * ```
 	 * @param host - Trading Host
 	 */
-	broker_factory?(host: IBrokerConnectionAdapterHost): IBrokerTerminal;
+	broker_factory?(host: IBrokerConnectionAdapterHost): IBrokerWithoutRealtime | IBrokerTerminal;
 	/**
 	 * Setting this property makes the library write detailed [Broker API](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/#broker-api) and [Trading Host](https://www.tradingview.com/charting-library-docs/latest/trading_terminal/trading-concepts/#trading-host) logs into the browser console.
 	 *
@@ -27222,11 +26755,15 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 * ```
 	 *
 	 * The logs include the calls and return values for methods invoked on the
-	 * host ({@link IBrokerConnectionAdapterHost}) and broker ({@link IBrokerTerminal}).
+	 * host ({@link IBrokerConnectionAdapterHost}) and broker ({@link IBrokerWithoutRealtime}).
 	 * Since the method calls can be asynchronous, you can use the ID numbers in each message to match
 	 * the calls to responses.
 	 */
 	debug_broker?: BrokerDebugMode;
+	/**
+	 * Custom theme colors to override the default light and dark themes.
+	 */
+	custom_themes?: CustomThemes;
 }
 /**
  * Overrides for the 'Trend Strength Index' indicator.
@@ -27309,7 +26846,7 @@ export interface TrendbasedfibextensionLineToolOverrides {
 	"linetooltrendbasedfibextension.labelFontSize": number;
 	/** Default value: `0` */
 	"linetooltrendbasedfibextension.level1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetooltrendbasedfibextension.level1.color": string;
 	/** Default value: `undefined` */
 	"linetooltrendbasedfibextension.level1.text": string;
@@ -27381,7 +26918,7 @@ export interface TrendbasedfibextensionLineToolOverrides {
 	"linetooltrendbasedfibextension.level17.visible": boolean;
 	/** Default value: `3.272` */
 	"linetooltrendbasedfibextension.level18.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetooltrendbasedfibextension.level18.color": string;
 	/** Default value: `undefined` */
 	"linetooltrendbasedfibextension.level18.text": string;
@@ -27477,7 +27014,7 @@ export interface TrendbasedfibextensionLineToolOverrides {
 	"linetooltrendbasedfibextension.level6.visible": boolean;
 	/** Default value: `1` */
 	"linetooltrendbasedfibextension.level7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetooltrendbasedfibextension.level7.color": string;
 	/** Default value: `undefined` */
 	"linetooltrendbasedfibextension.level7.text": string;
@@ -27513,7 +27050,7 @@ export interface TrendbasedfibextensionLineToolOverrides {
 	"linetooltrendbasedfibextension.showText": boolean;
 	/** Default value: `80` */
 	"linetooltrendbasedfibextension.transparency": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetooltrendbasedfibextension.trendline.color": string;
 	/** Default value: `2` */
 	"linetooltrendbasedfibextension.trendline.linestyle": number;
@@ -27536,7 +27073,7 @@ export interface TrendbasedfibtimeLineToolOverrides {
 	"linetooltrendbasedfibtime.horzLabelsAlign": string;
 	/** Default value: `0` */
 	"linetooltrendbasedfibtime.level1.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetooltrendbasedfibtime.level1.color": string;
 	/** Default value: `0` */
 	"linetooltrendbasedfibtime.level1.linestyle": number;
@@ -27616,7 +27153,7 @@ export interface TrendbasedfibtimeLineToolOverrides {
 	"linetooltrendbasedfibtime.level6.visible": boolean;
 	/** Default value: `1.618` */
 	"linetooltrendbasedfibtime.level7.coeff": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetooltrendbasedfibtime.level7.color": string;
 	/** Default value: `0` */
 	"linetooltrendbasedfibtime.level7.linestyle": number;
@@ -27648,7 +27185,7 @@ export interface TrendbasedfibtimeLineToolOverrides {
 	"linetooltrendbasedfibtime.showCoeffs": boolean;
 	/** Default value: `80` */
 	"linetooltrendbasedfibtime.transparency": number;
-	/** Default value: `#808080` */
+	/** Default value: `#787B86` */
 	"linetooltrendbasedfibtime.trendline.color": string;
 	/** Default value: `2` */
 	"linetooltrendbasedfibtime.trendline.linestyle": number;
@@ -27903,10 +27440,6 @@ export interface UnitInfo {
 	originalUnits: string[];
 	/** Groups of units (for example weight, energy, ...) */
 	availableGroups: string[];
-	/**
-	 * Symbols on the price scale
-	 */
-	symbols: string[];
 }
 /**
  * Used in the schema defined in exportData API to describe the user time field.
@@ -28392,6 +27925,10 @@ export interface WatermarkContentData {
 }
 /**
  * Defines the text and font properties for a line of the watermark.
+ *
+ * The default values for sizing and placement are as follows:
+ * - 1st line: \{ fontSize: 96, lineHeight: 117, vertOffset: 0, \}
+ * - 2nd line: \{ fontSize: 48, lineHeight: 58, vertOffset: 5, \}
  */
 export interface WatermarkLine {
 	/**
@@ -28587,6 +28124,7 @@ export type AccountId = Nominal<string, "AccountID">;
 export type AccountManagerColumn = {
 	[K in StandardFormatterName | FormatterName]: AccountManagerColumnBase<K>;
 }[StandardFormatterName | FormatterName];
+export type AccountManagerInfoWatchedValue = IWatchedValueReadonly<any>;
 /**
  * Describes a single action to put it into a dropdown or a context menu.
  */
@@ -28600,7 +28138,7 @@ export type AvailableSaveloadVersions = "1.0" | "1.1";
  * Sets the debug level for {@link TradingTerminalWidgetOptions.debug_broker }.
  *
  * - `host-only`: logs only messages related to the {@link IBrokerConnectionAdapterHost} interface.
- * - `broker-only`: logs only messages related to the {@link IBrokerTerminal} interface.
+ * - `broker-only`: logs only messages related to the {@link IBrokerWithoutRealtime} interface.
  * - `normal`: logs messages for the broker and host but excludes frequently called methods, such as `connectionStatus`.
  * - `all`: logs all possible debug messages.
  */
@@ -29088,8 +28626,8 @@ export type DrawingEventType = "click" | "move" | "remove" | "hide" | "show" | "
  *   - PERCENTAGE = 'percents'
  *   - MONEY = 'money'
  */
-export type DrawingOverrides = FivepointspatternLineToolOverrides | AbcdLineToolOverrides | AnchoredvpLineToolOverrides | AnchoredvwapLineToolOverrides | ArcLineToolOverrides | ArrowLineToolOverrides | ArrowmarkdownLineToolOverrides | ArrowmarkerLineToolOverrides | ArrowmarkleftLineToolOverrides | ArrowmarkrightLineToolOverrides | ArrowmarkupLineToolOverrides | BalloonLineToolOverrides | BarspatternLineToolOverrides | BeziercubicLineToolOverrides | BezierquadroLineToolOverrides | BrushLineToolOverrides | CalloutLineToolOverrides | CircleLineToolOverrides | CommentLineToolOverrides | CrosslineLineToolOverrides | CypherpatternLineToolOverrides | DisjointangleLineToolOverrides | ElliottcorrectionLineToolOverrides | ElliottdoublecomboLineToolOverrides | ElliottimpulseLineToolOverrides | ElliotttriangleLineToolOverrides | ElliotttriplecomboLineToolOverrides | EllipseLineToolOverrides | EmojiLineToolOverrides | ExecutionLineToolOverrides | ExtendedLineToolOverrides | FibchannelLineToolOverrides | FibcirclesLineToolOverrides | FibretracementLineToolOverrides | FibspeedresistancearcsLineToolOverrides | FibspeedresistancefanLineToolOverrides | FibtimezoneLineToolOverrides | FibwedgeLineToolOverrides | FlagmarkLineToolOverrides | FlatbottomLineToolOverrides | GanncomplexLineToolOverrides | GannfanLineToolOverrides | GannfixedLineToolOverrides | GannsquareLineToolOverrides | GhostfeedLineToolOverrides | HeadandshouldersLineToolOverrides | HighlighterLineToolOverrides | HorzlineLineToolOverrides | HorzrayLineToolOverrides | IconLineToolOverrides | ImageLineToolOverrides | InfolineLineToolOverrides | InsidepitchforkLineToolOverrides | OrderLineToolOverrides | ParallelchannelLineToolOverrides | PathLineToolOverrides | PitchfanLineToolOverrides | PitchforkLineToolOverrides | PolylineLineToolOverrides | PositionLineToolOverrides | PredictionLineToolOverrides | PricelabelLineToolOverrides | ProjectionLineToolOverrides | RayLineToolOverrides | RegressiontrendLineToolOverrides | RiskrewardlongLineToolOverrides | RiskrewardshortLineToolOverrides | RotatedrectangleLineToolOverrides | SchiffpitchforkLineToolOverrides | Schiffpitchfork2LineToolOverrides | SignpostLineToolOverrides | SinelineLineToolOverrides | StickerLineToolOverrides | TextLineToolOverrides | TextabsoluteLineToolOverrides | ThreedriversLineToolOverrides | TimecyclesLineToolOverrides | TrendangleLineToolOverrides | TrendbasedfibextensionLineToolOverrides | TrendbasedfibtimeLineToolOverrides | TrendlineLineToolOverrides | TriangleLineToolOverrides | TrianglepatternLineToolOverrides | VertlineLineToolOverrides;
-export type DrawingToolIdentifier = "arrow" | "cursor" | "dot" | "eraser" | "LineTool5PointsPattern" | "LineToolABCD" | "LineToolArc" | "LineToolArrow" | "LineToolArrowMarkDown" | "LineToolArrowMarker" | "LineToolArrowMarkLeft" | "LineToolArrowMarkRight" | "LineToolArrowMarkUp" | "LineToolBarsPattern" | "LineToolBezierCubic" | "LineToolBezierQuadro" | "LineToolBrush" | "LineToolCallout" | "LineToolCircle" | "LineToolCircleLines" | "LineToolComment" | "LineToolCrossLine" | "LineToolCypherPattern" | "LineToolDateAndPriceRange" | "LineToolDateRange" | "LineToolDisjointAngle" | "LineToolElliottCorrection" | "LineToolElliottDoubleCombo" | "LineToolElliottImpulse" | "LineToolElliottTriangle" | "LineToolElliottTripleCombo" | "LineToolEllipse" | "LineToolExtended" | "LineToolFibChannel" | "LineToolFibCircles" | "LineToolFibRetracement" | "LineToolFibSpeedResistanceArcs" | "LineToolFibSpeedResistanceFan" | "LineToolFibSpiral" | "LineToolFibTimeZone" | "LineToolFibWedge" | "LineToolFixedRangeVolumeProfile" | "LineToolFlagMark" | "LineToolFlatBottom" | "LineToolGannComplex" | "LineToolGannFan" | "LineToolGannFixed" | "LineToolGannSquare" | "LineToolGhostFeed" | "LineToolHeadAndShoulders" | "LineToolHighlighter" | "LineToolHorzLine" | "LineToolHorzRay" | "LineToolInfoLine" | "LineToolInsidePitchfork" | "LineToolNote" | "LineToolNoteAbsolute" | "LineToolParallelChannel" | "LineToolPath" | "LineToolPitchfan" | "LineToolPitchfork" | "LineToolPolyline" | "LineToolPrediction" | "LineToolPriceLabel" | "LineToolTextNote" | "LineToolPriceRange" | "LineToolPriceRange" | "LineToolProjection" | "LineToolRay" | "LineToolRectangle" | "LineToolRegressionTrend" | "LineToolRiskRewardLong" | "LineToolRiskRewardShort" | "LineToolRotatedRectangle" | "LineToolSchiffPitchfork" | "LineToolSchiffPitchfork2" | "LineToolSignpost" | "LineToolSineLine" | "LineToolText" | "LineToolTextAbsolute" | "LineToolThreeDrivers" | "LineToolTimeCycles" | "LineToolTrendAngle" | "LineToolTrendBasedFibExtension" | "LineToolTrendBasedFibTime" | "LineToolTrendLine" | "LineToolTriangle" | "LineToolTrianglePattern" | "LineToolVertLine";
+export type DrawingOverrides = FivepointspatternLineToolOverrides | AbcdLineToolOverrides | AnchoredvpLineToolOverrides | AnchoredvwapLineToolOverrides | ArcLineToolOverrides | ArrowLineToolOverrides | ArrowmarkdownLineToolOverrides | ArrowmarkerLineToolOverrides | ArrowmarkleftLineToolOverrides | ArrowmarkrightLineToolOverrides | ArrowmarkupLineToolOverrides | BalloonLineToolOverrides | BarspatternLineToolOverrides | BeziercubicLineToolOverrides | BezierquadroLineToolOverrides | BrushLineToolOverrides | CalloutLineToolOverrides | CircleLineToolOverrides | CommentLineToolOverrides | CrosslineLineToolOverrides | CypherpatternLineToolOverrides | DisjointangleLineToolOverrides | ElliottcorrectionLineToolOverrides | ElliottdoublecomboLineToolOverrides | ElliottimpulseLineToolOverrides | ElliotttriangleLineToolOverrides | ElliotttriplecomboLineToolOverrides | EllipseLineToolOverrides | EmojiLineToolOverrides | ExecutionLineToolOverrides | ExtendedLineToolOverrides | FibchannelLineToolOverrides | FibcirclesLineToolOverrides | FibretracementLineToolOverrides | FibspeedresistancearcsLineToolOverrides | FibspeedresistancefanLineToolOverrides | FibtimezoneLineToolOverrides | FibwedgeLineToolOverrides | FlagmarkLineToolOverrides | FlatbottomLineToolOverrides | GanncomplexLineToolOverrides | GannfanLineToolOverrides | GannfixedLineToolOverrides | GannsquareLineToolOverrides | GhostfeedLineToolOverrides | HeadandshouldersLineToolOverrides | HighlighterLineToolOverrides | HorzlineLineToolOverrides | HorzrayLineToolOverrides | IconLineToolOverrides | ImageLineToolOverrides | InfolineLineToolOverrides | InsidepitchforkLineToolOverrides | OrderLineToolOverrides | ParallelchannelLineToolOverrides | PathLineToolOverrides | PitchfanLineToolOverrides | PitchforkLineToolOverrides | PolylineLineToolOverrides | PositionLineToolOverrides | PredictionLineToolOverrides | PricelabelLineToolOverrides | ProjectionLineToolOverrides | RayLineToolOverrides | RectangleLineToolOverrides | RegressiontrendLineToolOverrides | RiskrewardlongLineToolOverrides | RiskrewardshortLineToolOverrides | RotatedrectangleLineToolOverrides | SchiffpitchforkLineToolOverrides | Schiffpitchfork2LineToolOverrides | SignpostLineToolOverrides | SinelineLineToolOverrides | StickerLineToolOverrides | TextLineToolOverrides | TextabsoluteLineToolOverrides | ThreedriversLineToolOverrides | TimecyclesLineToolOverrides | TrendangleLineToolOverrides | TrendbasedfibextensionLineToolOverrides | TrendbasedfibtimeLineToolOverrides | TrendlineLineToolOverrides | TriangleLineToolOverrides | TrianglepatternLineToolOverrides | VertlineLineToolOverrides;
+export type DrawingToolIdentifier = "arrow" | "cursor" | "dot" | "eraser" | "LineTool5PointsPattern" | "LineToolABCD" | "LineToolArc" | "LineToolArrow" | "LineToolArrowMarkDown" | "LineToolArrowMarker" | "LineToolArrowMarkLeft" | "LineToolArrowMarkRight" | "LineToolArrowMarkUp" | "LineToolBarsPattern" | "LineToolBezierCubic" | "LineToolBezierQuadro" | "LineToolBrush" | "LineToolCallout" | "LineToolCircle" | "LineToolCircleLines" | "LineToolComment" | "LineToolCrossLine" | "LineToolCypherPattern" | "LineToolDateAndPriceRange" | "LineToolDateRange" | "LineToolDisjointAngle" | "LineToolElliottCorrection" | "LineToolElliottDoubleCombo" | "LineToolElliottImpulse" | "LineToolElliottTriangle" | "LineToolElliottTripleCombo" | "LineToolEllipse" | "LineToolExtended" | "LineToolFibChannel" | "LineToolFibCircles" | "LineToolFibRetracement" | "LineToolFibSpeedResistanceArcs" | "LineToolFibSpeedResistanceFan" | "LineToolFibSpiral" | "LineToolFibTimeZone" | "LineToolFibWedge" | "LineToolFixedRangeVolumeProfile" | "LineToolFlagMark" | "LineToolFlatBottom" | "LineToolGannComplex" | "LineToolGannFan" | "LineToolGannFixed" | "LineToolGannSquare" | "LineToolGhostFeed" | "LineToolHeadAndShoulders" | "LineToolHighlighter" | "LineToolHorzLine" | "LineToolHorzRay" | "LineToolInfoLine" | "LineToolInsidePitchfork" | "LineToolNote" | "LineToolNoteAbsolute" | "LineToolParallelChannel" | "LineToolPath" | "LineToolPitchfan" | "LineToolPitchfork" | "LineToolPolyline" | "LineToolPrediction" | "LineToolPriceLabel" | "LineToolPriceNote" | "LineToolPriceRange" | "LineToolProjection" | "LineToolRay" | "LineToolRectangle" | "LineToolRegressionTrend" | "LineToolRiskRewardLong" | "LineToolRiskRewardShort" | "LineToolRotatedRectangle" | "LineToolSchiffPitchfork" | "LineToolSchiffPitchfork2" | "LineToolSignpost" | "LineToolSineLine" | "LineToolText" | "LineToolTextAbsolute" | "LineToolThreeDrivers" | "LineToolTimeCycles" | "LineToolTrendAngle" | "LineToolTrendBasedFibExtension" | "LineToolTrendBasedFibTime" | "LineToolTrendLine" | "LineToolTriangle" | "LineToolTrianglePattern" | "LineToolVertLine";
 /** Dropdown options which can be adjusted on an existing menu. */
 export type DropdownUpdateParams = Partial<Omit<DropdownParams, "align">>;
 export type EditObjectDialogObjectType = "mainSeries" | "drawing" | "study" | "other";
@@ -29203,7 +28741,6 @@ export type OnActionUpdateHandler = (action: IAction) => void;
 export type OnReadyCallback = (configuration: DatafeedConfiguration) => void;
 export type Order = PlacedOrder | BracketOrder;
 export type OrderLineLengthUnit = "pixel" | "percentage";
-export type OrderPreviewMessage = string | MarkupText;
 export type OrderTableColumn = AccountManagerColumn & {
 	/**
 	 * An optional numeric array of order statuses that is applied to order columns only. If it is available then the column will be displayed in the specified tabs of the status filter only.
@@ -29331,7 +28868,7 @@ export type StudyPriceScale = "new-left" | "new-right" | "no-scale" | "as-series
 export type StudyPrimitiveResult = (number | StudyResultValueWithOffset)[];
 export type SubscribeBarsCallback = (bar: Bar) => void;
 export type SuggestedQtyChangedListener = (newQty: number) => void;
-export type SupportedLineTools = "text" | "anchored_text" | "note" | "anchored_note" | "signpost" | "double_curve" | "arc" | "icon" | "emoji" | "sticker" | "arrow_up" | "arrow_down" | "arrow_left" | "arrow_right" | "price_label" | "price_note" | "arrow_marker" | "flag" | "vertical_line" | "horizontal_line" | "cross_line" | "horizontal_ray" | "trend_line" | "info_line" | "trend_angle" | "arrow" | "ray" | "extended" | "parallel_channel" | "disjoint_angle" | "flat_bottom" | "anchored_vwap" | "pitchfork" | "schiff_pitchfork_modified" | "schiff_pitchfork" | "balloon" | "comment" | "inside_pitchfork" | "pitchfan" | "gannbox" | "gannbox_square" | "gannbox_fixed" | "gannbox_fan" | "fib_retracement" | "fib_trend_ext" | "fib_speed_resist_fan" | "fib_timezone" | "fib_trend_time" | "fib_circles" | "fib_spiral" | "fib_speed_resist_arcs" | "fib_channel" | "xabcd_pattern" | "cypher_pattern" | "abcd_pattern" | "callout" | "text_note" | "triangle_pattern" | "3divers_pattern" | "head_and_shoulders" | "fib_wedge" | "elliott_impulse_wave" | "elliott_triangle_wave" | "elliott_triple_combo" | "elliott_correction" | "elliott_double_combo" | "cyclic_lines" | "time_cycles" | "sine_line" | "long_position" | "short_position" | "forecast" | "date_range" | "price_range" | "date_and_price_range" | "bars_pattern" | "ghost_feed" | "projection" | "rectangle" | "rotated_rectangle" | "circle" | "ellipse" | "triangle" | "polyline" | "path" | "curve" | "cursor" | "dot" | "arrow_cursor" | "eraser" | "measure" | "zoom" | "brush" | "highlighter" | "regression_trend" | "fixed_range_volume_profile" | "table";
+export type SupportedLineTools = "text" | "anchored_text" | "note" | "anchored_note" | "signpost" | "double_curve" | "arc" | "icon" | "emoji" | "sticker" | "arrow_up" | "arrow_down" | "arrow_left" | "arrow_right" | "price_label" | "price_note" | "arrow_marker" | "flag" | "vertical_line" | "horizontal_line" | "cross_line" | "horizontal_ray" | "trend_line" | "info_line" | "trend_angle" | "arrow" | "ray" | "extended" | "parallel_channel" | "disjoint_angle" | "flat_bottom" | "anchored_vwap" | "pitchfork" | "schiff_pitchfork_modified" | "schiff_pitchfork" | "balloon" | "comment" | "inside_pitchfork" | "pitchfan" | "gannbox" | "gannbox_square" | "gannbox_fixed" | "gannbox_fan" | "fib_retracement" | "fib_trend_ext" | "fib_speed_resist_fan" | "fib_timezone" | "fib_trend_time" | "fib_circles" | "fib_spiral" | "fib_speed_resist_arcs" | "fib_channel" | "xabcd_pattern" | "cypher_pattern" | "abcd_pattern" | "callout" | "triangle_pattern" | "3divers_pattern" | "head_and_shoulders" | "fib_wedge" | "elliott_impulse_wave" | "elliott_triangle_wave" | "elliott_triple_combo" | "elliott_correction" | "elliott_double_combo" | "cyclic_lines" | "time_cycles" | "sine_line" | "long_position" | "short_position" | "forecast" | "date_range" | "price_range" | "date_and_price_range" | "bars_pattern" | "ghost_feed" | "projection" | "rectangle" | "rotated_rectangle" | "circle" | "ellipse" | "triangle" | "polyline" | "path" | "curve" | "cursor" | "dot" | "arrow_cursor" | "eraser" | "measure" | "zoom" | "brush" | "highlighter" | "regression_trend" | "fixed_range_volume_profile";
 /**
  * function to override the symbol input from symbol search dialogs
  * @param  {SymbolSearchCompleteData} symbol - input from the symbol search

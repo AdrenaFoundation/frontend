@@ -437,8 +437,7 @@ export interface LibrarySymbolInfo {
 	 * It is an unique identifier for a particular symbol in your [symbology](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology).
 	 * If you specify this property, its value will be used for all data requests for this symbol.
 	 * `ticker` will be treated the same as {@link LibrarySymbolInfo.name} if not specified explicitly.
-	 *
-	 * You should avoid using colons (":") in ticker values unless you are following the TradingView format: "NYSE:IBM". Using colons may cause unexpected behaviour and display bugs.
+	 * Note that it should not contain the exchange name.
 	 */
 	ticker?: string;
 	/**
@@ -585,7 +584,7 @@ export interface LibrarySymbolInfo {
 	 * An array of [resolutions](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Resolution) which should be enabled in the _Resolution_ drop-down menu for this symbol.
 	 * Each item of the array is expected to be a string that has a specific [format](https://www.tradingview.com/charting-library-docs/latest/core_concepts/Resolution#resolution-format).
 	 *
-	 * If one changes the symbol and the new symbol does not support the selected resolution, an error message will be shown on the chart.
+	 * If one changes the symbol and the new symbol does not support the selected resolution, the resolution will be switched to the first available one in the list.
 	 *
 	 * **Resolution availability logic (pseudocode):**
 	 * ```
@@ -954,13 +953,7 @@ export interface SearchSymbolResultItem {
 	description: string;
 	/** Exchange name */
 	exchange: string;
-	/**
-	 * It is a unique identifier for a particular symbol in your [symbology](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology).
-	 *
-	 * You should avoid using colons (":") in ticker values unless you are following the TradingView format: "NYSE:IBM". Using colons may cause unexpected behaviour and display bugs.
-	 *
-	 * Corresponds with {@link LibrarySymbolInfo.ticker}.
-	 */
+	/** Symbol ticker name. Should be an unique id */
 	ticker?: string;
 	/**
 	 * Type of symbol
