@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import Loader from '@/components/Loader/Loader';
 import { SUPPORTED_RESOLUTIONS } from '@/constant';
 import { useChartDrawing } from '@/hooks/useChartDrawing';
-import { PositionExtended, Token, TokenSymbol } from '@/types';
+import { LimitOrder, PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
@@ -27,11 +27,13 @@ const STORAGE_KEY_RESOLUTION = 'trading_chart_resolution';
 export default function TradingChart({
   token,
   positions,
+  limitOrders,
   showBreakEvenLine,
   toggleSizeUsdInChart,
 }: {
   token: Token;
   positions: PositionExtended[] | null;
+  limitOrders: LimitOrder[] | null;
   showBreakEvenLine: boolean;
   toggleSizeUsdInChart: boolean;
 }) {
@@ -47,6 +49,7 @@ export default function TradingChart({
     widget,
     widgetReady,
     positions,
+    limitOrders,
     showBreakEvenLine,
     toggleSizeUsdInChart,
     drawingErrorCallback: () => {
@@ -117,8 +120,8 @@ export default function TradingChart({
           ],
           settings_adapter: {
             initialSettings: {
-              'paneProperties.background': '#0d1118',
               'paneProperties.backgroundType': 'solid',
+              'paneProperties.background': '#0d1118',
               'paneProperties.legendProperties.showStudyArguments': 'false',
               'paneProperties.legendProperties.showStudyTitles': 'false',
               'paneProperties.legendProperties.showStudyValues': 'false',
@@ -129,15 +132,17 @@ export default function TradingChart({
               'scalesProperties.textColor': '#B3B5BE',
               timezone: savedTimezone as Timezone,
             },
-            setValue: function (_, value) {
-              const chartprops = JSON.parse(value) as ChartPropertiesOverrides;
-              const currentTimezone = chartprops.timezone;
+            setValue: function (key, value) {
+              if (key === 'chartproperties') {
+                const chartprops = JSON.parse(value) as ChartPropertiesOverrides;
+                const currentTimezone = chartprops.timezone;
 
-              if (!currentTimezone || currentTimezone === savedTimezone) {
-                return;
+                if (!currentTimezone || currentTimezone === savedTimezone) {
+                  return;
+                }
+
+                localStorage.setItem('trading_chart_timezone', currentTimezone);
               }
-
-              localStorage.setItem('trading_chart_timezone', currentTimezone);
             },
             removeValue: function () { },
           },
@@ -164,8 +169,8 @@ export default function TradingChart({
           setIsLoading(false);
 
           widget.applyOverrides({
-            'paneProperties.background': '#0d1118',
             'paneProperties.backgroundType': 'solid',
+            'paneProperties.background': '#0d1118',
             'paneProperties.legendProperties.showStudyArguments': false,
             'paneProperties.legendProperties.showStudyTitles': false,
             'paneProperties.legendProperties.showStudyValues': false,
@@ -186,6 +191,7 @@ export default function TradingChart({
               .symbol()
               .split('.')[1]
               .split('/')[0] as TokenSymbol;
+
             const parsedChartShapes = JSON.parse(
               localStorage.getItem('chart_drawings') ?? '{}',
             );
@@ -206,8 +212,8 @@ export default function TradingChart({
 
                 // Uses text to filter out our drawings
                 if (
-                  shape.options.text.includes('long') ||
-                  shape.options.text.includes('short')
+                  shape.text.includes('long') ||
+                  shape.text.includes('short')
                 ) {
                   return null;
                 }
