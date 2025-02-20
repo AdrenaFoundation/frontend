@@ -451,7 +451,11 @@ export class AdrenaClient {
                   t.custody?.equals(order.custody),
                 );
 
-                if (!custodyToken) return null;
+                const collateralCustodyToken = this.tokens.find((t) =>
+                  t.custody?.equals(order.collateralCustody),
+                );
+
+                if (!custodyToken || !collateralCustodyToken) return null;
 
                 return {
                   id: order.id.toNumber(),
@@ -465,7 +469,10 @@ export class AdrenaClient {
                   side:
                     order.side === 1 ? ('long' as const) : ('short' as const),
                   initialized: order.initialized,
-                  amount: nativeToUi(order.amount, custodyToken.decimals),
+                  amount: nativeToUi(
+                    order.amount,
+                    collateralCustodyToken.decimals,
+                  ),
                   leverage: order.leverage / BPS,
                 };
               })
@@ -5652,12 +5659,14 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const rewardTokenAccount = typeof overrideRewardTokenAccount === 'undefined' ?
-      await this.checkATAAddressInitializedAndCreatePreInstruction({
-        owner,
-        mint: stakingRewardTokenMint,
-        preInstructions,
-      }): overrideRewardTokenAccount;
+    const rewardTokenAccount =
+      typeof overrideRewardTokenAccount === 'undefined'
+        ? await this.checkATAAddressInitializedAndCreatePreInstruction({
+            owner,
+            mint: stakingRewardTokenMint,
+            preInstructions,
+          })
+        : overrideRewardTokenAccount;
 
     console.log('>>> REWARD TOKEN ACCOUNT', rewardTokenAccount.toBase58());
 
