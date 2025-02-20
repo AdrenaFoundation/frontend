@@ -3496,15 +3496,10 @@ export class AdrenaClient {
 
     const limitOrderBook = this.getLimitOrderBookPda(owner);
 
-    console.log('limitOrderBook', limitOrderBook.toBase58());
-
     const collateralEscrow = this.getCollateralEscrowPda(
       owner,
       collateralCustodyInfos.mint,
     );
-
-    console.log('collateralEscrow', collateralEscrow.toBase58());
-    console.log('preInstructions', preInstructions);
 
     const transaction = await this.adrenaProgram.methods
       .cancelLimitOrder({
