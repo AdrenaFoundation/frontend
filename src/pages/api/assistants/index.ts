@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+
 import { openai } from '@/config/openai';
 
 export default async function handler(

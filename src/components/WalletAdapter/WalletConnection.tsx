@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import { useDispatch } from '@/store/store';
 
@@ -6,8 +8,10 @@ import Button from '../common/Button/Button';
 
 export default function WalletConnection({
   connected,
+  disableSubtext,
 }: {
   connected?: boolean;
+  disableSubtext?: boolean;
 }) {
   const dispatch = useDispatch();
 
@@ -24,13 +28,13 @@ export default function WalletConnection({
         title="Connect wallet"
         variant="secondary"
         rightIcon={phantomLogo}
-        className="mb-2"
+        className={twMerge(!disableSubtext && "mb-2")}
         onClick={handleClick}
       />
 
-      <p className="text-sm opacity-50 font-normal">
+      {disableSubtext ? <p className="text-sm opacity-50 font-normal">
         Waiting for wallet connection
-      </p>
+      </p> : null}
     </div>
   );
 }

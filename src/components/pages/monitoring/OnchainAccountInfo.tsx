@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
 import { getAccountExplorer } from '@/utils';
-import { useState } from 'react';
 
 export default function OnchainAccountInfo({
   address,
@@ -23,11 +22,6 @@ export default function OnchainAccountInfo({
   addressClassName?: string;
   shortenSize?: number;
 }) {
-
-  const copy = () => {
-    // copy the address to the clipboard
-    navigator.clipboard.writeText(address.toBase58());
-  };
 
   return (
     <div className='flex flex-row items-center gap-1'>
@@ -58,8 +52,6 @@ export default function OnchainAccountInfo({
           height="6"
         />
       </Link>
-
-      <p className='text-sm' onClick={copy} >c</p>
     </div>
   );
 }

@@ -1,18 +1,19 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { AnimatePresence } from 'framer-motion';
+// import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import React from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
-import collapseIcon from '../../../public/images/collapse-all.svg';
-import groupIcon from '../../../public/images/group.svg';
 
 import { UserProfileExtended } from '@/types';
 
+// import collapseIcon from '../../../public/images/collapse-all.svg';
+// import groupIcon from '../../../public/images/group.svg';
+// import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Modal from '../common/Modal/Modal';
+import Nemesis from '../Nemesis/Nemesis';
 import Chat from './Chat';
-import LiveIcon from '../common/LiveIcon/LiveIcon';
-import Image from 'next/image';
 
 function ChatContainer({
     userProfile,
@@ -27,8 +28,8 @@ function ChatContainer({
     isChatOpen: boolean | null;
     setIsChatOpen: (isOpen: boolean) => void;
 }) {
-    const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
-    const [isOpen, setIsOpen] = useState<boolean | null>(null);
+    // const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
+    // const [isOpen, setIsOpen] = useState<boolean | null>(null);
     const [showUserList, setShowUserList] = useState(false);
     const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
 
@@ -149,23 +150,26 @@ function ChatContainer({
                     style={{ userSelect: 'none' }}
                 />
             )}
-            <Chat
-                userProfile={userProfile}
-                wallet={wallet}
-                isOpen={isChatOpen}
-                showUserList={showUserList}
-                onToggleUserList={() => setShowUserList(!showUserList)}
-                clickOnHeader={() => {
-                    if (!isDragging) setIsChatOpen(!isChatOpen);
-                }}
-                className={twMerge(
-                    'bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none',
-                    isChatOpen ? `h-[${height}px]` : 'h-[3em]',
-                )}
-                style={
-                    isChatOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined
-                }
-            />
+            <div className={twMerge(
+                'bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em]',
+                isChatOpen ? `h-[${height}px]` : 'h-[3em]',
+            )}>
+                <Nemesis />
+                {/* <Chat
+                    userProfile={userProfile}
+                    wallet={wallet}
+                    isOpen={isChatOpen}
+                    showUserList={showUserList}
+                    onToggleUserList={() => setShowUserList(!showUserList)}
+                    clickOnHeader={() => {
+                        if (!isDragging) setIsChatOpen(!isChatOpen);
+                    }}
+
+                    style={
+                        isChatOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined
+                    }
+                /> */}
+            </div>
         </div>
     );
 }

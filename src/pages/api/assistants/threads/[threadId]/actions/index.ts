@@ -1,5 +1,6 @@
-import { openai } from '@/config/openai';
 import { NextApiRequest, NextApiResponse } from 'next';
+
+import { openai } from '@/config/openai';
 
 // Send a new message to a thread
 export default async function handler(
