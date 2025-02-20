@@ -431,7 +431,12 @@ export default function Trade({
                   onClick={() => setView('positions')}
                 >
                   Open positions
+
                 </span>
+                <div className={twMerge(
+                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
+                  view === 'positions' ? 'opacity-100' : 'opacity-40'
+                )}>{positions?.length ?? 0}</div>
 
                 <span className="opacity-20">|</span>
 
@@ -444,6 +449,10 @@ export default function Trade({
                 >
                   Limit orders
                 </span>
+                <div className={twMerge(
+                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
+                  view === 'limitOrder' ? 'opacity-100' : 'opacity-40'
+                )}>{limitOrderBook?.limitOrders.length ?? 0}</div>
 
                 <span className="opacity-20">|</span>
 
