@@ -19,6 +19,15 @@ module.exports = (phase, { defaultConfig }) => {
       ];
     },
 
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: '**',
+        },
+      ],
+    },
+
     webpack: (config) => {
       config.resolve = {
         ...config.resolve,
