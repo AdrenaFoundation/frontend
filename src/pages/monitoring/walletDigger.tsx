@@ -17,6 +17,7 @@ import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
+import useTraderInfo from '@/hooks/useTraderInfo';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -45,6 +46,10 @@ export default function WalletDigger({
     const { userVest } = useUserVest(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
 
     const positions = usePositionsByAddress({
+        walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
+    });
+
+    const { traderInfo } = useTraderInfo({
         walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
     });
 
@@ -367,7 +372,7 @@ export default function WalletDigger({
 
                 {userProfile ? <>
                     <TradingStats
-                        userProfile={userProfile}
+                        traderInfo={traderInfo}
                         livePositionsNb={positions === null ? null : positions.length}
                         className="gap-y-4 mb-2"
                         showFeesInPnl={showFeesInPnl}

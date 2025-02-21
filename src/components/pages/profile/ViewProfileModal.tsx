@@ -4,6 +4,7 @@ import crossIcon from '@/../public/images/cross.svg';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
+import useTraderInfo from '@/hooks/useTraderInfo';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { UserProfileExtended } from '@/types';
 
@@ -27,6 +28,9 @@ export default function ViewProfileModal({
         walletAddress,
     });
     const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
+    const { traderInfo } = useTraderInfo({
+        walletAddress,
+    });
 
     const [selectedTab, setSelectedTab] = useState('Active Positions');
 
@@ -55,15 +59,15 @@ export default function ViewProfileModal({
 
             <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border border-t-transparent">
                 <TradingStats
-                    userProfile={profile}
+                    traderInfo={traderInfo}
                     livePositionsNb={positions === null ? null : positions.length}
-                    className="gap-y-4 pt-4 pb-4"
+                    className="gap-y-4 pt-4 pb-2"
                     showFeesInPnl={showFeesInPnl}
                 />
 
                 <StakingStats
                     stakingAccounts={stakingAccounts}
-                    className="gap-y-4 pb-4"
+                    className="gap-y-4 pb-2"
                 />
 
                 <div className="flex flex-col gap-3 p-4">
