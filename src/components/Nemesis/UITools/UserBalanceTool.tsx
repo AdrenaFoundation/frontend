@@ -1,4 +1,5 @@
 import { ToolInvocation } from 'ai';
+import Image from 'next/image';
 import React, { memo, useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -61,7 +62,7 @@ const UserBalanceTool = ({
                     key={token}
                     className="flex flex-row items-center gap-2 bg-[#0D1925] border border-bcolor p-1 px-2 rounded-lg flex-1"
                   >
-                    <img
+                    <Image
                       src={TOKEN_SYMBOL_IMG[token]}
                       width={20}
                       height={20}

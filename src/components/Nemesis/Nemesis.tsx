@@ -2,22 +2,25 @@ import { PublicKey, Transaction } from '@solana/web3.js';
 import { ToolInvocation } from 'ai';
 import { Message, useChat } from 'ai/react';
 import BN from 'bn.js';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { memo, useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import { PRICE_DECIMALS, PROFILE_PICTURES } from '@/constant';
+import { PRICE_DECIMALS, PROFILE_PICTURES, USD_DECIMALS } from '@/constant';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import { useDispatch, useSelector } from '@/store/store';
-import { AdxLockPeriod, AlpLockPeriod } from '@/types';
+import { AdxLockPeriod, AlpLockPeriod, ClosePositionEvent } from '@/types';
 import {
   addNotification,
   formatNumber,
   getTokenSymbolReverse,
+  nativeToUi,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
@@ -31,7 +34,7 @@ import PositionsListTool from './UITools/PositionsListTool';
 import StakeLockTool from './UITools/StakeLockTool';
 import UserBalanceTool from './UITools/UserBalanceTool';
 
-export default function Nemesis() {
+const Nemesis = ({ className }: { className?: string }) => {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
   const owner: PublicKey | null = wallet
@@ -48,6 +51,7 @@ export default function Nemesis() {
   const { userProfile } = useUserProfile(walletAddress);
 
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, addToolResult } =
     useChat({
@@ -128,17 +132,21 @@ export default function Nemesis() {
             return notification.currentStepErrored('Error calculating fees');
           }
 
-          await window.adrena.client.openOrIncreasePositionWithSwapLong({
-            owner,
-            collateralMint: tokenA.mint,
-            mint: tokenB.mint,
-            price: openPositionWithSwapAmountAndFees.entryPrice,
-            collateralAmount,
-            leverage: uiLeverageToNative(leverage),
-            notification,
-          });
+          try {
+            await window.adrena.client.openOrIncreasePositionWithSwapLong({
+              owner,
+              collateralMint: tokenA.mint,
+              mint: tokenB.mint,
+              price: openPositionWithSwapAmountAndFees.entryPrice,
+              collateralAmount,
+              leverage: uiLeverageToNative(leverage),
+              notification,
+            });
 
-          return `Opened ${tradedTokenSymbol} ${side} position with $${collateralAmountUi} worth of ${collateralTokenSymbol}`;
+            return `Opened ${tradedTokenSymbol} ${side} position with $${collateralAmountUi} worth of ${collateralTokenSymbol}`;
+          } catch (error) {
+            return 'Failed to open position';
+          }
         }
 
         if (toolCall.toolName === 'getAllUserPositions') {
@@ -162,6 +170,80 @@ export default function Nemesis() {
         }
 
         if (toolCall.toolName === 'closePosition') {
+          const args = toolCall.args as {
+            pubkey: string;
+          };
+
+          if (!positions) {
+            return 'Error: No active positions';
+          }
+
+          const position = positions.find(
+            (p) => p.pubkey.toBase58() === args.pubkey,
+          );
+
+          if (!position) {
+            return 'Error: Position not found';
+          }
+
+          const notification =
+            MultiStepNotification.newForRegularTransaction(
+              'Close Position',
+            ).fire();
+
+          try {
+            const priceAndFee = await window.adrena.client.getExitPriceAndFee({
+              position,
+            });
+
+            if (!priceAndFee) {
+              return notification.currentStepErrored(
+                'Cannot calculate position closing price',
+              );
+            }
+
+            // 1%
+            const slippageInBps = 100;
+
+            const priceWithSlippage =
+              position.side === 'short'
+                ? priceAndFee.price
+                  .mul(new BN(10_000))
+                  .div(new BN(10_000 - slippageInBps))
+                : priceAndFee.price
+                  .mul(new BN(10_000 - slippageInBps))
+                  .div(new BN(10_000));
+
+            await (
+              position.side === 'long'
+                ? window.adrena.client.closePositionLong.bind(
+                  window.adrena.client,
+                )
+                : window.adrena.client.closePositionShort.bind(
+                  window.adrena.client,
+                )
+            )({
+              position,
+              price: priceWithSlippage,
+              notification,
+              getTransactionLogs: (logs) => {
+                if (!logs) return;
+
+                const events = logs.events as ClosePositionEvent;
+
+                const profit = nativeToUi(events.profitUsd, USD_DECIMALS);
+                const loss = nativeToUi(events.lossUsd, USD_DECIMALS);
+                // const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
+                // const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
+
+                return `Closed position with PnL: $${profit - loss}`;
+              },
+            });
+
+            return `Closed position`;
+          } catch (error) {
+            return 'Failed to close position';
+          }
         }
 
         if (toolCall.toolName === 'setTakeProfit') {
@@ -284,8 +366,6 @@ export default function Nemesis() {
 
           const stopLossInput = args.stopLossPrice;
 
-          console.log('position', position);
-          console.log('stopLossInput', stopLossInput);
           if (!position) {
             addNotification({
               title: 'Position not found',
@@ -448,18 +528,8 @@ export default function Nemesis() {
         }
 
         //
-        // utils
+        // staking
         //
-
-        if (toolCall.toolName === 'getUserWalletBalance') {
-          if (!owner) {
-            return null;
-          }
-          console.log('fetching wallet token balances...', walletTokenBalances);
-
-          dispatch(fetchWalletTokenBalances());
-          return walletTokenBalances;
-        }
 
         if (toolCall.toolName === 'stake') {
           if (!owner) {
@@ -471,8 +541,6 @@ export default function Nemesis() {
             days: number;
             stakedToken: 'ADX' | 'ALP';
           };
-
-          console.log(args);
 
           const amount = args?.amount;
           const days = args?.days;
@@ -499,7 +567,7 @@ export default function Nemesis() {
             `Stake ${stakedToken}`,
           ).fire();
 
-          if (days === 0) {
+          if (days === 0 && stakedToken === 'ADX') {
             await window.adrena.client.addLiquidStake({
               owner,
               amount,
@@ -520,158 +588,228 @@ export default function Nemesis() {
             ? `Liquid Staked ${amount} ADX`
             : `Staked ${amount} ADX for ${days} days`;
         }
+
+        //
+        // utils
+        //
+
+        if (toolCall.toolName === 'getUserWalletBalance') {
+          if (!owner) {
+            return null;
+          }
+
+          dispatch(fetchWalletTokenBalances());
+          console.log('walletTokenBalances', walletTokenBalances);
+          return walletTokenBalances;
+        }
       },
     });
 
-  if (!userProfile) return null;
+  // Scroll to the bottom whenever messages change
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
-    <div className="flex flex-col gap-5 justify-between w-full max-w-md h-full p-3 overflow-hidden">
-      <div className="flex flex-col gap-2 overflow-hidden overflow-y-auto custom-chat-scrollbar pb-[100px]">
-        {messages?.map((m: Message) => (
-          <div key={m.id}>
-            <div className="flex flex-row gap-2 items-start mb-2">
-              {m.role === 'assistant' ? (
-                <Image
-                  src={nemesisPP}
-                  width={24}
-                  height={24}
-                  alt="avatar"
-                  className="rounded-full border border-bcolor"
-                />
-              ) : (
-                <Image
-                  src={PROFILE_PICTURES[userProfile.profilePicture]}
-                  width={24}
-                  height={24}
-                  alt="avatar"
-                  className="rounded-full border border-bcolor"
-                />
-              )}
-              <div
-                className={twMerge(
-                  'flex flex-col gap-2',
-                  m.role === 'user' &&
-                  'bg-[#172430] border border-[#1D2A37] px-2 rounded-full',
-                )}
+    <div
+      className={twMerge(
+        'flex flex-col gap-5 justify-between h-full w-full p-3 overflow-hidden grow',
+        className,
+      )}
+    >
+      <div
+        className="flex flex-col gap-2 overflow-hidden overflow-y-auto custom-chat-scrollbar pb-[50px] grow"
+        ref={containerRef}
+      >
+        {messages && messages.length > 0 ? (
+          messages.map((m: Message) => (
+            <div key={m.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-row gap-2 items-start mb-2"
               >
-                <Markdown
-                  components={{
-                    p: ({ children }) => (
-                      <p className="text-base font-boldy">{children}</p>
-                    ),
-                    ul: ({ children }) => (
-                      <ul className="list-disc mb-2">{children}</ul>
-                    ),
-                    li: ({ children }) => (
-                      <li className="ml-4 text-sm ">{children}</li>
-                    ),
-                  }}
+                {m.role === 'assistant' ? (
+                  <Image
+                    src={nemesisPP}
+                    width={24}
+                    height={24}
+                    alt="avatar"
+                    className="rounded-full border border-bcolor"
+                  />
+                ) : (
+                  <Image
+                    src={
+                      PROFILE_PICTURES[
+                      userProfile ? userProfile.profilePicture : 0
+                      ]
+                    }
+                    width={24}
+                    height={24}
+                    alt="avatar"
+                    className="rounded-full border border-bcolor"
+                  />
+                )}
+                <div
+                  className={twMerge(
+                    'flex flex-col gap-2',
+                    m.role === 'user' &&
+                    'bg-[#172430] border border-[#1D2A37] px-2 rounded-full',
+                  )}
                 >
-                  {m.content}
-                </Markdown>
-              </div>
-            </div>
-            {m.toolInvocations ? (
-              <div className="border rounded-lg overflow-hidden mb-2 bg-[#081018]">
-                <div className="flex flex-row gap-2 justify-between  p-2 px-3 border-b">
-                  <p className="text-xs font-mono opacity-50">Total steps</p>
-                  <p className="text-xs font-mono opacity-50">
-                    {m.toolInvocations.length}
-                  </p>
+                  <Markdown
+                    components={{
+                      p: ({ children }) => (
+                        <p className="text-base font-boldy">{children}</p>
+                      ),
+                      h1: ({ children }) => (
+                        <h1 className="font-boldy">{children}</h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="font-boldy">{children}</h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="font-boldy">{children}</h3>
+                      ),
+                      h4: ({ children }) => (
+                        <h4 className="font-boldy">{children}</h4>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="list-disc mb-2">{children}</ul>
+                      ),
+                      li: ({ children }) => (
+                        <li className="ml-4 text-sm ">{children}</li>
+                      ),
+                    }}
+                  >
+                    {m.content}
+                  </Markdown>
                 </div>
+              </motion.div>
+              {m.toolInvocations ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.2 }}
+                  className="border rounded-lg overflow-hidden mb-2 bg-[#081018]"
+                >
+                  <div className="flex flex-row gap-2 justify-between  p-2 px-3 border-b">
+                    <p className="text-xs font-mono opacity-50">Total steps</p>
+                    <p className="text-xs font-mono opacity-50">
+                      {m.toolInvocations.length}
+                    </p>
+                  </div>
 
-                {m.toolInvocations.map((toolInvocation: ToolInvocation, i) => {
-                  const toolCallId = toolInvocation.toolCallId;
+                  {m.toolInvocations.map(
+                    (toolInvocation: ToolInvocation, i) => {
+                      const toolCallId = toolInvocation.toolCallId;
 
-                  const addResult = (result: string) =>
-                    addToolResult({ toolCallId, result });
+                      const addResult = (result: string) =>
+                        addToolResult({ toolCallId, result });
 
-                  const totalSteps = m.toolInvocations
-                    ? m.toolInvocations.length
-                    : 0;
+                      const totalSteps = m.toolInvocations
+                        ? m.toolInvocations.length
+                        : 0;
 
-                  switch (toolInvocation.toolName) {
-                    case 'isConnected':
-                      return (
-                        <IsConnected
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          sep={i !== totalSteps - 1}
-                        />
-                      );
-                    case 'askForClaimVestedADXConfirmation':
-                      return (
-                        <ClaimADXConfirmationTool
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          addResult={addResult}
-                          sep={i !== totalSteps - 1}
-                          vestAmounts={vestAmounts}
-                        />
-                      );
-                    case 'askForConfirmation':
-                      return (
-                        <AskForConfirmationTool
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          addResult={addResult}
-                          sep={i !== totalSteps - 1}
-                        />
-                      );
+                      switch (toolInvocation.toolName) {
+                        case 'isConnected':
+                          return (
+                            <IsConnected
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              sep={i !== totalSteps - 1}
+                            />
+                          );
+                        case 'askForClaimVestedADXConfirmation':
+                          return (
+                            <ClaimADXConfirmationTool
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              addResult={addResult}
+                              sep={i !== totalSteps - 1}
+                              vestAmounts={vestAmounts}
+                            />
+                          );
+                        case 'askForConfirmation':
+                          return (
+                            <AskForConfirmationTool
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              addResult={addResult}
+                              sep={i !== totalSteps - 1}
+                            />
+                          );
 
-                    case 'askHowManyDaysToStakeALP':
-                      return (
-                        <StakeLockTool
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          addResult={addResult}
-                          sep={i !== totalSteps - 1}
-                          token="ALP"
-                        />
-                      );
+                        case 'askHowManyDaysToStakeALP':
+                          return (
+                            <StakeLockTool
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              addResult={addResult}
+                              sep={i !== totalSteps - 1}
+                              token="ALP"
+                            />
+                          );
 
-                    case 'askHowManyDaysToStakeADX':
-                      return (
-                        <StakeLockTool
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          addResult={addResult}
-                          sep={i !== totalSteps - 1}
-                          token="ADX"
-                        />
-                      );
+                        case 'askHowManyDaysToStakeADX':
+                          return (
+                            <StakeLockTool
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              addResult={addResult}
+                              sep={i !== totalSteps - 1}
+                              token="ADX"
+                            />
+                          );
 
-                    case 'getUserWalletBalance':
-                      return (
-                        <UserBalanceTool
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          sep={i !== totalSteps - 1}
-                        />
-                      );
-                    case 'getAllUserPositions':
-                      return (
-                        <PositionsListTool
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          sep={i !== totalSteps - 1}
-                        />
-                      );
-                    default:
-                      return (
-                        <DefaultTool
-                          toolInvocation={toolInvocation}
-                          i={i}
-                          sep={i !== totalSteps - 1}
-                        />
-                      );
-                  }
-                })}
-              </div>
-            ) : null}
+                        case 'getUserWalletBalance':
+                          return (
+                            <UserBalanceTool
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              sep={i !== totalSteps - 1}
+                            />
+                          );
+                        case 'getAllUserPositions':
+                          return (
+                            <PositionsListTool
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              sep={i !== totalSteps - 1}
+                            />
+                          );
+                        default:
+                          return (
+                            <DefaultTool
+                              toolInvocation={toolInvocation}
+                              i={i}
+                              sep={i !== totalSteps - 1}
+                            />
+                          );
+                      }
+                    },
+                  )}
+                </motion.div>
+              ) : null}
+            </div>
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full h-full">
+            <h1
+              className={twMerge(
+                'text-[1em] font-archivoblack bg-[linear-gradient(110deg,#2C4852,45%,#F9F3A5,55%,#2C4852)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+              )}
+            >
+              N.E.M.E.S.I.S
+            </h1>
+            <p className="font-mono opacity-50">Adrena's AI assistant</p>
           </div>
-        ))}
+        )}
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -685,3 +823,5 @@ export default function Nemesis() {
     </div>
   );
 }
+
+export default memo(Nemesis);

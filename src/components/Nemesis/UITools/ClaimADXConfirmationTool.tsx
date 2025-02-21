@@ -37,13 +37,12 @@ const ClaimADXConfirmationTool = ({
       case 'call':
         return (
           <ToolWrapper className="flex flex-col gap-2 items-start">
-            <div className="flex flex-row justify-between w-full p-3 rounded-lg border border-bcolor mb-3">
+            <div className="flex flex-row justify-between w-full p-3 px-5 rounded-lg border border-bcolor mb-3">
               <div className="text-center">
                 <p className="text-xs font-boldy opacity-50">Vested</p>
                 <FormatNumber
                   nb={vestAmounts.amount}
                   suffix="ADX"
-                  className="text-base"
                   isDecimalDimmed={false}
                   isAbbreviate
                 />
@@ -54,7 +53,6 @@ const ClaimADXConfirmationTool = ({
                 <FormatNumber
                   nb={vestAmounts.claimedAmount}
                   suffix="ADX"
-                  className="text-base"
                   isDecimalDimmed={false}
                   isAbbreviate
                 />
@@ -65,7 +63,6 @@ const ClaimADXConfirmationTool = ({
                 <FormatNumber
                   nb={vestAmounts.claimableAmount}
                   suffix="ADX"
-                  className="text-base"
                   isDecimalDimmed={false}
                   isAbbreviate
                 />
