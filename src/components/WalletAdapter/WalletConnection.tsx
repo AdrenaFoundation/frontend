@@ -9,9 +9,11 @@ import Button from '../common/Button/Button';
 export default function WalletConnection({
   connected,
   disableSubtext,
+  className,
 }: {
   connected?: boolean;
   disableSubtext?: boolean;
+  className?: string;
 }) {
   const dispatch = useDispatch();
 
@@ -23,7 +25,7 @@ export default function WalletConnection({
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-center">
+    <div className={twMerge("flex flex-col h-full items-center justify-center", className)}>
       <Button
         title="Connect wallet"
         variant="secondary"

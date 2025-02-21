@@ -26,6 +26,7 @@ import {
 } from '@/utils';
 
 import nemesisPP from '../../../public/images/nemesis-pp.png';
+import WalletConnection from '../WalletAdapter/WalletConnection';
 import AskForConfirmationTool from './UITools/AskForConfirmationTool';
 import ClaimADXConfirmationTool from './UITools/ClaimADXConfirmationTool';
 import DefaultTool from './UITools/DefaultTool';
@@ -811,13 +812,14 @@ const Nemesis = ({ className }: { className?: string }) => {
               N.E.M.E.S.I.S
             </h1>
             <p className="font-mono opacity-50">Adrena&apos;s AI assistant</p>
+            {!owner ? <WalletConnection className='h-fit mt-5' /> : null}
           </div>
         )}
       </div>
 
       <form onSubmit={handleSubmit}>
         <input
-          className="bg-secondary w-full max-w-md p-2 px-4 border border-bcolor rounded-lg shadow-xl mt-auto text-sm font-boldy z-20"
+          className={twMerge("bg-secondary w-full max-w-md p-2 px-4 border border-bcolor rounded-lg shadow-xl mt-auto text-sm font-boldy z-20", !owner && 'pointer-events-none opacity-25')}
           value={input}
           placeholder="Say something..."
           onChange={handleInputChange}
