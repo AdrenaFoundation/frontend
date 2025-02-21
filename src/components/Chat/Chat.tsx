@@ -3,7 +3,6 @@ import { PublicKey } from "@solana/web3.js";
 import { createClient } from "@supabase/supabase-js";
 import Tippy from "@tippyjs/react";
 import { kv } from "@vercel/kv";
-import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import React from "react";
 import { twMerge } from "tailwind-merge";
@@ -13,11 +12,8 @@ import { PROFILE_PICTURES, WALLPAPER } from "@/constant";
 import { useDispatch } from "@/store/store";
 import { UserProfileExtended } from "@/types";
 
-import collapseIcon from '../../../public/images/collapse-all.svg';
-import groupIcon from '../../../public/images/group.svg';
 import Button from "../common/Button/Button";
 import InputString from "../common/inputString/InputString";
-import LiveIcon from "../common/LiveIcon/LiveIcon";
 import Loader from "../Loader/Loader";
 import FormatNumber from "../Number/FormatNumber";
 
@@ -95,27 +91,26 @@ interface ChatProps {
     className?: string;
     style?: React.CSSProperties;
     isOpen: boolean;
-    clickOnHeader: () => void;
+    // clickOnHeader: () => void;
     displaySmileys?: boolean;
     showUserList?: boolean;
-    onToggleUserList?: () => void;
+    // onToggleUserList?: () => void;
 }
 
 function Chat({
     userProfile,
     wallet,
     className,
-    style,
     isOpen,
-    clickOnHeader,
+    // clickOnHeader,
     displaySmileys = true,
     showUserList = false,
-    onToggleUserList,
+    // onToggleUserList,
 }: ChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
-    const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
+    const [, setNbConnectedUsers] = useState<number | null>(null);
     const [profileCache, setProfileCache] = useState<Record<string, UserProfileExtended | null | false>>({});
     const dispatch = useDispatch();
     const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
