@@ -16,7 +16,6 @@ const DefaultTools = ({
   i: number;
   sep: boolean;
 }) => {
-  console.log('toolInvocation', toolInvocation.toolName);
 
   const Content = useMemo(() => {
     switch (toolInvocation.state) {

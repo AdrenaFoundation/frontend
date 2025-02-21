@@ -10,12 +10,10 @@ export async function POST(req: Request) {
   const checkWalletConnectionMessage =
     'check if the user has connected their wallet. if connected, proceed to the next step.';
 
-  // const checkBalanceMessage = `check if the user has enough balance to perform this action. use the getUserWalletBalance tool to get the user's wallet balance.`;
-
-  // todo: add safety checks for the tools eg. check if the user has enough balance to perform the action
-
   const result = streamText({
     model: openai('gpt-4o'),
+    system:
+      'You are a Adrena assistant and only have access to the Adrena platform. You can help the user with different tasks on the platform.',
     messages,
     toolCallStreaming: true,
     tools: {
@@ -37,15 +35,6 @@ export async function POST(req: Request) {
         description: 'Check if the user has connected their wallet.',
         parameters: z.object({}),
       },
-
-      // checkBalance: {
-      //   description: `Check if the user has enough balance to perform this action. Use the getUserWalletBalance tool to get the user's wallet balance. ${checkWalletConnectionMessage}`,
-      //   parameters: z.object({
-      //     hasEnoughBalance: z
-      //       .boolean()
-      //       .describe('If the user has enough balance'),
-      //   }),
-      // },
 
       getUserWalletBalance: {
         description: `Get the user's wallet balance. ${checkWalletConnectionMessage}. Dont include tokens if the balance is 0 or null`,
@@ -140,19 +129,19 @@ export async function POST(req: Request) {
         }),
       },
 
+      closePosition: {
+        description: `Close a position. Always ask for the pubkey or description of the position to close if not stated already. ${checkWalletConnectionMessage}. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
+        parameters: z.object({
+          pubkey: z.string().describe('The position pubkey'),
+        }),
+      },
+
       getAllUserPositions: {
         description: `Get all the positions of the user. the pubkey is the position pubkey. and the user can perform different action with this key ${checkWalletConnectionMessage}`,
         parameters: z.object({
           positions: z.array(z.string()).describe('The positions details'),
         }),
       },
-
-      // getAllPositionPubkeys: {
-      //   description: `Get all the position ids of the user. ${checkWalletConnectionMessage}`,
-      //   parameters: z.object({
-      //     positionIds: z.array(z.string()).describe('The position ids'),
-      //   }),
-      // },
 
       setTakeProfit: {
         description: `Set a take profit for a position. Always ask for the price to set take profit at, if not stated already. Always ask to provide pubkey for which position to set take profit on if not stated already. ${checkWalletConnectionMessage}. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
