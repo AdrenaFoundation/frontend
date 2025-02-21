@@ -145,6 +145,7 @@ const Nemesis = ({ className }: { className?: string }) => {
 
             return `Opened ${tradedTokenSymbol} ${side} position with $${collateralAmountUi} worth of ${collateralTokenSymbol}`;
           } catch (error) {
+            console.log('error', error);
             return 'Failed to open position';
           }
         }
@@ -242,6 +243,7 @@ const Nemesis = ({ className }: { className?: string }) => {
 
             return `Closed position`;
           } catch (error) {
+            console.log('error', error);
             return 'Failed to close position';
           }
         }
@@ -523,6 +525,7 @@ const Nemesis = ({ className }: { className?: string }) => {
             });
             return `Claimed ${vestAmounts.claimableAmount} ADX`;
           } catch (error) {
+            console.log('error', error);
             return `Failed to claim ${formatNumber(vestAmounts.claimableAmount, 2)} ADX`;
           }
         }
@@ -807,7 +810,7 @@ const Nemesis = ({ className }: { className?: string }) => {
             >
               N.E.M.E.S.I.S
             </h1>
-            <p className="font-mono opacity-50">Adrena's AI assistant</p>
+            <p className="font-mono opacity-50">Adrena&apos;s AI assistant</p>
           </div>
         )}
       </div>
