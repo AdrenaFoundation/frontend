@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 
 import {
     EnrichedPositionApi,
+    EnrichedTraderInfo,
     GetPositionStatsReturnType,
     MutagenLeaderboardData,
     MutagenLeaderboardRawAPI,
@@ -15,6 +16,7 @@ import {
     Token,
     Trader,
     TraderDivisionRawAPI,
+    TraderInfoRawData,
     UserMutagensReturnType,
     UserSeasonProgressReturnType
 } from './types';
@@ -605,6 +607,64 @@ export default class DataApiClient {
         } catch (e) {
             console.error('Error fetching positions:', e);
             return [];
+        }
+    }
+
+    public static async getTraderInfo({
+        walletAddress,
+    }: {
+        walletAddress: string;
+    }): Promise<EnrichedTraderInfo | null> {
+        try {
+            const response = await fetch(
+                `https://datapi.adrena.xyz/trader-info?user_wallet=${walletAddress}`,
+            );
+
+            if (!response.ok) {
+                console.log('API response was not ok');
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            const apiData: TraderInfoRawData | undefined = apiBody.data;
+
+            if (typeof apiData === 'undefined' || !apiData)
+                return null;
+
+            return {
+                userPubkey: new PublicKey(apiData.user_pubkey),
+                totalPnl: apiData.total_pnl,
+                totalFees: apiData.total_fees,
+                totalBorrowFees: apiData.total_borrow_fees,
+                totalExitFees: apiData.total_exit_fees,
+                totalVolume: apiData.total_volume,
+                totalNumberPositions: apiData.total_number_positions,
+                totalNumberPositionsOpen: apiData.total_number_positions_open,
+                totalNumberPositionsClosed: apiData.total_number_positions_closed,
+                totalNumberPositionsLiquidated: apiData.total_number_positions_liquidated,
+                winRatePercentage: apiData.win_rate_percentage,
+                largestWinningTrade: apiData.largest_winning_trade,
+                largestLosingTrade: apiData.largest_losing_trade,
+                bestTradingPerformance: apiData.best_trading_performance,
+                worstTradingPerformance: apiData.worst_trading_performance,
+                tradeFrequencyPerDay: apiData.trade_frequency_per_day,
+                avgWinPnl: apiData.avg_win_pnl,
+                avgLossPnl: apiData.avg_loss_pnl,
+                avgVolume: apiData.avg_volume,
+                avgPnl: apiData.avg_pnl,
+                avgFees: apiData.avg_fees,
+                avgBorrowFees: apiData.avg_borrow_fees,
+                avgTradingPerformance: apiData.avg_trading_performance,
+                avgEntryLeverage: apiData.avg_entry_leverage,
+                avgEntrySize: apiData.avg_entry_size,
+                avgExitSize: apiData.avg_exit_size,
+                avgEntryCollateralAmount: apiData.avg_entry_collateral_amount,
+                avgHoldingTime: apiData.avg_holding_time,
+            } as EnrichedTraderInfo;
+        } catch (e) {
+            console.error('Error fetching trader Info:', e);
+            return null;
         }
     }
 }
