@@ -12,6 +12,7 @@ import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { WALLPAPER } from '@/constant';
 import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
+import useTraderInfo from '@/hooks/useTraderInfo';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
@@ -32,6 +33,9 @@ export default function Profile({
   const walletAddress = useSelector(selectWalletAddress);
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
   const positions = usePositions(walletAddress);
+  const { traderInfo } = useTraderInfo({
+    walletAddress,
+  });
 
   const {
     activityCalendarData,
@@ -121,15 +125,17 @@ export default function Profile({
 
               <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl'>
                 <TradingStats
-                  userProfile={userProfile}
+                  traderInfo={traderInfo}
                   livePositionsNb={positions === null ? null : positions.length}
-                  className="gap-y-4 pt-4 pb-4"
+                  className="gap-y-4 pt-2 pb-2"
                   showFeesInPnl={showFeesInPnl}
                 />
 
+                <div className="h-[1px] w-full bg-bcolor mb-2" />
+
                 <StakingStats
                   stakingAccounts={stakingAccounts}
-                  className="gap-y-4 pb-4"
+                  className="gap-y-4 pb-2"
                 />
 
                 <div className="h-[1px] w-full bg-bcolor" />
