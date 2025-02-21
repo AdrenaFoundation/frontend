@@ -34,7 +34,7 @@ function ChatContainer({
     const [view, setView] = useState('chat');
     // const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
     // const [isOpen, setIsOpen] = useState<boolean | null>(null);
-    const [showUserList, setShowUserList] = useState(false);
+    const [showUserList] = useState(false);
     const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
 
     const chatHeightCookie = cookies['chat-height'];
@@ -141,8 +141,8 @@ function ChatContainer({
                             wallet={wallet}
                             isOpen={isChatOpen}
                             showUserList={showUserList}
-                            onToggleUserList={() => setShowUserList(!showUserList)}
-                            clickOnHeader={() => setIsChatOpen(!isChatOpen)}
+                            // onToggleUserList={() => setShowUserList(!showUserList)}
+                            // clickOnHeader={() => setIsChatOpen(!isChatOpen)}
                             className={view === 'chat' ? '' : 'hidden'}
                         />
                     </Modal>
@@ -202,10 +202,10 @@ function ChatContainer({
                             wallet={wallet}
                             isOpen={isChatOpen}
                             showUserList={showUserList}
-                            onToggleUserList={() => setShowUserList(!showUserList)}
-                            clickOnHeader={() => {
-                                if (!isDragging) setIsChatOpen(!isChatOpen);
-                            }}
+                        // onToggleUserList={() => setShowUserList(!showUserList)}
+                        // clickOnHeader={() => {
+                        //     if (!isDragging) setIsChatOpen(!isChatOpen);
+                        // }}
                         />
                     ) : null
                 ) : null}
