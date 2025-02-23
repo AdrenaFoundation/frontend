@@ -16,7 +16,6 @@ const DefaultTools = ({
   i: number;
   sep: boolean;
 }) => {
-
   const Content = useMemo(() => {
     switch (toolInvocation.state) {
       case 'partial-call':
@@ -38,7 +37,9 @@ const DefaultTools = ({
         return (
           <ToolWrapper>
             {typeof toolInvocation.result === 'object' ? (
-              JSON.stringify(toolInvocation.result)
+              <pre className="font-mono text-xs">
+                {JSON.stringify(toolInvocation.result, null, 2)}
+              </pre>
             ) : (
               <p
                 className={twMerge(

@@ -162,6 +162,50 @@ export async function POST(req: Request) {
             .describe('The stop loss price for the position'),
         }),
       },
+
+      addLimitOrder: {
+        description: `Add a limit order. Always ask for the side, traded token, collateral token, price and amount to add limit order with if not stated already. the traded token must be the same token as collateral for long positions. ${checkWalletConnectionMessage}. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
+        parameters: z.object({
+          side: z.string().describe('The side of the order'),
+          tokenBSymbol: z
+            .string()
+            .describe(
+              'The token to trade. for long positions, this must be the same as the collateral token',
+            ),
+          tokenASymbol: z.string().describe('The collateral token'),
+          limitOrderTriggerPrice: z.number().describe('The price of the order'),
+          inputA: z.number().describe('The amount of the order'),
+          limitOrderSlippage: z
+            .number()
+            .optional()
+            .nullable()
+            .default(0.1)
+            .describe('The slippage of the order in percentage'),
+          leverage: z
+            .number()
+            .optional()
+            .nullable()
+            .default(1.1)
+            .describe('The leverage of the order'),
+        }),
+      },
+
+      cancelLimitOrder: {
+        description: `Cancel a limit order. Always ask for the pubkey of the order to cancel if not stated already. ${checkWalletConnectionMessage}. Always ask for confirmation before using this tool, use the askForConfirmation tool.`,
+        parameters: z.object({
+          id: z.string().describe('The limit order id'),
+          collateralCustody: z
+            .string()
+            .describe('The collateral custody pubkey'),
+        }),
+      },
+
+      getAllUserLimitOrders: {
+        description: `Get all the limit orders of the user. the id is the limit order id. and the user can perform different action with this key ${checkWalletConnectionMessage}`,
+        parameters: z.object({
+          limitOrders: z.array(z.string()).describe('The limit orders details'),
+        }),
+      },
     },
   });
 

@@ -11,11 +11,17 @@ import { twMerge } from 'tailwind-merge';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import { PRICE_DECIMALS, PROFILE_PICTURES, USD_DECIMALS } from '@/constant';
+import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import { useDispatch, useSelector } from '@/store/store';
-import { AdxLockPeriod, AlpLockPeriod, ClosePositionEvent } from '@/types';
+import {
+  AdxLockPeriod,
+  AlpLockPeriod,
+  ClosePositionEvent,
+  Token,
+} from '@/types';
 import {
   addNotification,
   formatNumber,
@@ -26,6 +32,8 @@ import {
 } from '@/utils';
 
 import nemesisPP from '../../../public/images/nemesis-pp.png';
+import { TradingInputState } from '../pages/trading/TradingInputs/LongShortTradingInputs/types';
+import { calculateLimitOrderLimitPrice } from '../pages/trading/TradingInputs/LongShortTradingInputs/utils';
 import WalletConnection from '../WalletAdapter/WalletConnection';
 import AskForConfirmationTool from './UITools/AskForConfirmationTool';
 import ClaimADXConfirmationTool from './UITools/ClaimADXConfirmationTool';
@@ -38,6 +46,7 @@ import UserBalanceTool from './UITools/UserBalanceTool';
 const Nemesis = ({ className }: { className?: string }) => {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
+  const tokenPrices = useSelector((s) => s.tokenPrices);
   const owner: PublicKey | null = wallet
     ? new PublicKey(wallet.walletAddress)
     : null;
@@ -49,6 +58,7 @@ const Nemesis = ({ className }: { className?: string }) => {
   const positions = usePositionsByAddress({
     walletAddress,
   });
+  const { limitOrderBook } = useLimitOrderBook({ walletAddress });
   const { userProfile } = useUserProfile(walletAddress);
 
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -460,6 +470,114 @@ const Nemesis = ({ className }: { className?: string }) => {
           }
         }
 
+        if (toolCall.toolName === 'getAllUserLimitOrders') {
+          return limitOrderBook?.limitOrders.map((order) => ({
+            id: order.id,
+            side: order.side,
+            collateralCustody: order.collateralCustody.toBase58(),
+          }));
+        }
+
+        if (toolCall.toolName === 'addLimitOrder') {
+          const args = toolCall.args as TradingInputState & {
+            side: 'long' | 'short';
+            tokenASymbol: Token['symbol'];
+            tokenBSymbol: Token['symbol'];
+          };
+
+          const {
+            inputA,
+            limitOrderTriggerPrice,
+            limitOrderSlippage,
+            tokenASymbol,
+            tokenBSymbol,
+            leverage,
+            side,
+          } = args;
+
+          console.log('args', args);
+
+          if (!inputA || !limitOrderTriggerPrice || !leverage || !side) {
+            return 'Error: Missing required parameters';
+          }
+
+          const tokenA = window.adrena.client.getTokenBySymbol(tokenASymbol);
+          const tokenB = window.adrena.client.getTokenBySymbol(
+            getTokenSymbolReverse(tokenBSymbol),
+          );
+
+          if (!tokenA || !tokenB) {
+            return 'Error: Token not found';
+          }
+
+          const tokenBPrice = tokenPrices[tokenB.symbol];
+          if (!tokenBPrice) {
+            return 'ERROR: Missing token B price';
+          }
+
+          // Check for minimum collateral value
+          const tokenAPrice = tokenPrices[tokenA.symbol];
+          if (!tokenAPrice) {
+            return 'ERROR: Missing token A price';
+          }
+
+          if (side === 'long' && tokenASymbol !== tokenBSymbol) {
+            return 'ERROR: Collateral token must be the same as traded token for long positions';
+          }
+
+          const notification = MultiStepNotification.newForRegularTransaction(
+            `Add limit order ${side}`,
+          ).fire();
+
+          try {
+            await window.adrena.client.addLimitOrder({
+              triggerPrice: limitOrderTriggerPrice,
+              limitPrice:
+                limitOrderSlippage === null
+                  ? null
+                  : calculateLimitOrderLimitPrice({
+                    limitOrderTriggerPrice: limitOrderTriggerPrice,
+                    tokenDecimals: tokenB.displayPriceDecimalsPrecision,
+                    percent: limitOrderSlippage,
+                    side,
+                  }),
+              side,
+              collateralAmount: uiToNative(inputA, tokenA.decimals),
+              leverage: uiLeverageToNative(leverage),
+              notification,
+              mint: tokenB.mint,
+              collateralMint: tokenA.mint,
+            });
+            return `Added limit order ${side} ${inputA} ${tokenA.symbol} at ${limitOrderTriggerPrice}`;
+          } catch (error) {
+            console.log('error', error);
+            return `Failed to add limit order`;
+          }
+        }
+
+        if (toolCall.toolName === 'cancelLimitOrder') {
+          const args = toolCall.args as {
+            id: number;
+            collateralCustody: string;
+          };
+          const { id, collateralCustody } = args;
+
+          const notification = MultiStepNotification.newForRegularTransaction(
+            `Cancel limit order #${id}`,
+          ).fire();
+
+          try {
+            await window.adrena.client.cancelLimitOrder({
+              id: id,
+              collateralCustody: new PublicKey(collateralCustody),
+              notification,
+            });
+            return `Cancelled limit order #${id}`;
+          } catch (error) {
+            console.log('error', error);
+            return 'Failed to cancel limit order';
+          }
+        }
         //
         // ALP
         //
@@ -662,7 +780,7 @@ const Nemesis = ({ className }: { className?: string }) => {
                   className={twMerge(
                     'flex flex-col gap-2',
                     m.role === 'user' &&
-                    'bg-[#172430] border border-[#1D2A37] px-2 rounded-full',
+                    'bg-[#172430] border border-[#1D2A37] px-2 py-1 rounded-xl',
                   )}
                 >
                   <Markdown
@@ -812,14 +930,17 @@ const Nemesis = ({ className }: { className?: string }) => {
               N.E.M.E.S.I.S
             </h1>
             <p className="font-mono opacity-50">Adrena&apos;s AI assistant</p>
-            {!owner ? <WalletConnection className='h-fit mt-5' /> : null}
+            {!owner ? <WalletConnection className="h-fit mt-5" /> : null}
           </div>
         )}
       </div>
 
       <form onSubmit={handleSubmit}>
         <input
-          className={twMerge("bg-secondary w-full max-w-md p-2 px-4 border border-bcolor rounded-lg shadow-xl mt-auto text-sm font-boldy z-20", !owner && 'pointer-events-none opacity-25')}
+          className={twMerge(
+            'bg-secondary w-full max-w-md p-2 px-4 border border-bcolor rounded-lg shadow-xl mt-auto text-sm font-boldy z-20',
+            !owner && 'pointer-events-none opacity-25',
+          )}
           value={input}
           placeholder="Say something..."
           onChange={handleInputChange}
@@ -827,6 +948,6 @@ const Nemesis = ({ className }: { className?: string }) => {
       </form>
     </div>
   );
-}
+};
 
 export default memo(Nemesis);
