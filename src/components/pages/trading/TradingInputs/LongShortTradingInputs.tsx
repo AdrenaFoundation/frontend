@@ -306,6 +306,14 @@ export default function LongShortTradingInputs({
       }
     }
 
+    if (tokenA.symbol === 'WBTC' || tokenB.symbol === 'WBTC') {
+      return addNotification({
+        type: 'info',
+        title: 'Cannot open position',
+        message: 'WBTC has been disabled for now, coming back soon',
+      });
+    }
+
     const notification = MultiStepNotification.newForRegularTransaction(
       side + ' Position Opening',
     ).fire();
@@ -325,6 +333,10 @@ export default function LongShortTradingInputs({
 
     if (!openPositionWithSwapAmountAndFees) {
       return notification.currentStepErrored('Error calculating fees');
+    }
+
+    if (tokenA.symbol === 'WBTC') {
+      return notification.currentStepErrored('BTC LO has been disabled for now, coming back soon');
     }
 
     try {
