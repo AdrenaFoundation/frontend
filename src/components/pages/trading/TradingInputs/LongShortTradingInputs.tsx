@@ -223,6 +223,17 @@ export default function LongShortTradingInputs({
       });
     }
 
+    if (tokenAPrice) {
+      const collateralValue = inputState.inputA * tokenAPrice;
+      if (collateralValue < 9.5) {
+        return addNotification({
+          type: 'info',
+          title: 'Cannot open position',
+          message: 'Collateral value must be at least $10',
+        });
+      }
+    }
+
     const notification = MultiStepNotification.newForRegularTransaction(
       side + ' Add Limit Order',
     ).fire();
@@ -295,7 +306,7 @@ export default function LongShortTradingInputs({
         message: `Missing ${tokenA.symbol} price`,
       });
     }
-    if (tokenAPrice && !openedPosition) {
+    if (tokenAPrice) {
       const collateralValue = inputState.inputA * tokenAPrice;
       if (collateralValue < 9.5) {
         return addNotification({
@@ -304,14 +315,6 @@ export default function LongShortTradingInputs({
           message: 'Collateral value must be at least $10',
         });
       }
-    }
-
-    if (tokenA.symbol === 'WBTC' || tokenB.symbol === 'WBTC') {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: 'WBTC has been disabled for now, coming back soon',
-      });
     }
 
     const notification = MultiStepNotification.newForRegularTransaction(
@@ -333,10 +336,6 @@ export default function LongShortTradingInputs({
 
     if (!openPositionWithSwapAmountAndFees) {
       return notification.currentStepErrored('Error calculating fees');
-    }
-
-    if (tokenA.symbol === 'WBTC') {
-      return notification.currentStepErrored('BTC LO has been disabled for now, coming back soon');
     }
 
     try {
@@ -588,7 +587,7 @@ export default function LongShortTradingInputs({
 
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
-    if (!inputState.isLimitOrder && tokenAPrice && !openedPosition) {
+    if (tokenAPrice) {
       const collateralValue = inputState.inputA * tokenAPrice;
       if (collateralValue < 9.5) {
         setPositionInfo(prev => ({

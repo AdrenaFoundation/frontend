@@ -132,16 +132,6 @@ export const LimitOrderContent = ({
                     errorMessage && <ErrorDisplay errorMessage={errorMessage} />
         }
 
-        {
-            side === 'short' && tokenB.symbol === 'WBTC' ?
-                <ErrorDisplay errorMessage="LO has been disabled for now, coming back soon" /> : null
-        }
-
-        {
-            side === 'long' && tokenB.symbol === 'WBTC' ?
-                <ErrorDisplay errorMessage="LO has been disabled for now, coming back soon" /> : null
-        }
-
         <Button
             className={twMerge(
                 'w-full justify-center mt-2 mb-1 sm:mb-2',
