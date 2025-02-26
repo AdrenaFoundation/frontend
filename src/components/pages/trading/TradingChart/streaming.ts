@@ -1,3 +1,6 @@
+import { setStreamingTokenPrice } from "@/actions/streamingTokenPrices";
+import store from "@/store/store";
+
 import {
   Bar,
   LibrarySymbolInfo,
@@ -25,6 +28,10 @@ const channelToSubscription = new Map<
   }
 >();
 
+function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
+  return pythStreamingFormat.split("/")[0].split(".")[1];
+}
+
 function handleStreamingData(data: { id: string; p: number; t: number }) {
   const { id, p, t } = data;
 
@@ -33,6 +40,21 @@ function handleStreamingData(data: { id: string; p: number; t: number }) {
 
   const channelString = id;
   const subscriptionItem = channelToSubscription.get(channelString);
+
+  if (
+    [
+      "Crypto.BTC/USD",
+      "Crypto.WBTC/USD",
+      "Crypto.SOL/USD",
+      "Crypto.JITOSOL/USD",
+      "Crypto.USDC/USD",
+      "Crypto.BONK/USD",
+    ].includes(id)
+  ) {
+    store.dispatch(
+      setStreamingTokenPrice(getTokenSymbolFromPythStreamingFormat(id), p),
+    );
+  }
 
   if (!subscriptionItem) {
     return;
