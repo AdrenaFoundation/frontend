@@ -1,6 +1,3 @@
-import { setStreamingTokenPrice } from "@/actions/streamingTokenPrices";
-import store from "@/store/store";
-
 import {
   getPythProgramKeyForCluster,
   PythConnection,
