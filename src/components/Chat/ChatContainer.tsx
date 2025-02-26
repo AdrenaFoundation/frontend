@@ -1,13 +1,21 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+// import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import React from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import cross from '@/../../public/images/Icons/cross.svg';
 import { UserProfileExtended } from '@/types';
 
+// import collapseIcon from '../../../public/images/collapse-all.svg';
+// import groupIcon from '../../../public/images/group.svg';
+// import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Modal from '../common/Modal/Modal';
+import TabSelect from '../common/TabSelect/TabSelect';
+import Nemesis from '../Nemesis/Nemesis';
 import Chat from './Chat';
 
 function ChatContainer({
@@ -23,7 +31,10 @@ function ChatContainer({
     isChatOpen: boolean | null;
     setIsChatOpen: (isOpen: boolean) => void;
 }) {
-    const [showUserList, setShowUserList] = useState(false);
+    const [view, setView] = useState('chat');
+    // const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
+    // const [isOpen, setIsOpen] = useState<boolean | null>(null);
+    const [showUserList] = useState(false);
     const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
 
     const chatHeightCookie = cookies['chat-height'];
@@ -31,9 +42,7 @@ function ChatContainer({
 
     const [height, setHeight] = useState(() => {
         // Initialize with cookie value or default
-        return (
-            chatHeightCookie || Math.round(window.innerHeight * 0.35)
-        );
+        return chatHeightCookie || Math.round(window.innerHeight * 0.35);
     });
 
     const [isDragging, setIsDragging] = useState(false);
@@ -49,8 +58,7 @@ function ChatContainer({
 
             // Opened by default on desktop, otherwise follow what the cookie says
             setIsChatOpen(
-                typeof isOpenCookie === 'undefined' ||
-                isOpenCookie === true,
+                typeof isOpenCookie === 'undefined' || isOpenCookie === true,
             );
             return;
         }
@@ -118,15 +126,24 @@ function ChatContainer({
                         close={() => setIsChatOpen(false)}
                         className="flex flex-col w-full h-[85vh] max-h-[85vh]"
                     >
+                        <TabSelect
+                            tabs={[{ title: 'chat' }, { title: 'N.E.M.E.S.I.S' }]}
+                            selected={view}
+                            onClick={(tab) => setView(tab)}
+                            wrapperClassName="py-2"
+                        />
+
+                        <Nemesis className={view === 'chat' ? 'hidden' : ''} />
+
                         <Chat
                             displaySmileys={false}
                             userProfile={userProfile}
                             wallet={wallet}
                             isOpen={isChatOpen}
                             showUserList={showUserList}
-                            onToggleUserList={() => setShowUserList(!showUserList)}
-                            clickOnHeader={() => setIsChatOpen(!isChatOpen)}
-                            className="bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full"
+                            // onToggleUserList={() => setShowUserList(!showUserList)}
+                            // clickOnHeader={() => setIsChatOpen(!isChatOpen)}
+                            className={view === 'chat' ? '' : 'hidden'}
                         />
                     </Modal>
                 ) : null}
@@ -143,23 +160,56 @@ function ChatContainer({
                     style={{ userSelect: 'none' }}
                 />
             )}
-            <Chat
-                userProfile={userProfile}
-                wallet={wallet}
-                isOpen={isChatOpen}
-                showUserList={showUserList}
-                onToggleUserList={() => setShowUserList(!showUserList)}
-                clickOnHeader={() => {
-                    if (!isDragging) setIsChatOpen(!isChatOpen);
-                }}
+            <div
                 className={twMerge(
-                    'bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none',
-                    isChatOpen ? `h-[${height}px]` : 'h-[3em]',
+                    'bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em]',
+                    isChatOpen ? `max-h-[${height}px]` : 'h-[3em]',
                 )}
                 style={
-                    isChatOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined
+                    isChatOpen
+                        ? { height, userSelect: 'none', marginTop: '4px' }
+                        : undefined
                 }
-            />
+            >
+                {isChatOpen ? <div className="absolute -left-3 -top-3 groupe" onClick={() => setIsChatOpen(!isChatOpen)}>
+                    <div className='flex items-center justify-center w-7 h-7 bg-secondary rounded-full border-2 border-bcolor cursor-pointer groupe:bg-bcolor transition duration-300'>
+                        <Image src={cross} alt="cross" className='w-[0.875rem] h-[0.875rem]' />
+                    </div>
+                </div> : null}
+
+                <TabSelect
+                    tabs={[{ title: 'chat' }, { title: 'N.E.M.E.S.I.S' }]}
+                    selected={view}
+                    onClick={(tab) => {
+                        setView(tab); if (tab === view && isChatOpen) {
+                            setIsChatOpen(false)
+                        } else {
+                            setIsChatOpen(true)
+                        }
+                    }}
+                    wrapperClassName={'py-2'}
+                />
+
+                {/* toggle display prop instead of removing it from the dom to keep the chat log (for now) */}
+                <Nemesis
+                    className={isChatOpen ? (view === 'chat' ? 'hidden' : '') : 'hidden'}
+                />
+
+                {isChatOpen ? (
+                    view === 'chat' ? (
+                        <Chat
+                            userProfile={userProfile}
+                            wallet={wallet}
+                            isOpen={isChatOpen}
+                            showUserList={showUserList}
+                        // onToggleUserList={() => setShowUserList(!showUserList)}
+                        // clickOnHeader={() => {
+                        //     if (!isDragging) setIsChatOpen(!isChatOpen);
+                        // }}
+                        />
+                    ) : null
+                ) : null}
+            </div>
         </div>
     );
 }

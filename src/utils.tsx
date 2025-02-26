@@ -733,6 +733,13 @@ export function getTokenSymbol(symbol: string): string {
   return symbol;
 }
 
+export function getTokenSymbolReverse(symbol: string): string {
+  if (symbol === 'SOL') return 'JITOSOL';
+  if (symbol === 'BTC') return 'WBTC';
+
+  return symbol;
+}
+
 export function formatAndFilterLockedStakes(
   lockedStakes: LockedStakeExtended[] | [],
   lockedStakesTokenSymbol: string,
