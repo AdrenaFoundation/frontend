@@ -1,4 +1,14 @@
-import { setStreamingTokenPrice } from "@/actions/streamingTokenPrices";
+import {
+  getPythProgramKeyForCluster,
+  PythConnection,
+} from "@pythnetwork/client";
+import { PublicKey } from "@solana/web3.js";
+
+import {
+  setStreamingTokenPrice,
+  stopStreamingTokenPrices,
+} from "@/actions/streamingTokenPrices";
+import { PYTH_CONNECTION } from "@/pages/_app";
 import store from "@/store/store";
 
 import {
@@ -8,148 +18,18 @@ import {
   SubscribeBarsCallback,
 } from "../../../../../public/charting_library/charting_library";
 
-//
-// Following https://docs.pyth.network/benchmarks/how-to-create-tradingview-charts#using-datafeed-url-with-charting-library
-//
-
-const streamingUrl =
-  "https://benchmarks.pyth.network/v1/shims/tradingview/streaming";
-
 const channelToSubscription = new Map<
   string,
   {
     subscriberUID: string;
-    lastDailyBar: Bar;
     resolution: ResolutionString;
     handlers: {
       id: string;
       callback: SubscribeBarsCallback;
+      lastBar: Bar;
     }[];
   }
 >();
-
-function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
-  return pythStreamingFormat.split("/")[0].split(".")[1];
-}
-
-function handleStreamingData(data: { id: string; p: number; t: number }) {
-  const { id, p, t } = data;
-
-  const tradePrice = p;
-  const tradeTime = t * 1000; // Multiplying by 1000 to get milliseconds
-
-  const channelString = id;
-  const subscriptionItem = channelToSubscription.get(channelString);
-
-  if (
-    [
-      "Crypto.BTC/USD",
-      "Crypto.WBTC/USD",
-      "Crypto.SOL/USD",
-      "Crypto.JITOSOL/USD",
-      "Crypto.USDC/USD",
-      "Crypto.BONK/USD",
-    ].includes(id)
-  ) {
-    store.dispatch(
-      setStreamingTokenPrice(getTokenSymbolFromPythStreamingFormat(id), p),
-    );
-  }
-
-  if (!subscriptionItem) {
-    return;
-  }
-
-  const lastDailyBar = subscriptionItem.lastDailyBar;
-  const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
-
-  let bar;
-
-  if (tradeTime >= nextDailyBarTime) {
-    bar = {
-      time: nextDailyBarTime,
-      open: tradePrice,
-      high: tradePrice,
-      low: tradePrice,
-      close: tradePrice,
-    };
-  } else {
-    bar = {
-      ...lastDailyBar,
-      high: Math.max(lastDailyBar.high, tradePrice),
-      low: Math.min(lastDailyBar.low, tradePrice),
-      close: tradePrice,
-    };
-  }
-
-  subscriptionItem.lastDailyBar = bar;
-
-  // Send data to every subscriber of that symbol
-  subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
-  channelToSubscription.set(channelString, subscriptionItem);
-}
-
-function startStreaming(retries = 3, delay = 3000) {
-  fetch(streamingUrl)
-    .then((response) => {
-      if (!response.body) return;
-
-      const reader = response.body.getReader();
-
-      function streamData() {
-        reader
-          .read()
-          .then(({ value, done }) => {
-            if (done) {
-              console.error("[stream] Streaming ended.");
-              return;
-            }
-
-            // Assuming the streaming data is separated by line breaks
-            const dataStrings = new TextDecoder().decode(value).split("\n");
-            dataStrings.forEach((dataString) => {
-              const trimmedDataString = dataString.trim();
-
-              if (trimmedDataString) {
-                try {
-                  const jsonData = JSON.parse(trimmedDataString);
-
-                  handleStreamingData(jsonData);
-                } catch {
-                  // Ignore any invalid JSON
-                }
-              }
-            });
-
-            streamData(); // Continue processing the stream
-          })
-          .catch((error) => {
-            console.error("[stream] Error reading from stream:", error);
-            attemptReconnect(retries, delay);
-          });
-      }
-
-      streamData();
-    })
-    .catch((error) => {
-      console.error(
-        "[stream] Error fetching from the streaming endpoint:",
-        error,
-      );
-    });
-
-  function attemptReconnect(retriesLeft: number, delay: number) {
-    if (retriesLeft > 0) {
-      console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
-
-      setTimeout(() => {
-        startStreaming(retriesLeft - 1, delay);
-      }, delay);
-    } else {
-      console.error("[stream] Maximum reconnection attempts reached.");
-    }
-  }
-}
 
 function getNextDailyBarTime(barTime: number) {
   const date = new Date(barTime * 1000);
@@ -159,43 +39,129 @@ function getNextDailyBarTime(barTime: number) {
   return date.getTime() / 1000;
 }
 
+function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
+  return pythStreamingFormat.split("/")[0].split(".")[1];
+}
+
+// Only null in server side
+const pythConnection =
+  PYTH_CONNECTION &&
+  new PythConnection(PYTH_CONNECTION, getPythProgramKeyForCluster("pythnet"));
+
+let pythConnectionStarted = false;
+
+function startStreaming() {
+  if (pythConnectionStarted || !pythConnection) return;
+
+  pythConnectionStarted = true;
+
+  pythConnection.feedIds = [
+    new PublicKey("Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr"), // WBTC
+    new PublicKey("GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"), // BTC
+    new PublicKey("H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"), // SOL
+    new PublicKey("7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk"), // JITOSOL
+    new PublicKey("Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD"), // USDC
+    new PublicKey("8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"), // BONK
+  ];
+
+  pythConnection.onPriceChange((product, price) => {
+    // sample output:
+    // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
+    const subscriptionItem = channelToSubscription.get(product.symbol);
+
+    if (!price.price) {
+      return;
+    }
+
+    store.dispatch(
+      setStreamingTokenPrice(
+        getTokenSymbolFromPythStreamingFormat(product.symbol),
+        price.price,
+      ),
+    );
+
+    if (!subscriptionItem) {
+      return;
+    }
+
+    subscriptionItem.handlers.forEach((handler) => {
+      if (!price.price) return;
+
+      const lastBar = handler.lastBar;
+      const nextBarTime = getNextDailyBarTime(lastBar.time);
+
+      let bar: Bar;
+
+      const tradeTime = Number(price.timestamp.toString()) * 1000; // Multiplying by 1000 to get milliseconds
+
+      if (tradeTime >= nextBarTime) {
+        bar = {
+          time: nextBarTime,
+          open: price.price,
+          high: price.price,
+          low: price.price,
+          close: price.price,
+        };
+      } else {
+        bar = {
+          ...lastBar,
+          high: Math.max(lastBar.high, price.price),
+          low: Math.min(lastBar.low, price.price),
+          close: price.price,
+        };
+      }
+
+      handler.lastBar = bar;
+
+      handler.callback(bar);
+    });
+
+    channelToSubscription.set(product.symbol, subscriptionItem);
+  });
+
+  // Start listening for price change events.
+  pythConnection.start();
+}
+
 export function subscribeOnStream(
   symbolInfo: LibrarySymbolInfo,
   resolution: ResolutionString,
   onRealtimeCallback: SubscribeBarsCallback,
   subscriberUID: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onResetCacheNeededCallback: () => void,
-  lastDailyBar: Bar,
+  lastBar: Bar,
 ) {
   const channelString = symbolInfo.ticker;
-
-  if (!channelString) return;
-
   const handler = {
     id: subscriberUID,
     callback: onRealtimeCallback,
-    lastDailyBar,
+    paused: false,
+    lastBar,
   };
+
+  if (!channelString) return;
 
   let subscriptionItem = channelToSubscription.get(channelString);
 
-  subscriptionItem = {
-    subscriberUID,
-    resolution,
-    lastDailyBar,
-    handlers: [handler],
-  };
+  if (subscriptionItem) {
+    subscriptionItem.handlers.push(handler);
+  } else {
+    subscriptionItem = {
+      subscriberUID,
+      resolution,
+      handlers: [handler],
+    };
+  }
 
   channelToSubscription.set(channelString, subscriptionItem);
+
+  if (!pythConnectionStarted) startStreaming();
 
   console.log(
     "[subscribeBars]: Subscribe to streaming. Channel:",
     channelString,
+    subscriberUID,
   );
-
-  // Start streaming when the first subscription is made
-  startStreaming();
 }
 
 export function unsubscribeFromStream(subscriberUID: string) {
@@ -203,18 +169,45 @@ export function unsubscribeFromStream(subscriberUID: string) {
   for (const channelString of channelToSubscription.keys()) {
     const subscriptionItem = channelToSubscription.get(channelString);
 
-    const handlerIndex = subscriptionItem?.handlers.findIndex(
-      (handler) => handler.id === subscriberUID,
+    if (!subscriptionItem) continue;
+
+    const before = subscriptionItem.handlers.length;
+
+    // Remove handler with id === subscriberUID
+    subscriptionItem.handlers = subscriptionItem.handlers.filter(
+      (handler) => handler.id !== subscriberUID,
     );
 
-    if (handlerIndex !== -1) {
-      // Unsubscribe from the channel if it is the last handler
+    if (subscriptionItem.handlers.length < before) {
       console.log(
         "[unsubscribeBars]: Unsubscribe from streaming. Channel:",
         channelString,
+        subscriberUID,
       );
 
-      channelToSubscription.delete(channelString);
+      if (subscriptionItem.handlers.length === 0) {
+        console.log(
+          "[unsubscribeBars]: Delete the channel string:",
+          channelString,
+        );
+        channelToSubscription.delete(channelString);
+      } else {
+        console.log(
+          "[unsubscribeBars]: Update the channel string:",
+          channelString,
+          subscriptionItem,
+        );
+        channelToSubscription.set(channelString, subscriptionItem);
+      }
+    } else {
+      // No change
     }
+  }
+
+  if (channelToSubscription.size === 0 && pythConnection) {
+    console.log("[Chart] No one subscribed to the streaming. Stopping...");
+    pythConnection.stop();
+    pythConnectionStarted = false;
+    store.dispatch(stopStreamingTokenPrices());
   }
 }
