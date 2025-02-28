@@ -175,6 +175,16 @@ export class AdrenaClient {
     )[0];
   };
 
+  public getReferrerRewardTokenVault = () => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("referrer_reward_token_vault"),
+        this.getUsdcToken().mint.toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
   protected async checkATAAddressInitializedAndCreatePreInstruction({
     mint,
     owner,
@@ -559,6 +569,10 @@ export class AdrenaClient {
     return {
       version: "version" in p ? p.version : 1,
       pubkey: userProfilePda,
+      claimableReferralFeeUsd:
+        "claimableReferralFeeUsd" in p
+          ? nativeToUi(p.claimableReferralFeeUsd, USD_DECIMALS)
+          : 0,
       // Transform the buffer of bytes to a string
       nickname: p.nickname.value
         .map((byte) => String.fromCharCode(byte))
@@ -2566,6 +2580,47 @@ export class AdrenaClient {
         .transaction(),
       notification,
     });
+  }
+
+  public async claimReferralRewards({
+    notification,
+  }: {
+    notification: MultiStepNotification;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error("adrena program not ready");
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
+        owner,
+        mint: this.getUsdcToken().mint,
+        preInstructions,
+      });
+
+    const userProfilePda = this.getUserProfilePda(owner);
+
+    const transaction = await this.adrenaProgram.methods
+      .claimReferralFee()
+      .accountsStrict({
+        referrer: owner,
+        receivingAccount,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        referrerProfile: userProfilePda,
+        referrerRewardTokenVault: this.getReferrerRewardTokenVault(),
+      })
+      .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({ transaction, notification });
   }
 
   public async claimUserVest({
@@ -4692,6 +4747,43 @@ export class AdrenaClient {
       pubkey: staking.publicKey,
       ...staking.account,
     }));
+  }
+
+  public async loadAllUserProfileWithReferrer(
+    referrerProfileFilter: PublicKey | null,
+  ): Promise<UserProfileExtended[] | null> {
+    if (!this.readonlyConnection || referrerProfileFilter === null) return null;
+
+    const userProfiles = await this.readonlyConnection.getProgramAccounts(
+      AdrenaClient.programId,
+      {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 400 }, // Ensure correct size for V2
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 336,
+              bytes: bs58.encode(referrerProfileFilter.toBuffer()),
+            },
+          }, // Filter by referrer_profile
+        ],
+      },
+    );
+
+    if (!userProfiles.length) {
+      return [];
+    }
+
+    return userProfiles
+      .map((account) => {
+        const p = this.decodeUserProfileAnyVersion(account.account);
+
+        if (!p) return null;
+
+        return this.extendUserProfileInfo(p, account.pubkey);
+      })
+      .filter((p) => p) as UserProfileExtended[];
   }
 
   public async loadAllUserProfile(): Promise<UserProfileExtended[] | null> {
