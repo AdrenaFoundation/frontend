@@ -227,6 +227,7 @@ export type UserProfileExtended = {
   createdAt: number;
   owner: PublicKey;
   referrerProfile: PublicKey | null;
+  claimableReferralFeeUsd: number;
   // Aggregates
   totalPnlUsd: number;
   // Only accounts for opens
