@@ -9455,6 +9455,15 @@ export type Adrena = {
             "type": "u64"
           },
           {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
             "name": "whitelistedSwapper",
             "type": "publicKey"
           },
@@ -9912,11 +9921,15 @@ export type Adrena = {
             "type": "u64"
           },
           {
+            "name": "totalReferralFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding2",
             "type": {
               "array": [
                 "u8",
-                24
+                16
               ]
             }
           }
@@ -22740,6 +22753,15 @@ export const IDL: Adrena = {
             "type": "u64"
           },
           {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
             "name": "whitelistedSwapper",
             "type": "publicKey"
           },
@@ -23197,11 +23219,15 @@ export const IDL: Adrena = {
             "type": "u64"
           },
           {
+            "name": "totalReferralFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding2",
             "type": {
               "array": [
                 "u8",
-                24
+                16
               ]
             }
           }

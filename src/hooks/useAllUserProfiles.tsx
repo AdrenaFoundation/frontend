@@ -1,7 +1,7 @@
+import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import { UserProfileExtended } from '@/types';
-import { PublicKey } from '@solana/web3.js';
 
 export function useAllUserProfiles({
     referrerProfileFilter,

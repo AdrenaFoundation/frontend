@@ -500,7 +500,8 @@ export class AdrenaClient {
   // false = profile not initialized
   public async loadUserProfile(
     user: PublicKey,
-  ): Promise<UserProfileExtended | null | false> {
+    onProfileChange?: (profile: UserProfileExtended | false | null) => void,
+  ): Promise<UserProfileExtended | false | null> {
     if (!this.readonlyAdrenaProgram) return null;
 
     const userProfilePda = this.getUserProfilePda(user);
@@ -518,12 +519,40 @@ export class AdrenaClient {
     }
 
     const p = this.decodeUserProfileAnyVersion(accountInfo);
+    if (p === false) return false;
 
-    if (p === false) {
-      return false;
+    const extendedProfile = this.extendUserProfileInfo(p, userProfilePda);
+
+    if (!onProfileChange) {
+      return extendedProfile;
     }
 
-    return this.extendUserProfileInfo(p, userProfilePda);
+    // Set up a listener to auto-update on changes
+    this.readonlyAdrenaProgram.provider.connection.onAccountChange(
+      userProfilePda,
+      (updatedAccountInfo) => {
+        if (!updatedAccountInfo || !updatedAccountInfo.data) {
+          onProfileChange?.(false);
+          return;
+        }
+
+        const updatedProfile =
+          this.decodeUserProfileAnyVersion(updatedAccountInfo);
+        if (updatedProfile === false) {
+          onProfileChange?.(false);
+        } else {
+          onProfileChange?.(
+            this.extendUserProfileInfo(updatedProfile, userProfilePda),
+          );
+        }
+      },
+      {
+        commitment: "processed",
+        encoding: "base64",
+      },
+    );
+
+    return extendedProfile;
   }
 
   protected decodeUserProfileAnyVersion(
@@ -572,6 +601,10 @@ export class AdrenaClient {
       claimableReferralFeeUsd:
         "claimableReferralFeeUsd" in p
           ? nativeToUi(p.claimableReferralFeeUsd, USD_DECIMALS)
+          : 0,
+      totalReferralFeeUsd:
+        "totalReferralFeeUsd" in p
+          ? nativeToUi(p.totalReferralFeeUsd, USD_DECIMALS)
           : 0,
       // Transform the buffer of bytes to a string
       nickname: p.nickname.value

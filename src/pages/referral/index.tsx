@@ -1,34 +1,45 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import copyIcon from '@/../../public/images/copy.svg';
 import banner from '@/../../public/images/expanse-banner.jpg';
 import usdcLogo from '@/../../public/images/usdc.svg';
 import Button from '@/components/common/Button/Button';
+import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PageProps } from '@/types';
-import { useRouter } from 'next/router';
-import copyIcon from '@/../../public/images/copy.svg';
-import { addNotification } from '@/utils';
-import Modal from '@/components/common/Modal/Modal';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
-import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import { PageProps } from '@/types';
+import { addNotification } from '@/utils';
 
 export default function Referral({
     userProfile,
+    triggerUserProfileReload,
     showFeesInPnl,
 }: PageProps) {
     const router = useRouter();
     const link = useMemo(() => userProfile ? `https://app.adrena.xyz/trade?referral=${encodeURIComponent(userProfile.nickname)}` : '', [userProfile]);
     const [activeProfile, setActiveProfile] = useState(null);
 
-    const { allUserProfiles, triggerAllUserProfilesReload } =
+    const { allUserProfiles } =
         useAllUserProfiles({
             referrerProfileFilter: userProfile ? userProfile.pubkey : null,
         });
+
+    useEffect(() => {
+        // Force user profile to reload more often, as it contains information we want to display in real-time
+        const interval = setInterval(() => {
+            triggerUserProfileReload();
+        }, 10000);
+
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <>
@@ -139,7 +150,7 @@ export default function Referral({
 
                                     <div className='flex items-center justify-center gap-2'>
                                         <FormatNumber
-                                            nb={100}
+                                            nb={userProfile ? userProfile.totalReferralFeeUsd : 0}
                                             format="currency"
                                             className="text-3xl text"
                                             precision={6}
