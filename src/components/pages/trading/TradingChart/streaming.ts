@@ -1,5 +1,7 @@
 import {
   getPythProgramKeyForCluster,
+  PriceData,
+  Product,
   PythConnection,
 } from "@pythnetwork/client";
 import { PublicKey } from "@solana/web3.js";
@@ -46,7 +48,28 @@ function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
 // Only null in server side
 const pythConnection =
   PYTH_CONNECTION &&
-  new PythConnection(PYTH_CONNECTION, getPythProgramKeyForCluster("pythnet"));
+  new PythConnection(
+    PYTH_CONNECTION,
+    getPythProgramKeyForCluster("pythnet"),
+    "finalized",
+    [
+      new PublicKey("Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr"), // WBTC
+      new PublicKey("GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"), // BTC
+      new PublicKey("H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"), // SOL
+      new PublicKey("7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk"), // JITOSOL
+      new PublicKey("Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD"), // USDC
+      new PublicKey("8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"), // BONK
+    ],
+    [
+      // When adding more prices, need to find the associated products keys
+      new PublicKey("F8EzAa4p8bu4RjfQpRxuD18odVPyYFT8F1dSEZdET9QX"),
+      new PublicKey("4aDoSXJ5o3AuvL7QFeR6h44jALQfTmUUCTVGDD6aoJTM"),
+      new PublicKey("ALP8SdU9oARYVLgLR7LrqMNCYBnhtnQz1cj6bwgwQmgj"),
+      new PublicKey("AEXiPjykV35xw8oqqpBRfEs1mfXQdkgKvm5BaHmGLFki"),
+      new PublicKey("8GWTTbNiXdmyZREXbjsZBmCRuzdPrW55dnZGDkTRjWvb"),
+      new PublicKey("FerFD54J6RgmQVCR5oNgpzXmz8BW2eBNhhirb1d5oifo"),
+    ],
+  );
 
 let pythConnectionStarted = false;
 
@@ -55,16 +78,7 @@ function startStreaming() {
 
   pythConnectionStarted = true;
 
-  pythConnection.feedIds = [
-    new PublicKey("Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr"), // WBTC
-    new PublicKey("GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"), // BTC
-    new PublicKey("H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"), // SOL
-    new PublicKey("7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk"), // JITOSOL
-    new PublicKey("Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD"), // USDC
-    new PublicKey("8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"), // BONK
-  ];
-
-  pythConnection.onPriceChange((product, price) => {
+  pythConnection.onPriceChange((product: Product, price: PriceData) => {
     // sample output:
     // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
     const subscriptionItem = channelToSubscription.get(product.symbol);
