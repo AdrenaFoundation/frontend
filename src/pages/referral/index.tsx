@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import copyIcon from '@/../../public/images/copy.svg';
-import banner from '@/../../public/images/expanse-banner.jpg';
+import banner from '@/../../public/images/referral-wallpaper.jpg';
 import usdcLogo from '@/../../public/images/usdc.svg';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -19,7 +19,6 @@ import { addNotification } from '@/utils';
 
 export default function Referral({
     userProfile,
-    triggerUserProfileReload,
     showFeesInPnl,
 }: PageProps) {
     const router = useRouter();
@@ -31,21 +30,11 @@ export default function Referral({
             referrerProfileFilter: userProfile ? userProfile.pubkey : null,
         });
 
-    useEffect(() => {
-        // Force user profile to reload more often, as it contains information we want to display in real-time
-        const interval = setInterval(() => {
-            triggerUserProfileReload();
-        }, 10000);
-
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     return (
         <>
             <div className="flex flex-col p-4">
                 <StyledContainer className="p-0 overflow-hidden" bodyClassName='p-0 items-center justify-center'>
-                    <div className="relative flex flex-col items-center w-full h-[15em] justify-center border-b">
+                    <div className="relative flex flex-col items-center w-full h-[17em] justify-center border-b">
                         <div className="">
                             <AnimatePresence>
                                 <motion.span
@@ -59,6 +48,7 @@ export default function Referral({
                                         src={banner}
                                         alt="referral banner"
                                         className="absolute top-0 left-0 w-full h-full object-cover opacity-30 rounded-tl-xl rounded-tr-xl"
+                                        style={{ objectPosition: "50% 80%" }}
                                     />
                                 </motion.span>
                             </AnimatePresence>
@@ -77,7 +67,7 @@ export default function Referral({
                                 SPREAD THE WORD
                             </h1>
 
-                            <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>And Receive 10% of the fees</h4>
+                            <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>And Receive 10% of the trading fees</h4>
                         </div>
                     </div>
 
@@ -125,6 +115,7 @@ export default function Referral({
                                     </div>
 
                                     <Button
+                                        disabled={userProfile ? userProfile.claimableReferralFeeUsd === 0 : true}
                                         className="w-[20em]"
                                         size="lg"
                                         title='Claim'
