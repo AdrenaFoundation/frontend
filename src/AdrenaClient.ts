@@ -3728,6 +3728,72 @@ export class AdrenaClient {
     });
   }
 
+  public async distributeFees({
+    notification,
+  }: {
+    notification: MultiStepNotification;
+  }) {
+    const transaction = new Transaction();
+
+    transaction.add(await this.buildDistributeFeesIx());
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+  }
+
+  public async buildDistributeFeesIx() {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error("adrena program not ready");
+    }
+
+    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const lmStaking = this.getStakingPda(this.lmTokenMint);
+    const lpStaking = this.getStakingPda(this.lpTokenMint);
+    const lmStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lmStaking);
+    const lpStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lpStaking);
+
+    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
+    const stakingRewardTokenCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
+
+    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
+      stakingRewardTokenMint,
+    );
+
+    return this.adrenaProgram.methods
+      .distributeFees()
+      .accountsStrict({
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
+        feeRedistributionMint: this.cortex.feeRedistributionMint,
+        lmTokenMint: this.lmTokenMint,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        caller,
+        adrenaProgram: AdrenaClient.programId,
+        pool: this.mainPool.pubkey,
+        lpTokenMint: this.lpTokenMint,
+        lpStaking,
+        lmStaking,
+        lmStakingRewardTokenVault,
+        lpStakingRewardTokenVault,
+        referrerRewardTokenVault: this.getReferrerRewardTokenVault(),
+        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
+        stakingRewardTokenCustodyOracle:
+          stakingRewardTokenCustodyAccount.nativeObject.oracle,
+        stakingRewardTokenCustodyTokenAccount,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
+  }
+
   public async addGenesisLiquidity({
     amountIn,
     minLpAmountOut,
