@@ -498,13 +498,23 @@ export class AdrenaClient {
   // Provide alternative user if you wanna get the profile of a specific user
   // null = not ready
   // false = profile not initialized
-  public async loadUserProfile(
-    user: PublicKey,
-    onProfileChange?: (profile: UserProfileExtended | false | null) => void,
-  ): Promise<UserProfileExtended | false | null> {
+  public async loadUserProfile({
+    onProfileChange,
+    ...params
+  }: // Either provide the user wallet you want to load the profile for, or directly the profile pda
+  (| {
+        user: PublicKey;
+      }
+    | {
+        profile: PublicKey;
+      }
+  ) & {
+    onProfileChange?: (profile: UserProfileExtended | false | null) => void;
+  }): Promise<UserProfileExtended | false | null> {
     if (!this.readonlyAdrenaProgram) return null;
 
-    const userProfilePda = this.getUserProfilePda(user);
+    const userProfilePda =
+      "user" in params ? this.getUserProfilePda(params.user) : params.profile;
 
     // Fetch raw account data
     const accountInfo =
@@ -1484,7 +1494,9 @@ export class AdrenaClient {
         mint: custody.mint,
         preInstructions,
       }),
-      this.loadUserProfile(position.owner),
+      this.loadUserProfile({
+        user: position.owner,
+      }),
     ]);
 
     console.log("Close long position:", {
@@ -1581,7 +1593,7 @@ export class AdrenaClient {
         mint: collateralCustody.mint,
         preInstructions,
       }),
-      this.loadUserProfile(position.owner),
+      this.loadUserProfile({ user: position.owner }),
     ]);
 
     return this.signAndExecuteTxAlternative({
@@ -1739,7 +1751,7 @@ export class AdrenaClient {
     // Handle automatic profile creation or update when a referrer is set
     //
     if (referrerProfile) {
-      const userProfileAccount = await this.loadUserProfile(owner);
+      const userProfileAccount = await this.loadUserProfile({ user: owner });
 
       // If user_profile doesn't exist, create it
       if (userProfileAccount === false) {
@@ -1939,7 +1951,7 @@ export class AdrenaClient {
     // Handle automatic profile creation or update when a referrer is set
     //
     if (referrerProfile) {
-      const userProfileAccount = await this.loadUserProfile(owner);
+      const userProfileAccount = await this.loadUserProfile({ user: owner });
 
       // If user_profile doesn't exist, create it
       if (userProfileAccount === false) {
@@ -2155,7 +2167,9 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const userProfileAccount = await this.loadUserProfile(wallet.publicKey);
+    const userProfileAccount = await this.loadUserProfile({
+      user: wallet.publicKey,
+    });
 
     if (!userProfileAccount) {
       throw new Error("User profile not found");

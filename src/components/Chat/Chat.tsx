@@ -231,7 +231,7 @@ function Chat({
 
         profileLoading = wallet;
 
-        window.adrena.client.loadUserProfile(new PublicKey(wallet))
+        window.adrena.client.loadUserProfile({ user: new PublicKey(wallet) })
             .then((profile) => {
                 setProfileCache((prev) => ({
                     ...prev,
@@ -245,7 +245,7 @@ function Chat({
             const keys = await kv.keys(`connected:${roomId}:*`);
             const users = await Promise.all(keys.map(async (key) => {
                 const wallet = key.split(':')[2];
-                const profile = await window.adrena.client.loadUserProfile(new PublicKey(wallet));
+                const profile = await window.adrena.client.loadUserProfile({ user: new PublicKey(wallet) });
                 if (profile) {
                     setProfileCache(prev => ({
                         ...prev,

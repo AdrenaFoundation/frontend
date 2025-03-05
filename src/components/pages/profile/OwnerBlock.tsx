@@ -15,7 +15,6 @@ import { PROFILE_PICTURES, WALLPAPER } from '@/constant';
 import { ProfilePicture, UserProfileExtended, Wallpaper } from '@/types';
 
 import walletIcon from '../../../../public/images/wallet-icon.svg';
-import Referral from './Referral';
 
 export default function OwnerBloc({
   userProfile,
@@ -32,6 +31,7 @@ export default function OwnerBloc({
   walletPubkey?: PublicKey;
   readonly?: boolean;
 }) {
+  const [isUpdatingReferrer, setIsUpdatingReferrer] = useState<boolean>(false);
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<Record<string, boolean>>({});
   const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
   const [updatedNickname, setUpdatedNickname] = useState<string | null>(userProfile.nickname);
@@ -208,23 +208,16 @@ export default function OwnerBloc({
               </Tippy>
             ) : null}
           </div>
+
+          {!readonly && userProfile.version > 1 ? <div className="absolute top-2 right-4 z-20 ">
+            <div
+              className='text-xs opacity-70 cursor-pointer flex hover:opacity-100'
+              onClick={() => setIsUpdatingMetadata(true)}
+            >
+              Edit wallpaper
+            </div>
+          </div> : null}
         </div>
-
-        {!readonly ? <>
-          <Referral
-            className='h-auto w-auto flex absolute right-0 bottom-0 z-20'
-            userProfile={userProfile}
-          />
-        </> : null}
-
-        {!readonly && userProfile.version > 1 ? <div className="absolute top-2 right-4 z-20 ">
-          <div
-            className='text-xs opacity-70 cursor-pointer flex hover:opacity-100'
-            onClick={() => setIsUpdatingMetadata(true)}
-          >
-            Edit wallpaper
-          </div>
-        </div> : null}
       </div>
 
       <AnimatePresence>

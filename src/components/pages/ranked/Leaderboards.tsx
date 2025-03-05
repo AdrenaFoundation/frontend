@@ -243,7 +243,7 @@ export default function Leaderboards() {
                                 isMobile={isMobile}
                                 isLarge={isLarge}
                                 onClickUserProfile={async (wallet: PublicKey) => {
-                                    const p = await window.adrena.client.loadUserProfile(wallet);
+                                    const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
                                     setActiveProfile(p !== false ? p : null);
                                 }}
@@ -351,7 +351,7 @@ export default function Leaderboards() {
                                 isLarge={isLarge}
                                 data={leaderboardData.seasonLeaderboard}
                                 onClickUserProfile={async (wallet: PublicKey) => {
-                                    const p = await window.adrena.client.loadUserProfile(wallet);
+                                    const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
                                     setActiveProfile(p !== false ? p : null);
                                 }}

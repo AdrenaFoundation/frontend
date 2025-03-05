@@ -519,7 +519,7 @@ export default function Awakening({
             const profile = allUserProfilesMetadata.find((p) => p.nickname === username);
 
             if (profile) {
-                const p = await window.adrena.client.loadUserProfile(profile.owner);
+                const p = await window.adrena.client.loadUserProfile({ user: profile.owner });
 
                 setProfile(p !== false ? p : null);
             }

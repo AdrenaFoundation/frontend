@@ -22,10 +22,10 @@ export default function useUserProfile(walletAddress: string | null): {
     }
 
     setUserProfile(
-      await window.adrena.client.loadUserProfile(
-        new PublicKey(walletAddress),
-        setUserProfile,
-      ),
+      await window.adrena.client.loadUserProfile({
+        user: new PublicKey(walletAddress),
+        onProfileChange: setUserProfile,
+      }),
     );
   }, [walletAddress]);
 
