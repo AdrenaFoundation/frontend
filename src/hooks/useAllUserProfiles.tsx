@@ -8,11 +8,11 @@ export function useAllUserProfiles({
 }: {
     referrerProfileFilter?: PublicKey | null;
 }): {
-    allUserProfiles: UserProfileExtended[];
+    allUserProfiles: UserProfileExtended[] | null;
     triggerAllUserProfilesReload: () => void;
 } {
     const [trickReload, triggerReload] = useState<number>(0);
-    const [allUserProfiles, setAllUserProfiles] = useState<UserProfileExtended[]>([]);
+    const [allUserProfiles, setAllUserProfiles] = useState<UserProfileExtended[] | null>(null);
 
     useEffect(() => {
         const loadAllUserProfiles = async () => {
@@ -33,7 +33,7 @@ export function useAllUserProfiles({
 
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [trickReload, window.adrena.client.readonlyConnection]);
+    }, [trickReload, window.adrena.client.readonlyConnection, referrerProfileFilter]);
 
     return {
         allUserProfiles,

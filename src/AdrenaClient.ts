@@ -1545,6 +1545,8 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
+    preInstructions.push(await this.buildDistributeFeesIx());
+
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .closePositionLong({
@@ -1636,6 +1638,8 @@ export class AdrenaClient {
       }),
       this.loadUserProfile({ user: position.owner }),
     ]);
+
+    preInstructions.push(await this.buildDistributeFeesIx());
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
@@ -3791,9 +3795,7 @@ export class AdrenaClient {
   }: {
     notification: MultiStepNotification;
   }) {
-    const transaction = new Transaction();
-
-    transaction.add(await this.buildDistributeFeesIx());
+    const transaction = await this.buildDistributeFeesIx();
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -3822,6 +3824,11 @@ export class AdrenaClient {
 
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
+    );
+
+    console.log(
+      "getReferrerRewardTokenVault",
+      this.getReferrerRewardTokenVault().toBase58(),
     );
 
     return this.adrenaProgram.methods
