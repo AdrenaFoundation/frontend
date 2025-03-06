@@ -502,7 +502,8 @@ export class AdrenaClient {
     onProfileChange,
     ...params
   }: // Either provide the user wallet you want to load the profile for, or directly the profile pda
-  (| {
+  (
+    | {
         user: PublicKey;
       }
     | {
@@ -2649,6 +2650,10 @@ export class AdrenaClient {
         mint: this.getUsdcToken().mint,
         preInstructions,
       });
+
+    const distributeFeesIx = await this.buildDistributeFeesIx();
+
+    preInstructions.push(distributeFeesIx);
 
     const userProfilePda = this.getUserProfilePda(owner);
 
