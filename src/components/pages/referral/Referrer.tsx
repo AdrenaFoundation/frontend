@@ -69,7 +69,7 @@ export default function Referrer({
                     title='Claim'
                     onClick={async () => {
                         const notification =
-                            MultiStepNotification.newForRegularTransaction('Claim referrer pending rewards').fire();
+                            MultiStepNotification.newForRegularTransaction('Claim rewards').fire();
 
                         try {
                             await window.adrena.client.claimReferralRewards({

@@ -90,12 +90,8 @@ export default function LongShortTradingInputs({
 
     const referrerNickname = query.referral;
 
-    console.log('REFERRER NICKNAME', referrerNickname);
-
     // Look for a user profile with that nickname
     const p = await window.adrena.client.loadUserProfileByNickname(referrerNickname);
-
-    console.log('USER PROFILE WITH NICKNAME', p);
 
     return p;
   }, [query.referral]);
