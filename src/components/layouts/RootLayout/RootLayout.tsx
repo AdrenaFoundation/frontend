@@ -10,6 +10,7 @@ import { twMerge } from 'tailwind-merge';
 
 import lockIcon from '@/../public/images/Icons/lock.svg';
 import monitorIcon from '@/../public/images/Icons/monitor-icon.svg';
+// import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import tradeIcon from '@/../public/images/Icons/trade-icon.svg';
 import trophyIcon from '@/../public/images/Icons/trophy.svg';
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
@@ -101,6 +102,7 @@ export default function RootLayout({
       icon: window.adrena.client.alpToken.image,
     },
     { name: 'Monitor', link: '/monitoring', icon: monitorIcon },
+    // { name: 'Referral', link: '/referral', icon: shareIcon },
     { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
     { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true },
   ]);

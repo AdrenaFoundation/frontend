@@ -34,9 +34,9 @@ export default function OtherUserProfile() {
       try {
         const pubkey = new PublicKey(otherUser as string);
 
-        const otherUserProfile = await window.adrena.client.loadUserProfile(
-          pubkey,
-        );
+        const otherUserProfile = await window.adrena.client.loadUserProfile({
+          user: pubkey,
+        });
 
         if (otherUserProfile === false) {
           setOtherUserProfile(false);

@@ -76,6 +76,7 @@ export default function Profile({
         profilePicture: 0,
         wallpaper: 0,
         title: 0,
+        referrerProfile: null,
       });
 
       triggerUserProfileReload();
