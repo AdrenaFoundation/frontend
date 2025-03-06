@@ -340,8 +340,6 @@ export default function LongShortTradingInputs({
     try {
       const r = await referrer;
 
-      console.log('>>>>USE REFERRER', r, r ? r.pubkey.toBase58() : null);
-
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
           owner: new PublicKey(wallet.publicKey),

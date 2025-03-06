@@ -1545,7 +1545,7 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
-    preInstructions.push(await this.buildDistributeFeesIx());
+    // preInstructions.push(await this.buildDistributeFeesIx());
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
@@ -1639,7 +1639,7 @@ export class AdrenaClient {
       this.loadUserProfile({ user: position.owner }),
     ]);
 
-    preInstructions.push(await this.buildDistributeFeesIx());
+    // preInstructions.push(await this.buildDistributeFeesIx());
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
