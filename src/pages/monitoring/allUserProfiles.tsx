@@ -73,7 +73,7 @@ export default function AllUserProfiles({
     useEffect(() => {
         if (view !== 'userProfiles') return;
 
-        const filteredProfiles = allUserProfiles.filter((profile) => {
+        const filteredProfiles = (allUserProfiles ?? []).filter((profile) => {
             const ownerCondition =
                 ownerFilter === '' ||
                 profile.pubkey
