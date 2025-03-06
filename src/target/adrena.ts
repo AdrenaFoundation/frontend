@@ -1,5 +1,5 @@
 export type Adrena = {
-  "version": "1.1.9",
+  "version": "1.2.0",
   "name": "adrena",
   "instructions": [
     {
@@ -9455,11 +9455,15 @@ export type Adrena = {
             "type": "u64"
           },
           {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding1",
             "type": {
               "array": [
                 "u8",
-                16
+                8
               ]
             }
           },
@@ -11275,6 +11279,10 @@ export type Adrena = {
           },
           {
             "name": "lpCirculatingSupply",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
             "type": "u64"
           }
         ]
@@ -13297,7 +13305,7 @@ export type Adrena = {
 };
 
 export const IDL: Adrena = {
-  "version": "1.1.9",
+  "version": "1.2.0",
   "name": "adrena",
   "instructions": [
     {
@@ -22753,11 +22761,15 @@ export const IDL: Adrena = {
             "type": "u64"
           },
           {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding1",
             "type": {
               "array": [
                 "u8",
-                16
+                8
               ]
             }
           },
@@ -24573,6 +24585,10 @@ export const IDL: Adrena = {
           },
           {
             "name": "lpCirculatingSupply",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
             "type": "u64"
           }
         ]

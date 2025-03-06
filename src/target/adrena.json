@@ -1,5 +1,5 @@
 {
-  "version": "1.1.9",
+  "version": "1.2.0",
   "name": "adrena",
   "instructions": [
     {
@@ -9455,11 +9455,15 @@
             "type": "u64"
           },
           {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding1",
             "type": {
               "array": [
                 "u8",
-                16
+                8
               ]
             }
           },
@@ -11275,6 +11279,10 @@
           },
           {
             "name": "lpCirculatingSupply",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
             "type": "u64"
           }
         ]
