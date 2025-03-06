@@ -31,7 +31,6 @@ export default function OwnerBloc({
   walletPubkey?: PublicKey;
   readonly?: boolean;
 }) {
-  const [isUpdatingReferrer, setIsUpdatingReferrer] = useState<boolean>(false);
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<Record<string, boolean>>({});
   const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
   const [updatedNickname, setUpdatedNickname] = useState<string | null>(userProfile.nickname);

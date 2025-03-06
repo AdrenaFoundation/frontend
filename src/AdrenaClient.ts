@@ -495,6 +495,46 @@ export class AdrenaClient {
     return limitOrderBookExtended;
   }
 
+  public async loadUserProfileByNickname(
+    nickname: string,
+  ): Promise<UserProfileExtended | false | null> {
+    if (!this.readonlyConnection) return null;
+
+    const buffer = new Uint8Array(32);
+    const nicknameBuffer = Buffer.from(nickname, "utf-8");
+
+    // Recreate a LimitedString
+    buffer.set(nicknameBuffer.slice(0, 31), 0);
+    buffer[31] = nicknameBuffer.length;
+
+    const userProfiles = await this.readonlyConnection.getProgramAccounts(
+      AdrenaClient.programId,
+      {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 400 }, // Ensure correct size for V2
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 8,
+              bytes: bs58.encode(buffer),
+            },
+          }, // Filter by nickname
+        ],
+      },
+    );
+
+    if (!userProfiles || userProfiles.length === 0) {
+      return null;
+    }
+
+    const p = this.decodeUserProfileAnyVersion(userProfiles[0].account);
+
+    if (!p) return null;
+
+    return this.extendUserProfileInfo(p, userProfiles[0].pubkey);
+  }
+
   // Provide alternative user if you wanna get the profile of a specific user
   // null = not ready
   // false = profile not initialized
@@ -1721,7 +1761,6 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
-
     referrerProfile,
   }: {
     owner: PublicKey;
@@ -1731,7 +1770,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
-    referrerProfile?: PublicKey;
+    referrerProfile?: PublicKey | null;
   }) {
     if (!this.connection) {
       throw new Error("no connection");
