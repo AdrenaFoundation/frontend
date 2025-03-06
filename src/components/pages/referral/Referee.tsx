@@ -20,10 +20,10 @@ export default function Referee({
 
     useEffect(() => {
         if (!userProfile) return;
-        // if (!userProfile.referrerProfile) return setReferrerProfile(null);
+        if (!userProfile.referrerProfile) return setReferrerProfile(null);
 
         window.adrena.client.loadUserProfile({
-            profile: new PublicKey('LVnt1Krswqd2AFcTe3KiCC4bQd6w9C1Q6xtNpHMj674') // userProfile.referrerProfile, // new PublicKey('LVnt1Krswqd2AFcTe3KiCC4bQd6w9C1Q6xtNpHMj674')
+            profile: userProfile.referrerProfile,
         }).then((profile) => {
             setReferrerProfile(profile ? profile : null);
         }).catch(() => {

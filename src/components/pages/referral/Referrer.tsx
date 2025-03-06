@@ -34,7 +34,7 @@ export default function Referrer({
 
                 <div className='flex items-center justify-center gap-2'>
                     <FormatNumber
-                        nb={allUserProfiles.length}
+                        nb={allUserProfiles !== null ? allUserProfiles.length : undefined}
                         format="number"
                         className="text-3xl text"
                         precision={0}
@@ -69,7 +69,7 @@ export default function Referrer({
                     title='Claim'
                     onClick={async () => {
                         const notification =
-                            MultiStepNotification.newForRegularTransaction('Claim referrer pending rewards').fire();
+                            MultiStepNotification.newForRegularTransaction('Claim rewards').fire();
 
                         try {
                             await window.adrena.client.claimReferralRewards({
@@ -163,22 +163,22 @@ export default function Referrer({
             <div className='font-light uppercase tracking-widest text-md text-txtfade pb-6'>REFEREES</div>
 
             <div className='flex flex-col gap-2 items-center w-[80%] max-w-[40em] border pt-2 pb-2 bg-third/40'>
-                {allUserProfiles.map((referee, i) => <>
-                    {i > 0 ? <div className='w-full h-[1px] bg-bcolor' key={`separator-${i}`} /> : null}
+                {allUserProfiles !== null ? allUserProfiles.map((referee, i) => <div key={`one-referee-${i}`} className="w-full gap-2 flex flex-col">
+                    {i > 0 ? <div className='w-full h-[1px] bg-bcolor' /> : null}
 
-                    <div key={referee.pubkey.toBase58()} className='w-full items-center justify-center flex flex-col gap-2  opacity-70 hover:opacity-100 cursor-pointer' onClick={() => {
+                    <div className='w-full items-center justify-center flex flex-col gap-2  opacity-70 hover:opacity-100 cursor-pointer' onClick={() => {
                         setActiveProfile(referee);
                     }}>
                         <div className='flex text-sm text-white'>
                             {referee.nickname.length ? referee.nickname : referee.owner.toBase58()}
                         </div>
                     </div>
-                </>)}
+                </div>) : <></>}
 
-                {allUserProfiles.length === 0 ? <div className='w-full items-center justify-center flex font-archivo text-sm opacity-80 pt-8 pb-8'>
+                {allUserProfiles !== null && allUserProfiles.length === 0 ? <div className='w-full items-center justify-center flex font-archivo text-sm opacity-80 pt-8 pb-8'>
                     No referee yet. Share your referral link!
                 </div> : null}
             </div>
         </div>
-    </div>;
+    </div >;
 }

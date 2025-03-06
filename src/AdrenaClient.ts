@@ -1545,6 +1545,8 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
+    // preInstructions.push(await this.buildDistributeFeesIx());
+
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .closePositionLong({
@@ -1636,6 +1638,8 @@ export class AdrenaClient {
       }),
       this.loadUserProfile({ user: position.owner }),
     ]);
+
+    // preInstructions.push(await this.buildDistributeFeesIx());
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
@@ -1806,7 +1810,11 @@ export class AdrenaClient {
         );
       } else if (userProfileAccount === null) {
         // Do nothing - idk the reason why but we couldn't load the user profile, it shouldn't stop the user from opening a position
-      } else if (userProfileAccount.referrerProfile) {
+      } else if (
+        (userProfileAccount.referrerProfile
+          ? userProfileAccount.referrerProfile.toBase58()
+          : null) !== (referrerProfile ? referrerProfile.toBase58() : null)
+      ) {
         preInstructions.push(
           await this.buildEditUserProfileIx({
             referrerProfile,
@@ -2006,7 +2014,11 @@ export class AdrenaClient {
         );
       } else if (userProfileAccount === null) {
         // Do nothing - idk the reason why but we couldn't load the user profile, it shouldn't stop the user from opening a position
-      } else if (userProfileAccount.referrerProfile) {
+      } else if (
+        (userProfileAccount.referrerProfile
+          ? userProfileAccount.referrerProfile.toBase58()
+          : null) !== (referrerProfile ? referrerProfile.toBase58() : null)
+      ) {
         preInstructions.push(
           await this.buildEditUserProfileIx({
             referrerProfile,
@@ -3791,9 +3803,11 @@ export class AdrenaClient {
   }: {
     notification: MultiStepNotification;
   }) {
+    const instruction = await this.buildDistributeFeesIx();
+
     const transaction = new Transaction();
 
-    transaction.add(await this.buildDistributeFeesIx());
+    transaction.add(instruction);
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -3822,6 +3836,11 @@ export class AdrenaClient {
 
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
+    );
+
+    console.log(
+      "getReferrerRewardTokenVault",
+      this.getReferrerRewardTokenVault().toBase58(),
     );
 
     return this.adrenaProgram.methods
