@@ -3795,7 +3795,11 @@ export class AdrenaClient {
   }: {
     notification: MultiStepNotification;
   }) {
-    const transaction = await this.buildDistributeFeesIx();
+    const instruction = await this.buildDistributeFeesIx();
+
+    const transaction = new Transaction();
+
+    transaction.add(instruction);
 
     return this.signAndExecuteTxAlternative({
       transaction,
