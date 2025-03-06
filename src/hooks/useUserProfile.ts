@@ -1,7 +1,7 @@
-import { PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { PublicKey } from "@solana/web3.js";
+import { useCallback, useEffect, useState } from "react";
 
-import { UserProfileExtended } from '@/types';
+import { UserProfileExtended } from "@/types";
 
 export default function useUserProfile(walletAddress: string | null): {
   userProfile: UserProfileExtended | false | null;
@@ -22,27 +22,17 @@ export default function useUserProfile(walletAddress: string | null): {
     }
 
     setUserProfile(
-      await window.adrena.client.loadUserProfile(
-        new PublicKey(walletAddress),
-      ),
+      await window.adrena.client.loadUserProfile({
+        user: new PublicKey(walletAddress),
+        onProfileChange: setUserProfile,
+      }),
     );
   }, [walletAddress]);
 
   useEffect(() => {
-    console.log('Fetch user profile for wallet', walletAddress);
     fetchUserProfile();
-
-    const interval = setInterval(() => {
-      fetchUserProfile();
-    }, 30_000);
-
-    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    fetchUserProfile,
-    trickReload,
-    window.adrena.client.readonlyConnection,
-  ]);
+  }, [fetchUserProfile, trickReload, window.adrena.client.readonlyConnection]);
 
   return {
     userProfile,

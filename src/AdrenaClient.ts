@@ -7,15 +7,15 @@ import {
   Program,
   ProgramAccount,
   Wallet,
-} from '@coral-xyz/anchor';
-import { IdlEventField } from '@coral-xyz/anchor/dist/cjs/idl';
-import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
+} from "@coral-xyz/anchor";
+import { IdlEventField } from "@coral-xyz/anchor/dist/cjs/idl";
+import { base64, bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createAssociatedTokenAccountInstruction,
   TOKEN_PROGRAM_ID,
-} from '@solana/spl-token';
+} from "@solana/spl-token";
 import {
   AccountInfo,
   Blockhash,
@@ -32,18 +32,18 @@ import {
   TransactionInstruction,
   TransactionMessage,
   VersionedTransaction,
-} from '@solana/web3.js';
+} from "@solana/web3.js";
 
-import { Adrena } from '@/target/adrena';
-import AdrenaJson from '@/target/adrena.json';
+import { Adrena } from "@/target/adrena";
+import AdrenaJson from "@/target/adrena.json";
 
-import adxIcon from '../public/images/adx.svg';
-import alpIcon from '../public/images/alp.svg';
-import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
-import IConfiguration from './config/IConfiguration';
-import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
-import { getMeanPrioritizationFeeByPercentile } from './priorityFee';
-import { TokenPricesState } from './reducers/tokenPricesReducer';
+import adxIcon from "../public/images/adx.svg";
+import alpIcon from "../public/images/alp.svg";
+import MultiStepNotification from "./components/common/MultiStepNotification/MultiStepNotification";
+import IConfiguration from "./config/IConfiguration";
+import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from "./constant";
+import { getMeanPrioritizationFeeByPercentile } from "./priorityFee";
+import { TokenPricesState } from "./reducers/tokenPricesReducer";
 import {
   AdrenaProgram,
   AdxLockPeriod,
@@ -81,7 +81,7 @@ import {
   VestRegistry,
   WalletAdapterExtended,
   Wallpaper,
-} from './types';
+} from "./types";
 import {
   AdrenaTransactionError,
   applySlippage,
@@ -96,7 +96,7 @@ import {
   sleep,
   u128SplitToBN,
   uiToNative,
-} from './utils';
+} from "./utils";
 
 export class AdrenaClient {
   public static programId = new PublicKey(
@@ -104,30 +104,30 @@ export class AdrenaClient {
   );
 
   public static transferAuthorityAddress = PublicKey.findProgramAddressSync(
-    [Buffer.from('transfer_authority')],
+    [Buffer.from("transfer_authority")],
     AdrenaClient.programId,
   )[0];
 
   public static programData = PublicKey.findProgramAddressSync(
     [AdrenaClient.programId.toBuffer()],
-    new PublicKey('BPFLoaderUpgradeab1e11111111111111111111111'),
+    new PublicKey("BPFLoaderUpgradeab1e11111111111111111111111"),
   )[0];
 
   public lpTokenMint = PublicKey.findProgramAddressSync(
-    [Buffer.from('lp_token_mint'), this.mainPool.pubkey.toBuffer()],
+    [Buffer.from("lp_token_mint"), this.mainPool.pubkey.toBuffer()],
     AdrenaClient.programId,
   )[0];
 
   public lmTokenMint = PublicKey.findProgramAddressSync(
-    [Buffer.from('lm_token_mint')],
+    [Buffer.from("lm_token_mint")],
     AdrenaClient.programId,
   )[0];
 
   public alpToken: Token = {
     mint: this.lpTokenMint,
-    color: '#130AAA',
-    name: 'Shares of a Adrena Liquidity Pool',
-    symbol: 'ALP',
+    color: "#130AAA",
+    name: "Shares of a Adrena Liquidity Pool",
+    symbol: "ALP",
     decimals: 6,
     displayAmountDecimalsPrecision: 2,
     displayPriceDecimalsPrecision: 3,
@@ -137,9 +137,9 @@ export class AdrenaClient {
 
   public adxToken: Token = {
     mint: this.lmTokenMint,
-    color: '#991B1B',
-    name: 'The Governance Token',
-    symbol: 'ADX',
+    color: "#991B1B",
+    name: "The Governance Token",
+    symbol: "ADX",
     decimals: 6,
     displayAmountDecimalsPrecision: 2,
     displayPriceDecimalsPrecision: 3,
@@ -149,28 +149,38 @@ export class AdrenaClient {
 
   public static getPoolPda = (poolName: string) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('pool'), Buffer.from(poolName)],
+      [Buffer.from("pool"), Buffer.from(poolName)],
       AdrenaClient.programId,
     )[0];
   };
 
   public getStakingPda = (stakedTokenMint: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('staking'), stakedTokenMint.toBuffer()],
+      [Buffer.from("staking"), stakedTokenMint.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
   public getUserStakingPda = (owner: PublicKey, stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('user_staking'), owner.toBuffer(), stakingPda.toBuffer()],
+      [Buffer.from("user_staking"), owner.toBuffer(), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
   public getUserVestPda = (owner: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('vest'), owner.toBuffer()],
+      [Buffer.from("vest"), owner.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getReferrerRewardTokenVault = () => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("referrer_reward_token_vault"),
+        this.getUsdcToken().mint.toBuffer(),
+      ],
       AdrenaClient.programId,
     )[0];
   };
@@ -185,7 +195,7 @@ export class AdrenaClient {
     preInstructions: TransactionInstruction[];
   }): Promise<PublicKey> {
     try {
-      if (!this.connection) throw new Error('Connection not found');
+      if (!this.connection) throw new Error("Connection not found");
 
       const ataAddress = findATAAddressSync(owner, mint);
 
@@ -213,7 +223,7 @@ export class AdrenaClient {
   public getPositionPda = (
     owner: PublicKey,
     token: Token,
-    side: 'long' | 'short',
+    side: "long" | "short",
   ) => {
     const cacheKey = `${owner.toBase58()}-${token.mint.toBase58()}-${side}`;
 
@@ -225,7 +235,7 @@ export class AdrenaClient {
     // Compute the PDA
     const pda = PublicKey.findProgramAddressSync(
       [
-        Buffer.from('position'),
+        Buffer.from("position"),
         owner.toBuffer(),
         token.mint.toBuffer(),
         Buffer.from(side),
@@ -241,7 +251,7 @@ export class AdrenaClient {
 
   public getGenesisLockPda = () => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('genesis_lock'), this.mainPool.pubkey.toBuffer()],
+      [Buffer.from("genesis_lock"), this.mainPool.pubkey.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
@@ -249,7 +259,7 @@ export class AdrenaClient {
   public getLimitOrderBookPda = (wallet: PublicKey) => {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from('limit_order_book'),
+        Buffer.from("limit_order_book"),
         wallet.toBuffer(),
         this.mainPool.pubkey.toBuffer(),
       ],
@@ -263,7 +273,7 @@ export class AdrenaClient {
   ) => {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from('escrow_account'),
+        Buffer.from("escrow_account"),
         wallet.toBuffer(),
         this.mainPool.pubkey.toBuffer(),
         collateralMint.toBuffer(),
@@ -274,52 +284,52 @@ export class AdrenaClient {
 
   public getStakingStakedTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('staking_staked_token_vault'), stakingPda.toBuffer()],
+      [Buffer.from("staking_staked_token_vault"), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
   public getStakingRewardTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('staking_reward_token_vault'), stakingPda.toBuffer()],
+      [Buffer.from("staking_reward_token_vault"), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
   public getStakingLmRewardTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('staking_lm_reward_token_vault'), stakingPda.toBuffer()],
+      [Buffer.from("staking_lm_reward_token_vault"), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
   public governanceTokenMint = PublicKey.findProgramAddressSync(
-    [Buffer.from('governance_token_mint')],
+    [Buffer.from("governance_token_mint")],
     AdrenaClient.programId,
   )[0];
 
   public governanceRealm = PublicKey.findProgramAddressSync(
-    [Buffer.from('governance'), Buffer.from(this.config.governanceRealmName)],
+    [Buffer.from("governance"), Buffer.from(this.config.governanceRealmName)],
     this.config.governanceProgram,
   )[0];
 
   public getUserProfilePda = (wallet: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('user_profile'), wallet.toBuffer()],
+      [Buffer.from("user_profile"), wallet.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
   public getUserNicknamePda = (nickname: string) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('nickname'), Buffer.from(nickname)],
+      [Buffer.from("nickname"), Buffer.from(nickname)],
       AdrenaClient.programId,
     )[0];
   };
 
   public governanceGoverningTokenHolding = PublicKey.findProgramAddressSync(
     [
-      Buffer.from('governance'),
+      Buffer.from("governance"),
       this.governanceRealm.toBuffer(),
       this.governanceTokenMint.toBuffer(),
     ],
@@ -327,14 +337,14 @@ export class AdrenaClient {
   )[0];
 
   public governanceRealmConfig = PublicKey.findProgramAddressSync(
-    [Buffer.from('realm-config'), this.governanceRealm.toBuffer()],
+    [Buffer.from("realm-config"), this.governanceRealm.toBuffer()],
     this.config.governanceProgram,
   )[0];
 
   public getGovernanceGoverningTokenOwnerRecordPda = (owner: PublicKey) => {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from('governance'),
+        Buffer.from("governance"),
         this.governanceRealm.toBuffer(),
         this.governanceTokenMint.toBuffer(),
         owner.toBuffer(),
@@ -344,12 +354,12 @@ export class AdrenaClient {
   };
 
   public static cortexPda = PublicKey.findProgramAddressSync(
-    [Buffer.from('cortex')],
+    [Buffer.from("cortex")],
     AdrenaClient.programId,
   )[0];
 
   public static vestRegistryPda = PublicKey.findProgramAddressSync(
-    [Buffer.from('vest_registry')],
+    [Buffer.from("vest_registry")],
     AdrenaClient.programId,
   )[0];
 
@@ -390,10 +400,10 @@ export class AdrenaClient {
   }
 
   public getStakingRewardTokenMint(): PublicKey {
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
 
     if (!stakingRewardTokenMint)
-      throw new Error('Cannot find staking reward token mint');
+      throw new Error("Cannot find staking reward token mint");
 
     return stakingRewardTokenMint;
   }
@@ -467,7 +477,7 @@ export class AdrenaClient {
                   collateralCustody: order.collateralCustody,
                   custodySymbol: getTokenSymbol(custodyToken.symbol),
                   side:
-                    order.side === 1 ? ('long' as const) : ('short' as const),
+                    order.side === 1 ? ("long" as const) : ("short" as const),
                   initialized: order.initialized,
                   amount: nativeToUi(
                     order.amount,
@@ -485,21 +495,73 @@ export class AdrenaClient {
     return limitOrderBookExtended;
   }
 
+  public async loadUserProfileByNickname(
+    nickname: string,
+  ): Promise<UserProfileExtended | false | null> {
+    if (!this.readonlyConnection) return null;
+
+    const buffer = new Uint8Array(32);
+    const nicknameBuffer = Buffer.from(nickname, "utf-8");
+
+    // Recreate a LimitedString
+    buffer.set(nicknameBuffer.slice(0, 31), 0);
+    buffer[31] = nicknameBuffer.length;
+
+    const userProfiles = await this.readonlyConnection.getProgramAccounts(
+      AdrenaClient.programId,
+      {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 400 }, // Ensure correct size for V2
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 8,
+              bytes: bs58.encode(buffer),
+            },
+          }, // Filter by nickname
+        ],
+      },
+    );
+
+    if (!userProfiles || userProfiles.length === 0) {
+      return null;
+    }
+
+    const p = this.decodeUserProfileAnyVersion(userProfiles[0].account);
+
+    if (!p) return null;
+
+    return this.extendUserProfileInfo(p, userProfiles[0].pubkey);
+  }
+
   // Provide alternative user if you wanna get the profile of a specific user
   // null = not ready
   // false = profile not initialized
-  public async loadUserProfile(
-    user: PublicKey,
-  ): Promise<UserProfileExtended | null | false> {
+  public async loadUserProfile({
+    onProfileChange,
+    ...params
+  }: // Either provide the user wallet you want to load the profile for, or directly the profile pda
+  (
+    | {
+        user: PublicKey;
+      }
+    | {
+        profile: PublicKey;
+      }
+  ) & {
+    onProfileChange?: (profile: UserProfileExtended | false | null) => void;
+  }): Promise<UserProfileExtended | false | null> {
     if (!this.readonlyAdrenaProgram) return null;
 
-    const userProfilePda = this.getUserProfilePda(user);
+    const userProfilePda =
+      "user" in params ? this.getUserProfilePda(params.user) : params.profile;
 
     // Fetch raw account data
     const accountInfo =
       await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(
         userProfilePda,
-        'processed',
+        "processed",
       );
 
     // If no data, profile doesn't exist
@@ -508,12 +570,40 @@ export class AdrenaClient {
     }
 
     const p = this.decodeUserProfileAnyVersion(accountInfo);
+    if (p === false) return false;
 
-    if (p === false) {
-      return false;
+    const extendedProfile = this.extendUserProfileInfo(p, userProfilePda);
+
+    if (!onProfileChange) {
+      return extendedProfile;
     }
 
-    return this.extendUserProfileInfo(p, userProfilePda);
+    // Set up a listener to auto-update on changes
+    this.readonlyAdrenaProgram.provider.connection.onAccountChange(
+      userProfilePda,
+      (updatedAccountInfo) => {
+        if (!updatedAccountInfo || !updatedAccountInfo.data) {
+          onProfileChange?.(false);
+          return;
+        }
+
+        const updatedProfile =
+          this.decodeUserProfileAnyVersion(updatedAccountInfo);
+        if (updatedProfile === false) {
+          onProfileChange?.(false);
+        } else {
+          onProfileChange?.(
+            this.extendUserProfileInfo(updatedProfile, userProfilePda),
+          );
+        }
+      },
+      {
+        commitment: "processed",
+        encoding: "base64",
+      },
+    );
+
+    return extendedProfile;
   }
 
   protected decodeUserProfileAnyVersion(
@@ -523,12 +613,12 @@ export class AdrenaClient {
       // Try parsing as V2 first
       const p =
         this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode(
-          'userProfile',
+          "userProfile",
           accountInfo.data,
         );
 
       if (!p || p.createdAt.isZero()) {
-        throw new Error('Invalid data');
+        throw new Error("Invalid data");
       }
 
       return p;
@@ -537,12 +627,12 @@ export class AdrenaClient {
         // Try parsing as V1 (legacy)
         const p =
           this.readonlyAdrenaProgram.account.userProfileV1.coder.accounts.decodeUnchecked(
-            'userProfileV1',
+            "userProfileV1",
             accountInfo.data,
           );
 
         if (!p || p.createdAt.isZero()) {
-          throw new Error('Invalid data');
+          throw new Error("Invalid data");
         }
 
         return p;
@@ -557,20 +647,33 @@ export class AdrenaClient {
     userProfilePda: PublicKey,
   ): UserProfileExtended {
     return {
-      version: 'version' in p ? p.version : 1,
+      version: "version" in p ? p.version : 1,
       pubkey: userProfilePda,
+      claimableReferralFeeUsd:
+        "claimableReferralFeeUsd" in p
+          ? nativeToUi(p.claimableReferralFeeUsd, USD_DECIMALS)
+          : 0,
+      totalReferralFeeUsd:
+        "totalReferralFeeUsd" in p
+          ? nativeToUi(p.totalReferralFeeUsd, USD_DECIMALS)
+          : 0,
       // Transform the buffer of bytes to a string
       nickname: p.nickname.value
         .map((byte) => String.fromCharCode(byte))
-        .join('')
-        .replace(/\0/g, ''),
+        .join("")
+        .replace(/\0/g, ""),
       createdAt: p.createdAt.toNumber(),
       owner: p.owner,
+      referrerProfile:
+        "referrerProfile" in p
+          ? p.referrerProfile.equals(PublicKey.default)
+            ? null
+            : p.referrerProfile
+          : null,
       profilePicture:
-        'profilePicture' in p ? (p.profilePicture as ProfilePicture) : 0,
-      wallpaper: 'wallpaper' in p ? (p.wallpaper as Wallpaper) : 0,
-      title: 'title' in p ? (p.title as UserProfileTitle) : 0,
-
+        "profilePicture" in p ? (p.profilePicture as ProfilePicture) : 0,
+      wallpaper: "wallpaper" in p ? (p.wallpaper as Wallpaper) : 0,
+      title: "title" in p ? (p.title as UserProfileTitle) : 0,
       // TODO: feed theses data with the offchain API
       // Aggregates
       totalPnlUsd: 0,
@@ -625,7 +728,7 @@ export class AdrenaClient {
     readonlyAdrenaProgram: Program<Adrena>,
     config: IConfiguration,
   ): Promise<AdrenaClient> {
-    const poolPda = AdrenaClient.getPoolPda('main-pool');
+    const poolPda = AdrenaClient.getPoolPda("main-pool");
     const mainPoolPromise = AdrenaClient.loadMainPool(
       readonlyAdrenaProgram,
       poolPda,
@@ -798,7 +901,7 @@ export class AdrenaClient {
     };
 
     const genesisLockPda = PublicKey.findProgramAddressSync(
-      [Buffer.from('genesis_lock'), poolPda.toBuffer()],
+      [Buffer.from("genesis_lock"), poolPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
 
@@ -838,7 +941,7 @@ export class AdrenaClient {
 
     // No custodies should be null
     if (result.find((c) => c === null)) {
-      throw new Error('Error loading custodies');
+      throw new Error("Error loading custodies");
     }
 
     return (result as Custody[]).map((custody, i) => {
@@ -848,7 +951,7 @@ export class AdrenaClient {
 
       if (!tokenInfo) {
         console.error(
-          'Cannot find token in config file that is used in custody',
+          "Cannot find token in config file that is used in custody",
           custody.mint.toBase58(),
         );
       }
@@ -923,7 +1026,7 @@ export class AdrenaClient {
     minLpAmountOut: BN;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custodyAddress = this.findCustodyAddress(mint);
@@ -940,7 +1043,7 @@ export class AdrenaClient {
       );
 
     if (untypedCustodies.find((custodies) => !custodies)) {
-      throw new Error('Cannot load custodies');
+      throw new Error("Cannot load custodies");
     }
 
     const custodyOracle = this.getCustodyByMint(mint).nativeObject.oracle;
@@ -956,19 +1059,7 @@ export class AdrenaClient {
         preInstructions,
       });
 
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
     const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
 
     return this.adrenaProgram.methods
       .addLiquidity({
@@ -986,17 +1077,8 @@ export class AdrenaClient {
         custodyTokenAccount,
         lpTokenMint: this.lpTokenMint,
         tokenProgram: TOKEN_PROGRAM_ID,
-        lmStaking,
         lpStaking,
         cortex: AdrenaClient.cortexPda,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        lmTokenMint: this.lmTokenMint,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
         adrenaProgram: this.adrenaProgram.programId,
       })
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
@@ -1017,7 +1099,7 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
-      throw new Error('not connected');
+      throw new Error("not connected");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -1055,7 +1137,7 @@ export class AdrenaClient {
     receivingAccount: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custodyAddress = this.findCustodyAddress(mint);
@@ -1064,20 +1146,6 @@ export class AdrenaClient {
     const custodyOracle = this.getCustodyByMint(mint).nativeObject.oracle;
 
     const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
 
     return this.adrenaProgram.methods
       .removeLiquidity({
@@ -1095,16 +1163,7 @@ export class AdrenaClient {
         custodyTokenAccount,
         lpTokenMint: this.lpTokenMint,
         tokenProgram: TOKEN_PROGRAM_ID,
-        lmStaking,
-        lpStaking,
         cortex: AdrenaClient.cortexPda,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
         adrenaProgram: this.adrenaProgram.programId,
       })
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts());
@@ -1124,7 +1183,7 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
-      throw new Error('not connected');
+      throw new Error("not connected");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -1163,7 +1222,6 @@ export class AdrenaClient {
     collateralMint,
     collateralAmount,
     leverage,
-    referrer,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1171,10 +1229,9 @@ export class AdrenaClient {
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
-    referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     // Tokens received by the program
@@ -1198,21 +1255,7 @@ export class AdrenaClient {
 
     const fundingAccount = findATAAddressSync(owner, collateralMint);
 
-    const position = this.findPositionAddress(owner, principalCustody, 'long');
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
+    const position = this.findPositionAddress(owner, principalCustody, "long");
 
     // TODO
     // Think and use proper slippage, for now use 0.3%
@@ -1223,7 +1266,6 @@ export class AdrenaClient {
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
-        referrer: referrer ?? null,
       })
       .accountsStrict({
         owner,
@@ -1239,21 +1281,11 @@ export class AdrenaClient {
         principalCustodyTokenAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        lmStaking,
-        lpStaking,
-        pool: this.mainPool.pubkey,
         position,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        lpTokenMint: this.lpTokenMint,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
+        pool: this.mainPool.pubkey,
       });
   }
 
@@ -1264,7 +1296,6 @@ export class AdrenaClient {
     collateralMint,
     collateralAmount,
     leverage,
-    referrer,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1272,10 +1303,9 @@ export class AdrenaClient {
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
-    referrer?: PublicKey | null;
   }) {
     if (!this.adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     // Tokens received by the program
@@ -1315,21 +1345,7 @@ export class AdrenaClient {
 
     const fundingAccount = findATAAddressSync(owner, collateralMint);
 
-    const position = this.findPositionAddress(owner, principalCustody, 'short');
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
+    const position = this.findPositionAddress(owner, principalCustody, "short");
 
     // TODO
     // Think and use proper slippage, for now use 0.3%
@@ -1340,7 +1356,6 @@ export class AdrenaClient {
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
-        referrer: referrer ?? null,
       })
       .accountsStrict({
         owner,
@@ -1358,18 +1373,8 @@ export class AdrenaClient {
         principalCustodyTokenAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        lmStaking,
-        lpStaking,
         pool: this.mainPool.pubkey,
         position,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        lpTokenMint: this.lpTokenMint,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
@@ -1393,7 +1398,7 @@ export class AdrenaClient {
     receivingAccount: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const fundingAccount = findATAAddressSync(owner, mintA);
@@ -1409,20 +1414,6 @@ export class AdrenaClient {
       this.findCustodyTokenAccountAddress(mintB);
     const dispensingCustodyOracle =
       this.getCustodyByMint(mintB).nativeObject.oracle;
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
 
     return this.adrenaProgram.methods
       .swap({
@@ -1443,17 +1434,7 @@ export class AdrenaClient {
         dispensingCustodyOracle,
         dispensingCustodyTokenAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
-        lmStaking,
-        lpStaking,
         cortex: AdrenaClient.cortexPda,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        lpTokenMint: this.lpTokenMint,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
         adrenaProgram: this.adrenaProgram.programId,
       });
   }
@@ -1475,7 +1456,7 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
-      throw new Error('not connected');
+      throw new Error("not connected");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -1523,7 +1504,7 @@ export class AdrenaClient {
     ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.custodies.find((custody) =>
@@ -1531,10 +1512,10 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
-    console.log('Close position:', {
+    console.log("Close position:", {
       position: position.pubkey.toBase58(),
       price: price.toString(),
     });
@@ -1548,28 +1529,18 @@ export class AdrenaClient {
       custody.mint,
     );
 
-    const receivingAccount =
-      await this.checkATAAddressInitializedAndCreatePreInstruction({
+    const [receivingAccount, userProfileAccount] = await Promise.all([
+      this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
         mint: custody.mint,
         preInstructions,
-      });
+      }),
+      this.loadUserProfile({
+        user: position.owner,
+      }),
+    ]);
 
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
-
-    console.log('Close long position:', {
+    console.log("Close long position:", {
       position: position.pubkey.toBase58(),
       price: price.toString(),
     });
@@ -1590,19 +1561,13 @@ export class AdrenaClient {
           custodyOracle,
           custodyTradeOracle,
           tokenProgram: TOKEN_PROGRAM_ID,
-          lmStaking,
-          lpStaking,
           cortex: AdrenaClient.cortexPda,
-          stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-          stakingRewardTokenCustodyOracle:
-            stakingRewardTokenCustodyAccount.nativeObject.oracle,
-          stakingRewardTokenCustodyTokenAccount,
-          lmStakingRewardTokenVault,
-          lpStakingRewardTokenVault,
-          lpTokenMint: this.lpTokenMint,
-          protocolFeeRecipient: this.cortex.protocolFeeRecipient,
           adrenaProgram: this.adrenaProgram.programId,
           caller: position.owner,
+          userProfile: userProfileAccount ? userProfileAccount.pubkey : null,
+          referrerProfile: userProfileAccount
+            ? userProfileAccount.referrerProfile
+            : null,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -1629,7 +1594,7 @@ export class AdrenaClient {
     ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.custodies.find((custody) =>
@@ -1637,7 +1602,7 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const custodyTradeOracle = custody.nativeObject.tradeOracle;
@@ -1647,10 +1612,10 @@ export class AdrenaClient {
     );
 
     if (!collateralCustody) {
-      throw new Error('Cannot find collateral custody related to position');
+      throw new Error("Cannot find collateral custody related to position");
     }
 
-    console.log('Close short position:', {
+    console.log("Close short position:", {
       position: position.pubkey.toBase58(),
       price: price.toString(),
     });
@@ -1663,26 +1628,14 @@ export class AdrenaClient {
       collateralCustody.mint,
     );
 
-    const receivingAccount =
-      await this.checkATAAddressInitializedAndCreatePreInstruction({
+    const [receivingAccount, userProfileAccount] = await Promise.all([
+      this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
         mint: collateralCustody.mint,
         preInstructions,
-      });
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
+      }),
+      this.loadUserProfile({ user: position.owner }),
+    ]);
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
@@ -1699,21 +1652,15 @@ export class AdrenaClient {
           custodyTradeOracle,
           collateralCustody: collateralCustody.pubkey,
           tokenProgram: TOKEN_PROGRAM_ID,
-          lmStaking,
-          lpStaking,
           cortex: AdrenaClient.cortexPda,
-          stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-          stakingRewardTokenCustodyOracle:
-            stakingRewardTokenCustodyAccount.nativeObject.oracle,
-          stakingRewardTokenCustodyTokenAccount,
-          lmStakingRewardTokenVault,
-          lpStakingRewardTokenVault,
-          lpTokenMint: this.lpTokenMint,
-          protocolFeeRecipient: this.cortex.protocolFeeRecipient,
           adrenaProgram: this.adrenaProgram.programId,
           collateralCustodyOracle,
           collateralCustodyTokenAccount,
           caller: position.owner,
+          userProfile: userProfileAccount ? userProfileAccount.pubkey : null,
+          referrerProfile: userProfileAccount
+            ? userProfileAccount.referrerProfile
+            : null,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -1724,9 +1671,9 @@ export class AdrenaClient {
   }
 
   public getUsdcToken(): Token {
-    const usdcToken = this.tokens.find((token) => token.symbol === 'USDC');
+    const usdcToken = this.tokens.find((token) => token.symbol === "USDC");
 
-    if (!usdcToken) throw new Error('Cannot found USDC token');
+    if (!usdcToken) throw new Error("Cannot found USDC token");
 
     return usdcToken;
   }
@@ -1748,7 +1695,7 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.connection) {
-      throw new Error('no connection');
+      throw new Error("no connection");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -1768,7 +1715,7 @@ export class AdrenaClient {
     transaction.add(...preInstructions, ...instructions, ...postInstructions);
 
     if (instructions.length === 0) {
-      console.log('Nothing to cleanup');
+      console.log("Nothing to cleanup");
       return;
     }
 
@@ -1776,6 +1723,32 @@ export class AdrenaClient {
       transaction,
       notification,
     });
+  }
+
+  // i.e
+  // Monster00042
+  // Monster87654
+  // Monster00999
+  protected async getUniqueMonsterName(): Promise<string> {
+    if (!this.readonlyConnection) throw new Error("Connection not ready");
+
+    while (true) {
+      const name = `Monster${Math.floor(Math.random() * 100000)
+        .toString()
+        .padStart(5, "0")}`;
+
+      const address = PublicKey.findProgramAddressSync(
+        [Buffer.from("nickname"), Buffer.from(name)],
+        AdrenaClient.programId,
+      )[0];
+
+      // Check if the name is available onchain
+      if ((await this.readonlyConnection.getAccountInfo(address)) === null) {
+        return name;
+      }
+
+      // If not available, try again
+    }
   }
 
   // When shorting, stable token must be used.
@@ -1788,7 +1761,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
-    referrer,
+    referrerProfile,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1797,10 +1770,10 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
-    referrer?: PublicKey | null;
+    referrerProfile?: PublicKey | null;
   }) {
     if (!this.connection) {
-      throw new Error('no connection');
+      throw new Error("no connection");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -1814,6 +1787,36 @@ export class AdrenaClient {
       preInstructions,
     });
 
+    //
+    // Handle automatic profile creation or update when a referrer is set
+    //
+    if (referrerProfile) {
+      const userProfileAccount = await this.loadUserProfile({ user: owner });
+
+      // If user_profile doesn't exist, create it
+      if (userProfileAccount === false) {
+        preInstructions.push(
+          await this.buildInitUserProfileIx({
+            nickname: await this.getUniqueMonsterName(),
+            profilePicture: 0,
+            wallpaper: 0,
+            title: 0,
+            referrerProfile,
+          }),
+        );
+      } else if (userProfileAccount === null) {
+        // Do nothing - idk the reason why but we couldn't load the user profile, it shouldn't stop the user from opening a position
+      } else if (userProfileAccount.referrerProfile) {
+        preInstructions.push(
+          await this.buildEditUserProfileIx({
+            referrerProfile,
+          }),
+        );
+      } else {
+        // Do nothing - the referrer is already set
+      }
+    }
+
     const openPositionWithSwapIx =
       await this.buildOpenOrIncreasePositionWithSwapShort({
         owner,
@@ -1822,7 +1825,6 @@ export class AdrenaClient {
         collateralMint,
         collateralAmount,
         leverage,
-        referrer,
       }).instruction();
 
     const transaction = new Transaction();
@@ -1851,7 +1853,7 @@ export class AdrenaClient {
     tokenB: Token;
     collateralAmount: BN;
     leverage: number;
-    side: 'long' | 'short';
+    side: "long" | "short";
     tokenPrices: TokenPricesState;
   }): Promise<{
     collateralUsd: number;
@@ -1884,7 +1886,7 @@ export class AdrenaClient {
       side,
     });
 
-    if (info === null) throw new Error('cannot calculate fees');
+    if (info === null) throw new Error("cannot calculate fees");
 
     const {
       size: nativeSize,
@@ -1897,7 +1899,7 @@ export class AdrenaClient {
     } = info;
 
     const { swappedTokenDecimals, swappedTokenPrice } =
-      side === 'long'
+      side === "long"
         ? {
             swappedTokenDecimals: tokenB.decimals,
             swappedTokenPrice: tokenBPrice,
@@ -1923,10 +1925,10 @@ export class AdrenaClient {
     // Size is always in collateral token
     const size = nativeToUi(
       nativeSize,
-      side === 'long' ? tokenB.decimals : usdcToken.decimals,
+      side === "long" ? tokenB.decimals : usdcToken.decimals,
     );
 
-    const sizeUsd = size * (side === 'long' ? tokenBPrice : usdcTokenPrice);
+    const sizeUsd = size * (side === "long" ? tokenBPrice : usdcTokenPrice);
 
     // calculate and return fee amount in usd
     return {
@@ -1961,7 +1963,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
-    referrer,
+    referrerProfile,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1970,10 +1972,10 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
-    referrer?: PublicKey | null;
+    referrerProfile?: PublicKey | null;
   }) {
     if (!this.connection) {
-      throw new Error('no connection');
+      throw new Error("no connection");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -1985,6 +1987,36 @@ export class AdrenaClient {
       preInstructions,
     });
 
+    //
+    // Handle automatic profile creation or update when a referrer is set
+    //
+    if (referrerProfile) {
+      const userProfileAccount = await this.loadUserProfile({ user: owner });
+
+      // If user_profile doesn't exist, create it
+      if (userProfileAccount === false) {
+        preInstructions.push(
+          await this.buildInitUserProfileIx({
+            nickname: await this.getUniqueMonsterName(),
+            profilePicture: 0,
+            wallpaper: 0,
+            title: 0,
+            referrerProfile,
+          }),
+        );
+      } else if (userProfileAccount === null) {
+        // Do nothing - idk the reason why but we couldn't load the user profile, it shouldn't stop the user from opening a position
+      } else if (userProfileAccount.referrerProfile) {
+        preInstructions.push(
+          await this.buildEditUserProfileIx({
+            referrerProfile,
+          }),
+        );
+      } else {
+        // Do nothing - the referrer is already set
+      }
+    }
+
     const openPositionWithSwapIx =
       await this.buildOpenOrIncreasePositionWithSwapLong({
         owner,
@@ -1993,7 +2025,6 @@ export class AdrenaClient {
         collateralMint,
         collateralAmount,
         leverage,
-        referrer,
       }).instruction();
 
     const transaction = new Transaction();
@@ -2019,14 +2050,14 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.connection) {
-      throw new Error('not connected');
+      throw new Error("not connected");
     }
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
     const transaction = await (
-      position.side === 'long'
+      position.side === "long"
         ? this.buildAddCollateralLongTx.bind(this)
         : this.buildAddCollateralShortTx.bind(this)
     )({
@@ -2043,30 +2074,30 @@ export class AdrenaClient {
     });
   }
 
-  public async initUserProfile({
+  protected async buildInitUserProfileIx({
     nickname,
-    notification,
     profilePicture,
     wallpaper,
     title,
+    referrerProfile,
   }: {
     nickname: string;
-    notification: MultiStepNotification;
     profilePicture: number;
     wallpaper: number;
     title: number;
-  }) {
+    referrerProfile: PublicKey | null;
+  }): Promise<TransactionInstruction> {
     if (!this.connection || !this.adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
-    if (!wallet.publicKey) throw new Error('user not connected');
+    if (!wallet.publicKey) throw new Error("user not connected");
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const transaction = await this.adrenaProgram.methods
+    return this.adrenaProgram.methods
       .initUserProfile({
         nickname,
         profilePicture,
@@ -2080,8 +2111,40 @@ export class AdrenaClient {
         userProfile: userProfilePda,
         user: wallet.publicKey,
         userNickname: this.getUserNicknamePda(nickname),
+        referrerProfile,
       })
-      .transaction();
+      .instruction();
+  }
+
+  public async initUserProfile({
+    nickname,
+    notification,
+    profilePicture,
+    wallpaper,
+    title,
+    referrerProfile,
+  }: {
+    nickname: string;
+    notification: MultiStepNotification;
+    profilePicture: number;
+    wallpaper: number;
+    title: number;
+    referrerProfile: PublicKey | null;
+  }) {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error("adrena program not ready");
+    }
+
+    const instruction = await this.buildInitUserProfileIx({
+      nickname,
+      profilePicture,
+      wallpaper,
+      title,
+      referrerProfile,
+    });
+
+    const transaction = new Transaction();
+    transaction.add(instruction);
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -2097,12 +2160,12 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.connection || !this.adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
-    if (!wallet.publicKey) throw new Error('user not connected');
+    if (!wallet.publicKey) throw new Error("user not connected");
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
@@ -2135,19 +2198,21 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.connection || !this.adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
-    if (!wallet.publicKey) throw new Error('user not connected');
+    if (!wallet.publicKey) throw new Error("user not connected");
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const userProfileAccount = await this.loadUserProfile(wallet.publicKey);
+    const userProfileAccount = await this.loadUserProfile({
+      user: wallet.publicKey,
+    });
 
     if (!userProfileAccount) {
-      throw new Error('User profile not found');
+      throw new Error("User profile not found");
     }
 
     const oldUserNicknamePda = userProfileAccount.nickname.length
@@ -2177,24 +2242,24 @@ export class AdrenaClient {
     });
   }
 
-  public async editUserProfile({
-    notification,
+  protected async buildEditUserProfileIx({
     profilePicture,
     wallpaper,
     title,
+    referrerProfile,
   }: {
-    notification: MultiStepNotification;
     profilePicture?: number;
     wallpaper?: number;
     title?: number;
-  }) {
+    referrerProfile?: PublicKey | null; // use null to cancel referrer
+  }): Promise<TransactionInstruction> {
     if (!this.connection || !this.adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
-    if (!wallet.publicKey) throw new Error('user not connected');
+    if (!wallet.publicKey) throw new Error("user not connected");
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
@@ -2203,25 +2268,59 @@ export class AdrenaClient {
         userProfilePda,
       );
 
-    const transaction = await this.adrenaProgram.methods
+    return this.adrenaProgram.methods
       .editUserProfile({
         profilePicture:
-          typeof profilePicture !== 'undefined'
+          typeof profilePicture !== "undefined"
             ? profilePicture
             : userProfileAccount.profilePicture,
         wallpaper:
-          typeof wallpaper !== 'undefined'
+          typeof wallpaper !== "undefined"
             ? wallpaper
             : userProfileAccount.wallpaper,
-        title: typeof title !== 'undefined' ? title : userProfileAccount.title,
+        title: typeof title !== "undefined" ? title : userProfileAccount.title,
       })
       .accountsStrict({
         systemProgram: SystemProgram.programId,
         userProfile: userProfilePda,
         user: wallet.publicKey,
         payer: wallet.publicKey,
+        referrerProfile:
+          typeof referrerProfile !== "undefined"
+            ? referrerProfile
+            : userProfileAccount.referrerProfile.equals(PublicKey.default)
+              ? null
+              : userProfileAccount.referrerProfile,
       })
-      .transaction();
+      .instruction();
+  }
+
+  public async editUserProfile({
+    notification,
+    profilePicture,
+    wallpaper,
+    title,
+    referrerProfile,
+  }: {
+    notification: MultiStepNotification;
+    profilePicture?: number;
+    wallpaper?: number;
+    title?: number;
+    referrerProfile?: PublicKey | null; // use null to cancel referrer
+  }) {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error("adrena program not ready");
+    }
+
+    const instruction = await this.buildEditUserProfileIx({
+      profilePicture,
+      wallpaper,
+      title,
+      referrerProfile,
+    });
+
+    const transaction = new Transaction();
+    transaction.add(instruction);
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -2230,7 +2329,7 @@ export class AdrenaClient {
   }
 
   public async deleteUserProfile(): Promise<string> {
-    throw new Error('deleteUserProfile instruction only available to admin');
+    throw new Error("deleteUserProfile instruction only available to admin");
   }
 
   public buildAddCollateralLongTx({
@@ -2241,7 +2340,7 @@ export class AdrenaClient {
     collateralAmount: BN;
   }) {
     if (!this.connection || !this.adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.custodies.find((custody) =>
@@ -2249,7 +2348,7 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const custodyOracle = custody.nativeObject.oracle;
@@ -2288,7 +2387,7 @@ export class AdrenaClient {
     collateralAmount: BN;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.custodies.find((custody) =>
@@ -2296,7 +2395,7 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const collateralCustody = this.custodies.find((custody) =>
@@ -2304,7 +2403,7 @@ export class AdrenaClient {
     );
 
     if (!collateralCustody) {
-      throw new Error('Cannot find collateral custody related to position');
+      throw new Error("Cannot find collateral custody related to position");
     }
 
     const custodyTradeOracle = custody.nativeObject.tradeOracle;
@@ -2350,7 +2449,7 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.custodies.find((custody) =>
@@ -2358,7 +2457,7 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const custodyOracle = custody.nativeObject.oracle;
@@ -2413,7 +2512,7 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.custodies.find((custody) =>
@@ -2421,7 +2520,7 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const collateralCustody = this.custodies.find((custody) =>
@@ -2429,7 +2528,7 @@ export class AdrenaClient {
     );
 
     if (!collateralCustody) {
-      throw new Error('Cannot find collateral custody related to position');
+      throw new Error("Cannot find collateral custody related to position");
     }
 
     const custodyTradeOracle = custody.nativeObject.tradeOracle;
@@ -2533,7 +2632,7 @@ export class AdrenaClient {
         ...vest,
       };
     } catch (e) {
-      console.log('e', e);
+      console.log("e", e);
       return null;
     }
   }
@@ -2546,7 +2645,7 @@ export class AdrenaClient {
     delegate: PublicKey | null;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
@@ -2570,6 +2669,51 @@ export class AdrenaClient {
     });
   }
 
+  public async claimReferralRewards({
+    notification,
+  }: {
+    notification: MultiStepNotification;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error("adrena program not ready");
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
+        owner,
+        mint: this.getUsdcToken().mint,
+        preInstructions,
+      });
+
+    const distributeFeesIx = await this.buildDistributeFeesIx();
+
+    preInstructions.push(distributeFeesIx);
+
+    const userProfilePda = this.getUserProfilePda(owner);
+
+    const transaction = await this.adrenaProgram.methods
+      .claimReferralFee()
+      .accountsStrict({
+        referrer: owner,
+        receivingAccount,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        referrerProfile: userProfilePda,
+        referrerRewardTokenVault: this.getReferrerRewardTokenVault(),
+      })
+      .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({ transaction, notification });
+  }
+
   public async claimUserVest({
     notification,
     targetWallet, // Wallet to receive the vest
@@ -2582,7 +2726,7 @@ export class AdrenaClient {
     owner?: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -2601,7 +2745,7 @@ export class AdrenaClient {
     const vestRegistry = await this.loadVestRegistry();
 
     if (vestRegistry === null) {
-      throw new Error('vest registry not found');
+      throw new Error("vest registry not found");
     }
 
     const transaction = await this.adrenaProgram.methods
@@ -2636,13 +2780,13 @@ export class AdrenaClient {
 
   public async getAllVestingAccounts(): Promise<Vest[]> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const vestRegistry = await this.loadVestRegistry();
 
     if (vestRegistry === null) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const allVestingAccounts = vestRegistry.vests;
@@ -2655,7 +2799,7 @@ export class AdrenaClient {
 
   public async getStakingStats() {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const lmStaking = this.getStakingPda(this.lmTokenMint);
@@ -2677,7 +2821,7 @@ export class AdrenaClient {
     stakedTokenMint: PublicKey;
   }): Promise<UserStakingExtended | null> {
     if (!this.readonlyAdrenaProgram || !this.readonlyConnection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
     const stakingPda = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, stakingPda);
@@ -2685,7 +2829,7 @@ export class AdrenaClient {
     const account =
       await this.readonlyAdrenaProgram.account.userStaking.fetchNullable(
         userStaking,
-        'processed',
+        "processed",
       );
 
     if (!account) return null;
@@ -2708,15 +2852,15 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
 
     if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
 
     const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
@@ -2732,7 +2876,7 @@ export class AdrenaClient {
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
-      throw new Error('User staking account not found');
+      throw new Error("User staking account not found");
     }
 
     const rewardTokenAccount =
@@ -2782,7 +2926,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    console.log('transaction debug in AdrenaClient', transaction);
+    console.log("transaction debug in AdrenaClient", transaction);
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -2804,14 +2948,14 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const preInstructions: TransactionInstruction[] = [];
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
 
     if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
 
     const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
@@ -2824,7 +2968,7 @@ export class AdrenaClient {
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
-      throw new Error('User staking account not found');
+      throw new Error("User staking account not found");
     }
 
     const rewardTokenAccount =
@@ -2894,14 +3038,14 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
     const stakedTokenMint =
-      lockedStake.tokenSymbol === 'ADX' ? this.lmTokenMint : this.lpTokenMint;
+      lockedStake.tokenSymbol === "ADX" ? this.lmTokenMint : this.lpTokenMint;
 
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
@@ -2954,7 +3098,7 @@ export class AdrenaClient {
         amount: additionalAmount
           ? uiToNative(
               additionalAmount,
-              lockedStake.tokenSymbol === 'ALP'
+              lockedStake.tokenSymbol === "ALP"
                 ? this.alpToken.decimals
                 : this.adxToken.decimals,
             )
@@ -3009,7 +3153,7 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
     const preInstructions: TransactionInstruction[] = [];
 
@@ -3027,7 +3171,7 @@ export class AdrenaClient {
       );
     }
 
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
     const stakedTokenAccount = findATAAddressSync(owner, stakedTokenMint);
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
@@ -3037,14 +3181,14 @@ export class AdrenaClient {
       this.getStakingLmRewardTokenVaultPda(staking);
 
     if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
 
     const userStakingAccount =
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
-      throw new Error('user staking account not found');
+      throw new Error("user staking account not found");
     }
 
     const rewardTokenAccount = findATAAddressSync(
@@ -3111,13 +3255,13 @@ export class AdrenaClient {
     earlyExit: boolean;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
 
     if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
 
     const staking = this.getStakingPda(stakedTokenMint);
@@ -3128,7 +3272,7 @@ export class AdrenaClient {
 
     // should not happen
     if (!userStakingAccount) {
-      throw new Error('user staking account not found');
+      throw new Error("user staking account not found");
     }
 
     return this.adrenaProgram.methods
@@ -3172,7 +3316,7 @@ export class AdrenaClient {
     overrideRewardTokenAccount?: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const builder = await this.buildClaimStakesInstruction({
@@ -3206,7 +3350,7 @@ export class AdrenaClient {
     pendingGenesisAdxRewards: number;
   }> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
@@ -3230,7 +3374,7 @@ export class AdrenaClient {
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       // Use finalize to get the latest blockhash accepted by leader
-      recentBlockhash: (await this.connection.getLatestBlockhash('confirmed'))
+      recentBlockhash: (await this.connection.getLatestBlockhash("confirmed"))
         .blockhash,
       instructions: transaction.instructions,
     }).compileToV0Message();
@@ -3243,7 +3387,7 @@ export class AdrenaClient {
     // Parse the simulation result to extract reward amounts
     const simulationLogs = result.logs;
     if (!simulationLogs) {
-      throw new Error('Simulation failed to return logs');
+      throw new Error("Simulation failed to return logs");
     }
 
     // Parsing log for ALP:
@@ -3308,14 +3452,14 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
     const preInstructions: TransactionInstruction[] = [];
 
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
 
     if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
 
     if (!resolved) {
@@ -3347,7 +3491,7 @@ export class AdrenaClient {
 
     // should not happen
     if (!userStakingAccount) {
-      throw new Error('user staking account not found');
+      throw new Error("user staking account not found");
     }
 
     const stakedTokenAccount =
@@ -3408,14 +3552,14 @@ export class AdrenaClient {
     notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const preInstructions: TransactionInstruction[] = [];
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
 
     if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
 
     const staking = this.getStakingPda(stakedTokenMint);
@@ -3492,7 +3636,7 @@ export class AdrenaClient {
     collateralCustody: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
@@ -3500,7 +3644,7 @@ export class AdrenaClient {
     const collateralCustodyInfos = this.getCustodyByPubkey(collateralCustody);
 
     if (!collateralCustodyInfos) {
-      throw new Error('Collateral custody not found');
+      throw new Error("Collateral custody not found");
     }
 
     const preInstructions: TransactionInstruction[] = [];
@@ -3562,7 +3706,7 @@ export class AdrenaClient {
   }: {
     triggerPrice: number;
     limitPrice: number | null;
-    side: 'long' | 'short';
+    side: "long" | "short";
     collateralAmount: BN;
     leverage: number;
     notification?: MultiStepNotification;
@@ -3570,7 +3714,7 @@ export class AdrenaClient {
     collateralMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
@@ -3579,7 +3723,7 @@ export class AdrenaClient {
     const usdcToken = this.getUsdcToken();
     const fundingAccount = findATAAddressSync(
       owner,
-      side === 'long' ? mint : usdcToken?.mint,
+      side === "long" ? mint : usdcToken?.mint,
     );
 
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
@@ -3614,7 +3758,7 @@ export class AdrenaClient {
       .addLimitOrder({
         triggerPrice: uiToNative(triggerPrice, PRICE_DECIMALS),
         limitPrice: limitPrice ? uiToNative(limitPrice, PRICE_DECIMALS) : null,
-        side: side === 'long' ? 1 : 2,
+        side: side === "long" ? 1 : 2,
         amount: collateralAmount,
         leverage,
       })
@@ -3642,6 +3786,72 @@ export class AdrenaClient {
     });
   }
 
+  public async distributeFees({
+    notification,
+  }: {
+    notification: MultiStepNotification;
+  }) {
+    const transaction = new Transaction();
+
+    transaction.add(await this.buildDistributeFeesIx());
+
+    return this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+  }
+
+  public async buildDistributeFeesIx() {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error("adrena program not ready");
+    }
+
+    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const lmStaking = this.getStakingPda(this.lmTokenMint);
+    const lpStaking = this.getStakingPda(this.lpTokenMint);
+    const lmStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lmStaking);
+    const lpStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lpStaking);
+
+    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
+    const stakingRewardTokenCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
+
+    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
+      stakingRewardTokenMint,
+    );
+
+    return this.adrenaProgram.methods
+      .distributeFees()
+      .accountsStrict({
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
+        feeRedistributionMint: this.cortex.feeRedistributionMint,
+        lmTokenMint: this.lmTokenMint,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        caller,
+        adrenaProgram: AdrenaClient.programId,
+        pool: this.mainPool.pubkey,
+        lpTokenMint: this.lpTokenMint,
+        lpStaking,
+        lmStaking,
+        lmStakingRewardTokenVault,
+        lpStakingRewardTokenVault,
+        referrerRewardTokenVault: this.getReferrerRewardTokenVault(),
+        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
+        stakingRewardTokenCustodyOracle:
+          stakingRewardTokenCustodyAccount.nativeObject.oracle,
+        stakingRewardTokenCustodyTokenAccount,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
+  }
+
   public async addGenesisLiquidity({
     amountIn,
     minLpAmountOut,
@@ -3652,12 +3862,12 @@ export class AdrenaClient {
     notification?: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
-    const usdc = this.getTokenBySymbol('USDC');
+    const usdc = this.getTokenBySymbol("USDC");
 
     if (!usdc) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
@@ -3688,7 +3898,7 @@ export class AdrenaClient {
       await this.adrenaProgram.account.userStaking.fetchNullable(lpUserStaking);
 
     if (!userStakingAccount) {
-      throw new Error('user staking account not found');
+      throw new Error("user staking account not found");
     }
 
     const governanceProgram = this.config.governanceProgram;
@@ -3743,7 +3953,7 @@ export class AdrenaClient {
     position: PositionExtended;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     return this.adrenaProgram.methods
@@ -3764,7 +3974,7 @@ export class AdrenaClient {
     position: PositionExtended;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     return this.adrenaProgram.methods
@@ -3789,11 +3999,11 @@ export class AdrenaClient {
     closePositionPrice: BN | null;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.getCustodyByPubkey(position.custody);
-    if (!custody) throw new Error('Cannot find custody');
+    if (!custody) throw new Error("Cannot find custody");
 
     return this.adrenaProgram.methods
       .setStopLossLong({
@@ -3820,11 +4030,11 @@ export class AdrenaClient {
     closePositionPrice: BN | null;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.getCustodyByPubkey(position.custody);
-    if (!custody) throw new Error('Cannot find custody');
+    if (!custody) throw new Error("Cannot find custody");
 
     return this.adrenaProgram.methods
       .setStopLossShort({
@@ -3849,11 +4059,11 @@ export class AdrenaClient {
     takeProfitLimitPrice: BN;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.getCustodyByPubkey(position.custody);
-    if (!custody) throw new Error('Cannot find custody');
+    if (!custody) throw new Error("Cannot find custody");
 
     return this.adrenaProgram.methods
       .setTakeProfitLong({
@@ -3877,11 +4087,11 @@ export class AdrenaClient {
     takeProfitLimitPrice: BN;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const custody = this.getCustodyByPubkey(position.custody);
-    if (!custody) throw new Error('Cannot find custody');
+    if (!custody) throw new Error("Cannot find custody");
 
     return this.adrenaProgram.methods
       .setTakeProfitShort({
@@ -3912,7 +4122,7 @@ export class AdrenaClient {
   }): Promise<SwapAmountAndFees | null> {
     if (!tokenIn.custody || !tokenOut.custody) {
       throw new Error(
-        'Cannot get swap price and fee for a token without custody',
+        "Cannot get swap price and fee for a token without custody",
       );
     }
 
@@ -3939,7 +4149,7 @@ export class AdrenaClient {
 
     return this.simulateInstructions<SwapAmountAndFees>(
       [instruction],
-      'SwapAmountAndFees',
+      "SwapAmountAndFees",
     );
   }
 
@@ -3954,7 +4164,7 @@ export class AdrenaClient {
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
-    side: 'long' | 'short';
+    side: "long" | "short";
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
     if (this.adrenaProgram === null) {
       return null;
@@ -3968,7 +4178,7 @@ export class AdrenaClient {
     const receivingCustodyOracle = receivingCustody.nativeObject.oracle;
 
     const instructionCollateralMint = (() => {
-      if (side === 'long') {
+      if (side === "long") {
         return principalCustody.mint;
       }
 
@@ -3984,7 +4194,7 @@ export class AdrenaClient {
       .getOpenPositionWithSwapAmountAndFees({
         collateralAmount,
         leverage,
-        side: side === 'long' ? 1 : 2,
+        side: side === "long" ? 1 : 2,
       })
       .accountsStrict({
         cortex: AdrenaClient.cortexPda,
@@ -4003,7 +4213,7 @@ export class AdrenaClient {
 
     return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
       [...preInstructions, instruction],
-      'OpenPositionWithSwapAmountAndFees',
+      "OpenPositionWithSwapAmountAndFees",
     );
   }
 
@@ -4018,11 +4228,11 @@ export class AdrenaClient {
     collateralToken: Token;
     collateralAmount: BN;
     leverage: number;
-    side: 'long' | 'short';
+    side: "long" | "short";
   }): Promise<NewPositionPricesAndFee | null> {
     if (!token.custody || !collateralToken.custody) {
       throw new Error(
-        'Cannot get entry price and fee for a token without custody',
+        "Cannot get entry price and fee for a token without custody",
       );
     }
 
@@ -4053,7 +4263,7 @@ export class AdrenaClient {
 
     return this.simulateInstructions<NewPositionPricesAndFee>(
       [instruction],
-      'NewPositionPricesAndFee',
+      "NewPositionPricesAndFee",
     );
   }
 
@@ -4075,7 +4285,7 @@ export class AdrenaClient {
     );
 
     if (!custody || !collateralCustody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const instruction = await this.adrenaProgram.methods
@@ -4093,7 +4303,7 @@ export class AdrenaClient {
 
     return this.simulateInstructions<ExitPriceAndFee>(
       [instruction],
-      'ExitPriceAndFee',
+      "ExitPriceAndFee",
     );
   }
 
@@ -4102,7 +4312,7 @@ export class AdrenaClient {
   }: {
     position: Pick<
       PositionExtended,
-      'custody' | 'pubkey' | 'collateralCustody'
+      "custody" | "pubkey" | "collateralCustody"
     >;
   }): Promise<ProfitAndLoss | null> {
     if (this.adrenaProgram === null) {
@@ -4114,7 +4324,7 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const collateralCustody = this.custodies.find((custody) =>
@@ -4122,7 +4332,7 @@ export class AdrenaClient {
     );
 
     if (!collateralCustody) {
-      throw new Error('Cannot find collateral custody related to position');
+      throw new Error("Cannot find collateral custody related to position");
     }
 
     const instruction = await this.adrenaProgram.methods
@@ -4140,7 +4350,7 @@ export class AdrenaClient {
 
     return this.simulateInstructions<ProfitAndLoss>(
       [instruction],
-      'ProfitAndLoss',
+      "ProfitAndLoss",
     );
   }
 
@@ -4151,7 +4361,7 @@ export class AdrenaClient {
   }: {
     position: Pick<
       PositionExtended,
-      'custody' | 'collateralCustody' | 'pubkey'
+      "custody" | "collateralCustody" | "pubkey"
     >;
     addCollateral: BN;
     removeCollateral: BN;
@@ -4165,7 +4375,7 @@ export class AdrenaClient {
     );
 
     if (!custody) {
-      throw new Error('Cannot find custody related to position');
+      throw new Error("Cannot find custody related to position");
     }
 
     const collateralCustody = this.custodies.find((custody) =>
@@ -4173,7 +4383,7 @@ export class AdrenaClient {
     );
 
     if (!collateralCustody) {
-      throw new Error('Cannot find collateral custody related to position');
+      throw new Error("Cannot find collateral custody related to position");
     }
 
     const instruction = await this.adrenaProgram.methods
@@ -4191,7 +4401,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructions<BN>([instruction], 'BN');
+    return this.simulateInstructions<BN>([instruction], "BN");
   }
 
   // Return in Native unit
@@ -4282,7 +4492,7 @@ export class AdrenaClient {
     const unrealizedLossUsd = exitFeeUsd.add(interestUsd);
 
     const { priceDiffProfit, priceDiffLoss } = (() => {
-      if (position.side === 'long') {
+      if (position.side === "long") {
         if (exitPrice.gt(entryPrice)) {
           return {
             priceDiffProfit: exitPrice.sub(entryPrice),
@@ -4376,7 +4586,7 @@ export class AdrenaClient {
     }
 
     if (
-      typeof position.borrowFeeUsd === 'undefined' ||
+      typeof position.borrowFeeUsd === "undefined" ||
       position.borrowFeeUsd === null
     ) {
       return null;
@@ -4411,7 +4621,7 @@ export class AdrenaClient {
       .mul(entryPrice)
       .div(positionSizeUsdScaled);
 
-    if (position.side === 'long') {
+    if (position.side === "long") {
       if (maxLossUsd.gte(marginUsd)) {
         return nativeToUi(entryPrice.add(maxPriceDiffScaled), PRICE_DECIMALS);
       }
@@ -4441,13 +4651,13 @@ export class AdrenaClient {
     interestUsd,
     sizeUsd,
   }: {
-    side: 'long' | 'short';
+    side: "long" | "short";
     price: number;
     exitFeeUsd: number;
     interestUsd: number;
     sizeUsd: number;
   }): number {
-    if (side === 'long') {
+    if (side === "long") {
       return price * (1 + (exitFeeUsd + interestUsd) / sizeUsd);
     }
 
@@ -4459,8 +4669,8 @@ export class AdrenaClient {
 
       return [
         ...acc,
-        this.findPositionAddress(user, token.custody, 'long'),
-        this.findPositionAddress(user, token.custody, 'short'),
+        this.findPositionAddress(user, token.custody, "long"),
+        this.findPositionAddress(user, token.custody, "short"),
       ];
     }, [] as PublicKey[]);
   }
@@ -4482,12 +4692,12 @@ export class AdrenaClient {
 
     // Ignore position with unknown tokens
     if (!token || !collateralToken) {
-      console.log('Ignore position with unknown tokens', position);
+      console.log("Ignore position with unknown tokens", position);
       return null;
     }
 
     const price = nativeToUi(position.price, PRICE_DECIMALS);
-    const side = position.side === 1 ? 'long' : 'short';
+    const side = position.side === 1 ? "long" : "short";
     const exitFeeUsd = nativeToUi(position.exitFeeUsd, USD_DECIMALS);
     const unrealizedInterestUsd = nativeToUi(
       position.unrealizedInterestUsd,
@@ -4495,7 +4705,7 @@ export class AdrenaClient {
     );
     const sizeUsd = nativeToUi(position.sizeUsd, USD_DECIMALS);
     const breakEvenPrice =
-      side === 'long'
+      side === "long"
         ? price * (1 + (exitFeeUsd + unrealizedInterestUsd) / sizeUsd)
         : price * (1 - (exitFeeUsd + unrealizedInterestUsd) / sizeUsd);
 
@@ -4555,7 +4765,7 @@ export class AdrenaClient {
     const positions =
       (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
         actualPositionAddresses,
-        'recent',
+        "recent",
       )) as (Position | null)[];
 
     // Create extended positions
@@ -4608,12 +4818,12 @@ export class AdrenaClient {
 
         // Ignore position with unknown tokens
         if (!token || !collateralToken) {
-          console.log('Ignore position with unknown tokens', position);
+          console.log("Ignore position with unknown tokens", position);
           return acc;
         }
 
         const side =
-          positionAccount.side === 1 ? 'long' : ('short' as 'long' | 'short');
+          positionAccount.side === 1 ? "long" : ("short" as "long" | "short");
         const sizeUsd = nativeToUi(positionAccount.sizeUsd, USD_DECIMALS);
         const price = nativeToUi(positionAccount.price, PRICE_DECIMALS);
         const exitFeeUsd = nativeToUi(positionAccount.exitFeeUsd, USD_DECIMALS);
@@ -4682,7 +4892,7 @@ export class AdrenaClient {
 
   public async loadAllStaking(): Promise<UserStakingExtended[] | null> {
     if (!this.readonlyAdrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const allStaking =
@@ -4696,20 +4906,57 @@ export class AdrenaClient {
     }));
   }
 
+  public async loadAllUserProfileWithReferrer(
+    referrerProfileFilter: PublicKey | null,
+  ): Promise<UserProfileExtended[] | null> {
+    if (!this.readonlyConnection || referrerProfileFilter === null) return null;
+
+    const userProfiles = await this.readonlyConnection.getProgramAccounts(
+      AdrenaClient.programId,
+      {
+        commitment: "processed",
+        filters: [
+          { dataSize: 8 + 400 }, // Ensure correct size for V2
+          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 336,
+              bytes: bs58.encode(referrerProfileFilter.toBuffer()),
+            },
+          }, // Filter by referrer_profile
+        ],
+      },
+    );
+
+    if (!userProfiles.length) {
+      return [];
+    }
+
+    return userProfiles
+      .map((account) => {
+        const p = this.decodeUserProfileAnyVersion(account.account);
+
+        if (!p) return null;
+
+        return this.extendUserProfileInfo(p, account.pubkey);
+      })
+      .filter((p) => p) as UserProfileExtended[];
+  }
+
   public async loadAllUserProfile(): Promise<UserProfileExtended[] | null> {
     if (!this.readonlyConnection) return null;
 
     // Fetch both UserProfileV1 and UserProfileV2 concurrently
     const [userProfilesV1, userProfilesV2] = await Promise.all([
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: 'processed',
+        commitment: "processed",
         filters: [
           { dataSize: 8 + 216 }, // Ensure correct size for V1
           { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([0])) } }, // Version == 0 (V1)
         ],
       }),
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: 'processed',
+        commitment: "processed",
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
           { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
@@ -4751,7 +4998,7 @@ export class AdrenaClient {
     // Fetch both UserProfileV1 and UserProfileV2 concurrently
     const [userProfilesV1, userProfilesV2] = await Promise.all([
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: 'processed',
+        commitment: "processed",
         dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
         filters: [
           { dataSize: 8 + 216 }, // Ensure correct size for V1
@@ -4759,7 +5006,7 @@ export class AdrenaClient {
         ],
       }),
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
-        commitment: 'processed',
+        commitment: "processed",
         dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
@@ -4777,7 +5024,7 @@ export class AdrenaClient {
       const nicknameLength = data[8 + 31]; // Last byte is the length
       const nickname = Buffer.from(
         Uint8Array.from(nicknameBytes.slice(0, nicknameLength)),
-      ).toString('utf-8');
+      ).toString("utf-8");
 
       // Extract owner (32 bytes)
       const owner = new PublicKey(data.slice(48, 48 + 32));
@@ -4800,7 +5047,7 @@ export class AdrenaClient {
       const nicknameLength = data[8 + 31]; // Last byte is the length
       const nickname = Buffer.from(
         Uint8Array.from(nicknameBytes.slice(0, nicknameLength)),
-      ).toString('utf-8');
+      ).toString("utf-8");
 
       // Extract owner (32 bytes)
       const owner = new PublicKey(data.slice(48, 48 + 32));
@@ -4831,7 +5078,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .instruction();
 
-    return this.simulateInstructions<BN>([instruction], 'BN');
+    return this.simulateInstructions<BN>([instruction], "BN");
   }
 
   // fees are expressed in collateral token
@@ -4845,7 +5092,7 @@ export class AdrenaClient {
   }): Promise<AmountAndFee | null> {
     if (!token.custody) {
       throw new Error(
-        'Cannot get add liquidity amount and fee for a token without custody',
+        "Cannot get add liquidity amount and fee for a token without custody",
       );
     }
 
@@ -4854,7 +5101,7 @@ export class AdrenaClient {
     }
 
     if (amountIn.isZero()) {
-      throw new Error('Cannot add 0 liquidity');
+      throw new Error("Cannot add 0 liquidity");
     }
 
     const custody = this.getCustodyByMint(token.mint);
@@ -4875,7 +5122,7 @@ export class AdrenaClient {
 
     return this.simulateInstructions<AmountAndFee>(
       [instruction],
-      'AmountAndFee',
+      "AmountAndFee",
     );
   }
 
@@ -4890,7 +5137,7 @@ export class AdrenaClient {
   }): Promise<AmountAndFee | null> {
     if (!token.custody) {
       throw new Error(
-        'Cannot get add liquidity amount and fee for a token without custody',
+        "Cannot get add liquidity amount and fee for a token without custody",
       );
     }
 
@@ -4916,7 +5163,7 @@ export class AdrenaClient {
 
     return this.simulateInstructions<AmountAndFee>(
       [instruction],
-      'AmountAndFee',
+      "AmountAndFee",
     );
   }
 
@@ -4935,7 +5182,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .instruction();
 
-    return this.simulateInstructions<BN>([instruction], 'BN');
+    return this.simulateInstructions<BN>([instruction], "BN");
   }
 
   public async resolveStakingRound({
@@ -5013,7 +5260,7 @@ export class AdrenaClient {
         );
 
         // Should never happens
-        if (!custody) throw new Error('Custody not found');
+        if (!custody) throw new Error("Custody not found");
 
         return {
           pubkey: custody.nativeObject.oracle,
@@ -5030,7 +5277,7 @@ export class AdrenaClient {
           );
 
           // Should never happens
-          if (!custody) throw new Error('Custody not found');
+          if (!custody) throw new Error("Custody not found");
 
           if (
             custody.nativeObject.oracle.equals(custody.nativeObject.tradeOracle)
@@ -5070,7 +5317,7 @@ export class AdrenaClient {
 
   // Include a retry system to avoid blockhash expired errors
   protected simulateTransactionStrong(
-    args: Parameters<Connection['simulateTransaction']>[0],
+    args: Parameters<Connection["simulateTransaction"]>[0],
   ): Promise<SimulatedTransactionResponse> {
     return new Promise((resolve, reject) => {
       this.simulateTransactionStrongPromise(resolve, reject, args);
@@ -5081,17 +5328,17 @@ export class AdrenaClient {
   protected simulateTransactionStrongPromise(
     resolve: (value: SimulatedTransactionResponse) => void,
     reject: (err: Error) => void,
-    args: Parameters<Connection['simulateTransaction']>[0],
+    args: Parameters<Connection["simulateTransaction"]>[0],
     retry = 0,
   ): void {
-    if (!this.connection) return reject(new Error('Connection missing'));
+    if (!this.connection) return reject(new Error("Connection missing"));
 
     const d = Date.now();
 
     this.connection
       .simulateTransaction(args, {
         sigVerify: false,
-        commitment: 'processed',
+        commitment: "processed",
       })
       .then((result) => {
         if (result.value.err) {
@@ -5110,9 +5357,9 @@ export class AdrenaClient {
         const errString =
           err instanceof AdrenaTransactionError ? err.errorString : String(err);
 
-        console.log('Simulate time KO', Date.now() - d, errString);
+        console.log("Simulate time KO", Date.now() - d, errString);
 
-        if (errString.includes('BlockhashNotFound') && retry < 10) {
+        if (errString.includes("BlockhashNotFound") && retry < 10) {
           setTimeout(() => {
             this.simulateTransactionStrongPromise(
               resolve,
@@ -5133,7 +5380,7 @@ export class AdrenaClient {
     typeName: string,
   ): Promise<T> {
     if (!this.readonlyAdrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
@@ -5142,7 +5389,7 @@ export class AdrenaClient {
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       // Use finalize to get the latest blockhash accepted by the leader
-      recentBlockhash: (await this.connection.getLatestBlockhash('confirmed'))
+      recentBlockhash: (await this.connection.getLatestBlockhash("confirmed"))
         .blockhash,
       instructions,
     }).compileToV0Message();
@@ -5154,11 +5401,11 @@ export class AdrenaClient {
     const returnDataEncoded = result.returnData?.data[0] ?? null;
 
     if (returnDataEncoded == null) {
-      throw new Error('View expected return data');
+      throw new Error("View expected return data");
     }
 
-    if (typeName === 'BN') {
-      const bn = new BN(Buffer.from(returnDataEncoded, 'base64'), 'le');
+    if (typeName === "BN") {
+      const bn = new BN(Buffer.from(returnDataEncoded, "base64"), "le");
 
       return bn as unknown as T;
     }
@@ -5193,7 +5440,7 @@ export class AdrenaClient {
 
       return result.unitsConsumed ?? null;
     } catch (err) {
-      console.log('Error', err);
+      console.log("Error", err);
 
       return null;
     }
@@ -5208,7 +5455,7 @@ export class AdrenaClient {
     transaction: Transaction;
     recentBlockhash: string;
   }): Promise<SimulatedTransactionResponse> {
-    if (!this.connection) throw new Error('Connection missing');
+    if (!this.connection) throw new Error("Connection missing");
 
     try {
       const messageV0 = new TransactionMessage({
@@ -5224,7 +5471,7 @@ export class AdrenaClient {
 
       return result;
     } catch (err) {
-      console.log('Error', err);
+      console.log("Error", err);
 
       throw err;
     }
@@ -5245,7 +5492,7 @@ export class AdrenaClient {
     ) => void;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     let priorityFeeMicroLamports: number =
@@ -5260,7 +5507,7 @@ export class AdrenaClient {
     };
 
     try {
-      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+      latestBlockHash = await this.connection.getLatestBlockhash("confirmed");
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
@@ -5286,13 +5533,13 @@ export class AdrenaClient {
         ),
       );
     } catch (err) {
-      console.log('Error fetching priority fee', err);
+      console.log("Error fetching priority fee", err);
     }
 
     console.log(
-      'Apply',
+      "Apply",
       priorityFeeMicroLamports,
-      'micro lamport priority fee to transaction',
+      "micro lamport priority fee to transaction",
     );
 
     transaction.instructions.unshift(
@@ -5324,7 +5571,7 @@ export class AdrenaClient {
       }
 
       computeUnitUsed = simulationResult.unitsConsumed;
-      console.log('computeUnitUsed', computeUnitUsed);
+      console.log("computeUnitUsed", computeUnitUsed);
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
@@ -5362,7 +5609,7 @@ export class AdrenaClient {
       let computeUnitToUse = computeUnitUsed * 1.05; // Add 5% of compute unit to avoid any issues in between simulation and actual execution
 
       // Solflare add two instructions to the end of the transaction, which cost compute units. Needs to take it into account
-      if (wallet.walletName === 'Solflare') {
+      if (wallet.walletName === "Solflare") {
         computeUnitToUse += 12000;
       }
 
@@ -5379,11 +5626,11 @@ export class AdrenaClient {
     try {
       signedTransaction = await wallet.signTransaction(transaction);
     } catch (err) {
-      console.log('sign error:', err);
+      console.log("sign error:", err);
 
       const adrenaError = new AdrenaTransactionError(
         null,
-        'User rejected the request',
+        "User rejected the request",
       );
 
       // Sign the transaction failed
@@ -5392,7 +5639,7 @@ export class AdrenaClient {
     }
 
     const txSignature = signedTransaction.signatures[0].signature;
-    if (!txSignature) throw new Error('Transaction signature missing');
+    if (!txSignature) throw new Error("Transaction signature missing");
     const txSignatureBase58 = bs58.encode(txSignature);
 
     notification?.currentStepSucceeded();
@@ -5417,11 +5664,11 @@ export class AdrenaClient {
             blockhash: latestBlockHash.blockhash,
             lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
           },
-          'confirmed',
+          "confirmed",
         );
 
         const txInfo = await this.connection.getTransaction(txSignatureBase58, {
-          commitment: 'confirmed',
+          commitment: "confirmed",
           maxSupportedTransactionVersion: 0,
         });
 
@@ -5463,7 +5710,7 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
     console.log(
       `tx: https://explorer.solana.com/tx/${txSignatureBase58}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+        this.config.cluster === "devnet" ? "?cluster=devnet" : ""
       }`,
     );
 
@@ -5485,7 +5732,7 @@ export class AdrenaClient {
         confirmTxRet = await this.connection
           .getSignatureStatus(txSignatureBase58)
           .catch((e) => {
-            console.log('GET SIGNATURE STATUS ERROR', e);
+            console.log("GET SIGNATURE STATUS ERROR", e);
             return null;
           });
 
@@ -5496,7 +5743,7 @@ export class AdrenaClient {
           confirmTxRet.value.confirmations > 10
         ) {
           txIsConfirmed = true;
-          console.log('Tx confirmed after', Date.now() - d, 'ms');
+          console.log("Tx confirmed after", Date.now() - d, "ms");
         } else {
           console.log(
             `Tx not confirmed after resending #${txSendAttempts++}`,
@@ -5531,11 +5778,11 @@ export class AdrenaClient {
           this.adrenaProgram,
           confirmTxRet && confirmTxRet.value
             ? confirmTxRet.value.err
-            : 'Transaction not confirmed',
+            : "Transaction not confirmed",
         );
         adrenaError.setTxHash(txSignatureBase58);
 
-        console.log('Transaction failed', adrenaError);
+        console.log("Transaction failed", adrenaError);
 
         // Confirm the transaction errored
         notification?.currentStepErrored(adrenaError);
@@ -5557,7 +5804,7 @@ export class AdrenaClient {
   public findCustodyAddress(mint: PublicKey): PublicKey {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from('custody'),
+        Buffer.from("custody"),
         this.mainPool.pubkey.toBuffer(),
         mint.toBuffer(),
       ],
@@ -5568,7 +5815,7 @@ export class AdrenaClient {
   public findCustodyTokenAccountAddress(mint: PublicKey) {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from('custody_token_account'),
+        Buffer.from("custody_token_account"),
         this.mainPool.pubkey.toBuffer(),
         mint.toBuffer(),
       ],
@@ -5579,11 +5826,11 @@ export class AdrenaClient {
   public findPositionAddress(
     owner: PublicKey,
     custody: PublicKey,
-    side: 'long' | 'short',
+    side: "long" | "short",
   ) {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from('position'),
+        Buffer.from("position"),
         owner.toBuffer(),
         this.mainPool.pubkey.toBuffer(),
         custody.toBuffer(),
@@ -5647,20 +5894,20 @@ export class AdrenaClient {
     caller: PublicKey;
     overrideRewardTokenAccount?: PublicKey;
   }) {
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakingRewardTokenMint = this.getTokenBySymbol("USDC")?.mint;
     const adrenaProgram = this.adrenaProgram;
 
     if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
+      throw new Error("USDC not found");
     }
     if (!adrenaProgram) {
-      throw new Error('adrena program not ready');
+      throw new Error("adrena program not ready");
     }
 
     const preInstructions: TransactionInstruction[] = [];
 
     const rewardTokenAccount =
-      typeof overrideRewardTokenAccount === 'undefined'
+      typeof overrideRewardTokenAccount === "undefined"
         ? await this.checkATAAddressInitializedAndCreatePreInstruction({
             owner,
             mint: stakingRewardTokenMint,
@@ -5668,7 +5915,7 @@ export class AdrenaClient {
           })
         : overrideRewardTokenAccount;
 
-    console.log('>>> REWARD TOKEN ACCOUNT', rewardTokenAccount.toBase58());
+    console.log(">>> REWARD TOKEN ACCOUNT", rewardTokenAccount.toBase58());
 
     const lmTokenAccount =
       await this.checkATAAddressInitializedAndCreatePreInstruction({

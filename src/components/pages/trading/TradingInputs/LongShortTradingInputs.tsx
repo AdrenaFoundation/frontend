@@ -1,6 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { kv } from '@vercel/kv';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -17,7 +16,6 @@ import {
   AdrenaTransactionError,
   getTokenSymbol,
   nativeToUi,
-  tryPubkey,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
@@ -90,15 +88,12 @@ export default function LongShortTradingInputs({
       return null;
     }
 
-    if (query.referral.length === 44) return tryPubkey(query.referral as string)
+    const referrerNickname = query.referral;
 
-    try {
-      const referralRedis = await kv.get(decodeURIComponent(query.referral as string)) as string | null
-      return referralRedis !== null ? tryPubkey(referralRedis) : null
-    } catch (err) {
-      console.log('Error getting referral from redis', err)
-      return null
-    }
+    // Look for a user profile with that nickname
+    const p = await window.adrena.client.loadUserProfileByNickname(referrerNickname);
+
+    return p;
   }, [query.referral]);
 
   const calculateIncreasePositionInfo = useCallback(() => {
@@ -339,7 +334,7 @@ export default function LongShortTradingInputs({
     }
 
     try {
-      const referrerPublicKey = await referrer;
+      const r = await referrer;
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
@@ -350,7 +345,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(inputState.leverage),
           notification,
-          referrer: referrerPublicKey,
+          referrerProfile: r ? r.pubkey : undefined,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -360,7 +355,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(inputState.leverage),
           notification,
-          referrer: referrerPublicKey,
+          referrerProfile: r ? r.pubkey : undefined,
         }));
 
       dispatch(fetchWalletTokenBalances());

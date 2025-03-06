@@ -29,7 +29,7 @@ export default function AllUserProfiles({
     view: string;
 }) {
     const { allUserProfiles, triggerAllUserProfilesReload } =
-        useAllUserProfiles();
+        useAllUserProfiles({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [sortConfigs, setSortConfigs] = useState<{

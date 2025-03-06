@@ -1,5 +1,5 @@
 export type Adrena = {
-  "version": "1.1.9",
+  "version": "1.2.0",
   "name": "adrena",
   "instructions": [
     {
@@ -1613,7 +1613,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1621,7 +1621,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "receivingCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1629,51 +1629,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "receivingCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "receivingCustodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -1681,7 +1641,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -1689,7 +1649,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
@@ -1697,7 +1657,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
@@ -1705,39 +1665,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
+            "#13"
           ]
         },
         {
@@ -1745,7 +1673,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#14"
           ]
         },
         {
@@ -1753,7 +1681,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#15"
           ]
         }
       ],
@@ -1802,7 +1730,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1810,7 +1738,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1818,7 +1746,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1826,7 +1754,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1834,43 +1762,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#9"
           ]
         },
         {
@@ -1878,31 +1774,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#17"
+            "#10"
           ]
         },
         {
@@ -1910,15 +1782,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
+            "#11"
           ]
         },
         {
@@ -1926,7 +1790,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#12"
           ]
         },
         {
@@ -1934,7 +1798,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#13"
           ]
         }
       ],
@@ -2410,7 +2274,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2418,7 +2282,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2426,7 +2290,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2434,51 +2298,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#8"
           ]
         },
         {
@@ -2486,23 +2310,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#16"
+            "#9"
           ]
         },
         {
@@ -2510,15 +2318,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
+            "#10"
           ]
         },
         {
@@ -2526,7 +2326,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#19"
+            "#11"
           ]
         },
         {
@@ -2534,7 +2334,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#12"
           ]
         }
       ],
@@ -2933,7 +2733,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2941,7 +2741,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2949,83 +2749,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#23"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#24"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#25"
+            "#16"
           ]
         },
         {
@@ -3033,7 +2761,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#26"
+            "#17"
           ]
         },
         {
@@ -3041,7 +2769,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#18"
           ]
         }
       ],
@@ -3178,7 +2906,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3186,7 +2914,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3194,83 +2922,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#23"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#24"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#25"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#26"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#18"
           ]
         },
         {
@@ -3278,7 +2934,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#19"
           ]
         },
         {
@@ -3286,7 +2942,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#29"
+            "#20"
           ]
         }
       ],
@@ -3787,7 +3443,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3795,7 +3451,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3803,7 +3459,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3811,7 +3467,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3819,51 +3475,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -3871,7 +3487,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -3879,39 +3495,25 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
+            "#13"
           ]
         },
         {
@@ -3919,7 +3521,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#14"
           ]
         },
         {
@@ -3927,7 +3529,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#15"
           ]
         }
       ],
@@ -3976,7 +3578,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3984,7 +3586,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -3992,7 +3594,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4000,7 +3602,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4008,51 +3610,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -4060,7 +3622,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -4068,7 +3630,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
@@ -4076,39 +3638,25 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#18"
+            "#13"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
+            "#14"
           ]
         },
         {
@@ -4116,7 +3664,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#15"
           ]
         },
         {
@@ -4124,7 +3672,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#16"
           ]
         }
       ],
@@ -4165,7 +3713,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4173,7 +3721,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4181,7 +3729,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4189,7 +3737,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4197,51 +3745,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#8"
           ]
         },
         {
@@ -4249,7 +3757,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -4257,39 +3765,25 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
+            "#12"
           ]
         },
         {
@@ -4297,7 +3791,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#13"
           ]
         },
         {
@@ -4305,7 +3799,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#14"
           ]
         }
       ],
@@ -4346,7 +3840,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4354,7 +3848,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4362,7 +3856,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4370,7 +3864,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -4378,51 +3872,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#8"
           ]
         },
         {
@@ -4430,7 +3884,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -4438,7 +3892,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -4446,39 +3900,25 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
+            "#13"
           ]
         },
         {
@@ -4486,7 +3926,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#14"
           ]
         },
         {
@@ -4494,7 +3934,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#15"
           ]
         }
       ],
@@ -5566,11 +5006,21 @@ export type Adrena = {
           ]
         },
         {
+          "name": "referrerProfile",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "#5",
+            "Apply this referrer to the user profile, If none, referrer_profile is set to default"
+          ]
+        },
+        {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -5578,7 +5028,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         }
       ],
@@ -5619,11 +5069,21 @@ export type Adrena = {
           ]
         },
         {
+          "name": "referrerProfile",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "#4",
+            "Apply this referrer to the user profile, If none, referrer_profile is set to default"
+          ]
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         }
       ],
@@ -9319,6 +8779,235 @@ export type Adrena = {
           }
         }
       ]
+    },
+    {
+      "name": "distributeFees",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1",
+            "Anyone can call this instruction"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "lmStaking",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "lpStaking",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "feeRedistributionMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "lmStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "lpStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "referrerRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "stakingRewardTokenCustody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "stakingRewardTokenCustodyOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "stakingRewardTokenCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipient",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#17"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#18"
+          ]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#19"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimReferralFee",
+      "accounts": [
+        {
+          "name": "referrer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "receivingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "referrerProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "referrerRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -9758,11 +9447,23 @@ export type Adrena = {
             }
           },
           {
+            "name": "feesDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "referrersFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding1",
             "type": {
               "array": [
                 "u8",
-                32
+                8
               ]
             }
           },
@@ -10216,11 +9917,23 @@ export type Adrena = {
             }
           },
           {
+            "name": "referrerProfile",
+            "type": "publicKey"
+          },
+          {
+            "name": "claimableReferralFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "totalReferralFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding2",
             "type": {
               "array": [
                 "u8",
-                64
+                16
               ]
             }
           }
@@ -11131,12 +10844,6 @@ export type Adrena = {
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "referrer",
-            "type": {
-              "option": "publicKey"
-            }
           }
         ]
       }
@@ -11157,12 +10864,6 @@ export type Adrena = {
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "referrer",
-            "type": {
-              "option": "publicKey"
-            }
           }
         ]
       }
@@ -11183,12 +10884,6 @@ export type Adrena = {
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "referrer",
-            "type": {
-              "option": "publicKey"
-            }
           }
         ]
       }
@@ -11584,6 +11279,10 @@ export type Adrena = {
           },
           {
             "name": "lpCirculatingSupply",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
             "type": "u64"
           }
         ]
@@ -13596,12 +13295,17 @@ export type Adrena = {
       "code": 6074,
       "name": "InvalidVestVersion",
       "msg": "Invalid vest version"
+    },
+    {
+      "code": 6075,
+      "name": "MissingOrInvalidReferrerAccount",
+      "msg": "Missing or invalid referrer account"
     }
   ]
 };
 
 export const IDL: Adrena = {
-  "version": "1.1.9",
+  "version": "1.2.0",
   "name": "adrena",
   "instructions": [
     {
@@ -15215,7 +14919,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -15223,7 +14927,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "receivingCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -15231,51 +14935,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "receivingCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "receivingCustodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -15283,7 +14947,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -15291,7 +14955,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
@@ -15299,7 +14963,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
@@ -15307,39 +14971,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
+            "#13"
           ]
         },
         {
@@ -15347,7 +14979,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#14"
           ]
         },
         {
@@ -15355,7 +14987,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#15"
           ]
         }
       ],
@@ -15404,7 +15036,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -15412,7 +15044,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -15420,7 +15052,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -15428,7 +15060,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -15436,43 +15068,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#9"
           ]
         },
         {
@@ -15480,31 +15080,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#17"
+            "#10"
           ]
         },
         {
@@ -15512,15 +15088,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
+            "#11"
           ]
         },
         {
@@ -15528,7 +15096,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#12"
           ]
         },
         {
@@ -15536,7 +15104,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#13"
           ]
         }
       ],
@@ -16012,7 +15580,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -16020,7 +15588,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -16028,7 +15596,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -16036,51 +15604,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#8"
           ]
         },
         {
@@ -16088,23 +15616,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#16"
+            "#9"
           ]
         },
         {
@@ -16112,15 +15624,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
+            "#10"
           ]
         },
         {
@@ -16128,7 +15632,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#19"
+            "#11"
           ]
         },
         {
@@ -16136,7 +15640,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#12"
           ]
         }
       ],
@@ -16535,7 +16039,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -16543,7 +16047,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -16551,83 +16055,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#23"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#24"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#25"
+            "#16"
           ]
         },
         {
@@ -16635,7 +16067,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#26"
+            "#17"
           ]
         },
         {
@@ -16643,7 +16075,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#18"
           ]
         }
       ],
@@ -16780,7 +16212,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -16788,7 +16220,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -16796,83 +16228,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#21"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#22"
-          ]
-        },
-        {
-          "name": "lmStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#23"
-          ]
-        },
-        {
-          "name": "lpStakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#24"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#25"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#26"
-          ]
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#18"
           ]
         },
         {
@@ -16880,7 +16240,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#19"
           ]
         },
         {
@@ -16888,7 +16248,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#29"
+            "#20"
           ]
         }
       ],
@@ -17389,7 +16749,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17397,7 +16757,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17405,7 +16765,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17413,7 +16773,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17421,51 +16781,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -17473,7 +16793,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -17481,39 +16801,25 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
+            "#13"
           ]
         },
         {
@@ -17521,7 +16827,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#14"
           ]
         },
         {
@@ -17529,7 +16835,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#15"
           ]
         }
       ],
@@ -17578,7 +16884,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17586,7 +16892,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17594,7 +16900,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17602,7 +16908,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17610,51 +16916,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
           "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -17662,7 +16928,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -17670,7 +16936,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
@@ -17678,39 +16944,25 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#18"
+            "#13"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#21"
+            "#14"
           ]
         },
         {
@@ -17718,7 +16970,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#15"
           ]
         },
         {
@@ -17726,7 +16978,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#16"
           ]
         }
       ],
@@ -17767,7 +17019,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17775,7 +17027,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17783,7 +17035,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17791,7 +17043,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17799,51 +17051,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#8"
           ]
         },
         {
@@ -17851,7 +17063,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -17859,39 +17071,25 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
+            "#12"
           ]
         },
         {
@@ -17899,7 +17097,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#13"
           ]
         },
         {
@@ -17907,7 +17105,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#14"
           ]
         }
       ],
@@ -17948,7 +17146,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lmStaking",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17956,7 +17154,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpStaking",
+          "name": "pool",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17964,7 +17162,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "cortex",
+          "name": "position",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17972,7 +17170,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "pool",
+          "name": "custody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -17980,51 +17178,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyOracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
           "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#8"
           ]
         },
         {
@@ -18032,7 +17190,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#9"
           ]
         },
         {
@@ -18040,7 +17198,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#10"
           ]
         },
         {
@@ -18048,39 +17206,25 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#11"
           ]
         },
         {
-          "name": "lmStakingRewardTokenVault",
+          "name": "userProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#17"
+            "#12"
           ]
         },
         {
-          "name": "lpStakingRewardTokenVault",
+          "name": "referrerProfile",
           "isMut": true,
           "isSigner": false,
+          "isOptional": true,
           "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#20"
+            "#13"
           ]
         },
         {
@@ -18088,7 +17232,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#14"
           ]
         },
         {
@@ -18096,7 +17240,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#22"
+            "#15"
           ]
         }
       ],
@@ -19168,11 +18312,21 @@ export const IDL: Adrena = {
           ]
         },
         {
+          "name": "referrerProfile",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "#5",
+            "Apply this referrer to the user profile, If none, referrer_profile is set to default"
+          ]
+        },
+        {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -19180,7 +18334,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         }
       ],
@@ -19221,11 +18375,21 @@ export const IDL: Adrena = {
           ]
         },
         {
+          "name": "referrerProfile",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "#4",
+            "Apply this referrer to the user profile, If none, referrer_profile is set to default"
+          ]
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         }
       ],
@@ -22921,6 +22085,235 @@ export const IDL: Adrena = {
           }
         }
       ]
+    },
+    {
+      "name": "distributeFees",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1",
+            "Anyone can call this instruction"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "lmStaking",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "lpStaking",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "feeRedistributionMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        },
+        {
+          "name": "lmStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
+          "name": "lpStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
+          ]
+        },
+        {
+          "name": "referrerRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#12"
+          ]
+        },
+        {
+          "name": "stakingRewardTokenCustody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#13"
+          ]
+        },
+        {
+          "name": "stakingRewardTokenCustodyOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "stakingRewardTokenCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipient",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#17"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#18"
+          ]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#19"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimReferralFee",
+      "accounts": [
+        {
+          "name": "referrer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "receivingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "referrerProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "referrerRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -23360,11 +22753,23 @@ export const IDL: Adrena = {
             }
           },
           {
+            "name": "feesDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "referrersFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding1",
             "type": {
               "array": [
                 "u8",
-                32
+                8
               ]
             }
           },
@@ -23818,11 +23223,23 @@ export const IDL: Adrena = {
             }
           },
           {
+            "name": "referrerProfile",
+            "type": "publicKey"
+          },
+          {
+            "name": "claimableReferralFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "totalReferralFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "padding2",
             "type": {
               "array": [
                 "u8",
-                64
+                16
               ]
             }
           }
@@ -24733,12 +24150,6 @@ export const IDL: Adrena = {
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "referrer",
-            "type": {
-              "option": "publicKey"
-            }
           }
         ]
       }
@@ -24759,12 +24170,6 @@ export const IDL: Adrena = {
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "referrer",
-            "type": {
-              "option": "publicKey"
-            }
           }
         ]
       }
@@ -24785,12 +24190,6 @@ export const IDL: Adrena = {
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "referrer",
-            "type": {
-              "option": "publicKey"
-            }
           }
         ]
       }
@@ -25186,6 +24585,10 @@ export const IDL: Adrena = {
           },
           {
             "name": "lpCirculatingSupply",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
             "type": "u64"
           }
         ]
@@ -27198,6 +26601,11 @@ export const IDL: Adrena = {
       "code": 6074,
       "name": "InvalidVestVersion",
       "msg": "Invalid vest version"
+    },
+    {
+      "code": 6075,
+      "name": "MissingOrInvalidReferrerAccount",
+      "msg": "Missing or invalid referrer account"
     }
   ]
 };

@@ -70,7 +70,7 @@ export default function TopTraders({ startDate, endDate, allUserProfilesMetadata
     }, [startDate, endDate]);
 
     const handleProfileView = async (pubkey: string) => {
-        const p = await window.adrena.client.loadUserProfile(new PublicKey(pubkey));
+        const p = await window.adrena.client.loadUserProfile({ user: new PublicKey(pubkey) });
 
         setProfile(p !== false ? p : null);
     };

@@ -1,8 +1,13 @@
+import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import { UserProfileExtended } from '@/types';
 
-export function useAllUserProfiles(): {
+export function useAllUserProfiles({
+    referrerProfileFilter,
+}: {
+    referrerProfileFilter?: PublicKey | null;
+}): {
     allUserProfiles: UserProfileExtended[];
     triggerAllUserProfilesReload: () => void;
 } {
@@ -12,7 +17,9 @@ export function useAllUserProfiles(): {
     useEffect(() => {
         const loadAllUserProfiles = async () => {
             try {
-                const profiles = await window.adrena.client.loadAllUserProfile();
+                const profiles = await (typeof referrerProfileFilter !== 'undefined' ?
+                    window.adrena.client.loadAllUserProfileWithReferrer(referrerProfileFilter) :
+                    window.adrena.client.loadAllUserProfile());
 
                 setAllUserProfiles(profiles !== null ? profiles : []);
             } catch (e) {
