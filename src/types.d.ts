@@ -158,6 +158,9 @@ export type PositionExtended = {
   takeProfitIsSet: boolean;
   unrealizedInterestUsd: number;
 
+  // Added later on after loading user profiles from onchain.
+  userProfile?: UserProfileExtended;
+
   // Onchain data
   nativeObject: Position;
 };

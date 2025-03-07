@@ -8,10 +8,11 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
-import { PositionExtended } from '@/types';
+import { PositionExtended, UserProfileMetadata } from '@/types';
 import { formatTimeDifference, getFullTimeDifference, getTokenSymbol } from '@/utils';
 
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
+import ViewProfileModal from '../../profile/ViewProfileModal';
 import { ButtonGroup } from './PositionBlockComponents/ButtonGroup';
 import { LiquidationWarning } from './PositionBlockComponents/LiquidationWarning';
 import { NetValue } from './PositionBlockComponents/NetValue';
@@ -31,6 +32,7 @@ interface PositionBlockProps {
   triggerEditPositionCollateral?: (p: PositionExtended) => void;
   showFeesInPnl: boolean;
   readOnly?: boolean;
+  userProfileMetadata?: UserProfileMetadata;
 }
 
 export function PositionBlock({
@@ -44,6 +46,7 @@ export function PositionBlock({
   readOnly = false,
 }: PositionBlockProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const blockRef = useRef<HTMLDivElement>(null);
   const [closableIn, setClosableIn] = useState<number | null>(null);
   const [isCompact, setIsCompact] = useState(false);
@@ -142,12 +145,17 @@ export function PositionBlock({
       <div className="flex w-full font-mono text-xs text-txtfade justify-center items-center">
         Owner
       </div>
-      <OnchainAccountInfo
-        address={position.owner}
-        shorten={true}
-        className="text-xs"
-        iconClassName="w-2 h-2"
-      />
+
+      {position.userProfile && position.userProfile.nickname.length > 0 ?
+        <div className='text-sm border-b border-transparent hover:border-white cursor-pointer' onClick={() => setIsProfileOpen(true)}>
+          {position.userProfile.nickname}
+        </div> :
+        <OnchainAccountInfo
+          address={position.owner}
+          shorten={true}
+          className="text-xs"
+          iconClassName="w-2 h-2"
+        />}
     </div>
   );
 
@@ -162,7 +170,6 @@ export function PositionBlock({
       />
     </svg>
   )
-
 
   return (
     <>
@@ -453,6 +460,24 @@ export function PositionBlock({
                 })()}
               </div>
               <SharePositionModal position={position} />
+            </Modal>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isProfileOpen && position.userProfile && (
+            <Modal
+              className="h-[80vh] w-full overflow-y-auto"
+              wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]"
+              title=""
+              close={() => setIsProfileOpen(false)}
+              isWrapped={false}
+            >
+              <ViewProfileModal
+                profile={position.userProfile}
+                showFeesInPnl={showFeesInPnl}
+                close={() => setIsProfileOpen(false)}
+              />
             </Modal>
           )}
         </AnimatePresence>
