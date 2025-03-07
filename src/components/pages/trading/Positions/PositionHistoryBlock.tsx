@@ -128,6 +128,21 @@ const PositionHistoryBlock = ({
             />
 
             <ValueColumn
+              label="Exit Size"
+              value={
+                <FormatNumber
+                  nb={positionHistory.exitSize}
+                  format="currency"
+                  precision={0}
+                  isDecimalDimmed={false}
+                  className={POSITION_BLOCK_STYLES.text.white}
+                />
+              }
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
+              columnClasses={columnClasses}
+            />
+
+            <ValueColumn
               label="Entry Price"
               value={
                 <FormatNumber
@@ -224,7 +239,7 @@ const PositionHistoryBlock = ({
                 isBig && "flex-row justify-center items-center",
                 isBiggest && "flex-row justify-center items-center"
               )}>
-                <div className="lg:block hidden flex flex-col justify-center items-center w-full">
+                <div className="lg:flex hidden flex-col justify-center items-center w-full">
                   <Button
                     leftIcon={shareIcon}
                     variant='secondary'
