@@ -76,7 +76,7 @@ export default function AllUserProfiles({
         const filteredProfiles = (allUserProfiles ?? []).filter((profile) => {
             const ownerCondition =
                 ownerFilter === '' ||
-                profile.pubkey
+                profile.owner
                     .toBase58()
                     .toLowerCase()
                     .includes(ownerFilter.toLowerCase());
