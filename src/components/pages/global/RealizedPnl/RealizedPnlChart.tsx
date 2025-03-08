@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
-import { getGMT } from '@/utils';
+import DataApiClient from '@/DataApiClient';
+import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 interface CumulativePnlChartProps {
   isSmallScreen: boolean;
@@ -80,52 +81,37 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_profit_usd=true&cumulative_loss_usd=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
-
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
+      const result = await DataApiClient.getCustodyInfo(
+        dataEndpoint,
+        'cumulative_profit_usd=true&cumulative_loss_usd=true',
+        dataPeriod
       );
 
-      const { data } = await res.json();
+      if (!result) {
+        console.error('Could not fetch realized PnL data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch realized PnL data
+          </div>
+        );
+      }
+
       const {
         cumulative_profit_usd: cumulativeProfitUsd,
         cumulative_loss_usd: cumulativeLossUsd,
         snapshot_timestamp,
-      } = data as {
-        cumulative_profit_usd: { [key: string]: string[] };
-        cumulative_loss_usd: { [key: string]: string[] };
-        snapshot_timestamp: string[];
-      };
+      } = result;
 
-      const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
+      if (!cumulativeProfitUsd || !cumulativeLossUsd || !snapshot_timestamp) {
+        console.error('Failed to fetch realized PnL data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch realized PnL data
+          </div>
+        );
+      }
 
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            hour: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            timeZone: 'UTC',
-          });
-        }
-
-        throw new Error('Invalid period');
-      });
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
 
       // Each custody keeps an utilization array
       const infos = window.adrena.client.custodies.map((c) => ({
@@ -186,7 +172,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
       });
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching realized PnL data:', e);
     }
   };
 

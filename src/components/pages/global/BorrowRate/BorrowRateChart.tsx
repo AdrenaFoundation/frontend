@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
-import { getGMT } from '@/utils';
+import DataApiClient from '@/DataApiClient';
+import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 export default function BorrowRateChart() {
   const [infos, setInfos] = useState<{
@@ -76,20 +77,32 @@ export default function BorrowRateChart() {
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?borrow_rate=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
-
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
+      // Use DataApiClient instead of direct fetch
+      const result = await DataApiClient.getCustodyInfo(
+        dataEndpoint,
+        'borrow_rate=true',
+        dataPeriod
       );
 
-      const { data } = await res.json();
-      const { borrow_rate, snapshot_timestamp } = data as {
-        borrow_rate: { [key: string]: string[] };
-        snapshot_timestamp: string[];
-      };
+      if (!result) {
+        console.error('Could not fetch borrow rate data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch borrow rate data
+          </div>
+        );
+      }
+
+      const { borrow_rate, snapshot_timestamp } = result;
+
+      if (!borrow_rate || !snapshot_timestamp) {
+        console.error('Failed to fetch borrow rate data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch borrow rate data
+          </div>
+        );
+      }
 
       // Each custody keeps an utilization array
       const infos = window.adrena.client.custodies.map((c) => ({
@@ -110,32 +123,7 @@ export default function BorrowRateChart() {
       }
 
       const formatted = snapshot_timestamp.map((time: string, i: number) => {
-        const formattedTime = (() => {
-          if (periodRef.current === '1d') {
-            return new Date(time).toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: 'numeric',
-            });
-          }
-
-          if (periodRef.current === '7d') {
-            return new Date(time).toLocaleString('en-US', {
-              day: 'numeric',
-              month: 'numeric',
-              hour: 'numeric',
-            });
-          }
-
-          if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-            return new Date(time).toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'numeric',
-              timeZone: 'UTC',
-            });
-          }
-
-          throw new Error('Invalid period');
-        })();
+        const formattedTime = formatSnapshotTimestamp([time], periodRef.current)[0];
 
         return {
           time: formattedTime,
@@ -154,7 +142,7 @@ export default function BorrowRateChart() {
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
       });
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching borrow rate data:', e);
     }
   };
 

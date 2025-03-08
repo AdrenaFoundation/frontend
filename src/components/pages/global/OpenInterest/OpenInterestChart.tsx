@@ -4,8 +4,9 @@ import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
-import { getCustodyByMint, getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getCustodyByMint, getGMT } from '@/utils';
 
 interface OpenInterestChartProps {
   isSmallScreen: boolean;
@@ -77,48 +78,37 @@ export default function OpenInterestChart({
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?open_interest_long_usd=true&open_interest_short_usd=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
-
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
+      const result = await DataApiClient.getCustodyInfo(
+        dataEndpoint,
+        'open_interest_long_usd=true&open_interest_short_usd=true',
+        dataPeriod
       );
 
-      const { data } = await res.json();
+      if (!result) {
+        console.error('Could not fetch open interest data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch open interest data
+          </div>
+        );
+      }
+
       const {
         open_interest_long_usd,
         open_interest_short_usd,
         snapshot_timestamp,
-      } = data;
+      } = result;
 
-      const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
+      if (!open_interest_long_usd || !open_interest_short_usd || !snapshot_timestamp) {
+        console.error('Failed to fetch open interest data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch open interest data
+          </div>
+        );
+      }
 
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            hour: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            timeZone: 'UTC',
-          });
-        }
-
-        throw new Error('Invalid period');
-      });
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
 
       const custodyInfos: TokenInfo[] = [];
 
@@ -177,7 +167,7 @@ export default function OpenInterestChart({
 
       setCustodyInfo(custodyInfos);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching open interest data:', e);
     }
   };
 

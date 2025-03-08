@@ -1361,6 +1361,19 @@ export type PoolInfoResponse = {
 
 export type CustodyInfoResponse = {
   snapshot_timestamp: string[];
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
+  cumulative_profit_usd?: { [key: string]: string[] };
+  cumulative_loss_usd?: { [key: string]: string[] };
+  borrow_rate?: { [key: string]: string[] };
+  short_pnl?: { [key: string]: string[] };
+  long_pnl?: { [key: string]: string[] };
+  open_interest_long_usd?: { [key: string]: string[] };
+  open_interest_short_usd?: { [key: string]: string[] };
+  oi_long_usd?: { [key: string]: string[] };
+  oi_short_usd?: { [key: string]: string[] };
+  unrealized_pnl?: { [key: string]: string[] };
+  owned?: { [key: string]: string[] };
+  locked?: { [key: string]: string[] };
+  [key: string]: unknown;
 };
