@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import AreaRechart from '@/components/ReCharts/AreaRecharts';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
-import { getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 export default function AumChart() {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
@@ -67,47 +68,33 @@ export default function AumChart() {
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?aum_usd=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
-
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
+      const result = await DataApiClient.getPoolInfo(
+        dataEndpoint,
+        'aum_usd=true',
+        dataPeriod
       );
 
-      const { data } = await res.json();
+      if (!result) {
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch AUM data
+          </div>
+        );
+      }
 
-      const { aum_usd, snapshot_timestamp } = data;
+      const { aum_usd, snapshot_timestamp } = result;
 
-      const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
+      if (!aum_usd || !snapshot_timestamp) {
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch AUM data
+          </div>
+        );
+      }
 
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            hour: 'numeric',
-          });
-        }
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current)
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            timeZone: 'UTC',
-          });
-        }
-
-        throw new Error('Invalid period');
-      });
-
-      const formattedData = aum_usd.map((aum: number, i: string | number) => ({
+      const formattedData = aum_usd.map((aum: number, i: number) => ({
         time: timeStamp[i],
         value: aum,
       }));

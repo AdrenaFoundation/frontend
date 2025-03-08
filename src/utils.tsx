@@ -1021,3 +1021,32 @@ export const isValidPublicKey = (key: string) => {
 export const calculateWeeksPassed = (startDate: Date): number => {
   return Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
 };
+
+export function formatSnapshotTimestamp(snapshot_timestamp: string[], period: string | null) {
+  return snapshot_timestamp.map((time: string) => {
+    if (period === '1d') {
+      return new Date(time).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+      });
+    }
+
+    if (period === '7d') {
+      return new Date(time).toLocaleString('en-US', {
+        day: 'numeric',
+        month: 'numeric',
+        hour: 'numeric',
+      });
+    }
+
+    if (period === '1M' || period === '3M' || period === '6M') {
+      return new Date(time).toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'numeric',
+        timeZone: 'UTC',
+      });
+    }
+
+    throw new Error('Invalid period');
+  });
+}
