@@ -1342,14 +1342,21 @@ export type EnrichedTraderInfo = {
   avgHoldingTime: number;
 };
 
-// Add this interface above the class definition
+// Update PoolInfoResponse to match what getPoolInfo returns (just the data part)
 export type PoolInfoResponse = {
   aum_usd?: number[];
   lp_apr?: number[];
   lm_apr?: number[];
+  lp_token_price?: number[];
+  cumulative_swap_fee_usd?: number[];
+  cumulative_liquidity_fee_usd?: number[];
+  cumulative_close_position_fee_usd?: number[];
+  cumulative_liquidation_fee_usd?: number[];
+  cumulative_borrow_fee_usd?: number[];
+  cumulative_trading_volume_usd?: number[];
   snapshot_timestamp: string[];
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
 };
 
 export type CustodyInfoResponse = {

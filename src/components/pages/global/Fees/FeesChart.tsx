@@ -3,8 +3,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
-import { getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 interface FeesChartProps {
   isSmallScreen: boolean;
@@ -61,16 +62,19 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
+      const queryParams = 'cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true';
 
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
-      );
+      const result = await DataApiClient.getPoolInfo(dataEndpoint, queryParams, dataPeriod);
 
-      const { data } = await res.json();
+      if (!result) {
+        console.error('Could not fetch fees data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch fees data
+          </div>
+        );
+      }
+
       const {
         cumulative_swap_fee_usd,
         cumulative_liquidity_fee_usd,
@@ -78,37 +82,22 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
         cumulative_liquidation_fee_usd,
         cumulative_borrow_fee_usd,
         snapshot_timestamp,
-      } = data;
+      } = result;
 
-      const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
+      if (!snapshot_timestamp || !cumulative_swap_fee_usd || !cumulative_liquidity_fee_usd ||
+        !cumulative_close_position_fee_usd || !cumulative_liquidation_fee_usd || !cumulative_borrow_fee_usd) {
+        console.error('Failed to fetch fees data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch fees data
+          </div>
+        );
+      }
 
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            hour: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            timeZone: 'UTC',
-          });
-        }
-
-        throw new Error('Invalid period');
-      });
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
 
       const formattedData: RechartsData[] = timeStamp.map(
-        (time: number, i: string | number) => ({
+        (time: string, i: number) => ({
           time,
           'Swap Fees': cumulative_swap_fee_usd[i],
           'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i],
@@ -126,7 +115,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
 
       setChartData(formattedData);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching fees data:', e);
     }
   };
 

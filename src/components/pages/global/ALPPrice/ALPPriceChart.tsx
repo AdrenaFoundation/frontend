@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import AreaRechart from '@/components/ReCharts/AreaRecharts';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
-import { getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 export default function ALPPriceChart() {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
@@ -68,46 +69,36 @@ export default function ALPPriceChart() {
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?lp_token_price=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
-
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
+      const result = await DataApiClient.getPoolInfo(
+        dataEndpoint,
+        'lp_token_price=true',
+        dataPeriod
       );
-      const { data } = await res.json();
-      const { lp_token_price, snapshot_timestamp } = data;
 
-      const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
+      if (!result) {
+        console.error('Could not fetch ALP price data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch ALP price data
+          </div>
+        );
+      }
 
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            hour: 'numeric',
-          });
-        }
+      const { lp_token_price, snapshot_timestamp } = result;
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            timeZone: 'UTC',
-          });
-        }
+      if (!lp_token_price || !snapshot_timestamp) {
+        console.error('Failed to fetch ALP price data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch ALP price data
+          </div>
+        );
+      }
 
-        throw new Error('Invalid period');
-      });
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
 
       const formattedData = lp_token_price.map(
-        (price: number, i: string | number) => ({
+        (price: number, i: number) => ({
           time: timeStamp[i],
           value: price,
         }),
@@ -115,7 +106,7 @@ export default function ALPPriceChart() {
 
       setChartData(formattedData);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching ALP price data:', e);
     }
   };
 

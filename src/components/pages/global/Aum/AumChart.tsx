@@ -75,6 +75,7 @@ export default function AumChart() {
       );
 
       if (!result) {
+        console.error('Could not fetch AUM data');
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
             Could not fetch AUM data
@@ -85,6 +86,7 @@ export default function AumChart() {
       const { aum_usd, snapshot_timestamp } = result;
 
       if (!aum_usd || !snapshot_timestamp) {
+        console.error('Failed to fetch AUM data: Missing required data fields');
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
             Could not fetch AUM data

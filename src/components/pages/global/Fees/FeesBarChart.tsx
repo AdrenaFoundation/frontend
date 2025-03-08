@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
 
 interface FeesChartProps {
@@ -51,22 +52,25 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         }
       })();
 
-      const [{ data }, { data: latestPoolInfoSnapshot }] = await Promise.all([
+      // Use DataApiClient instead of direct fetch
+      const queryParams = 'cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true';
 
-        fetch(
-          `https://datapi.adrena.xyz/poolinfodaily?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - dataPeriod);
-
-            return startDate.toISOString();
-          })()}&end_date=${new Date().toISOString()}`,
-        ).then((res) => res.json()),
+      const [historicalData, latestData] = await Promise.all([
+        // Get historical data
+        DataApiClient.getPoolInfo('poolinfodaily', queryParams, dataPeriod),
 
         // Get the latest pool info snapshot
-        fetch(
-          `https://datapi.adrena.xyz/poolinfo?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&sort=DESC&limit=1`,
-        ).then((res) => res.json()),
+        DataApiClient.getPoolInfo('poolinfo', `${queryParams}&sort=DESC&limit=1`, 1)
       ]);
+
+      if (!historicalData || !latestData) {
+        console.error('Could not fetch fees data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch fees data
+          </div>
+        );
+      }
 
       const {
         cumulative_swap_fee_usd,
@@ -75,8 +79,24 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         cumulative_liquidation_fee_usd,
         cumulative_borrow_fee_usd,
         snapshot_timestamp,
-      } = data;
+      } = historicalData;
 
+      if (!snapshot_timestamp || !cumulative_swap_fee_usd || !cumulative_liquidity_fee_usd ||
+        !cumulative_close_position_fee_usd || !cumulative_liquidation_fee_usd ||
+        !cumulative_borrow_fee_usd || !latestData.cumulative_swap_fee_usd ||
+        !latestData.cumulative_liquidity_fee_usd ||
+        !latestData.cumulative_close_position_fee_usd ||
+        !latestData.cumulative_liquidation_fee_usd ||
+        !latestData.cumulative_borrow_fee_usd) {
+        console.error('Failed to fetch fees data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch fees data
+          </div>
+        );
+      }
+
+      // Use original timestamp formatting specific to FeesBarChart
       const timeStamp = snapshot_timestamp.map((time: string) => {
         return new Date(time).toLocaleString('en-US', {
           day: 'numeric',
@@ -86,7 +106,6 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       });
 
       // Get fees for that day, taking last
-
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
         (time: string, i: number) => ({
           time,
@@ -105,16 +124,16 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
           minute: 'numeric',
           timeZone: 'UTC',
         }),
-        'Swap Fees': latestPoolInfoSnapshot.cumulative_swap_fee_usd[0] - cumulative_swap_fee_usd[cumulative_swap_fee_usd.length - 1],
-        'Mint/Redeem ALP Fees': latestPoolInfoSnapshot.cumulative_liquidity_fee_usd[0] - cumulative_liquidity_fee_usd[cumulative_liquidity_fee_usd.length - 1],
-        'Open/Close Fees': latestPoolInfoSnapshot.cumulative_close_position_fee_usd[0] - cumulative_close_position_fee_usd[cumulative_close_position_fee_usd.length - 1],
-        'Liquidation Fees': latestPoolInfoSnapshot.cumulative_liquidation_fee_usd[0] - cumulative_liquidation_fee_usd[cumulative_liquidation_fee_usd.length - 1],
-        'Borrow Fees': latestPoolInfoSnapshot.cumulative_borrow_fee_usd[0] - cumulative_borrow_fee_usd[cumulative_borrow_fee_usd.length - 1],
+        'Swap Fees': latestData.cumulative_swap_fee_usd[0] - cumulative_swap_fee_usd[cumulative_swap_fee_usd.length - 1],
+        'Mint/Redeem ALP Fees': latestData.cumulative_liquidity_fee_usd[0] - cumulative_liquidity_fee_usd[cumulative_liquidity_fee_usd.length - 1],
+        'Open/Close Fees': latestData.cumulative_close_position_fee_usd[0] - cumulative_close_position_fee_usd[cumulative_close_position_fee_usd.length - 1],
+        'Liquidation Fees': latestData.cumulative_liquidation_fee_usd[0] - cumulative_liquidation_fee_usd[cumulative_liquidation_fee_usd.length - 1],
+        'Borrow Fees': latestData.cumulative_borrow_fee_usd[0] - cumulative_borrow_fee_usd[cumulative_borrow_fee_usd.length - 1],
       })
 
       setChartData(formattedData);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching fees data:', e);
     }
   };
 

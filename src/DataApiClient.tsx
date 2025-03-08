@@ -673,10 +673,10 @@ export default class DataApiClient {
 
     /**
      * Get Pool Info data preserving the exact format expected by components
-     * @param dataEndpoint API endpoint to use ('poolinfo', 'poolinfohourly', 'poolinfodaily', )
+     * @param dataEndpoint API endpoint to use ('poolinfo', 'poolinfohourly', 'poolinfodaily')
      * @param queryParams Additional query parameters to include
      * @param dataPeriod Number of days to look back
-     * @returns Raw API response with data structure preserved
+     * @returns Data part of the API response or null on error
      */
     public static async getPoolInfo(
         dataEndpoint: string,
@@ -709,12 +709,12 @@ export default class DataApiClient {
     }
 
     /**
-    * Get  Custody Info data preserving the exact format expected by components
-    * @param dataEndpoint API endpoint to use ('custodyinfo', 'custodyinfohourly', 'custodyinfodaily', )
-    * @param queryParams Additional query parameters to include
-    * @param dataPeriod Number of days to look back
-    * @returns Raw API response with data structure preserved
-    */
+         * Get  Custody Info data preserving the exact format expected by components
+         * @param dataEndpoint API endpoint to use ('custodyinfo', 'custodyinfohourly', 'custodyinfodaily', )
+         * @param queryParams Additional query parameters to include
+         * @param dataPeriod Number of days to look back
+         * @returns Raw API response with data structure preserved
+         */
     public static async getCustodyInfo(
         dataEndpoint: string,
         queryParams: string,
