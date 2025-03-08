@@ -108,15 +108,37 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
       // Get fees for that day, taking last
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
-        (time: string, i: number) => ({
-          time,
-          'Swap Fees': cumulative_swap_fee_usd[i + 1] - cumulative_swap_fee_usd[i],
-          'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i + 1] - cumulative_liquidity_fee_usd[i],
-          'Open/Close Fees': cumulative_close_position_fee_usd[i + 1] - cumulative_close_position_fee_usd[i],
-          'Liquidation Fees': cumulative_liquidation_fee_usd[i + 1] - cumulative_liquidation_fee_usd[i],
-          'Borrow Fees': cumulative_borrow_fee_usd[i + 1] - cumulative_borrow_fee_usd[i],
-          'Referral Fees': cumulative_referrer_fee_usd[i + 1] - cumulative_referrer_fee_usd[i],
-        }),
+        (time: string, i: number) => {
+          // Parse the date to check if it's after March 6th 2025
+          const dateParts = time.split('/');
+
+          const month = parseInt(dateParts[0], 10);
+          const day = parseInt(dateParts[1], 10);
+          const currentYear = new Date().getFullYear();
+          const dataDate = new Date(currentYear, month - 1, day);
+
+          // Reference date - March 6th, 2025
+          const startShowingReferrerFees = new Date(2025, 2, 6);
+
+          // Calculate referrer fees
+          const referrerFees = typeof cumulative_referrer_fee_usd[i + 1] === 'number' &&
+            typeof cumulative_referrer_fee_usd[i] === 'number'
+            ? cumulative_referrer_fee_usd[i + 1] - cumulative_referrer_fee_usd[i]
+            : 0;
+
+          // Only include referrer fees if the date is on or after March 6th
+          const displayedReferrerFees = dataDate >= startShowingReferrerFees ? referrerFees : null;
+
+          return {
+            time,
+            'Swap Fees': cumulative_swap_fee_usd[i + 1] - cumulative_swap_fee_usd[i],
+            'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i + 1] - cumulative_liquidity_fee_usd[i],
+            'Open/Close Fees': cumulative_close_position_fee_usd[i + 1] - cumulative_close_position_fee_usd[i],
+            'Liquidation Fees': cumulative_liquidation_fee_usd[i + 1] - cumulative_liquidation_fee_usd[i],
+            'Borrow Fees': cumulative_borrow_fee_usd[i + 1] - cumulative_borrow_fee_usd[i],
+            'Referral Fees': displayedReferrerFees,
+          };
+        }
       );
 
       // Push a data coming from last data point (last day) to now

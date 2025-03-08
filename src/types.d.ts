@@ -490,7 +490,7 @@ export type Trader = {
 };
 
 export type RechartsData = {
-  [key: string]: number | string | boolean;
+  [key: string]: number | string | boolean | null;
 };
 
 export type AdrenaEventType = 'Global' | 'Trading' | 'Staking' | 'Other';
