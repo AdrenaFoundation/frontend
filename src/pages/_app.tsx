@@ -266,13 +266,13 @@ function AppComponent({
 
     const showFeesInPnl = cookies['show-fees-in-pnl'];
 
-    if (showFeesInPnl && showFeesInPnl === 'false') {
+    if (showFeesInPnl === false || showFeesInPnl === 'false') {
       setShowFeesInPnl(false);
     }
 
     const showPopupOnPositionClose = cookies['show-popup-on-position-close'];
 
-    if (showPopupOnPositionClose && showPopupOnPositionClose === 'false') {
+    if (showPopupOnPositionClose === false || showPopupOnPositionClose === 'false') {
       setShowPopupOnPositionClose(false);
     }
   }, [cookies]);
@@ -380,10 +380,27 @@ function AppComponent({
         setFavoriteRpc={setFavoriteRpc}
         preferredSolanaExplorer={preferredSolanaExplorer}
         adapters={adapters}
+        // TODO: Should refactor all settings and put them in the store instead of passing them as props
         showFeesInPnl={showFeesInPnl}
-        setShowFeesInPnl={setShowFeesInPnl}
+        setShowFeesInPnl={(showFeesInPnl: boolean) => {
+          setCookie('show-fees-in-pnl', showFeesInPnl, {
+            path: '/',
+            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
+            sameSite: 'strict',
+          });
+
+          setShowFeesInPnl(showFeesInPnl);
+        }}
         showPopupOnPositionClose={showPopupOnPositionClose}
-        setShowPopupOnPositionClose={setShowPopupOnPositionClose}
+        setShowPopupOnPositionClose={(showPopupOnPositionClose: boolean) => {
+          setCookie('show-popup-on-position-close', showPopupOnPositionClose, {
+            path: '/',
+            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
+            sameSite: 'strict',
+          });
+
+          setShowPopupOnPositionClose(showPopupOnPositionClose);
+        }}
       >
         {
           <TermsAndConditionsModal
