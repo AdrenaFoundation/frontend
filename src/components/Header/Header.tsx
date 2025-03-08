@@ -8,7 +8,6 @@ import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
 import {
   PriorityFeeOption,
-  SolanaExplorerOptions,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -47,12 +46,7 @@ export default function Header({
   setFavoriteRpc,
   maxPriorityFee,
   setMaxPriorityFee,
-  preferredSolanaExplorer,
   adapters,
-  showFeesInPnl,
-  setShowFeesInPnl,
-  showPopupOnPositionClose,
-  setShowPopupOnPositionClose,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
@@ -77,12 +71,7 @@ export default function Header({
   setFavoriteRpc: (favoriteRpc: string) => void;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
-  preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
-  showFeesInPnl: boolean;
-  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
-  showPopupOnPositionClose: boolean;
-  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
   const pathname = usePathname();
 
@@ -235,11 +224,6 @@ export default function Header({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          preferredSolanaExplorer={preferredSolanaExplorer}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
-          showPopupOnPositionClose={showPopupOnPositionClose}
-          setShowPopupOnPositionClose={setShowPopupOnPositionClose}
         />
 
         <Mutagen />

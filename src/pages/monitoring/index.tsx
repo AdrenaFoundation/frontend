@@ -17,7 +17,7 @@ import WalletDigger from './walletDigger';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
-export default function Monitoring({ showFeesInPnl, ...pageProps }: PageProps) {
+export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
   const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
 
@@ -60,13 +60,13 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: PageProps) {
   function getViewComponent(view: MonitorViews): React.ReactElement {
     switch (view) {
       case 'lite':
-        return <BasicMonitoring isSmallScreen={isSmallScreen} {...pageProps} showFeesInPnl={showFeesInPnl} poolInfo={poolInfo} view={view} />;
+        return <BasicMonitoring isSmallScreen={isSmallScreen} {...pageProps} poolInfo={poolInfo} view={view} />;
       case 'full':
-        return <DetailedMonitoring {...pageProps} showFeesInPnl={showFeesInPnl} poolInfo={poolInfo} view={view} />;
+        return <DetailedMonitoring {...pageProps} poolInfo={poolInfo} view={view} />;
       case 'livePositions':
-        return <AllPositions isSmallScreen={isSmallScreen} showFeesInPnl={showFeesInPnl} view={view} />;
+        return <AllPositions isSmallScreen={isSmallScreen} view={view} />;
       case 'userProfiles':
-        return <AllUserProfiles showFeesInPnl={showFeesInPnl} view={view} />;
+        return <AllUserProfiles view={view} />;
       case 'tokenomics':
         return <Tokenomics isSmallScreen={isSmallScreen} view={view} />;
       case 'allStaking':
@@ -74,7 +74,7 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: PageProps) {
       case 'flows':
         return <Flow custodies={pageProps.custodies} view={view} />;
       case 'walletDigger':
-        return <WalletDigger showFeesInPnl={showFeesInPnl} view={view} />;
+        return <WalletDigger view={view} />;
       default:
         return <div>Invalid view</div>;
     }

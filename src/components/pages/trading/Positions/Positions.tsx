@@ -21,8 +21,6 @@ export default function Positions({
   positions,
   triggerUserProfileReload,
   isBigScreen,
-  showFeesInPnl,
-  showPopupOnPositionClose,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -31,8 +29,6 @@ export default function Positions({
   positions: PositionExtended[] | null;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
-  showFeesInPnl: boolean;
-  showPopupOnPositionClose: boolean;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -87,7 +83,6 @@ export default function Positions({
                 setPositionToClose(null);
               }}
               tokenImage={positionToClose.token.image}
-              showPopupOnPositionClose={showPopupOnPositionClose}
               setShareClosePosition={setShareClosePosition}
             />
           </Modal>
@@ -209,7 +204,6 @@ export default function Positions({
         triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}
         triggerEditPositionCollateral={setPositionToEdit}
-        showFeesInPnl={showFeesInPnl}
       />
     </>
   );

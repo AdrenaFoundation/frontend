@@ -22,10 +22,8 @@ type SortableKeys = keyof Pick<
 >;
 
 export default function AllUserProfiles({
-    showFeesInPnl,
     view
 }: {
-    showFeesInPnl: boolean;
     view: string;
 }) {
     const { allUserProfiles, triggerAllUserProfilesReload } =
@@ -245,7 +243,6 @@ export default function AllUserProfiles({
                     >
                         <ViewProfileModal
                             profile={activeProfile}
-                            showFeesInPnl={showFeesInPnl}
                             close={() => setActiveProfile(null)}
                         />
                     </Modal>

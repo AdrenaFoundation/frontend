@@ -1,10 +1,11 @@
 import { Switch } from '@mui/material';
 import { Connection } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { setSettings } from '@/actions/settingsActions';
 import { SOLANA_EXPLORERS_OPTIONS } from '@/constant';
+import { useDispatch, useSelector } from '@/store/store';
 import { SolanaExplorerOptions } from '@/types';
 
 import settingsIcon from '../../../public/images/Icons/settings.svg';
@@ -28,13 +29,8 @@ export default function Settings({
   setCustomRpcUrl,
   setFavoriteRpc,
   isGenesis = false,
-  preferredSolanaExplorer,
   isMobile = false,
-  showFeesInPnl,
-  setShowFeesInPnl,
   setCloseMobileModal,
-  showPopupOnPositionClose,
-  setShowPopupOnPositionClose,
 }: {
   activeRpc: {
     name: string;
@@ -53,30 +49,15 @@ export default function Settings({
   setFavoriteRpc: (favoriteRpc: string) => void;
   isIcon?: boolean;
   isGenesis?: boolean;
-  preferredSolanaExplorer: SolanaExplorerOptions;
   isMobile?: boolean;
-  showFeesInPnl: boolean;
-  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
   setCloseMobileModal?: (close: boolean) => void;
-  showPopupOnPositionClose: boolean;
-  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
-
-  const [, setCookies] = useCookies(['solanaExplorer']);
-
-  const [activeSolanaExplorer, setActiveSolanaExplorer] =
-    useState<SolanaExplorerOptions>(preferredSolanaExplorer);
+  const dispatch = useDispatch();
+  const settings = useSelector((state) => state.settings);
 
   const SOLANA_EXPLORERS = Object.keys(
     SOLANA_EXPLORERS_OPTIONS,
   ) as Array<SolanaExplorerOptions>;
-
-  useEffect(() => {
-    window.adrena.settings.solanaExplorer = activeSolanaExplorer;
-
-    setCookies('solanaExplorer', activeSolanaExplorer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSolanaExplorer]);
 
   const EXPLORERS = {
     'Solana Explorer': {
@@ -116,12 +97,16 @@ export default function Settings({
           {SOLANA_EXPLORERS.map((exp) => (
             <Button
               onClick={() => {
-                setActiveSolanaExplorer(exp);
+                dispatch(
+                  setSettings({
+                    preferredSolanaExplorer: exp,
+                  }),
+                );
               }}
               leftIcon={EXPLORERS[exp].img}
               className={twMerge(
                 'justify-start transition duration-300',
-                exp !== activeSolanaExplorer &&
+                exp !== settings.preferredSolanaExplorer &&
                 'grayscale border-transparent hover:bg-transparent opacity-50',
               )}
               iconClassName="w-[20px] h-[20px]"
@@ -139,8 +124,15 @@ export default function Settings({
       <div className="flex flex-row mt-2 justify-between">
         <p className="opacity-50 w-full">Show fees in PnL</p>
         <Switch
-          checked={showFeesInPnl}
-          onChange={(event) => setShowFeesInPnl(event.target.checked)}
+          checked={settings.showFeesInPnl}
+          onChange={(event) => {
+            dispatch(
+              setSettings({
+                showFeesInPnl: event.target.checked,
+              }),
+            );
+
+          }}
           size="small"
           sx={{
             transform: 'scale(0.7)',
@@ -163,8 +155,15 @@ export default function Settings({
       <div className="flex flex-row justify-between">
         <p className="opacity-50 w-full">Display popup when position closes</p>
         <Switch
-          checked={showPopupOnPositionClose}
-          onChange={(event) => setShowPopupOnPositionClose(event.target.checked)}
+          checked={settings.showPopupOnPositionClose}
+          onChange={(event) => {
+            dispatch(
+              setSettings({
+                showPopupOnPositionClose: event.target.checked,
+              }),
+            );
+
+          }}
           size="small"
           sx={{
             transform: 'scale(0.7)',

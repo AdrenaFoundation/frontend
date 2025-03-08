@@ -30,7 +30,6 @@ interface PositionBlockProps {
   triggerClosePosition?: (p: PositionExtended) => void;
   triggerStopLossTakeProfit?: (p: PositionExtended) => void;
   triggerEditPositionCollateral?: (p: PositionExtended) => void;
-  showFeesInPnl: boolean;
   readOnly?: boolean;
   userProfileMetadata?: UserProfileMetadata;
 }
@@ -42,7 +41,6 @@ export function PositionBlock({
   triggerClosePosition,
   triggerStopLossTakeProfit,
   triggerEditPositionCollateral,
-  showFeesInPnl,
   readOnly = false,
 }: PositionBlockProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,6 +118,7 @@ export function PositionBlock({
     return tradeTokenPrice > position.liquidationPrice;
   })();
 
+  const showFeesInPnl = useSelector((s) => s.settings.showFeesInPnl);
   const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl);
 
   // Then update the dynamic classes
@@ -475,7 +474,6 @@ export function PositionBlock({
             >
               <ViewProfileModal
                 profile={position.userProfile}
-                showFeesInPnl={showFeesInPnl}
                 close={() => setIsProfileOpen(false)}
               />
             </Modal>

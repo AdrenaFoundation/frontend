@@ -14,7 +14,6 @@ function PositionsHistory({
   connected,
   walletAddress,
   showShareButton = true,
-  showFeesInPnl,
   exportButtonPosition = 'top-right',
   className,
 }: {
@@ -22,7 +21,6 @@ function PositionsHistory({
   className?: string;
   walletAddress: string | null;
   showShareButton?: boolean;
-  showFeesInPnl: boolean;
   exportButtonPosition: 'top-right' | 'bottom-left';
 }) {
   const { positionsHistory } = usePositionsHistory({ walletAddress });
@@ -110,7 +108,6 @@ function PositionsHistory({
                         key={positionHistory.positionId}
                         positionHistory={positionHistory}
                         showShareButton={showShareButton}
-                        showFeesInPnl={showFeesInPnl}
                       />
                     ))}
 

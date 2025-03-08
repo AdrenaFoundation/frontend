@@ -10,6 +10,7 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, PositionExtended } from '@/types';
 import { formatTimeDifference, getFullTimeDifference, getTxExplorer } from '@/utils';
 
@@ -27,15 +28,14 @@ const PositionHistoryBlock = ({
   borderColor,
   positionHistory,
   showShareButton = true,
-  showFeesInPnl,
 }: {
   bodyClassName?: string;
   borderColor?: string;
   positionHistory: EnrichedPositionApi;
   showShareButton?: boolean;
-  showFeesInPnl: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const showFeesInPnl = useSelector((state) => state.settings.showFeesInPnl);
   const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl);
 
   const blockRef = useRef<HTMLDivElement>(null);

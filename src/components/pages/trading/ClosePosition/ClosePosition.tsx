@@ -25,7 +25,6 @@ export default function ClosePosition({
   onClose,
   tokenImage,
   setShareClosePosition,
-  showPopupOnPositionClose,
 }: {
   className?: string;
   position: PositionExtended;
@@ -33,8 +32,8 @@ export default function ClosePosition({
   onClose: () => void;
   tokenImage: ImageRef;
   setShareClosePosition: (position: PositionExtended) => void;
-  showPopupOnPositionClose: boolean;
 }) {
+  const showPopupOnPositionClose = useSelector((state) => state.settings.showPopupOnPositionClose);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [exitPriceAndFee, setExitPriceAndFee] =

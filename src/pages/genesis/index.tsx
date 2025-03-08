@@ -25,7 +25,7 @@ import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useDispatch, useSelector } from '@/store/store';
-import { GenesisLock, PageProps, SolanaExplorerOptions, WalletAdapterExtended } from '@/types';
+import { GenesisLock, PageProps, WalletAdapterExtended } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
@@ -49,12 +49,7 @@ export default function Genesis({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  preferredSolanaExplorer,
   adapters,
-  showFeesInPnl,
-  setShowFeesInPnl,
-  showPopupOnPositionClose,
-  setShowPopupOnPositionClose,
 }: PageProps & {
   activeRpc: {
     name: string;
@@ -71,12 +66,7 @@ export default function Genesis({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
-  showFeesInPnl: boolean;
-  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
-  showPopupOnPositionClose: boolean;
-  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -626,13 +616,8 @@ export default function Genesis({
                     setAutoRpcMode={setAutoRpcMode}
                     setCustomRpcUrl={setCustomRpcUrl}
                     setFavoriteRpc={setFavoriteRpc}
-                    preferredSolanaExplorer={preferredSolanaExplorer}
                     isIcon
                     isGenesis
-                    showFeesInPnl={showFeesInPnl}
-                    setShowFeesInPnl={setShowFeesInPnl}
-                    showPopupOnPositionClose={showPopupOnPositionClose}
-                    setShowPopupOnPositionClose={setShowPopupOnPositionClose}
                   />
                   <WalletAdapter userProfile={userProfile} adapters={adapters} />
                 </div>

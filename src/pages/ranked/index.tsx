@@ -33,7 +33,7 @@ export default function Ranked() {
             </div>
 
             <div className=" sm:px-8 max-w-[2200px] mx-auto w-full mt-10">
-                {activeSeason === 'awakening' ? <Competition showFeesInPnl={false} /> : null}
+                {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
             </div>
         </>

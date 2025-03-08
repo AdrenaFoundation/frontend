@@ -40,6 +40,7 @@ import {
 
 import logo from '../../public/images/logo.svg';
 import store, { useDispatch, useSelector } from '../store/store';
+import useSettingsPersistence from '@/hooks/useSettingsPersistence';
 
 function Loader(): JSX.Element {
   return (
@@ -82,14 +83,6 @@ export default function App(props: AppProps) {
     setFavoriteRpc,
   } = useRpc(CONFIG);
 
-  const [cookies] = useCookies(['solanaExplorer']);
-
-  const preferredSolanaExplorer: SolanaExplorerOptions =
-    cookies?.solanaExplorer &&
-      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
-      ? cookies?.solanaExplorer
-      : 'Solana Explorer';
-
   // Initialize the app as soon as possible:
   // - when the client-side app boots..
   //   - and the RPC has been picked by usePRC hook.
@@ -102,7 +95,6 @@ export default function App(props: AppProps) {
   ) {
     setInitStatus('starting');
     initializeApp(
-      preferredSolanaExplorer,
       CONFIG,
       activeRpc.connection,
       PYTH_CONNECTION,
@@ -127,7 +119,6 @@ export default function App(props: AppProps) {
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           {...props}
         />
         <Analytics />
@@ -155,7 +146,6 @@ function AppComponent({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  preferredSolanaExplorer,
 }: AppProps & {
   activeRpc: {
     name: string;
@@ -172,7 +162,6 @@ function AppComponent({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -183,6 +172,7 @@ function AppComponent({
   const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
   const { userProfile, triggerUserProfileReload } = useUserProfile(walletAddress ?? null);
 
+  useSettingsPersistence();
   useWatchTokenPrices();
   useWatchBorrowRates();
 
@@ -196,8 +186,6 @@ function AppComponent({
     'terms-and-conditions-acceptance',
     'priority-fee',
     'max-priority-fee',
-    'show-fees-in-pnl',
-    'show-popup-on-position-close',
   ]);
 
   const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(
@@ -208,9 +196,6 @@ function AppComponent({
   const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(
     DEFAULT_MAX_PRIORITY_FEE,
   );
-
-  const [showFeesInPnl, setShowFeesInPnl] = useState<boolean>(true);
-  const [showPopupOnPositionClose, setShowPopupOnPositionClose] = useState<boolean>(true);
 
   const [userVest, setUserVest] = useState<VestExtended | null | false>(null);
   const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null | false>(null);
@@ -262,18 +247,6 @@ function AppComponent({
 
     if (maxPriorityFee && !isNaN(maxPriorityFee)) {
       setMaxPriorityFee(maxPriorityFee);
-    }
-
-    const showFeesInPnl = cookies['show-fees-in-pnl'];
-
-    if (showFeesInPnl === false || showFeesInPnl === 'false') {
-      setShowFeesInPnl(false);
-    }
-
-    const showPopupOnPositionClose = cookies['show-popup-on-position-close'];
-
-    if (showPopupOnPositionClose === false || showPopupOnPositionClose === 'false') {
-      setShowPopupOnPositionClose(false);
     }
   }, [cookies]);
 
@@ -378,29 +351,7 @@ function AppComponent({
         setAutoRpcMode={setAutoRpcMode}
         setCustomRpcUrl={setCustomRpcUrl}
         setFavoriteRpc={setFavoriteRpc}
-        preferredSolanaExplorer={preferredSolanaExplorer}
         adapters={adapters}
-        // TODO: Should refactor all settings and put them in the store instead of passing them as props
-        showFeesInPnl={showFeesInPnl}
-        setShowFeesInPnl={(showFeesInPnl: boolean) => {
-          setCookie('show-fees-in-pnl', showFeesInPnl, {
-            path: '/',
-            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-            sameSite: 'strict',
-          });
-
-          setShowFeesInPnl(showFeesInPnl);
-        }}
-        showPopupOnPositionClose={showPopupOnPositionClose}
-        setShowPopupOnPositionClose={(showPopupOnPositionClose: boolean) => {
-          setCookie('show-popup-on-position-close', showPopupOnPositionClose, {
-            path: '/',
-            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-            sameSite: 'strict',
-          });
-
-          setShowPopupOnPositionClose(showPopupOnPositionClose);
-        }}
       >
         {
           <TermsAndConditionsModal
@@ -453,10 +404,7 @@ function AppComponent({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           adapters={adapters}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
         />
       </RootLayout>
     </>

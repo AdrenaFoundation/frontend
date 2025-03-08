@@ -22,7 +22,6 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   ImageRef,
   PriorityFeeOption,
-  SolanaExplorerOptions,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -50,12 +49,7 @@ export default function RootLayout({
   setPriorityFeeOption,
   maxPriorityFee,
   setMaxPriorityFee,
-  preferredSolanaExplorer,
   adapters,
-  showFeesInPnl,
-  setShowFeesInPnl,
-  showPopupOnPositionClose,
-  setShowPopupOnPositionClose,
 }: {
   children: ReactNode;
   wallet: Wallet | null;
@@ -81,12 +75,7 @@ export default function RootLayout({
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
-  preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
-  showFeesInPnl: boolean;
-  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
-  showPopupOnPositionClose: boolean;
-  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
@@ -149,12 +138,7 @@ export default function RootLayout({
           setFavoriteRpc={setFavoriteRpc}
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           adapters={adapters}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
-          showPopupOnPositionClose={showPopupOnPositionClose}
-          setShowPopupOnPositionClose={setShowPopupOnPositionClose}
         />
       ) : (
         <BurgerMenu
@@ -175,14 +159,9 @@ export default function RootLayout({
           setFavoriteRpc={setFavoriteRpc}
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           adapters={adapters}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
-          showPopupOnPositionClose={showPopupOnPositionClose}
-          setShowPopupOnPositionClose={setShowPopupOnPositionClose}
         />
       )}
 
