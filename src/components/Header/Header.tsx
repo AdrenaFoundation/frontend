@@ -51,6 +51,8 @@ export default function Header({
   adapters,
   showFeesInPnl,
   setShowFeesInPnl,
+  showPopupOnPositionClose,
+  setShowPopupOnPositionClose,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
@@ -79,6 +81,8 @@ export default function Header({
   adapters: WalletAdapterExtended[];
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
+  showPopupOnPositionClose: boolean;
+  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
   const pathname = usePathname();
 
@@ -234,6 +238,8 @@ export default function Header({
           preferredSolanaExplorer={preferredSolanaExplorer}
           showFeesInPnl={showFeesInPnl}
           setShowFeesInPnl={setShowFeesInPnl}
+          showPopupOnPositionClose={showPopupOnPositionClose}
+          setShowPopupOnPositionClose={setShowPopupOnPositionClose}
         />
 
         <Mutagen />

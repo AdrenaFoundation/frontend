@@ -56,7 +56,7 @@ function Loader(): JSX.Element {
 }
 
 // Make explicit that the config is constant.
-// initalized once, doesn't move afterwards.
+// initialized once, doesn't move afterwards.
 // actually twice, once on the server to `null` & once on the client.
 const CONFIG = initConfig();
 export const PYTH_CONNECTION =
@@ -197,6 +197,7 @@ function AppComponent({
     'priority-fee',
     'max-priority-fee',
     'show-fees-in-pnl',
+    'show-popup-on-position-close',
   ]);
 
   const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(
@@ -209,6 +210,7 @@ function AppComponent({
   );
 
   const [showFeesInPnl, setShowFeesInPnl] = useState<boolean>(true);
+  const [showPopupOnPositionClose, setShowPopupOnPositionClose] = useState<boolean>(true);
 
   const [userVest, setUserVest] = useState<VestExtended | null | false>(null);
   const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null | false>(null);
@@ -266,6 +268,12 @@ function AppComponent({
 
     if (showFeesInPnl && showFeesInPnl === 'false') {
       setShowFeesInPnl(false);
+    }
+
+    const showPopupOnPositionClose = cookies['show-popup-on-position-close'];
+
+    if (showPopupOnPositionClose && showPopupOnPositionClose === 'false') {
+      setShowPopupOnPositionClose(false);
     }
   }, [cookies]);
 
@@ -374,6 +382,8 @@ function AppComponent({
         adapters={adapters}
         showFeesInPnl={showFeesInPnl}
         setShowFeesInPnl={setShowFeesInPnl}
+        showPopupOnPositionClose={showPopupOnPositionClose}
+        setShowPopupOnPositionClose={setShowPopupOnPositionClose}
       >
         {
           <TermsAndConditionsModal

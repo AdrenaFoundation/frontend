@@ -22,6 +22,7 @@ export default function Positions({
   triggerUserProfileReload,
   isBigScreen,
   showFeesInPnl,
+  showPopupOnPositionClose,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -31,6 +32,7 @@ export default function Positions({
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   showFeesInPnl: boolean;
+  showPopupOnPositionClose: boolean;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -85,6 +87,7 @@ export default function Positions({
                 setPositionToClose(null);
               }}
               tokenImage={positionToClose.token.image}
+              showPopupOnPositionClose={showPopupOnPositionClose}
               setShareClosePosition={setShareClosePosition}
             />
           </Modal>

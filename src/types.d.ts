@@ -81,6 +81,7 @@ export type PageProps = {
   userDelegatedVest: VestExtended | null | false;
   triggerUserVestReload: () => void;
   showFeesInPnl: boolean;
+  showPopupOnPositionClose: boolean;
 };
 
 export type CustodyExtended = {

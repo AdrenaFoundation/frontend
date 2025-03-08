@@ -53,6 +53,8 @@ export default function Genesis({
   adapters,
   showFeesInPnl,
   setShowFeesInPnl,
+  showPopupOnPositionClose,
+  setShowPopupOnPositionClose,
 }: PageProps & {
   activeRpc: {
     name: string;
@@ -73,6 +75,8 @@ export default function Genesis({
   adapters: WalletAdapterExtended[];
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
+  showPopupOnPositionClose: boolean;
+  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -627,6 +631,8 @@ export default function Genesis({
                     isGenesis
                     showFeesInPnl={showFeesInPnl}
                     setShowFeesInPnl={setShowFeesInPnl}
+                    showPopupOnPositionClose={showPopupOnPositionClose}
+                    setShowPopupOnPositionClose={setShowPopupOnPositionClose}
                   />
                   <WalletAdapter userProfile={userProfile} adapters={adapters} />
                 </div>

@@ -58,6 +58,8 @@ export default function BurgerMenu({
   setShowFeesInPnl,
   isChatOpen,
   setIsChatOpen,
+  showPopupOnPositionClose,
+  setShowPopupOnPositionClose,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
@@ -86,6 +88,8 @@ export default function BurgerMenu({
   adapters: WalletAdapterExtended[];
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
+  showPopupOnPositionClose: boolean;
+  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
   isChatOpen: boolean | null;
   setIsChatOpen: (isChatOpen: boolean | null) => void;
 }) {
@@ -233,6 +237,8 @@ export default function BurgerMenu({
                 setFavoriteRpc={setFavoriteRpc}
                 preferredSolanaExplorer={preferredSolanaExplorer}
                 showFeesInPnl={showFeesInPnl}
+                showPopupOnPositionClose={showPopupOnPositionClose}
+                setShowPopupOnPositionClose={setShowPopupOnPositionClose}
                 setShowFeesInPnl={setShowFeesInPnl}
                 setCloseMobileModal={setIsSettingsModalOpen}
                 isMobile

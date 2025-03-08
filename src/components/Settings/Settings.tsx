@@ -33,6 +33,8 @@ export default function Settings({
   showFeesInPnl,
   setShowFeesInPnl,
   setCloseMobileModal,
+  showPopupOnPositionClose,
+  setShowPopupOnPositionClose,
 }: {
   activeRpc: {
     name: string;
@@ -56,6 +58,8 @@ export default function Settings({
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
   setCloseMobileModal?: (close: boolean) => void;
+  showPopupOnPositionClose: boolean;
+  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
 
   const [, setCookies] = useCookies(['solanaExplorer']);
@@ -137,6 +141,30 @@ export default function Settings({
         <Switch
           checked={showFeesInPnl}
           onChange={(event) => setShowFeesInPnl(event.target.checked)}
+          size="small"
+          sx={{
+            transform: 'scale(0.7)',
+            '& .MuiSwitch-switchBase': {
+              color: '#ccc',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked': {
+              color: '#1a1a1a',
+            },
+            '& .MuiSwitch-track': {
+              backgroundColor: '#555',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              backgroundColor: '#10e1a3',
+            },
+          }}
+        />
+      </div>
+
+      <div className="flex flex-row justify-between">
+        <p className="opacity-50 w-full">Display popup when position closes</p>
+        <Switch
+          checked={showPopupOnPositionClose}
+          onChange={(event) => setShowPopupOnPositionClose(event.target.checked)}
           size="small"
           sx={{
             transform: 'scale(0.7)',

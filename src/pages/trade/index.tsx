@@ -67,6 +67,7 @@ export default function Trade({
   activeRpc,
   adapters,
   showFeesInPnl,
+  showPopupOnPositionClose,
 }: PageProps) {
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
@@ -405,6 +406,7 @@ export default function Trade({
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     showFeesInPnl={showFeesInPnl}
+                    showPopupOnPositionClose={showPopupOnPositionClose}
                   />
                 </div>
               ) : null}
@@ -498,6 +500,7 @@ export default function Trade({
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     showFeesInPnl={showFeesInPnl}
+                    showPopupOnPositionClose={showPopupOnPositionClose}
                   />
                 </div>
               ) : null}

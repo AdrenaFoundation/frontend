@@ -25,6 +25,7 @@ export default function ClosePosition({
   onClose,
   tokenImage,
   setShareClosePosition,
+  showPopupOnPositionClose,
 }: {
   className?: string;
   position: PositionExtended;
@@ -32,6 +33,7 @@ export default function ClosePosition({
   onClose: () => void;
   tokenImage: ImageRef;
   setShareClosePosition: (position: PositionExtended) => void;
+  showPopupOnPositionClose: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -114,7 +116,8 @@ export default function ClosePosition({
             const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
             const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
 
-            setShareClosePosition({ ...position, pnl: (profit - loss), exitFeeUsd, borrowFeeUsd });
+            if (showPopupOnPositionClose)
+              setShareClosePosition({ ...position, pnl: (profit - loss), exitFeeUsd, borrowFeeUsd });
           },
         });
 

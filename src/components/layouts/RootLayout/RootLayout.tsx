@@ -54,6 +54,8 @@ export default function RootLayout({
   adapters,
   showFeesInPnl,
   setShowFeesInPnl,
+  showPopupOnPositionClose,
+  setShowPopupOnPositionClose,
 }: {
   children: ReactNode;
   wallet: Wallet | null;
@@ -83,6 +85,8 @@ export default function RootLayout({
   adapters: WalletAdapterExtended[];
   showFeesInPnl: boolean;
   setShowFeesInPnl: (showFeesInPnl: boolean) => void;
+  showPopupOnPositionClose: boolean;
+  setShowPopupOnPositionClose: (showPopupOnPositionClose: boolean) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
@@ -149,6 +153,8 @@ export default function RootLayout({
           adapters={adapters}
           showFeesInPnl={showFeesInPnl}
           setShowFeesInPnl={setShowFeesInPnl}
+          showPopupOnPositionClose={showPopupOnPositionClose}
+          setShowPopupOnPositionClose={setShowPopupOnPositionClose}
         />
       ) : (
         <BurgerMenu
@@ -175,6 +181,8 @@ export default function RootLayout({
           setShowFeesInPnl={setShowFeesInPnl}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
+          showPopupOnPositionClose={showPopupOnPositionClose}
+          setShowPopupOnPositionClose={setShowPopupOnPositionClose}
         />
       )}
 
