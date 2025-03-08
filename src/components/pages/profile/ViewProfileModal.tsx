@@ -16,11 +16,9 @@ import TradingStats from './TradingStats';
 
 export default function ViewProfileModal({
     profile,
-    showFeesInPnl,
     close,
 }: {
     profile: UserProfileExtended;
-    showFeesInPnl: boolean;
     close: () => void;
 }) {
     const walletAddress = profile.owner.toBase58();
@@ -62,7 +60,6 @@ export default function ViewProfileModal({
                     traderInfo={traderInfo}
                     livePositionsNb={positions === null ? null : positions.length}
                     className="gap-y-4 pt-4 pb-2"
-                    showFeesInPnl={showFeesInPnl}
                 />
 
                 <StakingStats
@@ -89,7 +86,6 @@ export default function ViewProfileModal({
                                             <PositionBlock
                                                 key={position.pubkey.toBase58()}
                                                 position={position}
-                                                showFeesInPnl={showFeesInPnl}
                                                 readOnly={true}
                                             />
                                         ))}
@@ -108,7 +104,6 @@ export default function ViewProfileModal({
                                 connected={true}
                                 walletAddress={profile.owner.toBase58()}
                                 showShareButton={false}
-                                showFeesInPnl={showFeesInPnl}
                                 exportButtonPosition='bottom-left'
                             />
                         ) : null}

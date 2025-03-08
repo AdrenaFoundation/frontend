@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { calculatePnLandLiquidationPrice } from '@/actions/thunks';
 import { useSelector } from '@/store/store';
-import { PositionExtended } from '@/types';
+import { PositionExtended, UserProfileExtended } from '@/types';
+
+import { useAllUserProfiles } from './useAllUserProfiles';
 
 let lastDealtTrickReload = 0;
 let lastCall = 0;
@@ -12,6 +14,13 @@ export function useAllPositions({ connected }: { connected: boolean }): {
     isLoading: boolean;
     triggerAllPositionsReload: () => void;
 } {
+    const { allUserProfiles } = useAllUserProfiles({});
+
+    const allUserProfilesInObj = useMemo(() => (allUserProfiles ?? []).reduce((acc, profile) => {
+        acc[profile.owner.toBase58()] = profile;
+        return acc;
+    }, {} as Record<string, UserProfileExtended>), [allUserProfiles]);
+
     const [trickReload, triggerReload] = useState<number>(0);
     const [allPositions, setAllPositions] = useState<PositionExtended[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -46,6 +55,10 @@ export function useAllPositions({ connected }: { connected: boolean }): {
                         : allPositions) ?? [];
 
                 freshPositions.forEach((position) => {
+                    if (allUserProfilesInObj[position.owner.toBase58()]) {
+                        position.userProfile = allUserProfilesInObj[position.owner.toBase58()];
+                    }
+
                     calculatePnLandLiquidationPrice(position, tokenPrices);
                 });
 
@@ -63,12 +76,16 @@ export function useAllPositions({ connected }: { connected: boolean }): {
             return;
         }
 
-        // Recalculate Pnl and liquidation price
+        // Recalculate Pnl and liquidation price and attach user profile
         allPositions.forEach((position) => {
+            if (allUserProfilesInObj[position.owner.toBase58()]) {
+                position.userProfile = allUserProfilesInObj[position.owner.toBase58()];
+            }
+
             calculatePnLandLiquidationPrice(position, tokenPrices);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tokenPrices, allPositions]);
+    }, [tokenPrices, allPositions, allUserProfilesInObj]);
 
     useEffect(() => {
         loadAllPositions();

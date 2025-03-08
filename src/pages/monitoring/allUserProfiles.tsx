@@ -22,10 +22,8 @@ type SortableKeys = keyof Pick<
 >;
 
 export default function AllUserProfiles({
-    showFeesInPnl,
     view
 }: {
-    showFeesInPnl: boolean;
     view: string;
 }) {
     const { allUserProfiles, triggerAllUserProfilesReload } =
@@ -76,7 +74,7 @@ export default function AllUserProfiles({
         const filteredProfiles = (allUserProfiles ?? []).filter((profile) => {
             const ownerCondition =
                 ownerFilter === '' ||
-                profile.pubkey
+                profile.owner
                     .toBase58()
                     .toLowerCase()
                     .includes(ownerFilter.toLowerCase());
@@ -245,7 +243,6 @@ export default function AllUserProfiles({
                     >
                         <ViewProfileModal
                             profile={activeProfile}
-                            showFeesInPnl={showFeesInPnl}
                             close={() => setActiveProfile(null)}
                         />
                     </Modal>

@@ -20,7 +20,7 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
 
-export default function AllPositions({ showFeesInPnl, isSmallScreen, view }: { showFeesInPnl: boolean, isSmallScreen: boolean, view: string }) {
+export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const wallet = useSelector((state) => state.walletState.wallet);
 
     const connected = !!wallet;
@@ -300,7 +300,6 @@ export default function AllPositions({ showFeesInPnl, isSmallScreen, view }: { s
                                         <div className="flex w-full min-h-[34em] h-[34em] grow">
                                             <AllPositionsChart
                                                 allPositions={sortedPositions}
-                                                showFeesInPnl={showFeesInPnl}
                                             />
                                         </div>
                                     ) : null}
@@ -381,7 +380,6 @@ export default function AllPositions({ showFeesInPnl, isSmallScreen, view }: { s
                                                             <PositionBlock
                                                                 key={position.pubkey.toBase58()}
                                                                 position={position}
-                                                                showFeesInPnl={showFeesInPnl}
                                                                 readOnly={true}
                                                             />
                                                         ))}

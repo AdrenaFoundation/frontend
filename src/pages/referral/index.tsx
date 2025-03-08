@@ -14,7 +14,6 @@ import { PageProps, UserProfileExtended } from '@/types';
 
 export default function Referral({
     userProfile,
-    showFeesInPnl,
     connected,
 }: PageProps) {
     const router = useRouter();
@@ -128,7 +127,6 @@ export default function Referral({
                     >
                         <ViewProfileModal
                             profile={activeProfile}
-                            showFeesInPnl={showFeesInPnl}
                             close={() => setActiveProfile(null)}
                         />
                     </Modal>

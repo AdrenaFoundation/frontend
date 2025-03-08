@@ -21,8 +21,6 @@ import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   ImageRef,
-  PriorityFeeOption,
-  SolanaExplorerOptions,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -46,14 +44,7 @@ export default function RootLayout({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  priorityFeeOption,
-  setPriorityFeeOption,
-  maxPriorityFee,
-  setMaxPriorityFee,
-  preferredSolanaExplorer,
   adapters,
-  showFeesInPnl,
-  setShowFeesInPnl,
 }: {
   children: ReactNode;
   wallet: Wallet | null;
@@ -75,14 +66,7 @@ export default function RootLayout({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  priorityFeeOption: PriorityFeeOption;
-  setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
-  maxPriorityFee: number | null;
-  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
-  preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
-  showFeesInPnl: boolean;
-  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
@@ -130,8 +114,6 @@ export default function RootLayout({
         <Header
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
-          priorityFeeOption={priorityFeeOption}
-          setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -143,19 +125,12 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          maxPriorityFee={maxPriorityFee}
-          setMaxPriorityFee={setMaxPriorityFee}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           adapters={adapters}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
         />
       ) : (
         <BurgerMenu
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
-          priorityFeeOption={priorityFeeOption}
-          setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -167,12 +142,7 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          maxPriorityFee={maxPriorityFee}
-          setMaxPriorityFee={setMaxPriorityFee}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           adapters={adapters}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
         />

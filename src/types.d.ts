@@ -80,7 +80,6 @@ export type PageProps = {
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
   triggerUserVestReload: () => void;
-  showFeesInPnl: boolean;
 };
 
 export type CustodyExtended = {
@@ -157,6 +156,9 @@ export type PositionExtended = {
   takeProfitLimitPrice?: number | null;
   takeProfitIsSet: boolean;
   unrealizedInterestUsd: number;
+
+  // Added later on after loading user profiles from onchain.
+  userProfile?: UserProfileExtended;
 
   // Onchain data
   nativeObject: Position;

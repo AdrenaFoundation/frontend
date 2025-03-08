@@ -14,7 +14,6 @@ function PositionsHistory({
   connected,
   walletAddress,
   showShareButton = true,
-  showFeesInPnl,
   exportButtonPosition = 'top-right',
   className,
 }: {
@@ -22,7 +21,6 @@ function PositionsHistory({
   className?: string;
   walletAddress: string | null;
   showShareButton?: boolean;
-  showFeesInPnl: boolean;
   exportButtonPosition: 'top-right' | 'bottom-left';
 }) {
   const { positionsHistory } = usePositionsHistory({ walletAddress });
@@ -110,10 +108,8 @@ function PositionsHistory({
                         key={positionHistory.positionId}
                         positionHistory={positionHistory}
                         showShareButton={showShareButton}
-                        showFeesInPnl={showFeesInPnl}
                       />
                     ))}
-
 
                     <div className={twMerge('w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute',
                       exportButtonPosition === "top-right" ? "-top-[2.5em] right-0" : 'bottom-0 left-2'

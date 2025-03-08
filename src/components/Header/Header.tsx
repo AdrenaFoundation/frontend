@@ -7,8 +7,6 @@ import { twMerge } from 'tailwind-merge';
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
 import {
-  PriorityFeeOption,
-  SolanaExplorerOptions,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -40,20 +38,11 @@ export default function Header({
   favoriteRpc,
   userVest,
   userDelegatedVest,
-  priorityFeeOption,
-  setPriorityFeeOption,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  maxPriorityFee,
-  setMaxPriorityFee,
-  preferredSolanaExplorer,
   adapters,
-  showFeesInPnl,
-  setShowFeesInPnl,
 }: {
-  priorityFeeOption: PriorityFeeOption;
-  setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string; external?: boolean }[];
   activeRpc: {
@@ -73,12 +62,7 @@ export default function Header({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  maxPriorityFee: number | null;
-  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
-  preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
-  showFeesInPnl: boolean;
-  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const pathname = usePathname();
 
@@ -214,12 +198,7 @@ export default function Header({
           )}
         </Link>
 
-        <PriorityFeeSetting
-          priorityFeeOption={priorityFeeOption}
-          setPriorityFeeOption={setPriorityFeeOption}
-          maxPriorityFee={maxPriorityFee}
-          setMaxPriorityFee={setMaxPriorityFee}
-        />
+        <PriorityFeeSetting />
 
         <Settings
           activeRpc={activeRpc}
@@ -231,9 +210,6 @@ export default function Header({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          preferredSolanaExplorer={preferredSolanaExplorer}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
         />
 
         <Mutagen />
