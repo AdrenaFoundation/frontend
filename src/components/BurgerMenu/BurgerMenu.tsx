@@ -10,7 +10,6 @@ import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
-  PriorityFeeOption,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -47,10 +46,6 @@ export default function BurgerMenu({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  priorityFeeOption,
-  setPriorityFeeOption,
-  maxPriorityFee,
-  setMaxPriorityFee,
   adapters,
   isChatOpen,
   setIsChatOpen,
@@ -74,10 +69,6 @@ export default function BurgerMenu({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  priorityFeeOption: PriorityFeeOption;
-  setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
-  maxPriorityFee: number | null;
-  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   adapters: WalletAdapterExtended[];
   isChatOpen: boolean | null;
   setIsChatOpen: (isChatOpen: boolean | null) => void;
@@ -202,10 +193,6 @@ export default function BurgerMenu({
           <AnimatePresence>
             {isPriorityFeeModalOpen ? (
               <PriorityFeeSetting
-                priorityFeeOption={priorityFeeOption}
-                setPriorityFeeOption={setPriorityFeeOption}
-                maxPriorityFee={maxPriorityFee}
-                setMaxPriorityFee={setMaxPriorityFee}
                 setCloseMobileModal={setIsPriorityFeeModalOpen}
                 isMobile
               />

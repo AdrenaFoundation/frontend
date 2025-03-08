@@ -18,10 +18,10 @@ import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
-import { SOLANA_EXPLORERS_OPTIONS } from '@/constant';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import useRpc from '@/hooks/useRPC';
+import useSettingsPersistence from '@/hooks/useSettingsPersistence';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWalletAdapters from '@/hooks/useWalletAdapters';
@@ -31,16 +31,10 @@ import initializeApp, {
   createReadOnlyAdrenaProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { PriorityFeeOption, SolanaExplorerOptions, VestExtended } from '@/types';
-import {
-  DEFAULT_MAX_PRIORITY_FEE,
-  DEFAULT_PRIORITY_FEE_OPTION,
-  PercentilePriorityFeeList,
-} from '@/utils';
+import { VestExtended } from '@/types';
 
 import logo from '../../public/images/logo.svg';
 import store, { useDispatch, useSelector } from '../store/store';
-import useSettingsPersistence from '@/hooks/useSettingsPersistence';
 
 function Loader(): JSX.Element {
   return (
@@ -184,18 +178,7 @@ function AppComponent({
 
   const [cookies, setCookie] = useCookies([
     'terms-and-conditions-acceptance',
-    'priority-fee',
-    'max-priority-fee',
   ]);
-
-  const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(
-    DEFAULT_PRIORITY_FEE_OPTION,
-  );
-
-  // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
-  const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(
-    DEFAULT_MAX_PRIORITY_FEE,
-  );
 
   const [userVest, setUserVest] = useState<VestExtended | null | false>(null);
   const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null | false>(null);
@@ -232,31 +215,7 @@ function AppComponent({
     if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
       setIsTermsAndConditionModalOpen(true);
     }
-
-    // Priority fees
-    const priorityFeeOption = cookies['priority-fee'];
-
-    if (
-      priorityFeeOption &&
-      Object.keys(PercentilePriorityFeeList).includes(priorityFeeOption)
-    ) {
-      setPriorityFeeOption(priorityFeeOption);
-    }
-
-    const maxPriorityFee = parseFloat(cookies['max-priority-fee']);
-
-    if (maxPriorityFee && !isNaN(maxPriorityFee)) {
-      setMaxPriorityFee(maxPriorityFee);
-    }
   }, [cookies]);
-
-  useEffect(() => {
-    window.adrena.client.setPriorityFeeOption(priorityFeeOption);
-  }, [priorityFeeOption]);
-
-  useEffect(() => {
-    window.adrena.client.setMaxPriorityFee(maxPriorityFee);
-  }, [maxPriorityFee]);
 
   useEffect(() => {
     if (!wallet) {
@@ -321,26 +280,6 @@ function AppComponent({
         wallet={wallet}
         userVest={userVest}
         userDelegatedVest={userDelegatedVest}
-        priorityFeeOption={priorityFeeOption}
-        setPriorityFeeOption={(p: PriorityFeeOption) => {
-          setCookie('priority-fee', p, {
-            path: '/',
-            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-            sameSite: 'strict',
-          });
-
-          setPriorityFeeOption(p);
-        }}
-        maxPriorityFee={maxPriorityFee}
-        setMaxPriorityFee={(p: number | null) => {
-          setCookie('max-priority-fee', p, {
-            path: '/',
-            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-            sameSite: 'strict',
-          });
-
-          setMaxPriorityFee(p);
-        }}
         userProfile={userProfile}
         activeRpc={activeRpc}
         rpcInfos={rpcInfos}

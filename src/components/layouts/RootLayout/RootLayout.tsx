@@ -21,7 +21,6 @@ import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   ImageRef,
-  PriorityFeeOption,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -45,10 +44,6 @@ export default function RootLayout({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  priorityFeeOption,
-  setPriorityFeeOption,
-  maxPriorityFee,
-  setMaxPriorityFee,
   adapters,
 }: {
   children: ReactNode;
@@ -71,10 +66,6 @@ export default function RootLayout({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  priorityFeeOption: PriorityFeeOption;
-  setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
-  maxPriorityFee: number | null;
-  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   adapters: WalletAdapterExtended[];
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
@@ -123,8 +114,6 @@ export default function RootLayout({
         <Header
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
-          priorityFeeOption={priorityFeeOption}
-          setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -136,16 +125,12 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          maxPriorityFee={maxPriorityFee}
-          setMaxPriorityFee={setMaxPriorityFee}
           adapters={adapters}
         />
       ) : (
         <BurgerMenu
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
-          priorityFeeOption={priorityFeeOption}
-          setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -157,8 +142,6 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          maxPriorityFee={maxPriorityFee}
-          setMaxPriorityFee={setMaxPriorityFee}
           adapters={adapters}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}

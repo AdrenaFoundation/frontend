@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
 import {
-  PriorityFeeOption,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -39,17 +38,11 @@ export default function Header({
   favoriteRpc,
   userVest,
   userDelegatedVest,
-  priorityFeeOption,
-  setPriorityFeeOption,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  maxPriorityFee,
-  setMaxPriorityFee,
   adapters,
 }: {
-  priorityFeeOption: PriorityFeeOption;
-  setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string; external?: boolean }[];
   activeRpc: {
@@ -69,8 +62,6 @@ export default function Header({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  maxPriorityFee: number | null;
-  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   adapters: WalletAdapterExtended[];
 }) {
   const pathname = usePathname();
@@ -207,12 +198,7 @@ export default function Header({
           )}
         </Link>
 
-        <PriorityFeeSetting
-          priorityFeeOption={priorityFeeOption}
-          setPriorityFeeOption={setPriorityFeeOption}
-          maxPriorityFee={maxPriorityFee}
-          setMaxPriorityFee={setMaxPriorityFee}
-        />
+        <PriorityFeeSetting />
 
         <Settings
           activeRpc={activeRpc}
