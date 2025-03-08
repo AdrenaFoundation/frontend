@@ -1353,6 +1353,7 @@ export type PoolInfoResponse = {
   cumulative_close_position_fee_usd?: number[];
   cumulative_liquidation_fee_usd?: number[];
   cumulative_borrow_fee_usd?: number[];
+  cumulative_referrer_fee_usd?: number[];
   cumulative_trading_volume_usd?: number[];
   snapshot_timestamp: string[];
   startDate?: string;

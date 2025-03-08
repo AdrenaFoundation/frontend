@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
+import MixedBarLineChart from '@/components/ReCharts/MixedBarLineChart';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
@@ -53,7 +53,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       })();
 
       // Use DataApiClient instead of direct fetch
-      const queryParams = 'cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true';
+      const queryParams = 'cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&cumulative_referrer_fee_usd=true';
 
       const [historicalData, latestData] = await Promise.all([
         // Get historical data
@@ -78,16 +78,17 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         cumulative_close_position_fee_usd,
         cumulative_liquidation_fee_usd,
         cumulative_borrow_fee_usd,
+        cumulative_referrer_fee_usd,
         snapshot_timestamp,
       } = historicalData;
 
       if (!snapshot_timestamp || !cumulative_swap_fee_usd || !cumulative_liquidity_fee_usd ||
         !cumulative_close_position_fee_usd || !cumulative_liquidation_fee_usd ||
-        !cumulative_borrow_fee_usd || !latestData.cumulative_swap_fee_usd ||
-        !latestData.cumulative_liquidity_fee_usd ||
-        !latestData.cumulative_close_position_fee_usd ||
-        !latestData.cumulative_liquidation_fee_usd ||
-        !latestData.cumulative_borrow_fee_usd) {
+        !cumulative_borrow_fee_usd || !cumulative_referrer_fee_usd || !latestData.cumulative_swap_fee_usd ||
+        !latestData.cumulative_liquidity_fee_usd || !latestData.cumulative_close_position_fee_usd ||
+        !latestData.cumulative_liquidation_fee_usd || !latestData.cumulative_borrow_fee_usd ||
+        !latestData.cumulative_borrow_fee_usd ||
+        !latestData.cumulative_referrer_fee_usd) {
         console.error('Failed to fetch fees data: Missing required data fields');
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
@@ -114,6 +115,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
           'Open/Close Fees': cumulative_close_position_fee_usd[i + 1] - cumulative_close_position_fee_usd[i],
           'Liquidation Fees': cumulative_liquidation_fee_usd[i + 1] - cumulative_liquidation_fee_usd[i],
           'Borrow Fees': cumulative_borrow_fee_usd[i + 1] - cumulative_borrow_fee_usd[i],
+          'Referral Fees': cumulative_referrer_fee_usd[i + 1] - cumulative_referrer_fee_usd[i],
         }),
       );
 
@@ -129,6 +131,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         'Open/Close Fees': latestData.cumulative_close_position_fee_usd[0] - cumulative_close_position_fee_usd[cumulative_close_position_fee_usd.length - 1],
         'Liquidation Fees': latestData.cumulative_liquidation_fee_usd[0] - cumulative_liquidation_fee_usd[cumulative_liquidation_fee_usd.length - 1],
         'Borrow Fees': latestData.cumulative_borrow_fee_usd[0] - cumulative_borrow_fee_usd[cumulative_borrow_fee_usd.length - 1],
+        'Referral Fees': latestData.cumulative_referrer_fee_usd[0] - cumulative_referrer_fee_usd[cumulative_referrer_fee_usd.length - 1],
       })
 
       setChartData(formattedData);
@@ -146,37 +149,20 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
   }
 
   return (
-    <StakedBarRechart
-      title={'Daily Fees'}
+    <MixedBarLineChart
+      title="Daily Fees"
       data={chartData}
       labels={[
-        {
-          name: 'Swap Fees',
-          color: '#cec161',
-        },
-        {
-          name: 'Mint/Redeem ALP Fees',
-          color: '#5460cb',
-        },
-        {
-          name: 'Open/Close Fees',
-          color: '#7ccbd7',
-        },
-        {
-          name: 'Liquidation Fees',
-          color: '#BE84CC',
-        },
-        {
-          name: 'Borrow Fees',
-          color: '#84bd82',
-        },
+        { name: 'Swap Fees', color: '#cec161', type: 'bar' },
+        { name: 'Mint/Redeem ALP Fees', color: '#5460cb', type: 'bar' },
+        { name: 'Open/Close Fees', color: '#7ccbd7', type: 'bar' },
+        { name: 'Liquidation Fees', color: '#BE84CC', type: 'bar' },
+        { name: 'Borrow Fees', color: '#84bd82', type: 'bar' },
+        { name: 'Referral Fees', color: '#f7931a', type: 'line' },
       ]}
       period={period}
       setPeriod={setPeriod}
-      periods={['1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      periods={['1M', '3M', '6M', { name: '1Y', disabled: true }]}
       gmt={0}
       domain={[0, 'auto']}
       tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
