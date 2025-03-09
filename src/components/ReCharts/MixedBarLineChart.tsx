@@ -114,20 +114,17 @@ export default function MixedBarLineChart<T extends string>({
             <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart
                     data={data}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    syncId="fees-chart"
                 >
                     <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
                     <XAxis
                         dataKey="time"
                         fontSize="12"
-                        tickMargin={5}
                         axisLine={true}
                         tickLine={true}
                         scale="point"
                         xAxisId="main"
-                        padding={period === '1M' ? { left: 10, right: 10 } : period === '3M' ? { left: 3, right: 3 } : { left: 1.5, right: 1.5 }}
+                        allowDataOverflow={true}
                     />
 
                     {/* Left Y-axis for daily fee values */}
@@ -203,7 +200,6 @@ export default function MixedBarLineChart<T extends string>({
                                 fill={color}
                                 xAxisId="main"
                                 yAxisId="left"
-                                maxBarSize={18}
                             />
                         );
                     })}
@@ -235,7 +231,7 @@ export default function MixedBarLineChart<T extends string>({
                             dataKey={hiddenLabels.includes(cumulativeLabel.name) ? cumulativeLabel.name + ' ' : cumulativeLabel.name}
                             stroke={cumulativeLabel.color}
                             dot={false}
-                            activeDot={false}
+                            activeDot={true}
                             connectNulls={true}
                             hide={hiddenLabels.includes(cumulativeLabel.name)}
                             name={cumulativeLabel.name}
