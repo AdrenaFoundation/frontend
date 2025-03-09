@@ -231,31 +231,6 @@ export type UserProfileExtended = {
   referrerProfile: PublicKey | null;
   claimableReferralFeeUsd: number;
   totalReferralFeeUsd: number;
-  // Aggregates
-  totalPnlUsd: number;
-  // Only accounts for opens
-  totalTradeVolumeUsd: number;
-  totalFeesPaidUsd: number;
-  openingAverageLeverage: number;
-  //
-  shortStats: {
-    openedPositionCount: number;
-    liquidatedPositionCount: number;
-    openingAverageLeverage: number;
-    openingSizeUsd: number;
-    profitsUsd: number;
-    lossesUsd: number;
-    feePaidUsd: number;
-  };
-  longStats: {
-    openedPositionCount: number;
-    liquidatedPositionCount: number;
-    openingAverageLeverage: number;
-    openingSizeUsd: number;
-    profitsUsd: number;
-    lossesUsd: number;
-    feePaidUsd: number;
-  };
   profilePicture: ProfilePicture;
   wallpaper: Wallpaper;
   title: UserProfileTitle;
