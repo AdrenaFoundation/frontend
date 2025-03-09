@@ -164,13 +164,13 @@ export default function BasicMonitoring({
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
-              <RealizedPnlChart isSmallScreen={isSmallScreen} />
+              <CompositionChart />
+              <UsersCohortsChart />
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <CompositionChart />
-              <UsersCohortsChart />
+              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+              <RealizedPnlChart isSmallScreen={isSmallScreen} />
             </div>
 
           </StyledContainer >
