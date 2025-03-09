@@ -22,6 +22,7 @@ import { PositionHeader } from './PositionBlockComponents/PositionHeader';
 import { PositionName } from './PositionBlockComponents/PositionName';
 import { ValueColumn } from './PositionBlockComponents/ValueColumn';
 import SharePositionModal from './SharePositionModal';
+import VolumeTooltip from './VolumeTooltip';
 
 const PositionHistoryBlock = ({
   bodyClassName,
@@ -128,15 +129,20 @@ const PositionHistoryBlock = ({
             />
 
             <ValueColumn
-              label="Exit Size"
+              label="Volume"
               value={
-                <FormatNumber
-                  nb={positionHistory.exitSize}
-                  format="currency"
-                  precision={0}
-                  isDecimalDimmed={false}
-                  className={POSITION_BLOCK_STYLES.text.white}
-                />
+                <VolumeTooltip
+                  entrySize={positionHistory.entrySize}
+                  increaseSize={positionHistory.increaseSize}
+                  exitSize={positionHistory.exitSize}
+                >
+                  <FormatNumber
+                    nb={positionHistory.volume}
+                    format="currency"
+                    className={POSITION_BLOCK_STYLES.text.white}
+                    isDecimalDimmed={false}
+                  />
+                </VolumeTooltip>
               }
               valueClassName={POSITION_BLOCK_STYLES.text.white}
               columnClasses={columnClasses}
