@@ -71,13 +71,17 @@ export default function MixedBarLineChart<T extends string>({
 
     // Group labels by type
     const barLabels = labels.filter(label => label.type !== 'line');
-    const lineLabels = labels.filter(label => label.type === 'line' && label.name !== 'Cumulative Total Fees');
-    const cumulativeLabel = labels.find(label => label.name === 'Cumulative Total Fees');
+    const lineLabels = labels.filter(label => label.type === 'line' &&
+        !label.name.toLowerCase().includes('cumulative'));
+
+    // Find the cumulative label (either Fees or Volume)
+    const cumulativeLabel = labels.find(label =>
+        label.name.toLowerCase().includes('cumulative'));
 
     // Calculate the maximum value for the cumulative line
     const maxCumulativeValue = data.reduce((max, point) => {
-        const value = Number(point['Cumulative Total Fees'] || 0);
-        return value > max ? value : max;
+        const cumulativeValue = cumulativeLabel ? Number(point[cumulativeLabel.name] || 0) : 0;
+        return cumulativeValue > max ? cumulativeValue : max;
     }, 0);
 
     // Create a suitable domain for the cumulative axis
@@ -127,7 +131,7 @@ export default function MixedBarLineChart<T extends string>({
                         allowDataOverflow={true}
                     />
 
-                    {/* Left Y-axis for daily fee values */}
+                    {/* Left Y-axis for daily values */}
                     <YAxis
                         domain={domain}
                         tickFormatter={formatYAxis}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
+import MixedBarLineChart from '@/components/ReCharts/MixedBarLineChart';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
@@ -53,7 +53,7 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       })();
 
       // Use DataApiClient instead of direct fetch
-      const [historicalData, latestData] = await Promise.all([
+      const [historicalData, latestData, historicalCumulativeData] = await Promise.all([
         // Get historical data
         DataApiClient.getPoolInfo({
           dataEndpoint: 'poolinfodaily',
@@ -67,9 +67,17 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
           queryParams: 'cumulative_trading_volume_usd=true&sort=DESC&limit=1',
           dataPeriod: 1,
         }),
+
+        // Get historical cumulative data from the beginning
+        DataApiClient.getPoolInfo({
+          dataEndpoint: 'poolinfodaily',
+          queryParams: 'cumulative_trading_volume_usd=true',
+          dataPeriod: 1000,
+          allHistoricalData: true
+        })
       ]);
 
-      if (!historicalData || !latestData) {
+      if (!historicalData || !latestData || !historicalCumulativeData) {
         console.error('Could not fetch volume data');
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
@@ -102,19 +110,54 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
         });
       });
 
-      // Get fees for that day, taking last
+      // Create a map of date to cumulative volume from historical data
+      const cumulativeTotalByDate = new Map();
+
+      if (historicalCumulativeData.snapshot_timestamp) {
+        historicalCumulativeData.snapshot_timestamp.forEach((timestamp: string, index: number) => {
+          const date = new Date(timestamp).toLocaleString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+            timeZone: 'UTC',
+          });
+
+          // Get the cumulative volume for this date
+          const totalCumulative = historicalCumulativeData.cumulative_trading_volume_usd?.[index] || 0;
+          cumulativeTotalByDate.set(date, totalCumulative);
+        });
+      }
+
+      // Get volume for that day, taking last
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
-        (time: string, i: number) => ({
-          time,
-          'Volume': cumulative_trading_volume_usd[i + 1] - cumulative_trading_volume_usd[i],
-        }),
+        (time: string, i: number) => {
+          const dailyVolume = cumulative_trading_volume_usd[i + 1] - cumulative_trading_volume_usd[i];
+
+          // Format the date as mm/dd for consistent display
+          const formattedTime = time.replace(/^(\d+)\/(\d+)$/, '$1/$2');
+
+          return {
+            time: formattedTime,
+            'Volume': dailyVolume,
+            // Look up the cumulative total for this date from our historical data
+            'Cumulative Volume': cumulativeTotalByDate.get(time) || null,
+          };
+        }
       );
 
+      // Adjust volume for specific dates if needed
       formattedData.forEach((data) => {
         if (data.time === '11/16') {
           data.Volume = 0;
         }
       });
+
+      // Calculate the latest cumulative total volume
+      let finalCumulativeTotal = null;
+      if (cumulativeTotalByDate.size > 0) {
+        const latestHistoricalTotal = cumulativeTotalByDate.get(timeStamp[timeStamp.length - 1]);
+        const latestDailyVolume = latestData.cumulative_trading_volume_usd[0] - cumulative_trading_volume_usd[cumulative_trading_volume_usd.length - 1];
+        finalCumulativeTotal = latestHistoricalTotal + latestDailyVolume;
+      }
 
       // Push a data coming from last data point (last day) to now
       formattedData.push({
@@ -124,7 +167,8 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
           timeZone: 'UTC',
         }),
         'Volume': latestData.cumulative_trading_volume_usd[0] - cumulative_trading_volume_usd[cumulative_trading_volume_usd.length - 1],
-      })
+        'Cumulative Volume': finalCumulativeTotal,
+      });
 
       setChartData(formattedData);
     } catch (e) {
@@ -141,14 +185,12 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
   }
 
   return (
-    <StakedBarRechart
+    <MixedBarLineChart
       title={'Daily Volume'}
       data={chartData}
       labels={[
-        {
-          name: 'Volume',
-          color: '#cec161',
-        },
+        { name: 'Volume', color: '#cec161', type: 'bar' },
+        { name: 'Cumulative Volume', color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
       ]}
       period={period}
       setPeriod={setPeriod}

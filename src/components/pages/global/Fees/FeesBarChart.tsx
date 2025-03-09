@@ -172,7 +172,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
             'Borrow Fees': cumulative_borrow_fee_usd[i + 1] - cumulative_borrow_fee_usd[i],
             'Referral Fees': displayedReferrerFees,
             // Look up the cumulative total for this date from our historical data
-            'Cumulative Total Fees': cumulativeTotalByDate.get(time) || null,
+            'Cumulative Fees': cumulativeTotalByDate.get(time) || null,
           };
         }
       );
@@ -219,7 +219,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       formattedData.push({
         time: currentTimeFormatted,
         ...lastDayFees,
-        'Cumulative Total Fees': finalCumulativeTotal,
+        'Cumulative Fees': finalCumulativeTotal,
       });
 
       setChartData(formattedData);
@@ -247,7 +247,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         { name: 'Liquidation Fees', color: '#BE84CC', type: 'bar' },
         { name: 'Borrow Fees', color: '#84bd82', type: 'bar' },
         { name: 'Referral Fees', color: '#f7931a', type: 'line' },
-        { name: 'Cumulative Total Fees', color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
+        { name: 'Cumulative Fees', color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
       ]}
       period={period}
       setPeriod={setPeriod}
