@@ -1,8 +1,10 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { setSettings } from '@/actions/settingsActions';
 import { SOL_DECIMALS } from '@/constant';
 import usePriorityFee from '@/hooks/usePriorityFees';
+import { useDispatch, useSelector } from '@/store/store';
 import { PriorityFeeOption } from '@/types';
 import { DEFAULT_MAX_PRIORITY_FEE, formatNumber } from '@/utils';
 
@@ -14,21 +16,17 @@ import DisplayInfo from '../DisplayInfo/DisplayInfo';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function PriorityFeeSetting({
-  priorityFeeOption,
-  setPriorityFeeOption,
-  maxPriorityFee,
-  setMaxPriorityFee,
   setCloseMobileModal,
   isMobile = false,
 }: {
-  priorityFeeOption: PriorityFeeOption;
-  setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
-  maxPriorityFee: number | null;
-  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   setCloseMobileModal?: (close: boolean) => void;
   isMobile?: boolean;
 }) {
+  const dispatch = useDispatch();
   const priorityFeeAmounts = usePriorityFee();
+
+  const maxPriorityFee = useSelector((state) => state.settings.maxPriorityFee);
+  const priorityFeeOption = useSelector((state) => state.settings.priorityFeeOption);
 
   const currentPriorityFeeValue =
     priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
@@ -62,7 +60,11 @@ export default function PriorityFeeSetting({
           <div className="flex w-1/3 flex-col items-center" key={title}>
             <Button
               onClick={() => {
-                setPriorityFeeOption(title as PriorityFeeOption);
+                dispatch(
+                  setSettings({
+                    priorityFeeOption: title as PriorityFeeOption,
+                  }),
+                );
               }}
               variant={title === priorityFeeOption ? 'outline' : 'text'}
               className="w-20"
@@ -165,7 +167,13 @@ export default function PriorityFeeSetting({
             step="0.000000001"
             min="0.000000001"
             value={maxPriorityFee ?? ''}
-            onChange={(e) => setMaxPriorityFee(parseFloat(e.target.value))}
+            onChange={(e) => {
+              dispatch(
+                setSettings({
+                  maxPriorityFee: parseFloat(e.target.value),
+                }),
+              );
+            }}
           />
           <div className="absolute inset-y-0 right-0 flex items-center">
             <label htmlFor="currency" className="sr-only">

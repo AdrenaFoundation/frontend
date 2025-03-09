@@ -25,6 +25,7 @@ export default function CustomRechartsToolTip({
   gmt, // GMT+0
   labelCustomization,
   events,
+  lineDataKeys,
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
@@ -38,6 +39,7 @@ export default function CustomRechartsToolTip({
   gmt?: number;
   labelCustomization?: (label: string) => string;
   events?: AdrenaEvent[];
+  lineDataKeys?: string[];
 }) {
   if (active && payload && payload.length) {
     const activeEvents = (events || []).filter(event => event.time === label);
@@ -64,7 +66,13 @@ export default function CustomRechartsToolTip({
             style={{ color: totalColor }}
           >
             {(() => {
-              const v = payload.reduce((acc, item) => acc + Number(item.value), 0);
+              const v = payload.reduce((acc, item) => {
+                const dataKeyStr = String(item.dataKey);
+                if (lineDataKeys && lineDataKeys.some(key => dataKeyStr.includes(key))) {
+                  return acc;
+                }
+                return acc + Number(item.value);
+              }, 0);
 
               return format === 'currency'
                 ? formatPriceInfo(Number(v), precision, precision)

@@ -465,11 +465,7 @@ const ProfileBanner = memo(
 );
 ProfileBanner.displayName = 'ProfileBanner';
 
-export default function Awakening({
-    showFeesInPnl,
-}: {
-    showFeesInPnl: boolean;
-}) {
+export default function Awakening() {
     // states
     const [week, setWeek] = useState<number>(0);
     const [profile, setProfile] = useState<UserProfileExtended | null>(null);
@@ -653,7 +649,7 @@ export default function Awakening({
                         isWrapped={false}
                         close={() => setProfile(null)}
                     >
-                        <ViewProfileModal profile={profile} showFeesInPnl={showFeesInPnl} close={() => setProfile(null)} />
+                        <ViewProfileModal profile={profile} close={() => setProfile(null)} />
                     </Modal>
                 )}
             </AnimatePresence>

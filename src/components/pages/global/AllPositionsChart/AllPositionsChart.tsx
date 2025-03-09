@@ -4,6 +4,7 @@ import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatPercentage, formatPriceInfo } from '@/utils';
 
@@ -95,11 +96,10 @@ const CustomizedContent: React.FC<{
 
 export default function AllPositionsChart({
   allPositions,
-  showFeesInPnl,
 }: {
   allPositions: PositionExtended[] | null;
-  showFeesInPnl: boolean;
 }) {
+  const showFeesInPnl = useSelector((state) => state.settings.showFeesInPnl);
   const [data, setData] = useState<{
     key: string;
     name: string;
@@ -222,7 +222,6 @@ export default function AllPositionsChart({
           <PositionBlock
             key={selectedPositionObject.pubkey.toBase58()}
             position={selectedPositionObject}
-            showFeesInPnl={showFeesInPnl}
             readOnly={true}
           /> :
           <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}

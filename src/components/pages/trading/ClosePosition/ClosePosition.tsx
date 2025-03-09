@@ -33,6 +33,7 @@ export default function ClosePosition({
   tokenImage: ImageRef;
   setShareClosePosition: (position: PositionExtended) => void;
 }) {
+  const showPopupOnPositionClose = useSelector((state) => state.settings.showPopupOnPositionClose);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [exitPriceAndFee, setExitPriceAndFee] =
@@ -114,7 +115,8 @@ export default function ClosePosition({
             const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
             const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
 
-            setShareClosePosition({ ...position, pnl: (profit - loss), exitFeeUsd, borrowFeeUsd });
+            if (showPopupOnPositionClose)
+              setShareClosePosition({ ...position, pnl: (profit - loss), exitFeeUsd, borrowFeeUsd });
           },
         });
 

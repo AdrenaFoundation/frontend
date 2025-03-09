@@ -30,10 +30,8 @@ import shovelMonster from '../../../public/images/shovel-monster.png';
 const claimHistoryItemsPerPage = 4;
 
 export default function WalletDigger({
-    showFeesInPnl,
     view
 }: {
-    showFeesInPnl: boolean;
     view: string;
 }) {
     const [moreStakingInfo, setMoreStakingInfo] = useState(false);
@@ -375,7 +373,6 @@ export default function WalletDigger({
                         traderInfo={traderInfo}
                         livePositionsNb={positions === null ? null : positions.length}
                         className="gap-y-4 mb-2"
-                        showFeesInPnl={showFeesInPnl}
                     />
 
                     <div className='w-full h-[1px] bg-bcolor mt-2' />
@@ -395,7 +392,6 @@ export default function WalletDigger({
                                             readOnly={true}
                                             key={position.pubkey.toBase58()}
                                             position={position}
-                                            showFeesInPnl={showFeesInPnl}
                                         />
                                     ))}
                                 </div>
@@ -413,7 +409,6 @@ export default function WalletDigger({
                         <PositionsHistory
                             walletAddress={targetWalletPubkey?.toBase58() ?? null}
                             connected={true}
-                            showFeesInPnl={showFeesInPnl}
                             exportButtonPosition='bottom-left'
                         />
                     </div></> : null}

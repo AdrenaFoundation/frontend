@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import AreaRechart from '@/components/ReCharts/AreaRecharts';
+import MixedAreaLineChart from '@/components/ReCharts/MixedAreaLineChart';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
-import { getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 export default function AumChart() {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -67,54 +68,58 @@ export default function AumChart() {
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?aum_usd=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
-
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
-      );
-
-      const { data } = await res.json();
-
-      const { aum_usd, snapshot_timestamp } = data;
-
-      const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            hour: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            timeZone: 'UTC',
-          });
-        }
-
-        throw new Error('Invalid period');
+      // Fetch both AUM and ALP price data in parallel
+      const result = await DataApiClient.getPoolInfo({
+        dataEndpoint,
+        queryParams: 'aum_usd=true&lp_token_price=true',
+        dataPeriod,
       });
 
-      const formattedData = aum_usd.map((aum: number, i: string | number) => ({
-        time: timeStamp[i],
-        value: aum,
-      }));
+      if (!result) {
+        console.error('Could not fetch AUM and ALP price data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch data
+          </div>
+        );
+      }
+
+      const { aum_usd, lp_token_price, snapshot_timestamp } = result;
+
+      if (!aum_usd || !lp_token_price || !snapshot_timestamp) {
+        console.error('Failed to fetch data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch data
+          </div>
+        );
+      }
+
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
+
+      // Combine AUM and ALP price data
+      const formattedData = aum_usd.map((aum: number, i: number) => {
+        const alpPrice = lp_token_price[i];
+
+        // If both values are 0, return null for both to create breaks in the chart
+        if (aum === 0 && alpPrice === 0) {
+          return {
+            time: timeStamp[i],
+            'AUM': null,
+            'ALP Price': null,
+          };
+        }
+
+        return {
+          time: timeStamp[i],
+          'AUM': aum,
+          'ALP Price': alpPrice,
+        };
+      });
 
       setChartData(formattedData);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching data:', e);
     }
   };
 
@@ -126,12 +131,19 @@ export default function AumChart() {
     );
   }
 
+  // Get the latest values for display
+  const latestData = chartData[chartData.length - 1];
+  const latestAum = latestData['AUM'] as number;
+
   return (
-    <AreaRechart
-      title={'AUM'}
-      subValue={chartData[chartData.length - 1].value as number}
+    <MixedAreaLineChart
+      title={'AUM & ALP Price'}
+      subValue={latestAum}
       data={chartData}
-      labels={[{ name: 'value' }]}
+      labels={[
+        { name: 'AUM', color: '#5460cb', type: 'area', yAxisId: 'left' },
+        { name: 'ALP Price', color: '#fde000', type: 'line', yAxisId: 'right' }
+      ]}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
       periods={['1d', '7d', '1M', '3M', '6M', {
@@ -139,7 +151,10 @@ export default function AumChart() {
         disabled: true,
       }]}
       setPeriod={setPeriod}
-      domain={['dataMin', 'dataMax']}
+      leftDomain={['dataMin', 'dataMax']}
+      rightDomain={['dataMin', 'dataMax']}
+      formatLeftY="currency"
+      formatRightY="currency"
       events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
     />
   );

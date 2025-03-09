@@ -372,7 +372,6 @@ export default function Leaderboards() {
                     >
                         <ViewProfileModal
                             profile={activeProfile}
-                            showFeesInPnl={false}
                             close={() => setActiveProfile(null)}
                         />
                     </Modal>

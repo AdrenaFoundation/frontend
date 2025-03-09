@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
-import { getGMT } from '@/utils';
+import DataApiClient from '@/DataApiClient';
+import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 interface UnrealizedPnlChartProps {
   isSmallScreen: boolean;
@@ -20,7 +21,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
 
     custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState<number>(0);
@@ -78,52 +79,39 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
             return 1;
         }
       })();
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?short_pnl=true&long_pnl=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
 
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
+      // Use DataApiClient instead of direct fetch
+      const result = await DataApiClient.getCustodyInfo(
+        dataEndpoint,
+        'short_pnl=true&long_pnl=true',
+        dataPeriod
       );
 
-      const { data } = await res.json();
+      if (!result) {
+        console.error('Could not fetch unrealized PnL data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch unrealized PnL data
+          </div>
+        );
+      }
+
       const {
         short_pnl: shortPnL,
         long_pnl: longPnL,
         snapshot_timestamp,
-      } = data as {
-        short_pnl: { [key: string]: string[] };
-        long_pnl: { [key: string]: string[] };
-        snapshot_timestamp: string[];
-      };
+      } = result;
 
-      const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
+      if (!shortPnL || !longPnL || !snapshot_timestamp) {
+        console.error('Failed to fetch unrealized PnL data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch unrealized PnL data
+          </div>
+        );
+      }
 
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            hour: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            timeZone: 'UTC',
-          });
-        }
-
-        throw new Error('Invalid period');
-      });
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
 
       // Each custody keeps an utilization array
       const infos = window.adrena.client.custodies
@@ -176,7 +164,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
       });
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching unrealized PnL data:', e);
     }
   };
 

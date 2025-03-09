@@ -10,7 +10,7 @@ import { getCustodyByMint, getGMT } from '@/utils';
 export default function CompositionChart() {
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

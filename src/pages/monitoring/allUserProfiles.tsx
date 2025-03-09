@@ -8,135 +8,96 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { SuperchargedUserProfile, useAllUserSuperchargedProfiles } from '@/hooks/useAllUserSupercharedProfiles';
 import { UserProfileExtended } from '@/types';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 
-type SortableKeys = keyof Pick<
-    UserProfileExtended,
-    | 'totalTradeVolumeUsd'
-    | 'totalPnlUsd'
-    | 'openingAverageLeverage'
-    | 'totalFeesPaidUsd'
->;
+type SortableKeys = 'pnl'
+    | 'volume'
+    | 'fees';
 
-export default function AllUserProfiles({
-    showFeesInPnl,
-    view
-}: {
-    showFeesInPnl: boolean;
-    view: string;
-}) {
-    const { allUserProfiles, triggerAllUserProfilesReload } =
-        useAllUserProfiles({});
+export default function AllUserProfiles() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [sortConfigs, setSortConfigs] = useState<{
         [key: string]: 'asc' | 'desc';
     }>({
-        totalPnlUsd: 'asc',
-        totalTradeVolumeUsd: 'asc',
-        openingAverageLeverage: 'asc',
-        totalFeesPaidUsd: 'asc',
+        pnl: 'desc',
+        fees: 'desc',
+        volume: 'desc',
     });
 
     const keys = {
-        pnl: 'totalPnlUsd',
-        'trade volume': 'totalTradeVolumeUsd',
-        leverage: 'openingAverageLeverage',
-        'fees paid': 'totalFeesPaidUsd',
+        pnl: 'pnl',
+        'trade volume': 'volume',
+        'fees paid': 'fees',
     } as const;
 
     const [sortOrder, setSortOrder] = useState<string[]>([
-        'totalPnlUsd',
-        'totalTradeVolumeUsd',
-        'openingAverageLeverage',
-        'totalFeesPaidUsd',
+        'pnl',
+        'volume',
+        'fees',
     ]);
-    const [sortedProfiles, setSortedProfiles] = useState<UserProfileExtended[]>(
-        [],
-    );
-    const [paginatedProfiles, setPaginatedProfiles] = useState<
-        UserProfileExtended[]
-    >([]);
+
     const [usernameFilter, setUsernameFilter] = useState('');
     const [ownerFilter, setOwnerFilter] = useState('');
-    const [pnlFilter, setPnlFilter] = useState('all');
-    const [initialRankedProfiles, setInitialRankedProfiles] = useState<
-        UserProfileExtended[]
+    const [pnlFilter, setPnlFilter] = useState<'all' | 'positive' | 'negative'>('all');
+
+    const { superchargedUserProfiles: allUserProfiles, triggerReload } = useAllUserSuperchargedProfiles({
+        orderBy: sortOrder[0] as SortableKeys,
+        sort: sortConfigs[sortOrder[0] as SortableKeys],
+        pnlStatus: pnlFilter,
+    });
+
+    const [filteredProfiles, setFilteredProfiles] = useState<SuperchargedUserProfile[] | null>(null);
+
+    const [paginatedProfiles, setPaginatedProfiles] = useState<
+        SuperchargedUserProfile[]
     >([]);
-    const [hideZeroTradeVolume, setHideZeroTradeVolume] = useState(false);
+
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
     useEffect(() => {
-        if (view !== 'userProfiles') return;
+        if (!usernameFilter.length && !ownerFilter.length)
+            return setFilteredProfiles(allUserProfiles);
 
-        const filteredProfiles = (allUserProfiles ?? []).filter((profile) => {
-            const ownerCondition =
-                ownerFilter === '' ||
-                profile.pubkey
-                    .toBase58()
-                    .toLowerCase()
-                    .includes(ownerFilter.toLowerCase());
-            const pnlCondition =
-                pnlFilter === 'all' ||
-                (pnlFilter === 'profit' && profile.totalPnlUsd > 0) ||
-                (pnlFilter === 'loss' && profile.totalPnlUsd < 0);
-            const tradeVolumeCondition =
-                !hideZeroTradeVolume || profile.totalTradeVolumeUsd > 0;
+        setFilteredProfiles(allUserProfiles?.filter((p) => {
+            if (usernameFilter.length) {
+                if (!p.profile) {
+                    return false;
+                }
 
-            const usernameCondition = usernameFilter === '' || profile.nickname.toLowerCase().includes(usernameFilter.toLowerCase());
-
-            return usernameCondition && ownerCondition && pnlCondition && tradeVolumeCondition;
-        });
-
-        const sortedByPnl = [...filteredProfiles].sort(
-            (a, b) => b.totalPnlUsd - a.totalPnlUsd,
-        );
-
-        const rankedProfiles = sortedByPnl.map((profile, index) => ({
-            ...profile,
-            rank: index + 1,
-        }));
-
-        if (initialRankedProfiles.length === 0) {
-            setInitialRankedProfiles(rankedProfiles);
-        }
-
-        const sorted = rankedProfiles.sort((a, b) => {
-            for (const criteria of sortOrder) {
-                const order = sortConfigs[criteria];
-                const multiplier = order === 'asc' ? 1 : -1;
-                const aValue = a[criteria as SortableKeys];
-                const bValue = b[criteria as SortableKeys];
-                const comparison = multiplier * (bValue - aValue);
-                if (comparison !== 0) return comparison;
+                if (!p.profile.nickname.toLowerCase().includes(usernameFilter.toLowerCase())) {
+                    return false;
+                }
             }
-            return 0;
-        });
 
-        setSortedProfiles(sorted);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        allUserProfiles,
-        sortConfigs,
-        sortOrder,
-        pnlFilter,
-        hideZeroTradeVolume,
-        ownerFilter,
-        usernameFilter,
-        view,
-    ]);
+            if (ownerFilter.length) {
+                if (!p.profile) {
+                    return false;
+                }
+
+                if (!p.profile.owner.toBase58().toLowerCase().includes(ownerFilter.toLowerCase())) {
+                    return false;
+                }
+            }
+
+            return true;
+        }) ?? [])
+    }, [allUserProfiles, usernameFilter, ownerFilter]);
 
     useEffect(() => {
-        const paginated = sortedProfiles.slice(
+        if (!filteredProfiles) return;
+
+        const paginated = filteredProfiles.slice(
             (currentPage - 1) * itemsPerPage,
             currentPage * itemsPerPage,
         );
+
         setPaginatedProfiles(paginated);
-    }, [currentPage, sortedProfiles]);
+    }, [currentPage, filteredProfiles]);
 
     const toggleSortOrder = (criteria: keyof typeof keys) => {
         setSortConfigs((prevConfigs) => ({
@@ -144,10 +105,12 @@ export default function AllUserProfiles({
             [keys[criteria] as SortableKeys]:
                 prevConfigs[keys[criteria] as SortableKeys] === 'desc' ? 'asc' : 'desc',
         }));
+
         setSortOrder((prevOrder) => {
             const newOrder = prevOrder.filter(
                 (item) => item !== (keys[criteria] as SortableKeys),
             );
+
             return [keys[criteria] as SortableKeys, ...newOrder];
         });
     };
@@ -172,34 +135,31 @@ export default function AllUserProfiles({
                                     type: 'radio',
                                     name: 'PnL',
                                     activeOption: pnlFilter,
-                                    handleChange: setPnlFilter,
+                                    handleChange: (v: unknown) => setPnlFilter(v as 'all' | 'positive' | 'negative'),
                                     optionItems: [
                                         { label: 'all' },
-                                        { label: 'profit' },
-                                        { label: 'loss' },
+                                        { label: 'positive' },
+                                        { label: 'negative' },
                                     ],
-                                },
-                            ]}
-                            switchOptions={[
-                                {
-                                    label: 'Hide profiles w/o trades',
-                                    checked: hideZeroTradeVolume,
-                                    handleChange: setHideZeroTradeVolume,
                                 },
                             ]}
                             sortOptions={{
                                 handleChange: toggleSortOrder as React.Dispatch<React.SetStateAction<string>>,
                                 optionItems: [
-                                    { label: 'pnl', order: sortConfigs.totalPnlUsd },
+                                    {
+                                        label: 'pnl',
+                                        order: sortConfigs.pnl,
+                                        lastClicked: sortOrder[0] === 'pnl',
+                                    },
                                     {
                                         label: 'trade volume',
-                                        order: sortConfigs.totalTradeVolumeUsd,
+                                        order: sortConfigs.volume,
+                                        lastClicked: sortOrder[0] === 'volume',
                                     },
                                     {
-                                        label: 'leverage',
-                                        order: sortConfigs.openingAverageLeverage,
+                                        label: 'fees paid', order: sortConfigs.fees,
+                                        lastClicked: sortOrder[0] === 'fees',
                                     },
-                                    { label: 'fees paid', order: sortConfigs.totalFeesPaidUsd },
                                 ],
                             }}
                         />
@@ -209,23 +169,25 @@ export default function AllUserProfiles({
                                 <Button
                                     icon={reloadIcon}
                                     variant="outline"
-                                    onClick={triggerAllUserProfilesReload}
+                                    onClick={triggerReload}
                                     className="w-7 h-7 p-0 border-bcolor ml-auto"
                                     iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
                                 />
                             </div>
+
                             <div className="flex flex-wrap flex-col gap-2 mb-3">
-                                {paginatedProfiles.map((profile) => (
+                                {paginatedProfiles.map((superchargedProfile) => (
                                     <UserProfileBlock
-                                        key={profile.pubkey.toBase58()}
-                                        profile={profile as UserProfileExtended & { rank: number }}
+                                        key={superchargedProfile.wallet.toBase58()}
+                                        superchargedProfile={superchargedProfile}
                                         setActiveProfile={setActiveProfile}
                                     />
                                 ))}
                             </div>
+
                             <Pagination
                                 currentPage={currentPage}
-                                totalItems={sortedProfiles.length}
+                                totalItems={filteredProfiles ? filteredProfiles.length : 0}
                                 itemsPerPage={itemsPerPage}
                                 onPageChange={setCurrentPage}
                             />
@@ -245,7 +207,6 @@ export default function AllUserProfiles({
                     >
                         <ViewProfileModal
                             profile={activeProfile}
-                            showFeesInPnl={showFeesInPnl}
                             close={() => setActiveProfile(null)}
                         />
                     </Modal>
@@ -253,4 +214,6 @@ export default function AllUserProfiles({
             </AnimatePresence>
         </>
     );
+
+    return <div>Page under construction</div>
 }

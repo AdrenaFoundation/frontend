@@ -92,7 +92,6 @@ export default function Index() {
                 >
                     <ViewProfileModal
                         profile={activeProfile}
-                        showFeesInPnl={false}
                         close={() => setActiveProfile(null)}
                     />
                 </Modal>

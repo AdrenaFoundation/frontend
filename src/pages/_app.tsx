@@ -18,10 +18,10 @@ import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
-import { SOLANA_EXPLORERS_OPTIONS } from '@/constant';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import useRpc from '@/hooks/useRPC';
+import useSettingsPersistence from '@/hooks/useSettingsPersistence';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWalletAdapters from '@/hooks/useWalletAdapters';
@@ -31,12 +31,7 @@ import initializeApp, {
   createReadOnlyAdrenaProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { PriorityFeeOption, SolanaExplorerOptions, VestExtended } from '@/types';
-import {
-  DEFAULT_MAX_PRIORITY_FEE,
-  DEFAULT_PRIORITY_FEE_OPTION,
-  PercentilePriorityFeeList,
-} from '@/utils';
+import { VestExtended } from '@/types';
 
 import logo from '../../public/images/logo.svg';
 import store, { useDispatch, useSelector } from '../store/store';
@@ -56,7 +51,7 @@ function Loader(): JSX.Element {
 }
 
 // Make explicit that the config is constant.
-// initalized once, doesn't move afterwards.
+// initialized once, doesn't move afterwards.
 // actually twice, once on the server to `null` & once on the client.
 const CONFIG = initConfig();
 export const PYTH_CONNECTION =
@@ -82,14 +77,6 @@ export default function App(props: AppProps) {
     setFavoriteRpc,
   } = useRpc(CONFIG);
 
-  const [cookies] = useCookies(['solanaExplorer']);
-
-  const preferredSolanaExplorer: SolanaExplorerOptions =
-    cookies?.solanaExplorer &&
-      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
-      ? cookies?.solanaExplorer
-      : 'Solana Explorer';
-
   // Initialize the app as soon as possible:
   // - when the client-side app boots..
   //   - and the RPC has been picked by usePRC hook.
@@ -102,7 +89,6 @@ export default function App(props: AppProps) {
   ) {
     setInitStatus('starting');
     initializeApp(
-      preferredSolanaExplorer,
       CONFIG,
       activeRpc.connection,
       PYTH_CONNECTION,
@@ -127,7 +113,6 @@ export default function App(props: AppProps) {
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           {...props}
         />
         <Analytics />
@@ -155,7 +140,6 @@ function AppComponent({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  preferredSolanaExplorer,
 }: AppProps & {
   activeRpc: {
     name: string;
@@ -172,7 +156,6 @@ function AppComponent({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -183,6 +166,7 @@ function AppComponent({
   const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
   const { userProfile, triggerUserProfileReload } = useUserProfile(walletAddress ?? null);
 
+  useSettingsPersistence();
   useWatchTokenPrices();
   useWatchBorrowRates();
 
@@ -194,21 +178,7 @@ function AppComponent({
 
   const [cookies, setCookie] = useCookies([
     'terms-and-conditions-acceptance',
-    'priority-fee',
-    'max-priority-fee',
-    'show-fees-in-pnl',
   ]);
-
-  const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(
-    DEFAULT_PRIORITY_FEE_OPTION,
-  );
-
-  // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
-  const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(
-    DEFAULT_MAX_PRIORITY_FEE,
-  );
-
-  const [showFeesInPnl, setShowFeesInPnl] = useState<boolean>(true);
 
   const [userVest, setUserVest] = useState<VestExtended | null | false>(null);
   const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null | false>(null);
@@ -245,37 +215,7 @@ function AppComponent({
     if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
       setIsTermsAndConditionModalOpen(true);
     }
-
-    // Priority fees
-    const priorityFeeOption = cookies['priority-fee'];
-
-    if (
-      priorityFeeOption &&
-      Object.keys(PercentilePriorityFeeList).includes(priorityFeeOption)
-    ) {
-      setPriorityFeeOption(priorityFeeOption);
-    }
-
-    const maxPriorityFee = parseFloat(cookies['max-priority-fee']);
-
-    if (maxPriorityFee && !isNaN(maxPriorityFee)) {
-      setMaxPriorityFee(maxPriorityFee);
-    }
-
-    const showFeesInPnl = cookies['show-fees-in-pnl'];
-
-    if (showFeesInPnl && showFeesInPnl === 'false') {
-      setShowFeesInPnl(false);
-    }
   }, [cookies]);
-
-  useEffect(() => {
-    window.adrena.client.setPriorityFeeOption(priorityFeeOption);
-  }, [priorityFeeOption]);
-
-  useEffect(() => {
-    window.adrena.client.setMaxPriorityFee(maxPriorityFee);
-  }, [maxPriorityFee]);
 
   useEffect(() => {
     if (!wallet) {
@@ -340,26 +280,6 @@ function AppComponent({
         wallet={wallet}
         userVest={userVest}
         userDelegatedVest={userDelegatedVest}
-        priorityFeeOption={priorityFeeOption}
-        setPriorityFeeOption={(p: PriorityFeeOption) => {
-          setCookie('priority-fee', p, {
-            path: '/',
-            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-            sameSite: 'strict',
-          });
-
-          setPriorityFeeOption(p);
-        }}
-        maxPriorityFee={maxPriorityFee}
-        setMaxPriorityFee={(p: number | null) => {
-          setCookie('max-priority-fee', p, {
-            path: '/',
-            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-            sameSite: 'strict',
-          });
-
-          setMaxPriorityFee(p);
-        }}
         userProfile={userProfile}
         activeRpc={activeRpc}
         rpcInfos={rpcInfos}
@@ -370,10 +290,7 @@ function AppComponent({
         setAutoRpcMode={setAutoRpcMode}
         setCustomRpcUrl={setCustomRpcUrl}
         setFavoriteRpc={setFavoriteRpc}
-        preferredSolanaExplorer={preferredSolanaExplorer}
         adapters={adapters}
-        showFeesInPnl={showFeesInPnl}
-        setShowFeesInPnl={setShowFeesInPnl}
       >
         {
           <TermsAndConditionsModal
@@ -426,10 +343,7 @@ function AppComponent({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          preferredSolanaExplorer={preferredSolanaExplorer}
           adapters={adapters}
-          showFeesInPnl={showFeesInPnl}
-          setShowFeesInPnl={setShowFeesInPnl}
         />
       </RootLayout>
     </>

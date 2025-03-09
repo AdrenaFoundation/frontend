@@ -25,7 +25,6 @@ export default function Profile({
   readonly,
   wallet,
   userVest,
-  showFeesInPnl,
 }: PageProps & {
   readonly?: boolean;
 }) {
@@ -129,7 +128,6 @@ export default function Profile({
                   traderInfo={traderInfo}
                   livePositionsNb={positions === null ? null : positions.length}
                   className="gap-y-4 pt-2 pb-2"
-                  showFeesInPnl={showFeesInPnl}
                 />
 
                 <div className="h-[1px] w-full bg-bcolor mb-2" />

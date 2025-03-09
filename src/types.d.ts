@@ -80,7 +80,6 @@ export type PageProps = {
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
   triggerUserVestReload: () => void;
-  showFeesInPnl: boolean;
 };
 
 export type CustodyExtended = {
@@ -158,6 +157,9 @@ export type PositionExtended = {
   takeProfitIsSet: boolean;
   unrealizedInterestUsd: number;
 
+  // Added later on after loading user profiles from onchain.
+  userProfile?: UserProfileExtended;
+
   // Onchain data
   nativeObject: Position;
 };
@@ -229,31 +231,6 @@ export type UserProfileExtended = {
   referrerProfile: PublicKey | null;
   claimableReferralFeeUsd: number;
   totalReferralFeeUsd: number;
-  // Aggregates
-  totalPnlUsd: number;
-  // Only accounts for opens
-  totalTradeVolumeUsd: number;
-  totalFeesPaidUsd: number;
-  openingAverageLeverage: number;
-  //
-  shortStats: {
-    openedPositionCount: number;
-    liquidatedPositionCount: number;
-    openingAverageLeverage: number;
-    openingSizeUsd: number;
-    profitsUsd: number;
-    lossesUsd: number;
-    feePaidUsd: number;
-  };
-  longStats: {
-    openedPositionCount: number;
-    liquidatedPositionCount: number;
-    openingAverageLeverage: number;
-    openingSizeUsd: number;
-    profitsUsd: number;
-    lossesUsd: number;
-    feePaidUsd: number;
-  };
   profilePicture: ProfilePicture;
   wallpaper: Wallpaper;
   title: UserProfileTitle;
@@ -490,7 +467,7 @@ export type Trader = {
 };
 
 export type RechartsData = {
-  [key: string]: number | string | boolean;
+  [key: string]: number | string | boolean | null;
 };
 
 export type AdrenaEventType = "Global" | "Trading" | "Staking" | "Other";
@@ -1280,6 +1257,16 @@ export type EnrichedPositionApi = {
   updatedAt: Date | null;
 };
 
+export type TraderProfilesRawData = {
+  traders: {
+    user_id: number;
+    user_pubkey: string;
+    pnl: number;
+    volume: number;
+    fees: number;
+  }[];
+};
+
 export type TraderInfoRawData = {
   user_pubkey: string;
   total_pnl: number;
@@ -1340,4 +1327,48 @@ export type EnrichedTraderInfo = {
   avgExitSize: number;
   avgEntryCollateralAmount: number;
   avgHoldingTime: number;
+};
+
+export type TraderProfileInfo = {
+  userPubkey: PublicKey;
+  totalPnl: number;
+  totalFees: number;
+  totalVolume: number;
+};
+
+// Update PoolInfoResponse to match what getPoolInfo returns (just the data part)
+export type PoolInfoResponse = {
+  aum_usd?: number[];
+  lp_apr?: number[];
+  lm_apr?: number[];
+  lp_token_price?: number[];
+  cumulative_swap_fee_usd?: number[];
+  cumulative_liquidity_fee_usd?: number[];
+  cumulative_close_position_fee_usd?: number[];
+  cumulative_liquidation_fee_usd?: number[];
+  cumulative_borrow_fee_usd?: number[];
+  cumulative_referrer_fee_usd?: number[];
+  cumulative_trading_volume_usd?: number[];
+  snapshot_timestamp: string[];
+  startDate?: string;
+  endDate?: string;
+};
+
+export type CustodyInfoResponse = {
+  snapshot_timestamp: string[];
+  startDate?: string;
+  endDate?: string;
+  cumulative_profit_usd?: { [key: string]: string[] };
+  cumulative_loss_usd?: { [key: string]: string[] };
+  borrow_rate?: { [key: string]: string[] };
+  short_pnl?: { [key: string]: string[] };
+  long_pnl?: { [key: string]: string[] };
+  open_interest_long_usd?: { [key: string]: string[] };
+  open_interest_short_usd?: { [key: string]: string[] };
+  oi_long_usd?: { [key: string]: string[] };
+  oi_short_usd?: { [key: string]: string[] };
+  unrealized_pnl?: { [key: string]: string[] };
+  owned?: { [key: string]: string[] };
+  locked?: { [key: string]: string[] };
+  [key: string]: unknown;
 };

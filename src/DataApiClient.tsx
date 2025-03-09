@@ -1,11 +1,13 @@
 import { PublicKey } from '@solana/web3.js';
 
 import {
+    CustodyInfoResponse,
     EnrichedPositionApi,
     EnrichedTraderInfo,
     GetPositionStatsReturnType,
     MutagenLeaderboardData,
     MutagenLeaderboardRawAPI,
+    PoolInfoResponse,
     PositionActivityRawAPi,
     PositionApiRawData,
     PositionStatsRawApi,
@@ -17,19 +19,25 @@ import {
     Trader,
     TraderDivisionRawAPI,
     TraderInfoRawData,
+    TraderProfileInfo,
+    TraderProfilesRawData,
     UserMutagensReturnType,
     UserSeasonProgressReturnType
 } from './types';
 
+
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
+    // public static DATAPI_URL = "http://localhost:8080";
+    public static DATAPI_URL = 'https://datapi.adrena.xyz';
+
     public static async getLastPrice(): Promise<{
         adxPrice: number | null;
         alpPrice: number | null;
     } | null> {
         try {
             const result = await fetch(
-                `https://datapi.adrena.xyz/last-price`,
+                `${DataApiClient.DATAPI_URL}/last-price`,
             ).then((res) => res.json());
 
             if (result === null || typeof result === 'undefined' || !result.data || !result.data.adx || !result.data.alp) {
@@ -69,7 +77,7 @@ export default class DataApiClient {
         lp_apr_rolling_seven_day: number;
     }> {
         const result = await fetch(
-            `https://datapi.adrena.xyz/poolinfo?lm_apr_rolling_seven_day=true&lp_apr_rolling_seven_day=true&sort=DESC&limit=1`,
+            `${DataApiClient.DATAPI_URL}/poolinfo?lm_apr_rolling_seven_day=true&lp_apr_rolling_seven_day=true&sort=DESC&limit=1`,
         ).then((res) => res.json());
 
         return {
@@ -95,7 +103,7 @@ export default class DataApiClient {
         start_date: string;
     }> {
         const result = await fetch(
-            `https://datapi.adrena.xyz/apr?staking_type=${type}&start_date=${(() => {
+            `${DataApiClient.DATAPI_URL}/apr?staking_type=${type}&start_date=${(() => {
                 const startDate = new Date();
                 startDate.setDate(startDate.getDate() - 7);
 
@@ -124,7 +132,7 @@ export default class DataApiClient {
         start_date: string;
     }> {
         const result = await fetch(
-            `https://datapi.adrena.xyz/apr-graph?start_date=${(() => {
+            `${DataApiClient.DATAPI_URL}/apr-graph?start_date=${(() => {
                 const startDate = new Date();
                 startDate.setDate(startDate.getDate() - nbDays);
 
@@ -138,7 +146,7 @@ export default class DataApiClient {
     public static async getSeasonLeaderboards(): Promise<SeasonLeaderboardsData | null> {
         try {
             const result: SeasonLeaderboardsRawAPI = await fetch(
-                `https://datapi.adrena.xyz/season?season=expanse&show_leaderboard=true`,
+                `${DataApiClient.DATAPI_URL}/season?season=expanse&show_leaderboard=true`,
             ).then((res) => res.json());
 
             return {
@@ -208,7 +216,7 @@ export default class DataApiClient {
     } & T): Promise<PreSeasonLeaderboardReturnTypeAPI<T> | null> {
         try {
             const result = await fetch(
-                `https://datapi.adrena.xyz/v2/awakening?season=${season}&show_achievements=${Boolean(
+                `${DataApiClient.DATAPI_URL}/v2/awakening?season=${season}&show_achievements=${Boolean(
                     showAchievements,
                 )}&show_trader_divisions=${Boolean(
                     showTraderDivisions,
@@ -341,7 +349,7 @@ export default class DataApiClient {
     } & T): Promise<GetPositionStatsReturnType<T> | null> {
         try {
             const result = await fetch(
-                `https://datapi.adrena.xyz/position-stats?${symbol ? `symbol=${symbol}` : ''
+                `${DataApiClient.DATAPI_URL}/position-stats?${symbol ? `symbol=${symbol}` : ''
                 }${side ? `&side=${side}` : ''}${startDate ? `&start_date=${encodeURIComponent(startDate.toISOString())}` : ''
                 }${endDate ? `&end_date=${encodeURIComponent(endDate.toISOString())}` : ''
                 }&show_position_activity=${showPositionActivity ? showPositionActivity : false
@@ -429,7 +437,7 @@ export default class DataApiClient {
         if (sort) params.append('sort', sort);
 
         const queryString = params.toString();
-        const url = `https://datapi.adrena.xyz/traders${queryString ? `?${queryString}` : ''}`;
+        const url = `${DataApiClient.DATAPI_URL}/traders${queryString ? `?${queryString}` : ''}`;
 
         const result = await fetch(url).then((res) => res.json());
 
@@ -456,7 +464,7 @@ export default class DataApiClient {
 
         try {
             const response = await fetch(
-                `https://datapi.adrena.xyz/season?${params.toString()}`
+                `${DataApiClient.DATAPI_URL}/season?${params.toString()}`
             );
 
             if (!response.ok) {
@@ -473,7 +481,7 @@ export default class DataApiClient {
     public static async getMutagenLeaderboard(): Promise<MutagenLeaderboardData | null> {
         try {
             const response = await fetch(
-                `https://datapi.adrena.xyz/mutagen-leaderboard`
+                `${DataApiClient.DATAPI_URL}/mutagen-leaderboard`
             );
 
             if (!response.ok) {
@@ -513,7 +521,7 @@ export default class DataApiClient {
     }): Promise<UserMutagensReturnType | null> {
         try {
             const response = await fetch(
-                `https://datapi.adrena.xyz/mutagen?user_wallet=${userWallet}`
+                `${DataApiClient.DATAPI_URL}/mutagen?user_wallet=${userWallet}`
             );
 
             if (!response.ok) {
@@ -536,7 +544,7 @@ export default class DataApiClient {
     }): Promise<EnrichedPositionApi[]> {
         try {
             const response = await fetch(
-                `https://datapi.adrena.xyz/position?user_wallet=${walletAddress
+                `${DataApiClient.DATAPI_URL}/position?user_wallet=${walletAddress
                 }&status=liquidate&status=close`,
             );
 
@@ -617,7 +625,7 @@ export default class DataApiClient {
     }): Promise<EnrichedTraderInfo | null> {
         try {
             const response = await fetch(
-                `https://datapi.adrena.xyz/trader-info?user_wallet=${walletAddress}`,
+                `${DataApiClient.DATAPI_URL}/trader-info?user_wallet=${walletAddress}`,
             );
 
             if (!response.ok) {
@@ -664,6 +672,133 @@ export default class DataApiClient {
             } as EnrichedTraderInfo;
         } catch (e) {
             console.error('Error fetching trader Info:', e);
+            return null;
+        }
+    }
+
+    public static async getTraderProfiles({
+        orderBy,
+        sort,
+        pnlStatus,
+        limit,
+    }: {
+        orderBy: 'pnl' | 'volume' | 'fees';
+        sort: "asc" | "desc";
+        pnlStatus: "positive" | "negative" | "all";
+        limit?: number;
+    }): Promise<TraderProfileInfo[] | null> {
+        try {
+            const response = await fetch(
+                `${DataApiClient.DATAPI_URL}/trader-profiles?order_column=${orderBy}&sort=${sort.toUpperCase()}${limit ? `&limit=${limit}` : ''}&pnl_status=${pnlStatus}`,
+            );
+
+            if (!response.ok) {
+                console.log('API response was not ok');
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            const apiData: TraderProfilesRawData | undefined = apiBody.data;
+
+            if (typeof apiData === 'undefined' || !apiData)
+                return null;
+
+            return apiData.traders.map((trader) => ({
+                userPubkey: new PublicKey(trader.user_pubkey),
+                totalPnl: trader.pnl,
+                totalFees: trader.fees,
+                totalVolume: trader.volume,
+            } as TraderProfileInfo));
+        } catch (e) {
+            console.error('Error fetching trader Info:', e);
+            return null;
+        }
+    }
+
+    /**
+     * Get Pool Info data preserving the exact format expected by components
+     * @param dataEndpoint API endpoint to use ('poolinfo', 'poolinfohourly', 'poolinfodaily')
+     * @param queryParams Additional query parameters to include
+     * @param dataPeriod Number of days to look back
+     * @returns Data part of the API response or null on error
+    */
+    public static async getPoolInfo(
+        {
+            dataEndpoint,
+            queryParams,
+            dataPeriod,
+            allHistoricalData = false
+        }: {
+            dataEndpoint: string,
+            queryParams: string,
+            dataPeriod: number,
+            allHistoricalData?: boolean
+        }): Promise<PoolInfoResponse | null> {
+        try {
+            let startDate: Date;
+
+            if (allHistoricalData) {
+                startDate = new Date('2023-09-25T00:00:00.000Z');
+            } else {
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - dataPeriod);
+            }
+
+            const url = `https://datapi.adrena.xyz/${dataEndpoint}?${queryParams}&start_date=${startDate.toISOString()}&end_date=${new Date().toISOString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            if (!apiBody.success) {
+                return null;
+            }
+
+            return apiBody.data;
+        } catch (error) {
+            console.error('Error fetching pool info:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Get  Custody Info data preserving the exact format expected by components
+     * @param dataEndpoint API endpoint to use ('custodyinfo', 'custodyinfohourly', 'custodyinfodaily', )
+     * @param queryParams Additional query parameters to include
+     * @param dataPeriod Number of days to look back
+     * @returns Raw API response with data structure preserved
+    */
+    public static async getCustodyInfo(
+        dataEndpoint: string,
+        queryParams: string,
+        dataPeriod: number
+    ): Promise<CustodyInfoResponse | null> {
+        try {
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - dataPeriod);
+
+            const url = `https://datapi.adrena.xyz/${dataEndpoint}?${queryParams}&start_date=${startDate.toISOString()}&end_date=${new Date().toISOString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            if (!apiBody.success) {
+                return null;
+            }
+
+            return apiBody.data;
+        } catch (error) {
+            console.error('Error fetching custody info:', error);
             return null;
         }
     }

@@ -10,6 +10,7 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, PositionExtended } from '@/types';
 import { formatTimeDifference, getFullTimeDifference, getTxExplorer } from '@/utils';
 
@@ -21,21 +22,21 @@ import { PositionHeader } from './PositionBlockComponents/PositionHeader';
 import { PositionName } from './PositionBlockComponents/PositionName';
 import { ValueColumn } from './PositionBlockComponents/ValueColumn';
 import SharePositionModal from './SharePositionModal';
+import VolumeTooltip from './VolumeTooltip';
 
 const PositionHistoryBlock = ({
   bodyClassName,
   borderColor,
   positionHistory,
   showShareButton = true,
-  showFeesInPnl,
 }: {
   bodyClassName?: string;
   borderColor?: string;
   positionHistory: EnrichedPositionApi;
   showShareButton?: boolean;
-  showFeesInPnl: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const showFeesInPnl = useSelector((state) => state.settings.showFeesInPnl);
   const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl);
 
   const blockRef = useRef<HTMLDivElement>(null);
@@ -123,6 +124,26 @@ const PositionHistoryBlock = ({
                   positionHistory.exitDate ?? new Date()
                 )
               )}
+              valueClassName={POSITION_BLOCK_STYLES.text.white}
+              columnClasses={columnClasses}
+            />
+
+            <ValueColumn
+              label="Volume"
+              value={
+                <VolumeTooltip
+                  entrySize={positionHistory.entrySize}
+                  increaseSize={positionHistory.increaseSize}
+                  exitSize={positionHistory.exitSize}
+                >
+                  <FormatNumber
+                    nb={positionHistory.volume}
+                    format="currency"
+                    className={POSITION_BLOCK_STYLES.text.white}
+                    isDecimalDimmed={false}
+                  />
+                </VolumeTooltip>
+              }
               valueClassName={POSITION_BLOCK_STYLES.text.white}
               columnClasses={columnClasses}
             />
@@ -224,7 +245,7 @@ const PositionHistoryBlock = ({
                 isBig && "flex-row justify-center items-center",
                 isBiggest && "flex-row justify-center items-center"
               )}>
-                <div className="lg:block hidden flex flex-col justify-center items-center w-full">
+                <div className="lg:flex hidden flex-col justify-center items-center w-full">
                   <Button
                     leftIcon={shareIcon}
                     variant='secondary'

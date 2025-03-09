@@ -304,7 +304,7 @@ export default function Flow({
             isWrapped={false}
             close={() => setProfile(null)}
           >
-            <ViewProfileModal profile={profile} showFeesInPnl={true} close={() => setProfile(null)} />
+            <ViewProfileModal profile={profile} close={() => setProfile(null)} />
           </Modal>
         )}
       </AnimatePresence>

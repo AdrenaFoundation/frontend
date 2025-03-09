@@ -2,12 +2,10 @@ import React, { useEffect } from 'react';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import ALPPriceChart from '@/components/pages/global/ALPPrice/ALPPriceChart';
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
 import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
-import FeesChart from '@/components/pages/global/Fees/FeesChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
@@ -166,18 +164,13 @@ export default function BasicMonitoring({
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
-              <RealizedPnlChart isSmallScreen={isSmallScreen} />
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <FeesChart isSmallScreen={isSmallScreen} />
+              <CompositionChart />
               <UsersCohortsChart />
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <CompositionChart />
-              <ALPPriceChart />
+              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+              <RealizedPnlChart isSmallScreen={isSmallScreen} />
             </div>
 
           </StyledContainer >

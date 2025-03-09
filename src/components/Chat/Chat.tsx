@@ -10,8 +10,10 @@ import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
 import { PROFILE_PICTURES, WALLPAPER } from "@/constant";
+import DataApiClient from "@/DataApiClient";
+import { useAllUserProfilesMetadata } from "@/hooks/useAllUserProfilesMetadata";
 import { useDispatch } from "@/store/store";
-import { UserProfileExtended } from "@/types";
+import { EnrichedTraderInfo, ProfilePicture, UserProfileExtended, UserProfileMetadata, Wallpaper } from "@/types";
 
 import collapseIcon from '../../../public/images/collapse-all.svg';
 import groupIcon from '../../../public/images/group.svg';
@@ -112,30 +114,63 @@ function Chat({
     showUserList = false,
     onToggleUserList,
 }: ChatProps) {
+    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
     const [nbConnectedUsers, setNbConnectedUsers] = useState<number | null>(null);
-    const [profileCache, setProfileCache] = useState<Record<string, UserProfileExtended | null | false>>({});
+    const [profileCache, setProfileCache] = useState<Record<string, EnrichedTraderInfo | null>>({});
     const dispatch = useDispatch();
     const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
     const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
+
+    const userProfilesMap = useMemo(() => {
+        return allUserProfilesMetadata.reduce(
+            (acc, profile) => {
+                acc[profile.owner.toBase58()] = profile;
+                return acc;
+            },
+            {} as Record<string, UserProfileMetadata>,
+        );
+    }, [allUserProfilesMetadata]);
 
     const handleConnectionClick = () => {
         dispatch(openCloseConnectionModalAction(true));
     };
 
+    const fetchDetailedConnectedUsers = useCallback(async (roomId: number): Promise<ConnectedUser[]> => {
+        if (!Object.keys(userProfilesMap).length) return [];
+
+        try {
+            const keys = await kv.keys(`connected:${roomId}:*`);
+
+            return keys.map((key) => {
+                const wallet = key.split(':')[2];
+
+                return {
+                    wallet,
+                    nickname: userProfilesMap[wallet]?.nickname ?? null,
+                };
+            });
+        } catch (e) {
+            console.log('Error loading connected users', e);
+            return [];
+        }
+    }, [userProfilesMap]);
+
     useEffect(() => {
         const updateUsers = () => {
-            fetchConnectedUsers(roomId).then(setNbConnectedUsers);
-            fetchDetailedConnectedUsers(roomId).then(setConnectedUsers);
+            fetchDetailedConnectedUsers(roomId).then((users) => {
+                setNbConnectedUsers(users.length);
+                setConnectedUsers(users);
+            });
         };
 
         updateUsers();
         const interval = setInterval(updateUsers, 20000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [fetchDetailedConnectedUsers]);
 
     useEffect(() => {
         // Fetch initial messages
@@ -231,38 +266,20 @@ function Chat({
 
         profileLoading = wallet;
 
-        window.adrena.client.loadUserProfile({ user: new PublicKey(wallet) })
-            .then((profile) => {
-                setProfileCache((prev) => ({
-                    ...prev,
-                    [wallet]: profile,
-                }));
-            });
-    }, [profileCache]);
-
-    const fetchDetailedConnectedUsers = async (roomId: number) => {
-        try {
-            const keys = await kv.keys(`connected:${roomId}:*`);
-            const users = await Promise.all(keys.map(async (key) => {
-                const wallet = key.split(':')[2];
-                const profile = await window.adrena.client.loadUserProfile({ user: new PublicKey(wallet) });
-                if (profile) {
-                    setProfileCache(prev => ({
-                        ...prev,
-                        [wallet]: profile
-                    }));
-                }
-                return {
-                    wallet,
-                    nickname: profile ? profile.nickname : null
-                };
+        DataApiClient.getTraderInfo({ walletAddress: wallet }).then((offchainProfile) => {
+            setProfileCache((prev) => ({
+                ...prev,
+                [wallet]: offchainProfile,
             }));
-            return users;
-        } catch (e) {
-            console.log('Error loading connected users', e);
-            return [];
-        }
-    };
+        }).catch((e) => {
+            console.log('Error loading offchain profile info', e);
+
+            setProfileCache((prev) => ({
+                ...prev,
+                [wallet]: null,
+            }));
+        });
+    }, [profileCache]);
 
     const anonymousCount = useMemo(() => {
         return connectedUsers.filter(user => !user.nickname).length;
@@ -285,7 +302,9 @@ function Chat({
                                     style={{
                                         backgroundSize: 'cover',
                                         backgroundRepeat: 'no-repeat',
-                                        backgroundImage: `url(${WALLPAPER[msg.wallet ? (profileCache[msg.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
+                                        backgroundImage: `url(${WALLPAPER[
+                                            ((msg.wallet && userProfilesMap[msg.wallet]) ? ((userProfilesMap[msg.wallet] as UserProfileMetadata).wallpaper ?? 0) : 0) as Wallpaper
+                                        ]})`,
                                     }} />
 
                                 <div className="text-xs font-boldy p-2">
@@ -293,26 +312,28 @@ function Chat({
                                         Anonymous
                                     </div> : null}
 
-                                    {msg.wallet && profileCache[msg.wallet] ?
+                                    {msg.wallet ?
                                         <div className="w-[25em] h-[9em] relative flex">
                                             <div className={twMerge("h-[9em] w-[9em] rounded-full overflow-hidden z-20 border-bcolor border-2")} style={{
-                                                backgroundImage: `url(${PROFILE_PICTURES[(profileCache[msg.wallet] as UserProfileExtended).profilePicture]})`,
+                                                backgroundImage: `url(${PROFILE_PICTURES[(userProfilesMap[msg.wallet] ? (userProfilesMap[msg.wallet] as UserProfileMetadata).profilePicture ?? 0 : 0) as ProfilePicture]})`,
                                                 backgroundRepeat: 'no-repeat',
                                                 backgroundSize: 'cover',
                                             }} />
 
                                             <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
                                                 <div className="w-full flex flex-col items-center">
-                                                    <div className="text-base truncate max-w-full">{(profileCache[msg.wallet] as UserProfileExtended).nickname || msg.wallet}</div>
+                                                    <div className="text-base truncate max-w-full">
+                                                        {userProfilesMap[msg.wallet] ?
+                                                            (userProfilesMap[msg.wallet] as UserProfileMetadata).nickname || msg.wallet : msg.wallet}
+                                                    </div>
                                                     <div className="h-[1px] w-full bg-white opacity-90 mt-1 mb-1" />
                                                 </div>
 
-                                                {/* TODO: reactivate once we have plugged in offchain API data */}
-                                                {/* <div className="flex flex-col w-full gap-1">
+                                                <div className="flex flex-col w-full gap-1">
                                                     <div className="flex justify-between items-center w-full">
                                                         <div className="text-xs font-boldy">Trading Volume</div>
                                                         <FormatNumber
-                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalTradeVolumeUsd}
+                                                            nb={profileCache[msg.wallet]?.totalVolume}
                                                             format="currency"
                                                             precision={0}
                                                             isDecimalDimmed={false}
@@ -324,7 +345,7 @@ function Chat({
                                                     <div className="flex justify-between items-center w-full">
                                                         <div className="text-xs font-boldy">PnL</div>
                                                         <FormatNumber
-                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalPnlUsd}
+                                                            nb={profileCache[msg.wallet]?.totalPnl}
                                                             format="currency"
                                                             precision={0}
                                                             isDecimalDimmed={false}
@@ -335,17 +356,17 @@ function Chat({
                                                     <div className="flex justify-between items-center w-full">
                                                         <div className="text-xs font-boldy">Fees Paid</div>
                                                         <FormatNumber
-                                                            nb={(profileCache[msg.wallet] as UserProfileExtended).totalFeesPaidUsd}
+                                                            nb={profileCache[msg.wallet]?.totalFees}
                                                             format="currency"
                                                             precision={0}
                                                             isDecimalDimmed={false}
                                                             className='border-0 text-xs'
                                                         />
                                                     </div>
-                                                </div> */}
+                                                </div>
                                             </div>
                                         </div>
-                                        : msg.wallet && profileCache[msg.wallet] === false ?
+                                        : msg.wallet && userProfilesMap !== null && !userProfilesMap[msg.wallet] ?
                                             <div className="relative flex text-[1.2em] p-4">
                                                 No profile
                                             </div> : <Loader />}
@@ -372,7 +393,7 @@ function Chat({
                 </div>
             </div>;
         });
-    }, [isOpen, loadProfile, messages, profileCache, wallet]);
+    }, [isOpen, loadProfile, messages, profileCache, userProfilesMap, wallet]);
 
     return (
         <>
@@ -446,7 +467,9 @@ function Chat({
                                                 <>
                                                     <div className="h-full w-full absolute top-0 left-0 opacity-40"
                                                         style={{
-                                                            backgroundImage: `url(${WALLPAPER[user.wallet ? (profileCache[user.wallet] as UserProfileExtended | undefined)?.wallpaper ?? 0 : 0]})`,
+                                                            backgroundImage: `url(${WALLPAPER[
+                                                                ((user.wallet && userProfilesMap[user.wallet]) ? ((userProfilesMap[user.wallet] as UserProfileMetadata).wallpaper ?? 0) : 0) as Wallpaper
+                                                            ]})`,
                                                             backgroundSize: 'cover',
                                                             backgroundRepeat: 'no-repeat',
                                                         }}
@@ -456,19 +479,21 @@ function Chat({
                                                             <div className="w-[25em] h-[9em] relative flex">
                                                                 <div className="h-[9em] w-[9em] rounded-full overflow-hidden z-20 bg-cover border-bcolor border-2"
                                                                     style={{
-                                                                        background: `url(${PROFILE_PICTURES[(profileCache[user.wallet] as UserProfileExtended).profilePicture]})`,
+                                                                        backgroundImage: `url(${PROFILE_PICTURES[(userProfilesMap[user.wallet] ? (userProfilesMap[user.wallet] as UserProfileMetadata).profilePicture ?? 0 : 0) as ProfilePicture]})`,
                                                                     }}
                                                                 />
                                                                 <div className="flex flex-col w-[16em] pl-3 items-center justify-evenly">
                                                                     <div className="w-full flex flex-col items-center">
-                                                                        <div className="text-base truncate max-w-full">{(profileCache[user.wallet] as UserProfileExtended).nickname}</div>
+                                                                        <div className="text-base truncate max-w-full">{
+                                                                            userProfilesMap[user.wallet] ?
+                                                                                (userProfilesMap[user.wallet] as UserProfileMetadata).nickname || user.wallet : user.wallet}</div>
                                                                         <div className="h-[1px] w-full bg-white opacity-90 mt-1 mb-1" />
                                                                     </div>
                                                                     <div className="flex flex-col w-full gap-1">
                                                                         <div className="flex justify-between items-center w-full">
                                                                             <div className="text-xs font-boldy">Trading Volume</div>
                                                                             <FormatNumber
-                                                                                nb={(profileCache[user.wallet] as UserProfileExtended).totalTradeVolumeUsd}
+                                                                                nb={profileCache[user.wallet]?.totalVolume}
                                                                                 format="currency"
                                                                                 precision={0}
                                                                                 isDecimalDimmed={false}
@@ -479,7 +504,7 @@ function Chat({
                                                                         <div className="flex justify-between items-center w-full">
                                                                             <div className="text-xs font-boldy">PnL</div>
                                                                             <FormatNumber
-                                                                                nb={(profileCache[user.wallet] as UserProfileExtended).totalPnlUsd}
+                                                                                nb={profileCache[user.wallet]?.totalPnl}
                                                                                 format="currency"
                                                                                 precision={0}
                                                                                 isDecimalDimmed={false}
@@ -489,7 +514,7 @@ function Chat({
                                                                         <div className="flex justify-between items-center w-full">
                                                                             <div className="text-xs font-boldy">Fees Paid</div>
                                                                             <FormatNumber
-                                                                                nb={(profileCache[user.wallet] as UserProfileExtended).totalFeesPaidUsd}
+                                                                                nb={profileCache[user.wallet]?.totalFees}
                                                                                 format="currency"
                                                                                 precision={0}
                                                                                 isDecimalDimmed={false}
