@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import AreaRechart from '@/components/ReCharts/AreaRecharts';
+import MixedAreaLineChart from '@/components/ReCharts/MixedAreaLineChart';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
@@ -68,42 +68,45 @@ export default function AumChart() {
         }
       })();
 
+      // Fetch both AUM and ALP price data in parallel
       const result = await DataApiClient.getPoolInfo({
         dataEndpoint,
-        queryParams: 'aum_usd=true',
+        queryParams: 'aum_usd=true&lp_token_price=true',
         dataPeriod,
       });
 
       if (!result) {
-        console.error('Could not fetch AUM data');
+        console.error('Could not fetch AUM and ALP price data');
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
-            Could not fetch AUM data
+            Could not fetch data
           </div>
         );
       }
 
-      const { aum_usd, snapshot_timestamp } = result;
+      const { aum_usd, lp_token_price, snapshot_timestamp } = result;
 
-      if (!aum_usd || !snapshot_timestamp) {
-        console.error('Failed to fetch AUM data: Missing required data fields');
+      if (!aum_usd || !lp_token_price || !snapshot_timestamp) {
+        console.error('Failed to fetch data: Missing required data fields');
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
-            Could not fetch AUM data
+            Could not fetch data
           </div>
         );
       }
 
-      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current)
+      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
 
+      // Combine AUM and ALP price data
       const formattedData = aum_usd.map((aum: number, i: number) => ({
         time: timeStamp[i],
-        value: aum,
+        'AUM': aum,
+        'ALP Price': lp_token_price[i],
       }));
 
       setChartData(formattedData);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching data:', e);
     }
   };
 
@@ -115,12 +118,19 @@ export default function AumChart() {
     );
   }
 
+  // Get the latest values for display
+  const latestData = chartData[chartData.length - 1];
+  const latestAum = latestData['AUM'] as number;
+
   return (
-    <AreaRechart
-      title={'AUM'}
-      subValue={chartData[chartData.length - 1].value as number}
+    <MixedAreaLineChart
+      title={'AUM & ALP Price'}
+      subValue={latestAum}
       data={chartData}
-      labels={[{ name: 'value' }]}
+      labels={[
+        { name: 'AUM', color: '#5460cb', type: 'area', yAxisId: 'left' },
+        { name: 'ALP Price', color: '#ffffff', type: 'line', yAxisId: 'right' }
+      ]}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
       periods={['1d', '7d', '1M', '3M', '6M', {
@@ -128,7 +138,10 @@ export default function AumChart() {
         disabled: true,
       }]}
       setPeriod={setPeriod}
-      domain={['dataMin', 'dataMax']}
+      leftDomain={['dataMin', 'dataMax']}
+      rightDomain={['dataMin', 'dataMax']}
+      formatLeftY="currency"
+      formatRightY="currency"
       events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
     />
   );
