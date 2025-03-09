@@ -169,7 +169,7 @@ export default function FilterSidebar({
                 <p className="text-base font-boldy">Sort</p>
             </div>
             <div className="flex flex-row gap-3 flex-wrap">
-                {sortOptions.optionItems.map((opt, i) => (
+                {sortOptions.optionItems.map((opt) => (
                     <div
                         key={opt.label}
                         className={twMerge(
