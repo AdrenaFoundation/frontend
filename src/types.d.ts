@@ -1,23 +1,23 @@
-import { IdlAccounts, Program, Wallet } from "@coral-xyz/anchor";
+import { IdlAccounts, Program, Wallet } from '@coral-xyz/anchor';
 import {
   AllInstructionsMap,
   IdlEvents,
   IdlTypes,
-} from "@coral-xyz/anchor/dist/cjs/program/namespace/types";
-import { Adapter } from "@solana/wallet-adapter-base";
-import { Connection, PublicKey } from "@solana/web3.js";
-import Image from "next/image";
+} from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
+import { Adapter } from '@solana/wallet-adapter-base';
+import { Connection, PublicKey } from '@solana/web3.js';
+import Image from 'next/image';
 
-import { Adrena } from "@/target/adrena";
+import { Adrena } from '@/target/adrena';
 
-import { AdrenaClient } from "./AdrenaClient";
-import IConfiguration, { TokenInfo } from "./config/IConfiguration";
-import type { WalletAdapterName } from "./hooks/useWalletAdapters";
+import { AdrenaClient } from './AdrenaClient';
+import IConfiguration, { TokenInfo } from './config/IConfiguration';
+import type { WalletAdapterName } from './hooks/useWalletAdapters';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
-export type ImageRef = Exclude<Parameters<typeof Image>[0]["src"], string>;
+export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
 
-export type SupportedCluster = "devnet" | "mainnet";
+export type SupportedCluster = 'devnet' | 'mainnet';
 
 export type GeoBlockingData = {
   country?: string;
@@ -25,10 +25,10 @@ export type GeoBlockingData = {
 };
 
 export type SolanaExplorerOptions =
-  | "Solana Explorer"
-  | "Solscan"
-  | "Solana Beach"
-  | "Solana FM";
+  | 'Solana Explorer'
+  | 'Solscan'
+  | 'Solana Beach'
+  | 'Solana FM';
 
 export type Settings = {
   // priorityFee: PriorityFeeOption;
@@ -132,7 +132,7 @@ export type PositionExtended = {
   currentLeverage: number | null;
   token: Token;
   collateralToken: Token;
-  side: "long" | "short";
+  side: 'long' | 'short';
   openDate: Date;
   updatedDate: Date;
   // Including fees
@@ -271,33 +271,33 @@ export type UserProfileTitle = 0 | 1 | 2;
 
 type Events = IdlEvents<Adrena>;
 
-export type ClosePositionEvent = Events["ClosePositionEvent"];
+export type ClosePositionEvent = Events['ClosePositionEvent'];
 
 //
 // Accounts
 //
 type Accounts = IdlAccounts<Adrena>;
 
-export type Cortex = Accounts["cortex"];
-export type VestRegistry = Accounts["vestRegistry"];
-export type Custody = Accounts["custody"];
-export type Multisig = Accounts["multisig"];
-export type Perpetuals = Accounts["perpetuals"];
-export type Pool = Accounts["pool"];
-export type Position = Accounts["position"];
-export type UserStaking = Accounts["userStaking"];
-export type Staking = Accounts["staking"];
-export type Vest = Accounts["vest"];
-export type GenesisLock = Accounts["genesisLock"];
-export type UserProfile = Accounts["userProfile"];
-export type UserProfileV1 = Accounts["userProfileV1"];
-export type LimitOrderBook = Accounts["limitOrderBook"];
+export type Cortex = Accounts['cortex'];
+export type VestRegistry = Accounts['vestRegistry'];
+export type Custody = Accounts['custody'];
+export type Multisig = Accounts['multisig'];
+export type Perpetuals = Accounts['perpetuals'];
+export type Pool = Accounts['pool'];
+export type Position = Accounts['position'];
+export type UserStaking = Accounts['userStaking'];
+export type Staking = Accounts['staking'];
+export type Vest = Accounts['vest'];
+export type GenesisLock = Accounts['genesisLock'];
+export type UserProfile = Accounts['userProfile'];
+export type UserProfileV1 = Accounts['userProfileV1'];
+export type LimitOrderBook = Accounts['limitOrderBook'];
 
-export type LockedStake = UserStaking["lockedStakes"][0];
+export type LockedStake = UserStaking['lockedStakes'][0];
 
-export type LockedStakeExtended = UserStaking["lockedStakes"][0] & {
+export type LockedStakeExtended = UserStaking['lockedStakes'][0] & {
   index: number;
-  tokenSymbol: "ADX" | "ALP";
+  tokenSymbol: 'ADX' | 'ALP';
 };
 
 export type LimitOrder = {
@@ -307,7 +307,7 @@ export type LimitOrder = {
   custody: PublicKey;
   collateralCustody: PublicKey;
   custodySymbol: TokenSymbol;
-  side: "long" | "short";
+  side: 'long' | 'short';
   initialized: number;
   amount: number;
   leverage: number;
@@ -322,8 +322,8 @@ export type LimitOrderBookExtended = {
   pubkey: PublicKey;
 };
 
-export type GreaterThanOrEqual = "gte";
-export type LessThanOrEqual = "lte";
+export type GreaterThanOrEqual = 'gte';
+export type LessThanOrEqual = 'lte';
 
 export type Equality = {
   GreaterThanOrEqual;
@@ -331,7 +331,7 @@ export type Equality = {
 };
 
 // The UI options for priority fees - Stored in cookies
-export type PriorityFeeOption = "medium" | "high" | "ultra";
+export type PriorityFeeOption = 'medium' | 'high' | 'ultra';
 
 //
 // Params Types
@@ -339,39 +339,39 @@ export type PriorityFeeOption = "medium" | "high" | "ultra";
 
 type Params = IdlTypes<Adrena>;
 
-export type U128Split = Params["U128Split"];
-export type LimitedString = Params["LimitedString"];
-export type AddCollateralParams = Params["AddCollateralParams"];
-export type AddCustodyParams = Params["AddCustodyParams"];
-export type AddLiquidityParams = Params["AddLiquidityParams"];
-export type AddPoolParams = Params["AddPoolParams"];
-export type ClosePositionParams = Params["ClosePositionParams"];
-export type RemoveCollateralParams = Params["RemoveCollateralParams"];
-export type RemoveLiquidityParams = Params["RemoveLiquidityParams"];
-export type Fees = Params["Fees"];
-export type FeesStats = Params["FeesStats"];
-export type VolumeStats = Params["VolumeStats"];
-export type TradeStats = Params["TradeStats"];
-export type Assets = Params["Assets"];
-export type OracleParams = Params["OracleParams"];
-export type PricingParams = Params["PricingParams"];
-export type BorrowRateParams = Params["BorrowRateParams"];
-export type BorrowRateState = Params["BorrowRateState"];
-export type PositionStats = Params["PositionStats"];
-export type OraclePrice = Params["OraclePrice"];
-export type ExitPriceAndFee = Params["ExitPriceAndFee"];
-export type NewPositionPricesAndFee = Params["NewPositionPricesAndFee"];
+export type U128Split = Params['U128Split'];
+export type LimitedString = Params['LimitedString'];
+export type AddCollateralParams = Params['AddCollateralParams'];
+export type AddCustodyParams = Params['AddCustodyParams'];
+export type AddLiquidityParams = Params['AddLiquidityParams'];
+export type AddPoolParams = Params['AddPoolParams'];
+export type ClosePositionParams = Params['ClosePositionParams'];
+export type RemoveCollateralParams = Params['RemoveCollateralParams'];
+export type RemoveLiquidityParams = Params['RemoveLiquidityParams'];
+export type Fees = Params['Fees'];
+export type FeesStats = Params['FeesStats'];
+export type VolumeStats = Params['VolumeStats'];
+export type TradeStats = Params['TradeStats'];
+export type Assets = Params['Assets'];
+export type OracleParams = Params['OracleParams'];
+export type PricingParams = Params['PricingParams'];
+export type BorrowRateParams = Params['BorrowRateParams'];
+export type BorrowRateState = Params['BorrowRateState'];
+export type PositionStats = Params['PositionStats'];
+export type OraclePrice = Params['OraclePrice'];
+export type ExitPriceAndFee = Params['ExitPriceAndFee'];
+export type NewPositionPricesAndFee = Params['NewPositionPricesAndFee'];
 export type OpenPositionWithSwapAmountAndFees =
-  Params["OpenPositionWithSwapAmountAndFees"];
-export type SwapAmountAndFees = Params["SwapAmountAndFees"];
-export type ProfitAndLoss = Params["ProfitAndLoss"];
-export type Permissions = Params["Permissions"];
-export type PoolToken = Params["PoolToken"];
-export type FeesMode = Params["FeesMode"];
-export type OracleType = Params["OracleType"];
-export type Side = Params["Side"];
-export type GetEntryPriceAndFeeParams = Params["GetEntryPriceAndFeeParams"];
-export type AmountAndFee = Params["AmountAndFee"];
+  Params['OpenPositionWithSwapAmountAndFees'];
+export type SwapAmountAndFees = Params['SwapAmountAndFees'];
+export type ProfitAndLoss = Params['ProfitAndLoss'];
+export type Permissions = Params['Permissions'];
+export type PoolToken = Params['PoolToken'];
+export type FeesMode = Params['FeesMode'];
+export type OracleType = Params['OracleType'];
+export type Side = Params['Side'];
+export type GetEntryPriceAndFeeParams = Params['GetEntryPriceAndFeeParams'];
+export type AmountAndFee = Params['AmountAndFee'];
 
 //
 // Accounts types
@@ -384,7 +384,7 @@ type Nullable<T, U extends keyof T> = {
 };
 
 type ExtractAccounts<T> = {
-  [key in Instructions[T]["accounts"][number]["name"]]: PublicKey;
+  [key in Instructions[T]['accounts'][number]['name']]: PublicKey;
 };
 
 // Force some accounts to be optional (null)
@@ -392,41 +392,41 @@ type OptionalAccounts<T, U> = Nullable<Pick<T, U>> & Omit<T, U>;
 
 // Use accounts types to force TS typing computation. TS will then throw an error if account is missing
 export type InitUserProfile = OptionalAccounts<
-  ExtractAccounts<"initUserProfile">,
-  "sponsor"
+  ExtractAccounts<'initUserProfile'>,
+  'sponsor'
 >;
 
-export type EditUserProfile = ExtractAccounts<"editUserProfile">;
-export type DeleteUserProfile = ExtractAccounts<"deleteUserProfile">;
-export type AddCollateralAccounts = ExtractAccounts<"addCollateral">;
+export type EditUserProfile = ExtractAccounts<'editUserProfile'>;
+export type DeleteUserProfile = ExtractAccounts<'deleteUserProfile'>;
+export type AddCollateralAccounts = ExtractAccounts<'addCollateral'>;
 export type OpenPositionAccounts = OptionalAccounts<
-  ExtractAccounts<"openPosition">,
-  "userProfile"
+  ExtractAccounts<'openPosition'>,
+  'userProfile'
 >;
 
 export type OpenPositionWithSwapAccounts = OptionalAccounts<
-  ExtractAccounts<"openPositionWithSwap">,
-  "userProfile"
+  ExtractAccounts<'openPositionWithSwap'>,
+  'userProfile'
 >;
 export type SwapAccounts = OptionalAccounts<
-  ExtractAccounts<"swap">,
-  "userProfile"
+  ExtractAccounts<'swap'>,
+  'userProfile'
 >;
 export type ClosePositionAccounts = OptionalAccounts<
-  ExtractAccounts<"closePosition">,
-  "userProfile"
+  ExtractAccounts<'closePosition'>,
+  'userProfile'
 >;
-export type RemoveCollateralAccounts = ExtractAccounts<"removeCollateral">;
-export type AddLiquidStakeAccounts = ExtractAccounts<"addLiquidStake">;
-export type AddLockedStakeAccounts = ExtractAccounts<"addLockedStake">;
-export type RemoveLiquidStakeAccounts = ExtractAccounts<"removeLiquidStake">;
-export type RemoveLockedStakeAccounts = ExtractAccounts<"removeLockedStake">;
+export type RemoveCollateralAccounts = ExtractAccounts<'removeCollateral'>;
+export type AddLiquidStakeAccounts = ExtractAccounts<'addLiquidStake'>;
+export type AddLockedStakeAccounts = ExtractAccounts<'addLockedStake'>;
+export type RemoveLiquidStakeAccounts = ExtractAccounts<'removeLiquidStake'>;
+export type RemoveLockedStakeAccounts = ExtractAccounts<'removeLockedStake'>;
 export type FinalizeLockedStakeAccounts =
-  ExtractAccounts<"finalizeLockedStake">;
-export type InitUserStakingAccounts = ExtractAccounts<"initUserStaking">;
-export type AddLiquidityAccounts = ExtractAccounts<"addLiquidity">;
-export type RemoveLiquidityAccounts = ExtractAccounts<"removeLiquidity">;
-export type ClaimStakesAccounts = ExtractAccounts<"claimStakes">;
+  ExtractAccounts<'finalizeLockedStake'>;
+export type InitUserStakingAccounts = ExtractAccounts<'initUserStaking'>;
+export type AddLiquidityAccounts = ExtractAccounts<'addLiquidity'>;
+export type RemoveLiquidityAccounts = ExtractAccounts<'removeLiquidity'>;
+export type ClaimStakesAccounts = ExtractAccounts<'claimStakes'>;
 
 //
 // Program
@@ -444,8 +444,8 @@ export type PositionHistoryExtended = {
   positionId: number;
   userId: number;
   custodyId: number;
-  side: "long" | "short";
-  status: "open" | "close" | "liquidate";
+  side: 'long' | 'short';
+  status: 'open' | 'close' | 'liquidate';
   pubkey: PublicKey;
   entryPrice: number | null;
   exitPrice: number | null;
@@ -492,10 +492,10 @@ export type Trader = {
 };
 
 export type RechartsData = {
-  [key: string]: number | string | boolean;
+  [key: string]: number | string | boolean | null;
 };
 
-export type AdrenaEventType = "Global" | "Trading" | "Staking" | "Other";
+export type AdrenaEventType = 'Global' | 'Trading' | 'Staking' | 'Other';
 
 export type AdrenaEvent = {
   label: string;
@@ -515,7 +515,7 @@ export type ClaimApi = {
   transaction_date: string; // ISO date-time string
   created_at: string; // ISO date-time string
   mint: string;
-  source: "manual" | "auto";
+  source: 'manual' | 'auto';
 };
 
 export type ClaimHistoryApi = {
@@ -533,7 +533,7 @@ export type ClaimHistoryExtended = {
   rewards_adx_genesis: number;
   rewards_usdc: number;
   signature: string;
-  source: "manual" | "auto";
+  source: 'manual' | 'auto';
   symbol: string;
   transaction_date: Date;
 };
@@ -584,7 +584,7 @@ export type TradingCompetitionLeaderboardAPI = {
     pnl: number | null;
     adxRewards: number;
     jtoRewards: number;
-    badge: "Diamond" | "Gold" | "Silver" | "Bronze" | "Iron";
+    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
   }[];
 };
 
@@ -597,7 +597,7 @@ export type TraderDivisionRawAPI = {
     rank_in_division: number;
     adx_reward: number;
     jto_reward: number;
-    badge: "Diamond" | "Gold" | "Silver" | "Bronze" | "Iron";
+    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
   }[];
 };
 
@@ -712,7 +712,7 @@ export type PreSeasonLeaderboardReturnTypeAPI<
   startDate: string;
   endDate: string;
   rankedRewards: RankedRewards[];
-} & (T["showGlobalStats"] extends true
+} & (T['showGlobalStats'] extends true
   ? {
       globalStats: {
         totalTraders: number;
@@ -734,7 +734,7 @@ export type PreSeasonLeaderboardReturnTypeAPI<
       };
     }
   : object) &
-  (T["showAchievements"] extends true
+  (T['showAchievements'] extends true
     ? {
         achievements: {
           biggestLiquidation: {
@@ -774,7 +774,7 @@ export type PreSeasonLeaderboardReturnTypeAPI<
         };
       }
     : object) &
-  (T["showTraderDivisions"] extends true
+  (T['showTraderDivisions'] extends true
     ? {
         traderDivisions: {
           division: string;
@@ -785,12 +785,12 @@ export type PreSeasonLeaderboardReturnTypeAPI<
             rankInDivision: number;
             adxReward: number;
             jtoReward: number;
-            badge: "Diamond" | "Gold" | "Silver" | "Bronze" | "Iron";
+            badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
           }[];
         }[];
       }
     : object) &
-  (T["showEligibleJitosolWallets"] extends true
+  (T['showEligibleJitosolWallets'] extends true
     ? {
         eligibleJitosolWallets: string[];
       }
@@ -818,7 +818,7 @@ export type TradingViewChartSavedDrawing = Record<
   {
     name: Exclude<
       SupportedLineTools,
-      "cursor" | "dot" | "arrow_cursor" | "eraser" | "measure" | "zoom"
+      'cursor' | 'dot' | 'arrow_cursor' | 'eraser' | 'measure' | 'zoom'
     >;
     points: { time: number; price: number }[];
     options: CreateShapeOptions<object>;
@@ -840,7 +840,7 @@ export interface PositionActivityRawAPi {
 }
 
 export type PositionStatsRawApi = {
-  side: "long" | "short";
+  side: 'long' | 'short';
   symbol: string;
   count_positions: number;
   total_pnl: number;
@@ -871,7 +871,7 @@ export type GetPositionStatsReturnType<
     minVolume: number;
     maxVolume: number;
   }[];
-} & (T["showPositionActivity"] extends true
+} & (T['showPositionActivity'] extends true
   ? {
       positionActivity: {
         dateDay: string;
@@ -891,7 +891,7 @@ export type GetPositionStatsReturnType<
   : object);
 
 type CheckBoxType = {
-  type: "checkbox";
+  type: 'checkbox';
   description: string;
   progress: string;
   reward: number | string;
@@ -901,7 +901,7 @@ type CheckBoxType = {
 };
 
 type TextType = {
-  type: "text";
+  type: 'text';
   title: string;
   description: string;
   task: string;
@@ -910,7 +910,7 @@ type TextType = {
 };
 
 type ProgressiveType = {
-  type: "progressive";
+  type: 'progressive';
   description?: string;
   title: string;
   progress: number;
@@ -930,7 +930,7 @@ export type QuestType = {
 
 export type SeasonQuestProgress = {
   id: number;
-  frequency: "daily" | "weekly";
+  frequency: 'daily' | 'weekly';
   name: string;
   description: string;
   points: number;
@@ -965,7 +965,7 @@ export type SeasonQuestProgress = {
 
 export type EnrichedSeasonQuestProgress = {
   id: number;
-  frequency: "daily" | "weekly";
+  frequency: 'daily' | 'weekly';
   name: string;
   description: string;
   points: number;
@@ -1212,8 +1212,8 @@ export type PositionApiRawData = {
   user_id: number;
   symbol: string;
   token_account_mint: string;
-  side: "long" | "short";
-  status: "open" | "close" | "liquidate";
+  side: 'long' | 'short';
+  status: 'open' | 'close' | 'liquidate';
   pubkey: string;
   entry_price: number;
   exit_price: number;
@@ -1249,8 +1249,8 @@ export type EnrichedPositionApi = {
   userId: number;
   symbol: string;
   tokenAccountMint: string;
-  side: "long" | "short";
-  status: "open" | "close" | "liquidate";
+  side: 'long' | 'short';
+  status: 'open' | 'close' | 'liquidate';
   pubkey: PublicKey;
   entryPrice: number;
   exitPrice: number;
@@ -1342,4 +1342,41 @@ export type EnrichedTraderInfo = {
   avgExitSize: number;
   avgEntryCollateralAmount: number;
   avgHoldingTime: number;
+};
+
+// Update PoolInfoResponse to match what getPoolInfo returns (just the data part)
+export type PoolInfoResponse = {
+  aum_usd?: number[];
+  lp_apr?: number[];
+  lm_apr?: number[];
+  lp_token_price?: number[];
+  cumulative_swap_fee_usd?: number[];
+  cumulative_liquidity_fee_usd?: number[];
+  cumulative_close_position_fee_usd?: number[];
+  cumulative_liquidation_fee_usd?: number[];
+  cumulative_borrow_fee_usd?: number[];
+  cumulative_referrer_fee_usd?: number[];
+  cumulative_trading_volume_usd?: number[];
+  snapshot_timestamp: string[];
+  startDate?: string;
+  endDate?: string;
+};
+
+export type CustodyInfoResponse = {
+  snapshot_timestamp: string[];
+  startDate?: string;
+  endDate?: string;
+  cumulative_profit_usd?: { [key: string]: string[] };
+  cumulative_loss_usd?: { [key: string]: string[] };
+  borrow_rate?: { [key: string]: string[] };
+  short_pnl?: { [key: string]: string[] };
+  long_pnl?: { [key: string]: string[] };
+  open_interest_long_usd?: { [key: string]: string[] };
+  open_interest_short_usd?: { [key: string]: string[] };
+  oi_long_usd?: { [key: string]: string[] };
+  oi_short_usd?: { [key: string]: string[] };
+  unrealized_pnl?: { [key: string]: string[] };
+  owned?: { [key: string]: string[] };
+  locked?: { [key: string]: string[] };
+  [key: string]: unknown;
 };

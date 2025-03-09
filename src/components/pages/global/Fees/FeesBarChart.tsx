@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
+import MixedBarLineChart from '@/components/ReCharts/MixedBarLineChart';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
 
 interface FeesChartProps {
@@ -11,7 +12,7 @@ interface FeesChartProps {
 
 export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('1M');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -51,22 +52,44 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         }
       })();
 
-      const [{ data }, { data: latestPoolInfoSnapshot }] = await Promise.all([
+      // Use DataApiClient instead of direct fetch
+      const queryParams = 'cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&cumulative_referrer_fee_usd=true';
 
-        fetch(
-          `https://datapi.adrena.xyz/poolinfodaily?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - dataPeriod);
+      // Call to get the total cumulative fees from the beginning (September 25, 2023)
+      const historicalQueryParams = `cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true`;
 
-            return startDate.toISOString();
-          })()}&end_date=${new Date().toISOString()}`,
-        ).then((res) => res.json()),
+      const [historicalData, latestData, historicalCumulativeData] = await Promise.all([
+        // Get historical data for the selected period
+        DataApiClient.getPoolInfo({
+          dataEndpoint: 'poolinfodaily',
+          queryParams,
+          dataPeriod,
+        }),
 
         // Get the latest pool info snapshot
-        fetch(
-          `https://datapi.adrena.xyz/poolinfo?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&sort=DESC&limit=1`,
-        ).then((res) => res.json()),
+        DataApiClient.getPoolInfo({
+          dataEndpoint: 'poolinfo',
+          queryParams: `${queryParams}&sort=DESC&limit=1`,
+          dataPeriod: 1,
+        }),
+
+        // Get historical cumulative data from the beginning
+        DataApiClient.getPoolInfo({
+          dataEndpoint: 'poolinfodaily',
+          queryParams: historicalQueryParams,
+          dataPeriod: 1000,
+          allHistoricalData: true
+        })
       ]);
+
+      if (!historicalData || !latestData || !historicalCumulativeData) {
+        console.error('Could not fetch fees data');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch fees data
+          </div>
+        );
+      }
 
       const {
         cumulative_swap_fee_usd,
@@ -74,8 +97,24 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         cumulative_close_position_fee_usd,
         cumulative_liquidation_fee_usd,
         cumulative_borrow_fee_usd,
+        cumulative_referrer_fee_usd,
         snapshot_timestamp,
-      } = data;
+      } = historicalData;
+
+      if (!snapshot_timestamp || !cumulative_swap_fee_usd || !cumulative_liquidity_fee_usd ||
+        !cumulative_close_position_fee_usd || !cumulative_liquidation_fee_usd ||
+        !cumulative_borrow_fee_usd || !cumulative_referrer_fee_usd || !latestData.cumulative_swap_fee_usd ||
+        !latestData.cumulative_liquidity_fee_usd || !latestData.cumulative_close_position_fee_usd ||
+        !latestData.cumulative_liquidation_fee_usd || !latestData.cumulative_borrow_fee_usd ||
+        !latestData.cumulative_borrow_fee_usd ||
+        !latestData.cumulative_referrer_fee_usd) {
+        console.error('Failed to fetch fees data: Missing required data fields');
+        return (
+          <div className="h-full w-full flex items-center justify-center text-sm">
+            Could not fetch fees data
+          </div>
+        );
+      }
 
       const timeStamp = snapshot_timestamp.map((time: string) => {
         return new Date(time).toLocaleString('en-US', {
@@ -85,36 +124,107 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         });
       });
 
-      // Get fees for that day, taking last
+      // Create a map of date to cumulative total fees from historical data
+      const cumulativeTotalByDate = new Map();
 
+      if (historicalCumulativeData.snapshot_timestamp) {
+        historicalCumulativeData.snapshot_timestamp.forEach((timestamp: string, index: number) => {
+          const date = new Date(timestamp).toLocaleString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+            timeZone: 'UTC',
+          });
+
+          // Calculate total cumulative fees for this date
+          const totalCumulative =
+            (historicalCumulativeData.cumulative_swap_fee_usd?.[index] || 0) +
+            (historicalCumulativeData.cumulative_liquidity_fee_usd?.[index] || 0) +
+            (historicalCumulativeData.cumulative_close_position_fee_usd?.[index] || 0) +
+            (historicalCumulativeData.cumulative_liquidation_fee_usd?.[index] || 0) +
+            (historicalCumulativeData.cumulative_borrow_fee_usd?.[index] || 0);
+
+          cumulativeTotalByDate.set(date, totalCumulative);
+        });
+      }
+
+      // Get fees for that day, taking last
       const formattedData: RechartsData[] = timeStamp.slice(1).map(
-        (time: string, i: number) => ({
-          time,
-          'Swap Fees': cumulative_swap_fee_usd[i + 1] - cumulative_swap_fee_usd[i],
-          'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i + 1] - cumulative_liquidity_fee_usd[i],
-          'Open/Close Fees': cumulative_close_position_fee_usd[i + 1] - cumulative_close_position_fee_usd[i],
-          'Liquidation Fees': cumulative_liquidation_fee_usd[i + 1] - cumulative_liquidation_fee_usd[i],
-          'Borrow Fees': cumulative_borrow_fee_usd[i + 1] - cumulative_borrow_fee_usd[i],
-        }),
+        (time: string, i: number) => {
+          // Calculate referrer fees
+          const referrerFees = typeof cumulative_referrer_fee_usd[i + 1] === 'number' &&
+            typeof cumulative_referrer_fee_usd[i] === 'number'
+            ? cumulative_referrer_fee_usd[i + 1] - cumulative_referrer_fee_usd[i]
+            : 0;
+
+          // Only include referrer fees if they're non-zero, regardless of date
+          // This ensures that dates with zero values won't display the line
+          const displayedReferrerFees = referrerFees > 0 ? referrerFees : null;
+
+          // Format the date as mm/dd for consistent display
+          const formattedTime = time.replace(/^(\d+)\/(\d+)$/, '$1/$2');
+
+          return {
+            time: formattedTime,
+            'Swap Fees': cumulative_swap_fee_usd[i + 1] - cumulative_swap_fee_usd[i],
+            'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i + 1] - cumulative_liquidity_fee_usd[i],
+            'Open/Close Fees': cumulative_close_position_fee_usd[i + 1] - cumulative_close_position_fee_usd[i],
+            'Liquidation Fees': cumulative_liquidation_fee_usd[i + 1] - cumulative_liquidation_fee_usd[i],
+            'Borrow Fees': cumulative_borrow_fee_usd[i + 1] - cumulative_borrow_fee_usd[i],
+            'Referral Fees': displayedReferrerFees,
+            // Look up the cumulative total for this date from our historical data
+            'Cumulative Fees': cumulativeTotalByDate.get(time) || null,
+          };
+        }
       );
 
       // Push a data coming from last data point (last day) to now
+      const lastReferrerFees = typeof latestData.cumulative_referrer_fee_usd[0] === 'number' &&
+        typeof cumulative_referrer_fee_usd[cumulative_referrer_fee_usd.length - 1] === 'number'
+        ? latestData.cumulative_referrer_fee_usd[0] - cumulative_referrer_fee_usd[cumulative_referrer_fee_usd.length - 1]
+        : 0;
+
+      // Calculate the daily fees for the last point
+      const lastDayFees = {
+        'Swap Fees': latestData.cumulative_swap_fee_usd[0] - cumulative_swap_fee_usd[cumulative_swap_fee_usd.length - 1],
+        'Mint/Redeem ALP Fees': latestData.cumulative_liquidity_fee_usd[0] - cumulative_liquidity_fee_usd[cumulative_liquidity_fee_usd.length - 1],
+        'Open/Close Fees': latestData.cumulative_close_position_fee_usd[0] - cumulative_close_position_fee_usd[cumulative_close_position_fee_usd.length - 1],
+        'Liquidation Fees': latestData.cumulative_liquidation_fee_usd[0] - cumulative_liquidation_fee_usd[cumulative_liquidation_fee_usd.length - 1],
+        'Borrow Fees': latestData.cumulative_borrow_fee_usd[0] - cumulative_borrow_fee_usd[cumulative_borrow_fee_usd.length - 1],
+        'Referral Fees': lastReferrerFees,
+      };
+
+      // Sum all fees for the last day (excluding Referral Fees)
+      const lastDayTotal =
+        Number(lastDayFees['Swap Fees'] || 0) +
+        Number(lastDayFees['Mint/Redeem ALP Fees'] || 0) +
+        Number(lastDayFees['Open/Close Fees'] || 0) +
+        Number(lastDayFees['Liquidation Fees'] || 0) +
+        Number(lastDayFees['Borrow Fees'] || 0);
+
+      // Format current time for display
+      const currentTimeFormatted = new Date().toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        timeZone: 'UTC',
+      });
+
+      let finalCumulativeTotal = null;
+      if (cumulativeTotalByDate.size > 0) {
+        const latestHistoricalTotal = cumulativeTotalByDate.get(timeStamp[timeStamp.length - 1]);
+        finalCumulativeTotal = latestHistoricalTotal + lastDayTotal;
+      } else {
+        finalCumulativeTotal = null;
+      }
+
       formattedData.push({
-        time: new Date().toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-          timeZone: 'UTC',
-        }),
-        'Swap Fees': latestPoolInfoSnapshot.cumulative_swap_fee_usd[0] - cumulative_swap_fee_usd[cumulative_swap_fee_usd.length - 1],
-        'Mint/Redeem ALP Fees': latestPoolInfoSnapshot.cumulative_liquidity_fee_usd[0] - cumulative_liquidity_fee_usd[cumulative_liquidity_fee_usd.length - 1],
-        'Open/Close Fees': latestPoolInfoSnapshot.cumulative_close_position_fee_usd[0] - cumulative_close_position_fee_usd[cumulative_close_position_fee_usd.length - 1],
-        'Liquidation Fees': latestPoolInfoSnapshot.cumulative_liquidation_fee_usd[0] - cumulative_liquidation_fee_usd[cumulative_liquidation_fee_usd.length - 1],
-        'Borrow Fees': latestPoolInfoSnapshot.cumulative_borrow_fee_usd[0] - cumulative_borrow_fee_usd[cumulative_borrow_fee_usd.length - 1],
-      })
+        time: currentTimeFormatted,
+        ...lastDayFees,
+        'Cumulative Fees': finalCumulativeTotal,
+      });
 
       setChartData(formattedData);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching fees data:', e);
     }
   };
 
@@ -127,40 +237,24 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
   }
 
   return (
-    <StakedBarRechart
-      title={'Daily Fees'}
+    <MixedBarLineChart
+      title="Daily Fees"
       data={chartData}
       labels={[
-        {
-          name: 'Swap Fees',
-          color: '#cec161',
-        },
-        {
-          name: 'Mint/Redeem ALP Fees',
-          color: '#5460cb',
-        },
-        {
-          name: 'Open/Close Fees',
-          color: '#7ccbd7',
-        },
-        {
-          name: 'Liquidation Fees',
-          color: '#BE84CC',
-        },
-        {
-          name: 'Borrow Fees',
-          color: '#84bd82',
-        },
+        { name: 'Swap Fees', color: '#cec161', type: 'bar' },
+        { name: 'Mint/Redeem ALP Fees', color: '#5460cb', type: 'bar' },
+        { name: 'Open/Close Fees', color: '#7ccbd7', type: 'bar' },
+        { name: 'Liquidation Fees', color: '#BE84CC', type: 'bar' },
+        { name: 'Borrow Fees', color: '#84bd82', type: 'bar' },
+        { name: 'Referral Fees', color: '#f7931a', type: 'line' },
+        { name: 'Cumulative Fees', color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
       ]}
       period={period}
       setPeriod={setPeriod}
-      periods={['1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      periods={['1M', '3M', '6M', { name: '1Y', disabled: true }]}
       gmt={0}
       domain={[0, 'auto']}
-      tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
+      tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 8 bps."
       isSmallScreen={isSmallScreen}
       total={true}
       events={ADRENA_EVENTS}
