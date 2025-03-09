@@ -66,7 +66,7 @@ export default function Monitoring(pageProps: PageProps) {
       case 'livePositions':
         return <AllPositions isSmallScreen={isSmallScreen} view={view} />;
       case 'userProfiles':
-        return <AllUserProfiles view={view} />;
+        return <AllUserProfiles />;
       case 'tokenomics':
         return <Tokenomics isSmallScreen={isSmallScreen} view={view} />;
       case 'allStaking':

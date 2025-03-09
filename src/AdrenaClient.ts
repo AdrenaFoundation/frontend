@@ -674,32 +674,6 @@ export class AdrenaClient {
         "profilePicture" in p ? (p.profilePicture as ProfilePicture) : 0,
       wallpaper: "wallpaper" in p ? (p.wallpaper as Wallpaper) : 0,
       title: "title" in p ? (p.title as UserProfileTitle) : 0,
-      // TODO: feed theses data with the offchain API
-      // Aggregates
-      totalPnlUsd: 0,
-      // Only accounts for opens
-      totalTradeVolumeUsd: 0,
-      totalFeesPaidUsd: 0,
-      openingAverageLeverage: 0,
-      //
-      shortStats: {
-        openedPositionCount: 0,
-        liquidatedPositionCount: 0,
-        openingAverageLeverage: 0,
-        openingSizeUsd: 0,
-        profitsUsd: 0,
-        lossesUsd: 0,
-        feePaidUsd: 0,
-      },
-      longStats: {
-        openedPositionCount: 0,
-        liquidatedPositionCount: 0,
-        openingAverageLeverage: 0,
-        openingSizeUsd: 0,
-        profitsUsd: 0,
-        lossesUsd: 0,
-        feePaidUsd: 0,
-      },
     };
   }
 

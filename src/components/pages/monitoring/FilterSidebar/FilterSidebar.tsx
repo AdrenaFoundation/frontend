@@ -53,7 +53,12 @@ export default function FilterSidebar({
     }[];
     sortOptions?: {
         handleChange: React.Dispatch<React.SetStateAction<string>>;
-        optionItems: { label: string; icon?: ImageRef; order: 'asc' | 'desc' }[];
+        optionItems: {
+            label: string;
+            icon?: ImageRef;
+            order: 'asc' | 'desc';
+            lastClicked?: boolean; // Use this to highlight last clicked filter option
+        }[];
         disabled?: boolean;
     };
 }) {
@@ -167,7 +172,10 @@ export default function FilterSidebar({
                 {sortOptions.optionItems.map((opt) => (
                     <div
                         key={opt.label}
-                        className="flex flex-row gap-3 items-center border border-bcolor hover:border-white rounded-full p-1 px-3 cursor-pointer transition duration-300 select-none"
+                        className={twMerge(
+                            "flex flex-row gap-3 items-center border hover:border-white rounded-full p-1 px-3 cursor-pointer transition duration-300 select-none",
+                            opt.lastClicked ? 'border-white' : 'border-bcolor',
+                        )}
                         onClick={() => sortOptions.handleChange(opt.label)}
                     >
                         {opt.icon && <Image src={opt.icon} alt="sort icon" />}
