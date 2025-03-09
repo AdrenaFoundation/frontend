@@ -68,11 +68,11 @@ export default function AumChart() {
         }
       })();
 
-      const result = await DataApiClient.getPoolInfo(
+      const result = await DataApiClient.getPoolInfo({
         dataEndpoint,
-        'aum_usd=true',
-        dataPeriod
-      );
+        queryParams: 'aum_usd=true',
+        dataPeriod,
+      });
 
       if (!result) {
         console.error('Could not fetch AUM data');

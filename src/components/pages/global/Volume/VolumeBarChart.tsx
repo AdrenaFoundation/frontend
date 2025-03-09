@@ -55,18 +55,18 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       // Use DataApiClient instead of direct fetch
       const [historicalData, latestData] = await Promise.all([
         // Get historical data
-        DataApiClient.getPoolInfo(
-          'poolinfodaily',
-          'cumulative_trading_volume_usd=true',
-          dataPeriod
-        ),
+        DataApiClient.getPoolInfo({
+          dataEndpoint: 'poolinfodaily',
+          queryParams: 'cumulative_trading_volume_usd=true',
+          dataPeriod,
+        }),
 
         // Get the latest pool info snapshot
-        DataApiClient.getPoolInfo(
-          'poolinfo',
-          'cumulative_trading_volume_usd=true&sort=DESC&limit=1',
-          1
-        )
+        DataApiClient.getPoolInfo({
+          dataEndpoint: 'poolinfo',
+          queryParams: 'cumulative_trading_volume_usd=true&sort=DESC&limit=1',
+          dataPeriod: 1,
+        }),
       ]);
 
       if (!historicalData || !latestData) {

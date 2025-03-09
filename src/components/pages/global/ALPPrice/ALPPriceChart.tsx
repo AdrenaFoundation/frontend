@@ -69,11 +69,11 @@ export default function ALPPriceChart() {
         }
       })();
 
-      const result = await DataApiClient.getPoolInfo(
+      const result = await DataApiClient.getPoolInfo({
         dataEndpoint,
-        'lp_token_price=true',
-        dataPeriod
-      );
+        queryParams: 'lp_token_price=true',
+        dataPeriod,
+      });
 
       if (!result) {
         console.error('Could not fetch ALP price data');

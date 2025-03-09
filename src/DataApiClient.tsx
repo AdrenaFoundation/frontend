@@ -679,13 +679,26 @@ export default class DataApiClient {
      * @returns Data part of the API response or null on error
      */
     public static async getPoolInfo(
-        dataEndpoint: string,
-        queryParams: string,
-        dataPeriod: number
-    ): Promise<PoolInfoResponse | null> {
+        {
+            dataEndpoint,
+            queryParams,
+            dataPeriod,
+            allHistoricalData = false
+        }: {
+            dataEndpoint: string,
+            queryParams: string,
+            dataPeriod: number,
+            allHistoricalData?: boolean
+        }): Promise<PoolInfoResponse | null> {
         try {
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - dataPeriod);
+            let startDate: Date;
+
+            if (allHistoricalData) {
+                startDate = new Date('2023-09-25T00:00:00.000Z');
+            } else {
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - dataPeriod);
+            }
 
             const url = `https://datapi.adrena.xyz/${dataEndpoint}?${queryParams}&start_date=${startDate.toISOString()}&end_date=${new Date().toISOString()}`;
 
