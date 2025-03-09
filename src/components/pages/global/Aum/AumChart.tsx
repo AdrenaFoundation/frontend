@@ -9,7 +9,7 @@ import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
 export default function AumChart() {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -98,11 +98,24 @@ export default function AumChart() {
       const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
 
       // Combine AUM and ALP price data
-      const formattedData = aum_usd.map((aum: number, i: number) => ({
-        time: timeStamp[i],
-        'AUM': aum,
-        'ALP Price': lp_token_price[i],
-      }));
+      const formattedData = aum_usd.map((aum: number, i: number) => {
+        const alpPrice = lp_token_price[i];
+
+        // If both values are 0, return null for both to create breaks in the chart
+        if (aum === 0 && alpPrice === 0) {
+          return {
+            time: timeStamp[i],
+            'AUM': null,
+            'ALP Price': null,
+          };
+        }
+
+        return {
+          time: timeStamp[i],
+          'AUM': aum,
+          'ALP Price': alpPrice,
+        };
+      });
 
       setChartData(formattedData);
     } catch (e) {
@@ -129,7 +142,7 @@ export default function AumChart() {
       data={chartData}
       labels={[
         { name: 'AUM', color: '#5460cb', type: 'area', yAxisId: 'left' },
-        { name: 'ALP Price', color: '#ffffff', type: 'line', yAxisId: 'right' }
+        { name: 'ALP Price', color: '#fde000', type: 'line', yAxisId: 'right' }
       ]}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}

@@ -12,7 +12,7 @@ interface FeesChartProps {
 
 export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('1M');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 

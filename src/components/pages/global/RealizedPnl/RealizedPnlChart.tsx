@@ -21,7 +21,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
 
     custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [totalRealizedPnl, setTotalRealizedPnl] = useState<number>(0);

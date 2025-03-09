@@ -198,6 +198,7 @@ export default function MixedAreaLineChart<T extends string>({
                             type="monotone"
                             dataKey={hiddenLabels.includes(name) ? name + ' ' : name}
                             stroke={color}
+                            strokeWidth={1}
                             dot={false}
                             activeDot={true}
                             yAxisId={yAxisId}

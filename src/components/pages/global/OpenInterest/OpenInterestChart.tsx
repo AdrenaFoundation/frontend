@@ -17,7 +17,7 @@ export default function OpenInterestChart({
 }: OpenInterestChartProps) {
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
 
   const [totalOpenInterest, setTotalOpenInterest] = useState<number>(0);
