@@ -8,8 +8,8 @@ import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
-import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
+import FullyLiquidALPStaking from '@/components/pages/stake/FullyLiquidALPStaking';
 import StakeApr from '@/components/pages/stake/StakeApr';
 import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
@@ -521,18 +521,18 @@ export default function Stake({
     setAmount(Number(value));
   };
 
-  const { stakingAccount: alpStakingAccount } = useStakingAccount(
-    window.adrena.client.lpTokenMint,
-  );
+  // const { stakingAccount: alpStakingAccount } = useStakingAccount(
+  //   window.adrena.client.lpTokenMint,
+  // );
   const { stakingAccount: adxStakingAccount } = useStakingAccount(
     window.adrena.client.lmTokenMint,
   );
 
-  const nextStakingRoundTimeAlp = alpStakingAccount
-    ? getNextStakingRoundStartTime(
-      alpStakingAccount.currentStakingRound.startTime,
-    ).getTime()
-    : null;
+  // const nextStakingRoundTimeAlp = alpStakingAccount
+  //   ? getNextStakingRoundStartTime(
+  //     alpStakingAccount.currentStakingRound.startTime,
+  //   ).getTime()
+  //   : null;
 
   const nextStakingRoundTimeAdx = adxStakingAccount
     ? getNextStakingRoundStartTime(
@@ -608,33 +608,18 @@ export default function Stake({
         setActiveStakingToken(null);
       }}
     >
-      {activeStakingToken === 'ADX' ? (
-        <ADXStakeToken
-          amount={amount}
-          setAmount={setAmount}
-          onStakeAmountChange={onStakeAmountChange}
-          errorMessage={errorMessage}
-          stakeAmount={stakeAmount}
-          lockPeriod={lockPeriod as AdxLockPeriod}
-          setLockPeriod={(lockPeriod: AdxLockPeriod) =>
-            setLockPeriod(lockPeriod)
-          }
-          balance={adxBalance}
-        />
-      ) : (
-        <ALPStakeToken
-          amount={amount}
-          setAmount={setAmount}
-          onStakeAmountChange={onStakeAmountChange}
-          errorMessage={errorMessage}
-          stakeAmount={stakeAmount}
-          lockPeriod={lockPeriod as AlpLockPeriod}
-          setLockPeriod={(lockPeriod: AlpLockPeriod) =>
-            setLockPeriod(lockPeriod)
-          }
-          balance={alpBalance}
-        />
-      )}
+      <ADXStakeToken
+        amount={amount}
+        setAmount={setAmount}
+        onStakeAmountChange={onStakeAmountChange}
+        errorMessage={errorMessage}
+        stakeAmount={stakeAmount}
+        lockPeriod={lockPeriod as AdxLockPeriod}
+        setLockPeriod={(lockPeriod: AdxLockPeriod) =>
+          setLockPeriod(lockPeriod)
+        }
+        balance={adxBalance}
+      />
     </Modal>
   );
 
@@ -660,10 +645,6 @@ export default function Stake({
       {modal}
       <StakeLanding
         connected={connected}
-        handleClickOnStakeMoreALP={() => {
-          setLockPeriod(180);
-          setActiveStakingToken('ALP');
-        }}
         handleClickOnStakeMoreADX={() => {
           setLockPeriod(180);
           setActiveStakingToken('ADX');
@@ -679,7 +660,45 @@ export default function Stake({
           <div className="flex-1">
             <StakeApr token={'ALP'} className='mb-2' />
 
-            <StakeOverview
+            <FullyLiquidALPStaking
+              totalLockedStake={alpDetails.totalLockedStake}
+              lockedStakes={alpLockedStakes}
+              handleLockedStakeRedeem={handleLockedStakeRedeem}
+              handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
+              handleClickOnFinalizeLockedRedeem={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setUpgradeLockedStake(false);
+                setFinalizeLockedStakeRedeem(true);
+              }}
+              userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
+              userPendingAdxRewards={alpRewards.pendingAdxRewards}
+              roundPendingUsdcRewards={
+                alpStakingCurrentRoundRewards.usdcRewards ??
+                0 +
+                optimisticClaimAlp?.reduce(
+                  (acc, claim) => acc + claim.rewards_usdc,
+                  0,
+                )
+              }
+              roundPendingAdxRewards={
+                alpStakingCurrentRoundRewards.adxRewards ??
+                0 +
+                optimisticClaimAlp?.reduce(
+                  (acc, claim) => acc + claim.rewards_adx,
+                  0,
+                )
+              }
+              pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
+              claimsHistory={
+                claimsHistoryAlp
+                  ? optimisticClaimAlp?.length > 0 ? [...optimisticClaimAlp, ...claimsHistoryAlp] : claimsHistoryAlp
+                  : null
+              }
+            />
+
+            {/* <StakeOverview
               token={'ALP'}
               totalLockedStake={alpDetails.totalLockedStake}
               totalRedeemableLockedStake={getTotalRedeemableLockedStake('ALP')}
@@ -729,7 +748,7 @@ export default function Stake({
                   ? optimisticClaimAlp?.length > 0 ? [...optimisticClaimAlp, ...claimsHistoryAlp] : claimsHistoryAlp
                   : null
               }
-            />
+            /> */}
           </div>
 
           <div className="flex-1">
