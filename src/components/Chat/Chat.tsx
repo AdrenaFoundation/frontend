@@ -112,7 +112,7 @@ function Chat({
     clickOnHeader,
     displaySmileys = true,
     showUserList = false,
-    onToggleUserList,
+    // onToggleUserList,
 }: ChatProps) {
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -122,7 +122,7 @@ function Chat({
     const [profileCache, setProfileCache] = useState<Record<string, EnrichedTraderInfo | null>>({});
     const dispatch = useDispatch();
     const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
-    const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
+    const [, setConnectedUsers] = useState<ConnectedUser[]>([]);
 
     const userProfilesMap = useMemo(() => {
         return allUserProfilesMetadata.reduce(
@@ -279,11 +279,12 @@ function Chat({
                 [wallet]: null,
             }));
         });
-    }, [profileCache]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [profileCache?.length ?? 0]);
 
-    const anonymousCount = useMemo(() => {
-        return connectedUsers.filter(user => !user.nickname).length;
-    }, [connectedUsers]);
+    // const anonymousCount = useMemo(() => {
+    //     return connectedUsers.filter(user => !user.nickname).length;
+    // }, [connectedUsers]);
 
     const messagesDOM = useMemo(() => {
         if (!isOpen) return null;
@@ -393,7 +394,8 @@ function Chat({
                 </div>
             </div>;
         });
-    }, [isOpen, loadProfile, messages, profileCache, userProfilesMap, wallet]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, loadProfile, messages, profileCache?.length ?? 0, userProfilesMap, wallet]);
 
     return (
         <>
@@ -419,7 +421,8 @@ function Chat({
                             className="flex items-center gap-2 cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onToggleUserList?.();
+                                // DISABLE ALONG DISPLAYING THE LIST TO STOP MEMORY LEAK
+                                // onToggleUserList?.();
                             }}
                         >
                             <div className="text-xs flex mt-[0.1em] font-archivoblack text-txtfade">
@@ -451,12 +454,14 @@ function Chat({
                             <div className="p-3 border-b border-gray-800">
                                 <h3 className="text-xs font-archivoblack uppercase text-gray-400">Online Users</h3>
                             </div>
-                            <div className="p-3 overflow-y-auto custom-chat-scrollbar flex-grow">
+
+                            {/* <div className="p-3 overflow-y-auto custom-chat-scrollbar flex-grow">
                                 {anonymousCount > 0 && (
                                     <div className="mb-3 text-xs text-gray-500">
                                         {anonymousCount} anonymous user{anonymousCount > 1 ? 's' : ''} and :
                                     </div>
                                 )}
+                                
                                 {connectedUsers.filter(user => user.nickname).map((user, i) => (
                                     <div key={i} className="mb-1.5">
                                         <Tippy
@@ -539,7 +544,7 @@ function Chat({
                                         </Tippy>
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
