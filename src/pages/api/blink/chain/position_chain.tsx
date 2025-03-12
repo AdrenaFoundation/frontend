@@ -52,10 +52,7 @@ export default async function handler(
       description: hasActivePositions
         ? 'Choose which position you want to close'
         : 'You have no active positions',
-      label: 'Add Liquidity',
-      error: {
-        message: 'Providing liquidity failed', // TODO: add error message
-      },
+      label: hasActivePositions ? 'Close Position' : 'Open Position',
       links: hasActivePositions
         ? {
           actions: [
@@ -79,7 +76,9 @@ export default async function handler(
             },
           ],
         }
-        : undefined,
+        : {
+          actions: [],
+        },
     });
   } else {
     res.writeHead(200, ACTIONS_CORS_HEADERS).json({
@@ -88,15 +87,6 @@ export default async function handler(
       title: 'Close Position',
       description: 'Close your position, click the button below to proceed',
       label: 'Close Position',
-      links: {
-        actions: [
-          {
-            type: 'post',
-            label: 'Get my positions',
-            href: '/api/blink/chain/getPositions',
-          },
-        ],
-      },
     });
   }
 }
