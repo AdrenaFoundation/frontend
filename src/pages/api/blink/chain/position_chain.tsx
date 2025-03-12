@@ -88,9 +88,6 @@ export default async function handler(
       title: 'Close Position',
       description: 'Close your position, click the button below to proceed',
       label: 'Close Position',
-      error: {
-        message: 'Closing position failed',
-      },
       links: {
         actions: [
           {

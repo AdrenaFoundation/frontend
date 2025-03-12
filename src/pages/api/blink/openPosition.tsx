@@ -263,9 +263,6 @@ export default async function handler(
     Opened on: ${openedOn}
                 `,
             label: 'Open Trade',
-            error: {
-                message: 'Failed opening position',
-            },
             links: {
                 actions: [
                     {

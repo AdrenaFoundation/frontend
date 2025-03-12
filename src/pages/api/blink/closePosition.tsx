@@ -153,9 +153,6 @@ export default async function handler(
             title: 'Close Position',
             description: "Close your position",
             label: 'Close Position',
-            error: {
-                message: 'Closing position failed',
-            },
         });
     }
 }

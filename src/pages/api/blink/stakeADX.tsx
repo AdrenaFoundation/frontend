@@ -101,10 +101,6 @@ export default async function handler(
       title: 'Stake ADX',
       description: `Stake your ADX tokens.`,
       label: 'Stake ADX',
-      error: {
-        message: 'Staking ADX failed', // TODO: add error message
-      },
-
       links: {
         actions: [
           {
