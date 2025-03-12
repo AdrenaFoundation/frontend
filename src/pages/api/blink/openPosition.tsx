@@ -14,9 +14,6 @@ import {
 import BN from 'bn.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { AdrenaClient } from '@/AdrenaClient';
-import MainnetConfiguration from '@/config/mainnet';
-import { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { PositionExtended } from '@/types';
 import {
     AdrenaTransactionError,
@@ -29,6 +26,8 @@ import {
     uiToNative,
 } from '@/utils';
 
+import { adrenaClient } from './utils';
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<ActionGetResponse | ActionPostResponse>,
@@ -37,19 +36,14 @@ export default async function handler(
         'https://mainnet.helius-rpc.com/?api-key=d7a1bbbc-5a12-43d0-ab41-c96ffef811e0',
         'processed',
     );
-    const CONFIG = new MainnetConfiguration(false);
-    const adrenaProgram = createReadOnlyAdrenaProgram(connection);
 
-    const client = await AdrenaClient.initialize(adrenaProgram, CONFIG);
-
-    client.setAdrenaProgram(adrenaProgram);
+    const client = await adrenaClient;
 
     if (req.method === 'POST') {
         const { account } = req.body;
 
         const {
             side,
-            referrer,
             tokenSymbolA,
             tokenSymbolB,
             leverage,
@@ -162,9 +156,6 @@ export default async function handler(
                             tokenA.decimals,
                         ),
                         leverage: uiLeverageToNative(Number(leverage)),
-                        referrer: isValidPublicKey(referrer as string)
-                            ? new PublicKey(referrer as string)
-                            : null,
                     })
                     : await client.buildOpenOrIncreasePositionWithSwapShort({
                         owner: new PublicKey(account),
@@ -176,9 +167,6 @@ export default async function handler(
                             tokenA.decimals,
                         ),
                         leverage: uiLeverageToNative(Number(leverage)),
-                        referrer: isValidPublicKey(referrer as string)
-                            ? new PublicKey(referrer as string)
-                            : null,
                     });
 
             const tx = await ix.transaction();

@@ -143,7 +143,7 @@ export default async function handler(
             description: `Provide liquidity to the ALP pool, and earn fees on every trade. Current price: $${currentAlpPrice}`,
             label: 'Add Liquidity',
             error: {
-                message: 'Providing liquidity failed', // TODO: add error message
+                message: 'Providing liquidity failed',
             },
             links: {
                 actions: [
