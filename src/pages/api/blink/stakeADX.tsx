@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { ADX_LOCK_PERIODS } from '@/constant';
 import { AdxLockPeriod } from '@/types';
-import { AdrenaTransactionError,isValidPublicKey } from '@/utils';
+import { AdrenaTransactionError, isValidPublicKey } from '@/utils';
 
 import { adrenaClient, getSeriliazedTransaction } from './utils';
 
@@ -97,7 +97,7 @@ export default async function handler(
   } else {
     res.writeHead(200, ACTIONS_CORS_HEADERS).json({
       type: 'action',
-      icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/stake-adx.jpg',
+      icon: 'https://app.adrena.xyz/images/wallpaper.jpg',
       title: 'Stake ADX',
       description: `Stake your ADX tokens.`,
       label: 'Stake ADX',
