@@ -74,7 +74,6 @@ export default function RootLayout({
   const [isChatOpen, setIsChatOpen] = useState<boolean | null>(null);
   const disableChat = useSelector((state) => state.settings.disableChat);
 
-
   const [pages, setPages] = useState<
     { name: string; link: string; icon?: ImageRef; external?: boolean }[]
   >([
@@ -132,6 +131,7 @@ export default function RootLayout({
         />
       ) : (
         <BurgerMenu
+          disableChat={disableChat}
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
           userProfile={userProfile}
@@ -166,7 +166,7 @@ export default function RootLayout({
 
       <ToastContainer />
 
-      {!disableChat ? (
+      {disableChat === true ? null : (
         <ChatContainer
           userProfile={userProfile}
           wallet={wallet}
@@ -174,7 +174,7 @@ export default function RootLayout({
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
         />
-      ) : null}
+      )}
 
       {!isBigScreen ? (
         <MobileNavbar
