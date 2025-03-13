@@ -1,8 +1,9 @@
-import { SettingsActions } from "@/actions/settingsActions";
-import { PriorityFeeOption, SolanaExplorerOptions } from "@/types";
-import { DEFAULT_MAX_PRIORITY_FEE, DEFAULT_PRIORITY_FEE_OPTION } from "@/utils";
+import { SettingsActions } from '@/actions/settingsActions';
+import { PriorityFeeOption, SolanaExplorerOptions } from '@/types';
+import { DEFAULT_MAX_PRIORITY_FEE, DEFAULT_PRIORITY_FEE_OPTION } from '@/utils';
 
 export type SettingsState = {
+  disableChat: boolean;
   showFeesInPnl: boolean;
   showPopupOnPositionClose: boolean;
   preferredSolanaExplorer: SolanaExplorerOptions;
@@ -13,9 +14,10 @@ export type SettingsState = {
 // freeze the initial state object to make sure it can be re-used through
 // the app's lifecycle & is never mutated.
 const initialState: SettingsState = Object.freeze({
+  disableChat: false,
   showFeesInPnl: true,
   showPopupOnPositionClose: true,
-  preferredSolanaExplorer: "Solana Explorer",
+  preferredSolanaExplorer: 'Solana Explorer',
   priorityFeeOption: DEFAULT_PRIORITY_FEE_OPTION,
   maxPriorityFee: DEFAULT_MAX_PRIORITY_FEE,
 });
@@ -25,7 +27,7 @@ export default function settingsRatesReducer(
   action: SettingsActions,
 ) {
   switch (action.type) {
-    case "setSettings":
+    case 'setSettings':
       return { ...state, ...action.payload };
     default:
       return state;
