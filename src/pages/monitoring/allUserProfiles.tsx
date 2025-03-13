@@ -1,12 +1,13 @@
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
+
 import chartIcon from '@/../public/images/Icons/chart-icon.svg';
 import listIcon from '@/../public/images/Icons/list-ul.svg';
-
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import AllUserProfileStatsChart from '@/components/pages/global/AllUserProfileStatsChart/AllUserProfileStatsChart';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
@@ -17,7 +18,6 @@ import {
 import { UserProfileExtended } from '@/types';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
-import AllUserProfileStatsChart from '@/components/pages/global/AllUserProfileStatsChart/AllUserProfileStatsChart';
 
 type SortableKeys = 'pnl' | 'volume' | 'fees';
 
