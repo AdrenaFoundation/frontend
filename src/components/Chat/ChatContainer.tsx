@@ -25,9 +25,7 @@ function ChatContainer({
 }) {
     const [showUserList, setShowUserList] = useState(false);
     const [cookies, setCookie] = useCookies(['chat-open', 'chat-height']);
-
     const chatHeightCookie = cookies['chat-height'];
-    const isOpenCookie = cookies['chat-open'];
 
     const [height, setHeight] = useState(() => {
         // Initialize with cookie value or default
@@ -37,28 +35,6 @@ function ChatContainer({
     });
 
     const [isDragging, setIsDragging] = useState(false);
-
-    useEffect(() => {
-        // Decide if isOpen should be true or not, depending on cookies and if we are in mobile
-        if (isChatOpen === null) {
-            if (isMobile) {
-                // In mobile, not open by default
-                setIsChatOpen(false);
-                return;
-            }
-
-            // Opened by default on desktop, otherwise follow what the cookie says
-            setIsChatOpen(
-                typeof isOpenCookie === 'undefined' ||
-                isOpenCookie === true,
-            );
-            return;
-        }
-
-        if (isMobile) return;
-
-        setCookie('chat-open', isChatOpen);
-    }, [isMobile, isChatOpen, isOpenCookie, setIsChatOpen, setCookie]);
 
     // Add window resize handler
     useEffect(() => {
@@ -107,8 +83,6 @@ function ChatContainer({
         };
     }, [handleMouseMove, handleMouseUp]);
 
-    if (isChatOpen === null) return <></>;
-
     if (isMobile) {
         return (
             <AnimatePresence>
@@ -146,7 +120,7 @@ function ChatContainer({
             <Chat
                 userProfile={userProfile}
                 wallet={wallet}
-                isOpen={isChatOpen}
+                isOpen={isChatOpen ?? false}
                 showUserList={showUserList}
                 onToggleUserList={() => setShowUserList(!showUserList)}
                 clickOnHeader={() => {

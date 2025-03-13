@@ -33,6 +33,7 @@ import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
+  disableChat,
   userProfile,
   PAGES,
   activeRpc,
@@ -50,6 +51,7 @@ export default function BurgerMenu({
   isChatOpen,
   setIsChatOpen,
 }: {
+  disableChat: boolean;
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
   activeRpc: {
@@ -92,6 +94,7 @@ export default function BurgerMenu({
   }, [tokenPrices]);
 
   const clusterSwitchEnabled = false;
+
 
   useEffect(() => {
     if (isOpen) {
@@ -181,14 +184,18 @@ export default function BurgerMenu({
 
         <div className="flex flex-row gap-3 items-center">
           <Mutagen isMobile />
-          <Button
-            className="gap-1 text-xs p-0 h-8 w-8 border border-white/20"
-            leftIcon={chatIcon}
-            alt="chat icon"
-            leftIconClassName="w-[0.875rem] h-[0.875rem]"
-            variant="lightbg"
-            onClick={() => setIsChatOpen(!isChatOpen)}
-          />
+          {disableChat === true ? (
+            null
+          ) : (
+            <Button
+              className="gap-1 text-xs p-0 h-8 w-8 border border-white/20"
+              leftIcon={chatIcon}
+              alt="chat icon"
+              leftIconClassName="w-[0.875rem] h-[0.875rem]"
+              variant="lightbg"
+              onClick={() => setIsChatOpen(!isChatOpen)}
+            />
+          )}
 
           <AnimatePresence>
             {isPriorityFeeModalOpen ? (

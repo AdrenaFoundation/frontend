@@ -11,6 +11,7 @@ import { PercentilePriorityFeeList } from "@/utils";
 export default function useSettingsPersistence() {
     const dispatch = useDispatch();
     const [cookies, setCookie] = useCookies([
+        'disable-chat',
         'show-popup-on-position-close',
         'show-fees-in-pnl',
         'preferred-solana-explorer',
@@ -23,6 +24,12 @@ export default function useSettingsPersistence() {
     // Load cookies values when launching the hook
     useEffect(() => {
         const updatedSettings: Partial<SettingsState> = {};
+
+        {
+            const v = cookies['disable-chat'];
+            if (v === false || v === true)
+                updatedSettings.disableChat = v;
+        }
 
         {
             const v = cookies['show-fees-in-pnl'];
@@ -64,6 +71,7 @@ export default function useSettingsPersistence() {
     useEffect(() => {
         Object.entries(settings).forEach(([key, value]) => {
             setCookie(({
+                disableChat: 'disable-chat',
                 showFeesInPnl: 'show-fees-in-pnl',
                 showPopupOnPositionClose: 'show-popup-on-position-close',
                 preferredSolanaExplorer: 'preferred-solana-explorer',

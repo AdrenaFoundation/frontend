@@ -122,6 +122,37 @@ export default function Settings({
 
       <h2>preferences</h2>
       <div className="flex flex-row mt-2 justify-between">
+        <p className="opacity-50 w-full">Disable chat</p>
+        <Switch
+          checked={settings.disableChat}
+          onChange={(event) => {
+            dispatch(
+              setSettings({
+                disableChat: event.target.checked,
+              }),
+            );
+
+          }}
+          size="small"
+          sx={{
+            transform: 'scale(0.7)',
+            '& .MuiSwitch-switchBase': {
+              color: '#ccc',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked': {
+              color: '#1a1a1a',
+            },
+            '& .MuiSwitch-track': {
+              backgroundColor: '#555',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              backgroundColor: '#10e1a3',
+            },
+          }}
+        />
+      </div>
+
+      <div className="flex flex-row justify-between">
         <p className="opacity-50 w-full">Show fees in PnL</p>
         <Switch
           checked={settings.showFeesInPnl}
