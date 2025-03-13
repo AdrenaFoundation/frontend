@@ -1,8 +1,9 @@
 import React, { memo, useMemo, useState } from 'react';
 import { ResponsiveContainer, Treemap } from 'recharts';
+import { twMerge } from 'tailwind-merge';
+
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
 import { formatNumberShort, getAbbrevWalletAddress } from '@/utils';
-import { twMerge } from 'tailwind-merge';
 
 const AllUserProfileStatsChart = ({
   filteredProfiles,
