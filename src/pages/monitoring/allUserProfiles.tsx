@@ -1,5 +1,7 @@
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
+import chartIcon from '@/../public/images/Icons/chart-icon.svg';
+import listIcon from '@/../public/images/Icons/list-ul.svg';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -8,14 +10,16 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { SuperchargedUserProfile, useAllUserSuperchargedProfiles } from '@/hooks/useAllUserSupercharedProfiles';
+import {
+    SuperchargedUserProfile,
+    useAllUserSuperchargedProfiles,
+} from '@/hooks/useAllUserSupercharedProfiles';
 import { UserProfileExtended } from '@/types';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
+import AllUserProfileStatsChart from '@/components/pages/global/AllUserProfileStatsChart/AllUserProfileStatsChart';
 
-type SortableKeys = 'pnl'
-    | 'volume'
-    | 'fees';
+type SortableKeys = 'pnl' | 'volume' | 'fees';
 
 export default function AllUserProfiles() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -40,17 +44,24 @@ export default function AllUserProfiles() {
         'fees',
     ]);
 
+    const [viewPage, setViewPage] = useState<string>('List view');
+
     const [usernameFilter, setUsernameFilter] = useState('');
     const [ownerFilter, setOwnerFilter] = useState('');
-    const [pnlFilter, setPnlFilter] = useState<'all' | 'positive' | 'negative'>('all');
+    const [pnlFilter, setPnlFilter] = useState<'all' | 'positive' | 'negative'>(
+        'all',
+    );
 
-    const { superchargedUserProfiles: allUserProfiles, triggerReload } = useAllUserSuperchargedProfiles({
-        orderBy: sortOrder[0] as SortableKeys,
-        sort: sortConfigs[sortOrder[0] as SortableKeys],
-        pnlStatus: pnlFilter,
-    });
+    const { superchargedUserProfiles: allUserProfiles, triggerReload } =
+        useAllUserSuperchargedProfiles({
+            orderBy: sortOrder[0] as SortableKeys,
+            sort: sortConfigs[sortOrder[0] as SortableKeys],
+            pnlStatus: pnlFilter,
+        });
 
-    const [filteredProfiles, setFilteredProfiles] = useState<SuperchargedUserProfile[] | null>(null);
+    const [filteredProfiles, setFilteredProfiles] = useState<
+        SuperchargedUserProfile[] | null
+    >(null);
 
     const [paginatedProfiles, setPaginatedProfiles] = useState<
         SuperchargedUserProfile[]
@@ -63,29 +74,40 @@ export default function AllUserProfiles() {
         if (!usernameFilter.length && !ownerFilter.length)
             return setFilteredProfiles(allUserProfiles);
 
-        setFilteredProfiles(allUserProfiles?.filter((p) => {
-            if (usernameFilter.length) {
-                if (!p.profile) {
-                    return false;
+        setFilteredProfiles(
+            allUserProfiles?.filter((p) => {
+                if (usernameFilter.length) {
+                    if (!p.profile) {
+                        return false;
+                    }
+
+                    if (
+                        !p.profile.nickname
+                            .toLowerCase()
+                            .includes(usernameFilter.toLowerCase())
+                    ) {
+                        return false;
+                    }
                 }
 
-                if (!p.profile.nickname.toLowerCase().includes(usernameFilter.toLowerCase())) {
-                    return false;
-                }
-            }
+                if (ownerFilter.length) {
+                    if (!p.profile) {
+                        return false;
+                    }
 
-            if (ownerFilter.length) {
-                if (!p.profile) {
-                    return false;
+                    if (
+                        !p.profile.owner
+                            .toBase58()
+                            .toLowerCase()
+                            .includes(ownerFilter.toLowerCase())
+                    ) {
+                        return false;
+                    }
                 }
 
-                if (!p.profile.owner.toBase58().toLowerCase().includes(ownerFilter.toLowerCase())) {
-                    return false;
-                }
-            }
-
-            return true;
-        }) ?? [])
+                return true;
+            }) ?? [],
+        );
     }, [allUserProfiles, usernameFilter, ownerFilter]);
 
     useEffect(() => {
@@ -119,23 +141,39 @@ export default function AllUserProfiles() {
         <>
             <div>
                 <StyledContainer className="p-0">
-                    <div className="flex flex-col md:flex-row md:gap-3">
+                    <div className="flex flex-col md:flex-row md:gap-3 h-full w-full">
                         <FilterSidebar
-                            searches={[{
-                                value: ownerFilter,
-                                placeholder: 'Filter by owner (pubkey)',
-                                handleChange: setOwnerFilter,
-                            }, {
-                                value: usernameFilter,
-                                placeholder: 'Filter by username',
-                                handleChange: setUsernameFilter,
-                            }]}
+                            views={[
+                                {
+                                    title: 'List view',
+                                    icon: listIcon,
+                                },
+                                {
+                                    title: 'Chart view',
+                                    icon: chartIcon,
+                                },
+                            ]}
+                            activeView={viewPage}
+                            handleViewChange={setViewPage}
+                            searches={[
+                                {
+                                    value: ownerFilter,
+                                    placeholder: 'Filter by owner (pubkey)',
+                                    handleChange: setOwnerFilter,
+                                },
+                                {
+                                    value: usernameFilter,
+                                    placeholder: 'Filter by username',
+                                    handleChange: setUsernameFilter,
+                                },
+                            ]}
                             filterOptions={[
                                 {
                                     type: 'radio',
                                     name: 'PnL',
                                     activeOption: pnlFilter,
-                                    handleChange: (v: unknown) => setPnlFilter(v as 'all' | 'positive' | 'negative'),
+                                    handleChange: (v: unknown) =>
+                                        setPnlFilter(v as 'all' | 'positive' | 'negative'),
                                     optionItems: [
                                         { label: 'all' },
                                         { label: 'positive' },
@@ -144,7 +182,9 @@ export default function AllUserProfiles() {
                                 },
                             ]}
                             sortOptions={{
-                                handleChange: toggleSortOrder as React.Dispatch<React.SetStateAction<string>>,
+                                handleChange: toggleSortOrder as React.Dispatch<
+                                    React.SetStateAction<string>
+                                >,
                                 optionItems: [
                                     {
                                         label: 'pnl',
@@ -157,41 +197,49 @@ export default function AllUserProfiles() {
                                         lastClicked: sortOrder[0] === 'volume',
                                     },
                                     {
-                                        label: 'fees paid', order: sortConfigs.fees,
+                                        label: 'fees paid',
+                                        order: sortConfigs.fees,
                                         lastClicked: sortOrder[0] === 'fees',
                                     },
                                 ],
+                                disabled: viewPage === 'Chart view',
                             }}
                         />
 
-                        <div className="w-full p-4">
-                            <div className="mb-4 w-full">
-                                <Button
-                                    icon={reloadIcon}
-                                    variant="outline"
-                                    onClick={triggerReload}
-                                    className="w-7 h-7 p-0 border-bcolor ml-auto"
-                                    iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+                        {viewPage === 'List view' ? (
+                            <div className="w-full p-4">
+                                <div className="mb-4 w-full">
+                                    <Button
+                                        icon={reloadIcon}
+                                        variant="outline"
+                                        onClick={triggerReload}
+                                        className="w-7 h-7 p-0 border-bcolor ml-auto"
+                                        iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap flex-col gap-2 mb-3">
+                                    {paginatedProfiles.map((superchargedProfile) => (
+                                        <UserProfileBlock
+                                            key={superchargedProfile.wallet.toBase58()}
+                                            superchargedProfile={superchargedProfile}
+                                            setActiveProfile={setActiveProfile}
+                                        />
+                                    ))}
+                                </div>
+
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalItems={filteredProfiles ? filteredProfiles.length : 0}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
                                 />
                             </div>
-
-                            <div className="flex flex-wrap flex-col gap-2 mb-3">
-                                {paginatedProfiles.map((superchargedProfile) => (
-                                    <UserProfileBlock
-                                        key={superchargedProfile.wallet.toBase58()}
-                                        superchargedProfile={superchargedProfile}
-                                        setActiveProfile={setActiveProfile}
-                                    />
-                                ))}
+                        ) : (
+                            <div className="flex w-full min-h-[34em] h-[34em] grow">
+                                <AllUserProfileStatsChart filteredProfiles={filteredProfiles} />
                             </div>
-
-                            <Pagination
-                                currentPage={currentPage}
-                                totalItems={filteredProfiles ? filteredProfiles.length : 0}
-                                itemsPerPage={itemsPerPage}
-                                onPageChange={setCurrentPage}
-                            />
-                        </div>
+                        )}
                     </div>
                 </StyledContainer>
             </div>
@@ -215,5 +263,5 @@ export default function AllUserProfiles() {
         </>
     );
 
-    return <div>Page under construction</div>
+    return <div>Page under construction</div>;
 }
