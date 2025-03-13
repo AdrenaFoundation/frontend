@@ -25,7 +25,7 @@ export default async function handler(
   } else {
     res.writeHead(200, ACTIONS_CORS_HEADERS).json({
       type: 'action',
-      icon: 'https://app.adrena.xyz/images/wallpaper.jpg',
+      icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/close_position.jpg',
       title: 'Close Position',
       description: 'Close your position, click the button below to proceed',
       label: 'Close Position',
