@@ -83,8 +83,6 @@ function ChatContainer({
         };
     }, [handleMouseMove, handleMouseUp]);
 
-    if (isChatOpen === null) return <></>;
-
     if (isMobile) {
         return (
             <AnimatePresence>
@@ -122,7 +120,7 @@ function ChatContainer({
             <Chat
                 userProfile={userProfile}
                 wallet={wallet}
-                isOpen={isChatOpen}
+                isOpen={isChatOpen ?? false}
                 showUserList={showUserList}
                 onToggleUserList={() => setShowUserList(!showUserList)}
                 clickOnHeader={() => {
