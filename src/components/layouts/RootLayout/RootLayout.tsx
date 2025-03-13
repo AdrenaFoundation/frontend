@@ -19,6 +19,7 @@ import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { useSelector } from '@/store/store';
 import {
   ImageRef,
   UserProfileExtended,
@@ -71,6 +72,8 @@ export default function RootLayout({
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean | null>(null);
+  const disableChat = useSelector((state) => state.settings.disableChat);
+
 
   const [pages, setPages] = useState<
     { name: string; link: string; icon?: ImageRef; external?: boolean }[]
@@ -163,13 +166,15 @@ export default function RootLayout({
 
       <ToastContainer />
 
-      <ChatContainer
-        userProfile={userProfile}
-        wallet={wallet}
-        isMobile={!isBigScreen}
-        isChatOpen={isChatOpen}
-        setIsChatOpen={setIsChatOpen}
-      />
+      {!disableChat ? (
+        <ChatContainer
+          userProfile={userProfile}
+          wallet={wallet}
+          isMobile={!isBigScreen}
+          isChatOpen={isChatOpen}
+          setIsChatOpen={setIsChatOpen}
+        />
+      ) : null}
 
       {!isBigScreen ? (
         <MobileNavbar
