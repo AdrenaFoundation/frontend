@@ -43,7 +43,7 @@ export default function Monitoring(pageProps: PageProps) {
     lite: 'Overview',
     full: 'On-Chain',
     livePositions: 'Live Positions',
-    userProfiles: 'User Profiles',
+    userProfiles: 'Traders',
     tokenomics: 'Tokenomics',
     allStaking: 'Staking',
     flows: 'Flows',
