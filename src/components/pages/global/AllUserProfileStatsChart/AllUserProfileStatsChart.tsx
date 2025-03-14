@@ -1,8 +1,13 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import DatePicker from 'react-datepicker';
 import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import Select from '@/components/common/Select/Select';
+import Loader from '@/components/Loader/Loader';
+import DataApiClient from '@/DataApiClient';
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
+import { Trader } from '@/types';
 import { formatNumberShort, getAbbrevWalletAddress } from '@/utils';
 
 const AllUserProfileStatsChart = ({
@@ -10,31 +15,98 @@ const AllUserProfileStatsChart = ({
 }: {
   filteredProfiles: SuperchargedUserProfile[] | null;
 }) => {
-  const data = useMemo(() => {
-    return filteredProfiles
-      ? filteredProfiles
-        .map((userProfile) => {
-          if (!userProfile.traderProfile?.totalVolume) return;
+  const [selectedRange, setSelectedRange] = useState<string>('All Time');
+  const [startDate, setStartDate] = useState<string>(
+    new Date('01/01/24').toISOString(),
+  );
+  const [endDate, setEndDate] = useState<string>(new Date().toISOString());
+  const [traders, setTraders] = useState<Trader[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-          const key = userProfile.traderProfile?.userPubkey.toBase58();
-          const pubkey = userProfile.wallet.toBase58();
+  useEffect(() => {
+    const fetchTraders = async () => {
+      try {
+        setIsLoading(true);
+        const response = await DataApiClient.getTraders({
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          limit: 10000,
+        });
+
+        if (response.success && response.data.traders) {
+          setTraders(response.data.traders);
+        } else {
+          setError('Failed to fetch traders data');
+        }
+      } catch (err) {
+        setError('Error fetching traders data');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTraders();
+  }, [startDate, endDate]);
+
+  const traderWithUserProfiles = useMemo(() => {
+    return traders?.map((trader) => {
+      const userProfile = filteredProfiles?.find(
+        (profile) => profile.wallet.toBase58() === trader.user_pubkey,
+      );
+
+      return {
+        ...trader,
+        userProfile,
+      };
+    });
+  }, [traders, filteredProfiles]);
+
+  const data = useMemo(() => {
+    return traderWithUserProfiles
+      ? traderWithUserProfiles
+        .map((trader) => {
+          const key = trader.user_pubkey;
+          const pubkey = trader.user_pubkey;
           const name =
-            userProfile.profile?.nickname ?? getAbbrevWalletAddress(pubkey);
-          const volume = userProfile.traderProfile?.totalVolume;
-          const fees = userProfile.traderProfile?.totalFees;
-          const pnl = userProfile.traderProfile?.totalPnl;
+            trader.userProfile?.profile?.nickname ??
+            getAbbrevWalletAddress(pubkey);
+          const volume = trader.volume;
+          const fees = trader.fees;
+          const pnl = trader.pnl;
+          const totalPositions = trader.number_positions;
+          const winRate = trader.win_rate_percentage;
+
+          const colorArray = [
+            '#3d0909',
+            '#721717',
+            '#b54b4b',
+            '#d58f8f',
+            '#75d775',
+            '#4cbf4c',
+            '#2c8c2c',
+            '#064406',
+          ];
+
+          const color = (() => {
+            const colorIndex = Math.floor(winRate / 12.5);
+            return colorArray[colorIndex];
+          })();
 
           return {
             name,
             key,
             children: [
               {
+                color,
                 key,
                 name,
-                pubkey: pubkey,
+                pubkey,
                 volume,
                 fees,
                 pnl,
+                totalPositions,
               },
             ],
           };
@@ -47,56 +119,167 @@ const AllUserProfileStatsChart = ({
           return a.children[0].volume < b.children[0].volume ? 1 : -1;
         })
       : [];
-  }, [filteredProfiles]);
+  }, [traderWithUserProfiles]);
 
   return (
     <div className="flex flex-col w-0 flex-1 h-full items-center p-4">
-      <div className="w-full h-[20%] rounded-lg flex flex-col items-center justify-center ">
+      <div className="w-full h-[20%] rounded-lg flex flex-col items-center justify-center mb-3 sm:mb-0">
         <h2>Traders by volume</h2>
         <p className="opacity-50">Click on a trader to open wallet digger</p>
       </div>
-
-      <ResponsiveContainer width="100%" height="100%">
-        <Treemap
-          width={400}
-          height={400}
-          data={data}
-          dataKey="volume"
-          isAnimationActive={false}
-          fill="#8884d8"
-          stroke="#fff"
-          content={
-            <CustomizedContent
-              root={undefined}
-              depth={0}
-              x={0}
-              y={0}
-              width={0}
-              height={0}
-              index={0}
-              payload={undefined}
-              color={''}
-              pnl={null}
-              volume={null}
-              name={''}
-            />
-          }
-          onClick={(e) => {
-            if (e.pubkey) {
-              window.open(
-                `monitoring?view=walletDigger&wallet=${e.pubkey}`,
-                '_blank',
-              );
+      <div
+        className={twMerge(
+          'flex flex-col sm:flex-row  bg-secondary border border-gray-800 rounded text-sm items-center max-w-md z-20 mb-3 transition-opacity duration-300',
+          isLoading ? 'opacity-30 pointer-events-none' : '',
+        )}
+      >
+        <Select
+          onSelect={(value) => {
+            setSelectedRange(value);
+            const date = new Date();
+            setEndDate(date.toISOString());
+            switch (value) {
+              case 'All Time':
+                setStartDate('2024-09-25T00:00:00Z');
+                break;
+              case 'Last Month':
+                date.setMonth(date.getMonth() - 1);
+                setStartDate(date.toISOString());
+                break;
+              case 'Last Week':
+                date.setDate(date.getDate() - 7);
+                setStartDate(date.toISOString());
+                break;
+              case 'Last Day':
+                date.setDate(date.getDate() - 1);
+                setStartDate(date.toISOString());
+                break;
+              case 'Custom':
+                break;
+              default:
+                break;
             }
           }}
+          reversed={true}
+          className="p-2 flex items-center"
+          selectedTextClassName="text-sm font-boldy"
+          menuTextClassName="text-sm"
+          menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
+          menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
+          options={[
+            { title: 'All Time' },
+            { title: 'Last Month' },
+            { title: 'Last Week' },
+            { title: 'Last Day' },
+            { title: 'Custom' },
+          ]}
+          selected={selectedRange}
         />
-      </ResponsiveContainer>
+
+        {selectedRange === 'Custom' ? (
+          <div className="flex flex-row gap-3 p-2 sm:pl-0">
+            <DatePicker
+              selected={new Date(startDate)}
+              onChange={(date: Date | null) => {
+                if (date) {
+                  setStartDate(date.toISOString());
+                }
+              }}
+              className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+              minDate={new Date('2023-09-25')}
+              maxDate={new Date()}
+            />
+            <DatePicker
+              selected={new Date(endDate)}
+              onChange={(date: Date | null) => {
+                if (date) {
+                  setEndDate(date.toISOString());
+                }
+              }}
+              className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+              minDate={new Date('2023-09-25')}
+              maxDate={new Date()}
+            />
+          </div>
+        ) : (
+          <p className="font-mono p-2 sm:pr-4 sm:pl-0 opacity-50">
+            {new Date(startDate).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}{' '}
+            –{' '}
+            {new Date(endDate).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}
+          </p>
+        )}
+      </div>
+
+      {error && <div className="text-red-500 font-mono my-3 text-center">{error}</div>}
+
+      {!isLoading ? (
+        <ResponsiveContainer width="100%" height="100%">
+          <Treemap
+            width={400}
+            height={400}
+            data={data}
+            dataKey="volume"
+            isAnimationActive={false}
+            fill="#8884d8"
+            stroke="#fff"
+            content={
+              <CustomizedContent
+                root={undefined}
+                depth={0}
+                x={0}
+                y={0}
+                width={0}
+                height={0}
+                index={0}
+                payload={undefined}
+                color={''}
+                pnl={null}
+                volume={null}
+                name={''}
+              />
+            }
+            onClick={(e) => {
+              if (e.pubkey) {
+                window.open(
+                  `monitoring?view=walletDigger&wallet=${e.pubkey}`,
+                  '_blank',
+                );
+              }
+            }}
+          />
+        </ResponsiveContainer>
+      ) : (
+        <div className="h-full w-full flex items-center justify-center text-sm">
+          <Loader />
+        </div>
+      )}
+      <div className="flex mt-4 items-center justify-center">
+        <div className="flex ml-4 gap-8">
+          <div className="flex flex-col items-center justify-center text-xs gap-2 font-mono">
+            Trader PnL
+            <div
+              className="h-2 w-24 border"
+              style={{
+                background:
+                  'linear-gradient(to right, #3d0909, #721717, #b54b4b, #d58f8f,  #75d775, #4cbf4c, #2c8c2c, #064406)',
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
-
-export default memo(AllUserProfileStatsChart)
+export default memo(AllUserProfileStatsChart);
 
 const CustomizedContent: React.FC<{
   root: unknown;
