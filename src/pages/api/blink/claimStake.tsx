@@ -18,10 +18,8 @@ export default async function handler(
 
   if (req.method === 'POST') {
     const { account } = req.body;
-    const { tokenSymbol } = req.query;
 
-    const stakedTokenMint =
-      tokenSymbol === 'ADX' ? client.adxToken.mint : client.alpToken.mint;
+    const stakedTokenMint = client.adxToken.mint
 
     if (!stakedTokenMint) {
       return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
@@ -75,34 +73,14 @@ export default async function handler(
     res.writeHead(200, ACTIONS_CORS_HEADERS).json({
       type: 'action',
       icon: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/claim_rewards.jpg',
-      title: 'Claim Stake Rewards',
+      title: 'ADX Stake Rewards',
       description: `Claim your stake rewards.`,
       label: 'Claim Stake Rewards',
       links: {
         actions: [
           {
-            label: 'Claim Stake',
-            href: '/api/blink/claimStake?tokenSymbol={tokenSymbol}',
-            parameters: [
-              {
-                name: 'tokenSymbol',
-                type: 'select',
-                label: 'Token to claim',
-                required: true,
-                options: [
-                  {
-                    label: client.adxToken.symbol,
-                    value: client.adxToken.symbol,
-                    selected: true,
-                  },
-                  {
-                    label: client.alpToken.symbol,
-                    value: client.alpToken.symbol,
-                    selected: false,
-                  },
-                ],
-              },
-            ],
+            label: 'Claim ADX Rewards',
+            href: '/api/blink/claimStake',
             type: 'transaction',
           },
         ],
