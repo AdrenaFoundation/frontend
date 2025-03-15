@@ -16,12 +16,13 @@ import {
   getTokenSymbol,
 } from '@/utils';
 
+import dialectLogo from '../../../../../public/images/dialect-logo.svg';
 import adrenaLogo from '../../../../../public/images/logo.svg';
 import monster1 from '../../../../../public/images/monster_1.png';
 import monster2 from '../../../../../public/images/monster_2.png';
 import monster3 from '../../../../../public/images/monster_3.png';
 import monster4 from '../../../../../public/images/monster_4.png';
-import xIcon from '../../../../../public/images/x-black-bg.png';
+import xLogo from '../../../../../public/images/x-black-bg.png';
 
 export default function SharePositionModal({
   position,
@@ -100,6 +101,12 @@ export default function SharePositionModal({
 
   const twitterText = `I just made ${isPnlUsd ? `$${pnlUsd?.toFixed(2)}` : `${pnlPercentage?.toFixed(2)}%`
     } on ${position.side} position on ${position.token.symbol}!`;
+
+  const blinkParams = position?.exitPrice
+    ? null
+    : `tokenSymbolB=${position.token.symbol}&tokenSymbolA=${position.collateralToken.symbol}&collateralAmount=${position.collateralAmount}&symbol=${params.symbol}&price=${params.price}&leverage=${formatNumber(position.sizeUsd / position.collateralUsd, 2)}&side=${position.side}&referrer=${position.owner.toBase58()}&mark=${params.mark}&opened=${params.opened}&size=${params.size}&opt=${params.opt}&pnl=${params.pnl}&pnlUsd=${params.pnlUsd}&isPnlUsd=${params.isPnlUsd}&exitPrice=${params.exitPrice}&collateralUsd=${params.collateral}`;
+
+  const blinkTwitterText = `Copy my position on ${position.token.symbol}! @AdrenaProtocol`;
 
   return (
     <div className="max-w-[600px] p-5">
@@ -287,20 +294,40 @@ export default function SharePositionModal({
           </label>
         </div>
       </div>
-      <div className="mt-3">
-        <Button
-          size="lg"
-          title="Share on"
-          className="w-full mt-6 py-3 text-base"
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            twitterText,
-          )}&url=${encodeURIComponent(
-            `https://${window.location.hostname}/${shortenedUrl}`,
-          )}`}
-          isOpenLinkInNewTab
-          rightIcon={xIcon}
-          rightIconClassName="w-4 h-4"
-        />
+      <div className="flex flex-row items-center gap-3 mt-3">
+        <span className="flex-1">
+          <Button
+            size="lg"
+            title="Share on"
+            className="w-full mt-6 py-3 text-base flex-1"
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+              twitterText,
+            )}&url=${encodeURIComponent(
+              `https://${window.location.hostname}/${shortenedUrl}`,
+            )}`}
+            isOpenLinkInNewTab
+            rightIcon={xLogo}
+            rightIconClassName="w-4 h-4"
+          />
+        </span>
+
+        {!position?.exitPrice ? (
+          <span className="flex-1">
+            <Button
+              size="lg"
+              title="Share a Blink"
+              className="w-full mt-6 py-3 text-base flex-1"
+              leftIcon={dialectLogo}
+              leftIconClassName="w-4 h-4"
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                blinkTwitterText,
+              )}&url=${encodeURIComponent(
+                `https://dial.to/?action=${encodeURIComponent(`solana-action:https://${window.location.hostname}/api/blink/openPosition?${blinkParams}`)}`,
+              )}`}
+              isOpenLinkInNewTab
+            />
+          </span>
+        ) : null}
       </div>
     </div>
   );

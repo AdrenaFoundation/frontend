@@ -112,7 +112,8 @@ export function PositionBlock({
     )
       return false;
 
-    if (position.side === 'long') return tradeTokenPrice < position.liquidationPrice;
+    if (position.side === 'long')
+      return tradeTokenPrice < position.liquidationPrice;
 
     // Short
     return tradeTokenPrice > position.liquidationPrice;
