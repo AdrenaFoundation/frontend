@@ -610,6 +610,7 @@ export default function Trade({
                       terminalId="integrated-terminal-3"
                       adapters={adapters}
                       onLimitOrderAdded={reload}
+                      setActivePositionModal={setActivePositionModal}
                     />
                   </div>
                 </Modal>
