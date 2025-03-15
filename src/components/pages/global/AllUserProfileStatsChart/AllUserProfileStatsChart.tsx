@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import DataApiClient from '@/DataApiClient';
@@ -23,32 +24,41 @@ const AllUserProfileStatsChart = ({
   const [traders, setTraders] = useState<Trader[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCustomStartDate, setSelectedCustomStartDate] = useState<string>(
+    new Date('01/01/24').toISOString(),
+  );
+  const [selectedCustomEndDate, setSelectedCustomEndDate] = useState<string>(
+    new Date().toISOString(),
+  );
+
+
 
   useEffect(() => {
-    const fetchTraders = async () => {
-      try {
-        setIsLoading(true);
-        const response = await DataApiClient.getTraders({
-          startDate: new Date(startDate),
-          endDate: new Date(endDate),
-          limit: 10000,
-        });
-
-        if (response.success && response.data.traders) {
-          setTraders(response.data.traders);
-        } else {
-          setError('Failed to fetch traders data');
-        }
-      } catch (err) {
-        setError('Error fetching traders data');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchTraders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate]);
+
+  const fetchTraders = async (customStartDate?: string, customEndDate?: string) => {
+    try {
+      setIsLoading(true);
+      const response = await DataApiClient.getTraders({
+        startDate: new Date(customStartDate ?? startDate),
+        endDate: new Date(customEndDate ?? endDate),
+        limit: 10000,
+      });
+
+      if (response.success && response.data.traders) {
+        setTraders(response.data.traders);
+      } else {
+        setError('Failed to fetch traders data');
+      }
+    } catch (err) {
+      setError('Error fetching traders data');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const traderWithUserProfiles = useMemo(() => {
     return traders?.map((trader) => {
@@ -129,7 +139,7 @@ const AllUserProfileStatsChart = ({
       </div>
       <div
         className={twMerge(
-          'flex flex-col sm:flex-row  bg-secondary border border-gray-800 rounded text-sm items-center max-w-md z-20 mb-3 transition-opacity duration-300',
+          'flex flex-col sm:flex-row  bg-secondary border border-gray-800 rounded text-sm items-center z-20 mb-3 transition-opacity duration-300',
           isLoading ? 'opacity-30 pointer-events-none' : '',
         )}
       >
@@ -182,7 +192,7 @@ const AllUserProfileStatsChart = ({
               selected={new Date(startDate)}
               onChange={(date: Date | null) => {
                 if (date) {
-                  setStartDate(date.toISOString());
+                  setSelectedCustomStartDate(date.toISOString());
                 }
               }}
               className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
@@ -193,13 +203,14 @@ const AllUserProfileStatsChart = ({
               selected={new Date(endDate)}
               onChange={(date: Date | null) => {
                 if (date) {
-                  setEndDate(date.toISOString());
+                  setSelectedCustomEndDate(date.toISOString());
                 }
               }}
               className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
               minDate={new Date('2023-09-25')}
               maxDate={new Date()}
             />
+            <Button title="Apply" onClick={() => fetchTraders(selectedCustomStartDate, selectedCustomEndDate)} />
           </div>
         ) : (
           <p className="font-mono p-2 sm:pr-4 sm:pl-0 opacity-50">
