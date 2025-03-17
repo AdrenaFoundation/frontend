@@ -863,8 +863,10 @@ export default function Stake({
         </div>
 
         {(alpLockedStakes === null || alpLockedStakes?.length == 0) && claimsHistoryAlp && claimsHistoryAlp?.length ?
-          <div className="flex flex-col bg-main rounded-2xl border z-10 mb-4">
-            <ALPStakingRecap claimsHistory={claimsHistoryAlp} />
+          <div className='p-4 z-10'>
+            <div className="flex flex-col bg-main rounded-2xl border mb-4 w-full">
+              <ALPStakingRecap claimsHistory={claimsHistoryAlp} />
+            </div>
           </div> : null}
       </div>
     </>

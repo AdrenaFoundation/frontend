@@ -153,7 +153,7 @@ export default function Header({
         <Link
           href="/buy_alp"
           className={twMerge(
-            'flex flex-col xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
+            'flex flex-col 2xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
             pathname !== '/buy_alp' && 'opacity-50',
           )}
         >
@@ -177,7 +177,7 @@ export default function Header({
         <Link
           href="/buy_adx"
           className={twMerge(
-            'flex flex-col xl:flex-row items-center justify-center hover:opacity-100',
+            'flex flex-col 2xl:flex-row items-center justify-center hover:opacity-100',
             pathname !== '/buy_adx' && 'opacity-50',
           )}
         >
