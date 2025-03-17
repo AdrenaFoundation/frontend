@@ -28,8 +28,35 @@ import {
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
-    // public static DATAPI_URL = "http://localhost:8080";
-    public static DATAPI_URL = 'https://datapi.adrena.xyz';
+    public static DATAPI_URL = "http://localhost:8080";
+    // public static DATAPI_URL = 'https://datapi.adrena.xyz';
+
+    public static async getPriceAtDate(date: Date): Promise<{
+        adxPrice: number | null;
+        alpPrice: number | null;
+    } | null> {
+        try {
+            const result = await fetch(
+                `${DataApiClient.DATAPI_URL}/get-price?date=${date.toISOString()}`,
+            ).then((res) => res.json());
+
+            if (result === null || typeof result === 'undefined' || !result.data || !result.data.adx || !result.data.alp) {
+                return null;
+            }
+
+            const adxPrice = result.data.adx.price;
+            const alpPrice = result.data.alp.price;
+
+            return {
+                adxPrice,
+                alpPrice,
+            };
+        } catch (e) {
+            console.log('error fetching prices', e);
+            return null;
+        }
+    }
+
 
     public static async getLastPrice(): Promise<{
         adxPrice: number | null;

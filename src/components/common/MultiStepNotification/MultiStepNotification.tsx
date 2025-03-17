@@ -38,14 +38,20 @@ export default class MultiStepNotification {
   protected constructor(
     protected title: string,
     protected steps: NotificationSteps,
+    protected closingTimeSuccessInMs: number,
+    protected closingTimeErrorInMs: number,
   ) { }
 
   public static new({
     title,
     steps,
+    closingTimeSuccessInMs = 5_000,
+    closingTimeErrorInMs = 10_000,
   }: {
     title: string;
     steps: Omit<NotificationStep, 'state'>[];
+    closingTimeSuccessInMs?: number;
+    closingTimeErrorInMs?: number;
   }): MultiStepNotification {
     return new MultiStepNotification(
       title,
@@ -56,6 +62,8 @@ export default class MultiStepNotification {
             ? NotificationStepState.inProgress
             : NotificationStepState.waiting,
       })),
+      closingTimeSuccessInMs,
+      closingTimeErrorInMs,
     );
   }
 
@@ -98,7 +106,7 @@ export default class MultiStepNotification {
         render: this.getContent(),
       });
 
-      this.close(5_000);
+      this.close(this.closingTimeSuccessInMs);
       return;
     }
 
@@ -120,7 +128,7 @@ export default class MultiStepNotification {
 
     this.activeStepIndex += 1;
 
-    this.close(10_000);
+    this.close(this.closingTimeErrorInMs);
 
     toast.update(this.toastId, {
       render: this.getContent(),
@@ -154,9 +162,9 @@ export default class MultiStepNotification {
     })();
 
     return (
-      <div className="w-[20em] h-[10em] bg-[#162a3d] shadow-2xl z-[9999] border">
+      <div className="w-[20em] min-h-[10em] max-h-[15em] h-auto bg-[#162a3d] shadow-2xl z-[9999] border">
         <div className="flex flex-col pt-2 pb-2 pl-4 h-full w-full">
-          <div className="flex w-full">
+          <div className="flex w-full h-[2em]">
             <h2>{this.title ?? 'Title'}</h2>
 
             <Image
@@ -173,10 +181,10 @@ export default class MultiStepNotification {
 
           <div className="h-[1px] mt-2 w-full bg-bcolor" />
 
-          <div className="flex grow w-full items-center justify-center">
-            <div className="h-[6em] min-w-[9em] shrink w-full flex flex-col justify-center gap-2">
+          <div className="flex h-full w-full items-center justify-center pt-1">
+            <div className="h-full min-w-[11em] w-full flex flex-col justify-center gap-2 max-h-full overflow-auto">
               {this.steps.map((step, index) => (
-                <div key={index} className="w-full items-center flex h-4">
+                <div key={index} className="w-full items-center flex min-h-4 h-auto">
                   <div className="w-[1.6em] mr-1 flex items-center justify-center">
                     {step.state === NotificationStepState.waiting ? (
                       <Image
@@ -216,7 +224,7 @@ export default class MultiStepNotification {
                     ) : null}
                   </div>
 
-                  <div className="w-auto text-sm font-regular opacity-70">
+                  <div className="w-auto text-sm font-regular opacity-70 text-nowrap max-w-full overflow-hidden">
                     {step.title}
                   </div>
                 </div>

@@ -491,6 +491,7 @@ export type ClaimApi = {
   created_at: string; // ISO date-time string
   mint: string;
   source: "manual" | "auto";
+  adx_price_at_claim: number;
 };
 
 export type ClaimHistoryApi = {
@@ -511,6 +512,7 @@ export type ClaimHistoryExtended = {
   source: "manual" | "auto";
   symbol: string;
   transaction_date: Date;
+  adx_price_at_claim: number;
 };
 
 type AchievementsBase = {
