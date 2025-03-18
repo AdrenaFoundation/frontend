@@ -1,16 +1,24 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import FormatNumber from "@/components/Number/FormatNumber";
+import FormatNumber from '@/components/Number/FormatNumber';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { MutagenLeaderboardData } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
-import Table from "../monitoring/Table";
+import Table from '../monitoring/Table';
+
+type SortField =
+    | 'totalVolume'
+    | 'pointsTrading'
+    | 'pointsMutations'
+    | 'pointsQuests'
+    | 'pointsStreaks'
+    | 'totalPoints';
 
 export default function MutagenLeaderboard({
     data,
@@ -21,6 +29,8 @@ export default function MutagenLeaderboard({
     className?: string;
     onClickUserProfile: (wallet: PublicKey) => void;
 }) {
+    const [sortField, setSortField] = useState<SortField>('totalPoints');
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const wallet = useSelector((s) => s.walletState.wallet);
 
     const breakpoint5 = useBetterMediaQuery('(min-width: 500px)');
@@ -29,18 +39,61 @@ export default function MutagenLeaderboard({
     const breakpoint2 = useBetterMediaQuery('(min-width: 950px)');
     const breakpoint1 = useBetterMediaQuery('(min-width: 1100px)');
 
-    const dataReady = useMemo(() => {
-        if (!data) return [];
+    const handleSort = (field: SortField) => {
+        if (sortField === field) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortDirection('desc');
+        }
+    };
 
-        return data.map((d, i) => {
+    const sortFunction = useCallback(
+        (a: MutagenLeaderboardData[number], b: MutagenLeaderboardData[number]) => {
+            const multiplier = sortDirection === 'asc' ? 1 : -1;
+            return (a[sortField] - b[sortField]) * multiplier;
+        },
+        [sortField, sortDirection],
+    );
+
+    const sortedTraders = useMemo(() => {
+        if (!data) return null;
+        return [...data].sort(sortFunction);
+    }, [data, sortFunction]);
+
+    const SortIcon = ({ field }: { field: SortField }) => (
+        <span className="ml-1 text-xs opacity-50">
+            {sortField === field ? (sortDirection === 'asc' ? '↑' : '↓') : '↕'}
+        </span>
+    );
+
+    const getSortButtonClass = (field: SortField) =>
+        twMerge(
+            'ml-auto mr-auto opacity-50 hover:opacity-100 flex items-center cursor-pointer',
+            sortField === field && 'opacity-100',
+        );
+
+    const getSortTextClass = (field: SortField) =>
+        sortField === field ? 'underline underline-offset-4' : '';
+
+    const dataReady = useMemo(() => {
+        if (!sortedTraders) return [];
+
+        return sortedTraders.map((d, i) => {
             const values = [
-                <div className="text-sm text-center flex items-center justify-center w-[5em]" key={`rank-${i}`}>
-                    <div className="text-sm text-center" key={`rank-${i}`}>
+                <div
+                    className="text-sm text-center flex items-center justify-center w-[5em]"
+                    key={d.nickname}
+                >
+                    <div className="text-sm text-center" key={d.nickname}>
                         {d.rank}
                     </div>
                 </div>,
 
-                <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
+                <div
+                    className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center"
+                    key={d.nickname}
+                >
                     {d.profilePicture !== null ? (
                         <Image
                             src={PROFILE_PICTURES[d.profilePicture]}
@@ -48,9 +101,11 @@ export default function MutagenLeaderboard({
                             height={30}
                             alt="rank"
                             className="h-8 w-8 rounded-full opacity-80"
-                            key={`rank-${i}`}
+                            key={d.nickname}
                         />
-                    ) : <div className='h-8 w-8 bg-third rounded-full' />}
+                    ) : (
+                        <div className="h-8 w-8 bg-third rounded-full" />
+                    )}
 
                     <div id={`user-mutagen-${d.userWallet.toBase58()}`}>
                         {d.nickname ? (
@@ -67,14 +122,14 @@ export default function MutagenLeaderboard({
                                     ? `${d.nickname.substring(0, 16)}...`
                                     : d.nickname}
                             </p>
-                        ) : <p
-                            key={`trader-${i}`}
-                            className={twMerge(
-                                'text-xs font-boldy opacity-50',
-                            )}
-                        >
-                            {getAbbrevWalletAddress(d.userWallet.toBase58())}
-                        </p>}
+                        ) : (
+                            <p
+                                key={`trader-${i}`}
+                                className={twMerge('text-xs font-boldy opacity-50')}
+                            >
+                                {getAbbrevWalletAddress(d.userWallet.toBase58())}
+                            </p>
+                        )}
 
                         {d.title !== null ? (
                             <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
@@ -89,15 +144,15 @@ export default function MutagenLeaderboard({
                 values.push(
                     <div
                         className="flex items-center justify-center grow gap-1"
-                        key={`volume-${i}`}
+                        key={`volume-${d.nickname}`}
                     >
                         <FormatNumber
-                            prefix='$'
+                            prefix="$"
                             nb={d.totalVolume}
                             className="text-xs font-boldy"
                             precision={2}
                             isDecimalDimmed={false}
-                            format='currency'
+                            format="currency"
                             isAbbreviate={true}
                             isAbbreviateIcon={false}
                         />
@@ -109,7 +164,7 @@ export default function MutagenLeaderboard({
                 values.push(
                     <div
                         className="flex items-center justify-center grow gap-1"
-                        key={`trading-${i}`}
+                        key={`trading-${d.nickname}`}
                     >
                         <FormatNumber
                             nb={d.pointsTrading}
@@ -125,7 +180,7 @@ export default function MutagenLeaderboard({
                 values.push(
                     <div
                         className="flex items-center justify-center grow gap-1"
-                        key={`mutations-${i}`}
+                        key={`mutations-${d.nickname}`}
                     >
                         <FormatNumber
                             nb={d.pointsMutations}
@@ -134,7 +189,6 @@ export default function MutagenLeaderboard({
                             isDecimalDimmed={false}
                         />
                     </div>,
-
                 );
             }
 
@@ -142,7 +196,7 @@ export default function MutagenLeaderboard({
                 values.push(
                     <div
                         className="flex items-center justify-center grow gap-1"
-                        key={`quests-${i}`}
+                        key={`quests-${d.nickname}`}
                     >
                         <FormatNumber
                             nb={d.pointsQuests}
@@ -158,7 +212,7 @@ export default function MutagenLeaderboard({
                 values.push(
                     <div
                         className="flex items-center justify-center grow gap-1"
-                        key={`streaks-${i}`}
+                        key={`streaks-${d.nickname}`}
                     >
                         <FormatNumber
                             nb={d.pointsStreaks}
@@ -173,7 +227,7 @@ export default function MutagenLeaderboard({
             values.push(
                 <div
                     className="flex items-center justify-center grow gap-1"
-                    key={`championship-points-${i}`}
+                    key={`championship-points-${d.nickname}`}
                 >
                     <FormatNumber
                         nb={d.totalPoints}
@@ -186,13 +240,26 @@ export default function MutagenLeaderboard({
 
             return {
                 rowTitle: '',
-                specificRowClassName: twMerge(wallet?.walletAddress === d.userWallet.toBase58() ?
-                    'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
-                    : null),
+                specificRowClassName: twMerge(
+                    wallet?.walletAddress === d.userWallet.toBase58()
+                        ? 'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
+                        : null,
+                ),
                 values,
             };
         });
-    }, [breakpoint1, breakpoint2, breakpoint3, breakpoint4, breakpoint5, data, onClickUserProfile, wallet?.walletAddress]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        breakpoint1,
+        breakpoint2,
+        breakpoint3,
+        breakpoint4,
+        breakpoint5,
+        sortDirection,
+        sortedTraders,
+        onClickUserProfile,
+        wallet?.walletAddress,
+    ]);
 
     const columns = useMemo(() => {
         const columns = [
@@ -204,57 +271,98 @@ export default function MutagenLeaderboard({
 
         if (breakpoint5) {
             columns.push(
-                <span className="ml-auto mr-auto opacity-50" key="volume">
-                    Volume
-                </span>,
+                <button
+                    onClick={() => handleSort('totalVolume')}
+                    className={getSortButtonClass('totalVolume')}
+                    key="totalVolume"
+                >
+                    <span className={getSortTextClass('totalVolume')}>Volume</span>
+                    <SortIcon field="totalVolume" />
+                </button>,
             );
         }
 
         if (breakpoint4) {
             columns.push(
-                <span className="ml-auto mr-auto opacity-50" key="volume">
-                    Trading
-                </span>,
+                <button
+                    onClick={() => handleSort('pointsTrading')}
+                    className={getSortButtonClass('pointsTrading')}
+                    key="pointsTrading"
+                >
+                    <span className={getSortTextClass('pointsTrading')}>Trading</span>
+                    <SortIcon field="pointsTrading" />
+                </button>,
             );
         }
 
         if (breakpoint3) {
             columns.push(
-                <span className="ml-auto mr-auto opacity-50" key="volume">
-                    Mutation
-                </span>,
+                <button
+                    onClick={() => handleSort('pointsMutations')}
+                    className={getSortButtonClass('pointsMutations')}
+                    key="pointsMutations"
+                >
+                    <span className={getSortTextClass('pointsMutations')}>Mutation</span>
+                    <SortIcon field="pointsMutations" />
+                </button>,
             );
         }
 
         if (breakpoint2) {
             columns.push(
-                <span className="ml-auto mr-auto opacity-50" key="volume">
-                    Quests
-                </span>,
+                <button
+                    onClick={() => handleSort('pointsQuests')}
+                    className={getSortButtonClass('pointsQuests')}
+                    key="pointsQuests"
+                >
+                    <span className={getSortTextClass('pointsQuests')}>Quests</span>
+                    <SortIcon field="pointsQuests" />
+                </button>,
             );
         }
 
         if (breakpoint1) {
             columns.push(
-                <span className="ml-auto mr-auto opacity-50" key="volume">
-                    Streaks
-                </span>,
+                <button
+                    onClick={() => handleSort('pointsStreaks')}
+                    className={getSortButtonClass('pointsStreaks')}
+                    key="pointsStreaks"
+                >
+                    <span className={getSortTextClass('pointsStreaks')}>Streaks</span>
+                    <SortIcon field="pointsStreaks" />
+                </button>,
             );
         }
 
         columns.push(
-            <span className="ml-auto mr-auto opacity-50" key="pnl">
-                Mutagen
-            </span>,
+            <button
+                onClick={() => handleSort('totalPoints')}
+                className={getSortButtonClass('totalPoints')}
+                key="totalPoints"
+            >
+                <span className={getSortTextClass('totalPoints')}>Mutagen</span>
+                <SortIcon field="totalPoints" />
+            </button>,
         );
 
         return columns;
-    }, [breakpoint1, breakpoint2, breakpoint3, breakpoint4, breakpoint5]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        breakpoint1,
+        breakpoint2,
+        breakpoint3,
+        breakpoint4,
+        breakpoint5,
+        sortedTraders,
+        sortDirection,
+    ]);
 
     if (!data) return null;
 
     return (
-        <div className={twMerge('w-full ml-auto mr-auto mt-8 max-w-[60em]', className)}>
+        <div
+            className={twMerge('w-full ml-auto mr-auto mt-8 max-w-[60em]', className)}
+        >
             <Table
                 className="bg-transparent gap-1 border-none p-0"
                 columnTitlesClassName="text-sm opacity-50"
