@@ -27,6 +27,7 @@ export default function TradeComp({
   terminalId,
   adapters,
   onLimitOrderAdded,
+  setActivePositionModal,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -45,6 +46,7 @@ export default function TradeComp({
   };
   terminalId: string;
   adapters: WalletAdapterExtended[];
+  setActivePositionModal?: (e: Action | null) => void;
   onLimitOrderAdded: () => void;
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
@@ -95,6 +97,7 @@ export default function TradeComp({
                 wallet={wallet}
                 connected={connected}
                 onLimitOrderAdded={onLimitOrderAdded}
+                setActivePositionModal={setActivePositionModal}
               />
             ) : (
               <>

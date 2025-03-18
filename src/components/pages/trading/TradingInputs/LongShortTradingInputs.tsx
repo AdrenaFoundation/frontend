@@ -47,6 +47,7 @@ export default function LongShortTradingInputs({
   setTokenA,
   setTokenB,
   onLimitOrderAdded,
+  setActivePositionModal,
 }: TradingInputsProps) {
   const { query } = useRouter();
   const dispatch = useDispatch();
@@ -264,6 +265,7 @@ export default function LongShortTradingInputs({
         newPositionInfo: null,
         increasePositionInfo: null,
       }));
+      setActivePositionModal?.(null);
     } catch (error) {
       console.log('Error', error);
     }
@@ -359,7 +361,6 @@ export default function LongShortTradingInputs({
         }));
 
       dispatch(fetchWalletTokenBalances());
-
       setInputState((prev) => ({
         ...prev,
         inputA: null,
@@ -369,6 +370,7 @@ export default function LongShortTradingInputs({
         newPositionInfo: null,
         increasePositionInfo: null,
       }));
+      setActivePositionModal?.(null);
     } catch (error) {
       console.log('Error', error);
     }

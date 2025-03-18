@@ -15,6 +15,7 @@ export interface TradingInputsProps {
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   onLimitOrderAdded: () => void;
+  setActivePositionModal?: (e: 'long' | 'short' | 'swap' | null) => void;
 }
 
 export interface TradingInputState {
