@@ -2,12 +2,14 @@ import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
+import ALPStakingRecap from '@/components/pages/stake/ALPStakingRecap';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import FullyLiquidALPStaking from '@/components/pages/stake/FullyLiquidALPStaking';
 import StakeApr from '@/components/pages/stake/StakeApr';
@@ -35,8 +37,6 @@ import {
   getNextStakingRoundStartTime,
   nativeToUi,
 } from '@/utils';
-import { twMerge } from 'tailwind-merge';
-import ALPStakingRecap from '@/components/pages/stake/ALPStakingRecap';
 
 export type ADXTokenDetails = {
   balance: number | null;

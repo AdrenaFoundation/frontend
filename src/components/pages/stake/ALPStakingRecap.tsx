@@ -2,18 +2,18 @@ import '../../../styles/Animation.css';
 
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
+import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
-import chevronDown from '../../../../public/images/chevron-down.svg';
-import { CSSTransition } from 'react-transition-group';
 import {
     ClaimHistoryExtended,
 } from '@/types';
 
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
+import chevronDown from '../../../../public/images/chevron-down.svg';
 import downloadIcon from '../../../../public/images/download.png';
 import ClaimBlock from './ClaimBlock';
 

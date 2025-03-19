@@ -1,10 +1,11 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { AnimatePresence, motion } from 'framer-motion';
-import banner from '@/../../public/images/achievements-book-wallpaper.jpg';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
-import { ACHIEVEMENTS } from '@/constant';
+
+import banner from '@/../../public/images/achievements-book-wallpaper.jpg';
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Achievement from '@/components/pages/achievements/Achievement';
+import { ACHIEVEMENTS } from '@/constant';
 
 export default function Achievements() {
     return (

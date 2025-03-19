@@ -2,6 +2,7 @@ import '../../../styles/Animation.css';
 
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
@@ -22,10 +23,9 @@ import chevronDown from '../../../../public/images/chevron-down.svg';
 import downloadIcon from '../../../../public/images/download.png';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
+import { fullyLiquidALPStaking } from '../global/Emissions/EmissionsChart';
 import ClaimBlock from './ClaimBlock';
 import LockedStakes from './LockedStakes';
-import Link from 'next/link';
-import { fullyLiquidALPStaking } from '../global/Emissions/EmissionsChart';
 interface SortConfig {
     size: 'asc' | 'desc';
     duration: 'asc' | 'desc';

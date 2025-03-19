@@ -1,11 +1,11 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { AchievementInfo } from "@/types";
+import { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import lockIcon from '@/../public/images/Icons/lock.svg';
-import Tippy from '@tippyjs/react';
-import { useMemo, useState } from 'react';
 import { ACHIEVEMENTS } from '@/constant';
+import { AchievementInfo } from "@/types";
 
 export default function Achievement({
     achievement,
@@ -32,7 +32,7 @@ export default function Achievement({
         }
 
         return unlocks.join(' + ');
-    }, []);
+    }, [achievement.pfpUnlock, achievement.titleUnlock, achievement.wallpaperUnlock]);
 
     return <Tippy content={unlocked ? `Grant ${achievement.points} achievements points` : `Unlock and get ${achievement.points} achievements points`}>
         <div
@@ -45,6 +45,7 @@ export default function Achievement({
             <div
                 className={twMerge("relative w-[10em] h-[9.3em] mt-4 sm:mt-0 sm:w-[11em] sm:h-[8.7em] rounded-lg overflow-hidden", `animated-border-${achievement.category}`)}
             >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     className={twMerge(
                         'w-[10em] h-[10em] sm:w-full sm:h-full rounded-lg',

@@ -5,7 +5,6 @@ import expanseBanner from "@/../public/images/expanse-banner.jpg";
 
 import { ResolutionString } from "../public/charting_library/charting_library";
 import {
-  AchievementCategory,
   AchievementInfo,
   AdrenaEvent,
   AdxLockPeriod,
