@@ -280,12 +280,6 @@ export default function FullyLiquidALPStaking({
                     title={isClaimingRewardsAndRedeeming ? 'Claiming and redeeming...' : 'Claim rewards and redeem'}
                     className="px-5 w-[90%]"
                     onClick={handleClaim}
-                    disabled={
-                        userPendingUsdcRewards +
-                        userPendingAdxRewards +
-                        pendingGenesisAdxRewards <=
-                        0
-                    }
                 />
             </div>
 
