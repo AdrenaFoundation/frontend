@@ -352,6 +352,12 @@ export default function Stake({
       const tokenObj = stakingAccounts?.ALP;
       if (!tokenObj) return;
 
+      tokenObj.lockedStakes.forEach((stake, i) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        stake.index = i;
+      });
+
       const filteredLockedStakes = tokenObj.lockedStakes.filter(stake => !stake.amount.isZero());
 
       let i = 0;
@@ -364,7 +370,9 @@ export default function Stake({
           resolved: !!lockedStake.resolved,
           id: lockedStake.id,
           stakedTokenMint: window.adrena.client.alpToken.mint,
-          lockedStakeIndex: tokenObj.lockedStakeIdCounter,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          lockedStakeIndex: new BN(lockedStake.index),
           earlyExit: true,
           notification,
         });

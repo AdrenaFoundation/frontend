@@ -3560,6 +3560,18 @@ export class AdrenaClient {
         preInstructions,
       });
 
+    console.log(">>>>>>>ZDKZOZD REMOVE LOCKED STAKE", {
+      owner: owner.toBase58(),
+      id: id.toString(),
+      stakedTokenMint: stakedTokenMint.toBase58(),
+      earlyExit,
+      stakingStakedTokenVault: stakingStakedTokenVault.toBase58(),
+      stakingRewardTokenVault: stakingRewardTokenVault.toBase58(),
+      stakingLmRewardTokenVault: stakingLmRewardTokenVault.toBase58(),
+      userStaking: userStaking.toBase58(),
+      lockedStakeIndex: lockedStakeIndex.toString(),
+    });
+
     const transaction = await this.adrenaProgram.methods
       .removeLockedStake({
         lockedStakeIndex,
