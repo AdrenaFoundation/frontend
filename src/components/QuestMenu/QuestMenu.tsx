@@ -260,7 +260,7 @@ export default function QuestMenu({
         <div
             className={twMerge(
                 'fixed z-20',
-                isMobile ? window.location.pathname === '/trade' ? 'bottom-[7.7rem] left-4' : 'bottom-[3.6rem] left-4' : 'bottom-0 left-0',
+                isMobile ? window.location.pathname === '/trade' ? 'bottom-[7.7rem] left-4' : 'bottom-[4.3rem] left-4' : 'bottom-0 left-0',
                 className,
             )}
         >
