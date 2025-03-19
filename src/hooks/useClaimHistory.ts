@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
-import { ClaimHistoryApi, ClaimHistoryExtended } from '@/types';
+import { ClaimHistoryApi, ClaimHistoryExtended } from "@/types";
 
 export default function useClaimHistory(walletAddress: string | null): {
   claimsHistoryAdx: ClaimHistoryExtended[] | null;
@@ -30,18 +30,19 @@ export default function useClaimHistory(walletAddress: string | null): {
 
     const response = await fetch(
       `https://datapi.adrena.xyz/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
+      // `http://localhost:8080/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
     );
 
     if (!response.ok) {
-      console.log('API response was not ok');
+      console.log("API response was not ok");
     }
 
     const apiBody = await response.json();
 
     const apiData: ClaimHistoryApi | undefined = apiBody.data;
 
-    if (typeof apiData === 'undefined') {
-      console.log('apiData is undefined');
+    if (typeof apiData === "undefined") {
+      console.log("apiData is undefined");
       return [];
     }
 
@@ -49,8 +50,8 @@ export default function useClaimHistory(walletAddress: string | null): {
       .map((claim) => {
         const symbol =
           claim.mint === window.adrena.client.lmTokenMint.toBase58()
-            ? 'ADX'
-            : 'ALP';
+            ? "ADX"
+            : "ALP";
 
         return {
           claim_id: claim.claim_id,
@@ -63,6 +64,7 @@ export default function useClaimHistory(walletAddress: string | null): {
           stake_mint: claim.mint,
           symbol: symbol,
           source: claim.source,
+          adx_price_at_claim: claim.adx_price_at_claim,
         } as ClaimHistoryExtended;
       })
       .filter((claim) => claim !== null)
@@ -87,13 +89,13 @@ export default function useClaimHistory(walletAddress: string | null): {
         return;
       }
 
-      setClaimsHistoryAdx(claimsHistory.filter((c) => c.symbol === 'ADX'));
-      setClaimsHistoryAlp(claimsHistory.filter((c) => c.symbol === 'ALP'));
+      setClaimsHistoryAdx(claimsHistory.filter((c) => c.symbol === "ADX"));
+      setClaimsHistoryAlp(claimsHistory.filter((c) => c.symbol === "ALP"));
 
       setOptimisticClaimAdx([]);
       setOptimisticClaimAlp([]);
     } catch (e) {
-      console.log('Error loading claims history', e, String(e));
+      console.log("Error loading claims history", e, String(e));
       throw e;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

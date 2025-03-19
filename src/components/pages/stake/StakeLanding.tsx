@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -7,115 +7,85 @@ import Button from '@/components/common/Button/Button';
 import {
   ADX_LOCK_PERIODS,
   ADX_STAKE_MULTIPLIERS,
-  ALP_LOCK_PERIODS,
-  ALP_STAKE_MULTIPLIERS,
 } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useDispatch } from '@/store/store';
 
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
-import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxMonster from '../../../../public/images/ADX_monster.png';
-import alpMonster from '../../../../public/images/ALP_monster.png';
 import governanceIcon from '../../../../public/images/governance.svg';
 import Table from '../monitoring/Table';
 
 export default function StakeLanding({
-  handleClickOnStakeMoreALP,
   handleClickOnStakeMoreADX,
   connected,
 }: {
   connected: boolean;
-  handleClickOnStakeMoreALP: () => void;
   handleClickOnStakeMoreADX: () => void;
 }) {
   const [selectedAdxDays, setSelectedAdxDays] = useState('180d');
-  const [selectedAlpDays, setSelectedAlpDays] = useState('180d');
 
   const dispatch = useDispatch();
 
-  const handleClick = (token: 'ALP' | 'ADX') => {
+  const handleClick = () => {
     if (!connected) {
       return dispatch(openCloseConnectionModalAction(true));
     }
-    return token === 'ADX' ? handleClickOnStakeMoreADX() : handleClickOnStakeMoreALP();
+    return handleClickOnStakeMoreADX();
   };
 
-  // exclude 0 days
-  const ALP_STAKE_MULTIPLIERS_EXCLUDE_0: {
-    [key: string]: { usdc: number; adx: number };
-  } = Object.entries(ALP_STAKE_MULTIPLIERS).reduce((acc, [key, value]) => {
-    if (key !== '0') {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as { [key: string]: { usdc: number; adx: number } });
-
-  const TOKENS = [
-    {
-      name: 'ALP',
-      desc: 'Provide liquidities: the longer the period, the higher the rewards. 70% of protocol fees are distributed to ALP holder and stakers.',
-      logo: alpLogo,
-      sellingPoints: [
-        {
-          title: 'USDC yield',
-          desc: 'Base yield for all holders in the form of USDC. They originate from platform fees and revenues (70%), and are continuously being distributed to the pool, growing the value of your ALP shares automatically.',
-          icon: window.adrena.client.tokens.find((t) => t.symbol === 'USDC')
-            ?.image,
-        },
-        {
-          title: 'ADX yield',
-          desc: 'For the most committed users who Lock Stake their ALP, an extra yield distributed as ADX token. The yield amount is a function of the lock duration.',
-          icon: window.adrena.client.adxToken.image,
-        },
-      ],
-      days: ALP_LOCK_PERIODS,
-      benefits: ALP_STAKE_MULTIPLIERS_EXCLUDE_0,
-      selectedDay: selectedAlpDays,
-      setSelectedDay: setSelectedAlpDays,
-    },
-    {
-      name: 'ADX',
-      desc: 'Own a share of the protocol: Adx governance token provides yield and voting power when staked. Align with the protocol long term success and earn more. 20% of the protocol fees and revenues are distributed to stakers.',
-      logo: adxLogo,
-      sellingPoints: [
-        {
-          title: 'USDC yield',
-          desc: 'Base yield for all staker in the form of USDC. They originate from platform fees and revenues (20%)',
-          icon: window.adrena.client.tokens.find((t) => t.symbol === 'USDC')
-            ?.image,
-        },
-        {
-          title: 'ADX yield',
-          desc: 'For the most committed users who Lock Stake their ALP, an extra yield distributed as ADX token. The yield amount is a function of the lock duration.',
-          icon: window.adrena.client.adxToken.image,
-        },
-        {
-          title: 'Governance Boost',
-          desc: 'Lock Stake your ADX and receive amplified voting rights to influence the protocol. The additional voting rights is a function of the lock duration, and only available during the lock duration.',
-          icon: governanceIcon,
-        },
-      ],
-      days: ADX_LOCK_PERIODS,
-      benefits: ADX_STAKE_MULTIPLIERS,
-      selectedDay: selectedAdxDays,
-      setSelectedDay: setSelectedAdxDays,
-    },
-  ];
+  const token = useMemo(() => ({
+    name: 'ADX',
+    desc: 'Own a share of the protocol: Adx governance token provides yield and voting power when staked. Align with the protocol long term success and earn more. 20% of the protocol fees and revenues are distributed to stakers.',
+    logo: adxLogo,
+    sellingPoints: [
+      {
+        title: 'USDC yield',
+        desc: 'Base yield for all staker in the form of USDC. They originate from platform fees and revenues (20%)',
+        icon: window.adrena.client.tokens.find((t) => t.symbol === 'USDC')
+          ?.image,
+      },
+      {
+        title: 'ADX yield',
+        desc: 'For the most committed users who Lock Stake their ALP, an extra yield distributed as ADX token. The yield amount is a function of the lock duration.',
+        icon: window.adrena.client.adxToken.image,
+      },
+      {
+        title: 'Governance Boost',
+        desc: 'Lock Stake your ADX and receive amplified voting rights to influence the protocol. The additional voting rights is a function of the lock duration, and only available during the lock duration.',
+        icon: governanceIcon,
+      },
+    ],
+    days: ADX_LOCK_PERIODS,
+    benefits: ADX_STAKE_MULTIPLIERS,
+    selectedDay: selectedAdxDays,
+    setSelectedDay: setSelectedAdxDays,
+  }), [selectedAdxDays]);
 
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
 
-  const LANDING = (token: (typeof TOKENS)[0]) => {
-    return (
+  return (
+    <div className="flex h-full flex-col sm:flex-row justify-between">
+      <Image
+        src={adxMonster}
+        alt="ADX Monster"
+        className="absolute bottom-10 right-32 grayscale select-none opacity-40"
+      />
+
+      <div
+        className="hidden sm:block absolute right-0 top-0 h-full flex-1 opacity-60"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 100%, #050D14 50%, #2A1010 100%)',
+        }}
+      ></div>
+
       <div
         className="flex-1 p-[30px] lg:px-[50px] z-20 h-full"
         style={
           isMobile
             ? {
-              backgroundImage: `${token.name === 'ALP'
-                ? 'radial-gradient(circle at bottom, #050F19 50%, #10112A 100%)'
-                : 'radial-gradient(circle at bottom, #050F19 50%, #2A1010 100%)'
-                }`,
+              backgroundImage: 'radial-gradient(circle at bottom, #050F19 50%, #2A1010 100%)',
             }
             : {}
         }
@@ -144,11 +114,9 @@ export default function StakeLanding({
           title={`Stake ${token.name}`}
           className={twMerge(
             'mt-5 px-16 text-white border border-white/10',
-            token.name === 'ALP'
-              ? 'bg-gradient-to-r from-[#3B2ED2] to-[#5A2ABE]'
-              : 'bg-gradient-to-r from-[#DA1A31] to-[#DE1933]',
+            'bg-gradient-to-r from-[#DA1A31] to-[#DE1933]',
           )}
-          onClick={() => handleClick(token.name as 'ALP' | 'ADX')}
+          onClick={() => handleClick()}
         />
 
         <div className="w-full h-[1px] bg-bcolor my-[30px]" />
@@ -174,9 +142,7 @@ export default function StakeLanding({
         <div
           className={twMerge(
             'bg-secondary rounded-lg border p-1 mt-10',
-            token.name === 'ALP'
-              ? 'border-double border-[#3c2ed25f]'
-              : 'border-double border-[#da1a305f]',
+            'border-double border-[#da1a305f]',
           )}
         >
           <Table
@@ -209,46 +175,6 @@ export default function StakeLanding({
           />
         </div>
       </div>
-    );
-  };
-
-  return (
-    <div className="flex h-full flex-col sm:flex-row justify-between">
-      <>
-        <Image
-          src={alpMonster}
-          alt="ALP Monster"
-          className="absolute bottom-0 left-0 w-1/2 grayscale select-none scale-[0.75]"
-        />
-        <div
-          className="hidden sm:block absolute left-0 top-0 w-1/2 h-full flex-1 opacity-60"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 100%, #050D14 50%, #10112A 100%)',
-          }}
-        ></div>
-
-        {LANDING(TOKENS[0])}
-      </>
-
-      <div className="w-full h-[2px] sm:w-[1px] sm:h-full bg-gradient-to-r sm:bg-gradient-to-t from-[#307BEB] to-[#F05634] z-10 opacity-50" />
-
-      <>
-        <Image
-          src={adxMonster}
-          alt="ADX Monster"
-          className="absolute bottom-10 right-32 w-1/2 grayscale select-none"
-        />
-        <div
-          className="hidden sm:block absolute right-0 top-0 w-1/2 h-full flex-1 opacity-60"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 100%, #050D14 50%, #2A1010 100%)',
-          }}
-        ></div>
-
-        {LANDING(TOKENS[1])}
-      </>
     </div>
   );
 }
