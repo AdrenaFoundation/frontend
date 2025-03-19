@@ -9,7 +9,11 @@ import Loader from '@/components/Loader/Loader';
 import DataApiClient from '@/DataApiClient';
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
 import { Trader } from '@/types';
-import { formatNumberShort, getAbbrevWalletAddress } from '@/utils';
+import {
+  formatNumberShort,
+  formatPriceInfo,
+  getAbbrevWalletAddress,
+} from '@/utils';
 
 const AllUserProfileStatsChart = ({
   filteredProfiles,
@@ -23,22 +27,23 @@ const AllUserProfileStatsChart = ({
   const [endDate, setEndDate] = useState<string>(new Date().toISOString());
   const [traders, setTraders] = useState<Trader[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [activeMetric, setActiveMetric] = useState<string>('volume');
   const [error, setError] = useState<string | null>(null);
-  const [selectedCustomStartDate, setSelectedCustomStartDate] = useState<string>(
-    new Date('01/01/24').toISOString(),
-  );
+  const [selectedCustomStartDate, setSelectedCustomStartDate] =
+    useState<string>(new Date('01/01/24').toISOString());
   const [selectedCustomEndDate, setSelectedCustomEndDate] = useState<string>(
     new Date().toISOString(),
   );
-
-
 
   useEffect(() => {
     fetchTraders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate]);
 
-  const fetchTraders = async (customStartDate?: string, customEndDate?: string) => {
+  const fetchTraders = async (
+    customStartDate?: string,
+    customEndDate?: string,
+  ) => {
     try {
       setIsLoading(true);
       const response = await DataApiClient.getTraders({
@@ -100,8 +105,14 @@ const AllUserProfileStatsChart = ({
           ];
 
           const color = (() => {
-            const colorIndex = Math.floor(winRate / 12.5);
-            return colorArray[colorIndex];
+            if (pnl < -50_000) return colorArray[0];
+            if (pnl < -10_000) return colorArray[1];
+            if (pnl < -1000) return colorArray[2];
+            if (pnl < 0) return colorArray[3];
+            if (pnl < 1000) return colorArray[4];
+            if (pnl < 10_000) return colorArray[5];
+            if (pnl < 50_000) return colorArray[6];
+            return colorArray[7];
           })();
 
           return {
@@ -113,6 +124,7 @@ const AllUserProfileStatsChart = ({
                 key,
                 name,
                 pubkey,
+                winRate,
                 volume,
                 fees,
                 pnl,
@@ -189,7 +201,7 @@ const AllUserProfileStatsChart = ({
         {selectedRange === 'Custom' ? (
           <div className="flex flex-row gap-3 p-2 sm:pl-0">
             <DatePicker
-              selected={new Date(startDate)}
+              selected={new Date(selectedCustomStartDate)}
               onChange={(date: Date | null) => {
                 if (date) {
                   setSelectedCustomStartDate(date.toISOString());
@@ -200,7 +212,7 @@ const AllUserProfileStatsChart = ({
               maxDate={new Date()}
             />
             <DatePicker
-              selected={new Date(endDate)}
+              selected={new Date(selectedCustomEndDate)}
               onChange={(date: Date | null) => {
                 if (date) {
                   setSelectedCustomEndDate(date.toISOString());
@@ -210,7 +222,12 @@ const AllUserProfileStatsChart = ({
               minDate={new Date('2023-09-25')}
               maxDate={new Date()}
             />
-            <Button title="Apply" onClick={() => fetchTraders(selectedCustomStartDate, selectedCustomEndDate)} />
+            <Button
+              title="Apply"
+              onClick={() =>
+                fetchTraders(selectedCustomStartDate, selectedCustomEndDate)
+              }
+            />
           </div>
         ) : (
           <p className="font-mono p-2 sm:pr-4 sm:pl-0 opacity-50">
@@ -229,7 +246,25 @@ const AllUserProfileStatsChart = ({
         )}
       </div>
 
-      {error && <div className="text-red-500 font-mono my-3 text-center">{error}</div>}
+      <div className="flex flex-row gap-3 mb-3">
+        <p className="opacity-25">show: </p>
+        {['pnl', 'volume'].map((metric, i) => (
+          <p
+            className={twMerge(
+              'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300 font-regular text-sm',
+              activeMetric === metric && 'opacity-100 underline',
+            )}
+            onClick={() => setActiveMetric(metric)}
+            key={i}
+          >
+            {metric}
+          </p>
+        ))}
+      </div>
+
+      {error && (
+        <div className="text-red-500 font-mono my-3 text-center">{error}</div>
+      )}
 
       {!isLoading ? (
         <ResponsiveContainer width="100%" height="100%">
@@ -239,7 +274,6 @@ const AllUserProfileStatsChart = ({
             data={data}
             dataKey="volume"
             isAnimationActive={false}
-            fill="#8884d8"
             stroke="#fff"
             content={
               <CustomizedContent
@@ -255,6 +289,7 @@ const AllUserProfileStatsChart = ({
                 pnl={null}
                 volume={null}
                 name={''}
+                showVolume={activeMetric === 'volume'}
               />
             }
             onClick={(e) => {
@@ -302,54 +337,79 @@ const CustomizedContent: React.FC<{
   index: number;
   payload: unknown;
   color: string;
-  pnl: string | null;
+  pnl: number | null;
   volume: number | null;
   name: string;
-}> = ({ depth, x, y, width, height, index, color, volume, name }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  showVolume: boolean;
+}> = ({
+  depth,
+  x,
+  y,
+  width,
+  height,
+  index,
+  color,
+  volume,
+  pnl,
+  name,
+  showVolume = true,
+}) => {
+    const [isHovered, setIsHovered] = useState(false);
 
-  return (
-    <g
-      key={`node-${index}-${depth}-${name}`}
-      className={twMerge('relative', depth > 1 ? 'cursor-pointer' : '')}
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
-    >
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        style={{
-          fill: color,
-          stroke: '#fff',
-          strokeWidth: depth === 1 ? 5 : 1,
-          strokeOpacity: 1,
-          opacity: isHovered ? 1 : 0.9,
+    return (
+      <g
+        key={`node-${index}-${depth}-${name}`}
+        className={twMerge('relative', depth > 1 ? 'cursor-pointer' : '')}
+        onMouseEnter={() => {
+          setIsHovered(true);
         }}
-      />
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
+      >
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          style={{
+            fill: color,
+            stroke: '#fff',
+            strokeWidth: depth === 1 ? 5 : 1,
+            strokeOpacity: 1,
+            opacity: isHovered ? 1 : 0.9,
+          }}
+        />
 
-      {depth === 2 && width > 100 && volume !== null ? (
-        <text
-          x={x + width / 2}
-          y={y + height / 2 + 7}
-          textAnchor="middle"
-          fill="#fff"
-          fontSize={14}
-        >
-          ${formatNumberShort(volume)}
-        </text>
-      ) : null}
+        {depth === 2 && width > 75 && showVolume && volume !== null ? (
+          <text
+            x={x + width / 2}
+            y={y + height / 2 + 7}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={14}
+          >
+            ${formatNumberShort(Number(volume))}
+          </text>
+        ) : null}
 
-      {name ? (
-        <text x={x + 10} y={y + 22} fill="#fff" fontSize={12} fillOpacity={0.5}>
-          {name}
-        </text>
-      ) : null}
-    </g>
-  );
-};
+        {depth === 2 && width > 75 && !showVolume && pnl !== null ? (
+          <text
+            x={x + width / 2}
+            y={y + height / 2 + 7}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={14}
+          >
+            {formatPriceInfo(pnl)}
+          </text>
+        ) : null}
+
+        {name && width > 100 ? (
+          <text x={x + 10} y={y + 22} fill="#fff" fontSize={14} fillOpacity={0.5}>
+            {name}
+          </text>
+        ) : null}
+      </g>
+    );
+  };
