@@ -125,7 +125,7 @@ export default function BasicMonitoring({
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.85em] sm:text-[0.85em]'
-              tippyInfo='Average yield for 180d staked ALP in the last 7 days'
+              tippyInfo='Average yield for ALP in the last 7 days'
             />
 
             <NumberDisplay

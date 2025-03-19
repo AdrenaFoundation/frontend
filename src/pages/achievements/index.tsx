@@ -1,8 +1,10 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { AnimatePresence, motion } from 'framer-motion';
-import banner from '@/../../public/images/referral-wallpaper.jpg';
+import banner from '@/../../public/images/achievements-book-wallpaper.jpg';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
+import { ACHIEVEMENTS } from '@/constant';
+import Achievement from '@/components/pages/achievements/Achievement';
 
 export default function Achievements() {
     return (
@@ -22,10 +24,11 @@ export default function Achievements() {
                                     src={banner}
                                     alt="Achievements banner"
                                     className="absolute top-0 left-0 w-full h-full object-cover opacity-30 rounded-tl-xl rounded-tr-xl"
-                                    style={{ objectPosition: "50% 80%" }}
+                                    style={{ objectPosition: "50% 50%" }}
                                 />
                             </motion.span>
                         </AnimatePresence>
+
                         <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
                         <div className="absolute top-0 right-0 w-[10em] h-full bg-gradient-to-r from-transparent to-secondary z-10" />
                         <div className="absolute top-0 left-0 w-[10em] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
@@ -38,15 +41,24 @@ export default function Achievements() {
                                 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
                             )}
                         >
-                            Achievements
+                            Book of Achievements
                         </h1>
 
                         <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>
-                            Show the world what you are capable of
+                            Collect them all
                         </h4>
                     </div>
                 </div>
 
+                <div className='font-archivo pt-8 pb-8 text-txtfade'>The book is being written, achievements will unlocks automatically soon.</div>
+
+                <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4'>
+                    {ACHIEVEMENTS.map((achievement) => <Achievement
+                        unlocked={false}
+                        achievement={achievement}
+                        key={achievement.title}
+                    />)}
+                </div>
             </StyledContainer>
         </div>
     );
