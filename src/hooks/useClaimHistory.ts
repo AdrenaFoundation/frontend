@@ -29,8 +29,8 @@ export default function useClaimHistory(walletAddress: string | null): {
     if (!walletAddress) return null;
 
     const response = await fetch(
-      // `https://datapi.adrena.xyz/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
-      `http://localhost:8080/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
+      `https://datapi.adrena.xyz/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
+      // `http://localhost:8080/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
     );
 
     if (!response.ok) {
