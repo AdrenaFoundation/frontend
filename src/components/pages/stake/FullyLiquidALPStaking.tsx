@@ -219,11 +219,11 @@ export default function FullyLiquidALPStaking({
                     <div className="h-[1px] bg-bcolor w-full my-2" />
 
                     <p className="opacity-75 text-base p-3 flex flex-col gap-2 text-center">
-                        <span className='text-base'>Starting 19th march 2025, 00:00 UTC, ALP is becoming fully liquid and ALP staking system is discontinued.</span>
+                        <span className='text-base'>Starting 19th march 2025, 12:00 UTC, ALP becomes fully liquid and ALP staking system is discontinued.</span>
 
-                        <span className='text-base'>All existing staking to be unlocked for free with no more liquidity mining nor USDC yield redistributed to stakers.</span>
+                        <span className='text-base'>All existing stakes to be unlocked for free (no more liquidity mining nor USDC yield redistributed).</span>
 
-                        <span className='text-base'>Fully liquid ALP to enable DeFi integrations like looping and other strategies while boosting native yield through autocompounding.</span>
+                        <span className='text-base'>Fully liquid ALP will enable DeFi integrations like looping and other strategies while boosting native yield through autocompounding.</span>
                     </p>
 
                     <div className="h-[1px] bg-bcolor w-full my-2" />
