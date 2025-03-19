@@ -267,6 +267,7 @@ export default function BurgerMenu({
                           height={12}
                         />
                       )}
+
                       <Link
                         href={page.link}
                         className="block font-medium"
@@ -274,6 +275,7 @@ export default function BurgerMenu({
                       >
                         {page.name}
                       </Link>
+
                       {page.name === 'Ranked' && (
                         <Image
                           src={competitionIcon}

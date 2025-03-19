@@ -121,11 +121,11 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[12em]'
+              className='border-0 min-w-[12em] blur-md'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.85em] sm:text-[0.85em]'
-              tippyInfo='Average yield for 180d staked ALP in the last 7 days'
+              tippyInfo='Average yield for ALP in the last 7 days'
             />
 
             <NumberDisplay

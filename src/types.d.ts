@@ -491,6 +491,7 @@ export type ClaimApi = {
   created_at: string; // ISO date-time string
   mint: string;
   source: "manual" | "auto";
+  adx_price_at_claim: number;
 };
 
 export type ClaimHistoryApi = {
@@ -511,6 +512,7 @@ export type ClaimHistoryExtended = {
   source: "manual" | "auto";
   symbol: string;
   transaction_date: Date;
+  adx_price_at_claim: number;
 };
 
 type AchievementsBase = {
@@ -1371,4 +1373,26 @@ export type CustodyInfoResponse = {
   owned?: { [key: string]: string[] };
   locked?: { [key: string]: string[] };
   [key: string]: unknown;
+};
+
+export type AchievementCategory =
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "diamond";
+
+export type AchievementPoints = 5 | 10 | 15 | 25 | 50 | 100 | 200;
+
+export type AchievementInfo = {
+  index: number;
+  title: string;
+  description: string;
+  story: string;
+  image: string;
+  points: AchievementPoints;
+  pfpUnlock?: string;
+  titleUnlock?: string;
+  wallpaperUnlock?: string;
+  category: AchievementCategory;
 };

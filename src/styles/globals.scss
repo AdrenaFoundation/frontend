@@ -53,60 +53,60 @@
 
 @layer base {
   @font-face {
-    font-family: 'Archivo Black';
+    font-family: "Archivo Black";
     font-weight: 400;
     font-style: normal;
-    src: url('/fonts/ArchivoBlack-Regular.ttf') format('truetype');
+    src: url("/fonts/ArchivoBlack-Regular.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Archivo Regular';
+    font-family: "Archivo Regular";
     font-weight: 400;
     font-style: normal;
-    src: url('/fonts/Archivo-Regular.ttf') format('truetype');
+    src: url("/fonts/Archivo-Regular.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 400;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-Regular.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-Regular.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 500;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-Medium.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-Medium.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 600;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-SemiBold.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-SemiBold.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 700;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-Bold.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-Bold.ttf") format("truetype");
   }
 
   @font-face {
     font-family: special;
-    src: url('/fonts/Oswald-Bold.ttf');
+    src: url("/fonts/Oswald-Bold.ttf");
   }
 
   @font-face {
     font-family: regular;
-    src: url('/fonts/Inter_18pt-Light.ttf');
+    src: url("/fonts/Inter_18pt-Light.ttf");
   }
 
   @font-face {
     font-family: boldy;
-    src: url('/fonts/Inter_18pt-Regular.ttf');
+    src: url("/fonts/Inter_18pt-Regular.ttf");
   }
 
   div {
@@ -185,7 +185,7 @@ body,
   min-width: 375px;
   min-height: 100vh;
   background-color: #050f19;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 // Hide arrows on input number
@@ -200,7 +200,7 @@ html.theme-dark .group-MBOVGQRI {
   background-color: red !important;
 }
 /* Firefox */
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -245,7 +245,7 @@ input[type='number'] {
   }
 }
 
-input[type='radio'] {
+input[type="radio"] {
   appearance: none;
   background-color: transparent;
   margin: 0;
@@ -258,13 +258,13 @@ input[type='radio'] {
   box-shadow: 0 0 0 0px var(--color-dark) inset;
 }
 
-input[type='radio']:checked {
+input[type="radio"]:checked {
   background-color: var(--color-light);
   border: 1px solid var(--color-light);
   box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
 
-input[type='checkbox'] {
+input[type="checkbox"] {
   appearance: none;
   background-color: transparent;
   margin: 0;
@@ -276,7 +276,7 @@ input[type='checkbox'] {
   transition: 0.3s var(--bezier-spring);
 }
 
-input[type='checkbox']:checked {
+input[type="checkbox"]:checked {
   background-color: var(--color-light);
   border: 1px solid var(--color-light);
 }
@@ -349,7 +349,7 @@ input[type='checkbox']:checked {
 /* Works on Firefox */
 .custom-chat-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #E2464A80 #0F0F19; /* Thumb color, Track color */
+  scrollbar-color: #e2464a80 #0f0f19; /* Thumb color, Track color */
 }
 
 /* Works on Chrome, Edge, and Safari */
@@ -358,13 +358,13 @@ input[type='checkbox']:checked {
 }
 
 .custom-chat-scrollbar::-webkit-scrollbar-track {
-  background: #0F0F19; /* color of the tracking area */
+  background: #0f0f19; /* color of the tracking area */
 }
 
 .custom-chat-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #E2464A; /* color of the scroll thumb */
+  background-color: #e2464a; /* color of the scroll thumb */
   border-radius: 6px; /* roundness of the scroll thumb */
-  border: 2px solid #0F0F19; /* creates padding around scroll thumb */
+  border: 2px solid #0f0f19; /* creates padding around scroll thumb */
 }
 
 .Toastify__toast-container--bottom-left {
@@ -376,7 +376,7 @@ input[type='checkbox']:checked {
 }
 
 .archivo-black {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: "Archivo Black", sans-serif;
   font-weight: 600;
 }
 
@@ -425,4 +425,137 @@ img {
     color: #fff;
     opacity: 0.5;
   }
+}
+
+@property --bg-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: "<angle>";
+}
+
+@keyframes spin {
+  to {
+    --bg-angle: 360deg;
+  }
+}
+
+.animated-border-bronze {
+  animation: spin 7s infinite linear;
+
+  background:
+    linear-gradient(to bottom, #603600, #402400) padding-box,
+    conic-gradient(
+        from var(--bg-angle),
+        #d28b47,
+        #b46a30,
+        #804a00,
+        #603600,
+        #402400,
+        #804a00,
+        #b46a30,
+        #d28b47
+      )
+      border-box;
+
+  border: 0.3em solid transparent;
+}
+
+.animated-border-silver {
+  animation: spin 7s infinite linear;
+
+  background:
+    linear-gradient(to bottom, #9c9398, #6f6a6d) padding-box,
+    conic-gradient(
+        from var(--bg-angle),
+        #e5e3e4,
+        /* Brightest silver highlight */ #d1c7cb,
+        /* Mid-tone polished silver */ #c3b7ba,
+        /* Base silver */ #9c9398,
+        /* Darker silver */ #6f6a6d,
+        /* Deep metallic gray */ #9c9398,
+        /* Darker silver */ #c3b7ba,
+        /* Base silver */ #e5e3e4 /* Brightest highlight */
+      )
+      border-box;
+
+  border: 0.3em solid transparent;
+}
+
+.animated-border-gold {
+  animation: spin 7s infinite linear;
+
+  background:
+    linear-gradient(to bottom, #a78948, #7a632d) padding-box,
+    conic-gradient(
+        from var(--bg-angle),
+        #f2d97d,
+        /* Brightest gold highlight */ #e5c76d,
+        /* Mid-tone rich gold */ #c3a764,
+        /* Base gold */ #a78948,
+        /* Darker gold */ #7a632d,
+        /* Deep antique gold */ #a78948,
+        /* Darker gold */ #c3a764,
+        /* Base gold */ #f2d97d /* Brightest highlight */
+      )
+      border-box;
+
+  border: 0.3em solid transparent;
+}
+
+.animated-border-platinum {
+  animation: spin 7s infinite linear;
+
+  background:
+    linear-gradient(to bottom, #40b894, #2e826c) padding-box,
+    conic-gradient(
+        from var(--bg-angle),
+        #a3f3db,
+        /* Brightest platinum highlight */ #7be5c4,
+        /* Mid-tone polished platinum */ #54d6ac,
+        /* Base platinum */ #40b894,
+        /* Deeper platinum tone */ #2e826c,
+        /* Darkest metallic shadow */ #40b894,
+        /* Deeper platinum tone */ #54d6ac,
+        /* Base platinum */ #a3f3db /* Brightest highlight */
+      )
+      border-box;
+
+  border: 0.3em solid transparent;
+}
+
+.animated-border-diamond {
+  animation: spin 7s infinite linear;
+
+  background:
+    linear-gradient(to bottom, #a3e6e1, #6fb3af) padding-box,
+    conic-gradient(
+        from var(--bg-angle),
+        #ffffff,
+        /* Pure white highlight for shine */ #dafdfb,
+        /* Soft glow reflection */ #ccfffb,
+        /* Base diamond color */ #a3e6e1,
+        /* Deeper icy tone */ #6fb3af,
+        /* Subtle darker blue-gray */ #a3e6e1,
+        /* Deeper icy tone */ #ccfffb,
+        /* Base diamond */ #ffffff /* Pure white highlight */
+      )
+      border-box;
+
+  border: 0.3em solid transparent;
+}
+
+@keyframes breathing {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.breathing-image {
+  animation: breathing 10s ease-out infinite;
 }

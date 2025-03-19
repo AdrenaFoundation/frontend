@@ -164,14 +164,29 @@ export default function WalletAdapter({
                 >
                   Profile
                 </MenuItem>
+
                 <MenuSeparator />
+
+                <MenuItem
+                  onClick={() => {
+                    router.push('/achievements');
+                  }}
+                  className="py-2"
+                >
+                  Achievements
+                </MenuItem>
+
+                <MenuSeparator />
+
                 <MenuItem
                   className="py-2"
                   onClick={() => setIsPriorityFeeModalOpen?.(true)}
                 >
                   Priority Fee
                 </MenuItem>
+
                 <MenuSeparator />
+
                 <MenuItem
                   className="py-2"
                   onClick={() => {

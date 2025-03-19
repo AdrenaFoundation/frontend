@@ -25,6 +25,7 @@ export default function MobileNavbar({
             'Learn',
             'Profile',
             userVest || userDelegatedVest ? null : 'Vest',
+            'Achievements'
           ].includes(p.name),
       ).map((page) => {
         return (

@@ -49,6 +49,8 @@ const genesisEndDate = new Date(1742385600000);
 const genesisAdxRewards = 50_000_000;
 const genesisEmissionPerDay = genesisAdxRewards / ((genesisEndDate.getTime() - genesisStartDate.getTime()) / (1000 * 60 * 60 * 24));
 
+export const fullyLiquidALPStaking = new Date(1742385600000);
+
 export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
   const emissions: Emissions = useMemo(() => {
     // Generate all timestamps
@@ -100,7 +102,11 @@ export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
         return;
       }
 
-      emission.alpLiquidityMining = alpLmPerDayDyn;
+      if (emission.date.getTime() >= fullyLiquidALPStaking.getTime()) {
+        emission.alpLiquidityMining = 0;
+      } else {
+        emission.alpLiquidityMining = alpLmPerDayDyn;
+      }
       emission.adxLiquidityMining = adxLmPerDayDyn;
     });
 
