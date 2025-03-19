@@ -149,10 +149,9 @@ export default function FullyLiquidALPStaking({
 
     const calculateMedianStakedTime = sortedLockedStakes.reduce((median, lockedStake) => {
         const amount = nativeToUi(lockedStake.amount, 6);
-
         return {
             acc: median.acc + amount * (fullyLiquidALPStaking.getTime() - lockedStake.stakeTime.toNumber() * 1000),
-            total: amount,
+            total: median.total + amount,
         };
     }, {
         acc: 0,
@@ -160,7 +159,7 @@ export default function FullyLiquidALPStaking({
     });
 
     const medianStakedTime = calculateMedianStakedTime.total ? calculateMedianStakedTime.acc / calculateMedianStakedTime.total : 0;
-
+    console.log(calculateMedianStakedTime.total)
     const downloadClaimHistory = useCallback(() => {
         if (!claimsHistory) {
             return;
