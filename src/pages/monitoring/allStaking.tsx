@@ -25,8 +25,10 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
     return (
         <div className="flex flex-col gap-2 p-2 items-center justify-center">
             <StyledContainer className="p-4">
-                <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-                    <AprLpChart isSmallScreen={isSmallScreen} />
+                <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em] ">
+                    <div className='blur-md'>
+                        <AprLpChart isSmallScreen={isSmallScreen} />
+                    </div>
                     <AprLmChart isSmallScreen={isSmallScreen} />
                 </div>
             </StyledContainer>

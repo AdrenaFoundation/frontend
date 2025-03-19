@@ -20,7 +20,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
 
     // custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<string | null>('3M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
