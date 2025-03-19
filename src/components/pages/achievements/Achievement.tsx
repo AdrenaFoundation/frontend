@@ -43,7 +43,7 @@ export default function Achievement({
             <div className="absolute inset-0 bg-gradient-to-b from-[#E6C200] to-[#1c1c1c] opacity-10" />
 
             <div
-                className={twMerge("relative w-[10em] h-[9.3em] mt-4 sm:mt-0 sm:w-[11em] sm:h-[8.7em] rounded-lg overflow-hidden", `animated-border-${achievement.category}`)}
+                className={twMerge("relative w-[10em] h-[9.3em] mt-4 sm:mt-0 sm:w-[12.5em] sm:h-[9.7em] rounded-lg overflow-hidden", `animated-border-${achievement.category}`)}
             >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -69,8 +69,8 @@ export default function Achievement({
             </div>
 
             <div className='flex flex-col w-full h-full items-center'>
-                <div className="flex flex-col w-full h-full grow justify-between gap-4 sm:gap-0 pl-4">
-                    <div className="text-sm sm:text-base font-archivo text-center h-[3em] shrink pl-2 pr-2 flex items-center justify-center bg-third w-[28em] ml-auto mr-auto">
+                <div className="flex flex-col w-full h-full grow justify-between gap-4 sm:gap-0">
+                    <div className="text-sm sm:text-base font-archivo text-center h-[3em] shrink pl-2 pr-2 flex items-center justify-center bg-third w-[27em] ml-auto mr-auto">
                         {achievement.title}
                     </div>
 
@@ -82,7 +82,9 @@ export default function Achievement({
                         {achievement.story}
                     </div>
 
-                    <div className='font-boldy text-xs sm:text-xxs text-txtfade tracking-tighter w-[4.9em] h-[4em] absolute top-0 right-0 items-center justify-center flex'>{achievement.index} / {ACHIEVEMENTS.length}</div>
+                    <div className='font-boldy text-xs sm:text-xxs text-txtfade tracking-tighter w-[5em] h-[4em] absolute top-0 right-0 items-center justify-center flex'>
+                        {achievement.index} / {ACHIEVEMENTS.length}
+                    </div>
                 </div>
 
                 <div className='h-[2em] shrink-0 flex items-center gap-1 mb-2 sm:mb-0'>
