@@ -391,18 +391,14 @@ export default function OwnerBloc({
 
           <div className='flex gap-x-2 items-end relative bottom-1'>
             <span className='text-lg font-cursive relative top-1'>&quot;</span>
-            <span className='text-sm font-archivoblack'>Nameless One</span>
+            <span className='text-sm font-archivoblack'>{USER_PROFILE_TITLES[userProfile.title]}</span>
             <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
 
             {canUpdateNickname && userProfile.version > 1 ? (
-              <Tippy
-                content={
-                  <div className="text-sm">Coming soon</div>
-                }
-                placement="auto"
-              >
-                <div className='text-xs opacity-70 cursor-not-allowed hover:opacity-100 relative'>Edit</div>
-              </Tippy>
+              <div
+                className='text-xs opacity-70 cursor-pointer hover:opacity-100 relative'
+                onClick={() => setIsUpdatingMetadata(true)}
+              >Edit</div>
             ) : null}
           </div>
 
