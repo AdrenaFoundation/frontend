@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
@@ -11,10 +11,12 @@ import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
-import { PROFILE_PICTURES, WALLPAPER } from '@/constant';
+import { ACHIEVEMENTS, PROFILE_PICTURES, WALLPAPERS } from '@/constant';
 import { ProfilePicture, UserProfileExtended, Wallpaper } from '@/types';
 
 import walletIcon from '../../../../public/images/wallet-icon.svg';
+import lockIcon from '../../../../public/images/Icons/lock.svg';
+import Achievement from '../achievements/Achievement';
 
 export default function OwnerBloc({
   userProfile,
@@ -134,6 +136,46 @@ export default function OwnerBloc({
       });
   }, [trimmedUpdatedNickname]);
 
+  const unlockedPfpIndexes = useMemo(() => {
+    return Object.keys(PROFILE_PICTURES).reduce((unlocked, i) => {
+      const index = Number(i);
+      // Look if there is an achievement that unlocks this profile picture
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === index);
+
+      if (!achievement) {
+        // No requirement for the PFP
+        return [...unlocked, index];
+      }
+
+      // Check if the user have the Achievement
+      if (userProfile.achievements?.[index]) {
+        return [...unlocked, index];
+      }
+
+      return unlocked;
+    }, [] as number[]);
+  }, [userProfile.achievements]);
+
+  const unlockedWallpapers = useMemo(() => {
+    return Object.keys(WALLPAPERS).reduce((unlocked, i) => {
+      const index = Number(i);
+      // Look if there is an achievement that unlocks this wallpaper
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === index);
+
+      if (!achievement) {
+        // No requirement for the wallpaper
+        return [...unlocked, index];
+      }
+
+      // Check if the user have the Achievement
+      if (userProfile.achievements?.[index]) {
+        return [...unlocked, index];
+      }
+
+      return unlocked;
+    }, [] as number[]);
+  }, [userProfile.achievements]);
+
   return (
     <>
       <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#211a1a99]/50 rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
@@ -143,12 +185,13 @@ export default function OwnerBloc({
             onMouseLeave={() => setProfilePictureHovering(false)}
             onClick={() => setIsUpdatingMetadata(true)}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={PROFILE_PICTURES[userProfile.profilePicture]}
               alt="Profile picture"
               className='w-full h-full'
               width={250}
-              height={130}
+              height={250}
             />
 
             {profilePictureHovering && !readonly ? <>
@@ -225,7 +268,7 @@ export default function OwnerBloc({
           close={() => {
             setNicknameUpdating(false);
           }}
-          className="max-w-[100%] w-[30em] pl-8 pr-8 pt-5"
+          className="max-w-[100%] w-[30em] pl-8 pr-8 pt-5 overflow-y-none"
         >
           <div className="flex flex-col gap-3">
             <div className="text-sm flex w-full items-center justify-between">
@@ -296,68 +339,116 @@ export default function OwnerBloc({
           close={() => {
             setIsUpdatingMetadata(false);
           }}
-          className="max-w-[90%] w-[60em]"
+          className="max-w-[90%] w-[90em] h-full flex flex-col"
         >
-          <div className='mt-4 font-archivoblack w-full items-center flex justify-center text-white/80'>
-            Select Profile Picture
-          </div>
+          <div className='flex w-full h-[33em] flex-col lg:flex-row'>
+            <div className='flex flex-col w-full lg:w-1/2 max-h-[17em] lg:max-h-full'>
+              <div className='mt-4 mb-3 tracking-widest w-full items-center flex justify-center text-white/80'>
+                Select Profile Picture
+              </div>
 
-          <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4'>
-            {Object.entries(PROFILE_PICTURES).map(([v, path]) => {
-              return <div
-                key={v}
-                className={twMerge(
-                  'border-4 rounded-full w-[8em] h-[8em] left-[1.5em] top-[-0.8em] flex shrink-0 overflow-hidden z-30 cursor-pointer',
-                  updatingMetadata.profilePicture === (Number(v) as unknown as ProfilePicture) ? 'border-yellow-400/80' : 'border-[#ffffff20] grayscale hover:grayscale-0'
-                )}
-                onClick={() => {
-                  setUpdatingMetadata({
-                    profilePicture: (Number(v) as unknown as ProfilePicture),
-                    wallpaper: updatingMetadata.wallpaper,
-                  });
-                }}
-              >
-                <Image
-                  src={path}
-                  alt="Profile picture"
-                  className='w-full h-full'
-                  width={250}
-                  height={130}
-                />
-              </div>;
-            })}
-          </div>
+              <div className='w-full h-[1px] bg-bcolor flex mt-2' />
 
-          <div className='w-full h-[1px] bg-bcolor mt-2 mb-4' />
+              <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4 overflow-auto h-full max-h-full'>
+                {Object.entries(PROFILE_PICTURES).map(([v, path]) => {
+                  const unlocked = unlockedPfpIndexes.includes(Number(v));
 
-          <div className='mt-4 font-archivoblack w-full items-center flex justify-center text-white/80'>
-            Select Wallpaper
-          </div>
+                  return <Tippy
+                    content={`Unlocked by the achievement "${ACHIEVEMENTS.find(achievement => achievement.pfpUnlock === Number(v))?.title ?? ''}"`}
+                    key={v}
+                    disabled={unlocked}
+                  >
+                    <div
+                      key={v}
+                      className={twMerge(
+                        'border-4 rounded-lg w-[6em] h-[6em] sm:w-[7em] sm:h-[7em] md:w-[8em] md:h-[8em] lg:w-[10em] lg:h-[10em] flex shrink-0 overflow-hidden z-30 relative',
+                        updatingMetadata.profilePicture === (Number(v) as unknown as ProfilePicture) ? 'border-yellow-400/80' : 'border-[#ffffff20] grayscale',
+                        unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'grayscale cursor-disabled',
+                      )}
+                      onClick={() => {
+                        if (!unlocked) return;
 
-          <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4'>
-            {Object.entries(WALLPAPER).map(([v, path]) => {
-              return <div
-                key={v}
-                className={twMerge(
-                  'border-4 border-[#ffffff50] rounded-lg w-[15em] h-[7em] left-[1.5em] top-[-0.8em] flex shrink-0 overflow-hidden z-30 cursor-pointer',
-                  updatingMetadata.wallpaper === (Number(v) as unknown as Wallpaper) ? 'border-yellow-400/80' : 'border-[#ffffff20] grayscale hover:grayscale-0'
-                )}
-                onClick={() => {
-                  setUpdatingMetadata({
-                    profilePicture: updatingMetadata.profilePicture,
-                    wallpaper: (Number(v) as unknown as Wallpaper),
-                  });
-                }}
-              >
-                <Image
-                  src={path}
-                  alt="Wallpaper"
-                  className='w-full h-full'
-                  width={250}
-                  height={130}
-                />
-              </div>;
-            })}
+                        setUpdatingMetadata({
+                          profilePicture: (Number(v) as unknown as ProfilePicture),
+                          wallpaper: updatingMetadata.wallpaper,
+                        });
+                      }}
+                    >
+                      {!unlocked ? <Image
+                        className="absolute bottom-2 right-2 opacity-60 h-5 w-5"
+                        src={lockIcon}
+                        width={18}
+                        height={20}
+                        alt="lock icon"
+                      /> : null}
+
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={path}
+                        alt="Profile picture"
+                        className='w-full h-full'
+                        width={250}
+                        height={250}
+                      />
+                    </div>
+                  </Tippy>;
+                })}
+              </div>
+
+            </div>
+
+            <div className='flex flex-col w-full lg:w-1/2 max-h-[15em] lg:max-h-full'>
+              <div className='mt-4 mb-3 tracking-widest w-full items-center flex justify-center text-white/80'>
+                Select Wallpaper
+              </div>
+
+              <div className='w-full h-[1px] bg-bcolor flex mt-2' />
+
+              <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4 overflow-auto h-full'>
+                {Object.entries(WALLPAPERS).map(([v, path]) => {
+                  const unlocked = unlockedWallpapers.includes(Number(v));
+
+                  return <Tippy
+                    content={`Unlocked by the achievement "${ACHIEVEMENTS.find(achievement => achievement.wallpaperUnlock === Number(v))?.title ?? ''}"`}
+                    key={v}
+                    disabled={unlocked}
+                  >
+                    <div
+                      className={twMerge(
+                        'border-4 border-[#ffffff50] rounded-lg w-[12em] h-[5em] sm:w-[16em] sm:h-[7em] md:w-[20em] md:h-[9em] lg:w-[24em] lg:h-[10em] flex shrink-0 overflow-hidden z-30 cursor-pointer relative',
+                        updatingMetadata.wallpaper === (Number(v) as unknown as Wallpaper) ? 'border-yellow-400/80' : 'border-[#ffffff20]',
+                        unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'grayscale cursor-disabled',
+                      )}
+                      onClick={() => {
+                        if (!unlocked) return;
+
+                        setUpdatingMetadata({
+                          profilePicture: updatingMetadata.profilePicture,
+                          wallpaper: (Number(v) as unknown as Wallpaper),
+                        });
+                      }}
+                    >
+                      {!unlocked ? <Image
+                        className="absolute bottom-2 right-2 opacity-60 h-5 w-5"
+                        src={lockIcon}
+                        width={18}
+                        height={20}
+                        alt="lock icon"
+                      /> : null}
+
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={path}
+                        alt="Wallpaper"
+                        className='w-full h-full'
+                        width={900}
+                        height={600}
+                      />
+                    </div>
+                  </Tippy>;
+                })}
+              </div>
+            </div>
           </div>
 
           <div className='w-full h-[1px] bg-bcolor mt-2 mb-4' />

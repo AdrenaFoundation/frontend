@@ -1,5 +1,4 @@
 import { PublicKey } from '@solana/web3.js';
-import Image from 'next/image';
 import React, { useCallback, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -95,14 +94,17 @@ export default function MutagenLeaderboard({
                     key={d.nickname}
                 >
                     {d.profilePicture !== null ? (
-                        <Image
-                            src={PROFILE_PICTURES[d.profilePicture]}
-                            width={30}
-                            height={30}
-                            alt="rank"
-                            className="h-8 w-8 rounded-full opacity-80"
-                            key={d.nickname}
-                        />
+                        <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={PROFILE_PICTURES[d.profilePicture]}
+                                width={30}
+                                height={30}
+                                alt="rank"
+                                className="h-8 w-8 rounded-full opacity-80"
+                                key={d.nickname}
+                            />
+                        </>
                     ) : (
                         <div className="h-8 w-8 bg-third rounded-full" />
                     )}

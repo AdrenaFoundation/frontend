@@ -42,14 +42,17 @@ export default function ExpanseChampionshipLeaderboard({
 
                 <div className="flex flex-row gap-2 w-[10em] max-w-[10em] overflow-hidden items-center" key={`rank-${i}`}>
                     {d.profilePicture !== null && !filler ? (
-                        <Image
-                            src={PROFILE_PICTURES[d.profilePicture]}
-                            width={30}
-                            height={30}
-                            alt="rank"
-                            className="h-8 w-8 rounded-full opacity-80"
-                            key={`rank-${i}`}
-                        />
+                        <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={PROFILE_PICTURES[d.profilePicture]}
+                                width={30}
+                                height={30}
+                                alt="rank"
+                                className="h-8 w-8 rounded-full opacity-80"
+                                key={`rank-${i}`}
+                            />
+                        </>
                     ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
                     <div id={`user-season-${d.wallet.toBase58()}`}>
