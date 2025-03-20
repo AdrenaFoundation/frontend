@@ -3501,6 +3501,7 @@ export class AdrenaClient {
     stakedTokenMint,
     earlyExit = false,
     notification,
+    overrideRewardTokenAccount,
   }: {
     owner: PublicKey;
     resolved: boolean;
@@ -3509,6 +3510,7 @@ export class AdrenaClient {
     stakedTokenMint: PublicKey;
     earlyExit?: boolean;
     notification: MultiStepNotification;
+    overrideRewardTokenAccount?: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error("adrena program not ready");
@@ -3532,10 +3534,9 @@ export class AdrenaClient {
       preInstructions.push(instruction);
     }
 
-    const rewardTokenAccount = findATAAddressSync(
-      owner,
-      stakingRewardTokenMint,
-    );
+    const rewardTokenAccount =
+      overrideRewardTokenAccount ??
+      findATAAddressSync(owner, stakingRewardTokenMint);
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
     const staking = this.getStakingPda(stakedTokenMint);
@@ -3559,18 +3560,6 @@ export class AdrenaClient {
         mint: stakedTokenMint,
         preInstructions,
       });
-
-    console.log(">>>>>>>ZDKZOZD REMOVE LOCKED STAKE", {
-      owner: owner.toBase58(),
-      id: id.toString(),
-      stakedTokenMint: stakedTokenMint.toBase58(),
-      earlyExit,
-      stakingStakedTokenVault: stakingStakedTokenVault.toBase58(),
-      stakingRewardTokenVault: stakingRewardTokenVault.toBase58(),
-      stakingLmRewardTokenVault: stakingLmRewardTokenVault.toBase58(),
-      userStaking: userStaking.toBase58(),
-      lockedStakeIndex: lockedStakeIndex.toString(),
-    });
 
     const transaction = await this.adrenaProgram.methods
       .removeLockedStake({
