@@ -341,15 +341,15 @@ export default function OwnerBloc({
           }}
           className="max-w-[90%] w-[90em] h-full flex flex-col"
         >
-          <div className='flex w-full h-[33em] flex-col lg:flex-row'>
-            <div className='flex flex-col w-full lg:w-1/2 max-h-[17em] lg:max-h-full'>
+          <div className='flex w-full h-[33em] flex-col'>
+            <div className='flex flex-col w-full'>
               <div className='mt-4 mb-3 tracking-widest w-full items-center flex justify-center text-white/80'>
                 Select Profile Picture
               </div>
 
               <div className='w-full h-[1px] bg-bcolor flex mt-2' />
 
-              <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4 overflow-auto h-full max-h-full'>
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(7em,1fr))] overflow-auto max-h-[12em]">
                 {Object.entries(PROFILE_PICTURES).map(([v, path]) => {
                   const unlocked = unlockedPfpIndexes.includes(Number(v));
 
@@ -361,8 +361,8 @@ export default function OwnerBloc({
                     <div
                       key={v}
                       className={twMerge(
-                        'border-4 rounded-lg w-[6em] h-[6em] sm:w-[7em] sm:h-[7em] md:w-[8em] md:h-[8em] lg:w-[10em] lg:h-[10em] flex shrink-0 overflow-hidden z-30 relative',
-                        updatingMetadata.profilePicture === (Number(v) as unknown as ProfilePicture) ? 'border-yellow-400/80' : 'border-[#ffffff20] grayscale',
+                        'h-auto flex z-30 relative aspect-square',
+                        updatingMetadata.profilePicture === (Number(v) as unknown as ProfilePicture) ? 'border-4 border-yellow-400/80' : 'border-[#ffffff20] grayscale',
                         unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'grayscale cursor-disabled',
                       )}
                       onClick={() => {
@@ -386,7 +386,7 @@ export default function OwnerBloc({
                       <img
                         src={path}
                         alt="Profile picture"
-                        className='w-full h-full'
+                        className='h-full w-full'
                         width={250}
                         height={250}
                       />
@@ -397,14 +397,14 @@ export default function OwnerBloc({
 
             </div>
 
-            <div className='flex flex-col w-full lg:w-1/2 max-h-[15em] lg:max-h-full'>
+            <div className='flex flex-col w-full mt-6'>
               <div className='mt-4 mb-3 tracking-widest w-full items-center flex justify-center text-white/80'>
                 Select Wallpaper
               </div>
 
               <div className='w-full h-[1px] bg-bcolor flex mt-2' />
 
-              <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4 overflow-auto h-full'>
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(12em,1fr))] overflow-auto max-h-[12em]">
                 {Object.entries(WALLPAPERS).map(([v, path]) => {
                   const unlocked = unlockedWallpapers.includes(Number(v));
 
@@ -415,8 +415,8 @@ export default function OwnerBloc({
                   >
                     <div
                       className={twMerge(
-                        'border-4 border-[#ffffff50] rounded-lg w-[12em] h-[5em] sm:w-[16em] sm:h-[7em] md:w-[20em] md:h-[9em] lg:w-[24em] lg:h-[10em] flex shrink-0 overflow-hidden z-30 cursor-pointer relative',
-                        updatingMetadata.wallpaper === (Number(v) as unknown as Wallpaper) ? 'border-yellow-400/80' : 'border-[#ffffff20]',
+                        'h-auto flex z-30 relative aspect-[21/9]',
+                        updatingMetadata.wallpaper === (Number(v) as unknown as ProfilePicture) ? 'border-4 border-yellow-400/80' : 'border-[#ffffff20] grayscale',
                         unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'grayscale cursor-disabled',
                       )}
                       onClick={() => {
@@ -440,7 +440,7 @@ export default function OwnerBloc({
                       <img
                         src={path}
                         alt="Wallpaper"
-                        className='w-full h-full'
+                        className='h-full w-full'
                         width={900}
                         height={600}
                       />
