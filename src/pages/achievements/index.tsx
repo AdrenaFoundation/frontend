@@ -59,7 +59,7 @@ export default function Achievements({
 
                 <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4'>
                     {ACHIEVEMENTS.map((achievement) => <Achievement
-                        unlocked={userProfile ? (userProfile?.achievements[achievement.index - 1] ?? 0) > 0 : false}
+                        unlocked={userProfile ? (userProfile?.achievements[achievement.index] ?? 0) > 0 : false}
                         achievement={achievement}
                         key={`achievement-${achievement.index}`}
                     />)}
