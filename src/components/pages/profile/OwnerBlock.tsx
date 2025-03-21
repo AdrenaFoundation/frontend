@@ -14,8 +14,8 @@ import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo
 import { ACHIEVEMENTS, PROFILE_PICTURES, USER_PROFILE_TITLES, WALLPAPERS } from '@/constant';
 import { ProfilePicture, UserProfileExtended, UserProfileTitle, Wallpaper } from '@/types';
 
-import walletIcon from '../../../../public/images/wallet-icon.svg';
 import lockIcon from '../../../../public/images/Icons/lock.svg';
+import walletIcon from '../../../../public/images/wallet-icon.svg';
 
 export default function OwnerBloc({
   userProfile,
@@ -139,28 +139,8 @@ export default function OwnerBloc({
       });
   }, [trimmedUpdatedNickname]);
 
-  const unlockedPfpIndexes = useMemo(() => {
-    return Object.keys(PROFILE_PICTURES).reduce((unlocked, i) => {
-      const index = Number(i);
-      // Look if there is an achievement that unlocks this profile picture
-      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === index);
-
-      if (!achievement) {
-        // No requirement for the PFP
-        return [...unlocked, index];
-      }
-
-      // Check if the user have the Achievement
-      if (userProfile.achievements?.[index]) {
-        return [...unlocked, index];
-      }
-
-      return unlocked;
-    }, [] as number[]);
-  }, [userProfile.achievements]);
-
-  const unlockedWallpapers = useMemo(() => {
-    return Object.keys(WALLPAPERS).reduce((unlocked, i) => {
+  const wallpapersDOM = useMemo(() => {
+    const unlockedWallpapers = Object.keys(WALLPAPERS).reduce((unlocked, i) => {
       const index = Number(i);
       // Look if there is an achievement that unlocks this wallpaper
       const achievement = ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === index);
@@ -177,29 +157,7 @@ export default function OwnerBloc({
 
       return unlocked;
     }, [] as number[]);
-  }, [userProfile.achievements]);
 
-  const unlockedTitles = useMemo(() => {
-    return Object.keys(USER_PROFILE_TITLES).reduce((unlocked, i) => {
-      const index = Number(i);
-      // Look if there is an achievement that unlocks this title
-      const achievement = ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index);
-
-      if (!achievement) {
-        // No requirement for the title
-        return [...unlocked, index];
-      }
-
-      // Check if the user have the Achievement
-      if (userProfile.achievements?.[index]) {
-        return [...unlocked, index];
-      }
-
-      return unlocked;
-    }, [] as number[]);
-  }, [userProfile.achievements]);
-
-  const wallpapersDOM = useMemo(() => {
     return Object.entries(WALLPAPERS).map(([v, path]) => {
       const unlocked = unlockedWallpapers.includes(Number(v));
 
@@ -250,9 +208,27 @@ export default function OwnerBloc({
         </div>
       </Tippy>;
     });
-  }, [WALLPAPERS, unlockedWallpapers, updatingMetadata]);
+  }, [updatingMetadata, userProfile.achievements]);
 
   const profilePictureDOM = useMemo(() => {
+    const unlockedPfpIndexes = Object.keys(PROFILE_PICTURES).reduce((unlocked, i) => {
+      const index = Number(i);
+      // Look if there is an achievement that unlocks this profile picture
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === index);
+
+      if (!achievement) {
+        // No requirement for the PFP
+        return [...unlocked, index];
+      }
+
+      // Check if the user have the Achievement
+      if (userProfile.achievements?.[index]) {
+        return [...unlocked, index];
+      }
+
+      return unlocked;
+    }, [] as number[]);
+
     return Object.entries(PROFILE_PICTURES).map(([v, path]) => {
       const unlocked = unlockedPfpIndexes.includes(Number(v));
 
@@ -296,9 +272,27 @@ export default function OwnerBloc({
         </div>
       </Tippy>;
     });
-  }, [PROFILE_PICTURES, unlockedPfpIndexes, updatingMetadata]);
+  }, [updatingMetadata, userProfile.achievements]);
 
   const titlesDOM = useMemo(() => {
+    const unlockedTitles = Object.keys(USER_PROFILE_TITLES).reduce((unlocked, i) => {
+      const index = Number(i);
+      // Look if there is an achievement that unlocks this title
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index);
+
+      if (!achievement) {
+        // No requirement for the title
+        return [...unlocked, index];
+      }
+
+      // Check if the user have the Achievement
+      if (userProfile.achievements?.[index]) {
+        return [...unlocked, index];
+      }
+
+      return unlocked;
+    }, [] as number[]);
+
     return Object.entries(USER_PROFILE_TITLES).map(([v, title]) => {
       const unlocked = unlockedTitles.includes(Number(v));
 
@@ -329,7 +323,7 @@ export default function OwnerBloc({
         </div>
       </Tippy>;
     });
-  }, [USER_PROFILE_TITLES, unlockedTitles, updatingMetadata]);
+  }, [updatingMetadata, userProfile.achievements]);
 
   return (
     <>
