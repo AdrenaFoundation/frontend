@@ -63,7 +63,7 @@ export default function Achievement({
                     </Tippy>
 
                     {typeof achievement.titleUnlock !== 'undefined' ?
-                        <Tippy content={<div className='text-xs'>Unlocks title "{USER_PROFILE_TITLES[achievement.titleUnlock]}"</div>} className='z-20'>
+                        <Tippy content={<div className='text-xs'>Unlocks title &ldquo;{USER_PROFILE_TITLES[achievement.titleUnlock]}&ldquo;</div>} className='z-20'>
                             <div className='text-xxs font-mono text-white rounded-full bg-black w-[1.2em] h-[1.2em] flex items-center justify-center relative bottom-[0.1em]'>T</div>
                         </Tippy>
                         : null}
@@ -75,6 +75,7 @@ export default function Achievement({
                                     Unlocks a unique profile picture
                                 </div>
 
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     className={twMerge("w-[8em] h-[8em] border-2")}
                                     src={PROFILE_PICTURES[achievement.pfpUnlock]}
@@ -93,6 +94,7 @@ export default function Achievement({
                                     Unlocks a unique wallpaper
                                 </div>
 
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     className={twMerge("w-[14em] h-[6em] border-2")}
                                     src={WALLPAPERS[achievement.wallpaperUnlock]}
