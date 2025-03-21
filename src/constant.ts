@@ -598,7 +598,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     title: "Look at me, I'm the trader now!",
     description: "Execute your first perpetuals trade",
     story:
-      "Congrats! You've officially mutated into a trader… the markets won't know what hit 'em!",
+      "Congratulations! You've completed your first trade. The markets await your next move.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/1-look-at-me-now-pekTSNjN2sGH2JzlPIjK3tWREULk7D.jpg",
     points: 5,
