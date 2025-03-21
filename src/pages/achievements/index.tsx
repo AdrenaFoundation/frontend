@@ -55,13 +55,13 @@ export default function Achievements({
                     </div>
                 </div>
 
-                <div className='font-archivo pt-8 pb-8 text-txtfade'>The book is being written, achievements will unlocks automatically soon.</div>
+                <div className='font-archivo pt-8 pb-8 text-txtfade text-center'>The book is being written, achievements will unlocks automatically soon.</div>
 
                 <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4'>
                     {ACHIEVEMENTS.map((achievement) => <Achievement
                         unlocked={userProfile ? (userProfile?.achievements[achievement.index - 1] ?? 0) > 0 : false}
                         achievement={achievement}
-                        key={achievement.title}
+                        key={`achievement-${achievement.index}`}
                     />)}
                 </div>
             </StyledContainer>
