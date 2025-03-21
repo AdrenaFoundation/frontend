@@ -9,7 +9,7 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
-import { PROFILE_PICTURES, WALLPAPER } from "@/constant";
+import { PROFILE_PICTURES, WALLPAPERS } from "@/constant";
 import DataApiClient from "@/DataApiClient";
 import { useAllUserProfilesMetadata } from "@/hooks/useAllUserProfilesMetadata";
 import { useDispatch } from "@/store/store";
@@ -303,7 +303,7 @@ function Chat({
                                     style={{
                                         backgroundSize: 'cover',
                                         backgroundRepeat: 'no-repeat',
-                                        backgroundImage: `url(${WALLPAPER[
+                                        backgroundImage: `url(${WALLPAPERS[
                                             ((msg.wallet && userProfilesMap[msg.wallet]) ? ((userProfilesMap[msg.wallet] as UserProfileMetadata).wallpaper ?? 0) : 0) as Wallpaper
                                         ]})`,
                                     }} />
@@ -472,7 +472,7 @@ function Chat({
                                                 <>
                                                     <div className="h-full w-full absolute top-0 left-0 opacity-40"
                                                         style={{
-                                                            backgroundImage: `url(${WALLPAPER[
+                                                            backgroundImage: `url(${WALLPAPERS[
                                                                 ((user.wallet && userProfilesMap[user.wallet]) ? ((userProfilesMap[user.wallet] as UserProfileMetadata).wallpaper ?? 0) : 0) as Wallpaper
                                                             ]})`,
                                                             backgroundSize: 'cover',

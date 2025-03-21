@@ -674,6 +674,7 @@ export class AdrenaClient {
         "profilePicture" in p ? (p.profilePicture as ProfilePicture) : 0,
       wallpaper: "wallpaper" in p ? (p.wallpaper as Wallpaper) : 0,
       title: "title" in p ? (p.title as UserProfileTitle) : 0,
+      achievements: "achievements" in p ? p.achievements : [],
     };
   }
 

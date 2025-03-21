@@ -53,60 +53,60 @@
 
 @layer base {
   @font-face {
-    font-family: "Archivo Black";
+    font-family: 'Archivo Black';
     font-weight: 400;
     font-style: normal;
-    src: url("/fonts/ArchivoBlack-Regular.ttf") format("truetype");
+    src: url('/fonts/ArchivoBlack-Regular.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Archivo Regular";
+    font-family: 'Archivo Regular';
     font-weight: 400;
     font-style: normal;
-    src: url("/fonts/Archivo-Regular.ttf") format("truetype");
+    src: url('/fonts/Archivo-Regular.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     font-weight: 400;
     font-style: normal;
-    src: url("/fonts/Roboto-mono/RobotoMono-Regular.ttf") format("truetype");
+    src: url('/fonts/Roboto-mono/RobotoMono-Regular.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     font-weight: 500;
     font-style: normal;
-    src: url("/fonts/Roboto-mono/RobotoMono-Medium.ttf") format("truetype");
+    src: url('/fonts/Roboto-mono/RobotoMono-Medium.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     font-weight: 600;
     font-style: normal;
-    src: url("/fonts/Roboto-mono/RobotoMono-SemiBold.ttf") format("truetype");
+    src: url('/fonts/Roboto-mono/RobotoMono-SemiBold.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
     font-weight: 700;
     font-style: normal;
-    src: url("/fonts/Roboto-mono/RobotoMono-Bold.ttf") format("truetype");
+    src: url('/fonts/Roboto-mono/RobotoMono-Bold.ttf') format('truetype');
   }
 
   @font-face {
     font-family: special;
-    src: url("/fonts/Oswald-Bold.ttf");
+    src: url('/fonts/Oswald-Bold.ttf');
   }
 
   @font-face {
     font-family: regular;
-    src: url("/fonts/Inter_18pt-Light.ttf");
+    src: url('/fonts/Inter_18pt-Light.ttf');
   }
 
   @font-face {
     font-family: boldy;
-    src: url("/fonts/Inter_18pt-Regular.ttf");
+    src: url('/fonts/Inter_18pt-Regular.ttf');
   }
 
   div {
@@ -185,7 +185,7 @@ body,
   min-width: 375px;
   min-height: 100vh;
   background-color: #050f19;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 // Hide arrows on input number
@@ -200,7 +200,7 @@ html.theme-dark .group-MBOVGQRI {
   background-color: red !important;
 }
 /* Firefox */
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -245,7 +245,7 @@ input[type="number"] {
   }
 }
 
-input[type="radio"] {
+input[type='radio'] {
   appearance: none;
   background-color: transparent;
   margin: 0;
@@ -258,13 +258,13 @@ input[type="radio"] {
   box-shadow: 0 0 0 0px var(--color-dark) inset;
 }
 
-input[type="radio"]:checked {
+input[type='radio']:checked {
   background-color: var(--color-light);
   border: 1px solid var(--color-light);
   box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   appearance: none;
   background-color: transparent;
   margin: 0;
@@ -276,7 +276,7 @@ input[type="checkbox"] {
   transition: 0.3s var(--bezier-spring);
 }
 
-input[type="checkbox"]:checked {
+input[type='checkbox']:checked {
   background-color: var(--color-light);
   border: 1px solid var(--color-light);
 }
@@ -376,7 +376,7 @@ input[type="checkbox"]:checked {
 }
 
 .archivo-black {
-  font-family: "Archivo Black", sans-serif;
+  font-family: 'Archivo Black', sans-serif;
   font-weight: 600;
 }
 
@@ -430,7 +430,7 @@ img {
 @property --bg-angle {
   inherits: false;
   initial-value: 0deg;
-  syntax: "<angle>";
+  syntax: '<angle>';
 }
 
 @keyframes spin {
@@ -558,4 +558,257 @@ img {
 
 .breathing-image {
   animation: breathing 10s ease-out infinite;
+}
+
+/* Achievement category styling */
+
+/* Bronze achievement styling */
+.achievement-bronze {
+  --category-color: #b45309;
+  --category-light: #fbbf24;
+  --category-dark: #92400e;
+  --category-text: #fde68a;
+  --category-bg: rgba(146, 64, 14, 0.9);
+  --category-bg-light: rgba(180, 83, 9, 0.9);
+  --category-bg-footer: rgba(146, 64, 14, 0.3);
+  --category-indicator: #b45309;
+  --category-gradient: linear-gradient(
+    135deg,
+    rgba(180, 83, 9, 0.1),
+    rgba(251, 191, 36, 0.2),
+    rgba(146, 64, 14, 0.1)
+  );
+  --category-title-gradient: linear-gradient(
+    90deg,
+    rgba(146, 64, 14, 0.9),
+    rgba(180, 83, 9, 0.9),
+    rgba(146, 64, 14, 0.9)
+  );
+}
+
+/* Silver achievement styling */
+.achievement-silver {
+  --category-color: #94a3b8;
+  --category-light: #e2e8f0;
+  --category-dark: #475569;
+  --category-text: #f8fafc;
+  --category-bg: rgba(71, 85, 105, 0.9);
+  --category-bg-light: rgba(100, 116, 139, 0.9);
+  --category-bg-footer: rgba(71, 85, 105, 0.3);
+  --category-indicator: #94a3b8;
+  --category-gradient: linear-gradient(
+    135deg,
+    rgba(71, 85, 105, 0.1),
+    rgba(226, 232, 240, 0.2),
+    rgba(71, 85, 105, 0.1)
+  );
+  --category-title-gradient: linear-gradient(
+    90deg,
+    rgba(71, 85, 105, 0.9),
+    rgba(100, 116, 139, 0.9),
+    rgba(71, 85, 105, 0.9)
+  );
+}
+
+/* Gold achievement styling */
+.achievement-gold {
+  --category-color: #eab308;
+  --category-light: #fef08a;
+  --category-dark: #a16207;
+  --category-text: #fef9c3;
+  --category-bg: rgba(161, 98, 7, 0.9);
+  --category-bg-light: rgba(202, 138, 4, 0.9);
+  --category-bg-footer: rgba(161, 98, 7, 0.3);
+  --category-indicator: #eab308;
+  --category-gradient: linear-gradient(
+    135deg,
+    rgba(161, 98, 7, 0.1),
+    rgba(254, 240, 138, 0.2),
+    rgba(161, 98, 7, 0.1)
+  );
+  --category-title-gradient: linear-gradient(
+    90deg,
+    rgba(161, 98, 7, 0.9),
+    rgba(202, 138, 4, 0.9),
+    rgba(161, 98, 7, 0.9)
+  );
+}
+
+/* Platinum achievement styling */
+.achievement-platinum {
+  --category-color: #10b981;
+  --category-light: #a7f3d0;
+  --category-dark: #065f46;
+  --category-text: #d1fae5;
+  --category-bg: rgba(6, 95, 70, 0.9);
+  --category-bg-light: rgba(16, 185, 129, 0.9);
+  --category-bg-footer: rgba(6, 95, 70, 0.3);
+  --category-indicator: #10b981;
+  --category-gradient: linear-gradient(
+    135deg,
+    rgba(6, 95, 70, 0.1),
+    rgba(167, 243, 208, 0.2),
+    rgba(6, 95, 70, 0.1)
+  );
+  --category-title-gradient: linear-gradient(
+    90deg,
+    rgba(6, 95, 70, 0.9),
+    rgba(16, 185, 129, 0.9),
+    rgba(6, 95, 70, 0.9)
+  );
+}
+
+/* Diamond achievement styling */
+.achievement-diamond {
+  --category-color: #06b6d4;
+  --category-light: #cffafe;
+  --category-dark: #0e7490;
+  --category-text: #ecfeff;
+  --category-bg: rgba(14, 116, 144, 0.9);
+  --category-bg-light: rgba(6, 182, 212, 0.9);
+  --category-bg-footer: rgba(14, 116, 144, 0.3);
+  --category-indicator: #06b6d4;
+  --category-gradient: linear-gradient(
+    135deg,
+    rgba(14, 116, 144, 0.1),
+    rgba(207, 250, 254, 0.2),
+    rgba(14, 116, 144, 0.1)
+  );
+  --category-title-gradient: linear-gradient(
+    90deg,
+    rgba(14, 116, 144, 0.9),
+    rgba(6, 182, 212, 0.9),
+    rgba(14, 116, 144, 0.9)
+  );
+}
+
+/* Locked achievement styling */
+.achievement-locked {
+  --category-color: #334155;
+  --category-light: #94a3b8;
+  --category-dark: #1e293b;
+  --category-text: #cbd5e1;
+  --category-bg: rgba(30, 41, 59, 0.9);
+  --category-bg-light: rgba(51, 65, 85, 0.9);
+  --category-bg-footer: rgba(30, 41, 59, 0.3);
+  --category-indicator: #475569;
+  --category-gradient: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.1),
+    rgba(148, 163, 184, 0.05),
+    rgba(30, 41, 59, 0.1)
+  );
+  --category-title-gradient: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0.9),
+    rgba(51, 65, 85, 0.9),
+    rgba(30, 41, 59, 0.9)
+  );
+}
+
+.achievement-card {
+  border: 2px solid var(--category-color);
+  position: relative;
+}
+
+.achievement-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--category-gradient);
+  pointer-events: none;
+}
+
+.achievement-title {
+  background: var(--category-title-gradient);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: all 0.5s ease;
+}
+
+.achievement-card:hover .achievement-title::after {
+  left: 150%;
+}
+
+.achievement-story {
+  color: var(--category-text);
+}
+
+.achievement-footer {
+  background-color: var(--category-bg-footer);
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.achievement-footer-text {
+  color: var(--category-text);
+  position: relative;
+  z-index: 2;
+}
+
+.achievement-indicator {
+  background: radial-gradient(
+    circle,
+    var(--category-light),
+    var(--category-indicator)
+  );
+  box-shadow: 0 0 8px 2px var(--category-light);
+  animation: pulse 2s infinite;
+}
+
+.achievement-highlight {
+  height: 2px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    var(--category-color),
+    rgba(0, 0, 0, 0)
+  );
+  z-index: 10;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 8px 2px var(--category-light);
+  }
+  50% {
+    box-shadow: 0 0 12px 4px var(--category-light);
+  }
+  100% {
+    box-shadow: 0 0 8px 2px var(--category-light);
+  }
 }
