@@ -16,7 +16,7 @@ import { formatPriceInfo } from '@/utils';
 import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import competitionIcon from '../../../public/images/competition.svg';
-// import logo from '../../../public/images/logo.svg';
+import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
@@ -75,7 +75,7 @@ export default function Header({
     <div className="w-full flex flex-row items-center justify-between p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
       <div className="flex flex-row items-center gap-3 lg:gap-4 ">
         <Link className="font-bold uppercase relative" href="/">
-          {/* <Image
+          <Image
             src={logo}
             className={twMerge(
               'shrink-0 relative hidden xl:block',
@@ -84,12 +84,12 @@ export default function Header({
             alt="logo"
             width={100}
             height={25}
-          /> */}
+          />
 
           <Image
             src={adxLogo}
             className={twMerge(
-              'shrink-0 relative',
+              'shrink-0 relative xl:hidden',
               window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
             )}
             alt="logo"
