@@ -69,7 +69,7 @@ export default function RootLayout({
   setFavoriteRpc: (favoriteRpc: string) => void;
   adapters: WalletAdapterExtended[];
 }) {
-  const isBigScreen = useBetterMediaQuery('(min-width: 1050px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean | null>(null);
   const disableChat = useSelector((state) => state.settings.disableChat);
@@ -83,7 +83,7 @@ export default function RootLayout({
     { name: 'Stake', link: '/stake', icon: lockIcon },
     { name: 'Ranked', link: '/ranked', icon: trophyIcon },
     {
-      name: 'Provide Liquidity',
+      name: 'Pool',
       link: '/buy_alp',
       icon: window.adrena.client.alpToken.image,
     },
