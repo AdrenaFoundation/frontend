@@ -99,6 +99,15 @@ export default function ALPSwapSell({
                     token: collateralToken,
                 });
 
+            console.log('>>>> Amount and fee', {
+                amount: amountAndFee?.amount.toString(),
+                fee: amountAndFee?.fee.toString(),
+                collateralTokenDecimals: nativeToUi(amountAndFee?.fee ?? new BN(0), collateralToken.decimals),
+            }, {
+                lpAmount: uiToNative(alpInput, window.adrena.client.alpToken.decimals),
+                token: collateralToken.symbol,
+            })
+
             setIsMainDataLoading(false);
 
             // Verify that information is not outdated
@@ -114,7 +123,7 @@ export default function ALPSwapSell({
             }
 
             setCollateralInput(nativeToUi(amountAndFee.amount, collateralToken.decimals));
-            setFee(nativeToUi(amountAndFee.fee, window.adrena.client.alpToken.decimals));
+            setFee(nativeToUi(amountAndFee.fee, collateralToken.decimals));
             setErrorMessage(null);
         } catch (e) {
             console.log('Error loading price', e);
@@ -144,14 +153,14 @@ export default function ALPSwapSell({
 
     // Keep fee usd value up to date
     useEffect(() => {
-        if (fee !== null && tokenPrices['ALP'] !== null) {
-            setFeeUsd(fee * tokenPrices['ALP']);
+        if (fee !== null && collateralPrice !== null) {
+            setFeeUsd(fee * collateralPrice);
             return;
         }
 
         setFeeUsd(null);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fee, tokenPrices && tokenPrices['ALP']]);
+    }, [fee, tokenPrices && collateralPrice]);
 
     // Trigger calculations
     useEffect(() => {
@@ -247,7 +256,7 @@ export default function ALPSwapSell({
                                 className='text-base'
                                 format="number"
                             />
-                            <div className='text-base'>ALP</div>
+                            <div className='text-base'>{collateralToken.symbol}</div>
                         </div>
 
                         <div>

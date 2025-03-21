@@ -9,7 +9,7 @@ import StakingStats from '@/components/pages/profile/StakingStats';
 import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
-import { WALLPAPER } from '@/constant';
+import { WALLPAPERS } from '@/constant';
 import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
 import useTraderInfo from '@/hooks/useTraderInfo';
@@ -99,7 +99,7 @@ export default function Profile({
       <div
         className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: userProfile ? `url(${WALLPAPER[userProfile.wallpaper]})` : "url('/images/wallpaper-1.jpg')",
+          backgroundImage: userProfile ? `url(${WALLPAPERS[userProfile.wallpaper]})` : `url(${WALLPAPERS[0]})`,
         }}
       />
 

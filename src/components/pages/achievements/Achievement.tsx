@@ -69,23 +69,23 @@ export default function Achievement({
     // Get appropriate color for this achievement category
     const categoryColors = getCategoryColor(achievement.category);
 
-    const unlocks = useMemo(() => {
-        const unlocks = [];
+    // const unlocks = useMemo(() => {
+    //     const unlocks = [];
 
-        if (achievement.titleUnlock && achievement.titleUnlock.length > 0) {
-            unlocks.push(`"${achievement.titleUnlock}" title`);
-        }
+    //     if (achievement.titleUnlock && achievement.titleUnlock.length > 0) {
+    //         unlocks.push(`"${achievement.titleUnlock}" title`);
+    //     }
 
-        if (achievement.pfpUnlock) {
-            unlocks.push('unique pfp');
-        }
+    //     if (achievement.pfpUnlock) {
+    //         unlocks.push('unique pfp');
+    //     }
 
-        if (achievement.wallpaperUnlock) {
-            unlocks.push('unique wallpaper');
-        }
+    //     if (achievement.wallpaperUnlock) {
+    //         unlocks.push('unique wallpaper');
+    //     }
 
-        return unlocks.join(' + ');
-    }, [achievement.pfpUnlock, achievement.titleUnlock, achievement.wallpaperUnlock]);
+    //     return unlocks.join(' + ');
+    // }, [achievement.pfpUnlock, achievement.titleUnlock, achievement.wallpaperUnlock]);
 
     return (
         <>
