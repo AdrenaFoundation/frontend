@@ -6,8 +6,12 @@ import banner from '@/../../public/images/achievements-book-wallpaper.jpg';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Achievement from '@/components/pages/achievements/Achievement';
 import { ACHIEVEMENTS } from '@/constant';
+import { PageProps } from '@/types';
 
-export default function Achievements() {
+
+export default function Achievements({
+    userProfile
+}: PageProps) {
     return (
         <div className="flex flex-col p-4">
             <StyledContainer className="p-0 overflow-hidden" bodyClassName='p-0 items-center justify-center'>
@@ -51,13 +55,13 @@ export default function Achievements() {
                     </div>
                 </div>
 
-                <div className='font-archivo pt-8 pb-8 text-txtfade'>The book is being written, achievements will unlocks automatically soon.</div>
+                <div className='font-archivo pt-8 pb-8 text-txtfade text-center'>The book is being written, achievements will unlocks automatically soon.</div>
 
                 <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4'>
                     {ACHIEVEMENTS.map((achievement) => <Achievement
-                        unlocked={false}
+                        unlocked={userProfile ? (userProfile?.achievements[achievement.index - 1] ?? 0) > 0 : false}
                         achievement={achievement}
-                        key={achievement.title}
+                        key={`achievement-${achievement.index}`}
                     />)}
                 </div>
             </StyledContainer>

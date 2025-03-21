@@ -12,6 +12,7 @@ import { Adrena } from "@/target/adrena";
 
 import { AdrenaClient } from "./AdrenaClient";
 import IConfiguration, { TokenInfo } from "./config/IConfiguration";
+import { PROFILE_PICTURES, USER_PROFILE_TITLES, WALLPAPERS } from "./constant";
 import type { WalletAdapterName } from "./hooks/useWalletAdapters";
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
@@ -234,11 +235,12 @@ export type UserProfileExtended = {
   profilePicture: ProfilePicture;
   wallpaper: Wallpaper;
   title: UserProfileTitle;
+  achievements: number[];
 };
 
-export type ProfilePicture = 0 | 1 | 2;
-export type Wallpaper = 0 | 1 | 2;
-export type UserProfileTitle = 0 | 1 | 2;
+export type ProfilePicture = keyof typeof PROFILE_PICTURES;
+export type Wallpaper = keyof typeof WALLPAPERS;
+export type UserProfileTitle = keyof typeof USER_PROFILE_TITLES;
 
 //
 // Events
@@ -1391,8 +1393,8 @@ export type AchievementInfo = {
   story: string;
   image: string;
   points: AchievementPoints;
-  pfpUnlock?: string;
-  titleUnlock?: string;
-  wallpaperUnlock?: string;
+  pfpUnlock?: ProfilePicture;
+  titleUnlock?: UserProfileTitle;
+  wallpaperUnlock?: Wallpaper;
   category: AchievementCategory;
 };

@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
@@ -11,9 +11,10 @@ import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
-import { PROFILE_PICTURES, WALLPAPER } from '@/constant';
-import { ProfilePicture, UserProfileExtended, Wallpaper } from '@/types';
+import { ACHIEVEMENTS, PROFILE_PICTURES, USER_PROFILE_TITLES, WALLPAPERS } from '@/constant';
+import { ProfilePicture, UserProfileExtended, UserProfileTitle, Wallpaper } from '@/types';
 
+import lockIcon from '../../../../public/images/Icons/lock.svg';
 import walletIcon from '../../../../public/images/wallet-icon.svg';
 
 export default function OwnerBloc({
@@ -39,9 +40,11 @@ export default function OwnerBloc({
   const [updatingMetadata, setUpdatingMetadata] = useState<{
     profilePicture: ProfilePicture;
     wallpaper: Wallpaper;
+    title: UserProfileTitle;
   }>({
     profilePicture: userProfile.profilePicture,
     wallpaper: userProfile.wallpaper,
+    title: userProfile.title,
   });
 
   useEffect(() => {
@@ -99,12 +102,14 @@ export default function OwnerBloc({
       await window.adrena.client.editUserProfile({
         profilePicture: updatingMetadata.profilePicture,
         wallpaper: updatingMetadata.wallpaper,
+        title: updatingMetadata.title,
         notification,
       });
 
       // pre-shot the onchain change as we know it's coming
       userProfile.profilePicture = updatingMetadata.profilePicture;
       userProfile.wallpaper = updatingMetadata.wallpaper;
+      userProfile.title = updatingMetadata.title;
 
       triggerUserProfileReload();
 
@@ -112,7 +117,7 @@ export default function OwnerBloc({
     } catch (error) {
       console.error('error', error);
     }
-  }, [triggerUserProfileReload, updatingMetadata.profilePicture, updatingMetadata.wallpaper, userProfile, walletPubkey]);
+  }, [triggerUserProfileReload, updatingMetadata.profilePicture, updatingMetadata.wallpaper, updatingMetadata.title, userProfile, walletPubkey]);
 
   const [profilePictureHovering, setProfilePictureHovering] = useState<boolean>(false);
 
@@ -134,6 +139,192 @@ export default function OwnerBloc({
       });
   }, [trimmedUpdatedNickname]);
 
+  const wallpapersDOM = useMemo(() => {
+    const unlockedWallpapers = Object.keys(WALLPAPERS).reduce((unlocked, i) => {
+      const index = Number(i);
+      // Look if there is an achievement that unlocks this wallpaper
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === index);
+
+      if (!achievement) {
+        // No requirement for the wallpaper
+        return [...unlocked, index];
+      }
+
+      // Check if the user have the Achievement
+      if (userProfile.achievements?.[index]) {
+        return [...unlocked, index];
+      }
+
+      return unlocked;
+    }, [] as number[]);
+
+    return Object.entries(WALLPAPERS).map(([v, path]) => {
+      const unlocked = unlockedWallpapers.includes(Number(v));
+
+      return <Tippy
+        content={`Unlocked by the achievement "${ACHIEVEMENTS.find(achievement => achievement.wallpaperUnlock === Number(v))?.title ?? ''}"`}
+        key={`wallpaper-${v}`}
+        disabled={unlocked}
+      >
+        <div
+          className={twMerge(
+            'h-auto flex z-30 relative aspect-[21/9]',
+            updatingMetadata.wallpaper === (Number(v) as unknown as ProfilePicture) ? 'border-4 border-yellow-400/80' : 'border-[#ffffff20] grayscale',
+            unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'grayscale cursor-disabled',
+          )}
+          onClick={() => {
+            console.log('ONCLICK WALLPAPER', unlocked);
+            if (!unlocked) return;
+
+            console.log('SET UPDATING METADATA', {
+              profilePicture: updatingMetadata.profilePicture,
+              wallpaper: (Number(v) as unknown as Wallpaper),
+              title: updatingMetadata.title,
+            })
+
+            setUpdatingMetadata((u) => ({
+              profilePicture: u.profilePicture,
+              wallpaper: (Number(v) as unknown as Wallpaper),
+              title: u.title,
+            }));
+          }}
+        >
+          {!unlocked ? <Image
+            className="absolute bottom-2 right-2 opacity-60 h-5 w-5"
+            src={lockIcon}
+            width={18}
+            height={20}
+            alt="lock icon"
+          /> : null}
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={path}
+            alt="Wallpaper"
+            className='h-full w-full'
+            width={900}
+            height={600}
+          />
+        </div>
+      </Tippy>;
+    });
+  }, [updatingMetadata, userProfile.achievements]);
+
+  const profilePictureDOM = useMemo(() => {
+    const unlockedPfpIndexes = Object.keys(PROFILE_PICTURES).reduce((unlocked, i) => {
+      const index = Number(i);
+      // Look if there is an achievement that unlocks this profile picture
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === index);
+
+      if (!achievement) {
+        // No requirement for the PFP
+        return [...unlocked, index];
+      }
+
+      // Check if the user have the Achievement
+      if (userProfile.achievements?.[index]) {
+        return [...unlocked, index];
+      }
+
+      return unlocked;
+    }, [] as number[]);
+
+    return Object.entries(PROFILE_PICTURES).map(([v, path]) => {
+      const unlocked = unlockedPfpIndexes.includes(Number(v));
+
+      return <Tippy
+        content={`Unlocked by the achievement "${ACHIEVEMENTS.find(achievement => achievement.pfpUnlock === Number(v))?.title ?? ''}"`}
+        key={`pfp-${v}`}
+        disabled={unlocked}
+      >
+        <div
+          className={twMerge(
+            'h-auto flex z-30 relative aspect-square',
+            updatingMetadata.profilePicture === (Number(v) as unknown as ProfilePicture) ? 'border-4 border-yellow-400/80' : 'border-[#ffffff20] grayscale',
+            unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'grayscale cursor-disabled',
+          )}
+          onClick={() => {
+            if (!unlocked) return;
+
+            setUpdatingMetadata((u) => ({
+              profilePicture: (Number(v) as unknown as ProfilePicture),
+              wallpaper: u.wallpaper,
+              title: u.title,
+            }));
+          }}
+        >
+          {!unlocked ? <Image
+            className="absolute bottom-2 right-2 opacity-60 h-5 w-5"
+            src={lockIcon}
+            width={18}
+            height={20}
+            alt="lock icon"
+          /> : null}
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={path}
+            alt="Profile picture"
+            className='h-full w-full'
+            width={250}
+            height={250}
+          />
+        </div>
+      </Tippy>;
+    });
+  }, [updatingMetadata, userProfile.achievements]);
+
+  const titlesDOM = useMemo(() => {
+    const unlockedTitles = Object.keys(USER_PROFILE_TITLES).reduce((unlocked, i) => {
+      const index = Number(i);
+      // Look if there is an achievement that unlocks this title
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index);
+
+      if (!achievement) {
+        // No requirement for the title
+        return [...unlocked, index];
+      }
+
+      // Check if the user have the Achievement
+      if (userProfile.achievements?.[index]) {
+        return [...unlocked, index];
+      }
+
+      return unlocked;
+    }, [] as number[]);
+
+    return Object.entries(USER_PROFILE_TITLES).map(([v, title]) => {
+      const unlocked = unlockedTitles.includes(Number(v));
+
+      return <Tippy
+        content={`Unlocked by the achievement "${ACHIEVEMENTS.find(achievement => achievement.titleUnlock === Number(v))?.title ?? ''}"`}
+        key={`title-${v}`}
+        disabled={unlocked}
+      >
+        <div
+          className={twMerge(
+            'h-auto flex z-30 relative border-b-4 ml-auto mr-auto text-base',
+            updatingMetadata.title === (Number(v) as unknown as ProfilePicture) ? 'border-yellow-400/80' : 'border-transparent grayscale',
+            unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'text-txtfade cursor-disabled',
+          )}
+          onClick={() => {
+
+            console.log('ONCLICK TITLE');
+            if (!unlocked) return;
+
+            setUpdatingMetadata((u) => ({
+              profilePicture: u.profilePicture,
+              wallpaper: u.wallpaper,
+              title: (Number(v) as unknown as UserProfileTitle),
+            }));
+          }}
+        >
+          {title}
+        </div>
+      </Tippy>;
+    });
+  }, [updatingMetadata, userProfile.achievements]);
+
   return (
     <>
       <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#211a1a99]/50 rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
@@ -143,12 +334,13 @@ export default function OwnerBloc({
             onMouseLeave={() => setProfilePictureHovering(false)}
             onClick={() => setIsUpdatingMetadata(true)}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={PROFILE_PICTURES[userProfile.profilePicture]}
               alt="Profile picture"
               className='w-full h-full'
               width={250}
-              height={130}
+              height={250}
             />
 
             {profilePictureHovering && !readonly ? <>
@@ -193,18 +385,14 @@ export default function OwnerBloc({
 
           <div className='flex gap-x-2 items-end relative bottom-1'>
             <span className='text-lg font-cursive relative top-1'>&quot;</span>
-            <span className='text-sm font-archivoblack'>Nameless One</span>
+            <span className='text-sm font-archivoblack'>{USER_PROFILE_TITLES[userProfile.title]}</span>
             <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
 
             {canUpdateNickname && userProfile.version > 1 ? (
-              <Tippy
-                content={
-                  <div className="text-sm">Coming soon</div>
-                }
-                placement="auto"
-              >
-                <div className='text-xs opacity-70 cursor-not-allowed hover:opacity-100 relative'>Edit</div>
-              </Tippy>
+              <div
+                className='text-xs opacity-70 cursor-pointer hover:opacity-100 relative'
+                onClick={() => setIsUpdatingMetadata(true)}
+              >Edit</div>
             ) : null}
           </div>
 
@@ -225,7 +413,7 @@ export default function OwnerBloc({
           close={() => {
             setNicknameUpdating(false);
           }}
-          className="max-w-[100%] w-[30em] pl-8 pr-8 pt-5"
+          className="max-w-[100%] w-[30em] pl-8 pr-8 pt-5 overflow-y-none"
         >
           <div className="flex flex-col gap-3">
             <div className="text-sm flex w-full items-center justify-between">
@@ -296,68 +484,45 @@ export default function OwnerBloc({
           close={() => {
             setIsUpdatingMetadata(false);
           }}
-          className="max-w-[90%] w-[60em]"
+          className="max-w-[90%] w-[90em] h-full flex flex-col"
         >
-          <div className='mt-4 font-archivoblack w-full items-center flex justify-center text-white/80'>
-            Select Profile Picture
-          </div>
+          <div className='flex w-full h-full max-h-[35em] overflow-auto flex-col'>
+            <div className='flex flex-col w-full'>
+              <div className='mt-4 mb-3 tracking-widest w-full items-center flex justify-center text-white/80'>
+                Select Profile Picture
+              </div>
 
-          <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4'>
-            {Object.entries(PROFILE_PICTURES).map(([v, path]) => {
-              return <div
-                key={v}
-                className={twMerge(
-                  'border-4 rounded-full w-[8em] h-[8em] left-[1.5em] top-[-0.8em] flex shrink-0 overflow-hidden z-30 cursor-pointer',
-                  updatingMetadata.profilePicture === (Number(v) as unknown as ProfilePicture) ? 'border-yellow-400/80' : 'border-[#ffffff20] grayscale hover:grayscale-0'
-                )}
-                onClick={() => {
-                  setUpdatingMetadata({
-                    profilePicture: (Number(v) as unknown as ProfilePicture),
-                    wallpaper: updatingMetadata.wallpaper,
-                  });
-                }}
-              >
-                <Image
-                  src={path}
-                  alt="Profile picture"
-                  className='w-full h-full'
-                  width={250}
-                  height={130}
-                />
-              </div>;
-            })}
-          </div>
+              <div className='w-full h-[1px] bg-bcolor flex mt-2' />
 
-          <div className='w-full h-[1px] bg-bcolor mt-2 mb-4' />
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(7em,1fr))]">
+                {profilePictureDOM}
+              </div>
 
-          <div className='mt-4 font-archivoblack w-full items-center flex justify-center text-white/80'>
-            Select Wallpaper
-          </div>
+            </div>
 
-          <div className='flex pt-6 pb-6 items-center justify-evenly flex-wrap gap-4'>
-            {Object.entries(WALLPAPER).map(([v, path]) => {
-              return <div
-                key={v}
-                className={twMerge(
-                  'border-4 border-[#ffffff50] rounded-lg w-[15em] h-[7em] left-[1.5em] top-[-0.8em] flex shrink-0 overflow-hidden z-30 cursor-pointer',
-                  updatingMetadata.wallpaper === (Number(v) as unknown as Wallpaper) ? 'border-yellow-400/80' : 'border-[#ffffff20] grayscale hover:grayscale-0'
-                )}
-                onClick={() => {
-                  setUpdatingMetadata({
-                    profilePicture: updatingMetadata.profilePicture,
-                    wallpaper: (Number(v) as unknown as Wallpaper),
-                  });
-                }}
-              >
-                <Image
-                  src={path}
-                  alt="Wallpaper"
-                  className='w-full h-full'
-                  width={250}
-                  height={130}
-                />
-              </div>;
-            })}
+            <div className='flex flex-col w-full mt-6'>
+              <div className='mt-4 mb-3 tracking-widest w-full items-center flex justify-center text-white/80'>
+                Select Wallpaper
+              </div>
+
+              <div className='w-full h-[1px] bg-bcolor flex mt-2' />
+
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(12em,1fr))]">
+                {wallpapersDOM}
+              </div>
+            </div>
+
+            <div className='flex flex-col w-full mt-6'>
+              <div className='mt-4 mb-3 tracking-widest w-full items-center flex justify-center text-white/80'>
+                Select Title
+              </div>
+
+              <div className='w-full h-[1px] bg-bcolor flex mt-2' />
+
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(15em,1fr))] gap-2 pt-6 pb-6">
+                {titlesDOM}
+              </div>
+            </div>
           </div>
 
           <div className='w-full h-[1px] bg-bcolor mt-2 mb-4' />

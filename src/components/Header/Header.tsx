@@ -72,8 +72,8 @@ export default function Header({
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b border-b-bcolor bg-secondary z-50">
-      <div className="flex flex-row items-center gap-3 lg:gap-4 xl:gap-6">
+    <div className="w-full flex flex-row items-center justify-between p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
+      <div className="flex flex-row items-center gap-3 lg:gap-4 ">
         <Link className="font-bold uppercase relative" href="/">
           <Image
             src={logo}

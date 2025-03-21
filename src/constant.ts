@@ -9,10 +9,7 @@ import {
   AdrenaEvent,
   AdxLockPeriod,
   AlpLockPeriod,
-  ProfilePicture,
   SupportedCluster,
-  UserProfileTitle,
-  Wallpaper,
 } from "./types";
 
 export const RATE_DECIMALS = 9;
@@ -540,134 +537,171 @@ export const QUESTS = {
 
 export const USER_PROFILE_TITLES = {
   0: "Nameless One",
-} as Record<UserProfileTitle, string>;
+  1: "Golden Hands",
+  2: "Diamond Hands",
+  3: "Pre-season Winner",
+  4: "Pre-season Challenger",
+  5: "Pre-season Contender",
+  6: "Season 1 Winner",
+  7: "Season 1 Challenger",
+  8: "Season 1 Contender",
+  9: "Trader",
+  10: "Emerging Trader",
+  11: "Top Tier",
+  12: "Volume King",
+  13: "Future McDonalds Employee",
+  14: "Highly Unprofitable Trader",
+  15: "Severely Wounded",
+  16: "Daddy's Money",
+  17: "All In, All Gone",
+  18: "Highly Profitable Trader",
+  19: "Certified Money Printer",
+  20: "Whale Among Men",
+  21: "Apex Trader",
+  22: "Unstoppable",
+  23: "Free Kebab",
+  24: "Passive Income",
+  25: "Adrena Stakeholder",
+  26: "Board Member",
+  27: "Liquidity King",
+  28: "Bad Luck Brian",
+  29: "Le Cramer",
+  30: "The Chameleon",
+  // 31: "The Voter",
+} as const;
 
 export const PROFILE_PICTURES = {
-  0: "/images/profile-picture-1.jpg",
-  1: "/images/profile-picture-2.jpg",
-  2: "/images/profile-picture-3.jpg",
-  3: "/images/profile-picture-4.jpg",
-  4: "/images/profile-picture-5.jpg",
-} as Record<ProfilePicture, string>;
+  0: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/0-profile-picture-Sai0uwLWpbLfMDXL48PnGdsGtGvsfo.jpg",
+  1: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/1-profile-picture-rAZfGdMaFgg11X4iZdj0tpHbtvnUEB.jpg",
+  2: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/2-profile-picture-vdbh5zbkcnWxffdnHFq4tllswWxv03.jpg",
+  3: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/3-profile-picture-MWX88IAuSguCjy9SiDUijMmdc5D9mB.jpg",
+  4: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/4-profile-picture-tVeXt2txKPv5v3mhGEuFj6pe584En2.jpg",
+  5: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/5-pfp-thats-hot-8gpzLrdjEhrsLMMMhAETXEJLL6DTIz.jpg",
+  6: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/6-pfp-moby-dick-5RAmIKXc0j8LmZ0QJIelgph4j3QEJF.png",
+  7: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/7-pfp-strike-z7GdI3G1Dorp2hcnWqG2CcRho2yeSF.jpg",
+  8: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/8-pfp-prison-Qnl20EbJ5KsfKMKRFxpL6GcILngDbm.jpg",
+} as const;
 
-export const WALLPAPER = {
-  0: "/images/wallpaper-1.jpg",
-  1: "/images/wallpaper-2.jpg",
-  2: "/images/wallpaper-3.jpg",
-  3: "/images/wallpaper-4.jpg",
-  4: "/images/wallpaper-5.jpg",
-} as Record<Wallpaper, string>;
+export const WALLPAPERS = {
+  0: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/0-wallpaper-2yVhJbhqwV4UqFJH1bbBk1jjvCpInf.jpg",
+  1: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/1-wallpaper-YkO2m6dNQFZI3vk5K00D29ZgTpGPtl.jpg",
+  2: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/2-wallpaper-8YeEpx3met1eoovyXf764Rq8Emvw5N.jpg",
+  3: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/3-wallpaper-PoG6eJjrnp72oDGb3uTzytN01Lzsau.jpg",
+  4: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/4-wallpaper-IlGz8KZHUzxDbooXzxuBVAXHLwpgST.jpg",
+  5: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/5-wallpaper-bank-i0YXhqCzvVOTWVMxbCjApsULLbcEWg.jpg",
+  6: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/6-wallpaper-beast-k3nXlpiTRf30vDAZHRTRL9LNshF16W.jpg",
+} as const;
 
 export const ACHIEVEMENTS: AchievementInfo[] = [
   {
-    index: 1,
+    index: 0,
     title: "Look at me, I'm the trader now!",
     description: "Execute your first perpetuals trade",
     story:
-      "Congrats! You've officially mutated into a trader… the markets won't know what hit 'em!",
+      "Congratulations! You've completed your first trade. The markets await your next move.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/1-look-at-me-now-pekTSNjN2sGH2JzlPIjK3tWREULk7D.jpg",
     points: 5,
-    titleUnlock: "Trader",
+    titleUnlock: 9,
     category: "bronze",
   },
   {
-    index: 2,
-    title: "I can't use them, but they're pretty!",
+    index: 1,
+    title: "The Right Type of Gold Digger",
     description: "Do not sell more than 50% of ADX received from ALP staking",
     story:
-      "They're more for show, really. Like a gold-plated hammer—looks great, doesn't get much done.",
+      "While others dig for exits, you dig for glory. Golden hands, golden vision.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/2-golden-hands-td7i9DiSUQFzgWJl6nszw9e1ariMn1.jpg",
     points: 25,
-    titleUnlock: "Golden Hands",
+    titleUnlock: 1,
+    category: "gold",
+  },
+  {
+    index: 2,
+    title: "****s So heavy you can barely walk",
+    description: "Do not sell more than 90% of ADX received from ALP staking",
+    story: "Walking's hard when you’re lugging that much unshakable trust.",
+    image:
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/3-diamond-hands-3RVLS24IdxiKe4ntjguhO2ylgHYaJa.jpg",
+    points: 50,
+    titleUnlock: 2,
     category: "gold",
   },
   {
     index: 3,
-    title: "Can you cover them, please? You're blinding me!",
-    description: "Do not sell more than 90% of ADX received from ALP staking",
-    story:
-      "Some people wear shades, others wear diamonds. You're making people squint with all that sparkle!",
-    image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/3-diamond-hands-3RVLS24IdxiKe4ntjguhO2ylgHYaJa.jpg",
-    points: 50,
-    titleUnlock: "Diamond Hands",
-    category: "gold",
-  },
-  {
-    index: 4,
     title: "Wake Me Up Before You Trade",
-    description: "Be ranked the top 5 of the highest volume division",
+    description:
+      "Be ranked the top 5 of the highest volume division during pre-season",
     story: "You've awakened… Now the markets fear you.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/4-babe-wake-up-oqZKa6E2swQGYbXP1JznHgT3OKEpfW.jpg",
     points: 25,
-    titleUnlock: "Pre-season Challenger",
+    titleUnlock: 4,
     category: "gold",
   },
   {
-    index: 5,
+    index: 4,
     title: "Master of the Awakening",
-    description: "Be ranked top 1 during awakening preseason",
+    description: "Be ranked top 1 during pre-season",
     story:
       "Fully awakened and ready to rule! You're not just awake, you're the coffee-powered champion of the trading world. Bow before the one who snoozes no more!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/5-master-of-the-awakening-q5yUElviV2RTCCaIfXmMAyYG2GBays.jpg",
     points: 25,
-    titleUnlock: "Pre-season Winner",
+    titleUnlock: 3,
     category: "gold",
   },
   {
-    index: 6,
+    index: 5,
     title: "Sleepy Beast, time to wake up",
-    description: "Open a trade during awakening preseason",
+    description: "Open a trade during pre-season",
     story:
       "Still rubbing your eyes but somehow making moves? You're a contender, even if you're half-asleep!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/6-time-to-wake-up-IxV5VRhtyCeSFERdLoqklUa26rZfFZ.jpg",
     points: 5,
-    titleUnlock: "Pre-season Contender",
+    titleUnlock: 5,
     category: "bronze",
   },
   {
-    index: 7,
+    index: 6,
     title: "Dare to Mutate",
-    description: "Be ranked in the top 10 during expanse season 1",
+    description: "Be ranked in the top 10 during season 1",
     story:
       "You're a challenger, ready to evolve and wreak havoc. The markets tremble—well, sort of.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/7-dare-to-mutate-t3DnfboCXHK1tUNzcUCg1ibmEhRHYq.jpg",
     points: 25,
-    titleUnlock: "Challenger Season 1",
+    titleUnlock: 7,
     category: "gold",
   },
   {
-    index: 8,
+    index: 7,
     title: "Big Mutant in a Small Pond",
-    description: "Be ranked top 1 during expanse season 1",
+    description: "Be ranked top 1 during season 1",
     story:
       "You've conquered the first rank! Now don't let the pond fool you into thinking you're the ocean's ruler.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/8-big-mutant-in-small-pond-3d9Qr4vhYByHGlS57FD9DDQCP56pJY.jpg",
     points: 25,
-    titleUnlock: "Winner Season 1",
+    titleUnlock: 6,
     category: "gold",
   },
   {
-    index: 9,
+    index: 8,
     title: "Mutant on the Rise",
-    description: "Be ranked top 100 during expanse season 1",
+    description: "Be ranked top 100 during season 1",
     story:
       "Contender status unlocked! Keep going, because this mutation is only just getting started.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/9-mutant-on-the-rise-uewucKXwfPcjrOtGMXxrYH03X6xi93.jpg",
     points: 5,
-    titleUnlock: "Contender Season 1",
+    titleUnlock: 8,
     category: "bronze",
   },
   {
-    index: 10,
+    index: 9,
     title: "First Blood",
     description: "Close your first trade in profit.",
     story:
@@ -678,20 +712,20 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 11,
-    title: "One Million and Counting… But Who's Keeping Track?",
+    index: 10,
+    title: "One Million and Counting…",
     description: "Achieve $1,000,000 in trading volume",
     story:
       "You're still small, but the mutation is kicking in. Keep going, baby beast!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/11-who-is-counting-iRsdHMcespgxqa8ksltjaRbmp3q2Re.jpg",
     points: 5,
-    titleUnlock: "Emerging Trader",
+    titleUnlock: 10,
     category: "bronze",
   },
   {
-    index: 12,
-    title: "Did You Just Fill a Pool with Dollars?",
+    index: 11,
+    title: "Swimming in Cash",
     description: "Reach $10,000,000 in trading volume.",
     story:
       "Starting to look more chaotic and less cute now. Don't stop, the world is watching.",
@@ -701,8 +735,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "silver",
   },
   {
-    index: 13,
-    title: "Is This the Market or Your Personal Playground?",
+    index: 12,
+    title: "The market is your playground",
     description: "Achieve $100,000,000 in volume.",
     story:
       "Congrats, you're now a certified giant! Careful where you step, big guy.",
@@ -712,56 +746,56 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "gold",
   },
   {
-    index: 14,
-    title: "I bought the bank.",
+    index: 13,
+    title: "I bought the bank",
     description: "Reach $250,000,000 in total volume",
     story:
       "You're literally shaking the markets. Hope you've got a good insurance plan!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/14-i-bought-the-bank-4bcnHoGqQydV1BAgApuJp479GJTFus.jpg",
     points: 50,
-    wallpaperUnlock: "unique.png",
+    wallpaperUnlock: 5,
     category: "gold",
   },
   {
-    index: 15,
-    title: "That's hot.",
+    index: 14,
+    title: "That's hot",
     description: "Reach $500,000,000 in total volume.",
     story:
       "At this point, you're either a genius or a market menace. Maybe both.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/15-thats-hot-5ISN0W3DjRWKUxzh9nzudqP0inkRMY.jpg",
     points: 100,
-    titleUnlock: "Top Tier",
-    pfpUnlock: "unique.png",
+    titleUnlock: 11,
+    pfpUnlock: 5,
     category: "platinum",
   },
   {
-    index: 16,
-    title: "Just like that, a Legend was born.",
+    index: 15,
+    title: "Just like that, a Legend was born",
     description: "Hit $1,000,000,000 in total volume.",
     story:
       "Bow down, mortals! The market has a new ruler, and it's you. Long live the king!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/16-legend-nIvtYSkOolzupilzWQifWtuY9IwH91.jpg",
     points: 200,
-    titleUnlock: "The Volume King",
+    titleUnlock: 12,
     category: "diamond",
     // + ability to upload own PFP
   },
   {
-    index: 17,
+    index: 16,
     title: "Oops!",
     description: "Lose $5,000",
     story: "So… when's your McDonald's shift start?",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/17-mcdo-pZYjwBzwDwf6vDdeCpMxMiyauJEEGm.jpg",
     points: 5,
-    titleUnlock: "Future McDonald's Employee",
+    titleUnlock: 13,
     category: "bronze",
   },
   {
-    index: 18,
+    index: 17,
     title: "It happened so fast…",
     description: "Lose $10,000.",
     story:
@@ -772,7 +806,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "silver",
   },
   {
-    index: 19,
+    index: 18,
     title: "Is There A Refund Button for This?",
     description: "Lose $50,000.",
     story:
@@ -780,45 +814,45 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/19-refund-r75guD0MQXjRQgaEAJHx8ANKTKxmxs.jpg",
     points: 25,
-    titleUnlock: "Highly Unprofitable Trader",
+    titleUnlock: 14,
     category: "gold",
   },
   {
-    index: 20,
+    index: 19,
     title: "I swear, one win is all I need!",
     description: "Lose $200,000.",
     story: "Market slap you that hard? Don't worry, it builds character.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/20-one-win-X2TJ1UZ0f2RvT2PACf9u0x7wbKTRs4.jpg",
     points: 50,
-    titleUnlock: "Severely Wounded",
+    titleUnlock: 15,
     category: "gold",
   },
   {
-    index: 21,
-    title: "All My Chips Are In... And They're Gone!",
+    index: 20,
+    title: "Daddy's money",
     description: "Lose $500,000",
     story:
       "You didn't think you needed that half-million, did you? Thanks, Dad!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/21-daddy-money-4iLFVlVVt8DXbCfcytQS1BZclWv2Vd.jpg",
     points: 100,
-    titleUnlock: "Daddy's Money",
+    titleUnlock: 16,
     category: "platinum",
   },
   {
-    index: 22,
-    title: "Just a small Loan of 1 million dollars.",
+    index: 21,
+    title: "All Chips Gone!",
     description: "Lose $1,000,000.",
     story: "Well… that escalated quickly. All in? All gone.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/22-lose-1m-yzb22qDaBRu1qjcGLTHk6sagNI2iDp.jpg",
     points: 200,
-    titleUnlock: "All In, All Gone",
+    titleUnlock: 17,
     category: "diamond",
   },
   {
-    index: 23,
+    index: 22,
     title: "You guys are getting gains?",
     description: "Earn $5,000 in profit.",
     story: "You caught something! Let's hope it's not beginner's luck.",
@@ -828,7 +862,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 24,
+    index: 23,
     title: "Slow grind is the best grind",
     description: "Earn $10,000 in realized profits.",
     story: "Careful, the markets bite back.",
@@ -838,7 +872,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "silver",
   },
   {
-    index: 25,
+    index: 24,
     title: "Time to flex",
     description: "Earn $50,000 in profit",
     story:
@@ -846,91 +880,91 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/25-time-to-flex-1XuayhxSnAWeqSz2z7aMfY9ptgMt4w.jpg",
     points: 25,
-    titleUnlock: "Highly Profitable Trader",
+    titleUnlock: 18,
     category: "gold",
   },
   {
-    index: 26,
+    index: 25,
     title: "Packed your things yet?",
     description: "Earn $200,000 in profit",
     story: "Your printer's been activated. Please avoid hyperinflation.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/26-packed-your-things-yet-IpZBGnB46Lhut3G5thSYJAnzSPJMRP.jpg",
     points: 50,
-    titleUnlock: "Certified Money Printer",
+    titleUnlock: 19,
     category: "gold",
   },
   {
-    index: 27,
+    index: 26,
     title: "Moby Dick would be jealous",
     description: "Earn $500,000 in profits",
     story: "Whale alert! Careful, don't capsize the boat with all that profit.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/27-moby-dick-Lr0avxHgUHbIgx5upXO84l6DGQ6Cj2.jpg",
     points: 100,
-    titleUnlock: "Whale Among Men",
-    pfpUnlock: "unique",
+    titleUnlock: 20,
+    pfpUnlock: 6,
     category: "platinum",
   },
   {
-    index: 28,
-    title: "Reached the Apex, who would have bet?",
+    index: 27,
+    title: "Reached the Apex",
     description: "Earn $1,000,000 in profits",
     story: "You're at the top of the food chain!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/28-apex-Q9J81YMxgh2nm12so0K8p7frwcmBf4.jpg",
     points: 200,
-    titleUnlock: "Apex Trader",
+    titleUnlock: 21,
     category: "diamond",
   },
   {
-    index: 29,
-    title: "The Beast Knows Its Stuff… For Now",
+    index: 28,
+    title: "Beast Tamer... For Now",
     description: "Achieve 5 consecutive trades with no losses",
     story:
       "You're taming the markets like a circus trainer. Hope they stay obedient!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/29-book-Z3AXeSaEt1TpHoPNwuadRENYTjZyU7.jpg",
     points: 10,
-    wallpaperUnlock: "unique",
+    wallpaperUnlock: 6,
     category: "bronze",
   },
   {
-    index: 30,
+    index: 29,
     title: "Strike!",
     description: "Reach 10 consecutive trades with no losses",
     story: "You got them all in one streak.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/30-strike-mfHfdJ0Wryyrej2m9eVZ9JEVqW4MAM.jpg",
     points: 50,
-    pfpUnlock: "unique",
+    pfpUnlock: 7,
     category: "gold",
   },
   {
-    index: 31,
+    index: 30,
     title: "Unstoppable",
     description: "Achieve 20 consecutive trades with no losses",
     story: "Who can stop him?",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/31-unstoppable-cj1ncGJ5pCykjcHoUv43GVJENiJ192.jpg",
     points: 200,
-    titleUnlock: "Unstoppable",
+    titleUnlock: 22,
     category: "diamond",
   },
   {
-    index: 32,
-    title: "Found $10 in the Couch Cushions",
+    index: 31,
+    title: "Salad, Tomato and Oignon",
     description: "Earn $10 from Staked ADX",
     story:
       "You earned a kebab's worth of income! Don't spend it all in one place.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/32-free-kebab-jHIaLAppPnO2FSiGX0H9K3o0FeOo9t.jpg",
     points: 5,
-    titleUnlock: "Free Kebab",
+    titleUnlock: 23,
     category: "bronze",
   },
   {
-    index: 33,
+    index: 32,
     title: "I Can Buy a Lambo… In Monopoly",
     description: "Earn $1,000 from Staked ADX",
     story: "A thousand bucks? You're hoarding mutagen like a true monster.",
@@ -940,7 +974,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 34,
+    index: 33,
     title: "Blood, Sweat, and Some Coin",
     description: "Earn $5,000 from Staked ADX",
     story:
@@ -951,7 +985,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "silver",
   },
   {
-    index: 35,
+    index: 34,
     title: "Finally, Enough to Trade in X100",
     description: "Earn $10,000 from Staked ADX",
     story:
@@ -962,7 +996,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "gold",
   },
   {
-    index: 36,
+    index: 35,
     title: "I'm Not Saying I'm Rich, But...",
     description: "Earn $50,000 from Staked ADX",
     story:
@@ -973,7 +1007,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "gold",
   },
   {
-    index: 37,
+    index: 36,
     title: "The Money Grows on Trees, I Swear",
     description: "Earn $100,000 from Staked ADX",
     story:
@@ -981,11 +1015,11 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/37-money-growing-on-trees-TxiKxYJYvnMHYM0pCbIIw4BdIloPsc.jpg",
     points: 100,
-    titleUnlock: "Passive Income",
+    titleUnlock: 24,
     category: "platinum",
   },
   {
-    index: 38,
+    index: 37,
     title: "One Million reasons to love me",
     description: "Have 1,000,000 staked ADX",
     story: "A million staked ADX. Your mutant collection is looking strong!",
@@ -995,29 +1029,30 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 39,
-    title: "My Staked ADX is Getting Out of Hand",
+    index: 38,
+    title: "Locked and ADXed",
     description: "Have 3,000,000 staked ADX",
-    story: "Who needs prison bars when you have 3 million staked ADX to guard?",
+    story:
+      "3 million ADX staked? Welcome to the maximum security staking club!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/39-out-of-hands-3kjW1ZOrBq4QDOoRkIkWWuOcoesHgs.jpg",
     points: 15,
-    pfpUnlock: "unique",
+    pfpUnlock: 8,
     category: "silver",
   },
   {
-    index: 40,
+    index: 39,
     title: "Watch out, Retirement is coming",
     description: "Have 6,000,000 staked ADX",
     story: "The beasts of the stake bow to you. Can you handle the power?",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/40-retirement-is-coming-Gv3p6fvuS3HuLQmnRz8X5iVcMGFoqm.jpg",
     points: 25,
-    titleUnlock: "Adrena Stakeholder",
+    titleUnlock: 25,
     category: "gold",
   },
   {
-    index: 41,
+    index: 40,
     title: "Where's My Private Island?",
     description: "Have 10,000,000 staked ADX",
     story: "That's a lot of ADX. You're starting to scare the markets!",
@@ -1027,7 +1062,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "gold",
   },
   {
-    index: 42,
+    index: 41,
     title: "Is This Staking, or Is This Overkill?",
     description: "Have 20,000,000 staked ADX",
     story:
@@ -1038,18 +1073,18 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "platinum",
   },
   {
-    index: 43,
+    index: 42,
     title: "I Have Enough ADX to Buy Your Soul",
     description: "Have 50,000,000 staked ADX",
     story: "Your ADX empire is vast. The board awaits your command, Overlord.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/43-buy-our-soul-XOCwE3F6VXYTRz1D5mYjgNYPTgb9iT.jpg",
     points: 200,
-    titleUnlock: "Board Member",
+    titleUnlock: 26,
     category: "diamond",
   },
   {
-    index: 44,
+    index: 43,
     title: "Just Dip My Toes in the Pool",
     description: "Add $1,000 of liquidity at once",
     story:
@@ -1060,8 +1095,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 45,
-    title: "Storming the Liquidity Market, With Style",
+    index: 44,
+    title: "Storming the Liquidity Market",
     description: "Add $50,000 of liquidity at once",
     story: "You've summoned a storm, but are you ready for the downpour?",
     image:
@@ -1070,7 +1105,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 46,
+    index: 45,
     title: "Making Waves in the Market",
     description: "Add $100,000 of liquidity at once",
     story: "The ocean is roaring! Hold on tight, or you might get swept away.",
@@ -1080,7 +1115,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 47,
+    index: 46,
     title: "I'm the Storm Now",
     description: "Add $250,000 of liquidity at once",
     story: "You've become a force of nature. Don't let it go to your head!",
@@ -1090,7 +1125,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 48,
+    index: 47,
     title: "Tsunami Bringer",
     description: "Add $500,000 of liquidity at once",
     story: "A tsunami of liquidity! Hope you've got flood insurance.",
@@ -1100,7 +1135,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 49,
+    index: 48,
     title: "The Kraken Will Be Jealous",
     description: "Add $1,000,000 of liquidity at once",
     story:
@@ -1108,12 +1143,12 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/49-kraken-XMpMV1VInrDzc2u7jINZTJV3je8aad.jpg",
     points: 15,
-    titleUnlock: "Liquidity King",
+    titleUnlock: 27,
     category: "silver",
   },
   {
-    index: 50,
-    title: "Patiently Watching My Trade Go Nowhere",
+    index: 49,
+    title: "Patiently WAiting For the Bus",
     description: "Keep a trade open for 30 days (Long-Term Vision)",
     story:
       "Patience is a virtue… or maybe you just forgot about the trade. Either way, well done!",
@@ -1123,18 +1158,18 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 51,
+    index: 50,
     title: "Oops! There Goes My Wallet",
     description: "Get liquidated once",
     story: "Well, that went horribly wrong. Welcome to the void, Brian.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/51-wallet-b8kkZjbxBrlYxzBOceITq712QwihR6.jpg",
     points: 5,
-    titleUnlock: "Bad Luck Brian",
+    titleUnlock: 28,
     category: "bronze",
   },
   {
-    index: 52,
+    index: 51,
     title: "I Am the Fallen… And the Floor",
     description: "Get liquidated 25 times",
     story: "If at first you don't succeed… get liquidated 25 more times!",
@@ -1144,7 +1179,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 53,
+    index: 52,
     title: "Flaming Out, But Still Kicking",
     description: "Get liquidated 50 times",
     story: "You're on fire! But not in the good way…",
@@ -1154,18 +1189,18 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: "bronze",
   },
   {
-    index: 54,
+    index: 53,
     title: "My Portfolio Is Literally Ash",
     description: "Get liquidated 100 times",
     story: "Burned a hundred times? You must be Cramer's biggest fan!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/54-cramer-e5yTIHWTYdoN6s4i8pvzYim9p1zyDu.jpg",
     points: 25,
-    titleUnlock: "Le Cramer",
+    titleUnlock: 29,
     category: "gold",
   },
   {
-    index: 55,
+    index: 54,
     title: "Who Am I Again?",
     description: "Change your username 10 times",
     story:
@@ -1173,7 +1208,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/55-who-am-i-again-IsO6vuXv3TLcRcQDpROjAlT0zGo0yE.jpg",
     points: 5,
-    titleUnlock: "The Chameleon",
+    titleUnlock: 30,
     category: "bronze",
   },
   // {
