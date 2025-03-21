@@ -620,7 +620,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 2,
     title: "****s So heavy you can barely walk",
-    description: "Do not sell more than 90% of ADX received from ALP staking",
+    description: "Sell less than 10% of the ADX earned from ALP staking",
     story: "Walking's hard when you’re lugging that much unshakable trust.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/3-diamond-hands-3RVLS24IdxiKe4ntjguhO2ylgHYaJa.jpg",
