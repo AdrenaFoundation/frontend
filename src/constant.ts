@@ -607,10 +607,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 1,
-    title: "Show Off, Not Sell",
+    title: "The Right Type of Gold Digger",
     description: "Do not sell more than 50% of ADX received from ALP staking",
     story:
-      "Like a shiny sports car—you don’t drive it, you just let people admire it!",
+      "While others dig for exits, you dig for glory. Golden hands, golden vision.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/2-golden-hands-td7i9DiSUQFzgWJl6nszw9e1ariMn1.jpg",
     points: 25,
@@ -619,10 +619,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 2,
-    title: "You're Blinding Me!",
+    title: "****s So heavy you can barely walk",
     description: "Do not sell more than 90% of ADX received from ALP staking",
-    story:
-      "Some people wear shades, others wear diamonds. You're making people squint with all that sparkle!",
+    story: "Walking's hard when you’re lugging that much unshakable trust.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/3-diamond-hands-3RVLS24IdxiKe4ntjguhO2ylgHYaJa.jpg",
     points: 50,
@@ -632,7 +631,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 3,
     title: "Wake Me Up Before You Trade",
-    description: "Be ranked the top 5 of the highest volume division",
+    description:
+      "Be ranked the top 5 of the highest volume division during pre-season",
     story: "You've awakened… Now the markets fear you.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/4-babe-wake-up-oqZKa6E2swQGYbXP1JznHgT3OKEpfW.jpg",
@@ -643,7 +643,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 4,
     title: "Master of the Awakening",
-    description: "Be ranked top 1 during preseason",
+    description: "Be ranked top 1 during pre-season",
     story:
       "Fully awakened and ready to rule! You're not just awake, you're the coffee-powered champion of the trading world. Bow before the one who snoozes no more!",
     image:
@@ -655,7 +655,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 5,
     title: "Sleepy Beast, time to wake up",
-    description: "Open a trade during preseason",
+    description: "Open a trade during pre-season",
     story:
       "Still rubbing your eyes but somehow making moves? You're a contender, even if you're half-asleep!",
     image:
@@ -830,7 +830,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 20,
-    title: "All Chips Gone!",
+    title: "Daddy's money",
     description: "Lose $500,000",
     story:
       "You didn't think you needed that half-million, did you? Thanks, Dad!",
@@ -953,7 +953,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 31,
-    title: "Found $10 in the Couch Cushions",
+    title: "Salad, Tomato and Oignon",
     description: "Earn $10 from Staked ADX",
     story:
       "You earned a kebab's worth of income! Don't spend it all in one place.",

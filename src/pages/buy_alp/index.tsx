@@ -74,14 +74,6 @@ export default function Buy({ connected, mainPool }: PageProps) {
               revenue grows.
             </p>
           </div>
-
-          <div className="p-3 pl-6 border-l-2 border-white mt-7">
-            <h3 className="font-boldy text-lg">GET BONUS REWARDS</h3>
-            <p className="text-base opacity-75 max-w-96">
-              Duration lock ALP for bonus USDC yield and ADX token rewards.
-              The longer you lock, the higher the yield multipliers.
-            </p>
-          </div>
         </div>
       </div>
 
