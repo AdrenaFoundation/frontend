@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
+import AllStakingChartADX from '@/components/pages/global/AllStakingChart/AllStakingChartADX';
 import UnlockStakingChart from '@/components/pages/global/AllStakingChart/UnlockStakingChart';
 import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
 import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
@@ -71,6 +72,10 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
                                 </div>
                             </div>
                         </Tippy> : null}
+                </div>
+
+                <div className='flex w-full min-h-[15em] h-[15em] grow'>
+                    <AllStakingChartADX allStakingStats={allStakingStats} />
                 </div>
 
                 <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
