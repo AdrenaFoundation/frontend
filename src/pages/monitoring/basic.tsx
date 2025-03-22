@@ -121,7 +121,7 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[12em] blur-md'
+              className='border-0 min-w-[12em]'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.85em] sm:text-[0.85em]'

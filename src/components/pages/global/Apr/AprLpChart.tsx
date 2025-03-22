@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { getGMT } from '@/utils';
 
@@ -20,7 +21,7 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
 
     // custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<string | null>('1M');
   const periodRef = useRef(period);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -63,9 +64,38 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
         }
       })();
 
-      const data = await DataApiClient.getChartAprsInfo(dataPeriod);
+      // Similar to AumChart.tsx, determine endpoint based on period
+      const dataEndpoint = (() => {
+        switch (periodRef.current) {
+          case '1d':
+            return 'poolinfo';
+          case '7d':
+            return 'poolinfohourly';
+          case '1M':
+            return 'poolinfodaily';
+          case '3M':
+            return 'poolinfodaily';
+          case '6M':
+            return 'poolinfodaily';
+          default: return 'poolinfo';
+        }
+      })();
 
-      const timeStamp = data.aprs[0].end_date.map((time: string) => {
+      // Fetch pool info data like in AumChart.tsx
+      const result = await DataApiClient.getPoolInfo({
+        dataEndpoint,
+        queryParams: 'lp_apr_rolling_seven_day=true',
+        dataPeriod,
+        isLiquidApr: true,
+      });
+
+      if (!result || !result.lp_apr_rolling_seven_day || !result.snapshot_timestamp) {
+        console.error('Failed to fetch data: Missing required data fields');
+        return;
+      }
+
+      // Format timestamp similar to AumChart.tsx
+      const timeStamp = result.snapshot_timestamp.map((time: string) => {
         if (periodRef.current === '1d') {
           return new Date(time).toLocaleTimeString('en-US', {
             hour: 'numeric',
@@ -90,32 +120,22 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
           });
         }
 
-        throw new Error('Invalid period');
+        return time;
       });
 
-      const totalAprInfo = [90, 180, 360, 540].reduce((acc, c) => {
-        acc.push({
-          lockedPeriod: `${c}D TOTAL`,
-          values: data.aprs.find((x) => x.staking_type === 'lp' && x.lock_period === c)?.total_apr ?? [],
-        });
+      // Format data for chart
+      const formattedData = timeStamp.map((time: string, i: number) => {
+        const aprValue = result.lp_apr_rolling_seven_day?.[i] ?? null;
 
-        return acc;
-      }, [] as { lockedPeriod: string; values: number[] }[]);
-
-      const formatted = timeStamp.map((time: string, i: number) => ({
-        time,
-
-        'LIQUID': data.aprs.find((x) => x.staking_type === 'lp' && x.lock_period === 0)?.liquid_apr[i] ?? null,
-
-        ...totalAprInfo.reduce((acc, { lockedPeriod, values }) => {
-          acc[lockedPeriod] = values[i];
-
-          return acc;
-        }, {} as { [key: string]: number }),
-      }));
+        // If the value is 0, return null to create breaks in the chart
+        return {
+          time,
+          'ALP APR': aprValue === 0 ? null : aprValue,
+        };
+      });
 
       setInfos({
-        formattedData: formatted,
+        formattedData,
       });
     } catch (e) {
       console.error(e);
@@ -130,26 +150,35 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
     );
   }
 
+  // Check if we're after the ALP liquid date to adjust labels
+  const currentDate = new Date();
+  const alpLiquidDate = new Date('2025-03-19');
+  const isAfterAlpLiquid = currentDate > alpLiquidDate;
+
   return (
     <LineRechart
-      title="STAKED ALP APR"
+      title="ALP APR"
       data={infos.formattedData}
-      labels={[
-        ...Object.keys(infos.formattedData[0])
-          .filter((key) => key !== 'time')
-          .map((x) => ({
-            name: x,
-            color: (() => {
-              if (x.includes('90')) return '#99cc99'; // Light green
-              if (x.includes('180')) return '#ffd966'; // Light yellow
-              if (x.includes('360')) return '#ff9999'; // Light red
-              if (x.includes('540')) return '#ccccff'; // Light purple
-              if (x.includes('0')) return '#66b3ff'; // Light blue
+      labels={
+        isAfterAlpLiquid
+          ? [{ name: 'ALP APR', color: '#66b3ff' }]
+          : [
+            ...Object.keys(infos.formattedData[0])
+              .filter((key) => key !== 'time')
+              .map((x) => ({
+                name: x,
+                color: (() => {
+                  if (x.includes('90')) return '#99cc99'; // Light green
+                  if (x.includes('180')) return '#ffd966'; // Light yellow
+                  if (x.includes('360')) return '#ff9999'; // Light red
+                  if (x.includes('540')) return '#ccccff'; // Light purple
+                  if (x.includes('0')) return '#66b3ff'; // Light blue
 
-              return '#66b3ff'; // Light blue as a fallback
-            })(),
-          })),
-      ]}
+                  return '#66b3ff'; // Light blue as a fallback
+                })(),
+              })),
+          ]
+      }
       yDomain={[0]}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
@@ -160,7 +189,12 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
       }]}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
-      tippyContent={<div>This includes the APR from fees and LM rewards (converted to $ value at the time). It does not include the JitoSOL base APR nor the ALP index appreciation.</div>}
+      tippyContent={
+        isAfterAlpLiquid
+          ? <div>This represents the 7-day rolling average APR for ALP since March 19, 2025, when ALP became liquid.</div>
+          : <div>This includes the APR from fees and LM rewards (converted to $ value at the time). It does not include the JitoSOL base APR nor the ALP index appreciation.</div>
+      }
+      events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
     />
   );
 }
