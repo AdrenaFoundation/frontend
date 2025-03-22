@@ -3,20 +3,16 @@ import { useEffect } from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
-import AllStakingChartADX from '@/components/pages/global/AllStakingChart/AllStakingChartADX';
-import AllStakingChartALP from '@/components/pages/global/AllStakingChart/AllStakingChartALP';
 import UnlockStakingChart from '@/components/pages/global/AllStakingChart/UnlockStakingChart';
 import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
 import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 import StakingChart from '@/components/pages/global/Staking/StakingChart';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
-import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 
 export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const { allStakingStats } = useAllStakingStats();
     const totalSupplyADX = useADXTotalSupply();
-    const totalSupplyALP = useALPTotalSupply();
 
     useEffect(() => {
         if (view !== 'allStaking') return;
@@ -26,9 +22,7 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
         <div className="flex flex-col gap-2 p-2 items-center justify-center">
             <StyledContainer className="p-4">
                 <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em] ">
-                    <div className='blur-md'>
-                        <AprLpChart isSmallScreen={isSmallScreen} />
-                    </div>
+                    <AprLpChart isSmallScreen={isSmallScreen} />
                     <AprLmChart isSmallScreen={isSmallScreen} />
                 </div>
             </StyledContainer>
@@ -79,72 +73,11 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
                         </Tippy> : null}
                 </div>
 
-                <div className='flex w-full min-h-[15em] h-[15em] grow'>
-                    <AllStakingChartADX allStakingStats={allStakingStats} />
-                </div>
-
-                <div className='flex flex-col items-center justify-center gap-1'>
-                    <h2 className='flex'>STAKED ALP</h2>
-
-                    {allStakingStats && totalSupplyALP ?
-                        <Tippy
-                            content={
-                                <div className="text-sm flex">
-                                    Total staked ALP / Total supply ALP
-                                </div>
-                            }
-                            placement="auto"
-                        >
-                            <div className='flex items-center gap-2'>
-                                <FormatNumber
-                                    nb={allStakingStats.byDurationByAmount.ALP.totalLocked}
-                                    isAbbreviate={true}
-                                    isAbbreviateIcon={false}
-                                    className='text-txtfade text-base'
-                                    isDecimalDimmed={false}
-                                />
-
-                                <span className='text-txtfade text-base font-mono'>{"/"}</span>
-
-                                <FormatNumber
-                                    nb={totalSupplyALP}
-                                    isAbbreviate={true}
-                                    isAbbreviateIcon={false}
-                                    className='text-txtfade text-base'
-                                    isDecimalDimmed={false}
-                                />
-
-                                <div className='flex'>
-                                    <span className='text-txtfade text-base font-mono'>{"("}</span>
-                                    <FormatNumber
-                                        nb={allStakingStats.byDurationByAmount.ALP.totalLocked * 100 / totalSupplyALP}
-                                        className='text-txtfade text-base'
-                                        isDecimalDimmed={false}
-                                        format='percentage'
-                                    />
-                                    <span className='text-txtfade text-base font-mono'>{")"}</span>
-                                </div>
-                            </div>
-                        </Tippy> : null}
-                </div>
-
-                <div className='flex w-full min-h-[15em] h-[15em] grow'>
-                    <AllStakingChartALP allStakingStats={allStakingStats} />
-                </div>
-
                 <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
                     <h2 className='flex'>ADX STAKING REMAINING TIME</h2>
 
                     <div className='w-full flex h-[20em]'>
                         <UnlockStakingChart allStakingStats={allStakingStats} stakingType="ADX" />
-                    </div>
-                </div>
-
-                <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
-                    <h2 className='flex'>ALP STAKING REMAINING TIME</h2>
-
-                    <div className='w-full flex h-[20em]'>
-                        <UnlockStakingChart allStakingStats={allStakingStats} stakingType="ALP" />
                     </div>
                 </div>
 

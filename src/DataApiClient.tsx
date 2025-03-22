@@ -755,19 +755,24 @@ export default class DataApiClient {
             dataEndpoint,
             queryParams,
             dataPeriod,
-            allHistoricalData = false
+            allHistoricalData = false,
+            isLiquidApr = false
         }: {
             dataEndpoint: string,
             queryParams: string,
             dataPeriod: number,
             allHistoricalData?: boolean
+            isLiquidApr?: boolean
         }): Promise<PoolInfoResponse | null> {
         try {
             let startDate: Date;
 
             if (allHistoricalData) {
                 startDate = new Date('2023-09-25T00:00:00.000Z');
-            } else {
+            } else if (isLiquidApr) {
+                startDate = new Date('2025-03-19T12:00:00.000Z');
+            }
+            else {
                 startDate = new Date();
                 startDate.setDate(startDate.getDate() - dataPeriod);
             }
