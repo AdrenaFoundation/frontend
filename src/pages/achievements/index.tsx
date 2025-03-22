@@ -1,17 +1,33 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import banner from '@/../../public/images/achievements-book-wallpaper.jpg';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Achievement from '@/components/pages/achievements/Achievement';
 import { ACHIEVEMENTS } from '@/constant';
+import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { PageProps } from '@/types';
 
 
 export default function Achievements({
     userProfile
 }: PageProps) {
+    const { allUserProfiles } = useAllUserProfiles({});
+
+    const totalCollected = useMemo(() => {
+        if (userProfile === null || userProfile === false) return null;
+
+        return ACHIEVEMENTS.reduce((total, achievement) => (userProfile.achievements[achievement.index] ? 1 : 0) + total, 0);
+    }, [userProfile]);
+
+    // const totalPoints = useMemo(() => {
+    //     if (userProfile === null || userProfile === false) return null;
+
+    //     return ACHIEVEMENTS.reduce((total, achievement) => (userProfile.achievements[achievement.index] ? achievement.points : 0) + total, 0);
+    // }, [userProfile]);
+
     return (
         <div className="flex flex-col p-4">
             <StyledContainer className="p-0 overflow-hidden" bodyClassName='p-0 items-center justify-center'>
@@ -52,13 +68,22 @@ export default function Achievements({
                         <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>
                             Collect them all
                         </h4>
+
+                        <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>
+                            {totalCollected} / {ACHIEVEMENTS.length}
+                        </h4>
                     </div>
                 </div>
 
+                {/* <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>
+                    I HAVE {totalPoints} ACHIEVEMENT POINTS
+                </h4> */}
+
                 <div className='font-archivo pt-8 pb-8 text-txtfade text-center'>The book is being written, achievements will unlocks automatically soon.</div>
 
-                <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4'>
+                <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4 pb-6'>
                     {ACHIEVEMENTS.map((achievement) => <Achievement
+                        allUserProfiles={allUserProfiles}
                         unlocked={userProfile ? (userProfile?.achievements[achievement.index] ?? 0) > 0 : false}
                         achievement={achievement}
                         key={`achievement-${achievement.index}`}
