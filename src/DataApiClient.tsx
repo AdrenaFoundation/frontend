@@ -770,7 +770,9 @@ export default class DataApiClient {
             if (allHistoricalData) {
                 startDate = new Date('2023-09-25T00:00:00.000Z');
             } else if (isLiquidApr) {
-                startDate = new Date('2025-03-19T12:00:00.000Z');
+                const dateDataPeriod = new Date();
+                dateDataPeriod.setDate(dateDataPeriod.getDate() - dataPeriod);
+                startDate = dateDataPeriod.getTime() > new Date('2025-03-19T12:00:00.000Z').getTime() ? dateDataPeriod : new Date('2025-03-19T12:00:00.000Z');
             }
             else {
                 startDate = new Date();
