@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
-import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { getGMT } from '@/utils';
 
@@ -150,35 +149,11 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
     );
   }
 
-  // Check if we're after the ALP liquid date to adjust labels
-  const currentDate = new Date();
-  const alpLiquidDate = new Date('2025-03-19');
-  const isAfterAlpLiquid = currentDate > alpLiquidDate;
-
   return (
     <LineRechart
       title="ALP APR"
       data={infos.formattedData}
-      labels={
-        isAfterAlpLiquid
-          ? [{ name: 'ALP APR', color: '#66b3ff' }]
-          : [
-            ...Object.keys(infos.formattedData[0])
-              .filter((key) => key !== 'time')
-              .map((x) => ({
-                name: x,
-                color: (() => {
-                  if (x.includes('90')) return '#99cc99'; // Light green
-                  if (x.includes('180')) return '#ffd966'; // Light yellow
-                  if (x.includes('360')) return '#ff9999'; // Light red
-                  if (x.includes('540')) return '#ccccff'; // Light purple
-                  if (x.includes('0')) return '#66b3ff'; // Light blue
-
-                  return '#66b3ff'; // Light blue as a fallback
-                })(),
-              })),
-          ]
-      }
+      labels={[{ name: 'ALP APR', color: '#66b3ff' }]}
       yDomain={[0]}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
@@ -190,11 +165,8 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
       isSmallScreen={isSmallScreen}
       formatY='percentage'
       tippyContent={
-        isAfterAlpLiquid
-          ? <div>This represents the 7-day rolling average APR for ALP since March 19, 2025, when ALP became liquid.</div>
-          : <div>This includes the APR from fees and LM rewards (converted to $ value at the time). It does not include the JitoSOL base APR nor the ALP index appreciation.</div>
+        <div>This represents the 7-day rolling average APR for ALP since March 19, 2025, when ALP became liquid.</div>
       }
-      events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
     />
   );
 }
