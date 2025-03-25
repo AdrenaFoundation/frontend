@@ -138,41 +138,34 @@ export const SOLANA_EXPLORERS_OPTIONS = {
         ? `https://explorer.solana.com/address/${address}?cluster=devnet` // redirection vers Solana Explorer pour devnet
         : `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solanabeach.io/transaction/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solanabeach.io/transaction/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   Solscan: {
     url: 'https://solscan.io',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solscan.io/account/${address}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/account/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solscan.io/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana Explorer': {
     url: 'https://explorer.solana.com',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/address/${address}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/address/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana FM': {
     url: 'https://solana.fm',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solana.fm/address/${address}${
-        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/address/${address}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solana.fm/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
   },
 } as const;
@@ -606,7 +599,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     title: "Look at me, I'm the trader now!",
     description: 'Execute your first perpetuals trade',
     story:
-      "Congratulations! You've completed your first trade. The markets await your next move.",
+      "Congratulations! You've completed your first trade. The markets awaits your next move.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/1-look-at-me-now-pekTSNjN2sGH2JzlPIjK3tWREULk7D.jpg',
     points: 5,
@@ -615,8 +608,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 1,
-    title: 'The Right Type of Gold Digger',
-    description: 'Do not sell more than 50% of ADX received from ALP staking',
+    title: 'The right type of gold digger',
+    description: 'Do not sell more than 50% of the ADX tokens received from ALP staking rewards',
     story:
       'While others dig for exits, you dig for glory. Golden hands, golden vision.',
     image:
@@ -627,9 +620,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 2,
-    title: '****s So heavy you can barely walk',
-    description: 'Sell less than 10% of the ADX earned from ALP staking',
-    story: "Walking's hard when you’re lugging that much unshakable trust.",
+    title: 'B***s so heavy you can barely walk',
+    description: 'Sell less than 10% of the ADX earned from ALP staking rewards',
+    story: "Walking is hard when you're carrying that much unshakable trust.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/3-diamond-hands-3RVLS24IdxiKe4ntjguhO2ylgHYaJa.jpg',
     points: 50,
@@ -638,10 +631,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 3,
-    title: 'Wake Me Up Before You Trade',
+    title: 'Wake Me Up, Before You Trade-Trade',
     description:
-      'Be ranked the top 5 of the highest volume division during pre-season',
-    story: "You've awakened… Now the markets fear you.",
+      'Rank top 5 of the highest volume division during pre-season',
+    story: "You're awake... Now the markets fear you.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/4-babe-wake-up-oqZKa6E2swQGYbXP1JznHgT3OKEpfW.jpg',
     points: 25,
@@ -651,9 +644,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 4,
     title: 'Master of the Awakening',
-    description: 'Be ranked top 1 during pre-season',
+    description: 'Reach rank #1 during the pre-season',
     story:
-      "Fully awakened and ready to rule! You're not just awake, you're the coffee-powered champion of the trading world. Bow before the one who snoozes no more!",
+      "Fully awakened and ready to rule! The trading world bows to its new champion.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/5-master-of-the-awakening-q5yUElviV2RTCCaIfXmMAyYG2GBays.jpg',
     points: 25,
@@ -662,10 +655,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 5,
-    title: 'Sleepy Beast, time to wake up',
-    description: 'Open a trade during pre-season',
+    title: 'Time to wake up, Sleepy Beast',
+    description: 'Traded during the during pre-season',
     story:
-      "Still rubbing your eyes but somehow making moves? You're a contender, even if you're half-asleep!",
+      "Still rubbing your eyes but making moves. You're a contender, even half-asleep!",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/6-time-to-wake-up-IxV5VRhtyCeSFERdLoqklUa26rZfFZ.jpg',
     points: 5,
@@ -675,9 +668,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 6,
     title: 'Dare to Mutate',
-    description: 'Be ranked in the top 10 during season 1',
+    description: 'Rank top 10 during season 1',
     story:
-      "You're a challenger, ready to evolve and wreak havoc. The markets tremble—well, sort of.",
+      "You're a challenger, ready to evolve and wreak havoc. The markets tremble at your presence.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/7-dare-to-mutate-t3DnfboCXHK1tUNzcUCg1ibmEhRHYq.jpg',
     points: 25,
@@ -687,7 +680,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 7,
     title: 'Big Mutant in a Small Pond',
-    description: 'Be ranked top 1 during season 1',
+    description: 'Rank top 1 during season 1',
     story:
       "You've conquered the first rank! Now don't let the pond fool you into thinking you're the ocean's ruler.",
     image:
@@ -699,9 +692,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 8,
     title: 'Mutant on the Rise',
-    description: 'Be ranked top 100 during season 1',
+    description: 'Rank top 100 during season 1',
     story:
-      'Contender status unlocked! Keep going, because this mutation is only just getting started.',
+      'Contender status unlocked! Keep going, because this mutation is just getting started.',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/9-mutant-on-the-rise-uewucKXwfPcjrOtGMXxrYH03X6xi93.jpg',
     points: 5,
@@ -770,7 +763,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     title: "That's hot",
     description: 'Reach $500,000,000 in total volume.',
     story:
-      "At this point, you're either a genius or a market menace. Maybe both.",
+      "At this point, you're either a genius or a invested early in meme coins. Maybe both.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/15-thats-hot-5ISN0W3DjRWKUxzh9nzudqP0inkRMY.jpg',
     points: 100,
@@ -795,7 +788,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     index: 16,
     title: 'Oops!',
     description: 'Lose $5,000',
-    story: "So… when's your McDonald's shift start?",
+    story: "So... when does your McDonald's shift start?",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/17-mcdo-pZYjwBzwDwf6vDdeCpMxMiyauJEEGm.jpg',
     points: 5,
@@ -804,10 +797,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 17,
-    title: 'It happened so fast…',
+    title: 'It happened so fast...',
     description: 'Lose $10,000.',
     story:
-      "You've entered the danger zone. Better check your wallet for survivors.",
+      "Welcome to the danger zone. Check your wallet for survivors.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/18-happened-so-fast-KIt1ck2Sy7qgNqOBxs3T4vpNTORaFl.jpg',
     points: 15,
@@ -818,7 +811,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     title: 'Is There A Refund Button for This?',
     description: 'Lose $50,000.',
     story:
-      "Oof, that mutation didn't go as planned. But hey, at least you're 'highly' something.",
+      "Oof, that mutation didn't go as planned. But hey, at least you're scoring high at something.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/19-refund-r75guD0MQXjRQgaEAJHx8ANKTKxmxs.jpg',
     points: 25,
@@ -827,9 +820,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 19,
-    title: 'I swear, one win is all I need!',
+    title: 'I swear, one more trade to make it all back!',
     description: 'Lose $200,000.',
-    story: "Market slap you that hard? Don't worry, it builds character.",
+    story: "Market slapped you that hard? Don't worry, you'r one trade away to make it all back.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/20-one-win-X2TJ1UZ0f2RvT2PACf9u0x7wbKTRs4.jpg',
     points: 50,
@@ -862,7 +855,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 22,
     title: 'You guys are getting gains?',
-    description: 'Earn $5,000 in profit.',
+    description: 'Reach $5,000 in realized profits.',
     story: "You caught something! Let's hope it's not beginner's luck.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/23-you-guys-are-getting-paid-owNoteCLB5Z6TN8J73RkPlF1pCOgFA.jpg',
@@ -872,7 +865,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 23,
     title: 'Slow grind is the best grind',
-    description: 'Earn $10,000 in realized profits.',
+    description: 'Reach $10,000 in realized profits.',
     story: 'Careful, the markets bite back.',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/24-slow-grind-PiLmxOAcDSKLUHazU29PiOjmfAOwd4.jpg',
@@ -882,9 +875,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 24,
     title: 'Time to flex',
-    description: 'Earn $50,000 in profit',
+    description: 'Reach $50,000 in realized profits.',
     story:
-      'The beast has learned to hunt. The fortune is real, the flex is even better.',
+      'The beast has learned to hunt. The fortune is real, but the flex is even better.',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/25-time-to-flex-1XuayhxSnAWeqSz2z7aMfY9ptgMt4w.jpg',
     points: 25,
@@ -894,8 +887,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 25,
     title: 'Packed your things yet?',
-    description: 'Earn $200,000 in profit',
-    story: "Your printer's been activated. Please avoid hyperinflation.",
+    description: 'Reach $200,000 in realized profits.',
+    story: "Printer has been activated. Please avoid hyperinflation.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/26-packed-your-things-yet-IpZBGnB46Lhut3G5thSYJAnzSPJMRP.jpg',
     points: 50,
@@ -905,7 +898,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 26,
     title: 'Moby Dick would be jealous',
-    description: 'Earn $500,000 in profits',
+    description: 'Reach $500,000 in realized profits.',
     story: "Whale alert! Careful, don't capsize the boat with all that profit.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/27-moby-dick-Lr0avxHgUHbIgx5upXO84l6DGQ6Cj2.jpg',
@@ -917,7 +910,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 27,
     title: 'Reached the Apex',
-    description: 'Earn $1,000,000 in profits',
+    description: 'Reach $1,000,000 in realized profits.',
     story: "You're at the top of the food chain!",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/28-apex-Q9J81YMxgh2nm12so0K8p7frwcmBf4.jpg',
@@ -928,7 +921,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 28,
     title: 'Beast Tamer... For Now',
-    description: 'Achieve 5 consecutive trades with no losses',
+    description: 'Complete 5 consecutive trades with no losses',
     story:
       "You're taming the markets like a circus trainer. Hope they stay obedient!",
     image:
@@ -940,7 +933,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 29,
     title: 'Strike!',
-    description: 'Reach 10 consecutive trades with no losses',
+    description: 'Complete 10 consecutive trades with no losses',
     story: 'You got them all in one streak.',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/30-strike-mfHfdJ0Wryyrej2m9eVZ9JEVqW4MAM.jpg',
@@ -951,7 +944,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 30,
     title: 'Unstoppable',
-    description: 'Achieve 20 consecutive trades with no losses',
+    description: 'Complete 20 consecutive trades with no losses',
     story: 'Who can stop him?',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/31-unstoppable-cj1ncGJ5pCykjcHoUv43GVJENiJ192.jpg',
@@ -961,10 +954,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 31,
-    title: 'Salad, Tomato and Oignon',
+    title: 'Salade, tomates & oignons, chef',
     description: 'Earn $10 from Staked ADX',
     story:
-      "You earned a kebab's worth of income! Don't spend it all in one place.",
+      "You earned a kebab's worth of income!",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/32-free-kebab-jHIaLAppPnO2FSiGX0H9K3o0FeOo9t.jpg',
     points: 5,
@@ -973,7 +966,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 32,
-    title: 'I Can Buy a Lambo… In Monopoly',
+    title: 'I can buy a Lambo... in Monopoly',
     description: 'Earn $1,000 from Staked ADX',
     story: "A thousand bucks? You're hoarding mutagen like a true monster.",
     image:
@@ -983,7 +976,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 33,
-    title: 'Blood, Sweat, and Some Coin',
+    title: 'Blood, sweat, and some coins',
     description: 'Earn $5,000 from Staked ADX',
     story:
       "That's enough to buy some real monster snacks. Keep bleeding them dry!",
@@ -994,10 +987,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 34,
-    title: 'Finally, Enough to Trade in X100',
+    title: 'Finally, enough to trade x100',
     description: 'Earn $10,000 from Staked ADX',
     story:
-      "Your collection's growing. Soon you'll need a vault for all those profits!",
+      "Your collection is growing. Soon you'll need a vault for all those profits!",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/35-100x-TobyYt1CZMYvElzdGe8a60iSttJicD.jpg',
     points: 25,
@@ -1005,7 +998,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 35,
-    title: "I'm Not Saying I'm Rich, But...",
+    title: "I'm not saying I'm rich, but...",
     description: 'Earn $50,000 from Staked ADX',
     story:
       "You've got trophies, and they're all in your bank account. Cha-ching!",
@@ -1016,7 +1009,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 36,
-    title: 'The Money Grows on Trees, I Swear',
+    title: 'The money grows on trees, I swear',
     description: 'Earn $100,000 from Staked ADX',
     story:
       "Ruling over spoils? You've mastered the art of doing nothing while getting rich!",
@@ -1028,7 +1021,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 37,
-    title: 'One Million reasons to love me',
+    title: 'One million reasons to love me',
     description: 'Have 1,000,000 staked ADX',
     story: 'A million staked ADX. Your mutant collection is looking strong!',
     image:
@@ -1050,9 +1043,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 39,
-    title: 'Watch out, Retirement is coming',
+    title: 'Watch out, retirement is coming',
     description: 'Have 6,000,000 staked ADX',
-    story: 'The beasts of the stake bow to you. Can you handle the power?',
+    story: 'The stake beasts bow to you. Can you handle the power?',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/40-retirement-is-coming-Gv3p6fvuS3HuLQmnRz8X5iVcMGFoqm.jpg',
     points: 25,
@@ -1061,7 +1054,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 40,
-    title: "Where's My Private Island?",
+    title: "Where's my private island?",
     description: 'Have 10,000,000 staked ADX',
     story: "That's a lot of ADX. You're starting to scare the markets!",
     image:
@@ -1071,7 +1064,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 41,
-    title: 'Is This Staking, or Is This Overkill?',
+    title: 'Is this staking, or is this overkill?',
     description: 'Have 20,000,000 staked ADX',
     story:
       "You've become the Kraken of the staked ADX world. There's no stopping you!",
@@ -1082,7 +1075,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 42,
-    title: 'I Have Enough ADX to Buy Your Soul',
+    title: 'I have enough ADX to buy your soul',
     description: 'Have 50,000,000 staked ADX',
     story: 'Your ADX empire is vast. The board awaits your command, Overlord.',
     image:
@@ -1093,10 +1086,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 43,
-    title: 'Just Dip My Toes in the Pool',
-    description: 'Add $1,000 of liquidity at once',
+    title: 'Just dip my toes in the pool',
+    description: 'Add $1,000 of liquidities at once',
     story:
-      'Just a ripple in the liquidity pool… but every tidal wave starts small!',
+      'Just a ripple in the liquidity pool… though even tidal waves start small!',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/44-tip-a-toe-GLl6rxIIQF1WmYSgF1IpCAUeQOdDC8.jpg',
     points: 5,
@@ -1104,8 +1097,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 44,
-    title: 'Storming the Liquidity Market',
-    description: 'Add $50,000 of liquidity at once',
+    title: 'Storming the liquidity pool',
+    description: 'Add $50,000 of liquidities at once',
     story: "You've summoned a storm, but are you ready for the downpour?",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/45-tornado-mP5d8o5l79cXnzYJkMegyQT4ONHZIK.jpg',
@@ -1114,8 +1107,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 45,
-    title: 'Making Waves in the Market',
-    description: 'Add $100,000 of liquidity at once',
+    title: 'Making waves in the market',
+    description: 'Add $100,000 of liquidities at once',
     story: 'The ocean is roaring! Hold on tight, or you might get swept away.',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/46-waves-WvzBDFgBSH4rs7j8m8jupl6xQ4rrcS.jpg',
@@ -1124,8 +1117,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 46,
-    title: "I'm the Storm Now",
-    description: 'Add $250,000 of liquidity at once',
+    title: "I'm the storm now",
+    description: 'Add $250,000 of liquidities at once',
     story: "You've become a force of nature. Don't let it go to your head!",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/47-storm-CaprSEA1qW1xefBoJSOdhrKtWWOLa4.jpg',
@@ -1134,9 +1127,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 47,
-    title: 'Tsunami Bringer',
-    description: 'Add $500,000 of liquidity at once',
-    story: "A tsunami of liquidity! Hope you've got flood insurance.",
+    title: 'Tsunami bringer',
+    description: 'Add $500,000 of liquidities at once',
+    story: "A tsunami of liquidities! Hope you've got flood insurance.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/48-tsunami-9LzKOIPrPXW0SSWvtMZq8S1YhysRU3.jpg',
     points: 10,
@@ -1144,10 +1137,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 48,
-    title: 'The Kraken Will Be Jealous',
-    description: 'Add $1,000,000 of liquidity at once',
+    title: 'Bigger than the Kraken',
+    description: 'Add $1,000,000 of liquidities at once',
     story:
-      "You've reshaped the seas. The market tides bow to you now, Liquidity King!",
+      "You're reshaping the seas. The market bows to you now, liquidity king!",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/49-kraken-XMpMV1VInrDzc2u7jINZTJV3je8aad.jpg',
     points: 15,
@@ -1156,10 +1149,10 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 49,
-    title: 'Patiently WAiting For the Bus',
+    title: 'Patiently waiting for the bus',
     description: 'Keep a trade open for 30 days (Long-Term Vision)',
     story:
-      'Patience is a virtue… or maybe you just forgot about the trade. Either way, well done!',
+      'Patience is a virtue... or maybe you just forgot about the trade. Either way, well done!',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/50-waiting-the-bus-2qRgkjQCxMbFy0W0ttI1JH9jJO7ZB3.jpg',
     points: 10,
@@ -1167,7 +1160,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 50,
-    title: 'Oops! There Goes My Wallet',
+    title: 'Oops! There goes my wallet',
     description: 'Get liquidated once',
     story: 'Well, that went horribly wrong. Welcome to the void, Brian.',
     image:
@@ -1178,9 +1171,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 51,
-    title: 'I Am the Fallen… And the Floor',
+    title: 'I am the fallen... and the floor',
     description: 'Get liquidated 25 times',
-    story: "If at first you don't succeed… get liquidated 25 more times!",
+    story: "If at first you don't succeed... get liquidated 25 more times!",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/52-fallen-BZDcb6p0zacpso4oIrGII2cNw34rQ6.jpg',
     points: 5,
@@ -1188,9 +1181,9 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 52,
-    title: 'Flaming Out, But Still Kicking',
+    title: 'Flaming out, but still kicking',
     description: 'Get liquidated 50 times',
-    story: "You're on fire! But not in the good way…",
+    story: "You're on fire! Though not the right kind of fire...",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/53-burning-BafBZ7ifJzOjNvIyhvhx9msZGXDNWO.jpg',
     points: 10,
@@ -1198,7 +1191,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 53,
-    title: 'My Portfolio Is Literally Ash',
+    title: 'Return to dust',
     description: 'Get liquidated 100 times',
     story: "Burned a hundred times? You must be Cramer's biggest fan!",
     image:
@@ -1209,7 +1202,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 54,
-    title: 'Who Am I Again?',
+    title: 'Who am I again?',
     description: 'Change your username 10 times',
     story:
       "You've changed more times than I can count. Ever thought about sticking with one name?",
