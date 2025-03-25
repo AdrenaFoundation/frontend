@@ -173,14 +173,7 @@ export default function OwnerBloc({
             unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'grayscale cursor-disabled',
           )}
           onClick={() => {
-            console.log('ONCLICK WALLPAPER', unlocked);
             if (!unlocked) return;
-
-            console.log('SET UPDATING METADATA', {
-              profilePicture: updatingMetadata.profilePicture,
-              wallpaper: (Number(v) as unknown as Wallpaper),
-              title: updatingMetadata.title,
-            })
 
             setUpdatingMetadata((u) => ({
               profilePicture: u.profilePicture,
