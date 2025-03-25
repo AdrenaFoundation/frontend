@@ -38,7 +38,7 @@ export default function Achievement({
     const completionPercentage = useMemo(() => {
         if (nbUnlocked === null || allUserProfiles === null) return null;
 
-        return Math.round((nbUnlocked / allUserProfiles.length) * 100);
+        return (nbUnlocked / allUserProfiles.length) * 100;
     }, [allUserProfiles, nbUnlocked]);
 
     return (
