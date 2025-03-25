@@ -151,7 +151,7 @@ export default function OwnerBloc({
       }
 
       // Check if the user have the Achievement
-      if (userProfile.achievements?.[index]) {
+      if (userProfile.achievements?.[achievement.index]) {
         return [...unlocked, index];
       }
 
@@ -214,7 +214,7 @@ export default function OwnerBloc({
     const unlockedPfpIndexes = Object.keys(PROFILE_PICTURES).reduce((unlocked, i) => {
       const index = Number(i);
       // Look if there is an achievement that unlocks this profile picture
-      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === index);
+      const achievement = ACHIEVEMENTS.find((achievement) => typeof achievement.pfpUnlock !== 'undefined' ? achievement.pfpUnlock === index : false);
 
       if (!achievement) {
         // No requirement for the PFP
@@ -222,7 +222,7 @@ export default function OwnerBloc({
       }
 
       // Check if the user have the Achievement
-      if (userProfile.achievements?.[index]) {
+      if (userProfile.achievements?.[achievement.index]) {
         return [...unlocked, index];
       }
 
@@ -286,7 +286,7 @@ export default function OwnerBloc({
       }
 
       // Check if the user have the Achievement
-      if (userProfile.achievements?.[index]) {
+      if (userProfile.achievements?.[achievement.index]) {
         return [...unlocked, index];
       }
 
