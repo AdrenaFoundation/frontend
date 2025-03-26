@@ -670,7 +670,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     title: 'Dare to Mutate',
     description: 'Rank top 10 during season 1',
     story:
-      "You're a challenger, ready to evolve and wreak havoc. The markets tremble at your presence.",
+      "You're a challenger, ready to evolve and wreak havoc. The markets trembles at your presence.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/7-dare-to-mutate-t3DnfboCXHK1tUNzcUCg1ibmEhRHYq.jpg",
     points: 25,
