@@ -20,12 +20,16 @@ export default function StopLossTakeProfitInput({
   input,
   setInput,
   setIsError,
+  isLoading,
+  isLight = false,
 }: {
   position: PositionExtended;
   input: number | null;
   setInput: (nb: number | null) => void;
   type: 'Stop Loss' | 'Take Profit';
   setIsError: (b: boolean) => void;
+  isLoading?: boolean;
+  isLight?: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [infos, setInfos] = React.useState<{
@@ -106,7 +110,6 @@ export default function StopLossTakeProfitInput({
     });
   }, [
     input,
-    markPrice,
     position.borrowFeeUsd,
     position.collateralUsd,
     position.exitFeeUsd,
@@ -114,6 +117,7 @@ export default function StopLossTakeProfitInput({
     position.price,
     position.sizeUsd,
     position.side,
+    markPrice,
     position.initialLeverage,
     setIsError,
     type,
@@ -199,9 +203,12 @@ export default function StopLossTakeProfitInput({
     }
   };
 
-  if (!infos) return null;
 
-  const { min, max, priceIsOk, priceChangePnL } = infos;
+  const max = infos?.max ?? null
+  const min = infos?.min ?? null
+  const priceIsOk = infos?.priceIsOk ?? null
+  const priceChangePnL = infos?.priceChangePnL ?? null
+
 
   // Determine the value and color to display based on type
   const displayValue = priceChangePnL;
@@ -216,12 +223,12 @@ export default function StopLossTakeProfitInput({
 
   return (
     <div className="flex flex-col w-full">
-      <div className="border-t border-bcolor w-full h-[1px]" />
+      <div className={twMerge("border-t border-bcolor w-full h-[1px]", isLight && 'border-white/5')} />
 
-      <div className="flex my-3 gap-2 px-6 sm:px-4">
-        <p className="font-bold text-base">{type}</p>
+      <div className={twMerge("flex my-3 gap-2 px-6 sm:px-4", isLight && 'px-2 sm:px-2')}>
+        <p className="font-boldy text-sm">{type}</p>
 
-        {priceIsOk === true && displayValue !== null ? (
+        {priceIsOk === true && displayValue !== null && !isLoading && position.collateralUsd ? (
           <div className="flex items-center">
             <div className={twMerge('text-sm mr-1 font-mono', displayColor)}>
               {' '}
@@ -231,7 +238,7 @@ export default function StopLossTakeProfitInput({
             </div>
 
             <FormatNumber
-              nb={(displayValue / position.collateralUsd) * 100}
+              nb={(displayValue / position.collateralUsd)}
               format="percentage"
               prefix="("
               suffix=")"
@@ -244,9 +251,14 @@ export default function StopLossTakeProfitInput({
         ) : null}
       </div>
 
-      <div className="flex flex-col items-center w-full px-6 sm:px-4 gap-0">
-        <div className="w-full mb-3">
-          <div className="flex items-center border rounded-lg bg-third pt-2 pb-2 grow text-sm w-full relative">
+      <div className={twMerge("flex flex-col items-center w-full px-6 sm:px-4 gap-0", isLight && 'px-2 sm:px-2')}>
+        <div className="w-full">
+          <div
+            className={twMerge(
+              'flex items-center border rounded-lg pt-2 pb-2 bg-inputcolor grow text-sm w-full relative transition-opacity duration-300',
+              isLight ? isLoading && 'opacity-20' : 'bg-third',
+            )}
+          >
             <InputNumber
               value={input === null ? undefined : input}
               placeholder="none"
@@ -276,8 +288,9 @@ export default function StopLossTakeProfitInput({
                   variant="secondary"
                   rounded={false}
                   className={twMerge(
-                    'flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
+                    'flex-grow px-2 text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
                     sign === '-' ? 'text-redbright' : 'text-green',
+                    isLight && 'bg-inputcolor',
                   )}
                   onClick={() =>
                     adjustInputByPercentage(
@@ -291,10 +304,10 @@ export default function StopLossTakeProfitInput({
           </div>
         </div>
 
-        <div className="flex flex-row justify-between w-full">
+        <div className="flex flex-row justify-between w-full mt-3">
           {min !== null && (
             <div
-              className='text-base cursor-pointer hover:opacity-75 transition-opacity duration-300'
+              className="text-base cursor-pointer hover:opacity-75 transition-opacity duration-300"
               onClick={() => handleSetInput(getAdjustedPrice(min, true))}
             >
               <FormatNumber
@@ -305,20 +318,21 @@ export default function StopLossTakeProfitInput({
                 )}
                 isDecimalDimmed={true}
                 precision={determinePrecision(markPrice ?? 0)}
-                format='currency'
+                format="currency"
                 prefix="min: "
                 prefixClassName={twMerge(
                   'opacity-50 font-mono',
                   priceIsOk === -1 && 'text-redbright',
                 )}
-
               />
             </div>
           )}
 
           {max !== null && (
             <div
-              className={twMerge('text-base cursor-pointer hover:opacity-75 transition-opacity duration-300')}
+              className={twMerge(
+                'text-base cursor-pointer hover:opacity-75 transition-opacity duration-300',
+              )}
               onClick={() => handleSetInput(getAdjustedPrice(max, false))}
             >
               <FormatNumber
@@ -330,14 +344,13 @@ export default function StopLossTakeProfitInput({
                 )}
                 isDecimalDimmed={true}
                 precision={determinePrecision(markPrice ?? 0)}
-                format='currency'
+                format="currency"
                 prefix="max: "
                 prefixClassName={twMerge(
                   'opacity-50 font-mono',
                   max === null && 'text-txtfade',
                   priceIsOk === 1 && 'text-redbright',
                 )}
-
               />
             </div>
           )}
