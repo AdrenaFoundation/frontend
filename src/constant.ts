@@ -763,7 +763,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     title: "That's hot",
     description: "Reach $500,000,000 in total volume.",
     story:
-      "At this point, you're either a genius or a invested early in meme coins. Maybe both.",
+      "At this point, you're either a genius or you invested early in memecoins. Maybe both.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/15-thats-hot-5ISN0W3DjRWKUxzh9nzudqP0inkRMY.jpg",
     points: 100,
