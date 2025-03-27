@@ -8,7 +8,7 @@ import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import DataApiClient from '@/DataApiClient';
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
-import { Trader } from '@/types';
+import { Trader, TraderByVolumeInfo } from '@/types';
 import {
   formatNumberShort,
   formatPriceInfo,
@@ -20,17 +20,19 @@ const AllUserProfileStatsChart = ({
 }: {
   filteredProfiles: SuperchargedUserProfile[] | null;
 }) => {
-  const [selectedRange, setSelectedRange] = useState<string>('All Time');
+  const date = new Date();
+  const lastDay = date.setDate(date.getDate() - 1);
+  const [selectedRange, setSelectedRange] = useState<string>('Last Day');
   const [startDate, setStartDate] = useState<string>(
-    new Date('01/01/24').toISOString(),
+    new Date(lastDay).toISOString(),
   );
   const [endDate, setEndDate] = useState<string>(new Date().toISOString());
-  const [traders, setTraders] = useState<Trader[] | null>(null);
+  const [traders, setTraders] = useState<TraderByVolumeInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeMetric, setActiveMetric] = useState<string>('volume');
   const [error, setError] = useState<string | null>(null);
   const [selectedCustomStartDate, setSelectedCustomStartDate] =
-    useState<string>(new Date('01/01/24').toISOString());
+    useState<string>(new Date(lastDay).toISOString());
   const [selectedCustomEndDate, setSelectedCustomEndDate] = useState<string>(
     new Date().toISOString(),
   );
@@ -44,16 +46,17 @@ const AllUserProfileStatsChart = ({
     customStartDate?: string,
     customEndDate?: string,
   ) => {
+    setError(null);
+
     try {
       setIsLoading(true);
-      const response = await DataApiClient.getTraders({
+      const response = await DataApiClient.getTraderByVolume({
         startDate: new Date(customStartDate ?? startDate),
         endDate: new Date(customEndDate ?? endDate),
-        limit: 10000,
       });
 
-      if (response.success && response.data.traders) {
-        setTraders(response.data.traders);
+      if (response) {
+        setTraders(response);
       } else {
         setError('Failed to fetch traders data');
       }
@@ -68,7 +71,7 @@ const AllUserProfileStatsChart = ({
   const traderWithUserProfiles = useMemo(() => {
     return traders?.map((trader) => {
       const userProfile = filteredProfiles?.find(
-        (profile) => profile.wallet.toBase58() === trader.user_pubkey,
+        (profile) => profile.wallet.toBase58() === trader.userPubkey.toBase58(),
       );
 
       return {
@@ -82,16 +85,13 @@ const AllUserProfileStatsChart = ({
     return traderWithUserProfiles
       ? traderWithUserProfiles
         .map((trader) => {
-          const key = trader.user_pubkey;
-          const pubkey = trader.user_pubkey;
+          const key = trader.userPubkey.toBase58();
+          const pubkey = trader.userPubkey.toBase58();
           const name =
             trader.userProfile?.profile?.nickname ??
             getAbbrevWalletAddress(pubkey);
-          const volume = trader.volume;
-          const fees = trader.fees;
-          const pnl = trader.pnl;
-          const totalPositions = trader.number_positions;
-          const winRate = trader.win_rate_percentage;
+          const volume = trader.totalVolume;
+          const pnl = trader.totalPnl;
 
           const colorArray = [
             '#3d0909',
@@ -124,11 +124,8 @@ const AllUserProfileStatsChart = ({
                 key,
                 name,
                 pubkey,
-                winRate,
                 volume,
-                fees,
                 pnl,
-                totalPositions,
               },
             ],
           };
@@ -169,7 +166,7 @@ const AllUserProfileStatsChart = ({
                 setStartDate(date.toISOString());
                 break;
               case 'Last Week':
-                date.setDate(date.getDate() - 7);
+                date.setDate(date.getDate() - 6);
                 setStartDate(date.toISOString());
                 break;
               case 'Last Day':
@@ -189,11 +186,11 @@ const AllUserProfileStatsChart = ({
           menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
           menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
           options={[
-            { title: 'All Time' },
-            { title: 'Last Month' },
+            // { title: 'All Time' },
+            // { title: 'Last Month' },
             { title: 'Last Week' },
             { title: 'Last Day' },
-            { title: 'Custom' },
+            // { title: 'Custom' },
           ]}
           selected={selectedRange}
         />

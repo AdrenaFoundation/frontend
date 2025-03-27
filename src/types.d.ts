@@ -1271,6 +1271,16 @@ export type TraderProfilesRawData = {
   }[];
 };
 
+export type TraderByVolumeRawData = {
+  traders: {
+    user_pubkey: string;
+    total_pnl: number;
+    total_volume: number;
+  }[];
+  start_date: string;
+  end_date: string;
+};
+
 export type TraderInfoRawData = {
   user_pubkey: string;
   total_pnl: number;
@@ -1337,6 +1347,12 @@ export type TraderProfileInfo = {
   userPubkey: PublicKey;
   totalPnl: number;
   totalFees: number;
+  totalVolume: number;
+};
+
+export type TraderByVolumeInfo = {
+  userPubkey: PublicKey;
+  totalPnl: number;
   totalVolume: number;
 };
 
