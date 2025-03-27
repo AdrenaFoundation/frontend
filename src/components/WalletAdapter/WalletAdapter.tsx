@@ -188,6 +188,28 @@ export default function WalletAdapter({
                 <MenuSeparator />
 
                 <MenuItem
+                  href='https://docs.adrena.xyz/'
+                  target='_blank'
+                  linkClassName="py-2"
+                >
+                  Learn
+                </MenuItem>
+
+
+                <MenuSeparator />
+
+                <MenuItem
+                  href='https://dao.adrena.xyz/'
+                  target='_blank'
+                  linkClassName="py-2"
+                >
+                  Vote
+                </MenuItem>
+
+                <MenuSeparator />
+
+
+                <MenuItem
                   className="py-2"
                   onClick={() => {
                     setIsSettingsModalOpen?.(true);
