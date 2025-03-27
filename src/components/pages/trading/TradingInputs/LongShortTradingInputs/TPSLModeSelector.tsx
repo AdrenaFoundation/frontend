@@ -12,12 +12,12 @@ export default function TPSLModeSelector({
   tokenB,
   takeProfitInput,
   setTakeProfitInput,
-
   side,
   stopLossInput,
   setStopLossInput,
   isTPSL,
   setIsTPSL,
+  isConnected,
 }: {
   positionInfo: PositionInfoState;
   tokenB: Token;
@@ -28,6 +28,7 @@ export default function TPSLModeSelector({
   isTPSL: boolean;
   side: 'long' | 'short';
   setIsTPSL: (value: boolean) => void;
+  isConnected: boolean;
 }) {
 
 
@@ -47,17 +48,18 @@ export default function TPSLModeSelector({
   };
 
   return (
-    <div className="flex flex-col gap-3 w-full bg-third rounded-lg py-3 mt-2">
+    <div className={"flex flex-col gap-3 w-full bg-third rounded-lg py-3 mt-2"}>
       <div
         className="flex flex-row justify-between gap-3 px-4 cursor-pointer select-none"
         onClick={() => {
+          if (!isConnected) return;
           setIsTPSL(!isTPSL);
           setTakeProfitInput(null);
           setStopLossInput(null);
         }}
       >
-        <p className="font-mono text-sm opacity-50">Take Profit / Stop Loss</p>
-        <label className="flex items-center ml-1 cursor-pointer">
+        <h5>Take Profit / Stop Loss</h5>
+        <label className={twMerge("flex items-center ml-1 cursor-pointer", !isConnected ? "opacity-50" : "")}>
           <Switch
             className={twMerge("mr-0.5", isTPSL ? "bg-green" : "bg-inputcolor")}
             checked={isTPSL}
@@ -69,7 +71,7 @@ export default function TPSLModeSelector({
         </label>
       </div>
 
-      {isTPSL ? (
+      {isTPSL && isConnected ? (
         <>
           <StopLossTakeProfitInput
             position={position as unknown as PositionExtended}

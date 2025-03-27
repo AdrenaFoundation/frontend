@@ -836,6 +836,7 @@ export default function LongShortTradingInputs({
           side={side}
           isTPSL={isTPSL}
           setIsTPSL={setIsTPSL}
+          isConnected={!!wallet}
         />
 
         <ExecutionModeSelector

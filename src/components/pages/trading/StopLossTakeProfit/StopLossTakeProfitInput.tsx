@@ -203,12 +203,10 @@ export default function StopLossTakeProfitInput({
     }
   };
 
-
-  const max = infos?.max ?? null
-  const min = infos?.min ?? null
-  const priceIsOk = infos?.priceIsOk ?? null
-  const priceChangePnL = infos?.priceChangePnL ?? null
-
+  const max = infos?.max ?? null;
+  const min = infos?.min ?? null;
+  const priceIsOk = infos?.priceIsOk ?? null;
+  const priceChangePnL = infos?.priceChangePnL ?? null;
 
   // Determine the value and color to display based on type
   const displayValue = priceChangePnL;
@@ -223,35 +221,55 @@ export default function StopLossTakeProfitInput({
 
   return (
     <div className="flex flex-col w-full">
-      <div className={twMerge("border-t border-bcolor w-full h-[1px]", isLight && 'border-white/5')} />
+      <div
+        className={twMerge(
+          'border-t border-bcolor w-full h-[1px]',
+          isLight && 'border-white/5',
+        )}
+      />
 
-      <div className={twMerge("flex my-3 gap-2 px-6 sm:px-4", isLight && 'px-2 sm:px-2')}>
-        <p className="font-boldy text-sm">{type}</p>
+      <div
+        className={twMerge(
+          'flex my-3 gap-2 px-6 sm:px-4',
+          isLight && 'px-2 sm:px-2',
+        )}
+      >
+        <p className="font-boldy text-sm text-nowrap">{type}</p>
 
-        {priceIsOk === true && displayValue !== null && !isLoading && position.collateralUsd ? (
-          <div className="flex items-center">
-            <div className={twMerge('text-sm mr-1 font-mono', displayColor)}>
-              {' '}
-              { }
-              {isPositive ? '+' : '-'}
-              {formatPriceInfo(Math.abs(displayValue))}
-            </div>
+        {priceIsOk === true &&
+          displayValue !== null &&
+          !isLoading &&
+          position.collateralUsd ? (
+          <div className="flex items-center overflow-x-auto">
+            <FormatNumber
+              nb={Math.abs(displayValue)}
+              prefix={isPositive ? '+' : '-'}
+              format="currency"
+              isDecimalDimmed={false}
+              isAbbreviate={Math.abs(displayValue) > 100_000_000}
+              className={twMerge(displayColor + ` text-xs text-ellipsis`)}
+            />
 
             <FormatNumber
-              nb={(displayValue / position.collateralUsd)}
+              nb={displayValue / position.collateralUsd}
               format="percentage"
               prefix="("
               suffix=")"
-              suffixClassName={twMerge(displayColor, 'ml-0)')}
+              suffixClassName={twMerge(displayColor, 'ml-0')}
               precision={2}
               isDecimalDimmed={false}
-              className={twMerge(displayColor + ` text-xs`)}
+              className={twMerge(displayColor + ` text-xs text-ellipsis`)}
             />
           </div>
         ) : null}
       </div>
 
-      <div className={twMerge("flex flex-col items-center w-full px-6 sm:px-4 gap-0", isLight && 'px-2 sm:px-2')}>
+      <div
+        className={twMerge(
+          'flex flex-col items-center w-full px-6 sm:px-4 gap-0',
+          isLight && 'px-2 sm:px-2',
+        )}
+      >
         <div className="w-full">
           <div
             className={twMerge(
