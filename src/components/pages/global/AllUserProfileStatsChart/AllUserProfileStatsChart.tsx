@@ -8,7 +8,7 @@ import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import DataApiClient from '@/DataApiClient';
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
-import { Trader, TraderByVolumeInfo } from '@/types';
+import { TraderByVolumeInfo } from '@/types';
 import {
   formatNumberShort,
   formatPriceInfo,
