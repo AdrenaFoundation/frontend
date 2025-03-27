@@ -6,7 +6,7 @@ import InputNumber from '@/components/common/InputNumber/InputNumber';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatPriceInfo, getTokenSymbol } from '@/utils';
+import { getTokenSymbol } from '@/utils';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
