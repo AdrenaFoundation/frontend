@@ -55,12 +55,22 @@ export default function Footer({ className }: { className?: string }) {
             height="20"
           />
         </Link> */}
-        {/* <Link
-          href="/terms_and_conditions"
-          className="absolute right-6 text-txtfade hover:text-white font-mono"
+
+        <div className='h-full w-[1px] bg-bcolor' />
+        <Link
+          href="https://docs.adrena.xyz/"
+          target='_blank'
+          className="text-txtfade hover:text-white font-mono text-xs"
         >
-          Terms and conditions
-        </Link> */}
+          Learn
+        </Link>
+        <Link
+          href="https://dao.adrena.xyz/"
+          target='_blank'
+          className="text-txtfade hover:text-white font-mono text-xs"
+        >
+          Vote
+        </Link>
       </div>
     </footer>
   );
