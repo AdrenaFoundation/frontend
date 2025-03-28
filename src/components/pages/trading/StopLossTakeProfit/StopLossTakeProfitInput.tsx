@@ -7,6 +7,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
+import Switch from '@/components/common/Switch/Switch';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
@@ -22,6 +23,10 @@ export default function StopLossTakeProfitInput({
   setIsError,
   isLoading,
   isLight = false,
+  setIsTPSL,
+  isTPSL,
+  isConnected,
+  className,
 }: {
   position: PositionExtended;
   input: number | null;
@@ -30,6 +35,10 @@ export default function StopLossTakeProfitInput({
   setIsError: (b: boolean) => void;
   isLoading?: boolean;
   isLight?: boolean;
+  setIsTPSL?: (b: boolean) => void;
+  isTPSL?: boolean;
+  isConnected?: boolean;
+  className?: string;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [infos, setInfos] = React.useState<{
@@ -219,50 +228,86 @@ export default function StopLossTakeProfitInput({
   const isLong = position.side === 'long';
   const isNegative = (isLong && isStopLoss) || (!isLong && !isStopLoss);
 
+  const title = (
+    <div
+      className={twMerge(
+        'flex my-3 gap-2 px-6 sm:px-4 w-full',
+        isLight && 'px-2 sm:px-4',
+      )}
+    >
+      <p className="font-boldy text-sm text-nowrap">{type}</p>
+
+      {priceIsOk === true &&
+        displayValue !== null &&
+        !isLoading &&
+        position.collateralUsd ? (
+        <div className="flex items-center overflow-x-auto max-w-[150px]">
+          <FormatNumber
+            nb={Math.abs(displayValue)}
+            prefix={isPositive ? '+' : '-'}
+            format="currency"
+            isDecimalDimmed={false}
+            isAbbreviate={Math.abs(displayValue) > 100_000_000}
+            className={twMerge(displayColor + ` text-xs text-ellipsis`)}
+          />
+
+          <FormatNumber
+            nb={displayValue / position.collateralUsd}
+            format="percentage"
+            prefix="("
+            suffix=")"
+            suffixClassName={twMerge(displayColor, 'ml-0')}
+            precision={2}
+            isDecimalDimmed={false}
+            className={twMerge(displayColor + ` text-xs text-ellipsis`)}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
   return (
-    <div className="flex flex-col w-full">
-      <div
-        className={twMerge(
-          'border-t border-bcolor w-full h-[1px]',
-          isLight && 'border-white/5',
-        )}
-      />
+    <div className={twMerge("flex flex-col w-full", className)}>
+      {(!isLight || type === 'Stop Loss') ? (
+        <div
+          className={twMerge(
+            'border-t border-bcolor w-full h-[1px]',
+            isLight && 'border-white/5',
+          )}
+        />
+      ) : null}
 
-      <div
-        className={twMerge(
-          'flex my-3 gap-2 px-6 sm:px-4',
-          isLight && 'px-2 sm:px-2',
-        )}
-      >
-        <p className="font-boldy text-sm text-nowrap">{type}</p>
+      {type === 'Take Profit' && isLight ? (
+        <div
+          className="w-full flex flex-row justify-between gap-3 cursor-pointer select-none pr-4"
+          onClick={() => {
+            if (!isConnected) return;
+            setIsTPSL?.(!isTPSL);
+          }}
+        >
+          {title}
 
-        {priceIsOk === true &&
-          displayValue !== null &&
-          !isLoading &&
-          position.collateralUsd ? (
-          <div className="flex items-center overflow-x-auto">
-            <FormatNumber
-              nb={Math.abs(displayValue)}
-              prefix={isPositive ? '+' : '-'}
-              format="currency"
-              isDecimalDimmed={false}
-              isAbbreviate={Math.abs(displayValue) > 100_000_000}
-              className={twMerge(displayColor + ` text-xs text-ellipsis`)}
+          <label
+            className={twMerge(
+              'flex items-center ml-1 cursor-pointer',
+              !isConnected ? 'opacity-50' : '',
+            )}
+          >
+            <Switch
+              className={twMerge(
+                'mr-0.5',
+                isTPSL ? 'bg-green' : 'bg-inputcolor',
+              )}
+              checked={isTPSL}
+              onChange={() => {
+                // Handle the click on the level above
+              }}
+              size="medium"
             />
-
-            <FormatNumber
-              nb={displayValue / position.collateralUsd}
-              format="percentage"
-              prefix="("
-              suffix=")"
-              suffixClassName={twMerge(displayColor, 'ml-0')}
-              precision={2}
-              isDecimalDimmed={false}
-              className={twMerge(displayColor + ` text-xs text-ellipsis`)}
-            />
-          </div>
-        ) : null}
-      </div>
+          </label>
+        </div>
+      ) : (
+        title
+      )}
 
       <div
         className={twMerge(
