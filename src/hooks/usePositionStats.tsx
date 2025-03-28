@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { normalize } from '@/constant';
+// import DataApiClient from '@/DataApiClient';
 import { useSelector } from '@/store/store';
 import { GetPositionStatsReturnType } from '@/types';
 import { getDaysBetweenDates } from '@/utils';
@@ -16,12 +17,9 @@ export default function usePositionStats(isByWalletAddress = false) {
 
     const [loading, setLoading] = useState<boolean>(true);
 
-    const date = new Date()
-    const lastDay = new Date(date.setDate(date.getDate())).toISOString()
-
     const [startDate, setStartDate] = useState<string>(
-        lastDay,
-    ); // last day by default
+        new Date('2021-01-01').toISOString(),
+    ); // all time by default
 
     const [endDate, setEndDate] = useState<string>(new Date().toISOString());
     const [bubbleBy, setBubbleBy] = useState('pnl');
@@ -41,7 +39,7 @@ export default function usePositionStats(isByWalletAddress = false) {
         //     walletAddress: !isByWalletAddress ? undefined : walletAddress,
         // });
 
-        const result = null;
+        const result = null
 
         if (result) {
             setData(result);
