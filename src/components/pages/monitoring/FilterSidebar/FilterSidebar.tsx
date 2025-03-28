@@ -50,6 +50,7 @@ export default function FilterSidebar({
         | React.Dispatch<React.SetStateAction<string[] | null>>;
         activeOption: string[] | string | null;
         optionItems: { label: string; icon?: ImageRef }[];
+        disabled?: boolean;
     }[];
     sortOptions?: {
         handleChange: React.Dispatch<React.SetStateAction<string>>;
@@ -88,7 +89,8 @@ export default function FilterSidebar({
     ) : null;
 
     const FilterOptions = filterOptions ? (
-        <div className="p-4 bg-[#040D14] border rounded-lg">
+        <div className={twMerge("p-4 bg-[#040D14] border rounded-lg", filterOptions.some(f => f.disabled) &&
+            'opacity-25 cursor-not-allowed pointer-events-none')}>
             <div className="flex flex-row gap-2 mb-3">
                 <Image src={filterIcon} alt="filter icon" className="opacity-50" />
 

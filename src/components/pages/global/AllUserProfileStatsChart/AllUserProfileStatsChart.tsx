@@ -8,7 +8,7 @@ import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import DataApiClient from '@/DataApiClient';
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
-import { TraderByVolumeInfo } from '@/types';
+import { TraderByVolumeInfo, UserProfileExtended } from '@/types';
 import {
   formatNumberShort,
   formatPriceInfo,
@@ -17,12 +17,14 @@ import {
 
 const AllUserProfileStatsChart = ({
   filteredProfiles,
+  setActiveProfile,
 }: {
   filteredProfiles: SuperchargedUserProfile[] | null;
+  setActiveProfile: (profile: UserProfileExtended) => void;
 }) => {
   const date = new Date();
   const lastDay = date.setDate(date.getDate() - 1);
-  const [selectedRange, setSelectedRange] = useState<string>('Last Day');
+  const [selectedRange, setSelectedRange] = useState<string>('Today');
   const [startDate, setStartDate] = useState<string>(
     new Date(lastDay).toISOString(),
   );
@@ -144,7 +146,7 @@ const AllUserProfileStatsChart = ({
     <div className="flex flex-col w-0 flex-1 h-full items-center p-4">
       <div className="w-full h-[20%] rounded-lg flex flex-col items-center justify-center mb-3 sm:mb-0">
         <h2>Traders by volume</h2>
-        <p className="opacity-50">Click on a trader to open wallet digger</p>
+        <p className="opacity-50">Click on a trader to view user profile</p>
       </div>
       <div
         className={twMerge(
@@ -166,12 +168,50 @@ const AllUserProfileStatsChart = ({
                 setStartDate(date.toISOString());
                 break;
               case 'Last Week':
-                date.setDate(date.getDate() - 6);
+                date.setDate(date.getDate() - 7);
                 setStartDate(date.toISOString());
                 break;
-              case 'Last Day':
-                date.setDate(date.getDate() - 1);
-                setStartDate(date.toISOString());
+              case 'Yesterday':
+                const yesterdayStart = new Date(
+                  Date.UTC(
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate() - 1,
+                    0,
+                    0,
+                    0,
+                    0,
+                  ),
+                );
+
+                const yesterdayEnd = new Date(
+                  Date.UTC(
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate() - 1,
+                    23,
+                    59,
+                    59,
+                    999,
+                  ),
+                );
+
+                setStartDate(yesterdayStart.toISOString());
+                setEndDate(yesterdayEnd.toISOString());
+                break;
+              case 'Today':
+                const todayStart = new Date(
+                  Date.UTC(
+                    date.getUTCFullYear(),
+                    date.getUTCMonth(),
+                    date.getUTCDate(),
+                    0,
+                    0,
+                    0,
+                    0,
+                  ),
+                );
+                setStartDate(todayStart.toISOString());
                 break;
               case 'Custom':
                 break;
@@ -189,7 +229,8 @@ const AllUserProfileStatsChart = ({
             // { title: 'All Time' },
             // { title: 'Last Month' },
             { title: 'Last Week' },
-            { title: 'Last Day' },
+            { title: 'Yesterday' },
+            { title: 'Today' },
             // { title: 'Custom' },
           ]}
           selected={selectedRange}
@@ -291,10 +332,12 @@ const AllUserProfileStatsChart = ({
             }
             onClick={(e) => {
               if (e.pubkey) {
-                window.open(
-                  `monitoring?view=walletDigger&wallet=${e.pubkey}`,
-                  '_blank',
+                const trader = traderWithUserProfiles?.find(
+                  (trader) => trader.userPubkey.toBase58() === e.pubkey,
                 );
+                if (trader?.userProfile?.profile) {
+                  setActiveProfile(trader.userProfile.profile);
+                }
               }
             }}
           />

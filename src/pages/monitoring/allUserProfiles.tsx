@@ -179,6 +179,7 @@ export default function AllUserProfiles() {
                                         { label: 'positive' },
                                         { label: 'negative' },
                                     ],
+                                    disabled: viewPage === 'Chart view',
                                 },
                             ]}
                             sortOptions={{
@@ -237,7 +238,7 @@ export default function AllUserProfiles() {
                             </div>
                         ) : (
                             <div className="flex w-full min-h-[34em] h-[34em] grow">
-                                <AllUserProfileStatsChart filteredProfiles={filteredProfiles} />
+                                <AllUserProfileStatsChart filteredProfiles={filteredProfiles} setActiveProfile={setActiveProfile} />
                             </div>
                         )}
                     </div>
