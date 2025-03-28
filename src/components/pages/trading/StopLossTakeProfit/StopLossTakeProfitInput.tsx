@@ -3,11 +3,11 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import InputNumber from '@/components/common/InputNumber/InputNumber';
+import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
-import Switch from '@/components/common/Switch/Switch';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
