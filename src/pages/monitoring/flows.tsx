@@ -42,7 +42,7 @@ export default function Flow({
     setEndDate,
   } = usePositionStats();
 
-  const [selectedRange, setSelectedRange] = useState('All Time');
+  const [selectedRange, setSelectedRange] = useState('Last day');
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
 
@@ -58,7 +58,12 @@ export default function Flow({
     </div >;
   }
 
-  if (!groupedStats || !activityCalendarData) return <div className='flex justify-center items-center'>No data</div>;
+  if (!groupedStats || !activityCalendarData) return <div className='flex justify-center items-center min-h-[200px]'>
+    <div className='text-center'>
+      <h3 className='text-lg font-medium mb-2'>🛠️ Under Maintenance</h3>
+      <p className='text-gray-400'>We&apos;re making some improvements. Check back soon!</p>
+    </div>
+  </div>;
 
   return (
     <>
@@ -98,11 +103,11 @@ export default function Flow({
             menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
             menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
             options={[
-              { title: 'All Time' },
-              { title: 'Last Month' },
+              // { title: 'All Time' },
+              // { title: 'Last Month' },
               { title: 'Last Week' },
               { title: 'Last Day' },
-              { title: 'Custom' },
+              // { title: 'Custom' },
             ]}
             selected={selectedRange}
           />
