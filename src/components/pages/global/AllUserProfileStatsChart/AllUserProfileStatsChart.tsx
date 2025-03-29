@@ -446,7 +446,7 @@ const CustomizedContent: React.FC<{
         ) : null}
 
         {name && width > 100 ? (
-          <text x={x + 10} y={y + 22} fill="#fff" fontSize={14} fillOpacity={0.5}>
+          <text x={x + 10} y={y + 22} fill="#fff" fontSize={12} fillOpacity={0.5}>
             {name}
           </text>
         ) : null}
