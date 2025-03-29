@@ -132,7 +132,7 @@ export default function Achievements({
                     I HAVE {totalPoints} ACHIEVEMENT POINTS
                 </h4> */}
 
-                <div className='flex w-full items-center justify-center gap-10'>
+                <div className='flex w-full items-center justify-center gap-2 flex-col sm:flex-row sm:gap-10'>
                     <div className='flex flex-col gap-2 items-center'>
                         <div className='font-archivo text-white/80 tracking-widest uppercase text-xs'>sort by</div>
 
