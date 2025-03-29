@@ -7,15 +7,13 @@ import card from '@/../public/images/card-template.jpg';
 import lockIcon from '@/../public/images/Icons/lock.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ACHIEVEMENTS, PROFILE_PICTURES, USER_PROFILE_TITLES, WALLPAPERS } from '@/constant';
-import { AchievementInfo, UserProfileExtended } from "@/types";
+import { AchievementInfoExtended } from "@/types";
 
 export default function Achievement({
-    allUserProfiles,
     achievement,
     unlocked,
 }: {
-    allUserProfiles: UserProfileExtended[] | null;
-    achievement: AchievementInfo;
+    achievement: AchievementInfoExtended;
     unlocked: boolean;
 }) {
     const [hover, setHover] = useState(false);
@@ -28,18 +26,6 @@ export default function Achievement({
         platinum: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements-categories/cat-platinum-Xge9np4xUOYNAgcVtlOu97lYqv9c5N.png',
         diamond: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements-categories/cat-diamond-qXRUCzTau4zTeQYJoamX9DclelnNyw.png',
     }[achievement.category]), [achievement.category]);
-
-    const nbUnlocked = useMemo(() => {
-        if (allUserProfiles === null) return null;
-
-        return allUserProfiles.reduce((total, profile) => (profile.achievements[achievement.index] ? 1 : 0) + total, 0);
-    }, [allUserProfiles, achievement.index]);
-
-    const completionPercentage = useMemo(() => {
-        if (nbUnlocked === null || allUserProfiles === null) return null;
-
-        return (nbUnlocked / allUserProfiles.length) * 100;
-    }, [allUserProfiles, nbUnlocked]);
 
     return (
         <div className='flex flex-col gap-2 items-center'>
@@ -175,7 +161,7 @@ export default function Achievement({
             </div>
 
             <FormatNumber
-                nb={completionPercentage}
+                nb={achievement.completionPercentage}
                 format="number"
                 minimumFractionDigits={0}
                 precisionIfPriceDecimalsBelow={4}

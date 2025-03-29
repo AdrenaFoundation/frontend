@@ -17,6 +17,8 @@ import {
     SeasonLeaderboardsRawAPI,
     Token,
     Trader,
+    TraderByVolumeInfo,
+    TraderByVolumeRawData,
     TraderDivisionRawAPI,
     TraderInfoRawData,
     TraderProfileInfo,
@@ -836,4 +838,40 @@ export default class DataApiClient {
             return null;
         }
     }
+
+    public static async getTraderByVolume({
+        startDate,
+        endDate,
+    }: {
+        startDate: Date;
+        endDate: Date;
+    }): Promise<TraderByVolumeInfo[] | null> {
+        try {
+            const response = await fetch(
+                `${DataApiClient.DATAPI_URL}/trader-volume?${startDate ? `&start_date=${startDate.toISOString()}` : ''}${endDate ? `&end_date=${endDate.toISOString()}` : ''}`,
+            );
+
+            if (!response.ok) {
+                console.log('API response was not ok');
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            const apiData: TraderByVolumeRawData | undefined = apiBody.data;
+
+            if (typeof apiData === 'undefined' || !apiData)
+                return null;
+
+            return apiData.traders.map((trader) => ({
+                userPubkey: new PublicKey(trader.user_pubkey),
+                totalPnl: trader.total_pnl,
+                totalVolume: trader.total_volume,
+            } as TraderByVolumeInfo));
+        } catch (e) {
+            console.error('Error fetching trader Info:', e);
+            return null;
+        }
+    }
 }
+

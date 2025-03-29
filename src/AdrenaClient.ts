@@ -1943,6 +1943,9 @@ export class AdrenaClient {
     leverage,
     notification,
     referrerProfile,
+    stopLossLimitPrice,
+    takeProfitLimitPrice,
+    isIncrease,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1952,6 +1955,9 @@ export class AdrenaClient {
     leverage: number;
     notification: MultiStepNotification;
     referrerProfile?: PublicKey | null;
+    stopLossLimitPrice?: BN | null;
+    takeProfitLimitPrice?: BN | null;
+    isIncrease?: boolean;
   }) {
     if (!this.connection) {
       throw new Error("no connection");
@@ -2000,6 +2006,65 @@ export class AdrenaClient {
       } else {
         // Do nothing - the referrer is already set
       }
+    }
+
+    const custody = this.findCustodyAddress(mint);
+    const positionPda = this.findPositionAddress(owner, custody, 'short');
+
+    try {
+      if (stopLossLimitPrice) {
+        postInstructions.push(
+          await this.buildSetStopLossShortIx({
+            position: {
+              owner,
+              pubkey: positionPda,
+              custody,
+            } as PositionExtended,
+            stopLossLimitPrice,
+            closePositionPrice: null,
+          }),
+        );
+      } else if (isIncrease && stopLossLimitPrice === null) {
+        // if isIncrease is true and the trader want to remove their stopLoss
+        postInstructions.push(
+          await this.buildCancelStopLossIx({
+            position: {
+              owner,
+              pubkey: positionPda,
+              custody,
+            } as PositionExtended,
+          }),
+        );
+      }
+
+      if (takeProfitLimitPrice) {
+        postInstructions.push(
+          await this.buildSetTakeProfitShortIx({
+            position: {
+              owner,
+              pubkey: positionPda,
+              custody,
+            } as PositionExtended,
+            takeProfitLimitPrice,
+          }),
+        );
+      } else if (isIncrease && takeProfitLimitPrice === null) {
+        // if isIncrease is true and the trader want to remove their stopLoss
+        postInstructions.push(
+          await this.buildCancelTakeProfitIx({
+            position: {
+              owner,
+              pubkey: positionPda,
+              custody,
+            } as PositionExtended,
+          }),
+        );
+      }
+    } catch (error) {
+      console.error(
+        'Error while building stop loss or take profit instructions: ',
+        error,
+      );
     }
 
     const openPositionWithSwapIx =
@@ -2149,6 +2214,9 @@ export class AdrenaClient {
     leverage,
     notification,
     referrerProfile,
+    stopLossLimitPrice,
+    takeProfitLimitPrice,
+    isIncrease,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -2158,6 +2226,9 @@ export class AdrenaClient {
     leverage: number;
     notification: MultiStepNotification;
     referrerProfile?: PublicKey | null;
+    stopLossLimitPrice?: BN | null;
+    takeProfitLimitPrice?: BN | null;
+    isIncrease?: boolean;
   }) {
     if (!this.connection) {
       throw new Error("no connection");
@@ -2204,6 +2275,58 @@ export class AdrenaClient {
       } else {
         // Do nothing - the referrer is already set
       }
+    }
+
+    const custody = this.findCustodyAddress(mint);
+    const positionPda = this.findPositionAddress(owner, custody, 'long');
+
+    if (stopLossLimitPrice) {
+      postInstructions.push(
+        await this.buildSetStopLossLongIx({
+          position: {
+            owner,
+            pubkey: positionPda,
+            custody,
+          } as PositionExtended,
+          stopLossLimitPrice,
+          closePositionPrice: null,
+        }),
+      );
+    } else if (isIncrease && stopLossLimitPrice === null) {
+      // if isIncrease is true and the trader want to remove their stopLoss
+      postInstructions.push(
+        await this.buildCancelStopLossIx({
+          position: {
+            owner,
+            pubkey: positionPda,
+            custody,
+          } as PositionExtended,
+        }),
+      );
+    }
+
+    if (takeProfitLimitPrice) {
+      postInstructions.push(
+        await this.buildSetTakeProfitLongIx({
+          position: {
+            owner,
+            pubkey: positionPda,
+            custody,
+          } as PositionExtended,
+          takeProfitLimitPrice,
+        }),
+      );
+    } else if (isIncrease && takeProfitLimitPrice === null) {
+      // if isIncrease is true and the trader want to remove their stopLoss
+      postInstructions.push(
+        await this.buildCancelTakeProfitIx({
+          position: {
+            owner,
+            pubkey: positionPda,
+            custody,
+          } as PositionExtended,
+        }),
+      );
     }
 
     const openPositionWithSwapIx =
