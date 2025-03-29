@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { normalize } from '@/constant';
-// import DataApiClient from '@/DataApiClient';
+import DataApiClient from '@/DataApiClient';
 import { useSelector } from '@/store/store';
 import { GetPositionStatsReturnType } from '@/types';
 import { getDaysBetweenDates } from '@/utils';
@@ -16,9 +16,8 @@ export default function usePositionStats(isByWalletAddress = false) {
     )?.walletAddress;
 
     const [loading, setLoading] = useState<boolean>(true);
-
     const [startDate, setStartDate] = useState<string>(
-        new Date('2021-01-01').toISOString(),
+        new Date('2024-09-25T00:00:00Z').toISOString(),
     ); // all time by default
 
     const [endDate, setEndDate] = useState<string>(new Date().toISOString());
@@ -32,14 +31,12 @@ export default function usePositionStats(isByWalletAddress = false) {
     const fetchData = async () => {
         if (!walletAddress && isByWalletAddress) return;
 
-        // const result = await DataApiClient.getPositionStats({
-        //     showPositionActivity: true,
-        //     startDate: new Date(startDate),
-        //     endDate: new Date(endDate),
-        //     walletAddress: !isByWalletAddress ? undefined : walletAddress,
-        // });
-
-        const result = null
+        const result = isByWalletAddress ? await DataApiClient.getPositionStats({
+            showPositionActivity: true,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            walletAddress: !isByWalletAddress ? undefined : walletAddress,
+        }) : null
 
         if (result) {
             setData(result);
