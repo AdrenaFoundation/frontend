@@ -168,7 +168,7 @@ const AllUserProfileStatsChart = ({
                 setStartDate(date.toISOString());
                 break;
               case 'Last Week':
-                date.setDate(date.getDate() - 7);
+                date.setDate(date.getDate() - 6);
                 setStartDate(date.toISOString());
                 break;
               case 'Yesterday':

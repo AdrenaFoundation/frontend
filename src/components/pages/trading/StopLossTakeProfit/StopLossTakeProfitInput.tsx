@@ -24,6 +24,7 @@ export default function StopLossTakeProfitInput({
   isLoading,
   isLight = false,
   setIsTPSL,
+  title,
   isTPSL,
   isConnected,
   className,
@@ -32,6 +33,7 @@ export default function StopLossTakeProfitInput({
   input: number | null;
   setInput: (nb: number | null) => void;
   type: 'Stop Loss' | 'Take Profit';
+  title: string;
   setIsError: (b: boolean) => void;
   isLoading?: boolean;
   isLight?: boolean;
@@ -228,20 +230,20 @@ export default function StopLossTakeProfitInput({
   const isLong = position.side === 'long';
   const isNegative = (isLong && isStopLoss) || (!isLong && !isStopLoss);
 
-  const title = (
+  const titleComp = (
     <div
       className={twMerge(
         'flex my-3 gap-2 px-6 sm:px-4 w-full',
         isLight && 'px-2 sm:px-4',
       )}
     >
-      <p className="font-boldy text-sm text-nowrap">{type}</p>
+      <p className="font-boldy text-sm text-nowrap">{title}</p>
 
       {priceIsOk === true &&
         displayValue !== null &&
         !isLoading &&
         position.collateralUsd ? (
-        <div className="flex items-center overflow-x-auto max-w-[150px]">
+        <div className={twMerge("flex items-center overflow-x-auto", title.includes('Update') ? 'max-w-[110px]' : "max-w-[150px]")}>
           <FormatNumber
             nb={Math.abs(displayValue)}
             prefix={isPositive ? '+' : '-'}
@@ -259,7 +261,7 @@ export default function StopLossTakeProfitInput({
             suffixClassName={twMerge(displayColor, 'ml-0')}
             precision={2}
             isDecimalDimmed={false}
-            className={twMerge(displayColor + ` text-xs text-ellipsis`)}
+            className={twMerge(displayColor + ` text-xs text-ellipsis ml-0.5`)}
           />
         </div>
       ) : null}
@@ -284,7 +286,7 @@ export default function StopLossTakeProfitInput({
             setIsTPSL?.(!isTPSL);
           }}
         >
-          {title}
+          {titleComp}
 
           <label
             className={twMerge(
@@ -306,7 +308,7 @@ export default function StopLossTakeProfitInput({
           </label>
         </div>
       ) : (
-        title
+        titleComp
       )}
 
       <div

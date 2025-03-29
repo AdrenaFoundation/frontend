@@ -18,6 +18,7 @@ export default function TPSLModeSelector({
   isTPSL,
   setIsTPSL,
   isConnected,
+  openedPosition,
 }: {
   positionInfo: PositionInfoState;
   tokenB: Token;
@@ -29,6 +30,7 @@ export default function TPSLModeSelector({
   side: 'long' | 'short';
   setIsTPSL: (value: boolean) => void;
   isConnected: boolean;
+  openedPosition: PositionExtended | null;
 }) {
 
 
@@ -77,7 +79,8 @@ export default function TPSLModeSelector({
             position={position as unknown as PositionExtended}
             input={takeProfitInput}
             setInput={setTakeProfitInput}
-            type="Take Profit"
+            type='Take Profit'
+            title={openedPosition && openedPosition.takeProfitIsSet ? 'Update Take Profit' : "Take Profit"}
             isLoading={positionInfo.isInfoLoading}
             setIsError={() => { }}
             setIsTPSL={setIsTPSL}
@@ -89,7 +92,8 @@ export default function TPSLModeSelector({
             position={position as unknown as PositionExtended}
             input={stopLossInput}
             setInput={setStopLossInput}
-            type="Stop Loss"
+            type='Stop Loss'
+            title={openedPosition && openedPosition.stopLossIsSet ? 'Update Stop Loss' : "Stop Loss"}
             isLoading={positionInfo.isInfoLoading}
             setIsError={() => { }}
             className="pb-3"
