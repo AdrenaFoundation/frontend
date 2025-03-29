@@ -3,10 +3,11 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import InputNumber from '@/components/common/InputNumber/InputNumber';
+import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatPriceInfo, getTokenSymbol } from '@/utils';
+import { getTokenSymbol } from '@/utils';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
@@ -20,12 +21,24 @@ export default function StopLossTakeProfitInput({
   input,
   setInput,
   setIsError,
+  isLoading,
+  isLight = false,
+  setIsTPSL,
+  isTPSL,
+  isConnected,
+  className,
 }: {
   position: PositionExtended;
   input: number | null;
   setInput: (nb: number | null) => void;
   type: 'Stop Loss' | 'Take Profit';
   setIsError: (b: boolean) => void;
+  isLoading?: boolean;
+  isLight?: boolean;
+  setIsTPSL?: (b: boolean) => void;
+  isTPSL?: boolean;
+  isConnected?: boolean;
+  className?: string;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [infos, setInfos] = React.useState<{
@@ -106,7 +119,6 @@ export default function StopLossTakeProfitInput({
     });
   }, [
     input,
-    markPrice,
     position.borrowFeeUsd,
     position.collateralUsd,
     position.exitFeeUsd,
@@ -114,6 +126,7 @@ export default function StopLossTakeProfitInput({
     position.price,
     position.sizeUsd,
     position.side,
+    markPrice,
     position.initialLeverage,
     setIsError,
     type,
@@ -199,9 +212,10 @@ export default function StopLossTakeProfitInput({
     }
   };
 
-  if (!infos) return null;
-
-  const { min, max, priceIsOk, priceChangePnL } = infos;
+  const max = infos?.max ?? null;
+  const min = infos?.min ?? null;
+  const priceIsOk = infos?.priceIsOk ?? null;
+  const priceChangePnL = infos?.priceChangePnL ?? null;
 
   // Determine the value and color to display based on type
   const displayValue = priceChangePnL;
@@ -214,39 +228,100 @@ export default function StopLossTakeProfitInput({
   const isLong = position.side === 'long';
   const isNegative = (isLong && isStopLoss) || (!isLong && !isStopLoss);
 
+  const title = (
+    <div
+      className={twMerge(
+        'flex my-3 gap-2 px-6 sm:px-4 w-full',
+        isLight && 'px-2 sm:px-4',
+      )}
+    >
+      <p className="font-boldy text-sm text-nowrap">{type}</p>
+
+      {priceIsOk === true &&
+        displayValue !== null &&
+        !isLoading &&
+        position.collateralUsd ? (
+        <div className="flex items-center overflow-x-auto max-w-[150px]">
+          <FormatNumber
+            nb={Math.abs(displayValue)}
+            prefix={isPositive ? '+' : '-'}
+            format="currency"
+            isDecimalDimmed={false}
+            isAbbreviate={Math.abs(displayValue) > 100_000_000}
+            className={twMerge(displayColor + ` text-xs text-ellipsis`)}
+          />
+
+          <FormatNumber
+            nb={displayValue / position.collateralUsd}
+            format="percentage"
+            prefix="("
+            suffix=")"
+            suffixClassName={twMerge(displayColor, 'ml-0')}
+            precision={2}
+            isDecimalDimmed={false}
+            className={twMerge(displayColor + ` text-xs text-ellipsis`)}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
   return (
-    <div className="flex flex-col w-full">
-      <div className="border-t border-bcolor w-full h-[1px]" />
+    <div className={twMerge("flex flex-col w-full", className)}>
+      {(!isLight || type === 'Stop Loss') ? (
+        <div
+          className={twMerge(
+            'border-t border-bcolor w-full h-[1px]',
+            isLight && 'border-white/5',
+          )}
+        />
+      ) : null}
 
-      <div className="flex my-3 gap-2 px-6 sm:px-4">
-        <p className="font-bold text-base">{type}</p>
+      {type === 'Take Profit' && isLight ? (
+        <div
+          className="w-full flex flex-row justify-between gap-3 cursor-pointer select-none pr-4"
+          onClick={() => {
+            if (!isConnected) return;
+            setIsTPSL?.(!isTPSL);
+          }}
+        >
+          {title}
 
-        {priceIsOk === true && displayValue !== null ? (
-          <div className="flex items-center">
-            <div className={twMerge('text-sm mr-1 font-mono', displayColor)}>
-              {' '}
-              { }
-              {isPositive ? '+' : '-'}
-              {formatPriceInfo(Math.abs(displayValue))}
-            </div>
-
-            <FormatNumber
-              nb={(displayValue / position.collateralUsd) * 100}
-              format="percentage"
-              prefix="("
-              suffix=")"
-              suffixClassName={twMerge(displayColor, 'ml-0)')}
-              precision={2}
-              isDecimalDimmed={false}
-              className={twMerge(displayColor + ` text-xs`)}
+          <label
+            className={twMerge(
+              'flex items-center ml-1 cursor-pointer',
+              !isConnected ? 'opacity-50' : '',
+            )}
+          >
+            <Switch
+              className={twMerge(
+                'mr-0.5',
+                isTPSL ? 'bg-green' : 'bg-inputcolor',
+              )}
+              checked={isTPSL}
+              onChange={() => {
+                // Handle the click on the level above
+              }}
+              size="medium"
             />
-          </div>
-        ) : null}
-      </div>
+          </label>
+        </div>
+      ) : (
+        title
+      )}
 
-      <div className="flex flex-col items-center w-full px-6 sm:px-4 gap-0">
-        <div className="w-full mb-3">
-          <div className="flex items-center border rounded-lg bg-third pt-2 pb-2 grow text-sm w-full relative">
+      <div
+        className={twMerge(
+          'flex flex-col items-center w-full px-6 sm:px-4 gap-0',
+          isLight && 'px-2 sm:px-2',
+        )}
+      >
+        <div className="w-full">
+          <div
+            className={twMerge(
+              'flex items-center border rounded-lg pt-2 pb-2 bg-inputcolor grow text-sm w-full relative transition-opacity duration-300',
+              isLight ? isLoading && 'opacity-20' : 'bg-third',
+            )}
+          >
             <InputNumber
               value={input === null ? undefined : input}
               placeholder="none"
@@ -276,8 +351,9 @@ export default function StopLossTakeProfitInput({
                   variant="secondary"
                   rounded={false}
                   className={twMerge(
-                    'flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
+                    'flex-grow px-2 text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
                     sign === '-' ? 'text-redbright' : 'text-green',
+                    isLight && 'bg-inputcolor',
                   )}
                   onClick={() =>
                     adjustInputByPercentage(
@@ -291,10 +367,10 @@ export default function StopLossTakeProfitInput({
           </div>
         </div>
 
-        <div className="flex flex-row justify-between w-full">
+        <div className="flex flex-row justify-between w-full mt-3">
           {min !== null && (
             <div
-              className='text-base cursor-pointer hover:opacity-75 transition-opacity duration-300'
+              className="text-base cursor-pointer hover:opacity-75 transition-opacity duration-300"
               onClick={() => handleSetInput(getAdjustedPrice(min, true))}
             >
               <FormatNumber
@@ -305,20 +381,21 @@ export default function StopLossTakeProfitInput({
                 )}
                 isDecimalDimmed={true}
                 precision={determinePrecision(markPrice ?? 0)}
-                format='currency'
+                format="currency"
                 prefix="min: "
                 prefixClassName={twMerge(
                   'opacity-50 font-mono',
                   priceIsOk === -1 && 'text-redbright',
                 )}
-
               />
             </div>
           )}
 
           {max !== null && (
             <div
-              className={twMerge('text-base cursor-pointer hover:opacity-75 transition-opacity duration-300')}
+              className={twMerge(
+                'text-base cursor-pointer hover:opacity-75 transition-opacity duration-300',
+              )}
               onClick={() => handleSetInput(getAdjustedPrice(max, false))}
             >
               <FormatNumber
@@ -330,14 +407,13 @@ export default function StopLossTakeProfitInput({
                 )}
                 isDecimalDimmed={true}
                 precision={determinePrecision(markPrice ?? 0)}
-                format='currency'
+                format="currency"
                 prefix="max: "
                 prefixClassName={twMerge(
                   'opacity-50 font-mono',
                   max === null && 'text-txtfade',
                   priceIsOk === 1 && 'text-redbright',
                 )}
-
               />
             </div>
           )}

@@ -11,7 +11,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { addNotification, getTokenImage, getTokenSymbol } from '@/utils';
+import { addNotification, getTokenImage, getTokenSymbol, validateTPSLInputs } from '@/utils';
 
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
@@ -50,64 +50,74 @@ export default function StopLossTakeProfit({
   const [stopLossError, setStopLossError] = useState<boolean>(false);
   const [takeProfitError, setTakeProfitError] = useState<boolean>(false);
 
-  // Validation function
-  const validateInputs = () => {
-    let isValid = true;
 
-    // Validate Stop Loss
-    if (stopLossInput !== null && markPrice !== null) {
-      if (position.side === 'long') {
-        if (stopLossInput >= markPrice) {
-          setStopLossError(true); // 'Stop Loss must be below current price for long positions'
-          isValid = false;
-        } else if (
-          position.liquidationPrice != null &&
-          stopLossInput <= position.liquidationPrice
-        ) {
-          setStopLossError(true); // 'Stop Loss must be above liquidation price'
-          isValid = false;
-        } else {
-          setStopLossError(false);
-        }
-      } else if (position.side === 'short') {
-        if (stopLossInput <= markPrice) {
-          setStopLossError(true); // 'Stop Loss must be above current price for short positions'
-          isValid = false;
-        } else if (
-          position.liquidationPrice != null &&
-          stopLossInput >= position.liquidationPrice
-        ) {
-          setStopLossError(true); // 'Stop Loss must be below liquidation price'
-          isValid = false;
-        } else {
-          setStopLossError(false);
-        }
-      }
-    } else {
-      setStopLossError(false);
-    }
+  // // Validation function
+  // const validateInputs = () => {
+  //   let isValid = true;
 
-    // Validate Take Profit
-    if (takeProfitInput !== null && markPrice !== null) {
-      if (position.side === 'long' && takeProfitInput <= markPrice) {
-        setTakeProfitError(true); // 'Take Profit must be above current price for long positions'
-        isValid = false;
-      } else if (position.side === 'short' && takeProfitInput >= markPrice) {
-        setTakeProfitError(true); // 'Take Profit must be below current price for short positions'
-        isValid = false;
-      } else {
-        setTakeProfitError(false);
-      }
-    } else {
-      setTakeProfitError(false);
-    }
+  //   // Validate Stop Loss
+  //   if (stopLossInput !== null && markPrice !== null) {
+  //     if (position.side === 'long') {
+  //       if (stopLossInput >= markPrice) {
+  //         setStopLossError(true); // 'Stop Loss must be below current price for long positions'
+  //         isValid = false;
+  //       } else if (
+  //         position.liquidationPrice != null &&
+  //         stopLossInput <= position.liquidationPrice
+  //       ) {
+  //         setStopLossError(true); // 'Stop Loss must be above liquidation price'
+  //         isValid = false;
+  //       } else {
+  //         setStopLossError(false);
+  //       }
+  //     } else if (position.side === 'short') {
+  //       if (stopLossInput <= markPrice) {
+  //         setStopLossError(true); // 'Stop Loss must be above current price for short positions'
+  //         isValid = false;
+  //       } else if (
+  //         position.liquidationPrice != null &&
+  //         stopLossInput >= position.liquidationPrice
+  //       ) {
+  //         setStopLossError(true); // 'Stop Loss must be below liquidation price'
+  //         isValid = false;
+  //       } else {
+  //         setStopLossError(false);
+  //       }
+  //     }
+  //   } else {
+  //     setStopLossError(false);
+  //   }
 
-    return isValid;
-  };
+  //   // Validate Take Profit
+  //   if (takeProfitInput !== null && markPrice !== null) {
+  //     if (position.side === 'long' && takeProfitInput <= markPrice) {
+  //       setTakeProfitError(true); // 'Take Profit must be above current price for long positions'
+  //       isValid = false;
+  //     } else if (position.side === 'short' && takeProfitInput >= markPrice) {
+  //       setTakeProfitError(true); // 'Take Profit must be below current price for short positions'
+  //       isValid = false;
+  //     } else {
+  //       setTakeProfitError(false);
+  //     }
+  //   } else {
+  //     setTakeProfitError(false);
+  //   }
+
+  //   return isValid;
+  // };
 
   // Set or Cancel SL and TP depending user inputs
   const applyConfiguration = async () => {
-    if (!validateInputs()) {
+    if (!validateTPSLInputs(
+      {
+        takeProfitInput,
+        stopLossInput,
+        markPrice,
+        position,
+        setTakeProfitError,
+        setStopLossError,
+      }
+    )) {
       return;
     }
 
