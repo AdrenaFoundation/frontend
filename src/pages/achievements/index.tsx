@@ -1,20 +1,24 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import banner from '@/../../public/images/achievements-book-wallpaper.jpg';
+import Checkbox from '@/components/common/Checkbox/Checkbox';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Achievement from '@/components/pages/achievements/Achievement';
 import { ACHIEVEMENTS } from '@/constant';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
-import { PageProps } from '@/types';
+import { AchievementInfoExtended, PageProps } from '@/types';
 
 
 export default function Achievements({
     userProfile
 }: PageProps) {
     const { allUserProfiles } = useAllUserProfiles({});
+    const [showOwned, setShowOwned] = useState<boolean>(true);
+    const [showNotOwned, setShowNotOwned] = useState<boolean>(true);
+    const [sort, setSort] = useState<'index' | 'points' | 'completion' | null>('completion');
 
     const totalCollected = useMemo(() => {
         if (userProfile === null || userProfile === false) return null;
@@ -22,11 +26,69 @@ export default function Achievements({
         return ACHIEVEMENTS.reduce((total, achievement) => (userProfile.achievements[achievement.index] ? 1 : 0) + total, 0);
     }, [userProfile]);
 
-    // const totalPoints = useMemo(() => {
-    //     if (userProfile === null || userProfile === false) return null;
 
-    //     return ACHIEVEMENTS.reduce((total, achievement) => (userProfile.achievements[achievement.index] ? achievement.points : 0) + total, 0);
-    // }, [userProfile]);
+    const achievementsPlusPlus: AchievementInfoExtended[] = useMemo(() => {
+        return ACHIEVEMENTS.map((achievement) => {
+            if (allUserProfiles === null) {
+                return {
+                    ...achievement,
+                    completionPercentage: null,
+                };
+            }
+
+            return {
+                ...achievement,
+                completionPercentage: allUserProfiles.reduce((total, profile) => (profile.achievements[achievement.index] ? 1 : 0) + total, 0) / allUserProfiles.length,
+            };
+        });
+    }, [allUserProfiles]);
+
+    const sortedAchievements = useMemo(() => {
+        const copy = [...achievementsPlusPlus];
+
+        // Apply sort
+        if (sort === 'index') {
+            return copy.sort((a, b) => a.index - b.index);
+        }
+
+        if (sort === 'points') {
+            return copy.sort((a, b) => b.points - a.points);
+        }
+
+        if (sort === 'completion') {
+            return copy.sort((a, b) => {
+                if (a.completionPercentage === null) return 1;
+                if (b.completionPercentage === null) return -1;
+
+                if (b.completionPercentage === a.completionPercentage) {
+                    return b.points - a.points;
+                }
+
+                return a.completionPercentage - b.completionPercentage;
+            });
+        }
+
+        return copy;
+    }, [sort, achievementsPlusPlus]);
+
+    const filteredAchievements = useMemo(() => {
+        if (!showNotOwned && !showOwned) return [];
+
+        return sortedAchievements.filter((achievement) => {
+            // Display everything if no info from user
+            if (userProfile === null || userProfile === false) return true;
+
+            if (showOwned && userProfile.achievements[achievement.index]) {
+                return true;
+            }
+
+            if (showNotOwned && !userProfile.achievements[achievement.index]) {
+                return true;
+            }
+
+            return false;
+        });
+    }, [sortedAchievements, showOwned, showNotOwned, userProfile]);
 
     return (
         <div className="flex flex-col p-4">
@@ -79,14 +141,66 @@ export default function Achievements({
                     I HAVE {totalPoints} ACHIEVEMENT POINTS
                 </h4> */}
 
+                <div className='flex w-full items-center justify-center gap-2 flex-col sm:flex-row sm:gap-10'>
+                    <div className='flex flex-col gap-2 items-center'>
+                        <div className='font-archivo text-white/80 tracking-widest uppercase text-xs'>sort by</div>
+
+                        <div className='flex gap-2'>
+                            <div
+                                className={twMerge('text-sm text-txtfade cursor-pointer hover:text-white', sort === 'index' && 'text-white')}
+                                onClick={() => setSort('index')}
+                            >
+                                ACH-Index
+                            </div>
+                            <div className='text-sm text-txtfade'>/</div>
+                            <div
+                                className={twMerge('text-sm text-txtfade cursor-pointer hover:text-white', sort === 'points' && 'text-white')}
+                                onClick={() => setSort('points')}
+                            >
+                                Points
+                            </div>
+                            <div className='text-sm text-txtfade'>/</div>
+                            <div
+                                className={twMerge('text-sm text-txtfade cursor-pointer hover:text-white', sort === 'completion' && 'text-white')}
+                                onClick={() => setSort('completion')}
+                            >
+                                Completion %
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='h-full w-[1px] bg-bcolor' />
+
+                    <div className='flex flex-col gap-2 items-center'>
+                        <div className='font-archivo text-white/80 tracking-widest uppercase text-xs'>show</div>
+
+                        <div className='flex gap-2 items-center'>
+                            <Checkbox onChange={setShowOwned} checked={showOwned} className={twMerge('h-4 w-4')} variant='white' />
+
+                            <div className='text-sm text-txtfade'>Owned</div>
+
+                            <div className='text-sm text-txtfade'>/</div>
+
+                            <Checkbox onChange={setShowNotOwned} checked={showNotOwned} className={twMerge('h-4 w-4')} variant='white' />
+
+                            <div className='text-sm text-txtfade'>Not Owned</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4 pb-6'>
-                    {ACHIEVEMENTS.map((achievement) => <Achievement
-                        allUserProfiles={allUserProfiles}
+                    {filteredAchievements.map((achievement) => <Achievement
                         unlocked={userProfile ? (userProfile?.achievements[achievement.index] ?? 0) > 0 : false}
                         achievement={achievement}
                         key={`achievement-${achievement.index}`}
                     />)}
+
+                    {filteredAchievements.length === 0 ? <div className='font-archivo text-white/50 tracking-widest uppercase text-md pt-12 pb-12'>
+                        NO ACHIEVEMENT FOUND
+                    </div> : null}
                 </div>
+
+
             </StyledContainer>
         </div>
     );
