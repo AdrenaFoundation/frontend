@@ -18,7 +18,7 @@ export default function Achievements({
     const { allUserProfiles } = useAllUserProfiles({});
     const [showOwned, setShowOwned] = useState<boolean>(true);
     const [showNotOwned, setShowNotOwned] = useState<boolean>(true);
-    const [sort, setSort] = useState<'index' | 'points' | 'completion' | null>('index');
+    const [sort, setSort] = useState<'index' | 'points' | 'completion' | null>('completion');
 
     const totalCollected = useMemo(() => {
         if (userProfile === null || userProfile === false) return null;
@@ -56,7 +56,16 @@ export default function Achievements({
         }
 
         if (sort === 'completion') {
-            return copy.sort((a, b) => (a.completionPercentage === null ? 0 : a.completionPercentage) - (b.completionPercentage === null ? 0 : b.completionPercentage));
+            return copy.sort((a, b) => {
+                if (a.completionPercentage === null) return 1;
+                if (b.completionPercentage === null) return -1;
+
+                if (b.completionPercentage === a.completionPercentage) {
+                    return b.points - a.points;
+                }
+
+                return a.completionPercentage - b.completionPercentage;
+            });
         }
 
         return copy;
@@ -186,7 +195,7 @@ export default function Achievements({
                         key={`achievement-${achievement.index}`}
                     />)}
 
-                    {filteredAchievements.length === 0 ? <div className='font-archivo text-white/80 tracking-widest uppercase text-md pt-12 pb-12'>
+                    {filteredAchievements.length === 0 ? <div className='font-archivo text-white/50 tracking-widest uppercase text-md pt-12 pb-12'>
                         NO ACHIEVEMENT FOUND
                     </div> : null}
                 </div>
