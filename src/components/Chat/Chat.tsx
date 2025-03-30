@@ -384,7 +384,7 @@ function Chat({
                                         ? generateColorFromString(msg.wallet)
                                         : '#9ca3af'
                             }}
-                            onMouseEnter={() => msg.wallet && loadProfile(msg.wallet)}
+                            onClick={() => msg.wallet && loadProfile(msg.wallet)}
                         >
                             {msg.username ?? msg.wallet?.slice(0, 8) ?? 'anon'}
                         </div>

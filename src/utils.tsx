@@ -37,6 +37,7 @@ import {
   ImageRef,
   LimitedString,
   LockedStakeExtended,
+  PositionExtended,
   Token,
   U128Split,
 } from './types';
@@ -1050,3 +1051,67 @@ export function formatSnapshotTimestamp(snapshot_timestamp: string[], period: st
     throw new Error('Invalid period');
   });
 }
+
+// Validation function
+export const validateTPSLInputs = ({ takeProfitInput,
+  setTakeProfitError,
+  stopLossInput, setStopLossError, markPrice, position }: {
+    takeProfitInput: number | null,
+    setTakeProfitError?: (value: boolean) => void,
+    stopLossInput: number | null,
+    setStopLossError?: (value: boolean) => void,
+    markPrice: number | null, position: PositionExtended
+  }) => {
+
+  let isValid = true;
+
+  // Validate Stop Loss
+  if (stopLossInput !== null && markPrice !== null) {
+    if (position.side === 'long') {
+      if (stopLossInput >= markPrice) {
+        setStopLossError?.(true); // 'Stop Loss must be below current price for long positions'
+        isValid = false;
+      } else if (
+        position.liquidationPrice != null &&
+        stopLossInput <= position.liquidationPrice
+      ) {
+        setStopLossError?.(true); // 'Stop Loss must be above liquidation price'
+        isValid = false;
+      } else {
+        setStopLossError?.(false);
+      }
+    } else if (position.side === 'short') {
+      if (stopLossInput <= markPrice) {
+        setStopLossError?.(true); // 'Stop Loss must be above current price for short positions'
+        isValid = false;
+      } else if (
+        position.liquidationPrice != null &&
+        stopLossInput >= position.liquidationPrice
+      ) {
+        setStopLossError?.(true); // 'Stop Loss must be below liquidation price'
+        isValid = false;
+      } else {
+        setStopLossError?.(false);
+      }
+    }
+  } else {
+    setStopLossError?.(false);
+  }
+
+  // Validate Take Profit
+  if (takeProfitInput !== null && markPrice !== null) {
+    if (position.side === 'long' && takeProfitInput <= markPrice) {
+      setTakeProfitError?.(true); // 'Take Profit must be above current price for long positions'
+      isValid = false;
+    } else if (position.side === 'short' && takeProfitInput >= markPrice) {
+      setTakeProfitError?.(true); // 'Take Profit must be below current price for short positions'
+      isValid = false;
+    } else {
+      setTakeProfitError?.(false);
+    }
+  } else {
+    setTakeProfitError?.(false);
+  }
+
+  return isValid;
+};

@@ -18,6 +18,7 @@ import {
   nativeToUi,
   uiLeverageToNative,
   uiToNative,
+  validateTPSLInputs,
 } from '@/utils';
 
 import { ExecutionModeSelector } from './LongShortTradingInputs/ExecutionModeSelector';
@@ -27,6 +28,7 @@ import { LimitOrderContent } from './LongShortTradingInputs/LimitOrderContent';
 import { MarketOrderContent } from './LongShortTradingInputs/MarketOrderContent';
 import { PositionInfoSection } from './LongShortTradingInputs/PositionInfoSection';
 import { ShortWarning } from './LongShortTradingInputs/ShortWarning';
+import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
 import { PositionInfoState, TradingInputsProps, TradingInputState } from './LongShortTradingInputs/types';
 import { calculateLimitOrderLimitPrice, calculateLimitOrderTriggerPrice } from './LongShortTradingInputs/utils';
 
@@ -54,6 +56,8 @@ export default function LongShortTradingInputs({
   const borrowRates = useSelector((s) => s.borrowRates);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
+  const [stopLossInput, setStopLossInput] = useState<number | null>(null);
   const [inputState, setInputState] = useState<TradingInputState>({
     inputA: null,
     inputB: null,
@@ -83,6 +87,8 @@ export default function LongShortTradingInputs({
 
   const debouncedInputA = useDebounce(inputState.inputA);
   const debouncedLeverage = useDebounce(inputState.leverage);
+
+  const [isTPSL, setIsTPSL] = useState(false);
 
   const referrer = useMemo(async () => {
     if (query.referral === null || typeof query.referral === 'undefined' || query.referral === '' || typeof query.referral !== 'string') {
@@ -164,6 +170,29 @@ export default function LongShortTradingInputs({
       },
     }));
   }, [openedPosition, positionInfo.newPositionInfo, tokenB.decimals]);
+
+  useEffect(() => {
+    if (openedPosition) {
+
+      setStopLossInput(
+        openedPosition.stopLossIsSet &&
+          openedPosition.stopLossLimitPrice &&
+          openedPosition.stopLossLimitPrice > 0
+          ? openedPosition.stopLossLimitPrice ?? null
+          : null,
+      );
+
+      setTakeProfitInput(
+        openedPosition.takeProfitIsSet &&
+          openedPosition.takeProfitLimitPrice &&
+          openedPosition.takeProfitLimitPrice > 0
+          ? openedPosition.takeProfitLimitPrice ?? null
+          : null,
+      );
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!openedPosition, isTPSL]);
 
   useEffect(() => {
     calculateIncreasePositionInfo()
@@ -338,6 +367,21 @@ export default function LongShortTradingInputs({
     try {
       const r = await referrer;
 
+      let stopLossLimitPrice = null;
+      let takeProfitLimitPrice = null;
+
+      if (validateTPSLInputs({
+        takeProfitInput,
+        stopLossInput,
+        markPrice: tokenPriceBTrade,
+        position: { ...positionInfo.newPositionInfo, side } as unknown as PositionExtended,
+      })) {
+        stopLossLimitPrice = stopLossInput ? new BN(stopLossInput * 10 ** PRICE_DECIMALS) : null;
+        takeProfitLimitPrice = takeProfitInput ? new BN(takeProfitInput * 10 ** PRICE_DECIMALS) : null;
+      } else {
+        // alert('Invalid TPSL inputs');
+      }
+
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
           owner: new PublicKey(wallet.publicKey),
@@ -347,6 +391,9 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(inputState.leverage),
           notification,
+          stopLossLimitPrice,
+          takeProfitLimitPrice,
+          isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
@@ -357,6 +404,9 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(inputState.leverage),
           notification,
+          stopLossLimitPrice,
+          takeProfitLimitPrice,
+          isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
         }));
 
@@ -731,6 +781,10 @@ export default function LongShortTradingInputs({
   };
 
   const handleModeChange = (isLimit: boolean) => {
+    setIsTPSL(isLimit ? false : isTPSL);
+    setStopLossInput(isLimit ? null : stopLossInput);
+    setTakeProfitInput(isLimit ? null : takeProfitInput);
+
     setInputState((prev) => ({
       ...prev,
       isLimitOrder: isLimit,
@@ -770,6 +824,20 @@ export default function LongShortTradingInputs({
             leverage: v,
           }))}
           onMax={handleMax}
+        />
+
+        <TPSLModeSelector
+          positionInfo={positionInfo}
+          tokenB={tokenB}
+          takeProfitInput={takeProfitInput}
+          setTakeProfitInput={setTakeProfitInput}
+          stopLossInput={stopLossInput}
+          setStopLossInput={setStopLossInput}
+          side={side}
+          isTPSL={isTPSL}
+          setIsTPSL={setIsTPSL}
+          isConnected={!!wallet}
+          openedPosition={openedPosition}
         />
 
         <ExecutionModeSelector
