@@ -74,7 +74,7 @@ export default function Monitoring(pageProps: PageProps) {
       case 'flows':
         return <Flow custodies={pageProps.custodies} view={view} />;
       case 'walletDigger':
-        return <WalletDigger view={view} />;
+        return <WalletDigger view={view} {...pageProps} />;
       default:
         return <div>Invalid view</div>;
     }

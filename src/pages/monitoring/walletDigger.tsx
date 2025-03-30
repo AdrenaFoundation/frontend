@@ -21,19 +21,21 @@ import useTraderInfo from '@/hooks/useTraderInfo';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
+import { ClaimHistoryExtended, LockedStakeExtended, PageProps } from '@/types';
 import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
+import Achievements from '../achievements';
 
 const claimHistoryItemsPerPage = 4;
 
 export default function WalletDigger({
-    view
+    view,
+    ...props
 }: {
     view: string;
-}) {
+} & PageProps) {
     const [moreStakingInfo, setMoreStakingInfo] = useState(false);
     const [morePositionInfo, setMorePositionInfo] = useState(false);
 
@@ -422,5 +424,7 @@ export default function WalletDigger({
                 <VestStats vest={userVest} readonly={true} />
             </StyledContainer> : null
         }
+
+        {targetWalletPubkey && userProfile ? <Achievements {...props} userProfile={userProfile} defaultSort='points' defaultShowOwned={true} defaultShowNotOwned={false} /> : null}
     </div >;
 }
