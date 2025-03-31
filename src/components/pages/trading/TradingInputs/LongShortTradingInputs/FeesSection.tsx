@@ -50,7 +50,7 @@ export const FeesSection = ({
                     <Tippy
                         content={
                             <p className="font-medium text-txtfade">
-                                0 BPS entry fees - 8 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
+                                0 BPS entry fees - 14 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
                             </p>
                         }
                     >
