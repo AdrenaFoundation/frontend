@@ -96,14 +96,14 @@ const AllUserProfileStatsChart = ({
           const pnl = trader.totalPnl;
 
           const colorArray = [
-            '#3d0909',
-            '#721717',
-            '#b54b4b',
-            '#d58f8f',
-            '#75d775',
-            '#4cbf4c',
-            '#2c8c2c',
-            '#064406',
+            '#2a0505',
+            '#500f0f',
+            '#802f2f',
+            '#a06464',
+            '#4ca54c',
+            '#308f30',
+            '#1e5f1e',
+            '#032803',
           ];
 
           const color = (() => {
@@ -354,8 +354,7 @@ const AllUserProfileStatsChart = ({
             <div
               className="h-2 w-24 border"
               style={{
-                background:
-                  'linear-gradient(to right, #3d0909, #721717, #b54b4b, #d58f8f,  #75d775, #4cbf4c, #2c8c2c, #064406)',
+                background: 'linear-gradient(to right, #2a0505, #500f0f, #802f2f, #a06464, #4ca54c, #308f30, #1e5f1e, #032803)',
               }}
             />
           </div>
@@ -427,7 +426,7 @@ const CustomizedContent: React.FC<{
             y={y + height / 2 + 7}
             textAnchor="middle"
             fill="#fff"
-            fontSize={14}
+            fontSize={width > 80 && height > 80 ? 12 : width > 50 ? 10 : width > 40 ? 8 : 6}
           >
             ${formatNumberShort(Number(volume))}
           </text>
@@ -439,14 +438,14 @@ const CustomizedContent: React.FC<{
             y={y + height / 2 + 7}
             textAnchor="middle"
             fill="#fff"
-            fontSize={14}
+            fontSize={width > 80 && height > 80 ? 12 : width > 50 ? 10 : width > 40 ? 8 : 6}
           >
             {formatPriceInfo(pnl)}
           </text>
         ) : null}
 
         {name && width > 100 ? (
-          <text x={x + 10} y={y + 22} fill="#fff" fontSize={12} fillOpacity={0.5}>
+          <text x={x + 10} y={y + 22} fill="#fff" fontSize={width > 50 ? 12 : width > 40 ? 10 : 8} fillOpacity={0.5}>
             {name}
           </text>
         ) : null}
