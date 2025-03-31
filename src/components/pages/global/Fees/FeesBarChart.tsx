@@ -254,7 +254,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       periods={['1M', '3M', '6M', { name: '1Y', disabled: true }]}
       gmt={0}
       domain={[0, 'auto']}
-      tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 8 bps."
+      tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 14 bps."
       isSmallScreen={isSmallScreen}
       total={true}
       events={ADRENA_EVENTS}
