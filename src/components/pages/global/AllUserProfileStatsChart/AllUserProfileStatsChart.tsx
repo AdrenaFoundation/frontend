@@ -22,11 +22,26 @@ const AllUserProfileStatsChart = ({
   filteredProfiles: SuperchargedUserProfile[] | null;
   setActiveProfile: (profile: UserProfileExtended) => void;
 }) => {
-  const date = new Date();
-  const lastDay = date.setDate(date.getDate() - 1);
+  const today = useMemo(() => {
+    const date = new Date();
+
+    return new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        0,
+        0,
+        0,
+        0,
+      ),
+    );
+  }, []);
+
   const [selectedRange, setSelectedRange] = useState<string>('Today');
   const [startDate, setStartDate] = useState<string>(
-    new Date(lastDay).toISOString(),
+    // Today
+    today.toISOString(),
   );
   const [endDate, setEndDate] = useState<string>(new Date().toISOString());
   const [traders, setTraders] = useState<TraderByVolumeInfo[] | null>(null);
@@ -34,7 +49,7 @@ const AllUserProfileStatsChart = ({
   const [activeMetric, setActiveMetric] = useState<string>('volume');
   const [error, setError] = useState<string | null>(null);
   const [selectedCustomStartDate, setSelectedCustomStartDate] =
-    useState<string>(new Date(lastDay).toISOString());
+    useState<string>(today.toISOString());
   const [selectedCustomEndDate, setSelectedCustomEndDate] = useState<string>(
     new Date().toISOString(),
   );
@@ -52,6 +67,7 @@ const AllUserProfileStatsChart = ({
 
     try {
       setIsLoading(true);
+
       const response = await DataApiClient.getTraderByVolume({
         startDate: new Date(customStartDate ?? startDate),
         endDate: new Date(customEndDate ?? endDate),
