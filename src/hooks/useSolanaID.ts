@@ -20,7 +20,7 @@ const useSolanaID = ({
       setData(null);
       return;
     }
-    const apiKey = process.env.SOLANA_ID_API_KEY;
+    const apiKey = process.env.NEXT_PUBLIC_SOLANA_ID_API_KEY;
 
     if (!apiKey) {
       console.error('API key is not set');
