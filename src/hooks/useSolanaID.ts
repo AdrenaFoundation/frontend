@@ -20,6 +20,13 @@ const useSolanaID = ({
       setData(null);
       return;
     }
+    const apiKey = process.env.SOLANA_ID_API_KEY;
+
+    if (!apiKey) {
+      console.error('API key is not set');
+      setData(null);
+      return;
+    }
 
     const fetchData = async () => {
       setLoading(true);
@@ -32,7 +39,7 @@ const useSolanaID = ({
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              'x-api-key': process.env.SOLANA_ID_API_KEY || '',
+              'x-api-key': apiKey,
             },
           },
         );

@@ -25,7 +25,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
         <Image
           src={solanaIDMonster}
           alt="solana-id-monster"
-          className="absolute top-0 right-0 w-full opacity-30 object-cover"
+          className="absolute top-0 right-0 w-full opacity-30 object-contain"
         />
       </div>
 
@@ -37,7 +37,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
               alt="solana-id-logo"
               className="w-[100px]"
             />
-            <p className="font-boldy text-[#F4BD1C] uppercase">
+            <p className="font-archivoblack text-[#F4BD1C] uppercase">
               {SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].title}
             </p>
           </div>
