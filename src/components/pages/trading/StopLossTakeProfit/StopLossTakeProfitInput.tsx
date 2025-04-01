@@ -254,7 +254,7 @@ export default function StopLossTakeProfitInput({
           />
 
           <FormatNumber
-            nb={displayValue / position.collateralUsd}
+            nb={(displayValue / position.collateralUsd) * 100}
             format="percentage"
             prefix="("
             suffix=")"
