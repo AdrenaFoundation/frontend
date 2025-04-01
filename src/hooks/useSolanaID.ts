@@ -16,7 +16,7 @@ const useSolanaID = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (walletAddress === null) {
+    if (walletAddress === null || process.env.NODE_ENV === 'development') {
       setData(null);
       return;
     }
@@ -36,10 +36,12 @@ const useSolanaID = ({
             },
           },
         );
+
         if (!response.ok) {
           console.error('Error fetching data:', response.statusText);
           return null;
         }
+
         const result = (await response.json()) as SolanaIDType;
 
         setData(result);
