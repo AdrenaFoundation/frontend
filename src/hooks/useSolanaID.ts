@@ -40,6 +40,7 @@ const useSolanaID = ({
             headers: {
               'Content-Type': 'application/json',
               'x-api-key': apiKey,
+              mode: 'no-cors',
             },
           },
         );
