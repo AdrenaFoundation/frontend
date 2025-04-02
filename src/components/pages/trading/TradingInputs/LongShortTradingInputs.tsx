@@ -880,6 +880,7 @@ export default function LongShortTradingInputs({
               onInputBChange={handleInputBChange}
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
+              walletAddress={wallet?.publicKey?.toBase58() ?? null}
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>
