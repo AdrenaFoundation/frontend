@@ -11,8 +11,7 @@ import useSolanaID from '@/hooks/useSolanaID';
 
 function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
   const { data } = useSolanaID({ walletAddress });
-  const isSolanaIDDismissed = false;
-  // window.localStorage.getItem('solanaIDDismissed') === 'true';
+  const isSolanaIDDismissed = window.localStorage.getItem('solanaIDDismissed') === 'true';
 
   if (!data || isSolanaIDDismissed) return null;
 
@@ -27,11 +26,11 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
         </div>
 
         <div className='text-center text-sm'>
-          As a Tier {solanaID.solidUser.tierGroup} user, you’ll receive +{SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].mutagen} free mutagens on your first trade.
+          As a Tier {solanaID.solidUser.tierGroup} user, you will receive +{SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].mutagen} free mutagens on your first trade.
         </div>
 
         <div className='text-center text-sm'>
-          Bonus mutagens are awarded when you close your position and may take up to 2 hours to appear.
+          Bonus mutagens are awarded when you close your position and may take up to 24 hours to appear.
         </div>
       </div>}
     >
