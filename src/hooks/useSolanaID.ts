@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { SolanaIDType } from '@/types';
+import { SolanaIDType } from "@/types";
 
 const useSolanaID = ({
   walletAddress,
@@ -16,14 +16,15 @@ const useSolanaID = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (walletAddress === null || process.env.NODE_ENV === 'development') {
+    if (walletAddress === null) {
       setData(null);
       return;
     }
+
     const apiKey = process.env.NEXT_PUBLIC_SOLANA_ID_API_KEY;
 
     if (!apiKey) {
-      console.error('API key is not set');
+      console.error("API key is not set");
       setData(null);
       return;
     }
@@ -36,17 +37,16 @@ const useSolanaID = ({
         const response = await fetch(
           `https://score.solana.id/api/solid-score/address/${walletAddress}`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': apiKey,
-              mode: 'no-cors',
+              "Content-Type": "application/json",
+              "x-api-key": apiKey,
             },
           },
         );
 
         if (!response.ok) {
-          console.error('Error fetching data:', response.statusText);
+          console.error("Error fetching data:", response.statusText);
           return null;
         }
 
@@ -54,8 +54,8 @@ const useSolanaID = ({
 
         setData(result);
       } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to fetch data');
+        console.error("Error fetching data:", err);
+        setError("Failed to fetch data");
       } finally {
         setLoading(false);
       }
