@@ -1,21 +1,6 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
-// import { AnimatePresence } from 'framer-motion';
-// import Image from 'next/image';
-// import { useEffect, useState } from 'react';
-// import DatePicker from 'react-datepicker';
-// import { twMerge } from 'tailwind-merge';
-
-// import Modal from '@/components/common/Modal/Modal';
-// import Select from '@/components/common/Select/Select';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-// import Loader from '@/components/Loader/Loader';
-// import FormatNumber from '@/components/Number/FormatNumber';
-// import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
-// import TopTraders from '@/components/pages/monitoring/TopTraders';
-// import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-// import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-// import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended } from '@/types';
 
 
