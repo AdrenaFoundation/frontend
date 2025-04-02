@@ -106,10 +106,10 @@ export default function UtilizationChart() {
         if (!custodyInfos) continue;
 
         ownedValues.forEach((ownedValue: string, i: number) => {
-          const ownedNb = parseInt(ownedValue, 10);
-          const lockedNb = parseInt(locked[custodyKey][i], 10);
+          const ownedNb = parseFloat(ownedValue);
+          const lockedNb = parseFloat(locked[custodyKey][i]);
 
-          custodyInfos.values.push(ownedNb ? (lockedNb * 100) / ownedNb : 0);
+          custodyInfos.values.push(ownedNb ? Number((ownedNb ? (lockedNb * 100) / ownedNb : 0).toFixed(4)) : 0);
         });
       }
 
