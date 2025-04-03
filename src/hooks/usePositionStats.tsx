@@ -16,17 +16,14 @@ export default function usePositionStats(isByWalletAddress = false) {
     )?.walletAddress;
 
     const [loading, setLoading] = useState<boolean>(true);
-    const [startDate, setStartDate] = useState<string>(
-        new Date('2024-09-25T00:00:00Z').toISOString(),
-    );
+    const [startDate, setStartDate] = useState<string>(new Date('2024-09-25T00:00:00Z').toISOString());
     const [endDate, setEndDate] = useState<string>(new Date().toISOString());
     const [bubbleBy, setBubbleBy] = useState('pnl');
 
-    // Initial fetch on mount
     useEffect(() => {
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [startDate, endDate, isByWalletAddress ? walletAddress : undefined]);
 
     const fetchData = async () => {
         setLoading(true); // Set loading true at the start of fetch
