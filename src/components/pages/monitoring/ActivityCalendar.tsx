@@ -233,9 +233,11 @@ export default function ActivityCalendar({
                                             <motion.circle
                                                 cx="50%"
                                                 cy="50%"
+                                                initial={{ r: 0 }}
                                                 animate={{
                                                     r: stats.bubbleSize / 2,
                                                 }}
+                                                transition={{ duration: 0.3 }}
                                                 fill={stats.color}
                                                 className="inline-block"
                                             ></motion.circle>
