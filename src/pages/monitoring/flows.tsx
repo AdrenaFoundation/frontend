@@ -37,7 +37,7 @@ export default function Flow({
     loading,
   } = usePositionStats();
 
-  const [selectedRange, setSelectedRange] = useState('All Time');
+  const [selectedRange, setSelectedRange] = useState('All time');
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
   const [showTopTraders, setShowTopTraders] = useState(false);
@@ -47,75 +47,87 @@ export default function Flow({
   return (
     <>
       <StyledContainer className="rounded-lg overflow-hidden p-5">
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-secondary border border-gray-800 rounded p-2 text-sm items-center max-w-md">
-          <Select
-            onSelect={(value) => {
-              setSelectedRange(value);
-              const date = new Date();
-              setEndDate(date.toISOString());
-              switch (value) {
-                case 'All Time':
-                  setStartDate('2024-09-25T00:00:00Z');
-                  break;
-                case 'Last Month':
-                  date.setMonth(date.getMonth() - 1);
-                  setStartDate(date.toISOString());
-                  break;
-                case 'Last Week':
-                  date.setDate(date.getDate() - 7);
-                  setStartDate(date.toISOString());
-                  break;
-                case 'Last Day':
-                  date.setDate(date.getDate() - 1);
-                  setStartDate(date.toISOString());
-                  break;
-                case 'Custom':
-                  break;
-                default:
-                  break;
-              }
-            }}
-            reversed={true}
-            className="shrink-0 h-full flex items-center"
-            selectedTextClassName="text-sm"
-            menuTextClassName="text-sm"
-            menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
-            menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
-            options={[
-              { title: 'All Time' },
-              { title: 'Last Month' },
-              { title: 'Last Week' },
-              { title: 'Last Day' },
-              { title: 'Custom' },
-            ]}
-            selected={selectedRange}
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+            <Select
+              onSelect={(value) => {
+                setSelectedRange(value);
+                const date = new Date();
+                setEndDate(date.toISOString());
+                switch (value) {
+                  case 'All time':
+                    setStartDate('2024-09-25T00:00:00.000Z');
+                    break;
+                  case 'Last 7 days':
+                    const sevenDaysAgo = new Date();
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                    sevenDaysAgo.setUTCHours(0, 0, 0, 0);
+                    setStartDate(sevenDaysAgo.toISOString());
+                    break;
+                  case 'Last 30 days':
+                    const oneMonthAgo = new Date();
+                    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                    oneMonthAgo.setUTCHours(0, 0, 0, 0);
+                    setStartDate(oneMonthAgo.toISOString());
+                    break;
+                  case 'Year to date':
+                    const startOfYear = new Date();
+                    startOfYear.setMonth(0, 1);
+                    startOfYear.setUTCHours(0, 0, 0, 0);
+                    setStartDate(startOfYear.toISOString());
+                    break;
+                  case 'Custom':
+                    break;
+                  default:
+                    break;
+                }
+              }}
+              reversed={true}
+              className="h-8 w-28 flex items-center px-2"
+              selectedTextClassName="text-xs font-medium flex-1 text-left"
+              menuTextClassName="text-xs"
+              menuClassName="w-28"
+              options={[
+                { title: 'All time' },
+                { title: 'Last 7 days' },
+                { title: 'Last 30 days' },
+                { title: 'Year to date' },
+                { title: 'Custom' },
+              ]}
+              selected={selectedRange}
+            />
+          </div>
 
           {selectedRange === 'Custom' && (
-            <>
-              <DatePicker
-                selected={new Date(startDate)}
-                onChange={(date: Date | null) => {
-                  if (date) {
-                    setStartDate(date.toISOString());
-                  }
-                }}
-                className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
-                minDate={new Date('2023-09-25')}
-                maxDate={new Date()}
-              />
-              <DatePicker
-                selected={new Date(endDate)}
-                onChange={(date: Date | null) => {
-                  if (date) {
-                    setEndDate(date.toISOString());
-                  }
-                }}
-                className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
-                minDate={new Date('2023-09-25')}
-                maxDate={new Date()}
-              />
-            </>
+            <div className="flex items-center gap-2">
+              <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                <DatePicker
+                  selected={new Date(startDate)}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      setStartDate(date.toISOString());
+                    }
+                  }}
+                  className="h-8 w-[104px] px-2 bg-transparent text-xs font-medium"
+                  minDate={new Date('2023-09-25')}
+                  maxDate={new Date()}
+                />
+              </div>
+              <span className="text-xs text-gray-500">to</span>
+              <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                <DatePicker
+                  selected={new Date(endDate)}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      setEndDate(date.toISOString());
+                    }
+                  }}
+                  className="h-8 w-[104px] px-2 bg-transparent text-xs font-medium"
+                  minDate={new Date('2023-09-25')}
+                  maxDate={new Date()}
+                />
+              </div>
+            </div>
           )}
         </div>
 
