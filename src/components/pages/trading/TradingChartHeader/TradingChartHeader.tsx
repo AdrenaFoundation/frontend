@@ -42,10 +42,10 @@ export default function TradingChartHeader({
           className,
         )}
       >
-        <div className="flex items-center w-full sm:w-[200px] border-b border-r-none sm:border-b-0 sm:border-r">
+        <div className="flex items-center min-w-fit border-b sm:border-b-0 sm:border-r border-bcolor">
           <Select
             className="w-full"
-            selectedClassName="py-1 px-2 sm:px-2"
+            selectedClassName="py-1 px-2"
             selected={`${getTokenSymbol(selected.symbol)} / USD`}
             options={tokenList.map((token) => {
               return {
