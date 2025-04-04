@@ -42,6 +42,33 @@ export default function ActivityCalendar({
     isUserActivity?: boolean;
 }) {
     const isMobile = useBetterMediaQuery('(max-width: 640px)');
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const [blockSize, setBlockSize] = React.useState(16);
+    const [blockMargin, setBlockMargin] = React.useState(2);
+    const [scaleFactor, setScaleFactor] = React.useState(1);
+
+    React.useEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                const containerWidth = containerRef.current.offsetWidth;
+                const totalColumns = Math.ceil((data?.length || 0) / 7) || 1;
+                const baseSize = 16; // Base block size
+
+                // Calculate size to fill container width
+                const availableWidth = containerWidth - 40; // Account for some padding
+                const calculatedSize = Math.max(baseSize, Math.floor((availableWidth - (totalColumns * 4)) / totalColumns));
+                const newScaleFactor = calculatedSize / baseSize;
+
+                setBlockSize(calculatedSize);
+                setBlockMargin(2);
+                setScaleFactor(newScaleFactor);
+            }
+        };
+
+        updateSize();
+        window.addEventListener('resize', updateSize);
+        return () => window.removeEventListener('resize', updateSize);
+    }, [data]);
 
     if (!data) {
         return null;
@@ -129,75 +156,51 @@ export default function ActivityCalendar({
             </div>
 
             <div className="gap-3 mt-4 flex flex-col items-center justify-center">
-                <div className="hide-scrollbar overflow-auto">
-                    <div className="relative flex flex-row mt-4">
-                        {sortedMonths.map((monthData, i) => {
-                            const blockMargin = 4;
-                            const blockSize = 16;
-                            const columnWidth = blockSize + blockMargin;
+                <div ref={containerRef} className="hide-scrollbar w-full lg:w-[80%] flex justify-center">
+                    <div className="relative flex flex-col">
+                        <div className="relative flex flex-row mt-4">
+                            {sortedMonths.map((monthData, i) => {
+                                // Calculate the exact week number (0-based)
+                                let weekNumber = Math.floor(monthData.firstDayIndex / 7);
 
-                            // Calculate position based on the first day's column in the grid
-                            let startColumn = Math.floor(monthData.firstDayIndex / 7);
-
-                            // Special case for first month overlap
-                            if (i === 1 && sortedMonths[0]) {
-                                const firstMonth = sortedMonths[0];
-                                const firstMonthLastColumn = Math.floor(firstMonth.lastDayIndex / 7);
-                                if (startColumn === firstMonthLastColumn) {
-                                    startColumn += 1.3; // Shift second month if it overlaps with first month
+                                // If this month starts in the same week as the previous month ends,
+                                // shift it to the next week
+                                if (i > 0) {
+                                    const prevMonth = sortedMonths[i - 1];
+                                    const prevWeek = Math.floor(prevMonth.firstDayIndex / 7);
+                                    if (weekNumber === prevWeek) {
+                                        weekNumber += 1;
+                                    }
                                 }
-                            }
 
-                            const position = startColumn * columnWidth;
+                                // Calculate the exact pixel position
+                                const cellWidth = blockSize + blockMargin;
+                                const position = weekNumber * cellWidth;
 
-                            return (
-                                <div
-                                    key={i}
-                                    className="absolute -top-5 text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
-                                    style={{
-                                        left: position,
-                                        transform: i === 0 ? 'translateX(0)' : 'translateX(-15%)'
-                                    }}
-                                >
-                                    {monthData.month}
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <div className="relative grid w-fit grid-flow-col grid-rows-7 gap-1 overflow-auto">
-                        {data.map(({ date, stats }, i) => {
-                            if (stats === null) {
                                 return (
-                                    <Tippy
-                                        content={
-                                            <p className="text-xs font-boldy">
-                                                {new Date(date).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    day: 'numeric',
-                                                    month: 'short',
-                                                })}
-                                            </p>
-                                        }
+                                    <div
                                         key={i}
+                                        className="absolute text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
+                                        style={{
+                                            left: `${position}px`,
+                                            top: '-24px',
+                                            fontSize: '12px'
+                                        }}
                                     >
-                                        <div
-                                            key={i}
-                                            className="bg-third hover:bg-secondary rounded-sm size-4 transition duration-300"
-                                        />
-                                    </Tippy>
+                                        {monthData.month}
+                                    </div>
                                 );
-                            }
-                            return (
-                                <Tippy
-                                    content={
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex flex-row gap-1 items-center mb-1">
-                                                <Image
-                                                    src={calendarIcon}
-                                                    alt="calendar"
-                                                    width={10}
-                                                    height={10}
-                                                />
+                            })}
+                        </div>
+                        <div
+                            className="relative grid w-fit grid-flow-col grid-rows-7 gap-1 overflow-auto"
+                            style={{ columnGap: `${blockMargin}px` }}
+                        >
+                            {data.map(({ date, stats }, i) => {
+                                if (stats === null) {
+                                    return (
+                                        <Tippy
+                                            content={
                                                 <p className="text-xs font-boldy">
                                                     {new Date(date).toLocaleDateString('en-US', {
                                                         year: 'numeric',
@@ -205,112 +208,148 @@ export default function ActivityCalendar({
                                                         month: 'short',
                                                     })}
                                                 </p>
-                                            </div>
-
-                                            <FormatNumber
-                                                nb={stats.totalPositions}
-                                                prefix="positions: "
-                                                prefixClassName={twMerge(
-                                                    'font-mono opacity-50',
-                                                    bubbleBy === 'Position Count'
-                                                        ? 'text-[#F1C40F] opacity-100'
-                                                        : '',
-                                                )}
-                                            />
-
-                                            <FormatNumber
-                                                nb={stats.pnl}
-                                                prefix="pnl: "
-                                                format="currency"
-                                                prefixClassName={twMerge(
-                                                    'font-mono opacity-50',
-                                                    bubbleBy === 'Pnl'
-                                                        ? 'text-[#F1C40F] opacity-100'
-                                                        : '',
-                                                )}
-                                            />
-                                            <FormatNumber
-                                                nb={stats.size}
-                                                prefix="size: "
-                                                format="currency"
-                                                prefixClassName={twMerge(
-                                                    'font-mono opacity-50',
-                                                    bubbleBy === 'Open Size'
-                                                        ? 'text-[#F1C40F] opacity-100'
-                                                        : '',
-                                                )}
-                                            />
-
-                                            <FormatNumber
-                                                nb={stats.volume}
-                                                prefix="volume: "
-                                                format="currency"
-                                                prefixClassName={twMerge(
-                                                    'font-mono opacity-50',
-                                                    bubbleBy === 'Volume'
-                                                        ? 'text-[#F1C40F] opacity-100'
-                                                        : '',
-                                                )}
-                                            />
-                                            <FormatNumber
-                                                nb={stats.totalFees}
-                                                prefix="fees: "
-                                                format="currency"
-                                                prefixClassName={twMerge(
-                                                    'font-mono opacity-50',
-                                                    bubbleBy === 'Fees'
-                                                        ? 'text-[#F1C40F] opacity-100'
-                                                        : '',
-                                                )}
-                                            />
-                                        </div>
-                                    }
-                                    key={'cell-' + i}
-                                >
-                                    <div
-                                        className={twMerge(
-                                            'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer size-4 transition duration-300',
-                                        )}
-                                        onClick={() => {
-                                            if (isUserActivity) return;
-
-                                            const startDate = new Date(date);
-                                            const endDate = startDate.setHours(
-                                                startDate.getHours() + 24,
-                                            );
-                                            setSelectedRange?.('Custom');
-                                            setStartDate?.(new Date(date).toISOString());
-                                            setEndDate?.(new Date(endDate).toISOString());
-                                        }}
-                                    >
-                                        <svg height="100%" width="100%">
-                                            <motion.circle
-                                                cx="50%"
-                                                cy="50%"
-                                                initial={{ r: 0 }}
-                                                animate={{
-                                                    r: Math.min(stats.bubbleSize / 2, 6)
+                                            }
+                                            key={i}
+                                        >
+                                            <div
+                                                key={i}
+                                                className="bg-third hover:bg-secondary rounded-sm transition duration-300"
+                                                style={{
+                                                    width: blockSize,
+                                                    height: blockSize
                                                 }}
-                                                transition={{ duration: 0.3 }}
-                                                fill={stats.color}
-                                                className="inline-block"
-                                            ></motion.circle>
-                                        </svg>
-                                    </div>
-                                </Tippy>
-                            );
-                        })}
-                    </div>
+                                            />
+                                        </Tippy>
+                                    );
+                                }
+                                return (
+                                    <Tippy
+                                        content={
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex flex-row gap-1 items-center mb-1">
+                                                    <Image
+                                                        src={calendarIcon}
+                                                        alt="calendar"
+                                                        width={10}
+                                                        height={10}
+                                                    />
+                                                    <p className="text-xs font-boldy">
+                                                        {new Date(date).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            day: 'numeric',
+                                                            month: 'short',
+                                                        })}
+                                                    </p>
+                                                </div>
 
-                    <div className="flex flex-row gap-2 items-center justify-center mt-3">
-                        <p className="font-mono text-gray-500">pnl</p>
-                        <div className="flex flex-row items-center gap-1">
-                            {['bg-[#AB2E42]', 'bg-[#BD773E]', 'bg-[#17AC81]'].map((bg, i) => (
-                                <div
-                                    key={i}
-                                    className={twMerge('h-2 w-2 rounded-sm', bg)}
-                                ></div>
-                            ))}
+                                                <FormatNumber
+                                                    nb={stats.totalPositions}
+                                                    prefix="positions: "
+                                                    prefixClassName={twMerge(
+                                                        'font-mono opacity-50',
+                                                        bubbleBy === 'Position Count'
+                                                            ? 'text-[#F1C40F] opacity-100'
+                                                            : '',
+                                                    )}
+                                                />
+
+                                                <FormatNumber
+                                                    nb={stats.pnl}
+                                                    prefix="pnl: "
+                                                    format="currency"
+                                                    prefixClassName={twMerge(
+                                                        'font-mono opacity-50',
+                                                        bubbleBy === 'Pnl'
+                                                            ? 'text-[#F1C40F] opacity-100'
+                                                            : '',
+                                                    )}
+                                                />
+                                                <FormatNumber
+                                                    nb={stats.size}
+                                                    prefix="size: "
+                                                    format="currency"
+                                                    prefixClassName={twMerge(
+                                                        'font-mono opacity-50',
+                                                        bubbleBy === 'Open Size'
+                                                            ? 'text-[#F1C40F] opacity-100'
+                                                            : '',
+                                                    )}
+                                                />
+
+                                                <FormatNumber
+                                                    nb={stats.volume}
+                                                    prefix="volume: "
+                                                    format="currency"
+                                                    prefixClassName={twMerge(
+                                                        'font-mono opacity-50',
+                                                        bubbleBy === 'Volume'
+                                                            ? 'text-[#F1C40F] opacity-100'
+                                                            : '',
+                                                    )}
+                                                />
+                                                <FormatNumber
+                                                    nb={stats.totalFees}
+                                                    prefix="fees: "
+                                                    format="currency"
+                                                    prefixClassName={twMerge(
+                                                        'font-mono opacity-50',
+                                                        bubbleBy === 'Fees'
+                                                            ? 'text-[#F1C40F] opacity-100'
+                                                            : '',
+                                                    )}
+                                                />
+                                            </div>
+                                        }
+                                        key={'cell-' + i}
+                                    >
+                                        <div
+                                            className={twMerge(
+                                                'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer transition duration-300',
+                                            )}
+                                            style={{
+                                                width: blockSize,
+                                                height: blockSize
+                                            }}
+                                            onClick={() => {
+                                                if (isUserActivity) return;
+                                                const startDate = new Date(date);
+                                                const endDate = startDate.setHours(
+                                                    startDate.getHours() + 24,
+                                                );
+                                                setSelectedRange?.('Custom');
+                                                setStartDate?.(new Date(date).toISOString());
+                                                setEndDate?.(new Date(endDate).toISOString());
+                                            }}
+                                        >
+                                            <svg height="100%" width="100%">
+                                                <motion.circle
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    initial={{ r: 0 }}
+                                                    animate={{
+                                                        r: Math.min((stats.bubbleSize * scaleFactor) / 2, blockSize / 2)
+                                                    }}
+                                                    transition={{ duration: 0.3 }}
+                                                    fill={stats.color}
+                                                    className="inline-block"
+                                                ></motion.circle>
+                                            </svg>
+                                        </div>
+                                    </Tippy>
+                                );
+                            })}
+                        </div>
+
+                        <div className="flex flex-row gap-2 items-center justify-center mt-3">
+                            <p className="font-mono text-gray-500">pnl</p>
+                            <div className="flex flex-row items-center gap-1">
+                                {['bg-[#AB2E42]', 'bg-[#BD773E]', 'bg-[#17AC81]'].map((bg, i) => (
+                                    <div
+                                        key={i}
+                                        className={twMerge('h-2 w-2 rounded-sm', bg)}
+                                    ></div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
