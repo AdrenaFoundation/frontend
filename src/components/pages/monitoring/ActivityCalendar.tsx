@@ -47,16 +47,24 @@ export default function ActivityCalendar({
     const [blockMargin, setBlockMargin] = React.useState(2);
     const [scaleFactor, setScaleFactor] = React.useState(1);
 
+    const isToday = React.useCallback((dateToCheck: Date) => {
+        const today = new Date();
+        return dateToCheck.toDateString() === today.toDateString();
+    }, []);
+
     React.useEffect(() => {
         const updateSize = () => {
             if (containerRef.current) {
                 const containerWidth = containerRef.current.offsetWidth;
                 const totalColumns = Math.ceil((data?.length || 0) / 7) || 1;
-                const baseSize = 16; // Base block size
+                const baseSize = 16;
+                const maxBlockSize = 32;
 
-                // Calculate size to fill container width
-                const availableWidth = containerWidth - 40; // Account for some padding
-                const calculatedSize = Math.max(baseSize, Math.floor((availableWidth - (totalColumns * 4)) / totalColumns));
+                const availableWidth = containerWidth - 40;
+                const calculatedSize = Math.min(
+                    maxBlockSize,
+                    Math.max(baseSize, Math.floor((availableWidth - (totalColumns * 4)) / totalColumns))
+                );
                 const newScaleFactor = calculatedSize / baseSize;
 
                 setBlockSize(calculatedSize);
@@ -70,12 +78,71 @@ export default function ActivityCalendar({
         return () => window.removeEventListener('resize', updateSize);
     }, [data]);
 
+    const exportCalendarData = React.useCallback(() => {
+        if (!data) return;
+
+        const csvData = data.map(({ date, stats }) => ({
+            date: new Date(date).toLocaleDateString(),
+            pnl: stats?.pnl || 0,
+            volume: stats?.volume || 0,
+            positions: stats?.totalPositions || 0,
+            fees: stats?.totalFees || 0
+        }));
+
+        const headers = ['Date', 'PNL', 'Volume', 'Positions', 'Fees'];
+        const csvContent = [
+            headers.join(','),
+            ...csvData.map(row => [
+                row.date,
+                row.pnl,
+                row.volume,
+                row.positions,
+                row.fees
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'trading-activity.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }, [data]);
+
     if (!data) {
-        return null;
+        return (
+            <div className={twMerge('bg-[#040D14] border rounded-lg p-3', wrapperClassName)}>
+                <div className="flex flex-col sm:flex-row mb-6 pl-3 pr-3 justify-between items-center">
+                    <p className="font-boldy text-lg">Daily Trading activity</p>
+                    <div className="flex flex-row gap-3 animate-pulse">
+                        <div className="h-4 w-20 bg-third/20 rounded" />
+                    </div>
+                </div>
+                <div className="gap-3 mt-4 flex flex-col items-center justify-center">
+                    <div ref={containerRef} className="hide-scrollbar w-full flex justify-center">
+                        <div className="animate-pulse grid grid-flow-col grid-rows-7" style={{ gap: '2px' }}>
+                            {Array(91).fill(0).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="bg-third/20 rounded-sm"
+                                    style={{
+                                        width: 16,
+                                        height: 16
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     if (isMobile) {
-        data = data.slice(80);
+        data = data.slice(50);
     }
 
     const monthsInActivityData = data.reduce((acc, curr) => {
@@ -126,15 +193,17 @@ export default function ActivityCalendar({
         }));
 
     return (
-        <div
-            className={twMerge(
-                'bg-[#040D14] border rounded-lg p-3',
-                wrapperClassName,
-            )}
-        >
+        <div className={twMerge('bg-[#040D14] border rounded-lg p-3', wrapperClassName)}>
             <div className="flex flex-col sm:flex-row mb-6 pl-3 pr-3 justify-between items-center">
-                <p className="font-boldy text-lg">Daily Trading activity</p>
-
+                <div className="flex items-center gap-4">
+                    <p className="font-boldy text-lg">Daily Trading activity</p>
+                    <button
+                        onClick={exportCalendarData}
+                        className="text-xs opacity-50 hover:opacity-100 transition-opacity duration-300"
+                    >
+                        Export CSV
+                    </button>
+                </div>
                 <div className="flex flex-row gap-3">
                     <p className='opacity-25'>by: </p>
                     {['pnl', 'volume', 'position count'].map((filter, i) => (
@@ -189,7 +258,8 @@ export default function ActivityCalendar({
                             className="relative grid w-fit grid-flow-col grid-rows-7 overflow-auto"
                             style={{
                                 columnGap: `${blockMargin}px`,
-                                rowGap: `${blockMargin}px`
+                                rowGap: `${blockMargin}px`,
+                                padding: '1px'  // Add padding to ensure highlights are visible
                             }}
                         >
                             {data.map(({ date, stats }, i) => {
@@ -209,7 +279,10 @@ export default function ActivityCalendar({
                                         >
                                             <div
                                                 key={i}
-                                                className="bg-third hover:bg-secondary rounded-sm transition duration-300"
+                                                className={twMerge(
+                                                    'bg-third hover:bg-secondary rounded-sm transition duration-300 relative',
+                                                    isToday(new Date(date)) && 'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10'
+                                                )}
                                                 style={{
                                                     width: blockSize,
                                                     height: blockSize
@@ -243,23 +316,27 @@ export default function ActivityCalendar({
                                                     prefix="positions: "
                                                     prefixClassName={twMerge(
                                                         'font-mono opacity-50',
-                                                        bubbleBy === 'Position Count'
-                                                            ? 'text-[#F1C40F] opacity-100'
-                                                            : '',
+                                                        bubbleBy === 'position count' && 'text-[#F1C40F] opacity-100'
                                                     )}
                                                 />
 
-                                                <FormatNumber
-                                                    nb={stats.pnl}
-                                                    prefix="pnl: "
-                                                    format="currency"
-                                                    prefixClassName={twMerge(
-                                                        'font-mono opacity-50',
-                                                        bubbleBy === 'Pnl'
-                                                            ? 'text-[#F1C40F] opacity-100'
-                                                            : '',
+                                                <div className="flex items-center gap-2">
+                                                    <FormatNumber
+                                                        nb={stats.pnl}
+                                                        prefix="pnl: "
+                                                        format="currency"
+                                                        prefixClassName={twMerge(
+                                                            'font-mono opacity-50',
+                                                            bubbleBy === 'pnl' && 'text-[#F1C40F] opacity-100'
+                                                        )}
+                                                    />
+                                                    {stats.pnl !== 0 && (
+                                                        <span className={stats.pnl > 0 ? 'text-[#17AC81]' : 'text-[#AB2E42]'}>
+                                                            {stats.pnl > 0 ? '↑' : '↓'}
+                                                        </span>
                                                     )}
-                                                />
+                                                </div>
+
                                                 <FormatNumber
                                                     nb={stats.size}
                                                     prefix="size: "
@@ -278,9 +355,7 @@ export default function ActivityCalendar({
                                                     format="currency"
                                                     prefixClassName={twMerge(
                                                         'font-mono opacity-50',
-                                                        bubbleBy === 'Volume'
-                                                            ? 'text-[#F1C40F] opacity-100'
-                                                            : '',
+                                                        bubbleBy === 'volume' && 'text-[#F1C40F] opacity-100'
                                                     )}
                                                 />
                                                 <FormatNumber
@@ -300,7 +375,8 @@ export default function ActivityCalendar({
                                     >
                                         <div
                                             className={twMerge(
-                                                'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer transition duration-300',
+                                                'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer transition duration-300 relative',
+                                                isToday(new Date(date)) && 'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10'
                                             )}
                                             style={{
                                                 width: blockSize,
@@ -339,11 +415,17 @@ export default function ActivityCalendar({
                         <div className="flex flex-row gap-2 items-center justify-center mt-3">
                             <p className="font-mono text-gray-500">pnl</p>
                             <div className="flex flex-row items-center gap-1">
-                                {['bg-[#AB2E42]', 'bg-[#BD773E]', 'bg-[#17AC81]'].map((bg, i) => (
-                                    <div
-                                        key={i}
-                                        className={twMerge('h-2 w-2 rounded-sm', bg)}
-                                    ></div>
+                                {[
+                                    { color: '#AB2E42', label: 'Loss' },
+                                    { color: '#BD773E', label: 'Below Avg' },
+                                    { color: '#17AC81', label: 'Above Avg' }
+                                ].map(({ color, label }, i) => (
+                                    <Tippy key={i} content={label}>
+                                        <div
+                                            className={`h-2 w-2 rounded-sm cursor-help transition-opacity duration-300 hover:opacity-80`}
+                                            style={{ backgroundColor: color }}
+                                        />
+                                    </Tippy>
                                 ))}
                             </div>
                         </div>
