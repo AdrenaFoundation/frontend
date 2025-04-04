@@ -144,7 +144,7 @@ export default function ActivityCalendar({
                                 const firstMonth = sortedMonths[0];
                                 const firstMonthLastColumn = Math.floor(firstMonth.lastDayIndex / 7);
                                 if (startColumn === firstMonthLastColumn) {
-                                    startColumn += 1.2; // Shift second month if it overlaps with first month
+                                    startColumn += 1.3; // Shift second month if it overlaps with first month
                                 }
                             }
 
@@ -156,7 +156,7 @@ export default function ActivityCalendar({
                                     className="absolute -top-5 text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
                                     style={{
                                         left: position,
-                                        transform: 'translateX(-15%)'
+                                        transform: i === 0 ? 'translateX(0)' : 'translateX(-15%)'
                                     }}
                                 >
                                     {monthData.month}
@@ -182,7 +182,7 @@ export default function ActivityCalendar({
                                     >
                                         <div
                                             key={i}
-                                            className="bg-third hover:bg-secondary rounded-sm  size-4 transition duration-300"
+                                            className="bg-third hover:bg-secondary rounded-sm size-4 transition duration-300"
                                         />
                                     </Tippy>
                                 );
@@ -269,7 +269,7 @@ export default function ActivityCalendar({
                                 >
                                     <div
                                         className={twMerge(
-                                            'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer group size-4 transition duration-300',
+                                            'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer size-4 transition duration-300',
                                         )}
                                         onClick={() => {
                                             if (isUserActivity) return;
@@ -289,7 +289,7 @@ export default function ActivityCalendar({
                                                 cy="50%"
                                                 initial={{ r: 0 }}
                                                 animate={{
-                                                    r: stats.bubbleSize / 2,
+                                                    r: Math.min(stats.bubbleSize / 2, 6)
                                                 }}
                                                 transition={{ duration: 0.3 }}
                                                 fill={stats.color}
