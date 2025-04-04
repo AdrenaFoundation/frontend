@@ -1233,8 +1233,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
 ] as const;
 
 export const SOLANA_ID_TIERS_MUTAGEN = {
-  TIER_1: { mutagen: 10, title: "Tier 1" },
-  TIER_2: { mutagen: 5, title: "Tier 2" },
-  TIER_3: { mutagen: 3, title: "Tier 3" },
-  TIER_4: { mutagen: 1, title: "Tier 4" },
+  tier_1: { mutagen: 10, title: "Tier 1" },
+  tier_2: { mutagen: 5, title: "Tier 2" },
+  tier_3: { mutagen: 3, title: "Tier 3" },
+  tier_4: { mutagen: 1, title: "Tier 4" },
 } as const;

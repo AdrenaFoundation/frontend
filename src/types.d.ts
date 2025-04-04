@@ -1424,7 +1424,7 @@ export type AchievementInfoExtended = AchievementInfo & {
 export type SolanaIDType = {
   solidUser: {
     solidScore: number;
-    tierGroup: "TIER_1" | "TIER_2" | "TIER_3" | "TIER_4";
+    tierGroup: "tier_1" | "tier_2" | "tier_3" | "tier_4";
     // badges: string[];
     // dataPoints: {
     //   feesPaid: number;
@@ -1456,7 +1456,7 @@ export type SolanaIDType = {
     //   nativeStakingHistoricalSolVolumeByDuration: number;
     //   nativeStakingActiveSolVolume: number;
     // };
-    // isSolanaIdUser?: boolean | null; // Optional field
+    isSolanaIdUser?: boolean | null;
   };
   // status: string;
 };

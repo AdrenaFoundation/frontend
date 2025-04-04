@@ -7,7 +7,8 @@ import { SolanaIDType } from "@/types";
 const SolanaIDSchema = z.object({
   solidUser: z.object({
     solidScore: z.number(),
-    tierGroup: z.enum(["TIER_1", "TIER_2", "TIER_3", "TIER_4"]),
+    tierGroup: z.enum(["tier_1", "tier_2", "tier_3", "tier_4"]),
+    isSolanaIdUser: z.boolean().optional().nullable(),
   }),
 });
 
