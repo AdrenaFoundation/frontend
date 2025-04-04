@@ -62,6 +62,11 @@ const useSolanaID = ({
 
         const json = await response.json();
 
+        if (json === null) {
+          setData(null);
+          return;
+        }
+
         const parsed = SolanaIDSchema.safeParse(json);
 
         // Enforce the API answer
