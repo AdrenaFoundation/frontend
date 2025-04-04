@@ -51,7 +51,6 @@ const useSolanaID = ({
               "Content-Type": "application/json",
               "x-api-key": apiKey,
             },
-            mode: "no-cors",
           },
         );
 

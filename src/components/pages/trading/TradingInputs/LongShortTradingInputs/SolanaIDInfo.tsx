@@ -17,8 +17,6 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
 
   const solanaID = data;
 
-  console.log('SOLANA ID DATA', solanaID);
-
   return (
     <Tippy
       className="relative tippy-no-padding border-2"
