@@ -55,14 +55,51 @@ export default function ActivityCalendar({
         if (curr === null) {
             return acc;
         }
-        const month = new Date(curr.date).toLocaleString('default', {
-            month: 'short',
-        });
+        const date = new Date(curr.date);
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const key = `${date.getFullYear()}-${date.getMonth()}`; // Use this for sorting
 
-        acc[month] = (acc[month] || 0) + 1;
-
+        if (!acc[key]) {
+            acc[key] = {
+                month,
+                count: 0,
+                year: date.getFullYear(),
+                rawMonthIndex: date.getMonth(),
+                firstDayIndex: -1, // Will store the index of first day in the month
+                lastDayIndex: -1   // Will store the index of last day in the month
+            };
+        }
+        // Track the first and last occurrence of each month
+        const currentIndex = data.indexOf(curr);
+        if (acc[key].firstDayIndex === -1) acc[key].firstDayIndex = currentIndex;
+        acc[key].lastDayIndex = currentIndex;
+        acc[key].count += 1;
         return acc;
-    }, {} as { [key: string]: number });
+    }, {} as {
+        [key: string]: {
+            month: string;
+            count: number;
+            year: number;
+            rawMonthIndex: number;
+            firstDayIndex: number;
+            lastDayIndex: number;
+        }
+    });
+
+    // Convert to array and sort chronologically
+    const sortedMonths = Object.entries(monthsInActivityData)
+        .sort(([keyA], [keyB]) => {
+            const [yearA, monthA] = keyA.split('-').map(Number);
+            const [yearB, monthB] = keyB.split('-').map(Number);
+            return yearA !== yearB ? yearA - yearB : monthA - monthB;
+        })
+        .map(([, value], index) => ({
+            ...value,
+            order: index,
+            monthIndex: index
+        }));
+
+    console.log(sortedMonths);
 
     return (
         <div
@@ -94,18 +131,35 @@ export default function ActivityCalendar({
             <div className="gap-3 mt-4 flex flex-col items-center justify-center">
                 <div className="hide-scrollbar overflow-auto">
                     <div className="relative flex flex-row mt-4">
-                        {Object.keys(monthsInActivityData).map((month, i) => {
-                            const initSize = monthsInActivityData[month] / 7;
+                        {sortedMonths.map((monthData, i) => {
                             const blockMargin = 4;
                             const blockSize = 16;
-                            const nbOfBlocksToSkip = initSize * (blockSize + blockMargin);
+                            const columnWidth = blockSize + blockMargin;
+
+                            // Calculate position based on the first day's column in the grid
+                            let startColumn = Math.floor(monthData.firstDayIndex / 7);
+
+                            // Special case for first month overlap
+                            if (i === 1 && sortedMonths[0]) {
+                                const firstMonth = sortedMonths[0];
+                                const firstMonthLastColumn = Math.floor(firstMonth.lastDayIndex / 7);
+                                if (startColumn === firstMonthLastColumn) {
+                                    startColumn += 1.2; // Shift second month if it overlaps with first month
+                                }
+                            }
+
+                            const position = startColumn * columnWidth;
+
                             return (
                                 <div
                                     key={i}
-                                    className="absolute -top-5 text-sm font-boldy opacity-50 z-10"
-                                    style={{ left: i * nbOfBlocksToSkip }}
+                                    className="absolute -top-5 text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
+                                    style={{
+                                        left: position,
+                                        transform: 'translateX(-15%)'
+                                    }}
                                 >
-                                    {month}
+                                    {monthData.month}
                                 </div>
                             );
                         })}
