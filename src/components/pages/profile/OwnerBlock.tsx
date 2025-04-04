@@ -301,8 +301,6 @@ export default function OwnerBloc({
             unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'text-txtfade cursor-disabled',
           )}
           onClick={() => {
-
-            console.log('ONCLICK TITLE');
             if (!unlocked) return;
 
             setUpdatingMetadata((u) => ({
