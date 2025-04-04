@@ -113,7 +113,6 @@ export default function ActivityCalendar({
         }
     });
 
-    // Convert to array and sort chronologically
     const sortedMonths = Object.entries(monthsInActivityData)
         .sort(([keyA], [keyB]) => {
             const [yearA, monthA] = keyA.split('-').map(Number);
@@ -125,8 +124,6 @@ export default function ActivityCalendar({
             order: index,
             monthIndex: index
         }));
-
-    console.log(sortedMonths);
 
     return (
         <div
@@ -160,11 +157,8 @@ export default function ActivityCalendar({
                     <div className="relative flex flex-col">
                         <div className="relative flex flex-row mt-4">
                             {sortedMonths.map((monthData, i) => {
-                                // Calculate the exact week number (0-based)
                                 let weekNumber = Math.floor(monthData.firstDayIndex / 7);
 
-                                // If this month starts in the same week as the previous month ends,
-                                // shift it to the next week
                                 if (i > 0) {
                                     const prevMonth = sortedMonths[i - 1];
                                     const prevWeek = Math.floor(prevMonth.firstDayIndex / 7);
@@ -173,7 +167,6 @@ export default function ActivityCalendar({
                                     }
                                 }
 
-                                // Calculate the exact pixel position
                                 const cellWidth = blockSize + blockMargin;
                                 const position = weekNumber * cellWidth;
 
@@ -193,8 +186,11 @@ export default function ActivityCalendar({
                             })}
                         </div>
                         <div
-                            className="relative grid w-fit grid-flow-col grid-rows-7 gap-1 overflow-auto"
-                            style={{ columnGap: `${blockMargin}px` }}
+                            className="relative grid w-fit grid-flow-col grid-rows-7 overflow-auto"
+                            style={{
+                                columnGap: `${blockMargin}px`,
+                                rowGap: `${blockMargin}px`
+                            }}
                         >
                             {data.map(({ date, stats }, i) => {
                                 if (stats === null) {

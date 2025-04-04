@@ -138,7 +138,11 @@ export default function usePositionStats(isByWalletAddress = false) {
         const tradingStartDate = new Date(startDate);
         const endOfMonth = new Date(endDate);
 
-        const daysBetween = getDaysBetweenDates(tradingStartDate, endOfMonth);
+        // Add one day to include today
+        const adjustedEndDate = new Date(endOfMonth);
+        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+
+        const daysBetween = getDaysBetweenDates(tradingStartDate, adjustedEndDate);
 
         for (let i = 0; i < daysBetween; i++) {
             const date = new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000);
