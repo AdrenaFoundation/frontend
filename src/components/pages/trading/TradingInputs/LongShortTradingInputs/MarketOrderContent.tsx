@@ -57,7 +57,7 @@ export const MarketOrderContent = ({
         <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
             <Select
                 className="shrink-0 h-full flex items-center w-[7em]"
-                selectedClassName="w-14"
+                selectedClassName="w-22"
                 menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
                 menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
                 selected={getTokenSymbol(tokenB.symbol)}
