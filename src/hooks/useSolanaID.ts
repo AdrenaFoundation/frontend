@@ -6,7 +6,7 @@ import { SolanaIDType } from "@/types";
 // Match the API response
 const SolanaIDSchema = z.object({
   solidUser: z.object({
-    solidScore: z.number(),
+    // solidScore: z.number(),
     tierGroup: z.enum(["tier_1", "tier_2", "tier_3", "tier_4"]),
     isSolanaIdUser: z.boolean().optional().nullable(),
   }),

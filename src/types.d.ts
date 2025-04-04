@@ -1423,7 +1423,7 @@ export type AchievementInfoExtended = AchievementInfo & {
 
 export type SolanaIDType = {
   solidUser: {
-    solidScore: number;
+    // solidScore: number;
     tierGroup: "tier_1" | "tier_2" | "tier_3" | "tier_4";
     // badges: string[];
     // dataPoints: {
