@@ -195,15 +195,8 @@ export default function ActivityCalendar({
     return (
         <div className={twMerge('bg-[#040D14] border rounded-lg p-3', wrapperClassName)}>
             <div className="flex flex-col sm:flex-row mb-6 pl-3 pr-3 justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <p className="font-boldy text-lg">Daily Trading activity</p>
-                    <button
-                        onClick={exportCalendarData}
-                        className="text-xs opacity-50 hover:opacity-100 transition-opacity duration-300"
-                    >
-                        Export CSV
-                    </button>
-                </div>
+                <p className="font-boldy text-lg">Daily Trading activity</p>
+
                 <div className="flex flex-row gap-3">
                     <p className='opacity-25'>by: </p>
                     {['pnl', 'volume', 'position count'].map((filter, i) => (
@@ -412,21 +405,34 @@ export default function ActivityCalendar({
                             })}
                         </div>
 
-                        <div className="flex flex-row gap-2 items-center justify-center mt-3">
-                            <p className="font-mono text-gray-500">pnl</p>
-                            <div className="flex flex-row items-center gap-1">
-                                {[
-                                    { color: '#AB2E42', label: 'Loss' },
-                                    { color: '#BD773E', label: 'Below Avg' },
-                                    { color: '#17AC81', label: 'Above Avg' }
-                                ].map(({ color, label }, i) => (
-                                    <Tippy key={i} content={label}>
-                                        <div
-                                            className={`h-2 w-2 rounded-sm cursor-help transition-opacity duration-300 hover:opacity-80`}
-                                            style={{ backgroundColor: color }}
-                                        />
-                                    </Tippy>
-                                ))}
+                        <div className="flex flex-row items-center justify-center mt-3 gap-6">
+                            <div className="flex flex-row gap-2 items-center">
+                                <p className="font-mono text-gray-500">pnl</p>
+                                <div className="flex flex-row items-center gap-1">
+                                    {[
+                                        { color: '#AB2E42', label: 'Loss' },
+                                        { color: '#BD773E', label: 'Below Avg' },
+                                        { color: '#17AC81', label: 'Above Avg' }
+                                    ].map(({ color, label }, i) => (
+                                        <Tippy key={i} content={label}>
+                                            <div
+                                                className={`h-2 w-2 rounded-sm cursor-help transition-opacity duration-300 hover:opacity-80`}
+                                                style={{ backgroundColor: color }}
+                                            />
+                                        </Tippy>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex flex-row items-center gap-2 justify-center">
+                                <button
+                                    onClick={exportCalendarData}
+                                    className="text-xs text-gray-500 hover:text-gray-300 transition-colors duration-300 flex items-center gap-1"
+                                >
+                                    Export CSV
+                                    <svg className="w-3 h-3 translate-y-[-0.35em]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
