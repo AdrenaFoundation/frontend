@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
+import { z } from "zod";
 
 import { SolanaIDType } from "@/types";
+
+// Match the API response
+const SolanaIDSchema = z.object({
+  solidUser: z.object({
+    solidScore: z.number(),
+    tierGroup: z.enum(["TIER_1", "TIER_2", "TIER_3", "TIER_4"]),
+  }),
+});
 
 const useSolanaID = ({
   walletAddress,
@@ -42,6 +51,7 @@ const useSolanaID = ({
               "Content-Type": "application/json",
               "x-api-key": apiKey,
             },
+            mode: "no-cors",
           },
         );
 
@@ -50,9 +60,21 @@ const useSolanaID = ({
           return null;
         }
 
-        const result = (await response.json()) as SolanaIDType;
+        const json = await response.json();
 
-        setData(result);
+        const parsed = SolanaIDSchema.safeParse(json);
+
+        // Enforce the API answer
+        if (!parsed.success) {
+          console.log(
+            "SOLANA ID API response does not match schema",
+            parsed.error,
+          );
+          setData(null);
+          return;
+        }
+
+        setData(parsed.data);
       } catch (err) {
         console.error("Error fetching data:", err);
         setError("Failed to fetch data");
