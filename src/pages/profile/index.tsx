@@ -150,7 +150,9 @@ export default function Profile({
                     isUserActivity
                   />
                 ) : (
-                  <Loader />
+                  <div className="p-4 bg-[#050D14] flex-1 h-full flex items-center justify-center">
+                    <Loader />
+                  </div>
                 )}
 
                 <div className="h-[1px] w-full bg-bcolor" />
