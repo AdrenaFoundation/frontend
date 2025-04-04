@@ -142,6 +142,26 @@ export default function AdrenaAccounts({
               ),
             }))
             .flat(),
+          ...custodies
+            .map((custody) => ({
+              rowTitle: (
+                <div className="flex items-center">
+                  {custody.tokenInfo.symbol} Custody ATA
+                  <TitleAnnotation text="PDA" />
+                  <InfoAnnotation
+                    text={`Store ${custody.tokenInfo.symbol} assets within Adrena's ecosystem.`}
+                    className="mr-1"
+                  />
+                </div>
+              ),
+              value: (
+                <OnchainAccountInfo
+                  className="md:ml-auto"
+                  address={window.adrena.client.findCustodyTokenAccountAddress(custody.mint)}
+                />
+              ),
+            }))
+            .flat(),
           {
             rowTitle: (
               <div className="flex items-center font-boldy">

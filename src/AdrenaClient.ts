@@ -18,6 +18,9 @@ import {
 } from "@solana/spl-token";
 import {
   AccountInfo,
+  AddressLookupTableAccount,
+  AddressLookupTableProgram,
+  AddressLookupTableState,
   Blockhash,
   ComputeBudgetProgram,
   Connection,
@@ -2009,7 +2012,7 @@ export class AdrenaClient {
     }
 
     const custody = this.findCustodyAddress(mint);
-    const positionPda = this.findPositionAddress(owner, custody, 'short');
+    const positionPda = this.findPositionAddress(owner, custody, "short");
 
     try {
       if (stopLossLimitPrice) {
@@ -2062,7 +2065,7 @@ export class AdrenaClient {
       }
     } catch (error) {
       console.error(
-        'Error while building stop loss or take profit instructions: ',
+        "Error while building stop loss or take profit instructions: ",
         error,
       );
     }
@@ -2278,7 +2281,7 @@ export class AdrenaClient {
     }
 
     const custody = this.findCustodyAddress(mint);
-    const positionPda = this.findPositionAddress(owner, custody, 'long');
+    const positionPda = this.findPositionAddress(owner, custody, "long");
 
     if (stopLossLimitPrice) {
       postInstructions.push(
@@ -5809,13 +5812,42 @@ export class AdrenaClient {
       });
     }
 
+    const lookupTableAccount = (
+      await this.connection.getAddressLookupTable(
+        new PublicKey("4PZaPEXPzMLuBSKgZUvpzLi3zGXJ1pSz6NTKrtoXUd4q"),
+      )
+    ).value;
+
+    if (!lookupTableAccount) {
+      console.log("lookup table is null");
+
+      const adrenaError = new AdrenaTransactionError(
+        null,
+        "Couldn't load Address Lookup Table",
+      );
+
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+
     // Prepare the transaction succeeded
     notification?.currentStepSucceeded();
 
+    const messageV0 = new TransactionMessage({
+      payerKey: wallet.publicKey,
+      recentBlockhash: latestBlockHash.blockhash,
+      instructions: transaction.instructions,
+    })
+      //.compileToV0Message([]); // Deactivated lookup table for now
+      .compileToV0Message([lookupTableAccount]);
+
+    const versionedTx = new VersionedTransaction(messageV0);
+
+    let signedTransaction: VersionedTransaction;
+
     // Sign the transaction
-    let signedTransaction: Transaction;
     try {
-      signedTransaction = await wallet.signTransaction(transaction);
+      signedTransaction = await wallet.signTransaction(versionedTx);
     } catch (err) {
       console.log("sign error:", err);
 
@@ -5829,7 +5861,7 @@ export class AdrenaClient {
       throw adrenaError;
     }
 
-    const txSignature = signedTransaction.signatures[0].signature;
+    const txSignature = signedTransaction.signatures[0];
     if (!txSignature) throw new Error("Transaction signature missing");
     const txSignatureBase58 = bs58.encode(txSignature);
 
@@ -5837,16 +5869,19 @@ export class AdrenaClient {
 
     /////////////////////// Send the transaction ///////////////////////
     try {
-      await this.connection.sendRawTransaction(
-        signedTransaction.serialize({
-          requireAllSignatures: false,
-          verifySignatures: false,
-        }),
-        {
-          skipPreflight: true,
-          maxRetries: 0,
-        },
-      );
+      await this.connection.sendRawTransaction(signedTransaction.serialize(), {
+        skipPreflight: true,
+        maxRetries: 0,
+      });
+
+      // {
+      //   requireAllSignatures: false,
+      //   verifySignatures: false,
+      // }),
+      // {
+      //   skipPreflight: true,
+      //   maxRetries: 0,
+      // },
 
       if (getTransactionLogs) {
         await this.connection.confirmTransaction(
@@ -6147,5 +6182,100 @@ export class AdrenaClient {
       .preInstructions(preInstructions);
 
     return builder;
+  }
+
+  // Utility function to load all lookup tables by authority
+  async getAllLookupTablesByAuthority(
+    authority: PublicKey,
+  ): Promise<{ pubkey: PublicKey; account: AddressLookupTableState }[] | null> {
+    if (!this.connection) return null;
+
+    const rawAlts = await this.connection.getProgramAccounts(
+      AddressLookupTableProgram.programId,
+      {
+        filters: [
+          {
+            memcmp: {
+              offset: 22, // authority starts at byte 1
+              bytes: authority.toBase58(),
+            },
+          },
+        ],
+      },
+    );
+
+    // Deserialize
+    const lookupTables = rawAlts
+      .map(({ account }) =>
+        AddressLookupTableAccount.deserialize(new Uint8Array(account.data)),
+      )
+      .map((account, i) => ({
+        pubkey: rawAlts[i].pubkey,
+        account,
+      }));
+
+    return lookupTables;
+  }
+
+  // Utility function: To be called by admin manually
+  async createLookupTable({
+    notification,
+  }: {
+    notification?: MultiStepNotification;
+  }): Promise<void> {
+    if (!this.connection || !this.adrenaProgram)
+      throw new Error("Connection missing");
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider)
+      .wallet as Wallet & WalletAdapterExtended;
+
+    const recentSlot = await this.connection.getSlot();
+
+    const [createIx, lookupTableAddress] =
+      AddressLookupTableProgram.createLookupTable({
+        authority: wallet.publicKey,
+        payer: wallet.publicKey,
+        recentSlot,
+      });
+
+    const transaction = new Transaction().add(createIx);
+
+    await this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
+
+    console.log("📦 ALT created at:", lookupTableAddress.toBase58());
+  }
+
+  // Utility function: To be called only after createLookupTable by admin manually
+  async extendLookupTable({
+    lookupTableAddress,
+    notification,
+    addresses,
+  }: {
+    lookupTableAddress: PublicKey;
+    notification?: MultiStepNotification;
+    addresses: PublicKey[];
+  }): Promise<void> {
+    if (!this.connection || !this.adrenaProgram)
+      throw new Error("Connection missing");
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider)
+      .wallet as Wallet & WalletAdapterExtended;
+
+    const extendIx = AddressLookupTableProgram.extendLookupTable({
+      lookupTable: lookupTableAddress,
+      authority: wallet.publicKey,
+      payer: wallet.publicKey,
+      addresses,
+    });
+
+    const transaction = new Transaction().add(extendIx);
+
+    await this.signAndExecuteTxAlternative({
+      transaction,
+      notification,
+    });
   }
 }

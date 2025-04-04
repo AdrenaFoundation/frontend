@@ -2,10 +2,12 @@ import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { ADRENA_TEAM_WALLET } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
+import AddressLookupTable from './AddressLookupTable';
 import AllPositions from './allPositions';
 import AllStaking from './allStaking';
 import AllUserProfiles from './allUserProfiles';
@@ -20,8 +22,14 @@ import WalletDigger from './walletDigger';
 export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
   const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
+  const [showLookupTablePage, setShowLookupTablePage] = useState(false);
 
   const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
+
+  useEffect(() => {
+    console.log('Wallet:', pageProps.wallet?.publicKey.toBase58());
+    setShowLookupTablePage(pageProps.wallet?.publicKey.toBase58() === ADRENA_TEAM_WALLET.toBase58());
+  }, [pageProps.wallet?.publicKey]);
 
   const initialView = (() => {
     const searchParamsView = searchParams.get('view') ?? 'lite'
@@ -31,7 +39,7 @@ export default function Monitoring(pageProps: PageProps) {
     return 'lite';
   })();
 
-  type MonitorViews = 'lite' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'tokenomics' | 'full' | 'walletDigger';
+  type MonitorViews = 'lite' | 'livePositions' | 'allStaking' | 'flows' | 'userProfiles' | 'tokenomics' | 'full' | 'walletDigger' | 'lookupTable';
   const [view, setView] = useState<
     MonitorViews
   >(initialView as MonitorViews);
@@ -48,6 +56,7 @@ export default function Monitoring(pageProps: PageProps) {
     allStaking: 'Staking',
     flows: 'Flows',
     walletDigger: 'Wallet Digger',
+    lookupTable: 'ALT',
   };
 
   function getTranslateX(currentView: MonitorViews, previousView: MonitorViews): number {
@@ -75,6 +84,8 @@ export default function Monitoring(pageProps: PageProps) {
         return <Flow custodies={pageProps.custodies} view={view} />;
       case 'walletDigger':
         return <WalletDigger view={view} />;
+      case 'lookupTable':
+        return <AddressLookupTable view={view} />;
       default:
         return <div>Invalid view</div>;
     }
@@ -120,6 +131,12 @@ export default function Monitoring(pageProps: PageProps) {
           <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
 
           {MonitoringHeaderLink('walletDigger')}
+
+          {showLookupTablePage ? <>
+            <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+
+            {MonitoringHeaderLink('lookupTable')}
+          </> : null}
         </div >
       </div >
 

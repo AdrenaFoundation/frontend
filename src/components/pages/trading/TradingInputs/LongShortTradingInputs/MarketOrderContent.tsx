@@ -8,7 +8,6 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import InfoAnnotation from '../../../monitoring/InfoAnnotation';
 import { ErrorDisplay } from './ErrorDisplay';
-import SolanaIDInfo from './SolanaIDInfo';
 
 interface MarketOrderContentProps {
     side: 'long' | 'short';
@@ -50,7 +49,7 @@ export const MarketOrderContent = ({
     onTokenBSelect,
     onExecute,
     tokenPriceBTrade,
-    walletAddress,
+    // walletAddress,
 }: MarketOrderContentProps) => (
     <div className="flex flex-col transition-opacity duration-500 mt-4">
         <h5 className="flex items-center ml-4">Size</h5>
@@ -155,7 +154,7 @@ export const MarketOrderContent = ({
 
         {errorMessage && <ErrorDisplay errorMessage={errorMessage} />}
 
-        <SolanaIDInfo walletAddress={walletAddress} />
+        {/* <SolanaIDInfo walletAddress={walletAddress} /> */}
 
         <Button
             className={twMerge(

@@ -72,19 +72,33 @@ export default function Select<T extends string>({
             <div
               className={twMerge(
                 'flex flex-row gap-x-1 items-center',
-                options.length > 1 && 'w-full pr-3',
+                options.length > 1 && !reversed && 'w-full pr-3',
                 align === 'right' && 'justify-between',
+                options.length > 1 && reversed && 'w-full justify-between',
                 selectedClassName,
               )}
             >
-              {reversed ? img : chevron}
-              <div className="flex flex-row gap-2 items-center">
-                <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
-                  {selected}
-                </span>
-
-                {reversed ? chevron : img}
-              </div>
+              {reversed ? (
+                <>
+                  <div className="flex flex-row gap-2 items-center">
+                    {img}
+                    <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
+                      {selected}
+                    </span>
+                  </div>
+                  {chevron}
+                </>
+              ) : (
+                <>
+                  {chevron}
+                  <div className="flex flex-row gap-2 items-center">
+                    <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
+                      {selected}
+                    </span>
+                    {img}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         }
