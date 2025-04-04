@@ -79,7 +79,11 @@ const useSolanaID = ({
           return;
         }
 
-        setData(parsed.data);
+        if (parsed.data.solidUser.isSolanaIdUser) {
+          setData(parsed.data);
+        } else {
+          setData(null);
+        }
       } catch (err) {
         console.error("Error fetching data:", err);
         setError("Failed to fetch data");
