@@ -8,6 +8,7 @@ import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import RankingStats from '@/components/pages/profile/RankingStats';
 import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import VestStats from '@/components/pages/profile/VestStats';
@@ -47,7 +48,7 @@ export default function WalletDigger({
         walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
     });
 
-    const { traderInfo } = useTraderInfo({
+    const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
         walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
     });
 
@@ -420,6 +421,18 @@ export default function WalletDigger({
         {
             targetWalletPubkey && userVest ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
                 <VestStats vest={userVest} readonly={true} />
+            </StyledContainer> : null
+        }
+
+        {
+            targetWalletPubkey && expanseRanking && awakeningRanking ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
+                <h1 className='ml-auto mr-auto'>TRADING COMPETITION</h1>
+
+                <RankingStats
+                    expanseRanking={expanseRanking}
+                    awakeningRanking={awakeningRanking}
+                    className="gap-y-4 pt-2 pb-2"
+                />
             </StyledContainer> : null
         }
     </div >;
