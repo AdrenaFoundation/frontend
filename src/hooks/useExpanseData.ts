@@ -1,15 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
-import DataApiClient from '@/DataApiClient';
+import DataApiClient from "@/DataApiClient";
 import {
   ProfilePicture,
   SeasonLeaderboardsData,
   UserProfileMetadata,
   UserProfileTitle,
-} from '@/types';
+} from "@/types";
 
-function applyProfile(leaderboardData: SeasonLeaderboardsData | null, allMetadata: Record<string, UserProfileMetadata>) {
-  if (!leaderboardData || !allMetadata) {
+function applyProfile(
+  leaderboardData: SeasonLeaderboardsData | null,
+  allMetadata: Record<string, UserProfileMetadata>,
+) {
+  if (!leaderboardData || !allMetadata || !allMetadata.length) {
     return;
   }
 
@@ -43,30 +46,41 @@ export default function useExpanseData({
 }: {
   allUserProfilesMetadata: UserProfileMetadata[];
 }): SeasonLeaderboardsData | null {
-  const [leaderboardData, setLeaderboardData] = useState<SeasonLeaderboardsData | null>(null);
+  const [leaderboardData, setLeaderboardData] =
+    useState<SeasonLeaderboardsData | null>(null);
 
-  const allMetadata = useMemo(() => allUserProfilesMetadata.reduce((acc, profile) => {
-    acc[profile.owner.toBase58()] = profile;
-    return acc;
-  }, {} as Record<string, UserProfileMetadata>), [allUserProfilesMetadata]);
+  const allMetadata = useMemo(() => {
+    if (!allUserProfilesMetadata || !allUserProfilesMetadata.length) return {};
+
+    return allUserProfilesMetadata.reduce(
+      (acc, profile) => {
+        acc[profile.owner.toBase58()] = profile;
+        return acc;
+      },
+      {} as Record<string, UserProfileMetadata>,
+    );
+  }, [allUserProfilesMetadata]);
 
   useEffect(() => {
     if (!allMetadata) return;
 
     DataApiClient.getSeasonLeaderboards()
       .then((data) => {
-          applyProfile(data, allMetadata);
-          setLeaderboardData(data);
-      }).catch((error) => {
-          console.log(error);
+        applyProfile(data, allMetadata);
+        setLeaderboardData(data);
+      })
+      .catch((error) => {
+        console.log(error);
       });
 
     const interval = setInterval(() => {
-        DataApiClient.getSeasonLeaderboards().then((data) => {
+      DataApiClient.getSeasonLeaderboards()
+        .then((data) => {
           applyProfile(data, allMetadata);
           setLeaderboardData(data);
-        }).catch((error) => {
-            console.log(error);
+        })
+        .catch((error) => {
+          console.log(error);
         });
     }, 20_000);
 
