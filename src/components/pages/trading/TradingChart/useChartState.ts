@@ -8,7 +8,7 @@ import {
   DEFAULT_TIMEZONE,
   STORAGE_KEY_RESOLUTION,
 } from './constants';
-import { createTradingViewWidget } from './createWidget';
+import { createTradingViewWidget } from './createTradingViewWidget';
 import { ChartLoadRef, ChartState, Widget } from './types';
 
 // Script loading promise to ensure we only load TV script once

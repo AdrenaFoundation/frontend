@@ -1,12 +1,12 @@
-import { Token, TokenSymbol } from '@/types';
+import { Token } from '@/types';
 import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
   ChartingLibraryFeatureset,
-  IChartingLibraryWidget,
   ResolutionString,
   Timezone,
 } from '../../../../../public/charting_library/charting_library';
+import { configureChartOnReady } from './configureChartOnReady';
 import {
   CHART_BACKGROUND,
   CHART_PRICE_LINE_COLOR,
@@ -15,9 +15,9 @@ import {
   ENABLED_FEATURES,
   FAVORITE_CHART_TYPES,
   FAVORITE_INTERVALS,
-  STORAGE_KEY_DRAWINGS,
 } from './constants';
 import datafeed from './datafeed';
+import { isSupportedResolution } from './subscriptions/resolutionSubscription';
 
 /**
  * Creates and configures a TradingView widget for the chart
@@ -105,6 +105,7 @@ export function createTradingViewWidget({
       setWidgetReady(true);
       setIsLoading(false);
 
+      // Configure the chart and subscribe to events
       configureChartOnReady(widget, savedTimezone);
     });
 
@@ -112,110 +113,4 @@ export function createTradingViewWidget({
   }
 
   return null;
-}
-
-/**
- * Configure chart settings and subscriptions when ready
- */
-function configureChartOnReady(
-  widget: IChartingLibraryWidget,
-  savedTimezone: string,
-) {
-  // Apply chart visual overrides
-  widget.applyOverrides({
-    'paneProperties.backgroundType': 'solid',
-    'paneProperties.background': CHART_BACKGROUND,
-    'paneProperties.legendProperties.showStudyArguments': false,
-    'paneProperties.legendProperties.showStudyTitles': false,
-    'paneProperties.legendProperties.showStudyValues': false,
-    'paneProperties.legendProperties.showSeriesTitle': false,
-    'paneProperties.legendProperties.showBarChange': false,
-    'paneProperties.legendProperties.showSeriesOHLC': true,
-    'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,
-    'scalesProperties.textColor': CHART_TEXT_COLOR,
-    timezone: savedTimezone as Timezone,
-  });
-
-  // Subscribe to drawing events to save user drawings
-  widget.subscribe('drawing_event', () => {
-    const symbol = widget
-      .activeChart()
-      .symbol()
-      .split('.')[1]
-      .split('/')[0] as TokenSymbol;
-
-    const parsedChartShapes = JSON.parse(
-      localStorage.getItem(STORAGE_KEY_DRAWINGS) ?? '{}',
-    );
-
-    const userDrawings = widget
-      .activeChart()
-      .getAllShapes()
-      .map((line) => {
-        const points = widget.activeChart().getShapeById(line.id).getPoints();
-
-        const shape = widget
-          .activeChart()
-          .getShapeById(line.id)
-          .getProperties();
-
-        // Uses text to filter out our drawings
-        if (shape.text.includes('long') || shape.text.includes('short')) {
-          return null;
-        }
-
-        // Save user drawn line
-        return {
-          id: line.id,
-          points,
-          name: line.name,
-          options: shape,
-        };
-      })
-      .filter((line) => line);
-
-    localStorage.setItem(
-      STORAGE_KEY_DRAWINGS,
-      JSON.stringify({
-        ...parsedChartShapes,
-        [symbol]: userDrawings,
-      }),
-    );
-  });
-
-  // Listen for resolution changes
-  widget
-    .activeChart()
-    .onIntervalChanged()
-    .subscribe(null, (newInterval: ResolutionString) => {
-      if (!isSupportedResolution(newInterval)) {
-        localStorage.setItem('trading_chart_resolution', '1D');
-        return;
-      }
-
-      localStorage.setItem('trading_chart_resolution', newInterval);
-    });
-}
-
-/**
- * Check if a resolution is supported
- */
-function isSupportedResolution(resolution: string): boolean {
-  // Import from constants or use a specific list
-  const SUPPORTED_RESOLUTIONS = [
-    '1',
-    '3',
-    '5',
-    '15',
-    '30',
-    '1h',
-    '2h',
-    '4h',
-    'D',
-    '1D',
-    '1W',
-    '1M',
-  ];
-
-  return SUPPORTED_RESOLUTIONS.includes(resolution);
 }
