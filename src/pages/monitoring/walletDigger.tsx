@@ -26,6 +26,7 @@ import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
+import RankingStats from '@/components/pages/profile/RankingStats';
 
 const claimHistoryItemsPerPage = 4;
 
@@ -47,7 +48,7 @@ export default function WalletDigger({
         walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
     });
 
-    const { traderInfo } = useTraderInfo({
+    const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
         walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
     });
 
@@ -420,6 +421,18 @@ export default function WalletDigger({
         {
             targetWalletPubkey && userVest ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
                 <VestStats vest={userVest} readonly={true} />
+            </StyledContainer> : null
+        }
+
+        {
+            targetWalletPubkey && expanseRanking && awakeningRanking ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
+                <h1 className='ml-auto mr-auto'>TRADING COMPETITION</h1>
+
+                <RankingStats
+                    expanseRanking={expanseRanking}
+                    awakeningRanking={awakeningRanking}
+                    className="gap-y-4 pt-2 pb-2"
+                />
             </StyledContainer> : null
         }
     </div >;

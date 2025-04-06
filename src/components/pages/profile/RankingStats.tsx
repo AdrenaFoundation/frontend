@@ -34,7 +34,7 @@ export default function RankingStats({
             <div className='flex items-center flex-col mt-4'>
                 <h1
                     className={twMerge(
-                        'text-[1.2em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] z-10 mt-4 text-center',
+                        'text-[1em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] z-10 mt-4 text-center',
                         TRADING_COMPETITION_SEASONS.awakening.gradient,
                     )}
                 >
@@ -96,7 +96,7 @@ export default function RankingStats({
             <div className='flex items-center flex-col mt-4'>
                 <h1
                     className={twMerge(
-                        'text-[1.2em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] z-10 mt-4 text-center',
+                        'text-[1em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] z-10 mt-4 text-center',
                         TRADING_COMPETITION_SEASONS.expanse.gradient,
                     )}
                 >

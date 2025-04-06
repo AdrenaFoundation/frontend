@@ -13,6 +13,7 @@ import PositionsHistory from '../trading/Positions/PositionsHistory';
 import OwnerBlock from './OwnerBlock';
 import StakingStats from './StakingStats';
 import TradingStats from './TradingStats';
+import RankingStats from './RankingStats';
 
 export default function ViewProfileModal({
     profile,
@@ -26,7 +27,7 @@ export default function ViewProfileModal({
         walletAddress,
     });
     const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
-    const { traderInfo } = useTraderInfo({
+    const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
         walletAddress,
     });
 
@@ -65,6 +66,14 @@ export default function ViewProfileModal({
                 <StakingStats
                     stakingAccounts={stakingAccounts}
                     className="gap-y-4 pb-2"
+                />
+
+                <div className="h-[1px] w-full bg-bcolor" />
+
+                <RankingStats
+                    expanseRanking={expanseRanking}
+                    awakeningRanking={awakeningRanking}
+                    className="gap-y-4 pt-2 pb-2"
                 />
 
                 <div className="flex flex-col gap-3 p-4">
