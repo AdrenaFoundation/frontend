@@ -1,9 +1,9 @@
+import { useRouter } from 'next/navigation'
 import { twMerge } from 'tailwind-merge';
 
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { AwakeningRankingTraderInfo, ExpanseRankingTraderInfo } from '@/hooks/useTraderInfo';
-import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import { useRouter } from 'next/navigation'
 
 export default function RankingStats({
     expanseRanking,

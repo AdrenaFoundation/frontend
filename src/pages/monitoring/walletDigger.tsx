@@ -8,6 +8,7 @@ import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import RankingStats from '@/components/pages/profile/RankingStats';
 import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import VestStats from '@/components/pages/profile/VestStats';
@@ -26,7 +27,6 @@ import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
-import RankingStats from '@/components/pages/profile/RankingStats';
 
 const claimHistoryItemsPerPage = 4;
 

@@ -11,9 +11,9 @@ import { UserProfileExtended } from '@/types';
 import PositionBlock from '../trading/Positions/PositionBlock';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
 import OwnerBlock from './OwnerBlock';
+import RankingStats from './RankingStats';
 import StakingStats from './StakingStats';
 import TradingStats from './TradingStats';
-import RankingStats from './RankingStats';
 
 export default function ViewProfileModal({
     profile,
