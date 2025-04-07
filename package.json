@@ -41,7 +41,7 @@
     "date-fns": "=4.1.0",
     "framer-motion": "=11.14.4",
     "lottie-react": "=2.4.0",
-    "next": "=15.1.6",
+    "next": "^15.2.4",
     "next-seo": "=6.6.0",
     "rc-slider": "=11.1.7",
     "react": "=18.3.1",

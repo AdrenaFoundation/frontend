@@ -28,15 +28,48 @@ function getSymbolFromChart(
   widget: IChartingLibraryWidget,
 ): TokenSymbol | null {
   try {
-    const fullSymbol = widget.activeChart().symbol();
+    // First check if widget exists
+    if (!widget) {
+      return null;
+    }
+
+    // Try to get the chart instance safely
+    let chart;
+    try {
+      chart = widget.activeChart();
+    } catch {
+      // If activeChart() throws, the widget is likely destroyed
+      return null;
+    }
+
+    // If we got this far but chart is null, return early
+    if (!chart) {
+      return null;
+    }
+
+    // Try to get the symbol safely
+    let fullSymbol;
+    try {
+      fullSymbol = chart.symbol();
+    } catch {
+      // If symbol() throws, the chart API is likely not available
+      return null;
+    }
+
+    // Process the symbol if we have one
+    if (!fullSymbol) {
+      return null;
+    }
+
     const parts = fullSymbol.split('.');
     if (parts.length > 1) {
       const symbolPart = parts[1].split('/')[0];
       return symbolPart as TokenSymbol;
     }
     return null;
-  } catch (error) {
-    console.error('Error extracting symbol from chart:', error);
+  } catch {
+    // We should never reach this with the above checks, but just in case
+    console.debug('Chart symbol extraction skipped - chart likely unmounted');
     return null;
   }
 }
@@ -82,11 +115,25 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
 
     saveTimeout = setTimeout(() => {
       try {
+        // additional check to prevent errors when widget is destroyed
+        if (
+          !widget ||
+          !widget.activeChart ||
+          typeof widget.activeChart !== 'function'
+        ) {
+          return;
+        }
+
         const symbol = getSymbolFromChart(widget);
         if (!symbol) return;
 
+        const chart = widget.activeChart();
+        if (!chart || typeof chart.getAllStudies !== 'function') {
+          return;
+        }
+
         // Get all current studies/indicators on the chart
-        const studies = widget.activeChart().getAllStudies();
+        const studies = chart.getAllStudies();
 
         // Don't save empty studies during initial load to prevent wiping out saved studies
         if (studies.length === 0 && isInitialLoad) {
