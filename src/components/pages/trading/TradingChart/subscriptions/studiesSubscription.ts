@@ -42,76 +42,23 @@ function getSymbolFromChart(
 }
 
 /**
- * Synchronizes studies on the chart with the saved studies for a symbol
- * Only removes studies that shouldn't be there and adds missing ones
+ * Gets the saved studies for a symbol from localStorage
  */
-function syncStudiesForSymbol(
-  widget: IChartingLibraryWidget,
-  symbol: TokenSymbol,
-) {
-  if (!symbol) return;
-
+function getSavedStudies(symbol: TokenSymbol): StudyInfo[] {
   try {
-    // Get all current studies on the chart
-    const currentStudies = widget.activeChart().getAllStudies();
-
-    // Get saved studies for this symbol
     const savedStudies = JSON.parse(
       localStorage.getItem(STORAGE_KEY_STUDIES) ?? '{}',
     );
     const symbolStudies = savedStudies[symbol] as StudyInfo[] | undefined;
 
-    if (
-      !symbolStudies ||
-      !Array.isArray(symbolStudies) ||
-      symbolStudies.length === 0
-    ) {
-      // If there are no saved studies for this symbol, remove all current studies
-      for (const study of currentStudies) {
-        widget.activeChart().removeEntity(study.id);
-      }
-      return;
+    if (!symbolStudies || !Array.isArray(symbolStudies)) {
+      return [];
     }
 
-    // Create a map of saved studies by name for quick lookup
-    const savedStudyMap = new Map();
-    for (const study of symbolStudies) {
-      savedStudyMap.set(study.name, study);
-    }
-
-    // Create a map of current studies by name
-    const currentStudyMap = new Map();
-    for (const study of currentStudies) {
-      currentStudyMap.set(study.name, study);
-    }
-
-    // Remove studies that aren't in the saved list
-    for (const study of currentStudies) {
-      if (!savedStudyMap.has(study.name)) {
-        widget.activeChart().removeEntity(study.id);
-      }
-    }
-
-    // Add studies that are in saved list but not currently on the chart
-    for (const study of symbolStudies) {
-      if (!currentStudyMap.has(study.name)) {
-        try {
-          widget
-            .activeChart()
-            .createStudy(
-              study.name,
-              study.isShown ?? true,
-              study.isLocked ?? false,
-              study.inputs ?? {},
-              study.overrides ?? {},
-            );
-        } catch (error) {
-          console.error(`Error adding study ${study.name}:`, error);
-        }
-      }
-    }
+    return symbolStudies;
   } catch (error) {
-    console.error('Error in syncStudiesForSymbol:', error);
+    console.error('Error getting saved studies:', error);
+    return [];
   }
 }
 
@@ -126,8 +73,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
 
   let isInitialLoad = true;
   let saveTimeout: NodeJS.Timeout | null = null;
-  let lastSymbol: TokenSymbol | null = null;
-  let isProcessingSymbolChange = false;
 
   // Function to save studies with debounce to prevent excessive writes
   const saveStudies = () => {
@@ -167,7 +112,7 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
       } catch (error) {
         console.error('Error saving studies:', error);
       }
-    }, 500); // Increased debounce time to 500ms to reduce processing load
+    }, 500);
   };
 
   // Save studies when they are modified
@@ -176,44 +121,115 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
     saveStudies();
   });
 
-  // Load studies when symbol changes
-  const handleSymbolChange = () => {
-    if (isProcessingSymbolChange) return; // Prevent reentrant calls
+  // Initial load function that will be called once the chart is ready, only draws studies if there are any in local Storage
+  const loadStudiesOnReady = () => {
+    widget.onChartReady(() => {
+      console.log('Chart ready, loading studies');
 
-    isProcessingSymbolChange = true;
-    try {
-      const symbol = getSymbolFromChart(widget);
-      if (!symbol) {
-        isProcessingSymbolChange = false;
-        return;
-      }
+      try {
+        const currentSymbol = getSymbolFromChart(widget);
+        if (!currentSymbol) return;
 
-      // Only sync if the symbol actually changed
-      if (lastSymbol !== symbol) {
-        lastSymbol = symbol;
-        isInitialLoad = false; // No longer initial load after symbol change
-        syncStudiesForSymbol(widget, symbol);
+        // Update initialization flag
+        isInitialLoad = false;
+
+        // Load studies from localStorage
+        const studiesForSymbol = getSavedStudies(currentSymbol);
+
+        // Add each study
+        if (studiesForSymbol.length > 0) {
+          for (const study of studiesForSymbol) {
+            try {
+              widget
+                .activeChart()
+                .createStudy(
+                  study.name,
+                  study.isShown ?? true,
+                  study.isLocked ?? false,
+                  study.inputs ?? {},
+                  study.overrides ?? {},
+                );
+            } catch (error) {
+              console.error(`Error adding study ${study.name}:`, error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading studies on chart ready:', error);
       }
-    } catch (error) {
-      console.error('Error in symbol change handler:', error);
-    } finally {
-      isProcessingSymbolChange = false;
-    }
+    });
   };
 
-  widget.activeChart().onSymbolChanged().subscribe(null, handleSymbolChange);
+  // Call the initial load function - this is safe to call even if the chart is already ready
+  loadStudiesOnReady();
+}
 
-  // Initial load - with a small delay to ensure chart is ready
-  setTimeout(() => {
+/**
+ * Function to load studies for a specific symbol
+ * This should be called from the TradingChart component when the symbol changes
+ */
+export function loadStudiesForSymbol(
+  widget: IChartingLibraryWidget,
+  symbol: TokenSymbol,
+) {
+  if (!widget || !symbol) return;
+
+  // Handle special case for JITOSOL
+  symbol = symbol === 'JITOSOL' ? 'SOL' : symbol;
+
+  // This is overkill since called by event on TradingChart onChartReady on symbol change but doesn't cost anything
+  widget.onChartReady(() => {
     try {
-      const currentSymbol = getSymbolFromChart(widget);
-      if (currentSymbol) {
-        lastSymbol = currentSymbol;
-        syncStudiesForSymbol(widget, currentSymbol);
+      console.log(
+        `Loading studies for ${symbol} after chart ready on symbol change`,
+      );
+
+      // Get current studies on the chart
+      const currentStudies = widget.activeChart().getAllStudies();
+
+      // Load saved studies for this symbol from localStorage
+      const savedStudies = getSavedStudies(symbol);
+
+      // Create maps for faster lookups
+      const savedStudyMap = new Map(
+        savedStudies.map((study) => [study.name, study]),
+      );
+
+      const currentStudyMap = new Map(
+        currentStudies.map((study) => [study.name, study]),
+      );
+
+      // 1. First remove studies that aren't in the saved list
+      for (const study of currentStudies) {
+        if (!savedStudyMap.has(study.name)) {
+          try {
+            widget.activeChart().removeEntity(study.id);
+          } catch (error) {
+            console.error(`Error removing study ${study.name}:`, error);
+          }
+        }
       }
-      isInitialLoad = false;
+
+      // 2. Then add studies that are in saved list but not currently on the chart
+      for (const study of savedStudies) {
+        if (!currentStudyMap.has(study.name)) {
+          try {
+            widget
+              .activeChart()
+              .createStudy(
+                study.name,
+                study.isShown ?? true,
+                study.isLocked ?? false,
+                study.inputs ?? {},
+                study.overrides ?? {},
+              );
+          } catch (error) {
+            console.error(`Error adding study ${study.name}:`, error);
+          }
+        }
+      }
     } catch (error) {
-      console.error('Error loading initial studies:', error);
+      console.error(`Error loading studies for ${symbol}:`, error);
     }
-  }, 100);
+  });
 }

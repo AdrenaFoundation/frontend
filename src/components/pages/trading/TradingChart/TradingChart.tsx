@@ -3,10 +3,12 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { useChartDrawing } from '@/hooks/useChartDrawing';
+import { TokenSymbol } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
 import { ResolutionString } from '../../../../../public/charting_library/charting_library';
 import { STORAGE_KEY_RESOLUTION } from './constants';
+import { loadStudiesForSymbol } from './subscriptions/studiesSubscription';
 import { ChartOptions } from './types';
 import { useChartState } from './useChartState';
 
@@ -48,7 +50,7 @@ export default function TradingChart({
       savedResolution as ResolutionString,
       () => {
         widget.onChartReady(() => {
-          console.log('chart ready');
+          loadStudiesForSymbol(widget, token.symbol as TokenSymbol);
         });
       },
     );
