@@ -337,6 +337,9 @@ export function PositionBlock({
                   nb={position.breakEvenPrice}
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
+                  minimumFractionDigits={
+                    position.token.displayPriceDecimalsPrecision
+                  }
                   className={POSITION_BLOCK_STYLES.text.purple}
                   isDecimalDimmed={false}
                 />
@@ -363,6 +366,10 @@ export function PositionBlock({
                         nb={position.takeProfitLimitPrice}
                         format="currency"
                         className={POSITION_BLOCK_STYLES.text.blue}
+                        precision={position.token.displayPriceDecimalsPrecision}
+                        minimumFractionDigits={
+                          position.token.displayPriceDecimalsPrecision
+                        }
                         isDecimalDimmed={false}
                       />
                       {editIcon}

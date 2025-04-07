@@ -14,6 +14,7 @@ The trading chart implementation has been organized into several files for bette
 - **subscriptions/**: Directory containing event subscription handlers
   - **drawingSubscription.ts**: Handles saving user drawings
   - **resolutionSubscription.ts**: Handles chart resolution changes
+  - **studiesSubscription.ts**: Handles chart studies changes
 - **useChartState.ts**: Custom hook managing chart state and initialization
 - **datafeed.ts**: Implementation of the data feed for TradingView
 - **streaming.ts**: Implementation of real-time data streaming
