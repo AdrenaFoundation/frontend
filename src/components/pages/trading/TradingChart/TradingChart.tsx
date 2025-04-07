@@ -47,7 +47,9 @@ export default function TradingChart({
       `Crypto.${getTokenSymbol(token.symbol)}/USD`,
       savedResolution as ResolutionString,
       () => {
-        widget.onChartReady(() => { });
+        widget.onChartReady(() => {
+          console.log('chart ready');
+        });
       },
     );
 

@@ -9,6 +9,7 @@ import {
 } from './constants';
 import { setupDrawingEventSubscription } from './subscriptions/drawingSubscription';
 import { setupResolutionChangeSubscription } from './subscriptions/resolutionSubscription';
+import { setupStudiesSubscription } from './subscriptions/studiesSubscription';
 
 /**
  * Configures chart appearance and sets up event subscriptions when the chart is ready
@@ -35,4 +36,5 @@ export function configureChartOnReady(
   // Set up event subscriptions
   setupDrawingEventSubscription(widget);
   setupResolutionChangeSubscription(widget);
+  setupStudiesSubscription(widget);
 }
