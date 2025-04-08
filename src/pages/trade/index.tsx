@@ -401,6 +401,7 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
+                    setTokenB={setTokenB}
                   />
                 </div>
               ) : null}
@@ -492,6 +493,7 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
+                    setTokenB={setTokenB}
                   />
                 </div>
               ) : null}

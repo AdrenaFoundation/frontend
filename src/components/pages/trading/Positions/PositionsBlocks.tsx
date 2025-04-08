@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
-import { PositionExtended } from '@/types';
+import { PositionExtended, Token } from '@/types';
 
 import PositionBlock from './PositionBlock';
 
@@ -14,6 +14,7 @@ export function PositionsBlocks({
   triggerStopLossTakeProfit,
   triggerClosePosition,
   triggerEditPositionCollateral,
+  setTokenB,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -24,6 +25,7 @@ export function PositionsBlocks({
   triggerClosePosition: (p: PositionExtended) => void;
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   wrapped?: boolean;
+  setTokenB: (token: Token) => void;
 }) {
   if (positions === null && !connected) {
     return (
@@ -81,6 +83,7 @@ export function PositionsBlocks({
               triggerStopLossTakeProfit={triggerStopLossTakeProfit}
               triggerClosePosition={triggerClosePosition}
               triggerEditPositionCollateral={triggerEditPositionCollateral}
+              setTokenB={setTokenB}
             />
           ))}
         </div>
