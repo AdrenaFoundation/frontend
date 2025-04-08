@@ -1,12 +1,10 @@
 import { TokenSymbol } from '@/types';
 
 import {
+  EntityId,
   IChartingLibraryWidget,
   StudyInputValue,
   StudyOverrides,
-  EntityId,
-  IPaneApi,
-  ISeriesApi,
   StudyPriceScale,
 } from '../../../../../../public/charting_library/charting_library';
 import { STORAGE_KEY_STUDIES } from '../constants';
@@ -464,9 +462,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
           // Create maps for faster comparison
           const existingStudyMap = new Map(
             existingStudies.map((study: StudyInfo) => [study.id, study]),
-          );
-          const newStudyMap = new Map(
-            validStudies.map((study) => [study.id, study]),
           );
 
           // Check if there are any changes by comparing study IDs and their properties
