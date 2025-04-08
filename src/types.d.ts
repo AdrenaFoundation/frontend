@@ -1419,6 +1419,8 @@ export type AchievementInfo = {
 
 export type AchievementInfoExtended = AchievementInfo & {
   completionPercentage: number | null;
+  nbCompletions: number | null;
+  nbUserProfiles: number | null;
 };
 
 export type SolanaIDType = {

@@ -72,7 +72,24 @@ export default function TopTraders({ startDate, endDate, allUserProfilesMetadata
     const handleProfileView = async (pubkey: string) => {
         const p = await window.adrena.client.loadUserProfile({ user: new PublicKey(pubkey) });
 
-        setProfile(p !== false ? p : null);
+        if (p === false) {
+            setProfile({
+                version: -1, // Not a real profile
+                pubkey: PublicKey.default, // Not a real profile
+                nickname: getAbbrevWalletAddress(pubkey),
+                createdAt: Date.now(),
+                owner: new PublicKey(pubkey),
+                referrerProfile: null,
+                claimableReferralFeeUsd: 0,
+                totalReferralFeeUsd: 0,
+                profilePicture: 0,
+                wallpaper: 0,
+                title: 0,
+                achievements: [],
+            });
+        } else {
+            setProfile(p);
+        }
     };
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -249,22 +266,17 @@ export default function TopTraders({ startDate, endDate, allUserProfilesMetadata
                                     <p
                                         key={`trader-${i}`}
                                         className={twMerge(
-                                            'flex items-center justify-end lg:justify-center text-xs grow',
+                                            'flex items-center justify-end lg:justify-center text-xs grow hover:underline transition duration-300 cursor-pointer',
                                             userProfilesMap[trader.user_pubkey]
-                                                ? 'hover:underline transition duration-300 cursor-pointer'
+                                                ? ''
                                                 : 'opacity-50'
                                         )}
-                                        onClick={(e) => {
-                                            if (userProfilesMap[trader.user_pubkey]) {
-                                                handleProfileView(trader.user_pubkey);
-                                            } else {
-                                                e.stopPropagation();
-                                                window.open(`monitoring?view=walletDigger&wallet=${trader.user_pubkey}`, '_blank');
-                                            }
+                                        onClick={() => {
+                                            handleProfileView(trader.user_pubkey);
                                         }}
                                     >
                                         <Tippy
-                                            content={userProfilesMap[trader.user_pubkey] ? "View profile" : "Explore in walletdigger"}
+                                            content="View profile"
                                         >
                                             <span>
                                                 {userProfilesMap[trader.user_pubkey]

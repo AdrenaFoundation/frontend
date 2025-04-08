@@ -160,18 +160,46 @@ export default function Achievement({
                 </div>
             </div>
 
-            <FormatNumber
-                nb={achievement.completionPercentage}
-                format="number"
-                minimumFractionDigits={0}
-                precisionIfPriceDecimalsBelow={4}
-                isDecimalDimmed={false}
-                className='border-0 text-xs text-txtfade font-archivo tracking-widest'
-                prefix='Unlocked by '
-                prefixClassName='text-txtfade font-archivo tracking-widest'
-                suffix='% of users'
-                suffixClassName='text-xs text-txtfade font-archivo tracking-widest relative right-1'
-            />
+            <div className='flex gap-1'>
+                <div className='text-xs text-txtfade font-archivo tracking-widest'>Unlocked by</div>
+
+                <div className='flex gap-0.5'>
+                    <FormatNumber
+                        nb={achievement.nbCompletions}
+                        format="number"
+                        minimumFractionDigits={0}
+                        precisionIfPriceDecimalsBelow={4}
+                        isDecimalDimmed={false}
+                        className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+                    />
+
+                    <div className='text-xs text-txtfade font-archivo tracking-widest'>/</div>
+
+                    <FormatNumber
+                        nb={achievement.nbUserProfiles}
+                        format="number"
+                        minimumFractionDigits={0}
+                        precisionIfPriceDecimalsBelow={4}
+                        isDecimalDimmed={false}
+                        className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+                    />
+                </div>
+
+                <div className='text-xs text-txtfade font-archivo tracking-widest'>users</div>
+
+                <FormatNumber
+                    nb={achievement.completionPercentage}
+                    format="number"
+                    prefix='('
+                    suffix='%)'
+                    minimumFractionDigits={0}
+                    precisionIfPriceDecimalsBelow={4}
+                    isDecimalDimmed={false}
+                    className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+                    prefixClassName='text-txtfade font-archivo tracking-widest'
+                    suffixClassName='text-xs text-txtfade font-archivo tracking-widest relative right-1'
+                />
+            </div>
         </div>
     );
 }
