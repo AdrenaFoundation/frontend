@@ -211,9 +211,30 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   let isInitialLoad = true;
   let isChangingSymbol = false;
   let saveTimeout: NodeJS.Timeout | null = null;
+  const SAVE_DEBOUNCE_DELAY = 500;
+  let pendingSaveSymbol: TokenSymbol | null = null;
+  let currentSymbol: TokenSymbol | null = null;
 
-  // Function to save studies with debounce to prevent excessive writes
-  const saveStudies = () => {
+  // Function to save studies with debounce
+  const debouncedSaveStudies = () => {
+    // Get the current symbol
+    const newSymbol = getSymbolFromChart(widget);
+    if (!newSymbol) return;
+
+    // If we're in the middle of a symbol change, ignore saves from the old symbol
+    if (currentSymbol && newSymbol !== currentSymbol) {
+      console.log(
+        'Ignoring save from old symbol:',
+        newSymbol,
+        'current:',
+        currentSymbol,
+      );
+      return;
+    }
+
+    pendingSaveSymbol = newSymbol;
+    console.log('Queuing save for symbol:', pendingSaveSymbol);
+
     if (saveTimeout) {
       clearTimeout(saveTimeout);
     }
@@ -223,6 +244,7 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
         // Don't save if we're in the middle of changing symbols
         if (isChangingSymbol) {
           console.log('Skipping save during symbol change');
+          pendingSaveSymbol = null;
           return;
         }
 
@@ -232,25 +254,34 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
           !widget.activeChart ||
           typeof widget.activeChart !== 'function'
         ) {
+          pendingSaveSymbol = null;
           return;
         }
 
-        const symbol = getSymbolFromChart(widget);
+        // Use the captured symbol instead of getting it again
+        const symbol = pendingSaveSymbol;
         if (!symbol) return;
 
         const chart = widget.activeChart();
         if (!chart || typeof chart.getAllStudies !== 'function') {
+          pendingSaveSymbol = null;
           return;
         }
 
         // Get all current studies/indicators on the chart
         const studies = chart.getAllStudies();
 
-        // Don't save empty studies during initial load to prevent wiping out saved studies
+        // Don't save empty studies during initial load
         if (studies.length === 0 && isInitialLoad) {
           isInitialLoad = false;
+          pendingSaveSymbol = null;
           return;
         }
+
+        console.log(
+          `Saving studies for captured symbol ${symbol}:`,
+          studies.map((s) => `${s.name} (${s.id})`),
+        );
 
         // Get all panes to determine study positions
         const panes = chart.getPanes();
@@ -376,8 +407,29 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
           localStorage.getItem(STORAGE_KEY_STUDIES) ?? '{}',
         );
 
-        // Update studies for current symbol only if we have studies or if the key already exists
-        if (detailedStudies.length > 0 || savedStudies[symbol]) {
+        // Check if any of the current study IDs exist in other symbols
+        const studyIdsInUse = new Set<EntityId>();
+        Object.entries(savedStudies).forEach(([savedSymbol, studies]) => {
+          if (savedSymbol !== symbol && Array.isArray(studies)) {
+            (studies as StudyInfo[]).forEach((study) => {
+              studyIdsInUse.add(study.id);
+            });
+          }
+        });
+
+        // Filter out studies that have IDs already used by other symbols
+        const validStudies = detailedStudies.filter((study) => {
+          if (studyIdsInUse.has(study.id)) {
+            console.log(
+              `Skipping save for study ${study.name} (${study.id}) - ID already exists in another symbol`,
+            );
+            return false;
+          }
+          return true;
+        });
+
+        // Update studies for current symbol only if we have valid studies or if the key already exists
+        if (validStudies.length > 0 || savedStudies[symbol]) {
           // Compare with existing studies to avoid unnecessary updates
           const existingStudies = savedStudies[symbol] || [];
 
@@ -386,13 +438,13 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
             existingStudies.map((study: StudyInfo) => [study.id, study]),
           );
           const newStudyMap = new Map(
-            detailedStudies.map((study) => [study.id, study]),
+            validStudies.map((study) => [study.id, study]),
           );
 
           // Check if there are any changes by comparing study IDs and their properties
           const hasChanges =
-            existingStudies.length !== detailedStudies.length ||
-            detailedStudies.some((study) => {
+            existingStudies.length !== validStudies.length ||
+            validStudies.some((study) => {
               const existingStudy = existingStudyMap.get(study.id);
               return (
                 !existingStudy ||
@@ -405,35 +457,44 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
               STORAGE_KEY_STUDIES,
               JSON.stringify({
                 ...savedStudies,
-                [symbol]: detailedStudies,
+                [symbol]: validStudies,
               }),
             );
             console.log(
-              `Saved ${detailedStudies.length} studies for ${symbol}:`,
-              detailedStudies.map((s) => `${s.name} (${s.id})`),
+              `Saved ${validStudies.length} studies for ${symbol}:`,
+              validStudies.map((s) => `${s.name} (${s.id})`),
             );
           }
         }
       } catch (error) {
         console.error('Error saving studies:', error);
       }
-    }, 500);
+    }, SAVE_DEBOUNCE_DELAY);
   };
 
   // Save studies when they are modified
   widget.subscribe('study_event', (event) => {
     if (!event) return;
-    saveStudies();
+    if (!isChangingSymbol) {
+      console.log('Study event triggered save');
+      debouncedSaveStudies();
+    }
   });
 
   // Add subscription for property changes
   widget.subscribe('series_properties_changed', () => {
-    saveStudies();
+    if (!isChangingSymbol) {
+      console.log('Properties changed triggered save');
+      debouncedSaveStudies();
+    }
   });
 
   // Add subscription for price scale changes
   widget.subscribe('chart_load_requested', () => {
-    saveStudies();
+    if (!isChangingSymbol) {
+      console.log('Chart load triggered save');
+      debouncedSaveStudies();
+    }
   });
 
   /**
@@ -578,8 +639,26 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   return {
     setChangingSymbol: (changing: boolean) => {
       isChangingSymbol = changing;
+      if (changing) {
+        // Clear any pending saves when changing symbols
+        if (saveTimeout) {
+          clearTimeout(saveTimeout);
+          saveTimeout = null;
+        }
+        pendingSaveSymbol = null;
+      } else {
+        // Update current symbol when symbol change is complete
+        currentSymbol = getSymbolFromChart(widget);
+        console.log('Symbol change complete, current symbol:', currentSymbol);
+      }
     },
   };
+
+  // Update current symbol when chart is ready
+  widget.onChartReady(() => {
+    currentSymbol = getSymbolFromChart(widget);
+    console.log('Chart ready, current symbol:', currentSymbol);
+  });
 }
 
 /**
@@ -601,11 +680,17 @@ export function loadStudiesForSymbol(
 
       // Get current studies on the chart
       const currentStudies = widget.activeChart().getAllStudies();
-      console.log('Current studies on chart:', currentStudies);
+      console.log('Current studies on chart:', {
+        count: currentStudies.length,
+        details: currentStudies.map((s) => ({ id: s.id, name: s.name })),
+      });
 
       // Load saved studies for this symbol from localStorage
       const savedStudies = getSavedStudies(symbol);
-      console.log('Saved studies for symbol:', savedStudies);
+      console.log('Saved studies for symbol:', {
+        count: savedStudies.length,
+        details: savedStudies.map((s) => ({ id: s.id, name: s.name })),
+      });
 
       // Create maps for faster lookups using study ID
       const savedStudyMap = new Map(
@@ -615,8 +700,18 @@ export function loadStudiesForSymbol(
         currentStudies.map((study) => [study.id, study]),
       );
 
+      console.log('Study Maps:', {
+        savedStudyIds: Array.from(savedStudyMap.keys()),
+        currentStudyIds: Array.from(currentStudyMap.keys()),
+      });
+
       // 1. Remove studies that shouldn't be there
       const studyRemovalPromises = currentStudies.map(async (study) => {
+        console.log('Checking study for removal:', {
+          id: study.id,
+          name: study.name,
+          isInSavedMap: savedStudyMap.has(study.id),
+        });
         if (!savedStudyMap.has(study.id)) {
           try {
             console.log(
@@ -635,11 +730,31 @@ export function loadStudiesForSymbol(
       // 2. Add missing studies
       Promise.all(studyRemovalPromises).then(async () => {
         // Sort saved studies to ensure proper order (overlays first)
-        const sortedNewStudies = sortStudiesByPaneIndex(
-          savedStudies.filter((study) => !currentStudyMap.has(study.id)),
-        );
+        const newStudies = savedStudies.filter((study) => {
+          const shouldCreate = !currentStudyMap.has(study.id);
+          console.log('Study creation check:', {
+            id: study.id,
+            name: study.name,
+            isInCurrentMap: currentStudyMap.has(study.id),
+            shouldCreate,
+          });
+          return shouldCreate;
+        });
 
-        console.log('New studies to create:', sortedNewStudies);
+        const sortedNewStudies = sortStudiesByPaneIndex(newStudies);
+
+        console.log('Studies to create:', {
+          beforeSort: newStudies.map((s) => ({
+            id: s.id,
+            name: s.name,
+            paneIndex: s.options.paneIndex,
+          })),
+          afterSort: sortedNewStudies.map((s) => ({
+            id: s.id,
+            name: s.name,
+            paneIndex: s.options.paneIndex,
+          })),
+        });
 
         // Wait for main pane to be ready before adding new studies
         await waitForMainPane(widget);
