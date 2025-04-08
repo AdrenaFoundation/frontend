@@ -323,6 +323,12 @@ export default function OwnerBloc({
     };
   }, [userProfile.profilePicture]);
 
+  const { title, titleUnlockedByAchievement } = useMemo(() => {
+    return {
+      title: USER_PROFILE_TITLES[userProfile.title],
+      titleUnlockedByAchievement: ACHIEVEMENTS.find(achievement => achievement.titleUnlock === userProfile.title),
+    };
+  }, [userProfile.title]);
 
   return (
     <>
@@ -399,18 +405,31 @@ export default function OwnerBloc({
             </div>
           </div>
 
-          <div className='flex gap-x-2 items-end relative bottom-1'>
-            <span className='text-lg font-cursive relative top-1'>&quot;</span>
-            <span className='text-sm font-archivoblack'>{USER_PROFILE_TITLES[userProfile.title]}</span>
-            <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
+          <Tippy
+            content={titleUnlockedByAchievement ? <div className='text-center flex flex-col'>
+              <div>
+                Unlocked by achievement #{titleUnlockedByAchievement.index + 1}
+              </div>
 
-            {canUpdateNickname && userProfile.version > 1 ? (
-              <div
-                className='text-xs opacity-70 cursor-pointer hover:opacity-100 relative'
-                onClick={() => setIsUpdatingMetadata(true)}
-              >Edit</div>
-            ) : null}
-          </div>
+              <div>
+                &quot;{titleUnlockedByAchievement.title}&quot;
+              </div>
+            </div> : <div></div>}
+            disabled={typeof titleUnlockedByAchievement === 'undefined'}
+          >
+            <div className='flex gap-x-2 items-end relative bottom-1'>
+              <span className='text-lg font-cursive relative top-1'>&quot;</span>
+              <span className='text-sm font-archivoblack'>{title}</span>
+              <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
+
+              {canUpdateNickname && userProfile.version > 1 ? (
+                <div
+                  className='text-xs opacity-70 cursor-pointer hover:opacity-100 relative'
+                  onClick={() => setIsUpdatingMetadata(true)}
+                >Edit</div>
+              ) : null}
+            </div>
+          </Tippy>
 
           {!readonly && userProfile.version > 1 ? <div className="absolute top-2 right-4 z-20 ">
             <div
