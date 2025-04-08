@@ -18,7 +18,6 @@ interface StudyInfo {
   overrides?: StudyOverrides;
   options: {
     priceScale: 'left' | 'right' | 'overlay';
-    visible: boolean;
     paneIndex?: number; // The index of the pane (0 is main chart pane)
     paneHeight?: number; // The height of the pane
   };
@@ -66,7 +65,6 @@ function toStudyPriceScale(
  * Helper function to wait for main pane to be ready
  */
 function waitForMainPane(widget: IChartingLibraryWidget): Promise<void> {
-  console.log('Starting to wait for main pane...');
   return new Promise((resolve) => {
     let attempts = 0;
     const maxAttempts = 50; // 5 seconds maximum wait time
@@ -74,23 +72,15 @@ function waitForMainPane(widget: IChartingLibraryWidget): Promise<void> {
     const checkMainPane = () => {
       attempts++;
       try {
-        console.log(`Checking main pane (attempt ${attempts})...`);
         const chart = widget.activeChart();
         const panes = chart.getPanes();
-        console.log(`Found ${panes.length} panes`);
 
         if (panes.length > 0) {
           const mainPane = panes[0];
           const leftScales = mainPane.getLeftPriceScales();
           const rightScales = mainPane.getRightPriceScales();
 
-          console.log('Main pane scales:', {
-            left: leftScales.length,
-            right: rightScales.length,
-          });
-
           if (leftScales.length > 0 || rightScales.length > 0) {
-            console.log('Main pane is ready with price scales');
             resolve();
             return;
           }
@@ -195,7 +185,37 @@ function getSavedStudies(symbol: TokenSymbol): StudyInfo[] {
   }
 }
 
-// ============= Exported Functions =============
+/**
+ * Helper function to safely get the chart instance
+ * Returns null if the chart is not available
+ */
+function safeGetChart(widget: IChartingLibraryWidget | null) {
+  // First check if widget exists
+  if (!widget) {
+    return null;
+  }
+
+  // Try to get the chart instance safely
+  let chart;
+  try {
+    chart = widget.activeChart();
+  } catch {
+    // If activeChart() throws, the widget is likely destroyed
+    return null;
+  }
+
+  // If we got this far but chart is null, return early
+  if (!chart) {
+    return null;
+  }
+
+  // Verify the chart instance is valid by checking a known method
+  if (typeof chart.getAllStudies !== 'function') {
+    return null;
+  }
+
+  return chart;
+}
 
 /**
  * Sets up subscription to save and restore studies/indicators
@@ -209,30 +229,33 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   let isInitialLoad = true;
   let isChangingSymbol = false;
   let saveTimeout: NodeJS.Timeout | null = null;
-  const SAVE_DEBOUNCE_DELAY = 500;
+  const SAVE_DEBOUNCE_DELAY = 0;
   let pendingSaveSymbol: TokenSymbol | null = null;
   let currentSymbol: TokenSymbol | null = null;
   let hasLoadedInitialStudies = false;
 
   // Function to save studies with debounce
   const debouncedSaveStudies = () => {
+    // Get chart instance safely
+    const initialChart = safeGetChart(widget);
+    if (!initialChart) {
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+        saveTimeout = null;
+      }
+      return;
+    }
+
     // Get the current symbol
     const newSymbol = getSymbolFromChart(widget);
     if (!newSymbol) return;
 
     // If we're in the middle of a symbol change, ignore saves from the old symbol
     if (currentSymbol && newSymbol !== currentSymbol) {
-      console.log(
-        'Ignoring save from old symbol:',
-        newSymbol,
-        'current:',
-        currentSymbol,
-      );
       return;
     }
 
     pendingSaveSymbol = newSymbol;
-    console.log('Queuing save for symbol:', pendingSaveSymbol);
 
     if (saveTimeout) {
       clearTimeout(saveTimeout);
@@ -242,17 +265,13 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
       try {
         // Don't save if we're in the middle of changing symbols
         if (isChangingSymbol) {
-          console.log('Skipping save during symbol change');
           pendingSaveSymbol = null;
           return;
         }
 
-        // additional check to prevent errors when widget is destroyed
-        if (
-          !widget ||
-          !widget.activeChart ||
-          typeof widget.activeChart !== 'function'
-        ) {
+        // Get chart instance safely inside timeout
+        const timeoutChart = safeGetChart(widget);
+        if (!timeoutChart) {
           pendingSaveSymbol = null;
           return;
         }
@@ -261,14 +280,8 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
         const symbol = pendingSaveSymbol;
         if (!symbol) return;
 
-        const chart = widget.activeChart();
-        if (!chart || typeof chart.getAllStudies !== 'function') {
-          pendingSaveSymbol = null;
-          return;
-        }
-
         // Get all current studies/indicators on the chart
-        const studies = chart.getAllStudies();
+        const studies = timeoutChart.getAllStudies();
 
         // Don't save empty studies during initial load
         if (studies.length === 0 && isInitialLoad) {
@@ -277,13 +290,8 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
           return;
         }
 
-        console.log(
-          `Saving studies for captured symbol ${symbol}:`,
-          studies.map((s) => `${s.name} (${s.id})`),
-        );
-
         // Get all panes to determine study positions
-        const panes = chart.getPanes();
+        const panes = timeoutChart.getPanes();
         const mainPane = panes[0]; // Main chart pane
 
         // Create a Set to track processed study IDs to avoid duplicates
@@ -303,20 +311,16 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
           .map((study) => {
             try {
               // Get the study instance
-              const studyApi = chart.getStudyById(study.id);
+              const studyApi = timeoutChart.getStudyById(study.id);
               if (!studyApi) {
                 return null;
               }
-
-              // Get study properties including visibility
-              const isVisible = studyApi.isVisible();
 
               // Create a properly typed study info object with initialized options
               const studyInfo: StudyInfo = {
                 id: study.id,
                 name: study.name,
                 options: {
-                  visible: isVisible,
                   priceScale: 'right', // Temporary default
                 },
               };
@@ -345,10 +349,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
                   // Get the actual current height of the pane
                   try {
                     const currentHeight = studyPane.getHeight();
-                    console.log(
-                      `Saving pane ${paneIndex} height:`,
-                      currentHeight,
-                    );
                     studyInfo.options.paneHeight = currentHeight;
                   } catch (error) {
                     console.error(
@@ -417,17 +417,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
           })
           .filter((study): study is StudyInfo => study !== null);
 
-        // Log the studies with their pane heights before saving
-        console.log(
-          'Studies to save with heights:',
-          detailedStudies.map((study) => ({
-            name: study.name,
-            id: study.id,
-            paneIndex: study.options.paneIndex,
-            paneHeight: study.options.paneHeight,
-          })),
-        );
-
         // Get saved studies from localStorage
         const savedStudies = JSON.parse(
           localStorage.getItem(STORAGE_KEY_STUDIES) ?? '{}',
@@ -446,9 +435,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
         // Filter out studies that have IDs already used by other symbols
         const validStudies = detailedStudies.filter((study) => {
           if (studyIdsInUse.has(study.id)) {
-            console.log(
-              `Skipping save for study ${study.name} (${study.id}) - ID already exists in another symbol`,
-            );
             return false;
           }
           return true;
@@ -483,10 +469,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
                 [symbol]: validStudies,
               }),
             );
-            console.log(
-              `Saved ${validStudies.length} studies for ${symbol}:`,
-              validStudies.map((s) => `${s.name} (${s.id})`),
-            );
           }
         }
       } catch (error) {
@@ -499,7 +481,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   widget.subscribe('study_event', (event) => {
     if (!event) return;
     if (!isChangingSymbol) {
-      console.log('Study event triggered save');
       debouncedSaveStudies();
     }
   });
@@ -507,7 +488,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   // Add subscription for property changes
   widget.subscribe('series_properties_changed', () => {
     if (!isChangingSymbol) {
-      console.log('Properties changed triggered save');
       debouncedSaveStudies();
     }
   });
@@ -515,7 +495,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   // Add subscription for price scale changes
   widget.subscribe('chart_load_requested', () => {
     if (!isChangingSymbol) {
-      console.log('Chart load triggered save');
       debouncedSaveStudies();
     }
   });
@@ -529,7 +508,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
         clearTimeout(resizeTimeout);
       }
       resizeTimeout = setTimeout(() => {
-        console.log('Layout changed (pane resize) triggered save');
         debouncedSaveStudies();
       }, 300); // Wait for resize to finish
     }
@@ -538,7 +516,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   // Add subscription for pane changes (split/merge)
   widget.subscribe('panes_height_changed', () => {
     if (!isChangingSymbol) {
-      console.log('Pane height changed triggered save');
       debouncedSaveStudies();
     }
   });
@@ -546,11 +523,9 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   // Update current symbol and load studies when chart is ready
   widget.onChartReady(() => {
     currentSymbol = getSymbolFromChart(widget);
-    console.log('Chart ready, current symbol:', currentSymbol);
 
     // Only load studies on initial chart ready
     if (!hasLoadedInitialStudies && currentSymbol) {
-      console.log('Loading initial studies');
       hasLoadedInitialStudies = true;
       loadStudiesForSymbol(widget, currentSymbol);
     }
@@ -569,7 +544,6 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
       } else {
         // Update current symbol when symbol change is complete
         currentSymbol = getSymbolFromChart(widget);
-        console.log('Symbol change complete, current symbol:', currentSymbol);
       }
     },
   };
@@ -589,22 +563,12 @@ export function loadStudiesForSymbol(
   // Handle special case for JITOSOL
   symbol = symbol === 'JITOSOL' ? 'SOL' : symbol;
 
-  console.log(`Loading studies for ${symbol}`);
-
   try {
     // Get current studies on the chart
     const currentStudies = widget.activeChart().getAllStudies();
-    console.log('Current studies on chart:', {
-      count: currentStudies.length,
-      details: currentStudies.map((s) => ({ id: s.id, name: s.name })),
-    });
 
     // Load saved studies for this symbol from localStorage
     const savedStudies = getSavedStudies(symbol);
-    console.log('Saved studies for symbol:', {
-      count: savedStudies.length,
-      details: savedStudies.map((s) => ({ id: s.id, name: s.name })),
-    });
 
     // Create maps for faster lookups using study ID
     const savedStudyMap = new Map(
@@ -614,23 +578,10 @@ export function loadStudiesForSymbol(
       currentStudies.map((study) => [study.id, study]),
     );
 
-    console.log('Study Maps:', {
-      savedStudyIds: Array.from(savedStudyMap.keys()),
-      currentStudyIds: Array.from(currentStudyMap.keys()),
-    });
-
     // 1. Remove studies that shouldn't be there
     const studyRemovalPromises = currentStudies.map(async (study) => {
-      console.log('Checking study for removal:', {
-        id: study.id,
-        name: study.name,
-        isInSavedMap: savedStudyMap.has(study.id),
-      });
       if (!savedStudyMap.has(study.id)) {
         try {
-          console.log(
-            `Removing study not in saved list: ${study.name} (${study.id})`,
-          );
           await widget.activeChart().removeEntity(study.id);
         } catch (error) {
           console.error(
@@ -646,29 +597,10 @@ export function loadStudiesForSymbol(
       // Sort saved studies to ensure proper order (overlays first)
       const newStudies = savedStudies.filter((study) => {
         const shouldCreate = !currentStudyMap.has(study.id);
-        console.log('Study creation check:', {
-          id: study.id,
-          name: study.name,
-          isInCurrentMap: currentStudyMap.has(study.id),
-          shouldCreate,
-        });
         return shouldCreate;
       });
 
       const sortedNewStudies = sortStudiesByPaneIndex(newStudies);
-
-      console.log('Studies to create:', {
-        beforeSort: newStudies.map((s) => ({
-          id: s.id,
-          name: s.name,
-          paneIndex: s.options.paneIndex,
-        })),
-        afterSort: sortedNewStudies.map((s) => ({
-          id: s.id,
-          name: s.name,
-          paneIndex: s.options.paneIndex,
-        })),
-      });
 
       // Wait for main pane to be ready before adding new studies
       await waitForMainPane(widget);
@@ -687,18 +619,7 @@ export function loadStudiesForSymbol(
           // Prepare study overrides including price scale and visibility
           const studyOverrides = {
             ...study.overrides,
-            visible: study.options.visible,
           };
-
-          console.log('[Study Creation] Creating:', {
-            name: study.name,
-            id: study.id,
-            isOverlay,
-            priceScale,
-            inputs: study.inputs,
-            overrides: studyOverrides,
-            paneHeight: study.options.paneHeight,
-          });
 
           // Create the study with all properties set during creation
           const studyId = await widget.activeChart().createStudy(
@@ -713,14 +634,6 @@ export function loadStudiesForSymbol(
             console.error('[Study Creation] Failed:', study.name);
             continue;
           }
-
-          console.log('[Study Creation] Success:', {
-            name: study.name,
-            oldId: study.id,
-            newId: studyId,
-            isOverlay,
-            priceScale,
-          });
 
           // For non-overlay studies, set the price scale and pane position
           if (!isOverlay) {
@@ -771,22 +684,20 @@ export function loadStudiesForSymbol(
 
       // Function to apply pane heights with retries
       const applyPaneHeights = async (retryCount = 0, maxRetries = 5) => {
-        console.log(
-          `Attempting to apply pane heights (attempt ${retryCount + 1})`,
-        );
-        const panes = widget.activeChart().getPanes();
+        const chart = safeGetChart(widget);
+        if (!chart) {
+          return;
+        }
+
+        const panes = chart.getPanes();
         let allHeightsApplied = true;
 
         paneHeights.forEach((height, paneIndex) => {
           if (paneIndex < panes.length) {
             try {
               const currentHeight = panes[paneIndex].getHeight();
-              console.log(
-                `Pane ${paneIndex} - Current height: ${currentHeight}, Target height: ${height}`,
-              );
 
               if (currentHeight !== height) {
-                console.log(`Setting pane ${paneIndex} height to ${height}`);
                 panes[paneIndex].setHeight(height);
                 allHeightsApplied = false;
               }
@@ -801,23 +712,13 @@ export function loadStudiesForSymbol(
         });
 
         if (!allHeightsApplied && retryCount < maxRetries) {
-          console.log(
-            `Not all heights applied correctly, retrying in 200ms...`,
-          );
           await new Promise((resolve) => setTimeout(resolve, 1000));
           return applyPaneHeights(retryCount + 1, maxRetries);
         }
       };
 
-      // Wait for a bit to let the chart layout stabilize, then apply heights
-      console.log(
-        'Waiting for chart layout to stabilize before applying pane heights...',
-      );
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
       // Apply pane heights with retries
       if (paneHeights.size > 0) {
-        console.log('Applying pane heights:', Object.fromEntries(paneHeights));
         await applyPaneHeights();
       }
     });
