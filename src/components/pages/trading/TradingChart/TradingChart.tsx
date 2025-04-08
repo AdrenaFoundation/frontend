@@ -53,7 +53,7 @@ export default function TradingChart({
     showBreakEvenLine,
     toggleSizeUsdInChart,
     drawingErrorCallback: () => {
-      console.log('ERROR DRAWING ON CHART, RELOAD WIDGET');
+      console.log('>>>> ERROR DRAWING ON CHART, RELOAD WIDGET');
 
       setWidgetReady(false);
       setWidget(null);
@@ -74,7 +74,14 @@ export default function TradingChart({
   useEffect(() => {
     function createWidget() {
       if (document.getElementById('chart-area') && 'TradingView' in window) {
-        const widget = new window.TradingView.widget({
+        console.log('>>>> CREATING A NEW WIDGET');
+
+        if (widget) {
+          console.log('>>>> DESTROYING OLD WIDGET');
+          widget.remove();
+        }
+
+        const w = new window.TradingView.widget({
           container: 'chart-area',
           library_path: '/charting_library/',
           width: 100,
@@ -164,11 +171,11 @@ export default function TradingChart({
           },
         });
 
-        widget.onChartReady(() => {
+        w.onChartReady(() => {
           setWidgetReady(true);
           setIsLoading(false);
 
-          widget.applyOverrides({
+          w.applyOverrides({
             'paneProperties.backgroundType': 'solid',
             'paneProperties.background': '#0d1118',
             'paneProperties.legendProperties.showStudyArguments': false,
@@ -185,8 +192,8 @@ export default function TradingChart({
           // Note: this event is triggered before positionLines array is updated in the react state
           // So we can't check in the event if the positionLines matches our own drawing or the user's drawing
           // For now, will use the name of the draws to filter out ours drawing (liquidation, entry, break even etc.)
-          widget.subscribe('drawing_event', () => {
-            const symbol = widget
+          w.subscribe('drawing_event', () => {
+            const symbol = w
               .activeChart()
               .symbol()
               .split('.')[1]
@@ -196,16 +203,16 @@ export default function TradingChart({
               localStorage.getItem('chart_drawings') ?? '{}',
             );
 
-            const userDrawings = widget
+            const userDrawings = w
               .activeChart()
               .getAllShapes()
               .map((line) => {
-                const points = widget
+                const points = w
                   .activeChart()
                   .getShapeById(line.id)
                   .getPoints();
 
-                const shape = widget
+                const shape = w
                   .activeChart()
                   .getShapeById(line.id)
                   .getProperties();
@@ -238,7 +245,7 @@ export default function TradingChart({
           });
 
           // Listen for resolution changes
-          widget
+          w
             .activeChart()
             .onIntervalChanged()
             .subscribe(null, (newInterval: ResolutionString) => {
@@ -251,7 +258,7 @@ export default function TradingChart({
             });
         });
 
-        setWidget(widget);
+        setWidget(w);
       }
     }
 
