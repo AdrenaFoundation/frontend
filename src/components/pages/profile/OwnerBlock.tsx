@@ -316,36 +316,57 @@ export default function OwnerBloc({
     });
   }, [updatingMetadata, userProfile.achievements]);
 
+  const { profilePicture, profilePictureUnlockedByAchievement } = useMemo(() => {
+    return {
+      profilePicture: PROFILE_PICTURES[userProfile.profilePicture],
+      profilePictureUnlockedByAchievement: ACHIEVEMENTS.find(achievement => achievement.pfpUnlock === userProfile.profilePicture),
+    };
+  }, [userProfile.profilePicture]);
+
+
   return (
     <>
       <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#211a1a99]/50 rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
-        <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
-          <div
-            onMouseEnter={() => !readonly && setProfilePictureHovering(true)}
-            onMouseLeave={() => !readonly && setProfilePictureHovering(false)}
-            onClick={() => !readonly && setIsUpdatingMetadata(true)}
-            className={twMerge(
-              'border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30',
-              !readonly && 'cursor-pointer'
-            )}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={PROFILE_PICTURES[userProfile.profilePicture]}
-              alt="Profile picture"
-              className='w-full h-full'
-              width={250}
-              height={250}
-            />
+        <Tippy
+          content={profilePictureUnlockedByAchievement ? <div className='text-center flex flex-col'>
+            <div>
+              Unlocked by achievement #{profilePictureUnlockedByAchievement.index + 1}
+            </div>
 
-            {profilePictureHovering && !readonly ? <>
-              <div className='h-full w-full absolute z-10 backdrop-blur-2xl'></div>
-              <div className='h-full w-full absolute z-20 items-center justify-center flex flex-col'>
-                <div className='font-archivoblack tracking-widest opacity-70 text-sm text-center'>Change Profile Picture</div>
-              </div>
-            </> : null}
+            <div>
+              &quot;{profilePictureUnlockedByAchievement.title}&quot;
+            </div>
+          </div> : <div></div>}
+          disabled={typeof profilePictureUnlockedByAchievement === 'undefined'}
+        >
+          <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
+            <div
+              onMouseEnter={() => !readonly && setProfilePictureHovering(true)}
+              onMouseLeave={() => !readonly && setProfilePictureHovering(false)}
+              onClick={() => !readonly && setIsUpdatingMetadata(true)}
+              className={twMerge(
+                'border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30',
+                !readonly && 'cursor-pointer'
+              )}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={profilePicture}
+                alt="Profile picture"
+                className='w-full h-full'
+                width={250}
+                height={250}
+              />
+
+              {profilePictureHovering && !readonly ? <>
+                <div className='h-full w-full absolute z-10 backdrop-blur-2xl'></div>
+                <div className='h-full w-full absolute z-20 items-center justify-center flex flex-col'>
+                  <div className='font-archivoblack tracking-widest opacity-70 text-sm text-center'>Change Profile Picture</div>
+                </div>
+              </> : null}
+            </div>
           </div>
-        </div>
+        </Tippy>
 
         <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
           <div className='flex'>

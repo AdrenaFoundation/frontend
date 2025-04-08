@@ -12,7 +12,7 @@ function applyProfile(
   leaderboardData: SeasonLeaderboardsData | null,
   allMetadata: Record<string, UserProfileMetadata>,
 ) {
-  if (!leaderboardData || !allMetadata || !allMetadata.length) {
+  if (!leaderboardData || !allMetadata) {
     return;
   }
 
