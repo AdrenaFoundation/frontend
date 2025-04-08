@@ -73,12 +73,24 @@ const pythConnection =
 
 let pythConnectionStarted = false;
 
-function startStreaming() {
+let id: number = 0;
+
+async function startStreaming() {
   if (pythConnectionStarted || !pythConnection) return;
 
   pythConnectionStarted = true;
 
+  const localId = ++id;
+
+  // Erase possible registered callbacks
+  await pythConnection.stop();
+
   pythConnection.onPriceChange((product: Product, price: PriceData) => {
+    if (localId !== id) {
+      console.log("Triggered price changes that shouldn't have happened");
+      return;
+    }
+
     // sample output:
     // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
     const subscriptionItem = channelToSubscription.get(product.symbol);

@@ -1,4 +1,4 @@
-import { SUPPORTED_RESOLUTIONS } from '@/constant';
+import { SUPPORTED_RESOLUTIONS } from "@/constant";
 
 import {
   DatafeedErrorCallback,
@@ -11,17 +11,17 @@ import {
   ResolveCallback,
   SearchSymbolsCallback,
   SubscribeBarsCallback,
-} from '../../../../../public/charting_library/charting_library.js';
-import { subscribeOnStream, unsubscribeFromStream } from './streaming';
+} from "../../../../../public/charting_library/charting_library.js";
+import { subscribeOnStream, unsubscribeFromStream } from "./streaming";
 
-const API_ENDPOINT = 'https://benchmarks.pyth.network/v1/shims/tradingview';
+const API_ENDPOINT = "https://benchmarks.pyth.network/v1/shims/tradingview";
 
 // Use it to keep a record of the most recent bar on the chart
 const lastBarsCache = new Map();
 
 const datafeed: IBasicDataFeed = {
   onReady: (callback: OnReadyCallback) => {
-    console.log('[onReady]: Method call');
+    console.log("[onReady]: Method call");
 
     fetch(`${API_ENDPOINT}/config`).then((response) => {
       response.json().then((configurationData) => {
@@ -36,7 +36,7 @@ const datafeed: IBasicDataFeed = {
     symbolType: string,
     onResultReadyCallback: SearchSymbolsCallback,
   ) => {
-    console.log('[searchSymbols]: Method call');
+    console.log("[searchSymbols]: Method call");
 
     fetch(`${API_ENDPOINT}/search?query=${userInput}`).then((response) => {
       response.json().then((data) => {
@@ -49,20 +49,20 @@ const datafeed: IBasicDataFeed = {
     onSymbolResolvedCallback: ResolveCallback,
     onResolveErrorCallback: DatafeedErrorCallback,
   ) => {
-    console.log('[resolveSymbol]: Method call', symbolName);
+    console.log("[resolveSymbol]: Method call", symbolName);
 
     fetch(`${API_ENDPOINT}/symbols?symbol=${symbolName}`).then((response) => {
       response
         .json()
         .then((symbolInfo) => {
-          console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
+          console.log("[resolveSymbol]: Symbol resolved", symbolInfo);
           symbolInfo.supported_resolutions = SUPPORTED_RESOLUTIONS;
           onSymbolResolvedCallback(symbolInfo);
         })
         .catch(() => {
-          console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
+          console.log("[resolveSymbol]: Cannot resolve symbol", symbolName);
 
-          onResolveErrorCallback('Cannot resolve symbol');
+          onResolveErrorCallback("Cannot resolve symbol");
         });
     });
   },
@@ -75,7 +75,7 @@ const datafeed: IBasicDataFeed = {
   ) => {
     const { from, to, firstDataRequest } = periodParams;
 
-    console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
+    console.log("[getBars]: Method call", symbolInfo, resolution, from, to);
 
     fetch(
       `${API_ENDPOINT}/history?symbol=${symbolInfo.ticker}&from=${periodParams.from}&to=${periodParams.to}&resolution=${resolution}`,
@@ -109,7 +109,7 @@ const datafeed: IBasicDataFeed = {
           onHistoryCallback(bars, { noData: false });
         })
         .catch((error) => {
-          console.log('[getBars]: Get error', error);
+          console.log("[getBars]: Get error", error);
           onErrorCallback(error);
         });
     });
@@ -122,7 +122,7 @@ const datafeed: IBasicDataFeed = {
     onResetCacheNeededCallback: () => void,
   ) => {
     console.log(
-      '[subscribeBars]: Method call with subscriberUID:',
+      "[subscribeBars]: Method call with subscriberUID:",
       subscriberUID,
     );
 
@@ -137,7 +137,7 @@ const datafeed: IBasicDataFeed = {
   },
   unsubscribeBars: (subscriberUID: string) => {
     console.log(
-      '[unsubscribeBars]: Method call with subscriberUID:',
+      "[unsubscribeBars]: Method call with subscriberUID:",
       subscriberUID,
     );
 
