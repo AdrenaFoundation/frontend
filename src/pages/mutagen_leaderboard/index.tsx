@@ -12,6 +12,7 @@ import ViewProfileModal from "@/components/pages/profile/ViewProfileModal";
 import { useAllUserProfilesMetadata } from "@/hooks/useAllUserProfilesMetadata";
 import useMutagenLeaderboardData from "@/hooks/useMutagenLeaderboardData";
 import { UserProfileExtended } from "@/types";
+import { getAbbrevWalletAddress } from "@/utils";
 
 export default function Index() {
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
@@ -76,7 +77,24 @@ export default function Index() {
                 onClickUserProfile={async (wallet: PublicKey) => {
                     const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
-                    setActiveProfile(p !== false ? p : null);
+                    if (p === false) {
+                        setActiveProfile({
+                            version: -1, // Not a real profile
+                            pubkey: PublicKey.default, // Not a real profile
+                            nickname: getAbbrevWalletAddress(wallet.toBase58()),
+                            createdAt: Date.now(),
+                            owner: wallet,
+                            referrerProfile: null,
+                            claimableReferralFeeUsd: 0,
+                            totalReferralFeeUsd: 0,
+                            profilePicture: 0,
+                            wallpaper: 0,
+                            title: 0,
+                            achievements: [],
+                        });
+                    } else {
+                        setActiveProfile(p);
+                    }
                 }}
             /> : <Loader className="flex w-full items-center justify-center mb-8 mt-8" />}
         </div>

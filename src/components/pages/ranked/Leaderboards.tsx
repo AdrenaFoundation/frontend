@@ -15,6 +15,7 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useExpanseData from '@/hooks/useExpanseData';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
+import { getAbbrevWalletAddress } from '@/utils';
 
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
@@ -245,7 +246,24 @@ export default function Leaderboards() {
                                 onClickUserProfile={async (wallet: PublicKey) => {
                                     const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
-                                    setActiveProfile(p !== false ? p : null);
+                                    if (p === false) {
+                                        setActiveProfile({
+                                            version: -1, // Not a real profile
+                                            pubkey: PublicKey.default, // Not a real profile
+                                            nickname: getAbbrevWalletAddress(wallet.toBase58()),
+                                            createdAt: Date.now(),
+                                            owner: wallet,
+                                            referrerProfile: null,
+                                            claimableReferralFeeUsd: 0,
+                                            totalReferralFeeUsd: 0,
+                                            profilePicture: 0,
+                                            wallpaper: 0,
+                                            title: 0,
+                                            achievements: [],
+                                        });
+                                    } else {
+                                        setActiveProfile(p);
+                                    }
                                 }}
                                 data={weekInfo}
                                 startDate={weekInfo.startDate}
@@ -353,7 +371,24 @@ export default function Leaderboards() {
                                 onClickUserProfile={async (wallet: PublicKey) => {
                                     const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
-                                    setActiveProfile(p !== false ? p : null);
+                                    if (p === false) {
+                                        setActiveProfile({
+                                            version: -1, // Not a real profile
+                                            pubkey: PublicKey.default, // Not a real profile
+                                            nickname: getAbbrevWalletAddress(wallet.toBase58()),
+                                            createdAt: Date.now(),
+                                            owner: wallet,
+                                            referrerProfile: null,
+                                            claimableReferralFeeUsd: 0,
+                                            totalReferralFeeUsd: 0,
+                                            profilePicture: 0,
+                                            wallpaper: 0,
+                                            title: 0,
+                                            achievements: [],
+                                        });
+                                    } else {
+                                        setActiveProfile(p);
+                                    }
                                 }}
                             /> : <Loader className='self-center mt-8 mb-8' />}
                         </div>
