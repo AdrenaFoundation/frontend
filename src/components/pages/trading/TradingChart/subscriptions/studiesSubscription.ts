@@ -4,21 +4,39 @@ import {
   IChartingLibraryWidget,
   StudyInputValue,
   StudyOverrides,
+  EntityId,
+  IPaneApi,
+  ISeriesApi,
+  StudyPriceScale,
 } from '../../../../../../public/charting_library/charting_library';
 import { STORAGE_KEY_STUDIES } from '../constants';
 
 interface StudyInfo {
-  id: string;
+  id: EntityId;
   name: string;
   isShown?: boolean;
   isLocked?: boolean;
   inputs?: Record<string, StudyInputValue>;
   overrides?: StudyOverrides;
-  priceScale?: {
-    position?: string;
-    vertLabelsAlign?: string;
-    scaleSeriesOnly?: boolean;
+  options: {
+    priceScale: 'left' | 'right' | 'overlay';
+    visible: boolean;
   };
+}
+
+// Helper function to convert our price scale type to TradingView's StudyPriceScale
+function toStudyPriceScale(
+  scale: 'left' | 'right' | 'overlay',
+): StudyPriceScale {
+  switch (scale) {
+    case 'overlay':
+      return 'as-series';
+    case 'left':
+      return 'new-left';
+    case 'right':
+    default:
+      return 'new-right';
+  }
 }
 
 /**
@@ -141,18 +159,106 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
           return;
         }
 
+        // Get detailed study information including price scale settings
+        const detailedStudies = studies.map((study) => {
+          try {
+            // Get the study instance
+            const studyApi = chart.getStudyById(study.id);
+            if (!studyApi) {
+              return study;
+            }
+
+            // Get study properties including visibility
+            const isVisible = studyApi.isVisible();
+
+            // Create a properly typed study info object with initialized options
+            const studyInfo: StudyInfo = {
+              id: study.id,
+              name: study.name,
+              options: {
+                visible: isVisible,
+                priceScale: 'right', // Temporary default
+              },
+            };
+
+            // Try to determine the price scale position
+            try {
+              const panes = chart.getPanes();
+              const studyPane = panes.find((pane) => {
+                const leftPriceScales = pane.getLeftPriceScales();
+                const rightPriceScales = pane.getRightPriceScales();
+
+                // Check if study is on any price scale
+                return [...leftPriceScales, ...rightPriceScales].some(
+                  (scale) => {
+                    const studies = scale.getStudies();
+                    return studies.includes(study.id);
+                  },
+                );
+              });
+
+              if (studyPane) {
+                const leftScales = studyPane.getLeftPriceScales();
+                const rightScales = studyPane.getRightPriceScales();
+
+                const isOnLeftScale = leftScales.some((scale) => {
+                  const studies = scale.getStudies();
+                  return studies.includes(study.id);
+                });
+
+                const isOnRightScale = rightScales.some((scale) => {
+                  const studies = scale.getStudies();
+                  return studies.includes(study.id);
+                });
+
+                // Only update the price scale if we can definitively determine its position
+                if (isOnLeftScale) {
+                  studyInfo.options.priceScale = 'left';
+                } else if (isOnRightScale) {
+                  studyInfo.options.priceScale = 'right';
+                } else {
+                  studyInfo.options.priceScale = 'overlay';
+                }
+              }
+            } catch (error) {
+              console.error('Error getting price scale info:', error);
+            }
+
+            // If we couldn't determine the position, try to get it from the saved studies
+            if (studyInfo.options.priceScale === 'right') {
+              const savedStudies = JSON.parse(
+                localStorage.getItem(STORAGE_KEY_STUDIES) ?? '{}',
+              );
+              const savedStudy = savedStudies[symbol]?.find(
+                (s: StudyInfo) => s.name === study.name,
+              );
+              if (savedStudy?.options?.priceScale) {
+                studyInfo.options.priceScale = savedStudy.options.priceScale;
+              }
+            }
+
+            return studyInfo;
+          } catch (error) {
+            console.error(
+              `Error getting study details for ${study.name}:`,
+              error,
+            );
+            return study;
+          }
+        });
+
         // Get saved studies from localStorage
         const savedStudies = JSON.parse(
           localStorage.getItem(STORAGE_KEY_STUDIES) ?? '{}',
         );
 
         // Update studies for current symbol only if we have studies or if the key already exists
-        if (studies.length > 0 || savedStudies[symbol]) {
+        if (detailedStudies.length > 0 || savedStudies[symbol]) {
           localStorage.setItem(
             STORAGE_KEY_STUDIES,
             JSON.stringify({
               ...savedStudies,
-              [symbol]: studies,
+              [symbol]: detailedStudies,
             }),
           );
         }
@@ -165,6 +271,16 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   // Save studies when they are modified
   widget.subscribe('study_event', (event) => {
     if (!event) return;
+    saveStudies();
+  });
+
+  // Add subscription for property changes
+  widget.subscribe('series_properties_changed', () => {
+    saveStudies();
+  });
+
+  // Add subscription for price scale changes
+  widget.subscribe('chart_load_requested', () => {
     saveStudies();
   });
 
@@ -187,15 +303,66 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
         if (studiesForSymbol.length > 0) {
           for (const study of studiesForSymbol) {
             try {
+              const priceScale = study.options?.priceScale || 'right';
+
+              console.log('[Study Creation Initial] Creating:', {
+                name: study.name,
+                priceScale,
+              });
+
               widget
                 .activeChart()
                 .createStudy(
                   study.name,
-                  study.isShown ?? true,
-                  study.isLocked ?? false,
-                  study.inputs ?? {},
-                  study.overrides ?? {},
-                );
+                  false, // forceOverlay
+                  false, // lock
+                  study.inputs,
+                  study.overrides, // Don't set priceScale in overrides
+                )
+                .then((studyId) => {
+                  if (!studyId) {
+                    console.error(
+                      '[Study Creation Initial] Failed:',
+                      study.name,
+                    );
+                    return;
+                  }
+
+                  console.log('[Study Creation Initial] Success:', {
+                    name: study.name,
+                    id: studyId,
+                    priceScale,
+                  });
+
+                  // Wait a bit before applying additional settings
+                  setTimeout(() => {
+                    const studyApi = widget.activeChart().getStudyById(studyId);
+                    if (studyApi) {
+                      // Set visibility first
+                      if (study.options?.visible !== undefined) {
+                        studyApi.setVisible(study.options.visible);
+                      }
+
+                      // Then set price scale position
+                      if (priceScale !== 'overlay') {
+                        const mappedScale = toStudyPriceScale(priceScale);
+                        console.log('[Study Position Initial] Setting:', {
+                          name: study.name,
+                          id: studyId,
+                          priceScale,
+                          mappedScale,
+                        });
+                        studyApi.changePriceScale(mappedScale);
+                      }
+                    }
+                  }, 100);
+                })
+                .catch((error) => {
+                  console.error('[Study Creation Initial] Error:', {
+                    study: study.name,
+                    error: error.message,
+                  });
+                });
             } catch (error) {
               console.error(`Error adding study ${study.name}:`, error);
             }
@@ -261,15 +428,56 @@ export function loadStudiesForSymbol(
       for (const study of savedStudies) {
         if (!currentStudyMap.has(study.name)) {
           try {
+            const priceScale = study.options?.priceScale || 'right';
+
+            // Create study with explicit price scale setting
+            const studyParams = {
+              name: study.name,
+              forceOverlay: false,
+              lock: false,
+              inputs: study.inputs,
+              overrides: {
+                ...study.overrides,
+                pricescale: priceScale === 'left' ? 'left' : 'right',
+              },
+            };
+
+            console.log('[Study Creation]', studyParams);
+
             widget
               .activeChart()
               .createStudy(
-                study.name,
-                study.isShown ?? true,
-                study.isLocked ?? false,
-                study.inputs ?? {},
-                study.overrides ?? {},
-              );
+                studyParams.name,
+                studyParams.forceOverlay,
+                studyParams.lock,
+                studyParams.inputs,
+                studyParams.overrides,
+              )
+              .then((studyId) => {
+                if (!studyId) {
+                  console.error('[Study Creation] Failed:', study.name);
+                  return;
+                }
+
+                const studyApi = widget.activeChart().getStudyById(studyId);
+                if (studyApi) {
+                  // Set visibility
+                  if (study.options?.visible !== undefined) {
+                    studyApi.setVisible(study.options.visible);
+                  }
+
+                  // Force price scale position
+                  if (priceScale !== 'overlay') {
+                    studyApi.changePriceScale(toStudyPriceScale(priceScale));
+                  }
+                }
+              })
+              .catch((error) => {
+                console.error('[Study Creation] Error:', {
+                  study: study.name,
+                  error: error.message,
+                });
+              });
           } catch (error) {
             console.error(`Error adding study ${study.name}:`, error);
           }

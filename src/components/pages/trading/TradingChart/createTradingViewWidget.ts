@@ -70,6 +70,7 @@ export function createTradingViewWidget({
           'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,
           'scalesProperties.textColor': CHART_TEXT_COLOR,
           timezone: savedTimezone as Timezone,
+          'paneProperties.legendProperties.showVisibilityButton': 'true',
         },
         setValue: function (key, value) {
           if (key === 'chartproperties') {
