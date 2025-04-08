@@ -214,6 +214,7 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
   const SAVE_DEBOUNCE_DELAY = 500;
   let pendingSaveSymbol: TokenSymbol | null = null;
   let currentSymbol: TokenSymbol | null = null;
+  let hasLoadedInitialStudies = false;
 
   // Function to save studies with debounce
   const debouncedSaveStudies = () => {
@@ -342,7 +343,21 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
                   // Save pane information
                   const paneIndex = panes.indexOf(studyPane);
                   studyInfo.options.paneIndex = paneIndex;
-                  studyInfo.options.paneHeight = studyPane.getHeight();
+
+                  // Get the actual current height of the pane
+                  try {
+                    const currentHeight = studyPane.getHeight();
+                    console.log(
+                      `Saving pane ${paneIndex} height:`,
+                      currentHeight,
+                    );
+                    studyInfo.options.paneHeight = currentHeight;
+                  } catch (error) {
+                    console.error(
+                      `Error getting pane ${paneIndex} height:`,
+                      error,
+                    );
+                  }
 
                   const leftScales = studyPane.getLeftPriceScales();
                   const rightScales = studyPane.getRightPriceScales();
@@ -361,6 +376,8 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
                   if (studyPane === mainPane || paneIndex === 0) {
                     studyInfo.options.priceScale = 'overlay';
                     studyInfo.options.paneIndex = 0;
+                    // Don't save height for overlay studies
+                    delete studyInfo.options.paneHeight;
                   } else if (isOnLeftScale) {
                     studyInfo.options.priceScale = 'left';
                   } else if (isOnRightScale) {
@@ -401,6 +418,17 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
             }
           })
           .filter((study): study is StudyInfo => study !== null);
+
+        // Log the studies with their pane heights before saving
+        console.log(
+          'Studies to save with heights:',
+          detailedStudies.map((study) => ({
+            name: study.name,
+            id: study.id,
+            paneIndex: study.options.paneIndex,
+            paneHeight: study.options.paneHeight,
+          })),
+        );
 
         // Get saved studies from localStorage
         const savedStudies = JSON.parse(
@@ -497,144 +525,41 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
     }
   });
 
-  /**
-   * Initial load function that will be called once the chart is ready
-   */
-  const loadStudiesOnReady = () => {
-    widget.onChartReady(() => {
-      console.log('Chart ready, loading studies');
-      try {
-        const currentSymbol = getSymbolFromChart(widget);
-        if (!currentSymbol) {
-          console.log('No symbol found, skipping study load');
-          return;
-        }
-
-        console.log(`Loading studies for symbol: ${currentSymbol}`);
-
-        // Load studies from localStorage
-        const studiesForSymbol = getSavedStudies(currentSymbol);
-        console.log('Studies found in localStorage:', studiesForSymbol);
-
-        if (studiesForSymbol.length === 0) {
-          console.log('No saved studies found for symbol');
-          return;
-        }
-
-        // Sort studies by pane index to ensure correct order
-        const sortedStudies = sortStudiesByPaneIndex(studiesForSymbol);
-        console.log('Sorted studies to create:', sortedStudies);
-
-        // Create a map to track created studies and their promises
-        const studyCreationPromises: Promise<void>[] = [];
-        const createdStudyIds = new Map<number, EntityId>();
-
-        // Wait for main pane to be ready before adding studies
-        waitForMainPane(widget).then(() => {
-          console.log('Main pane ready, creating studies');
-
-          // Add each study sequentially
-          const createStudySequentially = async () => {
-            for (const study of sortedStudies) {
-              try {
-                const isOverlay =
-                  study.options.priceScale === 'overlay' ||
-                  study.options.paneIndex === 0;
-                const priceScale = toStudyPriceScale(study.options.priceScale);
-
-                // Prepare study overrides including price scale and visibility
-                const studyOverrides = {
-                  ...study.overrides,
-                  visible: study.options.visible,
-                };
-
-                console.log('[Study Creation] Creating:', {
-                  name: study.name,
-                  isOverlay,
-                  priceScale,
-                  inputs: study.inputs,
-                  overrides: studyOverrides,
-                });
-
-                // Create the study with all properties set during creation
-                const studyId = await widget.activeChart().createStudy(
-                  study.name,
-                  isOverlay, // forceOverlay
-                  false, // lock
-                  study.inputs,
-                  studyOverrides,
-                );
-
-                if (!studyId) {
-                  console.error('[Study Creation] Failed:', study.name);
-                  continue;
-                }
-
-                // Store the created study ID with its target pane index
-                createdStudyIds.set(study.options.paneIndex ?? 0, studyId);
-
-                console.log('[Study Creation] Success:', {
-                  name: study.name,
-                  id: studyId,
-                  isOverlay,
-                  priceScale,
-                });
-
-                // For non-overlay studies, set the price scale and pane position
-                if (!isOverlay) {
-                  const studyApi = widget.activeChart().getStudyById(studyId);
-                  if (studyApi) {
-                    studyApi.changePriceScale(priceScale);
-
-                    // Move to correct pane if specified
-                    if (
-                      study.options.paneIndex !== undefined &&
-                      study.options.paneIndex > 0
-                    ) {
-                      const panes = widget.activeChart().getPanes();
-                      const currentPane = panes.find((pane) => {
-                        const scales = [
-                          ...pane.getLeftPriceScales(),
-                          ...pane.getRightPriceScales(),
-                        ];
-                        return scales.some((scale) =>
-                          scale.getStudies().includes(studyId),
-                        );
-                      });
-
-                      if (currentPane) {
-                        currentPane.moveTo(study.options.paneIndex);
-
-                        // Set pane height if specified
-                        if (study.options.paneHeight) {
-                          currentPane.setHeight(study.options.paneHeight);
-                        }
-                      }
-                    }
-                  }
-                }
-
-                // Small delay between studies to ensure proper initialization
-                await new Promise((resolve) => setTimeout(resolve, 100));
-              } catch (error) {
-                console.error(`Error creating study ${study.name}:`, error);
-              }
-            }
-          };
-
-          // Start the sequential creation process
-          createStudySequentially().then(() => {
-            console.log('Finished creating all studies');
-          });
-        });
-      } catch (error) {
-        console.error('Error loading studies on chart ready:', error);
+  // Add subscription for pane resizing
+  let resizeTimeout: NodeJS.Timeout | null = null;
+  widget.subscribe('layout_changed', () => {
+    if (!isChangingSymbol) {
+      // Debounce the resize event to avoid too many saves
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
       }
-    });
-  };
+      resizeTimeout = setTimeout(() => {
+        console.log('Layout changed (pane resize) triggered save');
+        debouncedSaveStudies();
+      }, 300); // Wait for resize to finish
+    }
+  });
 
-  // Call the initial load function
-  loadStudiesOnReady();
+  // Add subscription for pane changes (split/merge)
+  widget.subscribe('panes_height_changed', () => {
+    if (!isChangingSymbol) {
+      console.log('Pane height changed triggered save');
+      debouncedSaveStudies();
+    }
+  });
+
+  // Update current symbol and load studies when chart is ready
+  widget.onChartReady(() => {
+    currentSymbol = getSymbolFromChart(widget);
+    console.log('Chart ready, current symbol:', currentSymbol);
+
+    // Only load studies on initial chart ready
+    if (!hasLoadedInitialStudies && currentSymbol) {
+      console.log('Loading initial studies');
+      hasLoadedInitialStudies = true;
+      loadStudiesForSymbol(widget, currentSymbol);
+    }
+  });
 
   return {
     setChangingSymbol: (changing: boolean) => {
@@ -653,17 +578,12 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
       }
     },
   };
-
-  // Update current symbol when chart is ready
-  widget.onChartReady(() => {
-    currentSymbol = getSymbolFromChart(widget);
-    console.log('Chart ready, current symbol:', currentSymbol);
-  });
 }
 
 /**
  * Function to load studies for a specific symbol
  * This should be called from the TradingChart component when the symbol changes
+ * or when the chart is initially ready
  */
 export function loadStudiesForSymbol(
   widget: IChartingLibraryWidget,
@@ -674,182 +594,239 @@ export function loadStudiesForSymbol(
   // Handle special case for JITOSOL
   symbol = symbol === 'JITOSOL' ? 'SOL' : symbol;
 
-  widget.onChartReady(() => {
-    try {
-      console.log(`Loading studies for ${symbol} after symbol change`);
+  console.log(`Loading studies for ${symbol}`);
 
-      // Get current studies on the chart
-      const currentStudies = widget.activeChart().getAllStudies();
-      console.log('Current studies on chart:', {
-        count: currentStudies.length,
-        details: currentStudies.map((s) => ({ id: s.id, name: s.name })),
+  try {
+    // Get current studies on the chart
+    const currentStudies = widget.activeChart().getAllStudies();
+    console.log('Current studies on chart:', {
+      count: currentStudies.length,
+      details: currentStudies.map((s) => ({ id: s.id, name: s.name })),
+    });
+
+    // Load saved studies for this symbol from localStorage
+    const savedStudies = getSavedStudies(symbol);
+    console.log('Saved studies for symbol:', {
+      count: savedStudies.length,
+      details: savedStudies.map((s) => ({ id: s.id, name: s.name })),
+    });
+
+    // Create maps for faster lookups using study ID
+    const savedStudyMap = new Map(
+      savedStudies.map((study) => [study.id, study]),
+    );
+    const currentStudyMap = new Map(
+      currentStudies.map((study) => [study.id, study]),
+    );
+
+    console.log('Study Maps:', {
+      savedStudyIds: Array.from(savedStudyMap.keys()),
+      currentStudyIds: Array.from(currentStudyMap.keys()),
+    });
+
+    // 1. Remove studies that shouldn't be there
+    const studyRemovalPromises = currentStudies.map(async (study) => {
+      console.log('Checking study for removal:', {
+        id: study.id,
+        name: study.name,
+        isInSavedMap: savedStudyMap.has(study.id),
       });
+      if (!savedStudyMap.has(study.id)) {
+        try {
+          console.log(
+            `Removing study not in saved list: ${study.name} (${study.id})`,
+          );
+          await widget.activeChart().removeEntity(study.id);
+        } catch (error) {
+          console.error(
+            `Error removing study ${study.name} (${study.id}):`,
+            error,
+          );
+        }
+      }
+    });
 
-      // Load saved studies for this symbol from localStorage
-      const savedStudies = getSavedStudies(symbol);
-      console.log('Saved studies for symbol:', {
-        count: savedStudies.length,
-        details: savedStudies.map((s) => ({ id: s.id, name: s.name })),
-      });
-
-      // Create maps for faster lookups using study ID
-      const savedStudyMap = new Map(
-        savedStudies.map((study) => [study.id, study]),
-      );
-      const currentStudyMap = new Map(
-        currentStudies.map((study) => [study.id, study]),
-      );
-
-      console.log('Study Maps:', {
-        savedStudyIds: Array.from(savedStudyMap.keys()),
-        currentStudyIds: Array.from(currentStudyMap.keys()),
-      });
-
-      // 1. Remove studies that shouldn't be there
-      const studyRemovalPromises = currentStudies.map(async (study) => {
-        console.log('Checking study for removal:', {
+    // 2. Add missing studies
+    Promise.all(studyRemovalPromises).then(async () => {
+      // Sort saved studies to ensure proper order (overlays first)
+      const newStudies = savedStudies.filter((study) => {
+        const shouldCreate = !currentStudyMap.has(study.id);
+        console.log('Study creation check:', {
           id: study.id,
           name: study.name,
-          isInSavedMap: savedStudyMap.has(study.id),
+          isInCurrentMap: currentStudyMap.has(study.id),
+          shouldCreate,
         });
-        if (!savedStudyMap.has(study.id)) {
-          try {
-            console.log(
-              `Removing study not in saved list: ${study.name} (${study.id})`,
-            );
-            await widget.activeChart().removeEntity(study.id);
-          } catch (error) {
-            console.error(
-              `Error removing study ${study.name} (${study.id}):`,
-              error,
-            );
-          }
-        }
+        return shouldCreate;
       });
 
-      // 2. Add missing studies
-      Promise.all(studyRemovalPromises).then(async () => {
-        // Sort saved studies to ensure proper order (overlays first)
-        const newStudies = savedStudies.filter((study) => {
-          const shouldCreate = !currentStudyMap.has(study.id);
-          console.log('Study creation check:', {
-            id: study.id,
+      const sortedNewStudies = sortStudiesByPaneIndex(newStudies);
+
+      console.log('Studies to create:', {
+        beforeSort: newStudies.map((s) => ({
+          id: s.id,
+          name: s.name,
+          paneIndex: s.options.paneIndex,
+        })),
+        afterSort: sortedNewStudies.map((s) => ({
+          id: s.id,
+          name: s.name,
+          paneIndex: s.options.paneIndex,
+        })),
+      });
+
+      // Wait for main pane to be ready before adding new studies
+      await waitForMainPane(widget);
+
+      // Track pane heights to apply after all studies are created
+      const paneHeights = new Map<number, number>();
+
+      // Add each missing study sequentially
+      for (const study of sortedNewStudies) {
+        try {
+          const isOverlay =
+            study.options.priceScale === 'overlay' ||
+            study.options.paneIndex === 0;
+          const priceScale = toStudyPriceScale(study.options.priceScale);
+
+          // Prepare study overrides including price scale and visibility
+          const studyOverrides = {
+            ...study.overrides,
+            visible: study.options.visible,
+          };
+
+          console.log('[Study Creation] Creating:', {
             name: study.name,
-            isInCurrentMap: currentStudyMap.has(study.id),
-            shouldCreate,
+            id: study.id,
+            isOverlay,
+            priceScale,
+            inputs: study.inputs,
+            overrides: studyOverrides,
+            paneHeight: study.options.paneHeight,
           });
-          return shouldCreate;
-        });
 
-        const sortedNewStudies = sortStudiesByPaneIndex(newStudies);
+          // Create the study with all properties set during creation
+          const studyId = await widget.activeChart().createStudy(
+            study.name,
+            isOverlay, // forceOverlay
+            false, // lock
+            study.inputs,
+            studyOverrides,
+          );
 
-        console.log('Studies to create:', {
-          beforeSort: newStudies.map((s) => ({
-            id: s.id,
-            name: s.name,
-            paneIndex: s.options.paneIndex,
-          })),
-          afterSort: sortedNewStudies.map((s) => ({
-            id: s.id,
-            name: s.name,
-            paneIndex: s.options.paneIndex,
-          })),
-        });
+          if (!studyId) {
+            console.error('[Study Creation] Failed:', study.name);
+            continue;
+          }
 
-        // Wait for main pane to be ready before adding new studies
-        await waitForMainPane(widget);
+          console.log('[Study Creation] Success:', {
+            name: study.name,
+            oldId: study.id,
+            newId: studyId,
+            isOverlay,
+            priceScale,
+          });
 
-        // Add each missing study sequentially
-        for (const study of sortedNewStudies) {
-          try {
-            const isOverlay =
-              study.options.priceScale === 'overlay' ||
-              study.options.paneIndex === 0;
-            const priceScale = toStudyPriceScale(study.options.priceScale);
+          // For non-overlay studies, set the price scale and pane position
+          if (!isOverlay) {
+            const studyApi = widget.activeChart().getStudyById(studyId);
+            if (studyApi) {
+              studyApi.changePriceScale(priceScale);
 
-            // Prepare study overrides including price scale and visibility
-            const studyOverrides = {
-              ...study.overrides,
-              visible: study.options.visible,
-            };
+              // Move to correct pane if specified
+              if (
+                study.options.paneIndex !== undefined &&
+                study.options.paneIndex > 0
+              ) {
+                const panes = widget.activeChart().getPanes();
+                const currentPane = panes.find((pane) => {
+                  const scales = [
+                    ...pane.getLeftPriceScales(),
+                    ...pane.getRightPriceScales(),
+                  ];
+                  return scales.some((scale) =>
+                    scale.getStudies().includes(studyId),
+                  );
+                });
 
-            console.log('[Study Creation] Creating:', {
-              name: study.name,
-              id: study.id,
-              isOverlay,
-              priceScale,
-              inputs: study.inputs,
-              overrides: studyOverrides,
-            });
+                if (currentPane) {
+                  currentPane.moveTo(study.options.paneIndex);
 
-            // Create the study with all properties set during creation
-            const studyId = await widget.activeChart().createStudy(
-              study.name,
-              isOverlay, // forceOverlay
-              false, // lock
-              study.inputs,
-              studyOverrides,
-            );
-
-            if (!studyId) {
-              console.error('[Study Creation] Failed:', study.name);
-              continue;
-            }
-
-            console.log('[Study Creation] Success:', {
-              name: study.name,
-              oldId: study.id,
-              newId: studyId,
-              isOverlay,
-              priceScale,
-            });
-
-            // For non-overlay studies, set the price scale and pane position
-            if (!isOverlay) {
-              const studyApi = widget.activeChart().getStudyById(studyId);
-              if (studyApi) {
-                studyApi.changePriceScale(priceScale);
-
-                // Move to correct pane if specified
-                if (
-                  study.options.paneIndex !== undefined &&
-                  study.options.paneIndex > 0
-                ) {
-                  const panes = widget.activeChart().getPanes();
-                  const currentPane = panes.find((pane) => {
-                    const scales = [
-                      ...pane.getLeftPriceScales(),
-                      ...pane.getRightPriceScales(),
-                    ];
-                    return scales.some((scale) =>
-                      scale.getStudies().includes(studyId),
+                  // Store pane height to apply later
+                  if (study.options.paneHeight) {
+                    paneHeights.set(
+                      study.options.paneIndex,
+                      study.options.paneHeight,
                     );
-                  });
-
-                  if (currentPane) {
-                    currentPane.moveTo(study.options.paneIndex);
-
-                    // Set pane height if specified
-                    if (study.options.paneHeight) {
-                      currentPane.setHeight(study.options.paneHeight);
-                    }
                   }
                 }
               }
             }
-
-            // Small delay between studies to ensure proper initialization
-            await new Promise((resolve) => setTimeout(resolve, 100));
-          } catch (error) {
-            console.error(
-              `Error creating study ${study.name} (${study.id}):`,
-              error,
-            );
           }
+
+          // Small delay between studies to ensure proper initialization
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        } catch (error) {
+          console.error(
+            `Error creating study ${study.name} (${study.id}):`,
+            error,
+          );
         }
-      });
-    } catch (error) {
-      console.error(`Error loading studies for ${symbol}:`, error);
-    }
-  });
+      }
+
+      // Function to apply pane heights with retries
+      const applyPaneHeights = async (retryCount = 0, maxRetries = 5) => {
+        console.log(
+          `Attempting to apply pane heights (attempt ${retryCount + 1})`,
+        );
+        const panes = widget.activeChart().getPanes();
+        let allHeightsApplied = true;
+
+        paneHeights.forEach((height, paneIndex) => {
+          if (paneIndex < panes.length) {
+            try {
+              const currentHeight = panes[paneIndex].getHeight();
+              console.log(
+                `Pane ${paneIndex} - Current height: ${currentHeight}, Target height: ${height}`,
+              );
+
+              if (currentHeight !== height) {
+                console.log(`Setting pane ${paneIndex} height to ${height}`);
+                panes[paneIndex].setHeight(height);
+                allHeightsApplied = false;
+              }
+            } catch (error) {
+              console.error(
+                `Error setting height for pane ${paneIndex}:`,
+                error,
+              );
+              allHeightsApplied = false;
+            }
+          }
+        });
+
+        if (!allHeightsApplied && retryCount < maxRetries) {
+          console.log(
+            `Not all heights applied correctly, retrying in 200ms...`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          return applyPaneHeights(retryCount + 1, maxRetries);
+        }
+      };
+
+      // Wait for a bit to let the chart layout stabilize, then apply heights
+      console.log(
+        'Waiting for chart layout to stabilize before applying pane heights...',
+      );
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Apply pane heights with retries
+      if (paneHeights.size > 0) {
+        console.log('Applying pane heights:', Object.fromEntries(paneHeights));
+        await applyPaneHeights();
+      }
+    });
+  } catch (error) {
+    console.error(`Error loading studies for ${symbol}:`, error);
+  }
 }
