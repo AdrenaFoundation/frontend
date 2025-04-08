@@ -97,7 +97,7 @@ const PositionHistoryBlock = ({
           isMini={isMini}
           isMedium={isMedium}
           readOnly={true}
-          positionName={<PositionName position={positionHistory} readOnly={true} isHistory={true} />}
+          positionName={<PositionName position={positionHistory} readOnly={true} isHistory={true} setTokenB={() => { }} />}
           pnl={
             <PnL
               position={positionHistory}

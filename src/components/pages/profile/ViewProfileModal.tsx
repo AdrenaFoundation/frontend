@@ -87,6 +87,7 @@ export default function ViewProfileModal({
                                                 key={position.pubkey.toBase58()}
                                                 position={position}
                                                 readOnly={true}
+                                                setTokenB={() => { }}
                                             />
                                         ))}
                                     </div>
