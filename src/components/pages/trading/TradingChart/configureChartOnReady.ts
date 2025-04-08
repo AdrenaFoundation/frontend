@@ -31,8 +31,6 @@ export function configureChartOnReady(
     'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,
     'scalesProperties.textColor': CHART_TEXT_COLOR,
     timezone: savedTimezone as Timezone,
-    // TODO: Maybe disable again
-    'paneProperties.legendProperties.showVisibilityButton': true,
   });
 
   // Set up event subscriptions
