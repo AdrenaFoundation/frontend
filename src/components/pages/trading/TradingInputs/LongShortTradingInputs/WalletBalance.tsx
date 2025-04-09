@@ -30,7 +30,7 @@ export const WalletBalance = ({ tokenA, walletTokenBalances, onMax, onPercentage
     };
 
     return (
-        <div className="text-sm flex items-center justify-end h-6 gap-2">
+        <div className="text-sm flex items-center justify-end h-6 gap-0.5">
             <div className="flex items-center">
                 {[10, 25, 50, 75].map((percentage) => (
                     <button
@@ -43,7 +43,7 @@ export const WalletBalance = ({ tokenA, walletTokenBalances, onMax, onPercentage
                     </button>
                 ))}
             </div>
-            <div className="w-0.5 h-3 bg-txtfade opacity-20" />
+            <div className="w-0.5 h-3 bg-txtfade opacity-20 mr-1" />
             <div className='flex' onClick={onMax}>
                 <Image
                     className="mr-1 opacity-60 relative group-hover:opacity-100"
