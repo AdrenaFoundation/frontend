@@ -270,10 +270,7 @@ export default function Trade({
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
       <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className={twMerge(
-        "flex flex-col w-full",
-        isExtraWideScreen && "px-4"
-      )}>
+      <div className="flex flex-col w-full">
         <div className="flex flex-col w-full border rounded-lg overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
@@ -593,8 +590,8 @@ export default function Trade({
 
       {isBigScreen && (
         <div className={twMerge(
-          "hidden sm:flex lg:ml-4",
-          isExtraWideScreen ? "w-[20%]" : "w-[25%]"
+          "hidden sm:flex ml-4",
+          isExtraWideScreen ? "w-[20%] min-w-[350px]" : "w-[25%] min-w-[320px]"
         )}>
           <TradeComp
             className="w-full"
