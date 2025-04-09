@@ -14,6 +14,7 @@ interface StudyInfo {
   name: string;
   isShown?: boolean;
   isLocked?: boolean;
+  isVisible?: boolean;
   inputs?: Record<string, StudyInputValue>;
   overrides?: StudyOverrides;
   options: {
@@ -395,6 +396,9 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
                       });
                       studyInfo.inputs = inputs;
                     }
+
+                    // Get visibility state from the study's properties
+                    studyInfo.isVisible = studyApi.isVisible();
                   } catch (error) {
                     console.error('Error getting study inputs:', error);
                   }
@@ -479,6 +483,14 @@ export function setupStudiesSubscription(widget: IChartingLibraryWidget) {
 
   // Save studies when they are modified
   widget.subscribe('study_event', (event) => {
+    if (!event) return;
+    if (!isChangingSymbol) {
+      debouncedSaveStudies();
+    }
+  });
+
+  // Add subscription for study visibility changes
+  widget.subscribe('study_properties_changed', (event) => {
     if (!event) return;
     if (!isChangingSymbol) {
       debouncedSaveStudies();
@@ -619,6 +631,7 @@ export function loadStudiesForSymbol(
           // Prepare study overrides including price scale and visibility
           const studyOverrides = {
             ...study.overrides,
+            visible: study.isVisible ?? true,
           };
 
           // Create the study with all properties set during creation
@@ -640,6 +653,8 @@ export function loadStudiesForSymbol(
             const studyApi = widget.activeChart().getStudyById(studyId);
             if (studyApi) {
               studyApi.changePriceScale(priceScale);
+              // Set visibility directly after creation
+              studyApi.setVisible(study.isVisible ?? true);
 
               // Move to correct pane if specified
               if (
