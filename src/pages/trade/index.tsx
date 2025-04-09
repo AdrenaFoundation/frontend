@@ -105,6 +105,10 @@ export default function Trade({
     walletAddress: wallet?.publicKey.toBase58() ?? null,
   });
 
+  const [chartHeight, setChartHeight] = useState(400); // Default height
+  const minChartHeight = 300; // Minimum height
+  const maxChartHeight = 800; // Maximum height
+
   useEffect(() => {
     if (!tokenA || !tokenB) return;
 
@@ -264,16 +268,18 @@ export default function Trade({
             />
           ) : null}
 
-          <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
-            {tokenA && tokenB ? (
-              <TradingChart
-                token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
-                positions={positions}
-                limitOrders={limitOrderBook?.limitOrders ?? null}
-                showBreakEvenLine={showBreakEvenLine}
-                toggleSizeUsdInChart={toggleSizeUsdInChart}
-              />
-            ) : null}
+          <div className="relative" style={{ height: chartHeight }}>
+            <div className="absolute inset-0 flex">
+              {tokenA && tokenB ? (
+                <TradingChart
+                  token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
+                  positions={positions}
+                  limitOrders={limitOrderBook?.limitOrders ?? null}
+                  showBreakEvenLine={showBreakEvenLine}
+                  toggleSizeUsdInChart={toggleSizeUsdInChart}
+                />
+              ) : null}
+            </div>
           </div>
 
           <div className="flex flex-row gap-3 items-center justify-end">
@@ -335,6 +341,33 @@ export default function Trade({
                   },
                 }}
               />
+            </div>
+
+            <div
+              className="flex items-center ml-4 cursor-ns-resize opacity-50 hover:opacity-100 transition-opacity"
+              onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                const startY = e.clientY;
+                const handleMouseMove = (moveEvent: MouseEvent) => {
+                  const deltaY = moveEvent.clientY - startY;
+                  const newHeight = chartHeight + deltaY;
+                  if (newHeight >= minChartHeight && newHeight <= maxChartHeight) {
+                    setChartHeight(newHeight);
+                  }
+                };
+
+                const handleMouseUp = () => {
+                  document.removeEventListener('mousemove', handleMouseMove);
+                  document.removeEventListener('mouseup', handleMouseUp);
+                };
+
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 15L12 19L16 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
           </div>
         </div>
