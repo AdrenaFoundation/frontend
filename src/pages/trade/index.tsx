@@ -362,17 +362,19 @@ export default function Trade({
                 />
               </div>
 
-              <div
-                className="flex items-center p-0.5 text-white cursor-pointer"
-                onClick={() => setIsResizing(!isResizing)}
-              >
-                <p className={twMerge("opacity-50 text-xs hover:opacity-100 transition-opacity", isResizing && "opacity-100")}>
-                  Resize
-                </p>
-              </div>
+              {isBigScreen && (
+                <div
+                  className="flex items-center p-0.5 text-white cursor-pointer"
+                  onClick={() => setIsResizing(!isResizing)}
+                >
+                  <p className={twMerge("opacity-50 text-xs hover:opacity-100 transition-opacity", isResizing && "opacity-100")}>
+                    Resize
+                  </p>
+                </div>
+              )}
             </div>
 
-            {isResizing && (
+            {isBigScreen && isResizing && (
               <div
                 className="h-6 w-full flex items-center justify-center cursor-ns-resize hover:bg-white/5"
                 onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
