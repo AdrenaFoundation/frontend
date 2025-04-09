@@ -108,6 +108,7 @@ export default function Trade({
   const [chartHeight, setChartHeight] = useState(400); // Default height
   const minChartHeight = 300; // Minimum height
   const maxChartHeight = 800; // Maximum height
+  const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -282,93 +283,108 @@ export default function Trade({
             </div>
           </div>
 
-          <div className="flex flex-row gap-3 items-center justify-end">
-            <div className="flex items-center p-0.5 text-white">
-              <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+          <div className="flex flex-col border-t border-white/10">
+            <div className="flex flex-row gap-3 items-center justify-end p-2">
+              <div className="flex items-center p-0.5 text-white">
+                <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+                  <p className="opacity-50 text-xs underline-dashed cursor-help">
+                    Show Break Even line
+                  </p>
+                </Tippy>
+                <Switch
+                  checked={showBreakEvenLine}
+                  onChange={() => {
+                    setCookie('showBreakEvenLine', !showBreakEvenLine);
+                    setShowBreakEvenLine(!showBreakEvenLine);
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center p-0.5 text-white">
                 <p className="opacity-50 text-xs underline-dashed cursor-help">
-                  Show Break Even line
+                  Show size in chart
                 </p>
-              </Tippy>
-              <Switch
-                checked={showBreakEvenLine}
-                onChange={() => {
-                  setCookie('showBreakEvenLine', !showBreakEvenLine);
-                  setShowBreakEvenLine(!showBreakEvenLine);
-                }}
-                size="small"
-                sx={{
-                  transform: 'scale(0.7)',
-                  '& .MuiSwitch-switchBase': {
-                    color: '#ccc',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#1a1a1a',
-                  },
-                  '& .MuiSwitch-track': {
-                    backgroundColor: '#555',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#10e1a3',
-                  },
-                }}
-              />
+                <Switch
+                  checked={toggleSizeUsdInChart}
+                  onChange={() => {
+                    setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
+                    setToggleSizeUsdInChart(!toggleSizeUsdInChart);
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
+
+              <div
+                className="flex items-center p-0.5 text-white cursor-pointer"
+                onClick={() => setIsResizing(!isResizing)}
+              >
+                <p className={twMerge("opacity-50 text-xs hover:opacity-100 transition-opacity", isResizing && "opacity-100")}>
+                  Resize
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center p-0.5 text-white">
-              <p className="opacity-50 text-xs underline-dashed cursor-help">
-                Show size in chart
-              </p>
-              <Switch
-                checked={toggleSizeUsdInChart}
-                onChange={() => {
-                  setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
-                  setToggleSizeUsdInChart(!toggleSizeUsdInChart);
+            {isResizing && (
+              <div
+                className="h-6 w-full flex items-center justify-center cursor-ns-resize hover:bg-white/5"
+                onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                  e.preventDefault();
+                  const startY = e.clientY;
+                  const startHeight = chartHeight;
+
+                  const handleMouseMove = (moveEvent: MouseEvent) => {
+                    moveEvent.preventDefault();
+                    const deltaY = moveEvent.clientY - startY;
+                    const newHeight = startHeight + deltaY;
+                    if (newHeight >= minChartHeight && newHeight <= maxChartHeight) {
+                      setChartHeight(newHeight);
+                    }
+                  };
+
+                  const handleMouseUp = () => {
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                    setIsResizing(false);
+                  };
+
+                  document.addEventListener('mousemove', handleMouseMove);
+                  document.addEventListener('mouseup', handleMouseUp);
                 }}
-                size="small"
-                sx={{
-                  transform: 'scale(0.7)',
-                  '& .MuiSwitch-switchBase': {
-                    color: '#ccc',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#1a1a1a',
-                  },
-                  '& .MuiSwitch-track': {
-                    backgroundColor: '#555',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#10e1a3',
-                  },
-                }}
-              />
-            </div>
-
-            <div
-              className="flex items-center ml-4 cursor-ns-resize opacity-50 hover:opacity-100 transition-opacity"
-              onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
-                const startY = e.clientY;
-                const handleMouseMove = (moveEvent: MouseEvent) => {
-                  const deltaY = moveEvent.clientY - startY;
-                  const newHeight = chartHeight + deltaY;
-                  if (newHeight >= minChartHeight && newHeight <= maxChartHeight) {
-                    setChartHeight(newHeight);
-                  }
-                };
-
-                const handleMouseUp = () => {
-                  document.removeEventListener('mousemove', handleMouseMove);
-                  document.removeEventListener('mouseup', handleMouseUp);
-                };
-
-                document.addEventListener('mousemove', handleMouseMove);
-                document.addEventListener('mouseup', handleMouseUp);
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 15L12 19L16 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M8 9L12 5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
+              >
+                <div className="w-12 h-1 bg-white/20 rounded-full hover:bg-white/40 transition-colors" />
+              </div>
+            )}
           </div>
         </div>
 
