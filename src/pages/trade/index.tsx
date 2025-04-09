@@ -99,6 +99,7 @@ export default function Trade({
   );
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
+  const isExtraWideScreen = useBetterMediaQuery('(min-width: 1600px)');
   const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>('positions');
 
   const { limitOrderBook, reload } = useLimitOrderBook({
@@ -267,9 +268,12 @@ export default function Trade({
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
+      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className="flex flex-col w-full">
+      <div className={twMerge(
+        "flex flex-col w-full",
+        isExtraWideScreen && "px-4"
+      )}>
         <div className="flex flex-col w-full border rounded-lg overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
@@ -587,10 +591,13 @@ export default function Trade({
         )}
       </div>
 
-      <>
-        {isBigScreen ? (
+      {isBigScreen && (
+        <div className={twMerge(
+          "hidden sm:flex lg:ml-4",
+          isExtraWideScreen ? "w-[20%]" : "w-[25%]"
+        )}>
           <TradeComp
-            className="hidden sm:flex lg:ml-4 lg:min-w-[25%]"
+            className="w-full"
             selectedAction={selectedAction}
             setSelectedAction={setSelectedAction}
             tokenA={tokenA}
@@ -606,87 +613,85 @@ export default function Trade({
             adapters={adapters}
             onLimitOrderAdded={reload}
           />
-        ) : null}
-
-        {/* 651px and 950px */}
-
-        <div className='relative w-full sm:hidden'>
-          <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
-            <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
-              <li>
-                <Button
-                  className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
-                  title="Long"
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    setActivePositionModal('long');
-                    setSelectedAction('long');
-                  }}
-                />
-              </li>
-              <li>
-                <Button
-                  className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
-                  title="Short"
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    setActivePositionModal('short');
-                    setSelectedAction('short');
-                  }}
-                />
-              </li>
-              <li>
-                <Button
-                  className="bg-transparent font-boldy border-white text-white"
-                  title="Swap"
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    setActivePositionModal('swap');
-                    setSelectedAction('swap');
-                  }}
-                />
-              </li>
-            </ul>
-
-            <AnimatePresence>
-              {activePositionModal && (
-                <Modal
-                  title={`${activePositionModal.charAt(0).toUpperCase() +
-                    activePositionModal.slice(1)
-                    } Position`}
-                  close={() => setActivePositionModal(null)}
-                  className="flex flex-col overflow-y-auto"
-                >
-                  {tokenB && <TradingChartMini token={tokenB} />}
-                  <div className="bg-bcolor w-full h-[1px] my-3" />
-                  <div className="flex w-full px-4">
-                    <TradeComp
-                      selectedAction={selectedAction}
-                      setSelectedAction={setSelectedAction}
-                      tokenA={tokenA}
-                      tokenB={tokenB}
-                      setTokenA={setTokenA}
-                      setTokenB={setTokenB}
-                      openedPosition={openedPosition}
-                      className="p-0 m-0"
-                      wallet={wallet}
-                      connected={connected}
-                      activeRpc={activeRpc}
-                      terminalId="integrated-terminal-3"
-                      adapters={adapters}
-                      onLimitOrderAdded={reload}
-                      setActivePositionModal={setActivePositionModal}
-                    />
-                  </div>
-                </Modal>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
-      </>
+      )}
+
+      <div className='relative w-full sm:hidden'>
+        <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
+          <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
+            <li>
+              <Button
+                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
+                title="Long"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  setActivePositionModal('long');
+                  setSelectedAction('long');
+                }}
+              />
+            </li>
+            <li>
+              <Button
+                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
+                title="Short"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  setActivePositionModal('short');
+                  setSelectedAction('short');
+                }}
+              />
+            </li>
+            <li>
+              <Button
+                className="bg-transparent font-boldy border-white text-white"
+                title="Swap"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  setActivePositionModal('swap');
+                  setSelectedAction('swap');
+                }}
+              />
+            </li>
+          </ul>
+
+          <AnimatePresence>
+            {activePositionModal && (
+              <Modal
+                title={`${activePositionModal.charAt(0).toUpperCase() +
+                  activePositionModal.slice(1)
+                  } Position`}
+                close={() => setActivePositionModal(null)}
+                className="flex flex-col overflow-y-auto"
+              >
+                {tokenB && <TradingChartMini token={tokenB} />}
+                <div className="bg-bcolor w-full h-[1px] my-3" />
+                <div className="flex w-full px-4">
+                  <TradeComp
+                    selectedAction={selectedAction}
+                    setSelectedAction={setSelectedAction}
+                    tokenA={tokenA}
+                    tokenB={tokenB}
+                    setTokenA={setTokenA}
+                    setTokenB={setTokenB}
+                    openedPosition={openedPosition}
+                    className="p-0 m-0"
+                    wallet={wallet}
+                    connected={connected}
+                    activeRpc={activeRpc}
+                    terminalId="integrated-terminal-3"
+                    adapters={adapters}
+                    onLimitOrderAdded={reload}
+                    setActivePositionModal={setActivePositionModal}
+                  />
+                </div>
+              </Modal>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }
