@@ -22,8 +22,8 @@ export function configureChartOnReady(
   widget.applyOverrides({
     'paneProperties.backgroundType': 'solid',
     'paneProperties.background': CHART_BACKGROUND,
-    'paneProperties.legendProperties.showStudyArguments': false,
-    'paneProperties.legendProperties.showStudyTitles': false,
+    'paneProperties.legendProperties.showStudyArguments': true,
+    'paneProperties.legendProperties.showStudyTitles': true,
     'paneProperties.legendProperties.showStudyValues': false,
     'paneProperties.legendProperties.showSeriesTitle': false,
     'paneProperties.legendProperties.showBarChange': false,
