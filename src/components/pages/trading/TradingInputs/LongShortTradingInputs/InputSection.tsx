@@ -30,47 +30,57 @@ export const InputSection = ({
     onInputAChange,
     onLeverageChange,
     onMax,
-}: InputSectionProps) => (
-    <>
-        <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
-            <h5 className="ml-4">Inputs</h5>
-            <WalletBalance
-                tokenA={tokenA}
-                walletTokenBalances={walletTokenBalances}
-                onMax={onMax}
-            />
-        </div>
+}: InputSectionProps) => {
+    const handlePercentageClick = (percentage: number) => {
+        const balance = walletTokenBalances?.[tokenA.symbol] ?? 0;
+        const amount = balance * (percentage / 100);
+        const roundedAmount = Number(amount.toFixed(tokenA.displayAmountDecimalsPrecision));
+        onInputAChange(roundedAmount);
+    };
 
-        <div className="flex">
-            <div className="flex flex-col border rounded-lg w-full bg-inputcolor relative">
-                <TradingInput
-                    className="text-sm rounded-full"
-                    inputClassName="border-0 tr-rounded-lg bg-inputcolor"
-                    tokenListClassName="border-none bg-inputcolor"
-                    menuClassName="shadow-none"
-                    menuOpenBorderClassName="rounded-tr-lg"
-                    value={inputA}
-                    subText={
-                        priceA ? (
-                            <div className="text-sm text-txtfade font-mono">
-                                {priceA > 500000000
-                                    ? `> ${formatPriceInfo(500000000)}`
-                                    : formatPriceInfo(priceA)}
-                            </div>
-                        ) : null
-                    }
-                    selectedToken={tokenA}
-                    tokenList={allowedTokenA}
-                    onTokenSelect={onTokenASelect}
-                    onChange={onInputAChange}
-                />
-
-                <LeverageSlider
-                    value={leverage}
-                    className="w-full font-mono border-t select-none"
-                    onChange={onLeverageChange}
+    return (
+        <>
+            <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
+                <h5 className="ml-4">Inputs</h5>
+                <WalletBalance
+                    tokenA={tokenA}
+                    walletTokenBalances={walletTokenBalances}
+                    onMax={onMax}
+                    onPercentageClick={handlePercentageClick}
                 />
             </div>
-        </div>
-    </>
-);
+
+            <div className="flex">
+                <div className="flex flex-col border rounded-lg w-full bg-inputcolor relative">
+                    <TradingInput
+                        className="text-sm rounded-full"
+                        inputClassName="border-0 tr-rounded-lg bg-inputcolor"
+                        tokenListClassName="border-none bg-inputcolor"
+                        menuClassName="shadow-none"
+                        menuOpenBorderClassName="rounded-tr-lg"
+                        value={inputA}
+                        subText={
+                            priceA ? (
+                                <div className="text-sm text-txtfade font-mono">
+                                    {priceA > 500000000
+                                        ? `> ${formatPriceInfo(500000000)}`
+                                        : formatPriceInfo(priceA)}
+                                </div>
+                            ) : null
+                        }
+                        selectedToken={tokenA}
+                        tokenList={allowedTokenA}
+                        onTokenSelect={onTokenASelect}
+                        onChange={onInputAChange}
+                    />
+
+                    <LeverageSlider
+                        value={leverage}
+                        className="w-full font-mono border-t select-none"
+                        onChange={onLeverageChange}
+                    />
+                </div>
+            </div>
+        </>
+    );
+};

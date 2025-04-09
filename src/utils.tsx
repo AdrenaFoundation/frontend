@@ -262,7 +262,6 @@ export function formatNumberShort(
   nb: number | string,
   maxDecimals = 2,
 ): string {
-  // Added maxDecimals parameter
   if (typeof nb === 'string') {
     nb = Number(nb);
   }
