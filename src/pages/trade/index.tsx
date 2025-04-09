@@ -105,9 +105,26 @@ export default function Trade({
     walletAddress: wallet?.publicKey.toBase58() ?? null,
   });
 
-  const [chartHeight, setChartHeight] = useState(400); // Default height
-  const minChartHeight = 300; // Minimum height
-  const maxChartHeight = 800; // Maximum height
+  const minChartHeight = 200; // Minimum height
+  const maxChartHeight = 1200; // Maximum height
+  const [chartHeight, setChartHeight] = useState(() => {
+    // Try to get saved height from localStorage
+    const savedHeight = localStorage.getItem('chartHeight');
+    if (savedHeight) {
+      const height = parseInt(savedHeight);
+      // Validate the saved height is within bounds
+      if (height >= minChartHeight && height <= maxChartHeight) {
+        return height;
+      }
+    }
+    return 400; // Default height if no valid saved value
+  });
+
+  // Update localStorage whenever chartHeight changes
+  useEffect(() => {
+    localStorage.setItem('chartHeight', chartHeight.toString());
+  }, [chartHeight]);
+
   const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
@@ -361,15 +378,13 @@ export default function Trade({
                 onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.preventDefault();
                   const startY = e.clientY;
-                  const startHeight = chartHeight;
+                  const initialHeight = chartHeight;
 
                   const handleMouseMove = (moveEvent: MouseEvent) => {
                     moveEvent.preventDefault();
                     const deltaY = moveEvent.clientY - startY;
-                    const newHeight = startHeight + deltaY;
-                    if (newHeight >= minChartHeight && newHeight <= maxChartHeight) {
-                      setChartHeight(newHeight);
-                    }
+                    const newHeight = Math.max(minChartHeight, Math.min(maxChartHeight, initialHeight + deltaY));
+                    setChartHeight(newHeight);
                   };
 
                   const handleMouseUp = () => {
