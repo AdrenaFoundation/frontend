@@ -6,10 +6,14 @@ import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
 import Competition from './Awakening';
 import Expanse from './Expanse';
+import Factions from './Factions';
 
 export default function Ranked() {
+    //
+    // Ignore following for inter-season
+    //
     const [activeSeason, setActiveSeason] =
-        useState<keyof typeof TRADING_COMPETITION_SEASONS>('expanse');
+        useState<keyof typeof TRADING_COMPETITION_SEASONS>('factions');
 
     const data = useMemo(() => TRADING_COMPETITION_SEASONS[activeSeason], [activeSeason]);
 
@@ -20,21 +24,25 @@ export default function Ranked() {
                     activeSeason={activeSeason}
                     setActiveSeason={setActiveSeason}
                 />
-
-                <CompetitionBanner
-                    banner={data.img}
-                    gradientColor={data.gradient}
-                    title={data.title}
-                    subTitle={data.subTitle}
-                    startDate={data.startDate}
-                    endDate={data.endDate}
-                    seasonName={activeSeason}
-                />
             </div>
+
+            <CompetitionBanner
+                banner={data.img}
+                gradientColor={data.gradient}
+                title={data.title}
+                subTitle={data.subTitle}
+                startDate={data.startDate}
+                endDate={data.endDate}
+                seasonName={activeSeason}
+                adxRewards={data.adxRewards}
+                jtoRewards={data.jtoRewards}
+                bannerClassName={data.bannerClassName}
+            />
 
             <div className=" sm:px-8 max-w-[2200px] mx-auto w-full mt-10">
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
+                {activeSeason === 'factions' ? <Factions /> : null}
             </div>
         </>
     );

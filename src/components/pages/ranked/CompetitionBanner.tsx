@@ -21,6 +21,9 @@ export default function CompetitionBanner({
     startDate,
     endDate,
     seasonName,
+    adxRewards,
+    jtoRewards,
+    bannerClassName,
 }: {
     banner: ImageRef;
     endDate: Date | null;
@@ -29,24 +32,24 @@ export default function CompetitionBanner({
     subTitle?: string;
     gradientColor?: string;
     seasonName: string;
+    adxRewards: number;
+    jtoRewards: number;
+    bannerClassName: string;
 }) {
     const { days, hours, minutes, seconds } = useCountDown(
         new Date(),
-        new Date(Date.UTC(2025, 1, 1)),
+        startDate,
     );
 
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
-    const adxNumber = seasonName === 'expanse' ? 5000000 : 2270000;
-    const jtoNumber = seasonName === 'expanse' ? 50000 : 25000;
-
     const totalPrize = useMemo(() => {
-        return adxNumber * (tokenPrices['ADX'] ?? 0) + jtoNumber * (tokenPrices['JTO'] ?? 0);
-    }, [adxNumber, jtoNumber, tokenPrices]);
+        return adxRewards * (tokenPrices['ADX'] ?? 0) + jtoRewards * (tokenPrices['JTO'] ?? 0);
+    }, [adxRewards, jtoRewards, tokenPrices]);
 
     return (
         <div className="relative">
-            <div className="relative flex flex-col items-center w-full h-[30em] justify-center border-b">
+            <div className={twMerge("relative flex flex-col items-center w-full border-b", bannerClassName)}>
                 <div className="mt-[4em]">
                     <AnimatePresence>
                         <motion.span
@@ -68,7 +71,7 @@ export default function CompetitionBanner({
                     <div className="absolute top-0 left-0 w-[10em] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
                 </div>
 
-                <div className="z-10 text-center">
+                {seasonName !== 'factions' ? <div className="z-10 text-center">
                     <p className="text-lg tracking-[0.2rem] uppercase">{subTitle}</p>
                     <h1
                         className={twMerge(
@@ -78,7 +81,27 @@ export default function CompetitionBanner({
                     >
                         {title}
                     </h1>
-                </div>
+                </div> : <div className="z-10 text-center">
+                    <p className="text-lg tracking-[0.2rem] uppercase">{subTitle}</p>
+                    <div className='flex'>
+                        <h1
+                            className={twMerge(
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'bg-[linear-gradient(110deg,#5AA6FA_45%,#A2E3FA_55%,#5AA6FA)]',
+                            )}
+                        >
+                            Fact
+                        </h1>
+                        <h1
+                            className={twMerge(
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
+                            )}
+                        >
+                            ions
+                        </h1>
+                    </div>
+                </div>}
 
                 {startDate && startDate.getTime() >= Date.now() ? (
                     <ul className="flex flex-row gap-3 md:gap-9 mt-2 px-6 md:px-9 p-3 bg-black/40 rounded-lg z-10">
@@ -120,7 +143,7 @@ export default function CompetitionBanner({
                     </ul>
                 ) : null}
 
-                <div className='flex flex-col mt-8 z-10 items-center'>
+                {(adxRewards + jtoRewards) > 0 ? <div className='flex flex-col mt-8 z-10 items-center'>
                     <div className='text-xs font-thin text-txtfade'>PRIZE POOL</div>
 
                     <div className='w-[20em] flex items-center justify-center rounded-lg flex-col'>
@@ -141,7 +164,7 @@ export default function CompetitionBanner({
                                 />
 
                                 <p className="text-md font-boldy text-txtfade">
-                                    {formatNumber(adxNumber, 2, 0)} ADX
+                                    {formatNumber(adxRewards, 2, 0)} ADX
                                 </p>
                             </div>
 
@@ -151,14 +174,14 @@ export default function CompetitionBanner({
                                 <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
 
                                 <p className="text-md font-boldy text-txtfade">
-                                    {formatNumber(jtoNumber, 2, 0)} JTO
+                                    {formatNumber(jtoRewards, 2, 0)} JTO
                                 </p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> : null}
 
-                <div
+                {seasonName !== 'factions' ? <div
                     className={twMerge(
                         'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
                         startDate && startDate.getTime() >= Date.now() ? 'mt-[2em]' : 'mt-[4em]',
@@ -170,7 +193,7 @@ export default function CompetitionBanner({
                         alt="jito logo"
                         className="w-[3em] md:w-[4em]"
                     />
-                </div>
+                </div> : null}
             </div>
 
             <div className="flex items-center justify-center">
