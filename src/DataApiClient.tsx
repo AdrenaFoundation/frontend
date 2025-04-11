@@ -172,10 +172,15 @@ export default class DataApiClient {
         return result.data;
     }
 
-    public static async getSeasonLeaderboards(): Promise<SeasonLeaderboardsData | null> {
+    public static async getSeasonLeaderboards({
+        season,
+    }: {
+        season: 'expanse' | 'interseason2';
+    }): Promise<SeasonLeaderboardsData | null> {
         try {
             const result: SeasonLeaderboardsRawAPI = await fetch(
-                `${DataApiClient.DATAPI_URL}/season?season=expanse&show_leaderboard=true`,
+                // TODO: Remove the ternary here once we have interseason2 data in API
+                `${DataApiClient.DATAPI_URL}/season?season=${season === 'expanse' ? 'expanse' : 'interseason1'}&show_leaderboard=true`,
             ).then((res) => res.json());
 
             return {
