@@ -223,6 +223,7 @@ export default function AllPositionsChart({
             key={selectedPositionObject.pubkey.toBase58()}
             position={selectedPositionObject}
             readOnly={true}
+            setTokenB={() => { }}
           /> :
           <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}
       </div>

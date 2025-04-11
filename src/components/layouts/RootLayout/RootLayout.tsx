@@ -157,7 +157,7 @@ export default function RootLayout({
       <div className="w-full grow flex justify-center">
         <div
           className={twMerge(
-            'w-full flex flex-col max-w-[120em]',
+            'w-full flex flex-col max-w-[200em]',
             !isBigScreen ? 'pb-[100px]' : 'sm:pb-0',
           )}
         >

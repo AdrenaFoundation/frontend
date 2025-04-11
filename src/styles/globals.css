@@ -1,0 +1,40 @@
+/* Add these styles for the resizable component */
+.react-resizable {
+  position: relative;
+}
+
+.resize-handle-bottom {
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: linear-gradient(to bottom, transparent, rgba(16, 225, 163, 0.1));
+  cursor: ns-resize;
+  z-index: 20;
+  transition: background 0.2s;
+}
+
+.resize-handle-bottom::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background-color: rgba(16, 225, 163, 0.5);
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.resize-handle-bottom:hover {
+  background: linear-gradient(to bottom, transparent, rgba(16, 225, 163, 0.2));
+}
+
+.resize-handle-bottom:hover::after {
+  background-color: rgba(16, 225, 163, 0.8);
+  width: 50px;
+}
+
+/* ... rest of your existing CSS ... */

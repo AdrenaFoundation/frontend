@@ -381,6 +381,7 @@ export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: b
                                                                 key={position.pubkey.toBase58()}
                                                                 position={position}
                                                                 readOnly={true}
+                                                                setTokenB={() => { }}
                                                             />
                                                         ))}
                                                     </div>

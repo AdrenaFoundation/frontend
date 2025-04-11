@@ -42,7 +42,7 @@ export default function Achievements({
 
             return {
                 ...achievement,
-                completionPercentage: nbCompletions / allUserProfiles.length,
+                completionPercentage: nbCompletions / allUserProfiles.length * 100,
                 nbCompletions,
                 nbUserProfiles: allUserProfiles.length,
             };

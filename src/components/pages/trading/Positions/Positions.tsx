@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
-import { PositionExtended } from '@/types';
+import { PositionExtended, Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
@@ -21,6 +21,7 @@ export default function Positions({
   positions,
   triggerUserProfileReload,
   isBigScreen,
+  setTokenB,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -29,6 +30,7 @@ export default function Positions({
   positions: PositionExtended[] | null;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
+  setTokenB: (token: Token) => void;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -204,6 +206,7 @@ export default function Positions({
         triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}
         triggerEditPositionCollateral={setPositionToEdit}
+        setTokenB={setTokenB}
       />
     </>
   );
