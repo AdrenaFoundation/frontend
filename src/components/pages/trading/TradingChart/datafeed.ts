@@ -75,44 +75,84 @@ const datafeed: IBasicDataFeed = {
   ) => {
     const { from, to, firstDataRequest } = periodParams;
 
-    console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
+    // Limit the range to 1 year for initial request
+    const maxRange = 365 * 24 * 60 * 60; // 1 year in seconds
+    const requestTo = to;
+    const requestFrom = firstDataRequest ? Math.max(from, to - maxRange) : from;
+
+    console.log('[getBars]: Method call', {
+      symbol: symbolInfo.ticker,
+      resolution,
+      from: new Date(from * 1000).toISOString(),
+      to: new Date(to * 1000).toISOString(),
+      requestFrom: new Date(requestFrom * 1000).toISOString(),
+      requestTo: new Date(requestTo * 1000).toISOString(),
+      firstDataRequest,
+    });
 
     fetch(
-      `${API_ENDPOINT}/history?symbol=${symbolInfo.ticker}&from=${periodParams.from}&to=${periodParams.to}&resolution=${resolution}`,
-    ).then((response) => {
-      response
-        .json()
-        .then((data) => {
-          if (data.t.length === 0) {
-            onHistoryCallback([], { noData: true });
-            return;
-          }
+      `${API_ENDPOINT}/history?symbol=${symbolInfo.ticker}&from=${requestFrom}&to=${requestTo}&resolution=${resolution}`,
+    )
+      .then((response) => {
+        response
+          .json()
+          .then((data) => {
+            // Check for error response
+            if (data.s === 'error') {
+              console.log('[getBars]: Error:', data.errmsg);
+              onHistoryCallback([], { noData: true });
+              return;
+            }
 
-          const bars = [];
+            // Validate data structure
+            if (!data || !data.t || !Array.isArray(data.t)) {
+              console.log('[getBars]: Invalid data structure received:', data);
+              onHistoryCallback([], { noData: true });
+              return;
+            }
 
-          for (let i = 0; i < data.t.length; ++i) {
-            bars.push({
-              time: data.t[i] * 1000,
-              low: data.l[i],
-              high: data.h[i],
-              open: data.o[i],
-              close: data.c[i],
-            });
-          }
+            if (data.t.length === 0) {
+              onHistoryCallback([], { noData: true });
+              return;
+            }
 
-          if (firstDataRequest) {
-            lastBarsCache.set(symbolInfo.ticker, {
-              ...bars[bars.length - 1],
-            });
-          }
+            const bars = [];
 
-          onHistoryCallback(bars, { noData: false });
-        })
-        .catch((error) => {
-          console.log('[getBars]: Get error', error);
-          onErrorCallback(error);
-        });
-    });
+            for (let i = 0; i < data.t.length; ++i) {
+              if (
+                data.t[i] &&
+                data.o[i] !== undefined &&
+                data.h[i] !== undefined &&
+                data.l[i] !== undefined &&
+                data.c[i] !== undefined
+              ) {
+                bars.push({
+                  time: data.t[i] * 1000,
+                  low: data.l[i],
+                  high: data.h[i],
+                  open: data.o[i],
+                  close: data.c[i],
+                });
+              }
+            }
+
+            if (firstDataRequest) {
+              lastBarsCache.set(symbolInfo.ticker, {
+                ...bars[bars.length - 1],
+              });
+            }
+
+            onHistoryCallback(bars, { noData: bars.length === 0 });
+          })
+          .catch((error) => {
+            console.log('[getBars]: Get error', error);
+            onErrorCallback(error);
+          });
+      })
+      .catch((error) => {
+        console.log('[getBars]: Fetch error', error);
+        onErrorCallback(error);
+      });
   },
   subscribeBars: (
     symbolInfo: LibrarySymbolInfo,

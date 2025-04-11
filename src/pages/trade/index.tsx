@@ -99,11 +99,34 @@ export default function Trade({
   );
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
+  const isExtraWideScreen = useBetterMediaQuery('(min-width: 1600px)');
   const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>('positions');
 
   const { limitOrderBook, reload } = useLimitOrderBook({
     walletAddress: wallet?.publicKey.toBase58() ?? null,
   });
+
+  const minChartHeight = 200; // Minimum height
+  const maxChartHeight = 1200; // Maximum height
+  const [chartHeight, setChartHeight] = useState(() => {
+    // Try to get saved height from localStorage
+    const savedHeight = localStorage.getItem('chartHeight');
+    if (savedHeight) {
+      const height = parseInt(savedHeight);
+      // Validate the saved height is within bounds
+      if (height >= minChartHeight && height <= maxChartHeight) {
+        return height;
+      }
+    }
+    return 400; // Default height if no valid saved value
+  });
+
+  // Update localStorage whenever chartHeight changes
+  useEffect(() => {
+    localStorage.setItem('chartHeight', chartHeight.toString());
+  }, [chartHeight]);
+
+  const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -245,7 +268,7 @@ export default function Trade({
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
+      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col w-full">
         <div className="flex flex-col w-full border rounded-lg overflow-hidden bg-secondary">
@@ -264,78 +287,122 @@ export default function Trade({
             />
           ) : null}
 
-          <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
-            {tokenA && tokenB ? (
-              <TradingChart
-                token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
-                positions={positions}
-                limitOrders={limitOrderBook?.limitOrders ?? null}
-                showBreakEvenLine={showBreakEvenLine}
-                toggleSizeUsdInChart={toggleSizeUsdInChart}
-              />
-            ) : null}
+          <div className="relative" style={{ height: chartHeight }}>
+            <div className="absolute inset-0 flex">
+              {tokenA && tokenB ? (
+                <TradingChart
+                  token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
+                  positions={positions}
+                  limitOrders={limitOrderBook?.limitOrders ?? null}
+                  showBreakEvenLine={showBreakEvenLine}
+                  toggleSizeUsdInChart={toggleSizeUsdInChart}
+                />
+              ) : null}
+            </div>
           </div>
 
-          <div className="flex flex-row gap-3 items-center justify-end">
-            <div className="flex items-center p-0.5 text-white">
-              <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+          <div className="flex flex-col border-t border-white/10">
+            <div className="flex flex-row gap-3 items-center justify-end p-2">
+              <div className="flex items-center p-0.5 text-white">
+                <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
+                  <p className="opacity-50 text-xs underline-dashed cursor-help">
+                    Show Break Even line
+                  </p>
+                </Tippy>
+                <Switch
+                  checked={showBreakEvenLine}
+                  onChange={() => {
+                    setCookie('showBreakEvenLine', !showBreakEvenLine);
+                    setShowBreakEvenLine(!showBreakEvenLine);
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center p-0.5 text-white">
                 <p className="opacity-50 text-xs underline-dashed cursor-help">
-                  Show Break Even line
+                  Show size in chart
                 </p>
-              </Tippy>
-              <Switch
-                checked={showBreakEvenLine}
-                onChange={() => {
-                  setCookie('showBreakEvenLine', !showBreakEvenLine);
-                  setShowBreakEvenLine(!showBreakEvenLine);
-                }}
-                size="small"
-                sx={{
-                  transform: 'scale(0.7)',
-                  '& .MuiSwitch-switchBase': {
-                    color: '#ccc',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#1a1a1a',
-                  },
-                  '& .MuiSwitch-track': {
-                    backgroundColor: '#555',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#10e1a3',
-                  },
-                }}
-              />
+                <Switch
+                  checked={toggleSizeUsdInChart}
+                  onChange={() => {
+                    setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
+                    setToggleSizeUsdInChart(!toggleSizeUsdInChart);
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
+
+              {isBigScreen && (
+                <div
+                  className="flex items-center p-0.5 text-white cursor-pointer"
+                  onClick={() => setIsResizing(!isResizing)}
+                >
+                  <p className={twMerge("opacity-50 text-xs hover:opacity-100 transition-opacity", isResizing && "opacity-100")}>
+                    Resize
+                  </p>
+                </div>
+              )}
             </div>
 
-            <div className="flex items-center p-0.5 text-white">
-              <p className="opacity-50 text-xs underline-dashed cursor-help">
-                Show size in chart
-              </p>
-              <Switch
-                checked={toggleSizeUsdInChart}
-                onChange={() => {
-                  setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
-                  setToggleSizeUsdInChart(!toggleSizeUsdInChart);
+            {isBigScreen && isResizing && (
+              <div
+                className="h-6 w-full flex items-center justify-center cursor-ns-resize hover:bg-white/5"
+                onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                  e.preventDefault();
+                  const startY = e.clientY;
+                  const initialHeight = chartHeight;
+
+                  const handleMouseMove = (moveEvent: MouseEvent) => {
+                    moveEvent.preventDefault();
+                    const deltaY = moveEvent.clientY - startY;
+                    const newHeight = Math.max(minChartHeight, Math.min(maxChartHeight, initialHeight + deltaY));
+                    setChartHeight(newHeight);
+                  };
+
+                  const handleMouseUp = () => {
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                    setIsResizing(false);
+                  };
+
+                  document.addEventListener('mousemove', handleMouseMove);
+                  document.addEventListener('mouseup', handleMouseUp);
                 }}
-                size="small"
-                sx={{
-                  transform: 'scale(0.7)',
-                  '& .MuiSwitch-switchBase': {
-                    color: '#ccc',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#1a1a1a',
-                  },
-                  '& .MuiSwitch-track': {
-                    backgroundColor: '#555',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#10e1a3',
-                  },
-                }}
-              />
-            </div>
+              >
+                <div className="w-12 h-1 bg-white/20 rounded-full hover:bg-white/40 transition-colors" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -401,6 +468,7 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
+                    setTokenB={setTokenB}
                   />
                 </div>
               ) : null}
@@ -492,6 +560,7 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
+                    setTokenB={setTokenB}
                   />
                 </div>
               ) : null}
@@ -519,10 +588,13 @@ export default function Trade({
         )}
       </div>
 
-      <>
-        {isBigScreen ? (
+      {isBigScreen && (
+        <div className={twMerge(
+          "hidden sm:flex ml-4",
+          isExtraWideScreen ? "w-[20%] min-w-[350px]" : "w-[25%] min-w-[320px]"
+        )}>
           <TradeComp
-            className="hidden sm:flex lg:ml-4 lg:min-w-[25%]"
+            className="w-full"
             selectedAction={selectedAction}
             setSelectedAction={setSelectedAction}
             tokenA={tokenA}
@@ -538,87 +610,85 @@ export default function Trade({
             adapters={adapters}
             onLimitOrderAdded={reload}
           />
-        ) : null}
-
-        {/* 651px and 950px */}
-
-        <div className='relative w-full sm:hidden'>
-          <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
-            <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
-              <li>
-                <Button
-                  className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
-                  title="Long"
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    setActivePositionModal('long');
-                    setSelectedAction('long');
-                  }}
-                />
-              </li>
-              <li>
-                <Button
-                  className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
-                  title="Short"
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    setActivePositionModal('short');
-                    setSelectedAction('short');
-                  }}
-                />
-              </li>
-              <li>
-                <Button
-                  className="bg-transparent font-boldy border-white text-white"
-                  title="Swap"
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    setActivePositionModal('swap');
-                    setSelectedAction('swap');
-                  }}
-                />
-              </li>
-            </ul>
-
-            <AnimatePresence>
-              {activePositionModal && (
-                <Modal
-                  title={`${activePositionModal.charAt(0).toUpperCase() +
-                    activePositionModal.slice(1)
-                    } Position`}
-                  close={() => setActivePositionModal(null)}
-                  className="flex flex-col overflow-y-auto"
-                >
-                  {tokenB && <TradingChartMini token={tokenB} />}
-                  <div className="bg-bcolor w-full h-[1px] my-3" />
-                  <div className="flex w-full px-4">
-                    <TradeComp
-                      selectedAction={selectedAction}
-                      setSelectedAction={setSelectedAction}
-                      tokenA={tokenA}
-                      tokenB={tokenB}
-                      setTokenA={setTokenA}
-                      setTokenB={setTokenB}
-                      openedPosition={openedPosition}
-                      className="p-0 m-0"
-                      wallet={wallet}
-                      connected={connected}
-                      activeRpc={activeRpc}
-                      terminalId="integrated-terminal-3"
-                      adapters={adapters}
-                      onLimitOrderAdded={reload}
-                      setActivePositionModal={setActivePositionModal}
-                    />
-                  </div>
-                </Modal>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
-      </>
+      )}
+
+      <div className='relative w-full sm:hidden'>
+        <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
+          <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
+            <li>
+              <Button
+                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
+                title="Long"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  setActivePositionModal('long');
+                  setSelectedAction('long');
+                }}
+              />
+            </li>
+            <li>
+              <Button
+                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
+                title="Short"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  setActivePositionModal('short');
+                  setSelectedAction('short');
+                }}
+              />
+            </li>
+            <li>
+              <Button
+                className="bg-transparent font-boldy border-white text-white"
+                title="Swap"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  setActivePositionModal('swap');
+                  setSelectedAction('swap');
+                }}
+              />
+            </li>
+          </ul>
+
+          <AnimatePresence>
+            {activePositionModal && (
+              <Modal
+                title={`${activePositionModal.charAt(0).toUpperCase() +
+                  activePositionModal.slice(1)
+                  } Position`}
+                close={() => setActivePositionModal(null)}
+                className="flex flex-col overflow-y-auto"
+              >
+                {tokenB && <TradingChartMini token={tokenB} />}
+                <div className="bg-bcolor w-full h-[1px] my-3" />
+                <div className="flex w-full px-4">
+                  <TradeComp
+                    selectedAction={selectedAction}
+                    setSelectedAction={setSelectedAction}
+                    tokenA={tokenA}
+                    tokenB={tokenB}
+                    setTokenA={setTokenA}
+                    setTokenB={setTokenB}
+                    openedPosition={openedPosition}
+                    className="p-0 m-0"
+                    wallet={wallet}
+                    connected={connected}
+                    activeRpc={activeRpc}
+                    terminalId="integrated-terminal-3"
+                    adapters={adapters}
+                    onLimitOrderAdded={reload}
+                    setActivePositionModal={setActivePositionModal}
+                  />
+                </div>
+              </Modal>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }
