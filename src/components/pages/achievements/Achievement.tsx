@@ -189,9 +189,9 @@ export default function Achievement({
 
                 <FormatNumber
                     nb={achievement.completionPercentage}
-                    format="number"
+                    format="percentage"
                     prefix='('
-                    suffix='%)'
+                    suffix=')'
                     minimumFractionDigits={0}
                     precisionIfPriceDecimalsBelow={4}
                     isDecimalDimmed={false}
