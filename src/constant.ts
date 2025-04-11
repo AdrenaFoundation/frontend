@@ -392,8 +392,8 @@ export const TRADING_COMPETITION_SEASONS = {
     img: factionsBanner,
     title: "Factions",
     subTitle: "Season 2 is coming",
-    startDate: new Date("2025-04-12T00:00:00.000Z"),
-    endDate: new Date("2025-04-25T23:59:59.999Z"),
+    startDate: new Date("2025-04-25T23:59:59.999Z"),
+    endDate: new Date("2025-04-30T23:59:59.999Z"), // Not used
     gradient: "", // Not used. Specific if in CompetitionBanner component
     primaryColor: "#247CFA",
     adxRewards: 0,

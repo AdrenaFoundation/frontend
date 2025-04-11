@@ -14,6 +14,15 @@ import { twMerge } from 'tailwind-merge';
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange
 
+const PICTURES = {
+    'A-General': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-general-XslAAKuuLulnWZjojoSgUfpcvPSUao.jpg',
+    'A-Lieutenant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-lieutenant-rlj75BR7yTwcCLDqghVw8pGQuqDdGp.jpg',
+    'A-Sergeant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-sergeant-TOF5salEAeiwnZNQTqmcRLk0078M54.jpg',
+    'B-General': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/B-general-3qXDpxizWvG7cbhgPS0aYkiXzWHpO3.jpg',
+    'B-Lieutenant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/B-lieutenant-o07VbHByp3D6dQIpzhvzPyEeT6W0qy.jpg',
+    'B-Sergeant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/B-sergeant-Kd64lsAO14Y6UAEQAkwj0EpIWrj8Mc.jpg',
+} as const;
+
 function Rank({
     team,
     rank,
@@ -37,18 +46,14 @@ function Rank({
                 Lieutenant: 'w-[14em] h-[23em] border-2',
                 Sergeant: 'w-[10em] h-[20em] border-2',
             } as const)[rank],
-            // `shadow-[0_0_10px_#5AA6FA,0_0_20px_${team === 'A' ? teamAColor : teamBColor}]`,
         )}
             onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-            style={{
-                // borderColor: rank === 'General' ? team === 'A' ? teamAColor : teamBColor : '',
-            }}
         >
             <div className={twMerge('absolute w-full h-full z-10 opacity-50 max-w-full max-h-full overflow-hidden')}>
                 <div
                     className={twMerge('bg-cover bg-no-repeat bg-center w-full h-full', hover ? 'breathing-image' : '', className)}
                     style={{
-                        backgroundImage: `url(images/${team}-${rank.toLowerCase()}.png)`,
+                        backgroundImage: `url(${PICTURES[`${team}-${rank}` as keyof typeof PICTURES]}`,
                     }}
                 />
             </div>
@@ -81,44 +86,47 @@ function Rank({
             <div className={twMerge(
                 'absolute -bottom-10 flex flex-col w-full left-0 items-center justify-center',
             )}>
-                {user ? <div
-                    className={twMerge('font-archivo tracking-widest text-xs cursor-pointer hover:underline')}
-                    style={{
-                        color: team === 'A' ? teamAColor : teamBColor,
-                    }}
-                    onClick={async () => {
-                        const p = await window.adrena.client.loadUserProfile({ user: user.wallet });
+                {user && user.wallet.toBase58() !== PublicKey.default.toBase58() ?
+                    <>
+                        <div
+                            className={twMerge('font-archivo tracking-widest text-xs cursor-pointer hover:underline')}
+                            style={{
+                                color: team === 'A' ? teamAColor : teamBColor,
+                            }}
+                            onClick={async () => {
+                                const p = await window.adrena.client.loadUserProfile({ user: user.wallet });
 
-                        if (p === false) {
-                            setActiveProfile({
-                                version: -1, // Not a real profile
-                                pubkey: PublicKey.default, // Not a real profile
-                                nickname: getAbbrevWalletAddress(user.wallet.toBase58()),
-                                createdAt: Date.now(),
-                                owner: user.wallet,
-                                referrerProfile: null,
-                                claimableReferralFeeUsd: 0,
-                                totalReferralFeeUsd: 0,
-                                profilePicture: 0,
-                                wallpaper: 0,
-                                title: 0,
-                                achievements: [],
-                            });
-                        } else {
-                            setActiveProfile(p);
-                        }
-                    }}
-                >
-                    {user.nickname && user.nickname.length ? user.nickname : getAbbrevWalletAddress(user.wallet.toBase58())}
-                </div> : <div
-                    className={twMerge('font-archivo tracking-widest text-xs')}>
-                    Not assigned
-                </div>}
+                                if (p === false) {
+                                    setActiveProfile({
+                                        version: -1, // Not a real profile
+                                        pubkey: PublicKey.default, // Not a real profile
+                                        nickname: getAbbrevWalletAddress(user.wallet.toBase58()),
+                                        createdAt: Date.now(),
+                                        owner: user.wallet,
+                                        referrerProfile: null,
+                                        claimableReferralFeeUsd: 0,
+                                        totalReferralFeeUsd: 0,
+                                        profilePicture: 0,
+                                        wallpaper: 0,
+                                        title: 0,
+                                        achievements: [],
+                                    });
+                                } else {
+                                    setActiveProfile(p);
+                                }
+                            }}
+                        >
+                            {user.nickname && user.nickname.length ? user.nickname : getAbbrevWalletAddress(user.wallet.toBase58())}
+                        </div>
 
-                {user ? <div className={twMerge('font-archivo tracking-widest text-xs text-[#ff47b5]')} style={{
-                }}>
-                    {formatNumber(user.totalPoints, 2)} mutagens
-                </div> : null}
+                        <div className={twMerge('font-archivo tracking-widest text-xs text-[#ff47b5]')}>
+                            {formatNumber(user.totalPoints, 2)} mutagens
+                        </div>
+                    </> : <div
+                        className={twMerge('font-archivo tracking-widest text-xs')}>
+                        Not assigned
+                    </div>
+                }
             </div>
         </div >
     );
