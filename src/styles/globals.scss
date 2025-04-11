@@ -53,60 +53,60 @@
 
 @layer base {
   @font-face {
-    font-family: 'Archivo Black';
+    font-family: "Archivo Black";
     font-weight: 400;
     font-style: normal;
-    src: url('/fonts/ArchivoBlack-Regular.ttf') format('truetype');
+    src: url("/fonts/ArchivoBlack-Regular.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Archivo Regular';
+    font-family: "Archivo Regular";
     font-weight: 400;
     font-style: normal;
-    src: url('/fonts/Archivo-Regular.ttf') format('truetype');
+    src: url("/fonts/Archivo-Regular.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 400;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-Regular.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-Regular.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 500;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-Medium.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-Medium.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 600;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-SemiBold.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-SemiBold.ttf") format("truetype");
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
+    font-family: "Roboto Mono";
     font-weight: 700;
     font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-Bold.ttf') format('truetype');
+    src: url("/fonts/Roboto-mono/RobotoMono-Bold.ttf") format("truetype");
   }
 
   @font-face {
     font-family: special;
-    src: url('/fonts/Oswald-Bold.ttf');
+    src: url("/fonts/Oswald-Bold.ttf");
   }
 
   @font-face {
     font-family: regular;
-    src: url('/fonts/Inter_18pt-Light.ttf');
+    src: url("/fonts/Inter_18pt-Light.ttf");
   }
 
   @font-face {
     font-family: boldy;
-    src: url('/fonts/Inter_18pt-Regular.ttf');
+    src: url("/fonts/Inter_18pt-Regular.ttf");
   }
 
   div {
@@ -185,7 +185,7 @@ body,
   min-width: 375px;
   min-height: 100vh;
   background-color: #050f19;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 // Hide arrows on input number
@@ -200,7 +200,7 @@ html.theme-dark .group-MBOVGQRI {
   background-color: red !important;
 }
 /* Firefox */
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -245,7 +245,7 @@ input[type='number'] {
   }
 }
 
-input[type='radio'] {
+input[type="radio"] {
   appearance: none;
   background-color: transparent;
   margin: 0;
@@ -258,13 +258,13 @@ input[type='radio'] {
   box-shadow: 0 0 0 0px var(--color-dark) inset;
 }
 
-input[type='radio']:checked {
+input[type="radio"]:checked {
   background-color: var(--color-light);
   border: 1px solid var(--color-light);
   box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
 
-input[type='checkbox'] {
+input[type="checkbox"] {
   appearance: none;
   background-color: transparent;
   margin: 0;
@@ -276,7 +276,7 @@ input[type='checkbox'] {
   transition: 0.3s var(--bezier-spring);
 }
 
-input[type='checkbox']:checked {
+input[type="checkbox"]:checked {
   background-color: var(--color-light);
   border: 1px solid var(--color-light);
 }
@@ -376,7 +376,7 @@ input[type='checkbox']:checked {
 }
 
 .archivo-black {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: "Archivo Black", sans-serif;
   font-weight: 600;
 }
 
@@ -430,7 +430,7 @@ img {
 @property --bg-angle {
   inherits: false;
   initial-value: 0deg;
-  syntax: '<angle>';
+  syntax: "<angle>";
 }
 
 @keyframes spin {
@@ -712,7 +712,7 @@ img {
 }
 
 .achievement-card::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -728,7 +728,7 @@ img {
 }
 
 .achievement-title::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -150%;
@@ -758,7 +758,7 @@ img {
 }
 
 .achievement-footer::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -811,4 +811,8 @@ img {
   100% {
     box-shadow: 0 0 8px 2px var(--category-light);
   }
+}
+
+.chapter-wrapper-light * {
+  color: black;
 }

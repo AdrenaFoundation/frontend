@@ -1,5 +1,6 @@
 import Modal from '@/components/common/Modal/Modal';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import AdrenaLoreBook from '@/components/pages/ranked/lore/AdrenaLoreBook';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useInterseason2Data from '@/hooks/useInterseason2Data';
@@ -10,8 +11,8 @@ import { AnimatePresence } from 'framer-motion';
 import React, { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-const teamAColor = "#A2E3FA";
-const teamBColor = "#FAD524";
+const teamAColor = "#FA6724"; // Richer electric blue
+const teamBColor = "#5AA6FA"; // Deep burnt orange
 
 function Rank({
     team,
@@ -26,6 +27,8 @@ function Rank({
     className?: string;
     setActiveProfile: (u: UserProfileExtended | null) => void;
 }) {
+    const [hover, setHover] = useState(false);
+
     return (
         <div className={twMerge(
             'relative',
@@ -36,16 +39,19 @@ function Rank({
             } as const)[rank],
             // `shadow-[0_0_10px_#5AA6FA,0_0_20px_${team === 'A' ? teamAColor : teamBColor}]`,
         )}
+            onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
             style={{
                 // borderColor: rank === 'General' ? team === 'A' ? teamAColor : teamBColor : '',
             }}
         >
-            <div
-                className={twMerge('absolute bg-cover bg-no-repeat bg-center w-full h-full z-10 opacity-50', className)}
-                style={{
-                    backgroundImage: `url(images/${team}-${rank.toLowerCase()}.png)`,
-                }}
-            />
+            <div className={twMerge('absolute w-full h-full z-10 opacity-50 max-w-full max-h-full overflow-hidden')}>
+                <div
+                    className={twMerge('bg-cover bg-no-repeat bg-center w-full h-full', hover ? 'breathing-image' : '', className)}
+                    style={{
+                        backgroundImage: `url(images/${team}-${rank.toLowerCase()}.png)`,
+                    }}
+                />
+            </div>
 
             <div className={twMerge(
                 'absolute flex flex-col w-full left-0 items-center justify-center font-archivo tracking-[0.3em] uppercase text-txtfade',
@@ -104,7 +110,10 @@ function Rank({
                     }}
                 >
                     {user.nickname && user.nickname.length ? user.nickname : getAbbrevWalletAddress(user.wallet.toBase58())}
-                </div> : null}
+                </div> : <div
+                    className={twMerge('font-archivo tracking-widest text-xs')}>
+                    Not assigned
+                </div>}
 
                 {user ? <div className={twMerge('font-archivo tracking-widest text-xs text-[#ff47b5]')} style={{
                 }}>
@@ -130,10 +139,9 @@ export default function Factions() {
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col pb-20 items-center gap-10">
-                <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>Those who rise now will lead the next war</div>
+                <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>Those who rise now will lead the next war...</div>
 
                 <div className="flex items-center pl-4 pr-4 max-w-full mt-8">
-
                     {isMobile ? <div className='flex flex-wrap items-center justify-center gap-10'>
                         {/* Team A */}
                         <div className='flex flex-col items-center gap-[6em] mt-16'>
@@ -161,8 +169,15 @@ export default function Factions() {
                         <Rank team='B' rank="Lieutenant" user={top10?.[3]} setActiveProfile={setActiveProfile} />
                         <Rank team='B' rank="Sergeant" user={top10?.[5]} setActiveProfile={setActiveProfile} />
                     </div>}
-
                 </div>
+
+                <div className='w-full h-[1px] bg-bcolor mt-10 mb-10' />
+
+                <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>
+                    INTRODUCING ADRENA LORE
+                </div>
+
+                <AdrenaLoreBook />
             </div>
 
             <AnimatePresence>
