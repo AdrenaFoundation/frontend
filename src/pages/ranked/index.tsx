@@ -18,7 +18,7 @@ export default function Ranked() {
     const data = useMemo(() => TRADING_COMPETITION_SEASONS[activeSeason], [activeSeason]);
 
     return (
-        <>
+        <div className='flex flex-col'>
             <div className="relative">
                 <SeasonNavigator
                     activeSeason={activeSeason}
@@ -44,6 +44,6 @@ export default function Ranked() {
                 {activeSeason === 'expanse' ? <Expanse /> : null}
                 {activeSeason === 'factions' ? <Factions /> : null}
             </div>
-        </>
+        </div>
     );
 }
