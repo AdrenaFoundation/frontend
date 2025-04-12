@@ -813,6 +813,26 @@ img {
   }
 }
 
+.chapter-wrapper span,
+p {
+  font-size: 0.94em;
+}
+
+.chapter-wrapper * {
+  font-family: "system-ui";
+}
+
 .chapter-wrapper-light * {
   color: black;
+}
+
+.chapter-wrapper-dark * {
+  color: rgb(209, 202, 202);
+}
+
+blockquote {
+  border-left: 4px solid #999;
+  padding: 1em 1em;
+  background-color: rgba(255, 255, 255, 0.03);
+  color: #ccc;
 }

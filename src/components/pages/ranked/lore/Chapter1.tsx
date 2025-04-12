@@ -6,70 +6,241 @@ export default function Chapter1({
     className?: string;
 }) {
     return <div className={twMerge(className)}>
-        <h2>Awakening</h2>
+        <h2>Chapter I - THE SLEEPING CORE</h2>
 
-        <p>
-            <strong>"The ground cracked. The air thickened. Beneath the surface, something stirred."</strong>
-        </p>
+        <blockquote>
+            <p>“They thought the planet was silent.<br />It was only asleep.”<br /><em>– Corrupted data shard, Source Unknown</em></p>
+        </blockquote>
 
-        <p>
-            Before there was order, there was only chaos.
-        </p>
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
-        <p>
-            Deep within the heart of a world called <strong>Adhyhex</strong>, beneath the surface and hidden from the eyes of the Adhyhexians, something ancient lay dormant. A primordial chaotic energy—older than the planet itself—had slumbered for eons, waiting to be awakened. The Adhyhexians, the inhabitants of Adhyhex, had achieved the impossible: global unity, the mastery of technology, and an understanding of the very fabric of existence.
-        </p>
+        <blockquote>
+            <p><em>Excerpt from the recovered archival ledger, [REDACTED]-controlled zone. Author unknown.</em></p>
+        </blockquote>
 
-        <p>
-            Their scientists and engineers, driven by unrelenting curiosity, sought to unravel the deepest mysteries of the universe. Through their relentless pursuit of knowledge, they began to experiment with forces beyond their comprehension. They created <strong>devices</strong>—tools capable of manipulating time, space, and matter itself. They sought the key to ultimate power, believing that they could control everything, even the very energy that bound the cosmos together.
-        </p>
+        <p>No one remembers how the world began.</p>
+        <p>There are no surviving records of who—or what—shaped <strong>Adhyhex</strong>, or why its crust pulses faintly with energies that defy cataloging. The core of the world sings in a spectrum no sensor can detect, and always has. Some claimed it was a natural resonance.</p>
+        <p>Others believed it to be life. But no consensus was ever reached.</p>
+        <p>By the time the <strong>Adehyxans</strong> emerged, <strong>whatever came before was buried too deeply to matter</strong>.</p>
+        <p>The past is not lost. It is simply silent.</p>
 
-        <p>
-            But in their quest for control, they triggered something far greater than they could understand.
-        </p>
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
-        <p>
-            The very heart of <strong>Adhyhex</strong> trembled as the rupture occurred. The outer shell of the planet, long believed to be unbreakable, cracked open like a fragile eggshell. From this breach, a surge of <strong>primordial chaotic energy</strong> erupted, flooding the planet’s surface with a power unlike anything the Adhyhexians had ever encountered.
-        </p>
+        <blockquote>
+            <p><em>Translation of pre-Confederation logs from the Adehyxan Archaeology Network</em></p>
+        </blockquote>
 
-        <p>
-            As the chaos spread, the <strong>Monsters</strong> were born—ferocious, primal beings drawn to the volatile surge of energy. These creatures, mindless and hungry, ravaged the landscape, consuming everything in their path. The <strong>Monsters</strong> were not merely beasts—they were manifestations of the very chaos that had erupted from the core of Adhyhex.
-        </p>
+        <p>There are no detailed records of early Adehyxan civilization. Like all species that reached galactic scale, they <strong>spent their first millennia waging war at each other</strong>. These conflicts, though once central to their history, were later redacted, rewritten, or omitted entirely.</p>
+        <p>The early archives are fragmentary. Intentionally so.</p>
+        <p>But this much is agreed upon: the Adehyxans evolved quickly, and with frightening unity.</p>
+        <p>Within a few thousand cycles, they reached planetary zenith. Then they expanded. Dyson-lattice systems blossomed around their sun, satellites bloomed across dependent systems, and species within <strong>Adrena’s inner spiral</strong> were quietly folded into the fold.</p>
+        <p>What followed was not an empire, but a <strong>hegemonic confederation</strong>. Flexible. Clean. Efficient.</p>
+        <p>The universe, it was said, could be understood. And what could be understood could be tamed.</p>
 
-        <p>
-            Among the <strong>Monsters</strong>, one stood above all others—a massive, terrifying creature known as <strong>RaviMonke</strong>, the largest Leviathan. RaviMonke was an entity of unimaginable power and size, born from the very chaos that had torn through the planet. With its colossal form, it ravaged the land, causing destruction on an unprecedented scale.
-        </p>
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
-        <p>
-            The very presence of <strong>RaviMonke</strong> caused a ripple of terror among the Adhyhexians, for this Leviathan was unlike any other <strong>Monster</strong>. It didn’t simply destroy—it left nothing in its wake but death and ruin.
-        </p>
+        <blockquote>
+            <p><em>Command Authority Deltacore — Transmission Record<br />Access Level: Echelon–V | Timestamp: ~5800 Cycles Pre-Resonance<br />Subject: Final Compliance Directive — Planet Designate Xharn-3c</em></p>
+        </blockquote>
 
-        <p>
-            The <strong>Adhyhexians</strong>, once the masters of their world, now found themselves caught in a desperate struggle. Their land, once a symbol of order and progress, had been twisted into a battleground. The chaotic energy, spreading faster than they could contain it, began to warp their cities, their technology, and their very bodies.
-        </p>
+        <h5><strong>COMMANDER VYLLAN DRETH – PRIMARY NODE BROADCAST</strong></h5>
+        <p>"This is Command. The Xharn-3c population has failed integration protocol.</p>
+        <p>All diplomatic envoys have been terminated. Phase-gate extension denied.</p>
+        <p>They have chosen rejection.</p>
+        <p>Therefore, we must proceed with Operation <strong>Bloomless Silence</strong>.</p>
+        <p>You are authorized to enact full biosphere erasure.</p>
+        <p>Orbital dispersal of pathogen ash-fields to begin immediately."</p>
+        <p><strong>End Transmission</strong></p>
 
-        <p>
-            As the <strong>Monsters</strong> rampaged across the world, the <strong>Adhyhexians</strong> turned on each other. The energy coursing through the planet did not discriminate. It twisted the minds and hearts of the Adhyhexians, driving them to violence and chaos.
-        </p>
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
-        <p>
-            The landscape of <strong>Adhyhex</strong> was no longer recognizable. Where there had once been calm plains and peaceful forests, now laid twisted, mutated environments—a reflection of the destructive energy that had surged from the planet’s core.
-        </p>
+        <blockquote>
+            <p><em>Excerpt from the Proceedings of the Adehyxan Scientific Directorate<br />“Planetary Engineering and Terraforming: Limits and Observations”<br />Cycle 31.217.488 | 4800 Cycles Pre-Resonance</em></p>
+        </blockquote>
 
-        <p>
-            With each battle between the <strong>Adhyhexians</strong>, the <strong>Monsters</strong> grew stronger, their rampage spreading across the land, consuming everything in their path. The planet was no longer a place of order and reason—it had become a land of unrelenting chaos.
-        </p>
+        <p>“Terraforming is, by now, a mature science.</p>
+        <p>From the chlorine skies of <strong>Vellux-5</strong> to the glacial sands of <strong>Null-Ordo</strong>, over two dozen planetary bodies have been rendered habitable. Protocols function across a range of gravities, compositions, and tectonic structures. The Confederation’s ability to shape worlds is not theoretical—it is procedural.</p>
+        <p>And yet, one exception has remained: <strong>Adhyhex</strong>.</p>
+        <p>All attempts to bioform our homeworld—mild or extreme—have failed. Weather systems revert. Synthetic growth cycles collapse. Even long-term crustal anchoring becomes erratic after the second phase.</p>
+        <p>The world appears to resist manipulation. The planet is livable, yet it defies optimization.</p>
+        <p>While once considered a geological curiosity, recent simulations suggest deeper layers of resonant interference—structures or energies unknown, and likely native.</p>
+        <p>This has led to the current consensus:</p>
+        <p><strong>Adhyhex is not terraformable. Not by our tools.</strong>”</p>
 
-        <p>
-            The struggle between the <strong>Adhyhexians</strong> and the <strong>Monsters</strong> grew fiercer with each passing day. Driven by desperation, the Adhyhexians fought not just to survive, but to master the chaos that had consumed their world.
-        </p>
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
-        <p>
-            But the true cost of this power was unknown. With each passing battle, the world around them continued to fracture. The energy had begun to warp not only the land but also the very nature of existence itself.
-        </p>
+        <blockquote>
+            <p><em>Excerpt from the Central Archive of the Adehyxan Georesonant Survey Authority<br />Filed 823 Cycles Pre-Resonance – Classification: Elevated Civil-Science<br />Title: “On the Seismic Inversion Events Beneath Adhyhex – Anomalous Energy Report”</em></p>
+        </blockquote>
 
-        <p>
-            The future of <strong>Adhyhex</strong> was now in question. Would the Adhyhexians be able to reclaim their world, or would they be consumed by the chaos they had set loose? Only time would tell.
-        </p>
+        <p>There are places beneath Adhyhex that do not behave as stone should.</p>
+        <p>Seismic arrays deployed across subcontinental rift zones recorded recurring <strong>inversion pulses</strong>—energy spikes with no tectonic origin, moving <em>against</em> the planet’s natural pressure gradients. These pulses defied gravitational models and could not be traced to fault lines or artificial systems.</p>
+        <p>Eventually, they were traced to <strong>deeper layers</strong>, farther down than any drill had ever reached.</p>
+        <p>What they encountered was not magma.</p>
+        <p>It was <strong>metal</strong>.</p>
+
+        <p><strong>Designation:</strong> <em>HX-33</em><br /><strong>Colloquial name:</strong> <em>“Nullmetal”</em></p>
+
+        <p>HX-33 absorbed all signal.</p>
+        <p>Radar, sonar, photonic mapping—useless. No bore could pierce it. No thermal system could melt it. No chemical process left a mark.</p>
+        <p>And yet—it conducted energy. <strong>Actively</strong>.</p>
+        <p>HX-33 refracted energy pulses in strange, recursive patterns—sending them back with more force than it received. When modeled in closed circuits, its behavior mimicked logic, but with no pattern the Confederation could decode.</p>
+        <p>The deeper the measurement, the <strong>greater the field amplitude</strong> became.</p>
+        <p>It was as if the entire crust of Adhyhex was a <strong>containment layer</strong>.</p>
+        <p>And beneath it—<strong>an energy no model could estimate, with potentially no limit.</strong></p>
+
+        <blockquote>
+            <p>“This planet is not inert. It is armored. It is alive.”<br /><em>– Dr. Kephal Truin, senior geophysicist of Meridian Prime</em></p>
+        </blockquote>
+
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
+        <blockquote>
+            <p><em>Confidential Communiqué: Adehyxan Astral Monitoring Bureau – Stellar Hazard Division<br />Timestamp: 249 Cycles Pre-Resonance<br />Classification: Echelon-VI</em></p>
+        </blockquote>
+
+        <p><strong>DAO CORE INSTABILITY: CONFIRMED</strong></p>
+        <p>Helioseismic analysis indicates irreversible decay.</p>
+        <p>Projected timeline to critical collapse: <strong>97–112 orbital cycles.</strong></p>
+
+        <p><strong>Systemic Projections:</strong></p>
+        <div className="flex flex-col">
+            <p>- Estimated <strong>5–12 system-wide destabilizations</strong> from gravitational cascade effects.</p>
+            <p>- <strong>Inner-system Dyson lattices</strong> to suffer catastrophic energy loss. Grid collapse in 4 sectors.</p>
+            <p>- Atmospheric and thermoregulatory support for <strong>~3,100 dependent worlds</strong> to require full synthetic substitution.</p>
+            <p>- Civilian impact: <strong>4.8 to 6.2 trillion lives</strong> projected at risk.</p>
+        </div>
+
+        <p><strong>RECOMMENDATION:</strong></p>
+        <p>Immediate mobilization of a stellar core-revitalization initiative.</p>
+        <p><strong>Sterilization scenario unacceptable.</strong></p>
+
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
+
+        <blockquote>
+            <p><em>Transcript Excerpt: Emergency Session of the Confederation Stellar Continuity Council<br />Location: Core Assembly Hall, Meridian Prime<br />Timestamp: 249 Cycles Pre-Resonance<br />Classification – Echelon VI</em></p>
+        </blockquote>
+
+        <h5><strong>COUNCILOR VYTH SARAV (Sector Chair, Arelian Cluster):</strong></h5>
+        <p>"We are not debating <em>if</em> Dao will collapse. We are debating <em>how many systems</em> we’re willing to let die when it does."</p>
+
+        <h5 className="mt-2"><strong>DELEGATE MAR'SIR (Atmospheric Architect, Kynov Helix):</strong></h5>
+        <p>"The energy loss from the lattice chains will be instantaneous. We’ll lose 60% of our synthetic climate grid. Terraformers can’t act that fast."</p>
+
+        <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO:</strong></h5>
+        <p>"And yet you're all still hesitating. Are we blind to scale? Fifteen thousand years ago we controlled nothing beyond our stratosphere. Now we sit in a hall mined from the moons of ten worlds—and still you wait for a contingency?"</p>
+
+        <h5 className="mt-2"><strong>COUNCILOR VYTH SARAV:</strong></h5>
+        <p>"With respect, we’re not hesitating. We’re grieving. There is no precedent for this."</p>
+
+        <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO:</strong></h5>
+        <p>"Then let grief be efficient. Dr. Jiraa’s proposal is before you. The direct injection of stellar energy into Dao’s core. It may reverse the decay entirely—buy us another thousand years."</p>
+
+        <h5 className="mt-2"><strong>DELEGATE MAR'SIR:</strong></h5>
+        <p>"A sub-crustal stellar ignition? That’s—"</p>
+
+        <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO (interrupting):</strong></h5>
+        <p>"Radical. Experimental. Yes. But not blind. We’ve known for centuries that Adhyhex’s mantle sits atop a sealed potential—energy of unmeasurable depth. We’ve never pierced it. We’ve never mapped it. But its conductivity is undeniable."</p>
+        <p><em>(pause)</em></p>
+        <p>"Everything we need to survive is already beneath our feet. The planet is armored—maybe it was there for this particular reason. Now is time to use what is our birthright."</p>
+
+        <h5 className="mt-2"><strong>COUNCILOR VYTH SARAV:</strong></h5>
+        <p>"And if we awaken something worse than collapse?"</p>
+
+        <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO:</strong></h5>
+        <p>"Then we all die. But at least we die <em>doing something.</em>"</p>
+
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
+
+        <blockquote>
+            <p><em>Excerpt from "Chronicle of the Last Light," compiled 112 cycles after the Resonance Event.<br />Author: Unknown.</em></p>
+        </blockquote>
+
+        <p><strong>Dao</strong>, the lifelight of Adhyhex, was dying.</p>
+        <p>Its warmth touched over three thousand worlds. Its pulse fed Dyson rings older than many generations. But the decay was real—and irreversible. Once a statistical aberration. Then a confirmed failure. Then a sentence.</p>
+        <p>The Confederation could not flee. It could not rebuild.</p>
+        <p>It could only <strong>revive</strong>.</p>
+
+        <p>For centuries, Adehyxan geoscientists had mapped strange pulses within their homeworld. Seismic distortions. Inverted pressure gradients. And buried deep beneath the crust, something stranger still: <strong>Nullmetal</strong>.</p>
+
+        <p>A substance that rejected all scanning, pierced by no bore, unaffected by heat or blade—yet it resonated with immeasurable energy. The planet, they concluded, was not dead inside. It was <strong>armored</strong>. A sealed core, hiding a pressure they could not name.</p>
+
+        <p>They did not know what it was shielding.</p>
+        <p>They only knew it might be <strong>useful</strong>.</p>
+
+        <p>And so <strong>Project New Dawn</strong> was born.</p>
+
+        <p>The idea was radical: inject enough energy into Dao’s failing core to restart its fusion cycle—an artificial rebirth, powered by a planet they had never truly understood.</p>
+
+        <blockquote>
+            <p>“Everything we need to survive is already beneath our feet,” the Consul had said.<br /><em>The planet is armored—maybe it was there for this particular reason. Now is the time to use what is our birthright.</em></p>
+        </blockquote>
+
+        <p>The vaults were carved under Adhyhex itself—closer to its secret than any tool had ever gone. At the center of it all stood a single figure:</p>
+        <p><strong>Ya Jiraa</strong>. Mathematician. Pacifist. Visionary.</p>
+        <p>The only one who believed it might work.</p>
+        <p>He would never live to see the Resonator ignite.</p>
+
+        <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
+
+        <blockquote>
+            <p><em>Personal Log: V. Krel – Entry 001<br />T+1 Cycle, Assigned Lead of Project New Dawn</em></p>
+        </blockquote>
+
+        <p>I’ve reviewed what remains of Jiraa’s logs.</p>
+        <p>The last one ends in silence—except not silence, exactly. There’s something woven beneath it. Like a tone. A <strong>geometry of sound</strong>.</p>
+
+        <p>His final words, before the distortion overtook everything:</p>
+
+        <blockquote>
+            <p>“It speaks in shapes. I can’t ignore it anymore.”</p>
+        </blockquote>
+
+        <p>I don’t know what he meant.</p>
+        <p>Maybe I do.</p>
+
+        <p>The lattice arrays he left behind are too clean. His math is elegant, but cold. Measured. As if the real work was hidden—not deleted, but <strong>buried</strong>.</p>
+        <p>Not in code.</p>
+        <p>In the world itself.</p>
+
+        <p>While cross-referencing seismic logs from Meridian Vault, I found something strange—buried beneath the standard tectonic reports: harmonic distortions that didn’t match any natural crustal pattern. Repeating. Intentional. <em>Layered</em>.</p>
+
+        <p>They correspond to the Nullmetal fields.</p>
+
+        <p><strong>HX-33</strong>. The unpierceable metal we still don’t understand.</p>
+
+        <p>It deflects everything—buries sound, light, logic. But the energy it holds…</p>
+        <p>It’s <em>not inert</em>. It’s <strong>louder</strong> than anything else I’ve seen.</p>
+
+        <p>No one could ever map it.</p>
+
+        <p>But I’ve found something in the noise.</p>
+
+        <p>A pulse.</p>
+        <p>A frequency.</p>
+
+        <p>Something Jiraa never wrote down—but maybe he heard it too.</p>
+
+        <p>I’ve reconfigured the transfer lattice.</p>
+        <p>The primary array will still target Dao’s core, but the <strong>resonance pulse</strong>—that’s mine.</p>
+
+        <p>It sits beneath the injection shaft, tuned not to Dao, but to the hidden hum beneath our feet.</p>
+
+        <p>The <strong>Resonator</strong>.</p>
+
+        <p>It’s not designed to extract; It’s designed to <strong>respond</strong>.</p>
+
+        <p>To send a signal deep enough, pure enough, to make the Nullmetal sing back.</p>
+
+        <p>Not in resistance—but in resonance.</p>
+
+        <p>To find the one note it cannot ignore, to amplify it until the armor cracks, to make the planet <strong>give</strong> what it’s been holding.</p>
+
+        <p>If I’m wrong, nothing will happen.</p>
+        <p>If I’m right... everything will.</p>
+
+        <p>It will work.</p>
+        <p>It has to.</p>
+
+        <p>—V.</p>
     </div>;
 }

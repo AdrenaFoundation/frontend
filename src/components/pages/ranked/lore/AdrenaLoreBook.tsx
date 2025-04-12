@@ -1,8 +1,5 @@
 import { useRef, useState } from "react";
 import Chapter1 from "./Chapter1";
-import Chapter2 from "./Chapter2";
-import Chapter3 from "./Chapter3";
-import Chapter4 from "./Chapter4";
 import { twMerge } from "tailwind-merge";
 
 export default function AdrenaLoreBook() {
@@ -21,15 +18,26 @@ export default function AdrenaLoreBook() {
         <div className='flex flex-col gap-2'>
             <div ref={anchorRef} />
 
-            <div className="flex border pl-4 pr-4 pt-2 pb-2 gap-6 items-center">
-                <h2 className="text-md">Chapters</h2>
+            <div className="flex border pl-4 pr-4 pt-2 pb-2 gap-6 items-center bg-black/30">
+                <h2 className="text-md font-['system-ui']" style={{
+                    color: "rgb(191, 185, 185)",
+                }}>Chapters</h2>
 
                 <div className="flex">
                     {["I", "II", "III", "IV"].map((label, index) => (
                         <div key={label} className="flex items-center">
                             <div
-                                onClick={() => setChapter(index)}
-                                className={twMerge("cursor-pointer hover:opacity-100 pl-4 pr-4", chapter === index ? 'opacity-100' : 'opacity-50')}
+                                onClick={() => {
+                                    // TODO: Change when having more than one chapter
+                                    if (index === 0)
+                                        setChapter(index);
+                                }}
+                                className={twMerge(
+                                    "pl-4 pr-4",
+                                    chapter === index ? 'opacity-100' : 'opacity-50',
+                                    // TODO: Change when having more than one chapter
+                                    index > 0 ? 'cursor-not-allowed hover:opacity-100' : 'cursor-pointer',
+                                )}
                             >
                                 {label}
                             </div>
@@ -50,17 +58,16 @@ export default function AdrenaLoreBook() {
             </div>
 
             <div className={twMerge(
-                'flex flex-col gap-2 max-w-[40em] border p-4 ',
-                mode === 'light' ? 'bg-white/90 chapter-wrapper-light' : 'bg-black/10',
+                'chapter-wrapper flex flex-col gap-2 max-w-[40em] border p-4',
+                mode === 'light' ? 'bg-white/90 chapter-wrapper-light' : 'bg-black/30 chapter-wrapper-dark',
             )}
             >
-                {chapter === 0 && <Chapter1 className="flex flex-col gap-4" />}
-                {chapter === 1 && <Chapter2 className="flex flex-col gap-4" />}
-                {chapter === 2 && <Chapter3 className="flex flex-col gap-4" />}
-                {chapter === 3 && <Chapter4 className="flex flex-col gap-4" />}
+                {chapter === 0 && <Chapter1 className="flex flex-col gap-3" />}
             </div>
 
-            <div className="flex border pl-4 pr-4 pt-2 pb-2 gap-6 items-center relative justify-between">
+            {/* TODO: Change when having more than one chapter */}
+
+            {/* <div className="flex border pl-4 pr-4 pt-2 pb-2 gap-6 items-center relative justify-between">
                 <div
                     onClick={() => goToChapter(Math.max(chapter - 1, 0))}
                     className={twMerge("text-sm cursor-pointer", chapter === 0 ? "text-txtfade" : "")}
@@ -73,7 +80,7 @@ export default function AdrenaLoreBook() {
                         next chapter
                     </div>
                 )}
-            </div>
+            </div>*/ }
         </div>
     );
 }
