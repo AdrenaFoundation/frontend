@@ -1,3 +1,8 @@
+import { PublicKey } from '@solana/web3.js';
+import { AnimatePresence } from 'framer-motion';
+import React, { useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+
 import Modal from '@/components/common/Modal/Modal';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import AdrenaLoreBook from '@/components/pages/ranked/lore/AdrenaLoreBook';
@@ -6,10 +11,6 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useInterseason2Data from '@/hooks/useInterseason2Data';
 import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
-import { PublicKey } from '@solana/web3.js';
-import { AnimatePresence } from 'framer-motion';
-import React, { useMemo, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange

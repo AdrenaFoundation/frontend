@@ -6,7 +6,14 @@ export default function Chapter1({
     className?: string;
 }) {
     return <div className={twMerge(className)}>
-        <h2>Chapter I - THE SLEEPING CORE</h2>
+        <h2>Chapter I - IN A GALAXY FAR FAR AWAY</h2>
+
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+            src={'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/galaxy-adrena-rm1QUaLe8VSKWRf4vYb4gNswwCVAEZ.jpg'}
+            alt="galaxy"
+            className="w-full"
+        />
 
         <blockquote>
             <p>“They thought the planet was silent.<br />It was only asleep.”<br /><em>– Corrupted data shard, Source Unknown</em></p>
@@ -44,13 +51,20 @@ export default function Chapter1({
         </blockquote>
 
         <h5><strong>COMMANDER VYLLAN DRETH – PRIMARY NODE BROADCAST</strong></h5>
-        <p>"This is Command. The Xharn-3c population has failed integration protocol.</p>
+        <p>&quot;This is Command. The Xharn-3c population has failed integration protocol.</p>
         <p>All diplomatic envoys have been terminated. Phase-gate extension denied.</p>
         <p>They have chosen rejection.</p>
         <p>Therefore, we must proceed with Operation <strong>Bloomless Silence</strong>.</p>
         <p>You are authorized to enact full biosphere erasure.</p>
-        <p>Orbital dispersal of pathogen ash-fields to begin immediately."</p>
+        <p>Orbital dispersal of pathogen ash-fields to begin immediately.&quot;</p>
         <p><strong>End Transmission</strong></p>
+
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+            src={'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/planet-fLuBKPgJhbEyxEQwoiHYw2pL4PlDdT.jpg'}
+            alt="galaxy"
+            className="w-full"
+        />
 
         <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
@@ -99,6 +113,14 @@ export default function Chapter1({
         </blockquote>
 
         <p><strong>DAO CORE INSTABILITY: CONFIRMED</strong></p>
+
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+            src={'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/dying-sun-ifCHgN3eNhC2WcN83dS6g32XqUZvpn.jpg'}
+            alt="dying sun"
+            className="w-full"
+        />
+
         <p>Helioseismic analysis indicates irreversible decay.</p>
         <p>Projected timeline to critical collapse: <strong>97–112 orbital cycles.</strong></p>
 
@@ -121,38 +143,38 @@ export default function Chapter1({
         </blockquote>
 
         <h5><strong>COUNCILOR VYTH SARAV (Sector Chair, Arelian Cluster):</strong></h5>
-        <p>"We are not debating <em>if</em> Dao will collapse. We are debating <em>how many systems</em> we’re willing to let die when it does."</p>
+        <p>&quot;We are not debating <em>if</em> Dao will collapse. We are debating <em>how many systems</em> we&apos;re willing to let die when it does.&quot;</p>
 
-        <h5 className="mt-2"><strong>DELEGATE MAR'SIR (Atmospheric Architect, Kynov Helix):</strong></h5>
-        <p>"The energy loss from the lattice chains will be instantaneous. We’ll lose 60% of our synthetic climate grid. Terraformers can’t act that fast."</p>
+        <h5 className="mt-2"><strong>DELEGATE MAR&apos;SIR (Atmospheric Architect, Kynov Helix):</strong></h5>
+        <p>&quot;The energy loss from the lattice chains will be instantaneous. we&apos;ll lose 60% of our synthetic climate grid. Terraformers can&apos;t act that fast.&quot;</p>
 
         <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO:</strong></h5>
-        <p>"And yet you're all still hesitating. Are we blind to scale? Fifteen thousand years ago we controlled nothing beyond our stratosphere. Now we sit in a hall mined from the moons of ten worlds—and still you wait for a contingency?"</p>
+        <p>&quot;And yet you&apos;re all still hesitating. Are we blind to scale? Fifteen thousand years ago we controlled nothing beyond our stratosphere. Now we sit in a hall mined from the moons of ten worlds—and still you wait for a contingency?&quot;</p>
 
         <h5 className="mt-2"><strong>COUNCILOR VYTH SARAV:</strong></h5>
-        <p>"With respect, we’re not hesitating. We’re grieving. There is no precedent for this."</p>
+        <p>&quot;With respect, we&apos;re not hesitating. we&apos;re grieving. There is no precedent for this.&quot;</p>
 
         <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO:</strong></h5>
-        <p>"Then let grief be efficient. Dr. Jiraa’s proposal is before you. The direct injection of stellar energy into Dao’s core. It may reverse the decay entirely—buy us another thousand years."</p>
+        <p>&quot;Then let grief be efficient. Dr. Jiraa&apos;s proposal is before you. The direct injection of stellar energy into Dao&apos;s core. It may reverse the decay entirely—buy us another thousand years.&quot;</p>
 
-        <h5 className="mt-2"><strong>DELEGATE MAR'SIR:</strong></h5>
-        <p>"A sub-crustal stellar ignition? That’s—"</p>
+        <h5 className="mt-2"><strong>DELEGATE MAR&apos;SIR:</strong></h5>
+        <p>&quot;A sub-crustal stellar ignition? That&apos;s—&quot;</p>
 
         <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO (interrupting):</strong></h5>
-        <p>"Radical. Experimental. Yes. But not blind. We’ve known for centuries that Adhyhex’s mantle sits atop a sealed potential—energy of unmeasurable depth. We’ve never pierced it. We’ve never mapped it. But its conductivity is undeniable."</p>
+        <p>&quot;Radical. Experimental. Yes. But not blind. we&apos;ve known for centuries that Adhyhex&apos;s mantle sits atop a sealed potential—energy of unmeasurable depth. we&apos;ve never pierced it. we&apos;ve never mapped it. But its conductivity is undeniable.&quot;</p>
         <p><em>(pause)</em></p>
-        <p>"Everything we need to survive is already beneath our feet. The planet is armored—maybe it was there for this particular reason. Now is time to use what is our birthright."</p>
+        <p>&quot;Everything we need to survive is already beneath our feet. The planet is armored—maybe it was there for this particular reason. Now is time to use what is our birthright.&quot;</p>
 
         <h5 className="mt-2"><strong>COUNCILOR VYTH SARAV:</strong></h5>
-        <p>"And if we awaken something worse than collapse?"</p>
+        <p>&quot;And if we awaken something worse than collapse?&quot;</p>
 
         <h5 className="mt-2"><strong>PRIME CONSUL KARETH TYRO:</strong></h5>
-        <p>"Then we all die. But at least we die <em>doing something.</em>"</p>
+        <p>&quot;Then we all die. But at least we die <em>doing something.</em>&quot;</p>
 
         <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
         <blockquote>
-            <p><em>Excerpt from "Chronicle of the Last Light," compiled 112 cycles after the Resonance Event.<br />Author: Unknown.</em></p>
+            <p><em>Excerpt from &quot;Chronicle of the Last Light,&quot; compiled 112 cycles after the Resonance Event.<br />Author: Unknown.</em></p>
         </blockquote>
 
         <p><strong>Dao</strong>, the lifelight of Adhyhex, was dying.</p>
@@ -169,7 +191,7 @@ export default function Chapter1({
 
         <p>And so <strong>Project New Dawn</strong> was born.</p>
 
-        <p>The idea was radical: inject enough energy into Dao’s failing core to restart its fusion cycle—an artificial rebirth, powered by a planet they had never truly understood.</p>
+        <p>The idea was radical: inject enough energy into Dao&apos;s failing core to restart its fusion cycle—an artificial rebirth, powered by a planet they had never truly understood.</p>
 
         <blockquote>
             <p>“Everything we need to survive is already beneath our feet,” the Consul had said.<br /><em>The planet is armored—maybe it was there for this particular reason. Now is the time to use what is our birthright.</em></p>
@@ -186,57 +208,64 @@ export default function Chapter1({
             <p><em>Personal Log: V. Krel – Entry 001<br />T+1 Cycle, Assigned Lead of Project New Dawn</em></p>
         </blockquote>
 
-        <p>I’ve reviewed what remains of Jiraa’s logs.</p>
-        <p>The last one ends in silence—except not silence, exactly. There’s something woven beneath it. Like a tone. A <strong>geometry of sound</strong>.</p>
+        <p>I&apos;ve reviewed what remains of Jiraa&apos;s logs.</p>
+        <p>The last one ends in silence—except not silence, exactly. There&apos;s something woven beneath it. Like a tone. A <strong>geometry of sound</strong>.</p>
 
         <p>His final words, before the distortion overtook everything:</p>
 
         <blockquote>
-            <p>“It speaks in shapes. I can’t ignore it anymore.”</p>
+            <p>“It speaks in shapes. I can&apos;t ignore it anymore.”</p>
         </blockquote>
 
-        <p>I don’t know what he meant.</p>
+        <p>I don&apos;t know what he meant.</p>
         <p>Maybe I do.</p>
 
         <p>The lattice arrays he left behind are too clean. His math is elegant, but cold. Measured. As if the real work was hidden—not deleted, but <strong>buried</strong>.</p>
         <p>Not in code.</p>
         <p>In the world itself.</p>
 
-        <p>While cross-referencing seismic logs from Meridian Vault, I found something strange—buried beneath the standard tectonic reports: harmonic distortions that didn’t match any natural crustal pattern. Repeating. Intentional. <em>Layered</em>.</p>
+        <p>While cross-referencing seismic logs from Meridian Vault, I found something strange—buried beneath the standard tectonic reports: harmonic distortions that didn&apos;t match any natural crustal pattern. Repeating. Intentional. <em>Layered</em>.</p>
 
         <p>They correspond to the Nullmetal fields.</p>
 
-        <p><strong>HX-33</strong>. The unpierceable metal we still don’t understand.</p>
+        <p><strong>HX-33</strong>. The unpierceable metal we still don&apos;t understand.</p>
 
         <p>It deflects everything—buries sound, light, logic. But the energy it holds…</p>
-        <p>It’s <em>not inert</em>. It’s <strong>louder</strong> than anything else I’ve seen.</p>
+        <p>It&apos;s <em>not inert</em>. It&apos;s <strong>louder</strong> than anything else I&apos;ve seen.</p>
 
         <p>No one could ever map it.</p>
 
-        <p>But I’ve found something in the noise.</p>
+        <p>But I&apos;ve found something in the noise.</p>
 
         <p>A pulse.</p>
         <p>A frequency.</p>
 
         <p>Something Jiraa never wrote down—but maybe he heard it too.</p>
 
-        <p>I’ve reconfigured the transfer lattice.</p>
-        <p>The primary array will still target Dao’s core, but the <strong>resonance pulse</strong>—that’s mine.</p>
+        <p>I&apos;ve reconfigured the transfer lattice.</p>
+        <p>The primary array will still target Dao&apos;s core, but the <strong>resonance pulse</strong>—That&apos;s mine.</p>
 
         <p>It sits beneath the injection shaft, tuned not to Dao, but to the hidden hum beneath our feet.</p>
 
         <p>The <strong>Resonator</strong>.</p>
 
-        <p>It’s not designed to extract; It’s designed to <strong>respond</strong>.</p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+            src={'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/resonator-i39hMN8d59QvZWnE1degUq3bNNwUJd.jpg'}
+            alt="galaxy"
+            className="w-full"
+        />
+
+        <p>It&apos;s not designed to extract; It&apos;s designed to <strong>respond</strong>.</p>
 
         <p>To send a signal deep enough, pure enough, to make the Nullmetal sing back.</p>
 
         <p>Not in resistance—but in resonance.</p>
 
-        <p>To find the one note it cannot ignore, to amplify it until the armor cracks, to make the planet <strong>give</strong> what it’s been holding.</p>
+        <p>To find the one note it cannot ignore, to amplify it until the armor cracks, to make the planet <strong>give</strong> what It&apos;s been holding.</p>
 
-        <p>If I’m wrong, nothing will happen.</p>
-        <p>If I’m right... everything will.</p>
+        <p>If I&apos;m wrong, nothing will happen.</p>
+        <p>If I&apos;m right... everything will.</p>
 
         <p>It will work.</p>
         <p>It has to.</p>

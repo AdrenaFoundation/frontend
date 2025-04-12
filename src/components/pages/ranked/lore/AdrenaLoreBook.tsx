@@ -1,18 +1,20 @@
 import { useRef, useState } from "react";
-import Chapter1 from "./Chapter1";
 import { twMerge } from "tailwind-merge";
+
+import Chapter1 from "./Chapter1";
 
 export default function AdrenaLoreBook() {
     const [chapter, setChapter] = useState<number>(0);
     const anchorRef = useRef<HTMLDivElement | null>(null);
     const [mode, setMode] = useState<'light' | 'dark'>('dark');
 
-    const goToChapter = (n: number) => {
-        setChapter(n);
-        setTimeout(() => {
-            anchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 0);
-    };
+    // TODO: Change when having more than one chapter
+    // const goToChapter = (n: number) => {
+    //     setChapter(n);
+    //     setTimeout(() => {
+    //         anchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    //     }, 0);
+    // };
 
     return (
         <div className='flex flex-col gap-2'>
