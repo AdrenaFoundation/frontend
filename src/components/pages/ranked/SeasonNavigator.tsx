@@ -23,7 +23,7 @@ export default function SeasonNavigator({
             {SEASON_NAMES.map((season) => (
                 <div
                     className={twMerge(
-                        'flex items-center justify-center relative bg-third border rounded-md overflow-hidden transition-opacity duration-300 cursor-pointer hover:opacity-100 min-h-[3em]',
+                        'flex items-center justify-center relative bg-third border rounded-md overflow-hidden transition-opacity duration-300 cursor-pointer hover:opacity-100 min-h-[2em]',
                         activeSeason === season
                             ? 'border-white'
                             : 'border-white/10 opacity-50 grayscale',
