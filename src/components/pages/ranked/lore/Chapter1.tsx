@@ -16,13 +16,13 @@ export default function Chapter1({
         />
 
         <blockquote>
-            <p>“They thought the planet was silent.<br />It was only asleep.”<br /><em>– Corrupted data shard, Source Unknown</em></p>
+            <p>“What lays below.”<br /><em>– Corrupted data shard, origin lost</em></p>
         </blockquote>
 
         <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
         <blockquote>
-            <p><em>Excerpt from the recovered archival ledger, [REDACTED]-controlled zone. Author unknown.</em></p>
+            <p><em>Excerpt from the recovered archival ledger, [REDACTED] - controlled zone. Author unknown.</em></p>
         </blockquote>
 
         <p>No one remembers how the world began.</p>
@@ -37,7 +37,7 @@ export default function Chapter1({
             <p><em>Translation of pre-Confederation logs from the Adehyxan Archaeology Network</em></p>
         </blockquote>
 
-        <p>There are no detailed records of early Adehyxan civilization. Like all species that reached galactic scale, they <strong>spent their first millennia waging war at each other</strong>. These conflicts, though once central to their history, were later redacted, rewritten, or omitted entirely.</p>
+        <p>There are no detailed records of early Adehyxan civilization. Like all species that reached stellar civilization scale, they <strong>spent their first millennia waging war at each other</strong>. These conflicts, though once central to their history, were later redacted, rewritten, or omitted entirely.</p>
         <p>The early archives are fragmentary. Intentionally so.</p>
         <p>But this much is agreed upon: the Adehyxans evolved quickly, and with frightening unity.</p>
         <p>Within a few thousand cycles, they reached planetary zenith. Then they expanded. Dyson-lattice systems blossomed around their sun, satellites bloomed across dependent systems, and species within <strong>Adrena’s inner spiral</strong> were quietly folded into the fold.</p>
@@ -57,7 +57,7 @@ export default function Chapter1({
         <p>Therefore, we must proceed with Operation <strong>Bloomless Silence</strong>.</p>
         <p>You are authorized to enact full biosphere erasure.</p>
         <p>Orbital dispersal of pathogen ash-fields to begin immediately.&quot;</p>
-        <p><strong>End Transmission</strong></p>
+        <p><strong>End of transmission</strong></p>
 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
