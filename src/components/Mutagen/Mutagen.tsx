@@ -159,6 +159,7 @@ const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
           'genesis': 'Protocol Launch',
           'awakening': 'Pre-season: Awakening',
           'interseason1': 'Inter-season 1',
+          'interseason2': 'Inter-season 2',
           'expanse': 'Season 1: Expanse',
         }[season.seasonName] ?? season.seasonName}</h4>
 
