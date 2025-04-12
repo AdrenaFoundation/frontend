@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import Leaderboards from '../../components/pages/ranked/Leaderboards';
+import Leaderboards from '../../components/pages/ranked/expanse/ExpanseLeaderboards';
 import Quests from '../../components/pages/ranked/Quests';
 
 export default function Expanse() {

@@ -2,6 +2,7 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 
 import awakeningBanner from "@/../../public/images/comp-banner.png";
 import expanseBanner from "@/../public/images/expanse-banner.jpg";
+import factionsBanner from "@/../public/images/factions-banner.jpg";
 
 import { ResolutionString } from "../public/charting_library/charting_library";
 import {
@@ -361,6 +362,7 @@ export const TRADING_COMPETITION_SEASONS = {
       "Welcome to Adrena's trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons. From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions. Your total trading volume during the six-week event determines your division qualification. Check out the divisions below, continuously updated based on onchain events.",
       "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
     ] as string[],
+    bannerClassName: "h-[30em] justify-center",
   },
 
   expanse: {
@@ -382,6 +384,22 @@ export const TRADING_COMPETITION_SEASONS = {
 
       `Come get some.`,
     ] as string[],
+    bannerClassName: "h-[30em] justify-center",
+  },
+
+  // Inter-season for now, modify when season 2 starts
+  factions: {
+    img: factionsBanner,
+    title: "Factions",
+    subTitle: "Season 2 is coming",
+    startDate: new Date("2025-04-25T23:59:59.999Z"),
+    endDate: new Date("2025-04-30T23:59:59.999Z"), // Not used
+    gradient: "", // Not used. Specific if in CompetitionBanner component
+    primaryColor: "#247CFA",
+    adxRewards: 0,
+    jtoRewards: 0,
+    description: [``] as string[],
+    bannerClassName: "h-[30em] pt-20",
   },
 } as const;
 
