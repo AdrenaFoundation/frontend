@@ -6,7 +6,7 @@ export default function Chapter1({
     className?: string;
 }) {
     return <div className={twMerge(className)}>
-        <h2>Chapter I - IN A GALAXY FAR FAR AWAY</h2>
+        <h2 className="text-center">Chapter I - IN A GALAXY FAR FAR AWAY</h2>
 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

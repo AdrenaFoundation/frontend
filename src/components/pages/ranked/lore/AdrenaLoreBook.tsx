@@ -20,7 +20,7 @@ export default function AdrenaLoreBook() {
         <div className='flex flex-col gap-2'>
             <div ref={anchorRef} />
 
-            <div className="flex border pl-4 pr-4 pt-2 pb-2 gap-6 items-center bg-black/30">
+            <div className="flex flex-col sm:flex-row border pl-4 pr-4 pt-2 pb-2 gap-6 items-center bg-black/30 relative">
                 <h2 className="text-md font-['system-ui']" style={{
                     color: "rgb(191, 185, 185)",
                 }}>Chapters</h2>
@@ -31,14 +31,15 @@ export default function AdrenaLoreBook() {
                             <div
                                 onClick={() => {
                                     // TODO: Change when having more than one chapter
-                                    if (index === 0)
+                                    if (index === 0) {
                                         setChapter(index);
+                                    }
                                 }}
                                 className={twMerge(
                                     "pl-4 pr-4",
                                     chapter === index ? 'opacity-100' : 'opacity-50',
                                     // TODO: Change when having more than one chapter
-                                    index > 0 ? 'cursor-not-allowed hover:opacity-100' : 'cursor-pointer',
+                                    index > 0 ? 'cursor-not-allowed hover:opacity-100 line-through' : 'cursor-pointer',
                                 )}
                             >
                                 {label}
@@ -48,15 +49,15 @@ export default function AdrenaLoreBook() {
                     ))}
                 </div>
 
-                {mode === 'dark' ?
-                    <div
-                        className="rounded-full bg-black border ml-auto cursor-pointer text-sm pt-1 pb-1 pr-2 pl-2 text-white/60 hover:text-white"
-                        onClick={() => setMode('light')}
-                    >dark mode</div> :
-                    <div
-                        className="rounded-full bg-white/90 border ml-auto cursor-pointer text-sm pt-1 pb-1 pr-2 pl-2 text-black"
-                        onClick={() => setMode('dark')}
-                    >light mode</div>}
+                <div
+                    className={`rounded-full border absolute top-2 right-2 sm:relative sm:top-0 sm:right-auto sm:ml-auto cursor-pointer text-sm pt-1 pb-1 pr-2 pl-2 ${mode === 'dark'
+                        ? 'bg-black text-white/60 hover:text-white'
+                        : 'bg-white/90 text-black'
+                        }`}
+                    onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')}
+                >
+                    {mode === 'dark' ? 'dark mode' : 'light mode'}
+                </div>
             </div>
 
             <div className={twMerge(
