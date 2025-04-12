@@ -41,7 +41,8 @@ function applyProfile(
   });
 }
 
-export default function useExpanseData({
+// TODO: refactor later and have only one hook for all seasons. When implementing S2
+export default function useInterseason2Data({
   allUserProfilesMetadata,
 }: {
   allUserProfilesMetadata: UserProfileMetadata[];
@@ -65,7 +66,7 @@ export default function useExpanseData({
     if (!allMetadata) return;
 
     DataApiClient.getSeasonLeaderboards({
-      season: "expanse",
+      season: "interseason2",
     })
       .then((data) => {
         applyProfile(data, allMetadata);
@@ -77,7 +78,7 @@ export default function useExpanseData({
 
     const interval = setInterval(() => {
       DataApiClient.getSeasonLeaderboards({
-        season: "expanse",
+        season: "interseason2",
       })
         .then((data) => {
           applyProfile(data, allMetadata);
