@@ -10,7 +10,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import useCountDown from '@/hooks/useCountDown';
 import { useSelector } from '@/store/store';
-import { ImageRef } from '@/types';
 import { formatNumber } from '@/utils';
 
 export default function CompetitionBanner({
@@ -25,7 +24,7 @@ export default function CompetitionBanner({
     jtoRewards,
     bannerClassName,
 }: {
-    banner: ImageRef;
+    banner: string;
     endDate: Date | null;
     startDate: Date;
     title?: string;
