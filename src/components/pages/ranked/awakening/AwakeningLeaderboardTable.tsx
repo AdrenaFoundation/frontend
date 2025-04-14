@@ -31,11 +31,10 @@ export default function AwakeningLeaderboardTable({
 }) {
     return (
         <div className={className}>
-            {DIVISIONS[division].img ? <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {DIVISIONS[division].img ? <img
                 src={DIVISIONS[division].img}
-                width={75}
-                height={75}
-                alt=""
+                alt="division logo"
                 className="rounded-full border-2 border-yellow-600 h-[6em] w-[6em]"
             /> : null}
 
