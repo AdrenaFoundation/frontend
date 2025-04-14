@@ -189,7 +189,7 @@ export default function UserVest({
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]" />
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col max-w-[60em] pl-4 pr-4 pb-4 w-full self-center bg-main z-10 rounded-xl mt-4 mb-[100px] sm:mb-4 relative ">
 

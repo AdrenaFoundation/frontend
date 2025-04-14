@@ -477,7 +477,7 @@ export function PositionBlock({
           {isProfileOpen && position.userProfile && (
             <Modal
               className="h-[80vh] w-full overflow-y-auto"
-              wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper-1.jpg')]"
+              wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
               title=""
               close={() => setIsProfileOpen(false)}
               isWrapped={false}
