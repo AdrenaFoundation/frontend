@@ -6,25 +6,12 @@ import { Staking } from '@/types';
 import { nativeToUi } from '@/utils';
 
 export default function StakingRewardsWaitingToBeClaimed({
-  alpStakingAccount,
   adxStakingAccount,
   titleClassName,
 }: {
-  alpStakingAccount: Staking;
   adxStakingAccount: Staking;
   titleClassName?: string;
 }) {
-  const alpStakingPendingRewards = alpStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
-    if (!round.rate) return acc;
-
-    const totalToClaim = round.rate.mul(round.totalStake.sub(round.totalClaim)).div(new BN(10 ** RATE_DECIMALS));
-
-    return acc + nativeToUi(
-      totalToClaim,
-      alpStakingAccount.rewardTokenDecimals,
-    );
-  }, 0);
-
   const adxStakingPendingRewards = adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
     if (!round.rate) return acc;
 
@@ -33,17 +20,6 @@ export default function StakingRewardsWaitingToBeClaimed({
     return acc + nativeToUi(
       totalToClaim,
       adxStakingAccount.rewardTokenDecimals,
-    );
-  }, 0);
-
-  const alpStakingPendingLmRewards = alpStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
-    if (!round.lmRate) return acc;
-
-    const lmTotalToClaim = round.lmRate.mul(round.lmTotalStake.sub(round.lmTotalClaim)).div(new BN(10 ** RATE_DECIMALS));
-
-    return acc + nativeToUi(
-      lmTotalToClaim,
-      window.adrena.client.adxToken.decimals,
     );
   }, 0);
 
