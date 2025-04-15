@@ -267,7 +267,7 @@ export default function WalletDigger({
                         titleClassName='text-[0.7em] sm:text-[0.7em]'
                     />
 
-                    <NumberDisplay
+                    {totalStakedAlp > 0 ? <NumberDisplay
                         title="LOCKED STAKED ALP"
                         nb={totalStakedAlp}
                         format="number"
@@ -277,7 +277,7 @@ export default function WalletDigger({
                         bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
                         headerClassName='pb-2'
                         titleClassName='text-[0.7em] sm:text-[0.7em]'
-                    />
+                    /> : null}
 
                     <NumberDisplay
                         title="TOTAL CLAIMED USDC"
@@ -320,7 +320,7 @@ export default function WalletDigger({
                                     handleClickOnUpdateLockedStake={() => { /* readonly */ }}
                                 /> : null}
 
-                                {alpLockedStakes ? <LockedStakes
+                                {alpLockedStakes && alpLockedStakes.length ? <LockedStakes
                                     readonly={true}
                                     lockedStakes={alpLockedStakes}
                                     className='gap-3 mt-4 w-[25em] grow'

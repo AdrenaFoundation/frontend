@@ -108,30 +108,6 @@ export default function CurrentStakingRoundTime({
       </div>
 
       <div className="flex flex-col sm:flex-row grow">
-        <div className='flex-1 p-3 flex items-center justify-center flex-col'>
-          <div className='mb-3 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ALP Staking</div>
-
-          <div className='flex flex-row items-center flex-wrap gap-5'>
-            <RemainingTimeToDate
-              timestamp={
-                getNextStakingRoundStartTime(
-                  alpStakingAccount.currentStakingRound.startTime,
-                ).getTime() / 1000
-              }
-              className="items-center text-xl"
-              tippyText="The call is overdue."
-            />
-
-            {alpRoundPassed ? (
-              <Button
-                className="text-xs"
-                title="Trigger manually"
-                onClick={() => triggerManually(window.adrena.client.lpTokenMint)}
-              />
-            ) : null}
-          </div>
-        </div>
-
         <div className='flex-1 p-3 border-t sm:border-t-0 sm:border-l flex items-center justify-center flex-col'>
           <div className='mb-3 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ADX Staking</div>
 

@@ -217,7 +217,6 @@ export default function DetailedMonitoring({
 
               <StakingRewardsWaitingToBeClaimed
                 titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
                 adxStakingAccount={adxStakingAccount}
               />
             </div>

@@ -1,9 +1,5 @@
 import { Keypair, PublicKey } from "@solana/web3.js";
 
-import awakeningBanner from "@/../../public/images/comp-banner.png";
-import expanseBanner from "@/../public/images/expanse-banner.jpg";
-import factionsBanner from "@/../public/images/factions-banner.jpg";
-
 import { ResolutionString } from "../public/charting_library/charting_library";
 import {
   AchievementInfo,
@@ -349,7 +345,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
 
 export const TRADING_COMPETITION_SEASONS = {
   awakening: {
-    img: awakeningBanner,
+    img: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/awakening/comp-banner-I4GlDkseidl72PgFvy8rbqb4Ktxr9s.jpg",
     title: "Awakening",
     subTitle: "pre-season",
     startDate: new Date("11/11/2024"),
@@ -366,7 +362,7 @@ export const TRADING_COMPETITION_SEASONS = {
   },
 
   expanse: {
-    img: expanseBanner,
+    img: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/expanse/expanse-banner-M4jVXVtzATa0P36KUpVvc1hXFNkznk.jpg",
     title: "The Expanse",
     subTitle: "new season",
     startDate: new Date("2025-01-31T23:59:59.999Z"),
@@ -389,7 +385,7 @@ export const TRADING_COMPETITION_SEASONS = {
 
   // Inter-season for now, modify when season 2 starts
   factions: {
-    img: factionsBanner,
+    img: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/factions-banner-OKwsUEBqusOest7hhIPaKsklmSlNdh.jpg",
     title: "Factions",
     subTitle: "Season 2 is coming",
     startDate: new Date("2025-04-25T23:59:59.999Z"),

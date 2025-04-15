@@ -21,9 +21,7 @@ export default function StakingRewardVaults({
   } | null;
   titleClassName?: string;
 }) {
-  let nextAlpRoundUsdcRewards = 0;
   let nextAdxRoundUsdcRewards = 0;
-  let nextAlpRoundAdxRewards = 0;
   let nextAdxRoundAdxRewards = 0;
 
   if (
@@ -37,12 +35,6 @@ export default function StakingRewardVaults({
     adxStakingAccount.resolvedRewardTokenAmount !== null
   ) {
     // USDC rewards
-    nextAlpRoundUsdcRewards =
-      alpStakingRewardsAccumulated.usdcRewards -
-      nativeToUi(
-        alpStakingAccount.resolvedRewardTokenAmount,
-        alpStakingAccount.rewardTokenDecimals,
-      );
     nextAdxRoundUsdcRewards =
       adxStakingRewardsAccumulated.usdcRewards -
       nativeToUi(
@@ -51,10 +43,6 @@ export default function StakingRewardVaults({
       );
 
     // ADX rewards
-    nextAlpRoundAdxRewards = nativeToUi(
-      alpStakingAccount.currentMonthEmissionAmountPerRound,
-      window.adrena.client.adxToken.decimals,
-    );
     nextAdxRoundAdxRewards = nativeToUi(
       adxStakingAccount.currentMonthEmissionAmountPerRound,
       window.adrena.client.adxToken.decimals,
@@ -65,7 +53,7 @@ export default function StakingRewardVaults({
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>
-          Staking Rewards (available next round)
+          ADX Staking Rewards (available next round)
         </p>
 
         <p className="text-xs opacity-50">
@@ -73,41 +61,20 @@ export default function StakingRewardVaults({
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row grow">
-        <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow">
-          <div className='mb-2 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ALP Staking</div>
+      <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow">
+        <NumberDisplay
+          nb={nextAdxRoundUsdcRewards}
+          precision={0}
+          suffix='USDC'
+          className='border-0 p-0 items-start'
+        />
 
-          <NumberDisplay
-            nb={nextAlpRoundUsdcRewards}
-            precision={0}
-            suffix='USDC'
-            className='border-0 p-0 items-start'
-          />
-
-          <NumberDisplay
-            nb={nextAlpRoundAdxRewards}
-            precision={0}
-            suffix='ADX'
-            className='border-0 p-0 items-start'
-          />
-        </div>
-
-        <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow border-t sm:border-l">
-          <div className='mb-2 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ADX Staking</div>
-          <NumberDisplay
-            nb={nextAdxRoundUsdcRewards}
-            precision={0}
-            suffix='USDC'
-            className='border-0 p-0 items-start'
-          />
-
-          <NumberDisplay
-            nb={nextAdxRoundAdxRewards}
-            precision={0}
-            suffix='ADX'
-            className='border-0 p-0 items-start'
-          />
-        </div>
+        <NumberDisplay
+          nb={nextAdxRoundAdxRewards}
+          precision={0}
+          suffix='ADX'
+          className='border-0 p-0 items-start'
+        />
       </div>
     </div>
   );

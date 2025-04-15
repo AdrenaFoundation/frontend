@@ -27,7 +27,7 @@ export default function OnchainAccountInfo({
       href={getAccountExplorer(address)}
       target="_blank"
       className={twMerge(
-        'flex items-center hover:opacity-100 opacity-50 cursor-pointer',
+        'flex items-center hover:opacity-100 hover:underline opacity-50 cursor-pointer',
         className,
       )}
     >
