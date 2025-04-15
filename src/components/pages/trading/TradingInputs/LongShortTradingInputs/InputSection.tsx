@@ -41,7 +41,7 @@ export const InputSection = ({
     return (
         <>
             <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
-                <h5 className="ml-4">Inputs</h5>
+                <h5 className="ml-4">Collateral</h5>
                 <WalletBalance
                     tokenA={tokenA}
                     walletTokenBalances={walletTokenBalances}
