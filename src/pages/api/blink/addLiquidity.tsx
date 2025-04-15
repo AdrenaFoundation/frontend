@@ -35,8 +35,10 @@ export default async function handler(
         | ActionPostResponse
     >,
 ) {
+    const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+
     const connection = new Connection(
-        'https://mainnet.helius-rpc.com/?api-key=d7a1bbbc-5a12-43d0-ab41-c96ffef811e0',
+        `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${apiKey}`,
         'processed',
     );
     const CONFIG = new MainnetConfiguration(false);

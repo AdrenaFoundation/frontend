@@ -39,12 +39,18 @@ export default function Achievements({
                 return {
                     ...achievement,
                     completionPercentage: null,
+                    nbCompletions: null,
+                    nbUserProfiles: null,
                 };
             }
 
+            const nbCompletions = allUserProfiles.reduce((total, profile) => (profile.achievements[achievement.index] ? 1 : 0) + total, 0);
+
             return {
                 ...achievement,
-                completionPercentage: allUserProfiles.reduce((total, profile) => (profile.achievements[achievement.index] ? 1 : 0) + total, 0) / allUserProfiles.length,
+                completionPercentage: nbCompletions / allUserProfiles.length * 100,
+                nbCompletions,
+                nbUserProfiles: allUserProfiles.length,
             };
         });
     }, [allUserProfiles]);

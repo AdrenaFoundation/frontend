@@ -105,8 +105,11 @@ export default function ExpanseWeeklyLeaderboard({
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
-                                    'text-xs font-boldy opacity-50',
+                                    'text-xs text-txtfade font-boldy hover:underline transition duration-300 cursor-pointer',
                                 )}
+                                onClick={() => {
+                                    onClickUserProfile(d.wallet);
+                                }}
                             >
                                 {getAbbrevWalletAddress(d.wallet.toBase58())}
                             </p>

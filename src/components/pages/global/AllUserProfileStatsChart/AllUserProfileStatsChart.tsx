@@ -22,11 +22,26 @@ const AllUserProfileStatsChart = ({
   filteredProfiles: SuperchargedUserProfile[] | null;
   setActiveProfile: (profile: UserProfileExtended) => void;
 }) => {
-  const date = new Date();
-  const lastDay = date.setDate(date.getDate() - 1);
+  const today = useMemo(() => {
+    const date = new Date();
+
+    return new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        0,
+        0,
+        0,
+        0,
+      ),
+    );
+  }, []);
+
   const [selectedRange, setSelectedRange] = useState<string>('Today');
   const [startDate, setStartDate] = useState<string>(
-    new Date(lastDay).toISOString(),
+    // Today
+    today.toISOString(),
   );
   const [endDate, setEndDate] = useState<string>(new Date().toISOString());
   const [traders, setTraders] = useState<TraderByVolumeInfo[] | null>(null);
@@ -34,7 +49,7 @@ const AllUserProfileStatsChart = ({
   const [activeMetric, setActiveMetric] = useState<string>('volume');
   const [error, setError] = useState<string | null>(null);
   const [selectedCustomStartDate, setSelectedCustomStartDate] =
-    useState<string>(new Date(lastDay).toISOString());
+    useState<string>(today.toISOString());
   const [selectedCustomEndDate, setSelectedCustomEndDate] = useState<string>(
     new Date().toISOString(),
   );
@@ -52,6 +67,7 @@ const AllUserProfileStatsChart = ({
 
     try {
       setIsLoading(true);
+
       const response = await DataApiClient.getTraderByVolume({
         startDate: new Date(customStartDate ?? startDate),
         endDate: new Date(customEndDate ?? endDate),
@@ -96,14 +112,14 @@ const AllUserProfileStatsChart = ({
           const pnl = trader.totalPnl;
 
           const colorArray = [
-            '#3d0909',
-            '#721717',
-            '#b54b4b',
-            '#d58f8f',
-            '#75d775',
-            '#4cbf4c',
-            '#2c8c2c',
-            '#064406',
+            '#2a0505',
+            '#500f0f',
+            '#802f2f',
+            '#a06464',
+            '#4ca54c',
+            '#308f30',
+            '#1e5f1e',
+            '#032803',
           ];
 
           const color = (() => {
@@ -354,8 +370,7 @@ const AllUserProfileStatsChart = ({
             <div
               className="h-2 w-24 border"
               style={{
-                background:
-                  'linear-gradient(to right, #3d0909, #721717, #b54b4b, #d58f8f,  #75d775, #4cbf4c, #2c8c2c, #064406)',
+                background: 'linear-gradient(to right, #2a0505, #500f0f, #802f2f, #a06464, #4ca54c, #308f30, #1e5f1e, #032803)',
               }}
             />
           </div>
@@ -427,7 +442,7 @@ const CustomizedContent: React.FC<{
             y={y + height / 2 + 7}
             textAnchor="middle"
             fill="#fff"
-            fontSize={14}
+            fontSize={width > 80 && height > 80 ? 12 : width > 50 ? 10 : width > 40 ? 8 : 6}
           >
             ${formatNumberShort(Number(volume))}
           </text>
@@ -439,14 +454,14 @@ const CustomizedContent: React.FC<{
             y={y + height / 2 + 7}
             textAnchor="middle"
             fill="#fff"
-            fontSize={14}
+            fontSize={width > 80 && height > 80 ? 12 : width > 50 ? 10 : width > 40 ? 8 : 6}
           >
             {formatPriceInfo(pnl)}
           </text>
         ) : null}
 
         {name && width > 100 ? (
-          <text x={x + 10} y={y + 22} fill="#fff" fontSize={12} fillOpacity={0.5}>
+          <text x={x + 10} y={y + 22} fill="#fff" fontSize={width > 50 ? 12 : width > 40 ? 10 : 8} fillOpacity={0.5}>
             {name}
           </text>
         ) : null}

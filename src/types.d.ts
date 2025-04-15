@@ -1419,4 +1419,46 @@ export type AchievementInfo = {
 
 export type AchievementInfoExtended = AchievementInfo & {
   completionPercentage: number | null;
+  nbCompletions: number | null;
+  nbUserProfiles: number | null;
+};
+
+export type SolanaIDType = {
+  solidUser: {
+    // solidScore: number;
+    tierGroup: "tier_1" | "tier_2" | "tier_3" | "tier_4";
+    // badges: string[];
+    // dataPoints: {
+    //   feesPaid: number;
+    //   txnsPlaced: number;
+    //   walletAge: number;
+    //   activeDays: number;
+    //   portfolioUsdValue: number;
+    //   portfolioUsdVolumeByToken: number;
+    //   portfolioUsdVolumeByTokenCategory: number;
+    //   dexHistoricalTxnVolume: number;
+    //   dexRecentTxnVolume: number;
+    //   dexHistoricalUsdVolume: number;
+    //   dexRecentUsdVolume: number;
+    //   dexTxnVolumeByProvider: number;
+    //   dexUsdVolumeByProvider: number;
+    //   dexPnlPerformance: number;
+    //   nftHistoricalBuyTxnVolume: number;
+    //   nftRecentBuyTxnVolume: number;
+    //   nftHistoricalBuyUsdVolume: number;
+    //   nftRecentBuyUsdVolume: number;
+    //   nftBuyTxnVolumeByCollection: number;
+    //   nftBuyUsdVolumeByCollection: number;
+    //   nftBuyTxnVolumeByMarketplace: number;
+    //   nftBuyUsdVolumeByMarketplace: number;
+    //   lpHistoricalUsdVolumeByDuration: number;
+    //   lpActiveUsdVolume: number;
+    //   lpUsdDepositVolumeByProgram: number;
+    //   lpUsdDepositVolumeByPool: number;
+    //   nativeStakingHistoricalSolVolumeByDuration: number;
+    //   nativeStakingActiveSolVolume: number;
+    // };
+    isSolanaIdUser?: boolean | null;
+  };
+  // status: string;
 };

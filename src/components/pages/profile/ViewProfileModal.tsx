@@ -11,6 +11,7 @@ import { UserProfileExtended } from '@/types';
 import PositionBlock from '../trading/Positions/PositionBlock';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
 import OwnerBlock from './OwnerBlock';
+import RankingStats from './RankingStats';
 import StakingStats from './StakingStats';
 import TradingStats from './TradingStats';
 
@@ -26,7 +27,7 @@ export default function ViewProfileModal({
         walletAddress,
     });
     const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
-    const { traderInfo } = useTraderInfo({
+    const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
         walletAddress,
     });
 
@@ -67,6 +68,14 @@ export default function ViewProfileModal({
                     className="gap-y-4 pb-2"
                 />
 
+                <div className="h-[1px] w-full bg-bcolor" />
+
+                <RankingStats
+                    expanseRanking={expanseRanking}
+                    awakeningRanking={awakeningRanking}
+                    className="gap-y-4 pt-2 pb-2"
+                />
+
                 <div className="flex flex-col gap-3 p-4">
                     <TabSelect
                         tabs={[
@@ -87,6 +96,7 @@ export default function ViewProfileModal({
                                                 key={position.pubkey.toBase58()}
                                                 position={position}
                                                 readOnly={true}
+                                                setTokenB={() => { }}
                                             />
                                         ))}
                                     </div>

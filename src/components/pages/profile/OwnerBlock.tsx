@@ -301,8 +301,6 @@ export default function OwnerBloc({
             unlocked ? 'grayscale-0 hover:grayscale-0 cursor-pointer' : 'text-txtfade cursor-disabled',
           )}
           onClick={() => {
-
-            console.log('ONCLICK TITLE');
             if (!unlocked) return;
 
             setUpdatingMetadata((u) => ({
@@ -318,32 +316,63 @@ export default function OwnerBloc({
     });
   }, [updatingMetadata, userProfile.achievements]);
 
+  const { profilePicture, profilePictureUnlockedByAchievement } = useMemo(() => {
+    return {
+      profilePicture: PROFILE_PICTURES[userProfile.profilePicture],
+      profilePictureUnlockedByAchievement: ACHIEVEMENTS.find(achievement => achievement.pfpUnlock === userProfile.profilePicture),
+    };
+  }, [userProfile.profilePicture]);
+
+  const { title, titleUnlockedByAchievement } = useMemo(() => {
+    return {
+      title: USER_PROFILE_TITLES[userProfile.title],
+      titleUnlockedByAchievement: ACHIEVEMENTS.find(achievement => achievement.titleUnlock === userProfile.title),
+    };
+  }, [userProfile.title]);
+
   return (
     <>
       <div className={twMerge("items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#211a1a99]/50 rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto", className)}>
-        <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
-          <div className='border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30 cursor-pointer'
-            onMouseEnter={() => setProfilePictureHovering(true)}
-            onMouseLeave={() => setProfilePictureHovering(false)}
-            onClick={() => setIsUpdatingMetadata(true)}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={PROFILE_PICTURES[userProfile.profilePicture]}
-              alt="Profile picture"
-              className='w-full h-full'
-              width={250}
-              height={250}
-            />
+        <Tippy
+          content={profilePictureUnlockedByAchievement ? <div className='text-center flex flex-col'>
+            <div>
+              Unlocked by achievement #{profilePictureUnlockedByAchievement.index + 1}
+            </div>
 
-            {profilePictureHovering && !readonly ? <>
-              <div className='h-full w-full absolute z-10 backdrop-blur-2xl'></div>
-              <div className='h-full w-full absolute z-20 items-center justify-center flex flex-col'>
-                <div className='font-archivoblack tracking-widest opacity-70 text-sm text-center'>Change Profile Picture</div>
-              </div>
-            </> : null}
+            <div>
+              &quot;{profilePictureUnlockedByAchievement.title}&quot;
+            </div>
+          </div> : <div></div>}
+          disabled={typeof profilePictureUnlockedByAchievement === 'undefined'}
+        >
+          <div className='flex min-w-[12em] w-[11.5em] h-[10em] relative'>
+            <div
+              onMouseEnter={() => !readonly && setProfilePictureHovering(true)}
+              onMouseLeave={() => !readonly && setProfilePictureHovering(false)}
+              onClick={() => !readonly && setIsUpdatingMetadata(true)}
+              className={twMerge(
+                'border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30',
+                !readonly && 'cursor-pointer'
+              )}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={profilePicture}
+                alt="Profile picture"
+                className='w-full h-full'
+                width={250}
+                height={250}
+              />
+
+              {profilePictureHovering && !readonly ? <>
+                <div className='h-full w-full absolute z-10 backdrop-blur-2xl'></div>
+                <div className='h-full w-full absolute z-20 items-center justify-center flex flex-col'>
+                  <div className='font-archivoblack tracking-widest opacity-70 text-sm text-center'>Change Profile Picture</div>
+                </div>
+              </> : null}
+            </div>
           </div>
-        </div>
+        </Tippy>
 
         <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
           <div className='flex'>
@@ -376,18 +405,31 @@ export default function OwnerBloc({
             </div>
           </div>
 
-          <div className='flex gap-x-2 items-end relative bottom-1'>
-            <span className='text-lg font-cursive relative top-1'>&quot;</span>
-            <span className='text-sm font-archivoblack'>{USER_PROFILE_TITLES[userProfile.title]}</span>
-            <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
+          <Tippy
+            content={titleUnlockedByAchievement ? <div className='text-center flex flex-col'>
+              <div>
+                Unlocked by achievement #{titleUnlockedByAchievement.index + 1}
+              </div>
 
-            {canUpdateNickname && userProfile.version > 1 ? (
-              <div
-                className='text-xs opacity-70 cursor-pointer hover:opacity-100 relative'
-                onClick={() => setIsUpdatingMetadata(true)}
-              >Edit</div>
-            ) : null}
-          </div>
+              <div>
+                &quot;{titleUnlockedByAchievement.title}&quot;
+              </div>
+            </div> : <div></div>}
+            disabled={typeof titleUnlockedByAchievement === 'undefined'}
+          >
+            <div className='flex gap-x-2 items-end relative bottom-1'>
+              <span className='text-lg font-cursive relative top-1'>&quot;</span>
+              <span className='text-sm font-archivoblack'>{title}</span>
+              <span className='text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100'>&quot;</span>
+
+              {canUpdateNickname && userProfile.version > 1 ? (
+                <div
+                  className='text-xs opacity-70 cursor-pointer hover:opacity-100 relative'
+                  onClick={() => setIsUpdatingMetadata(true)}
+                >Edit</div>
+              ) : null}
+            </div>
+          </Tippy>
 
           {!readonly && userProfile.version > 1 ? <div className="absolute top-2 right-4 z-20 ">
             <div

@@ -127,7 +127,10 @@ export default function MutagenLeaderboard({
                         ) : (
                             <p
                                 key={`trader-${i}`}
-                                className={twMerge('text-xs font-boldy opacity-50')}
+                                className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer text-txtfade')}
+                                onClick={() => {
+                                    onClickUserProfile(d.userWallet);
+                                }}
                             >
                                 {getAbbrevWalletAddress(d.userWallet.toBase58())}
                             </p>

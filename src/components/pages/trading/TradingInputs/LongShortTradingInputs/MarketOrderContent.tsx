@@ -8,6 +8,7 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import InfoAnnotation from '../../../monitoring/InfoAnnotation';
 import { ErrorDisplay } from './ErrorDisplay';
+import SolanaIDInfo from './SolanaIDInfo';
 
 interface MarketOrderContentProps {
     side: 'long' | 'short';
@@ -28,6 +29,7 @@ interface MarketOrderContentProps {
     onInputBChange: (value: number | null) => void;
     onExecute: () => void;
     tokenPriceBTrade: number | undefined | null;
+    walletAddress: string | null;
 }
 
 export const MarketOrderContent = ({
@@ -48,6 +50,7 @@ export const MarketOrderContent = ({
     onTokenBSelect,
     onExecute,
     tokenPriceBTrade,
+    walletAddress,
 }: MarketOrderContentProps) => (
     <div className="flex flex-col transition-opacity duration-500 mt-4">
         <h5 className="flex items-center ml-4">Size</h5>
@@ -55,7 +58,7 @@ export const MarketOrderContent = ({
         <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
             <Select
                 className="shrink-0 h-full flex items-center w-[7em]"
-                selectedClassName="w-14"
+                selectedClassName="w-22"
                 menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
                 menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
                 selected={getTokenSymbol(tokenB.symbol)}
@@ -151,6 +154,8 @@ export const MarketOrderContent = ({
         </div>
 
         {errorMessage && <ErrorDisplay errorMessage={errorMessage} />}
+
+        <SolanaIDInfo walletAddress={walletAddress} />
 
         <Button
             className={twMerge(

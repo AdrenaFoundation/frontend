@@ -31,6 +31,7 @@ const supabase = createClient(
 const roomId = 0;
 
 const MAX_MESSAGES = 1000;
+const OPEN_CHAT_TTL = 600000; // 10 minute TTL - in millisecond
 
 interface Message {
     id: number;
@@ -40,8 +41,6 @@ interface Message {
     username?: string;
     wallet?: string;
 }
-
-const OPEN_CHAT_TTL = 600000; // 10 minute TTL - in millisecond
 
 const generateColorFromString = (str: string): string => {
     let hash = 0;
@@ -179,8 +178,12 @@ function Chat({
                 .from("messages")
                 .select("*")
                 .eq("room_id", roomId)
-                .order("timestamp", { ascending: true })
-                .limit(MAX_MESSAGES);
+                .order('timestamp', { ascending: false }) // Get newest first
+                .limit(MAX_MESSAGES)
+                .then(result => ({
+                    ...result,
+                    data: result.data?.reverse() // Reverse to display in correct order
+                }));
             setMessages(data || []);
         };
 
@@ -202,8 +205,8 @@ function Chat({
 
                     setMessages((prev) => {
                         const updatedMessages = [...prev, payload.new as Message];
-
-                        return updatedMessages.slice(-MAX_MESSAGES);
+                        // Keep the most recent 1000 messages
+                        return updatedMessages.slice(-1000);
                     });
                 }
             )
@@ -461,7 +464,7 @@ function Chat({
                                         {anonymousCount} anonymous user{anonymousCount > 1 ? 's' : ''} and :
                                     </div>
                                 )}
-                                
+
                                 {connectedUsers.filter(user => user.nickname).map((user, i) => (
                                     <div key={i} className="mb-1.5">
                                         <Tippy

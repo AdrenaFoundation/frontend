@@ -5,6 +5,7 @@ import Loader from '@/components/Loader/Loader';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import OwnerBlock from '@/components/pages/profile/OwnerBlock';
 import ProfileCreation from '@/components/pages/profile/ProfileCreation';
+import RankingStats from '@/components/pages/profile/RankingStats';
 import StakingStats from '@/components/pages/profile/StakingStats';
 import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
@@ -32,7 +33,7 @@ export default function Profile({
   const walletAddress = useSelector(selectWalletAddress);
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
   const positions = usePositions(walletAddress);
-  const { traderInfo } = useTraderInfo({
+  const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
     walletAddress,
   });
 
@@ -139,6 +140,14 @@ export default function Profile({
 
                 <div className="h-[1px] w-full bg-bcolor" />
 
+                <RankingStats
+                  expanseRanking={expanseRanking}
+                  awakeningRanking={awakeningRanking}
+                  className="gap-y-4 pt-2 pb-2"
+                />
+
+                <div className="h-[1px] w-full bg-bcolor" />
+
                 {!loading && connected ? (
                   <ActivityCalendar
                     data={activityCalendarData}
@@ -150,7 +159,9 @@ export default function Profile({
                     isUserActivity
                   />
                 ) : (
-                  <Loader />
+                  <div className="p-4 bg-[#050D14] flex-1 h-full flex items-center justify-center">
+                    <Loader />
+                  </div>
                 )}
 
                 <div className="h-[1px] w-full bg-bcolor" />

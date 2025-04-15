@@ -16,39 +16,49 @@ export default function usePositionStats(isByWalletAddress = false) {
     )?.walletAddress;
 
     const [loading, setLoading] = useState<boolean>(true);
-    const [startDate, setStartDate] = useState<string>(
-        new Date('2024-09-25T00:00:00Z').toISOString(),
-    ); // all time by default
-
+    const [startDate, setStartDate] = useState<string>(new Date('2024-09-25T00:00:00Z').toISOString());
     const [endDate, setEndDate] = useState<string>(new Date().toISOString());
     const [bubbleBy, setBubbleBy] = useState('pnl');
 
     useEffect(() => {
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startDate, endDate, walletAddress]);
+    }, [startDate, endDate, isByWalletAddress ? walletAddress : undefined]);
 
     const fetchData = async () => {
-        if (!walletAddress && isByWalletAddress) return;
+        setLoading(true); // Set loading true at the start of fetch
 
-        const result = isByWalletAddress ? await DataApiClient.getPositionStats({
-            showPositionActivity: true,
-            startDate: new Date(startDate),
-            endDate: new Date(endDate),
-            walletAddress: !isByWalletAddress ? undefined : walletAddress,
-        }) : null
-
-        if (result) {
-            setData(result);
+        if (!walletAddress && isByWalletAddress) {
+            setLoading(false);
+            setData(null);
+            return;
         }
 
-        setLoading(false);
+        try {
+            const result = await DataApiClient.getPositionStats({
+                showPositionActivity: true,
+                startDate: new Date(startDate),
+                endDate: new Date(endDate),
+                walletAddress: !isByWalletAddress ? undefined : walletAddress,
+            });
+
+            if (result) {
+                setData(result);
+            }
+        } catch (error) {
+            console.error('Error fetching position stats:', error);
+            setData(null);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const activityCalendarData = useMemo(() => {
-        const activity = data?.positionActivity;
+        if (loading || !data?.positionActivity) {
+            return null;
+        }
 
-        if (!activity) return null;
+        const activity = data.positionActivity;
 
         const getColor = (value: number, avg: number) => {
             if (value < 0) return '#AC2E41';
@@ -78,17 +88,21 @@ export default function usePositionStats(isByWalletAddress = false) {
         };
 
         const formattedActivity = activity.reduce(
-            (acc, activity) => ({
-                ...acc,
-                [activity.dateDay]: {
-                    totalSize: activity.totalExitSize,
-                    totalPositions: activity.exitCount,
-                    totalPnl: activity.totalExitPnl,
-                    totalVolume: activity.totalVolume,
-                    totalIncreaseSize: activity.totalIncreaseSize,
-                    totalFees: activity.totalExitFees,
-                },
-            }),
+            (acc, activity) => {
+                const date = new Date(activity.dateDay);
+                const dateKey = date.toISOString().split('T')[0] + 'T00:00:00.000Z';
+                return {
+                    ...acc,
+                    [dateKey]: {
+                        totalSize: activity.totalExitSize,
+                        totalPositions: activity.exitCount,
+                        totalPnl: activity.totalExitPnl,
+                        totalVolume: activity.totalVolume,
+                        totalIncreaseSize: activity.totalIncreaseSize,
+                        totalFees: activity.totalExitFees,
+                    },
+                };
+            },
             {} as Record<
                 string,
                 {
@@ -121,61 +135,54 @@ export default function usePositionStats(isByWalletAddress = false) {
             );
 
         const tableData = [];
-        const currentDate = new Date();
-        const tradingStartDate = new Date(
-            new Date(
-                currentDate.getFullYear(),
-                currentDate.getMonth() - 5,
-                2,
-            ).setUTCHours(0, 0, 0, 0),
-        );
-        const endOfMonth = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() + 1,
-            2,
-        );
+        const tradingStartDate = new Date(startDate);
+        const endOfMonth = new Date(endDate);
 
-        const daysBetween = getDaysBetweenDates(tradingStartDate, endOfMonth);
+        // Add one day to include today
+        const adjustedEndDate = new Date(endOfMonth);
+        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+
+        const daysBetween = getDaysBetweenDates(tradingStartDate, adjustedEndDate);
 
         for (let i = 0; i < daysBetween; i++) {
-            const date = new Date(
-                tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000,
-            ).toISOString();
+            const date = new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000);
+            const dateKey = date.toISOString().split('T')[0] + 'T00:00:00.000Z';
 
-            if (!formattedActivity[date]) {
+            if (!formattedActivity[dateKey]) {
                 tableData.push({
-                    date: new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000),
+                    date,
                     stats: null,
                 });
             } else {
-                tableData.push({
-                    date: new Date(tradingStartDate.getTime() + i * 24 * 60 * 60 * 1000),
-                    stats: {
-                        color: getColor(formattedActivity[date].totalPnl, averagePnl),
-                        totalPositions: formattedActivity[date].totalPositions,
-                        pnl: formattedActivity[date].totalPnl,
-                        increaseSize: formattedActivity[date].totalIncreaseSize,
-                        totalFees: formattedActivity[date].totalFees,
-                        volume: formattedActivity[date].totalVolume,
-                        size: formattedActivity[date].totalSize,
-                        bubbleSize: normalize(
-                            Math.abs(
-                                formattedActivity[date][
-                                formattedActivityKeys[
-                                bubbleBy.toLowerCase() as keyof typeof activityKeys
-                                ]
-                                ],
-                            ),
-                            3,
-                            12,
-                            minTotal(
-                                activityKeys[bubbleBy.toLowerCase()] as keyof typeof activity,
-                            ),
-                            maxTotal(
-                                activityKeys[bubbleBy.toLowerCase()] as keyof typeof activity,
-                            ),
+                const stats = {
+                    color: getColor(formattedActivity[dateKey].totalPnl, averagePnl),
+                    totalPositions: formattedActivity[dateKey].totalPositions,
+                    pnl: formattedActivity[dateKey].totalPnl,
+                    increaseSize: formattedActivity[dateKey].totalIncreaseSize,
+                    totalFees: formattedActivity[dateKey].totalFees,
+                    volume: formattedActivity[dateKey].totalVolume,
+                    size: formattedActivity[dateKey].totalSize,
+                    bubbleSize: normalize(
+                        Math.abs(
+                            formattedActivity[dateKey][
+                            formattedActivityKeys[
+                            bubbleBy.toLowerCase() as keyof typeof activityKeys
+                            ]
+                            ],
                         ),
-                    },
+                        3,
+                        12,
+                        minTotal(
+                            activityKeys[bubbleBy.toLowerCase()] as keyof typeof activity,
+                        ),
+                        maxTotal(
+                            activityKeys[bubbleBy.toLowerCase()] as keyof typeof activity,
+                        ),
+                    ),
+                };
+                tableData.push({
+                    date,
+                    stats,
                 });
             }
         }

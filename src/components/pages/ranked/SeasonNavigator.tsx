@@ -19,11 +19,11 @@ export default function SeasonNavigator({
     ) as (keyof typeof TRADING_COMPETITION_SEASONS)[];
 
     return (
-        <div className="absolute top-0 grid grid-cols-2 lg:grid-cols-7 gap-6 w-full h-[4em] bg-main/80 backdrop-blur-md border-b z-20 p-2">
+        <div className="absolute top-0 grid grid-cols-2 lg:grid-cols-7 gap-3 w-full min-h-[4em] bg-main/80 backdrop-blur-md border-b z-20 p-2">
             {SEASON_NAMES.map((season) => (
                 <div
                     className={twMerge(
-                        'flex items-center justify-center relative bg-third border rounded-md overflow-hidden transition-opacity duration-300 cursor-pointer hover:opacity-100',
+                        'flex items-center justify-center relative bg-third border rounded-md overflow-hidden transition-opacity duration-300 cursor-pointer hover:opacity-100 min-h-[2em]',
                         activeSeason === season
                             ? 'border-white'
                             : 'border-white/10 opacity-50 grayscale',
@@ -31,7 +31,7 @@ export default function SeasonNavigator({
                     key={season}
                     onClick={() => setActiveSeason(season)}
                 >
-                    <p className="relative z-20 font-archivoblack tracking-widest text-md uppercase">
+                    <p className="relative z-20 font-archivoblack tracking-widest text-md uppercase text-nowrap">
                         {TRADING_COMPETITION_SEASONS[season].title}
                     </p>
 
@@ -43,7 +43,7 @@ export default function SeasonNavigator({
                 </div>
             ))}
 
-            {Array.from({ length: 5 }, () => null).map((_, i) => (
+            {Array.from({ length: 4 }, () => null).map((_, i) => (
                 <div
                     className="hidden lg:flex items-center justify-center relative bg-third border rounded-md overflow-hidden border-white/10 opacity-50"
                     key={i}

@@ -8,7 +8,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
-import { PositionExtended, UserProfileMetadata } from '@/types';
+import { PositionExtended, Token, UserProfileMetadata } from '@/types';
 import { formatTimeDifference, getFullTimeDifference, getTokenSymbol } from '@/utils';
 
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
@@ -32,6 +32,7 @@ interface PositionBlockProps {
   triggerEditPositionCollateral?: (p: PositionExtended) => void;
   readOnly?: boolean;
   userProfileMetadata?: UserProfileMetadata;
+  setTokenB: (token: Token) => void;
 }
 
 export function PositionBlock({
@@ -42,6 +43,7 @@ export function PositionBlock({
   triggerStopLossTakeProfit,
   triggerEditPositionCollateral,
   readOnly = false,
+  setTokenB,
 }: PositionBlockProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -179,7 +181,7 @@ export function PositionBlock({
       >
         <PositionHeader
           readOnly={readOnly}
-          positionName={<PositionName position={position} readOnly={readOnly} />}
+          positionName={<PositionName position={position} readOnly={readOnly} setTokenB={setTokenB} />}
           ownerInfo={ownerInfo}
           pnl={<PnL position={position} showAfterFees={showAfterFees} setShowAfterFees={setShowAfterFees} />}
           netValue={<NetValue position={position} />}
@@ -337,6 +339,9 @@ export function PositionBlock({
                   nb={position.breakEvenPrice}
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
+                  minimumFractionDigits={
+                    position.token.displayPriceDecimalsPrecision
+                  }
                   className={POSITION_BLOCK_STYLES.text.purple}
                   isDecimalDimmed={false}
                 />
@@ -363,6 +368,10 @@ export function PositionBlock({
                         nb={position.takeProfitLimitPrice}
                         format="currency"
                         className={POSITION_BLOCK_STYLES.text.blue}
+                        precision={position.token.displayPriceDecimalsPrecision}
+                        minimumFractionDigits={
+                          position.token.displayPriceDecimalsPrecision
+                        }
                         isDecimalDimmed={false}
                       />
                       {editIcon}

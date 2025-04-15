@@ -72,19 +72,33 @@ export default function Select<T extends string>({
             <div
               className={twMerge(
                 'flex flex-row gap-x-1 items-center',
-                options.length > 1 && 'w-full pr-3',
+                options.length > 1 && !reversed && 'w-full pr-3',
                 align === 'right' && 'justify-between',
+                options.length > 1 && reversed && 'w-full justify-between',
                 selectedClassName,
               )}
             >
-              {reversed ? img : chevron}
-              <div className="flex flex-row gap-2 items-center">
-                <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
-                  {selected}
-                </span>
-
-                {reversed ? chevron : img}
-              </div>
+              {reversed ? (
+                <>
+                  <div className="flex flex-row gap-2 items-center">
+                    {img}
+                    <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
+                      {selected}
+                    </span>
+                  </div>
+                  {chevron}
+                </>
+              ) : (
+                <>
+                  {chevron}
+                  <div className="flex flex-row gap-2 items-center">
+                    <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
+                      {selected}
+                    </span>
+                    {img}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         }
@@ -103,7 +117,7 @@ export default function Select<T extends string>({
 
                   <MenuItem
                     disabled={option.disabled}
-                    className={twMerge("flex flex-row items-center justify-end text-center relative overflow-hidden h-14", menuItemClassName)}
+                    className={twMerge("flex flex-row items-center relative overflow-hidden h-14", menuItemClassName, option?.img ? "justify-end" : "justify-center")}
                     onMouseEnter={() => setOptionHover(i)}
                     onMouseLeave={() => setOptionHover(null)}
                     onClick={() => {
@@ -126,7 +140,7 @@ export default function Select<T extends string>({
                       />
                     ) : null}
 
-                    <span className={twMerge("font-boldy text-lg z-20 m-auto", menuTextClassName)}>
+                    <span className={twMerge("font-boldy text-lg z-20", menuTextClassName)}>
                       {option.title}
                     </span>
                   </MenuItem>
