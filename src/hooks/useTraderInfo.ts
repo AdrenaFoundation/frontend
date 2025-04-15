@@ -51,7 +51,6 @@ export default function useTraderInfo({
   const [traderInfo, setTraderInfo] = useState<EnrichedTraderInfo | null>(null);
 
   const wallet = useMemo(() => {
-    console.log("WALLET ADDRESS", walletAddress);
     return walletAddress
       ? {
           adapterName: "Phantom" as WalletAdapterName,

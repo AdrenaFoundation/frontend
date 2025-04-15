@@ -83,7 +83,7 @@ export default function Monitoring(pageProps: PageProps) {
       case 'flows':
         return <Flow custodies={pageProps.custodies} view={view} />;
       case 'walletDigger':
-        return <WalletDigger view={view} />;
+        return <WalletDigger view={view} {...pageProps} />;
       case 'lookupTable':
         return <AddressLookupTable view={view} />;
       default:

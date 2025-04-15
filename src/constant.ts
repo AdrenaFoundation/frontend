@@ -1,9 +1,5 @@
 import { Keypair, PublicKey } from "@solana/web3.js";
 
-import awakeningBanner from "@/../../public/images/comp-banner.png";
-import expanseBanner from "@/../public/images/expanse-banner.jpg";
-import factionsBanner from "@/../public/images/factions-banner.jpg";
-
 import { ResolutionString } from "../public/charting_library/charting_library";
 import {
   AchievementInfo,
@@ -349,7 +345,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
 
 export const TRADING_COMPETITION_SEASONS = {
   awakening: {
-    img: awakeningBanner,
+    img: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/awakening/comp-banner-I4GlDkseidl72PgFvy8rbqb4Ktxr9s.jpg",
     title: "Awakening",
     subTitle: "pre-season",
     startDate: new Date("11/11/2024"),
@@ -366,7 +362,7 @@ export const TRADING_COMPETITION_SEASONS = {
   },
 
   expanse: {
-    img: expanseBanner,
+    img: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/expanse/expanse-banner-M4jVXVtzATa0P36KUpVvc1hXFNkznk.jpg",
     title: "The Expanse",
     subTitle: "new season",
     startDate: new Date("2025-01-31T23:59:59.999Z"),
@@ -389,7 +385,7 @@ export const TRADING_COMPETITION_SEASONS = {
 
   // Inter-season for now, modify when season 2 starts
   factions: {
-    img: factionsBanner,
+    img: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/factions-banner-OKwsUEBqusOest7hhIPaKsklmSlNdh.jpg",
     title: "Factions",
     subTitle: "Season 2 is coming",
     startDate: new Date("2025-04-25T23:59:59.999Z"),
@@ -1115,7 +1111,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 43,
     title: "Just dip my toes in the pool",
-    description: "Add $1,000 of liquidities at once",
+    description: "Add $1,000 of liquidity at once",
     story:
       "Just a ripple in the liquidity pool… though even tidal waves start small!",
     image:
@@ -1126,7 +1122,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 44,
     title: "Storming the liquidity pool",
-    description: "Add $50,000 of liquidities at once",
+    description: "Add $50,000 of liquidity at once",
     story: "You've summoned a storm, but are you ready for the downpour?",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/45-tornado-mP5d8o5l79cXnzYJkMegyQT4ONHZIK.jpg",
@@ -1136,7 +1132,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 45,
     title: "Making waves in the market",
-    description: "Add $100,000 of liquidities at once",
+    description: "Add $100,000 of liquidity at once",
     story: "The ocean is roaring! Hold on tight, or you might get swept away.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/46-waves-WvzBDFgBSH4rs7j8m8jupl6xQ4rrcS.jpg",
@@ -1146,7 +1142,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 46,
     title: "I'm the storm now",
-    description: "Add $250,000 of liquidities at once",
+    description: "Add $250,000 of liquidity at once",
     story: "You've become a force of nature. Don't let it go to your head!",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/47-storm-CaprSEA1qW1xefBoJSOdhrKtWWOLa4.jpg",
@@ -1156,8 +1152,8 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 47,
     title: "Tsunami bringer",
-    description: "Add $500,000 of liquidities at once",
-    story: "A tsunami of liquidities! Hope you've got flood insurance.",
+    description: "Add $500,000 of liquidity at once",
+    story: "A tsunami of liquidity! Hope you've got flood insurance.",
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/48-tsunami-9LzKOIPrPXW0SSWvtMZq8S1YhysRU3.jpg",
     points: 10,
@@ -1166,7 +1162,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 48,
     title: "Bigger than the Kraken",
-    description: "Add $1,000,000 of liquidities at once",
+    description: "Add $1,000,000 of liquidity at once",
     story:
       "You're reshaping the seas. The market bows to you now, liquidity king!",
     image:

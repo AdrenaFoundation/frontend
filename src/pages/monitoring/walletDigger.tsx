@@ -22,19 +22,21 @@ import useTraderInfo from '@/hooks/useTraderInfo';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
+import { ClaimHistoryExtended, LockedStakeExtended, PageProps } from '@/types';
 import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
+import Achievements from '../achievements';
 
 const claimHistoryItemsPerPage = 4;
 
 export default function WalletDigger({
-    view
+    view,
+    ...props
 }: {
     view: string;
-}) {
+} & PageProps) {
     const [moreStakingInfo, setMoreStakingInfo] = useState(false);
     const [morePositionInfo, setMorePositionInfo] = useState(false);
 
@@ -265,7 +267,7 @@ export default function WalletDigger({
                         titleClassName='text-[0.7em] sm:text-[0.7em]'
                     />
 
-                    <NumberDisplay
+                    {totalStakedAlp > 0 ? <NumberDisplay
                         title="LOCKED STAKED ALP"
                         nb={totalStakedAlp}
                         format="number"
@@ -275,7 +277,7 @@ export default function WalletDigger({
                         bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
                         headerClassName='pb-2'
                         titleClassName='text-[0.7em] sm:text-[0.7em]'
-                    />
+                    /> : null}
 
                     <NumberDisplay
                         title="TOTAL CLAIMED USDC"
@@ -318,7 +320,7 @@ export default function WalletDigger({
                                     handleClickOnUpdateLockedStake={() => { /* readonly */ }}
                                 /> : null}
 
-                                {alpLockedStakes ? <LockedStakes
+                                {alpLockedStakes && alpLockedStakes.length ? <LockedStakes
                                     readonly={true}
                                     lockedStakes={alpLockedStakes}
                                     className='gap-3 mt-4 w-[25em] grow'
@@ -424,6 +426,8 @@ export default function WalletDigger({
                 <VestStats vest={userVest} readonly={true} />
             </StyledContainer> : null
         }
+
+        {targetWalletPubkey && userProfile ? <Achievements {...props} userProfile={userProfile} defaultSort='points' defaultShowOwned={true} defaultShowNotOwned={false} /> : null}
 
         {
             targetWalletPubkey && expanseRanking && awakeningRanking ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>

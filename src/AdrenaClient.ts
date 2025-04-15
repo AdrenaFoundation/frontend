@@ -1587,7 +1587,7 @@ export class AdrenaClient {
       });
   }
 
-  async buildClosePositionLongIx({
+  public async buildClosePositionLongIx({
     position,
     price,
   }: {
@@ -1665,7 +1665,7 @@ export class AdrenaClient {
     return tx;
   }
 
-  async buildClosePositionShortIx({
+  public async buildClosePositionShortIx({
     position,
     price,
   }: {
@@ -3813,13 +3813,11 @@ export class AdrenaClient {
     return this.readonlyAdrenaProgram.account.genesisLock.fetch(genesisLockPda);
   }
 
-  public async cancelLimitOrder({
+  public async buildCancelLimitOrderIx({
     id,
-    notification,
     collateralCustody,
   }: {
     id: number;
-    notification?: MultiStepNotification;
     collateralCustody: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
@@ -3854,7 +3852,7 @@ export class AdrenaClient {
       collateralCustodyInfos.mint,
     );
 
-    const transaction = await this.adrenaProgram.methods
+    return this.adrenaProgram.methods
       .cancelLimitOrder({
         id: new BN(id),
       })
@@ -3872,8 +3870,24 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
-      .preInstructions(preInstructions)
-      .transaction();
+      .preInstructions(preInstructions);
+  }
+
+  public async cancelLimitOrder({
+    id,
+    notification,
+    collateralCustody,
+  }: {
+    id: number;
+    notification?: MultiStepNotification;
+    collateralCustody: PublicKey;
+  }) {
+    const transaction = await (
+      await this.buildCancelLimitOrderIx({
+        id,
+        collateralCustody,
+      })
+    ).transaction();
 
     return this.signAndExecuteTxAlternative({
       transaction,

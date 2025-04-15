@@ -522,7 +522,7 @@ export default function StakeOverview({
 
                 <div className="justify-end ml-2 hidden sm:flex">
                   <Link
-                    href="https://docs.adrena.xyz/about-adrena/staking"
+                    href="https://docs.adrena.xyz/tokenomics/adx/staking-and-duration-locked-parameters-for-adx"
                     className="text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity"
                     target="_blank"
                     rel="noopener noreferrer"

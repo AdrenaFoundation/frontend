@@ -13,19 +13,25 @@ import { AchievementInfoExtended, PageProps } from '@/types';
 
 
 export default function Achievements({
-    userProfile
-}: PageProps) {
+    userProfile,
+    defaultSort = 'completion',
+    defaultShowOwned = true,
+    defaultShowNotOwned = true,
+}: PageProps & {
+    defaultSort?: 'index' | 'points' | 'completion';
+    defaultShowOwned?: boolean;
+    defaultShowNotOwned?: boolean;
+}) {
     const { allUserProfiles } = useAllUserProfiles({});
-    const [showOwned, setShowOwned] = useState<boolean>(true);
-    const [showNotOwned, setShowNotOwned] = useState<boolean>(true);
-    const [sort, setSort] = useState<'index' | 'points' | 'completion' | null>('completion');
+    const [showOwned, setShowOwned] = useState<boolean>(defaultShowOwned);
+    const [showNotOwned, setShowNotOwned] = useState<boolean>(defaultShowNotOwned);
+    const [sort, setSort] = useState<'index' | 'points' | 'completion' | null>(defaultSort);
 
     const totalCollected = useMemo(() => {
         if (userProfile === null || userProfile === false) return null;
 
         return ACHIEVEMENTS.reduce((total, achievement) => (userProfile.achievements[achievement.index] ? 1 : 0) + total, 0);
     }, [userProfile]);
-
 
     const achievementsPlusPlus: AchievementInfoExtended[] = useMemo(() => {
         return ACHIEVEMENTS.map((achievement) => {
@@ -205,8 +211,6 @@ export default function Achievements({
                         NO ACHIEVEMENT FOUND
                     </div> : null}
                 </div>
-
-
             </StyledContainer>
         </div>
     );

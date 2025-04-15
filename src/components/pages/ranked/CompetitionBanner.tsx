@@ -10,7 +10,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import useCountDown from '@/hooks/useCountDown';
 import { useSelector } from '@/store/store';
-import { ImageRef } from '@/types';
 import { formatNumber } from '@/utils';
 
 export default function CompetitionBanner({
@@ -25,7 +24,7 @@ export default function CompetitionBanner({
     jtoRewards,
     bannerClassName,
 }: {
-    banner: ImageRef;
+    banner: string;
     endDate: Date | null;
     startDate: Date;
     title?: string;
@@ -59,7 +58,8 @@ export default function CompetitionBanner({
                             transition={{}}
                             key={title}
                         >
-                            <Image
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
                                 src={banner}
                                 alt="competition banner"
                                 className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
