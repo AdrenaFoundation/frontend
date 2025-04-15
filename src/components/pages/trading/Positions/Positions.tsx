@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
 import { PositionExtended, Token } from '@/types';
-import { getTokenImage, getTokenSymbol, uiToNative } from '@/utils';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
