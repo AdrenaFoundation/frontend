@@ -88,7 +88,7 @@ export default function RankingStats({
             <div
                 className='w-full h-full absolute opacity-20'
                 style={{
-                    backgroundImage: 'url(/images/expanse-banner.jpg)',
+                    backgroundImage: `url(${TRADING_COMPETITION_SEASONS.expanse.img})`,
                     backgroundSize: 'cover',
                 }}
             />
