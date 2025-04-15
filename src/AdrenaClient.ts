@@ -1587,7 +1587,7 @@ export class AdrenaClient {
       });
   }
 
-  async buildClosePositionLongIx({
+  public async buildClosePositionLongIx({
     position,
     price,
   }: {
@@ -1665,7 +1665,7 @@ export class AdrenaClient {
     return tx;
   }
 
-  async buildClosePositionShortIx({
+  public async buildClosePositionShortIx({
     position,
     price,
   }: {

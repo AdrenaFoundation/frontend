@@ -2,7 +2,7 @@ import { Switch } from '@mui/material';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
@@ -19,7 +19,15 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
 import usePositions from '@/hooks/usePositions';
 import { PageProps, PositionExtended, Token } from '@/types';
-import { getTokenSymbol } from '@/utils';
+import { getTokenSymbol, uiToNative } from '@/utils';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import { useSelector } from '@/store/store';
+import { BN } from '@coral-xyz/anchor';
+import { PRICE_DECIMALS } from '@/constant';
+import { Transaction } from '@solana/web3.js';
+import { POSITION_BLOCK_STYLES } from '@/components/pages/trading/Positions/PositionBlockComponents/PositionBlockStyles';
+
+import crossIcon from '@/../public/images/Icons/cross.svg';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -67,6 +75,8 @@ export default function Trade({
   activeRpc,
   adapters,
 }: PageProps) {
+  const tokenPrices = useSelector((s) => s.tokenPrices);
+
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
@@ -266,6 +276,47 @@ export default function Trade({
     }
   }, [activePositionModal]);
 
+  const triggerCloseAllPosition = useCallback(async () => {
+    if (!positions || positions.length === 0) return;
+
+    // Missing price
+    if (positions.some(p => !tokenPrices[getTokenSymbol(p.token.symbol)])) {
+      return;
+    }
+
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Close All Positions').fire();
+
+    try {
+      // 1%
+      const slippageInBps = 100;
+
+      const ixBuilders = await Promise.all(positions.map(p => p.side === 'long' ? window.adrena.client.buildClosePositionLongIx({
+        position: p,
+        price: uiToNative(tokenPrices[getTokenSymbol(p.token.symbol)]!, PRICE_DECIMALS)
+          .mul(new BN(10_000 - slippageInBps))
+          .div(new BN(10_000)),
+      }) : window.adrena.client.buildClosePositionShortIx({
+        position: p,
+        price: uiToNative(tokenPrices[p.token.symbol]!, PRICE_DECIMALS)
+          .mul(new BN(10_000))
+          .div(new BN(10_000 - slippageInBps)),
+      })));
+
+      const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+
+      const transaction = new Transaction();
+      transaction.add(...ixs);
+
+      await window.adrena.client.signAndExecuteTxAlternative({
+        transaction,
+        notification,
+      });
+    } catch (error) {
+      console.error('error', error);
+    }
+  }, [positions, tokenPrices]);
+
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
       <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
@@ -449,6 +500,13 @@ export default function Trade({
                   Trade history
                 </span>
 
+                <Button
+                  size="xs"
+                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[13em] ml-auto')}
+                  title="Close All Positions"
+                  rounded={false}
+                  onClick={() => triggerCloseAllPosition()}
+                />
               </div>
 
               {view === 'history' ? (
@@ -486,7 +544,7 @@ export default function Trade({
           </>
         ) : (
           <div className="flex">
-            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col">
+            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col relative">
               <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
                 <span
                   className={twMerge(
@@ -514,6 +572,7 @@ export default function Trade({
                 >
                   Limit orders
                 </span>
+
                 <div className={twMerge(
                   'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
                   view === 'limitOrder' ? 'opacity-100' : 'opacity-40'
@@ -531,6 +590,14 @@ export default function Trade({
                   Trade history
                 </span>
 
+                <Button
+                  size="xs"
+                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[3em] max-w-[3em] ml-auto')}
+                  title=""
+                  icon={crossIcon}
+                  rounded={false}
+                  onClick={() => triggerCloseAllPosition()}
+                />
               </div>
 
               {view === 'history' ? (
