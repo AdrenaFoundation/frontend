@@ -1,4 +1,6 @@
+import { BN } from '@coral-xyz/anchor';
 import { Switch } from '@mui/material';
+import { Transaction } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
@@ -6,28 +8,25 @@ import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import crossIcon from '@/../public/images/Icons/cross.svg';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import LimitOrder from '@/components/pages/trading/LimitOrder/LimitOrder';
+import { POSITION_BLOCK_STYLES } from '@/components/pages/trading/Positions/PositionBlockComponents/PositionBlockStyles';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
+import { PRICE_DECIMALS } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
 import usePositions from '@/hooks/usePositions';
+import { useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol, uiToNative } from '@/utils';
-import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import { useSelector } from '@/store/store';
-import { BN } from '@coral-xyz/anchor';
-import { PRICE_DECIMALS } from '@/constant';
-import { Transaction } from '@solana/web3.js';
-import { POSITION_BLOCK_STYLES } from '@/components/pages/trading/Positions/PositionBlockComponents/PositionBlockStyles';
-
-import crossIcon from '@/../public/images/Icons/cross.svg';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -276,6 +275,34 @@ export default function Trade({
     }
   }, [activePositionModal]);
 
+  const triggerCancelAllLimitOrder = useCallback(async () => {
+    if (!limitOrderBook || limitOrderBook.limitOrders.length === 0) return;
+
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Cancel All Limit Order').fire();
+
+    try {
+      const ixBuilders = await Promise.all(limitOrderBook.limitOrders.map(lo => window.adrena.client.buildCancelLimitOrderIx({
+        id: lo.id,
+        collateralCustody: lo.collateralCustody,
+      })));
+
+      const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+
+      const transaction = new Transaction();
+      transaction.add(...ixs);
+
+      await window.adrena.client.signAndExecuteTxAlternative({
+        transaction,
+        notification,
+      });
+
+      reload();
+    } catch (error) {
+      console.error('error', error);
+    }
+  }, [limitOrderBook, reload]);
+
   const triggerCloseAllPosition = useCallback(async () => {
     if (!positions || positions.length === 0) return;
 
@@ -500,13 +527,21 @@ export default function Trade({
                   Trade history
                 </span>
 
-                <Button
+                {view === 'positions' && positions?.length ? <Button
                   size="xs"
                   className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[13em] ml-auto')}
                   title="Close All Positions"
                   rounded={false}
                   onClick={() => triggerCloseAllPosition()}
-                />
+                /> : null}
+
+                {view === 'limitOrder' && limitOrderBook?.limitOrders.length ? <Button
+                  size="xs"
+                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[15em] ml-auto')}
+                  title="Cancel All Limit Order"
+                  rounded={false}
+                  onClick={() => triggerCancelAllLimitOrder()}
+                /> : null}
               </div>
 
               {view === 'history' ? (
@@ -590,14 +625,23 @@ export default function Trade({
                   Trade history
                 </span>
 
-                <Button
+                {view === 'positions' && positions?.length ? <Button
                   size="xs"
                   className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[3em] max-w-[3em] ml-auto')}
                   title=""
                   icon={crossIcon}
                   rounded={false}
                   onClick={() => triggerCloseAllPosition()}
-                />
+                /> : null}
+
+                {view === 'limitOrder' && limitOrderBook?.limitOrders.length ? <Button
+                  size="xs"
+                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[3em] max-w-[3em] ml-auto')}
+                  title=""
+                  icon={crossIcon}
+                  rounded={false}
+                  onClick={() => triggerCancelAllLimitOrder()}
+                /> : null}
               </div>
 
               {view === 'history' ? (
