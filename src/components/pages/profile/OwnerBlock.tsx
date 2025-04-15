@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
+import copyIcon from '@/../../public/images/copy.svg';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
@@ -13,9 +14,9 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { ACHIEVEMENTS, PROFILE_PICTURES, USER_PROFILE_TITLES, WALLPAPERS } from '@/constant';
 import { ProfilePicture, UserProfileExtended, UserProfileTitle, Wallpaper } from '@/types';
+import { addNotification } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
-import walletIcon from '../../../../public/images/wallet-icon.svg';
 
 export default function OwnerBloc({
   userProfile,
@@ -376,21 +377,37 @@ export default function OwnerBloc({
 
         <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
           <div className='flex'>
-            {walletPubkey ? <div className='z-20 flex gap-1'>
-              <Image
-                src={walletIcon}
-                className="w-4 h-4 opacity-100"
-                alt="alp logo"
-              />
+            {walletPubkey ? <Tippy content={"Wallet address"}>
+              <div className='z-20 flex gap-1'>
+                <Image
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(walletPubkey.toBase58());
 
-              <OnchainAccountInfo
-                address={walletPubkey}
-                className="text-sm opacity-90"
-                addressClassName="text-xs tracking-[0.12em]"
-                iconClassName='ml-1'
-                shorten={true}
-              />
-            </div> : null}
+                      addNotification({
+                        title: 'Wallet address copied to clipboard',
+                        message: '',
+                        type: 'info',
+                        duration: 'regular',
+                      });
+                    } catch (err) {
+                      console.error('Could not copy text: ', err);
+                    }
+                  }}
+                  src={copyIcon}
+                  className="w-3 h-3 opacity-90 cursor-pointer hover:opacity-100 mr-1"
+                  alt="copy icon"
+                />
+
+                <OnchainAccountInfo
+                  address={walletPubkey}
+                  className="text-sm opacity-90"
+                  addressClassName="text-xs tracking-[0.12em]"
+                  iconClassName='ml-1'
+                  shorten={true}
+                />
+              </div>
+            </Tippy> : null}
           </div>
 
           <div className='flex mt-1'>
