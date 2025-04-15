@@ -82,7 +82,7 @@ export default function TradingStats({
             bodyClassName='text-base'
         />
 
-        <NumberDisplay
+        {lockedStakedALP ? <NumberDisplay
             title="Locked Staked ALP"
             nb={lockedStakedALP}
             precision={2}
@@ -92,6 +92,6 @@ export default function TradingStats({
             headerClassName='pb-2'
             titleClassName='text-[0.7em] sm:text-[0.7em]'
             bodyClassName='text-base'
-        />
+        /> : null}
     </div>;
 }
