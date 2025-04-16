@@ -1,16 +1,18 @@
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import AdrenaLoreBook from '@/components/pages/ranked/lore/AdrenaLoreBook';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import useInterseason2Data from '@/hooks/useInterseason2Data';
+import useInterseason2Data from '@/hooks/useFactionsData';
 import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
+import { useSelector } from '@/store/store';
 
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange
@@ -133,52 +135,165 @@ function Rank({
     );
 }
 
+function getWeekIndexFromWeek(week: string): number {
+    return Number(week.split(' ')[1]) - 1;
+}
+
+const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
+
 export default function Factions() {
+    const [week, setWeek] = useState<string>('Week 1');
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
     const isMobile = useBetterMediaQuery('(max-width: 1000px)');
 
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
-    const data = useInterseason2Data({ allUserProfilesMetadata });
+    const wallet = useSelector((s) => s.walletState.wallet);
+    const leaderboardData = useInterseason2Data({ allUserProfilesMetadata });
 
-    const top10 = useMemo(() => {
-        return data?.seasonLeaderboard?.slice(0, 10);
-    }, [data]);
+    useEffect(() => {
+        if (!leaderboardData) return;
+
+        const week = leaderboardData.weekLeaderboard.findIndex((week) => {
+            return new Date(week.startDate).getTime() <= Date.now() && new Date(week.endDate).getTime() >= Date.now();
+        });
+
+        if (week !== -1) {
+            setWeek(`Week ${week + 1}`);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [!!leaderboardData]);
+
+    const weekInfo = useMemo(() => leaderboardData?.weekLeaderboard[getWeekIndexFromWeek(week)] ?? null, [week, leaderboardData]);
+
+    const userWeeklyRank: number | null | false = useMemo(() => {
+        if (!wallet || !weekInfo) return null;
+
+        return weekInfo.ranks.find((p) => p.wallet.toBase58() === wallet.walletAddress)?.rank ?? false;
+    }, [wallet, weekInfo]);
+
+    const userSeasonRank: number | null | false = useMemo(() => {
+        if (!wallet || !leaderboardData) return null;
+
+        return leaderboardData.seasonLeaderboard.find((p) => p.wallet.toBase58() === wallet?.walletAddress)?.rank ?? false;
+    }, [leaderboardData, wallet]);
+
+    const weeklyStats = useMemo(() => {
+        if (!weekInfo) return null;
+
+        return weekInfo.ranks.reduce((acc, rank) => {
+            if (!rank.wallet.equals(PublicKey.default)) {
+                acc.totalVolume += rank.volume;
+                acc.totalFees += rank.fees;
+                acc.totalUsers += 1;
+            }
+
+            return acc;
+        }, {
+            totalUsers: 0,
+            totalVolume: 0,
+            totalFees: 0,
+        });
+    }, [weekInfo]);
+
+    const seasonStats = useMemo(() => {
+        const ranks = leaderboardData?.seasonLeaderboard;
+
+        if (!ranks) return null;
+
+        return ranks.reduce((acc, rank) => {
+            if (!rank.wallet.equals(PublicKey.default)) {
+                acc.totalVolume += rank.volume;
+                acc.totalFees += rank.fees;
+                acc.totalUsers += 1;
+            }
+
+            return acc;
+        }, {
+            totalUsers: 0,
+            totalVolume: 0,
+            totalFees: 0,
+        });
+    }, [leaderboardData?.seasonLeaderboard]);
 
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col pb-20 items-center gap-10">
+
+                <div>
+
+                </div>
+
+                <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4 pb-10 md:pb-14")}>
+                    <NumberDisplay
+                        title="Traders"
+                        nb={weeklyStats?.totalUsers ?? null}
+                        format="number"
+                        precision={0}
+                        className={numberDisplayClasses}
+                        headerClassName='pb-2'
+                        bodyClassName='text-[0.8em]'
+                        titleClassName='text-[0.7em] text-base'
+                    />
+
+                    <NumberDisplay
+                        title="Volume"
+                        nb={weeklyStats?.totalVolume ?? null}
+                        format="currency"
+                        prefix='$'
+                        isAbbreviate={true}
+                        isAbbreviateIcon={false}
+                        isDecimalDimmed={false}
+                        precision={0}
+                        className={numberDisplayClasses}
+                        prefixClassName="text-[0.9em]"
+                        headerClassName='pb-2'
+                        bodyClassName='text-[0.8em]'
+                        titleClassName='text-[0.7em] text-base'
+                    />
+
+                    <NumberDisplay
+                        title="Fees"
+                        nb={weeklyStats?.totalFees ?? null}
+                        format="currency"
+                        prefix='$'
+                        isAbbreviate={true}
+                        isAbbreviateIcon={false}
+                        isDecimalDimmed={false}
+                        precision={0}
+                        className={numberDisplayClasses}
+                        prefixClassName="text-[0.9em]"
+                        headerClassName='pb-2'
+                        bodyClassName='text-[0.8em]'
+                        titleClassName='text-[0.7em] text-base'
+                    />
+                </div>
+
                 <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>Those who rise now will lead the next war...</div>
 
-                <div className="flex items-center pl-4 pr-4 max-w-full mt-8">
+                {/* <div className="flex items-center pl-4 pr-4 max-w-full mt-8">
                     {isMobile ? <div className='flex flex-wrap items-center justify-center gap-10'>
-                        {/* Team A */}
                         <div className='flex flex-col items-center gap-[6em] mt-16'>
                             <Rank team='A' rank="General" user={top10?.[0]} setActiveProfile={setActiveProfile} />
                             <Rank team='A' rank="Lieutenant" user={top10?.[2]} setActiveProfile={setActiveProfile} />
                             <Rank team='A' rank="Sergeant" user={top10?.[4]} setActiveProfile={setActiveProfile} />
                         </div>
 
-                        {/* Team B */}
                         <div className='flex flex-col items-center gap-[6em] mt-16'>
                             <Rank team='B' rank="General" user={top10?.[1]} setActiveProfile={setActiveProfile} />
                             <Rank team='B' rank="Lieutenant" user={top10?.[3]} setActiveProfile={setActiveProfile} />
                             <Rank team='B' rank="Sergeant" user={top10?.[5]} setActiveProfile={setActiveProfile} />
                         </div>
                     </div> : <div className='flex w-full items-end mt-8 gap-2'>
-                        {/* Team A */}
-
                         <Rank team='A' rank="Sergeant" user={top10?.[4]} setActiveProfile={setActiveProfile} />
                         <Rank team='A' rank="Lieutenant" user={top10?.[2]} setActiveProfile={setActiveProfile} />
                         <Rank team='A' rank="General" user={top10?.[0]} setActiveProfile={setActiveProfile} />
-
-                        {/* Team B */}
 
                         <Rank team='B' rank="General" user={top10?.[1]} setActiveProfile={setActiveProfile} />
                         <Rank team='B' rank="Lieutenant" user={top10?.[3]} setActiveProfile={setActiveProfile} />
                         <Rank team='B' rank="Sergeant" user={top10?.[5]} setActiveProfile={setActiveProfile} />
                     </div>}
-                </div>
+                </div> */}
 
                 <div className='w-full h-[1px] bg-bcolor mt-10 mb-10' />
 
