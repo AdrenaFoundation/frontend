@@ -41,9 +41,9 @@ export default function AumChart() {
           case '7d':
             return 'poolinfohourly';
           case '1M':
-            return 'poolinfodaily';
+            return 'poolinfohourly';
           case '3M':
-            return 'poolinfodaily';
+            return 'poolinfohourly';
           case '6M':
             return 'poolinfodaily';
           default:

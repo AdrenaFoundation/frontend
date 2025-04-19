@@ -142,7 +142,7 @@ export default function Factions() {
     const data = useInterseason2Data({ allUserProfilesMetadata });
 
     const top10 = useMemo(() => {
-        return data?.seasonLeaderboard?.slice(0, 10);
+        return data?.seasonLeaderboard?.sort((a, b) => b.totalPoints - a.totalPoints).slice(0, 10);
     }, [data]);
 
     return (
