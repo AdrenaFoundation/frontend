@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -11,7 +12,6 @@ import { useSelector } from '@/store/store';
 import { PositionExtended, Token, UserProfileMetadata } from '@/types';
 import { formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getTokenSymbol } from '@/utils';
 
-import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import ViewProfileModal from '../../profile/ViewProfileModal';
 import { ButtonGroup } from './PositionBlockComponents/ButtonGroup';
 import { LiquidationWarning } from './PositionBlockComponents/LiquidationWarning';
@@ -22,7 +22,6 @@ import { PositionHeader } from './PositionBlockComponents/PositionHeader';
 import { PositionName } from './PositionBlockComponents/PositionName';
 import { ValueColumn } from './PositionBlockComponents/ValueColumn';
 import SharePositionModal from './SharePositionModal';
-import { PublicKey } from '@solana/web3.js';
 
 interface PositionBlockProps {
   bodyClassName?: string;
