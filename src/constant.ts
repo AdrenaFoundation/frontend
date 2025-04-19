@@ -383,13 +383,12 @@ export const TRADING_COMPETITION_SEASONS = {
     bannerClassName: "h-[30em] justify-center",
   },
 
-  // Inter-season for now, modify when season 2 starts
   factions: {
     img: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/factions-banner-OKwsUEBqusOest7hhIPaKsklmSlNdh.jpg",
     title: "Factions",
-    subTitle: "Season 2 is coming",
-    startDate: new Date("2025-04-25T23:59:59.999Z"),
-    endDate: new Date("2025-04-30T23:59:59.999Z"), // Not used
+    subTitle: "Season 2",
+    startDate: new Date("2025-04-30T23:59:59.999Z"),
+    endDate: new Date("2025-07-09T23:59:59.999Z"),
     gradient: "", // Not used. Specific if in CompetitionBanner component
     primaryColor: "#247CFA",
     adxRewards: 0,
