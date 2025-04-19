@@ -1,10 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
+import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import InputString from '@/components/common/inputString/InputString';
-import usdcLogo from '@/../../public/images/usdc.svg';
+import Modal from '@/components/common/Modal/Modal';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -13,10 +14,12 @@ import RankingStats from '@/components/pages/profile/RankingStats';
 import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import VestStats from '@/components/pages/profile/VestStats';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import ClaimBlock from '@/components/pages/stake/ClaimBlock';
 import LockedStakes from '@/components/pages/stake/LockedStakes';
 import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
+import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import useTraderInfo from '@/hooks/useTraderInfo';
@@ -29,11 +32,6 @@ import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
 import Achievements from '../achievements';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
-import { AnimatePresence } from 'framer-motion';
-import Modal from '@/components/common/Modal/Modal';
-import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 const claimHistoryItemsPerPage = 4;
 
