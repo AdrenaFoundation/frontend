@@ -9,6 +9,7 @@ import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { PageProps } from '@/types';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
+import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 
 export default function Buy({ connected, mainPool }: PageProps) {
   const aumUsd = useAssetsUnderManagement();
@@ -66,22 +67,16 @@ export default function Buy({ connected, mainPool }: PageProps) {
           </div>
         </div>
 
-        <div className="mt-[50px]">
-          <div className="p-3 pl-6 border-l-2 border-white">
-            <h3 className="font-boldy text-lg">GET PASSIVE INCOME</h3>
-            <p className="text-base opacity-75 max-w-96">
-              The value of each share of ALP naturally appreciates as fee
-              revenue grows.
-            </p>
+        <StyledContainer className="p-4 mt-12">
+          <div className='h-[15em] w-full'>
+            <AprLpChart isSmallScreen={false} />
           </div>
-        </div>
+        </StyledContainer>
       </div>
 
       <StyledContainer className="max-w-[400px] lg:max-w-[25em] mb-auto">
         <ALPSwap connected={connected} />
       </StyledContainer>
     </div>
-
-
   );
 }
