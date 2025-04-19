@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import InputString from '@/components/common/inputString/InputString';
+import usdcLogo from '@/../../public/images/usdc.svg';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -22,12 +23,17 @@ import useTraderInfo from '@/hooks/useTraderInfo';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { ClaimHistoryExtended, LockedStakeExtended, PageProps } from '@/types';
+import { ClaimHistoryExtended, LockedStakeExtended, PageProps, UserProfileExtended } from '@/types';
 import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
 import Achievements from '../achievements';
+import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { AnimatePresence } from 'framer-motion';
+import Modal from '@/components/common/Modal/Modal';
+import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 const claimHistoryItemsPerPage = 4;
 
@@ -37,6 +43,7 @@ export default function WalletDigger({
 }: {
     view: string;
 } & PageProps) {
+    const [activeProfile, setActiveProfile] = useState<UserProfileExtended | null>(null);
     const [moreStakingInfo, setMoreStakingInfo] = useState(false);
     const [morePositionInfo, setMorePositionInfo] = useState(false);
 
@@ -45,6 +52,11 @@ export default function WalletDigger({
 
     const { userProfile } = useUserProfile(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
     const { userVest } = useUserVest(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
+
+    const { allUserProfiles: allRefereesProfiles } =
+        useAllUserProfiles({
+            referrerProfileFilter: userProfile ? userProfile.pubkey : null,
+        });
 
     const positions = usePositionsByAddress({
         walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
@@ -194,251 +206,332 @@ export default function WalletDigger({
         />
     </div>;
 
-    return <div className="flex flex-col gap-2 p-2 w-full">
-        <StyledContainer className="p-4 w-full relative overflow-hidden">
-            <div className="flex flex-col w-full items-center justify-center gap-2 relative h-[15em]">
-                <div>Target Wallet</div>
+    return <>
+        <div className="flex flex-col gap-2 p-2 w-full">
+            <StyledContainer className="p-4 w-full relative overflow-hidden">
+                <div className="flex flex-col w-full items-center justify-center gap-2 relative h-[15em]">
+                    <div>Target Wallet</div>
 
-                {targetWalletPubkey ? <OnchainAccountInfo iconClassName="w-[0.7em] h-[0.7em] ml-4" address={targetWalletPubkey} noAddress={true} className='absolute right-2 top-2' /> : null}
+                    {targetWalletPubkey ? <OnchainAccountInfo iconClassName="w-[0.7em] h-[0.7em] ml-4" address={targetWalletPubkey} noAddress={true} className='absolute right-2 top-2' /> : null}
 
-                <InputString
-                    value={targetWallet ?? ''}
-                    onChange={setTargetWallet}
-                    placeholder="i.e 9zXR1TckFZRt6aVnJZfJ4JrG6WQFr4YZ3ouAgz9AcfST"
-                    className="text-center w-[40em] max-w-full bg-inputcolor border rounded-xl p-2"
-                    inputFontSize="0.7em"
-                />
-
-                <div className={twMerge('text-sm', !targetWallet?.length ? 'opacity-0' : 'opacity-50 hover:opacity-100 cursor-pointer')} onClick={() => {
-                    setTargetWalletPubkey(null);
-                    setTargetWallet(null);
-                }}>reset</div>
-            </div>
-
-            <Image
-                className="h-[15em] w-[15em] absolute -bottom-2 right-0 -z-10 opacity-40 grayscale"
-                src={shovelMonster}
-                height={600}
-                width={600}
-                alt="Shovel monster"
-            />
-        </StyledContainer >
-
-        {targetWalletPubkey ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
-            <UserRelatedAdrenaAccounts
-                className="h-auto flex mt-auto rounded-lg"
-                userProfile={userProfile ?? false}
-                userVest={userVest ? userVest : null}
-                positions={positions}
-                stakingAccounts={stakingAccounts}
-            />
-        </StyledContainer > : null}
-
-        {
-            targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
-                <h1 className='ml-auto mr-auto'>STAKING</h1>
-
-                {moreStakingInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMoreStakingInfo(false)}>hide details</div> : null}
-
-                <div className='w-full h-[1px] bg-bcolor mt-2' />
-
-                <div className='flex gap-y-4 mt-2 flex-wrap'>
-                    <NumberDisplay
-                        title="LIQUID STAKED ADX"
-                        nb={stakingAccounts?.ADX?.liquidStake.amount ? nativeToUi(stakingAccounts.ADX.liquidStake.amount, window.adrena.client.adxToken.decimals) : 0}
-                        format="number"
-                        suffix='ADX'
-                        precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
+                    <InputString
+                        value={targetWallet ?? ''}
+                        onChange={setTargetWallet}
+                        placeholder="i.e 9zXR1TckFZRt6aVnJZfJ4JrG6WQFr4YZ3ouAgz9AcfST"
+                        className="text-center w-[40em] max-w-full bg-inputcolor border rounded-xl p-2"
+                        inputFontSize="0.7em"
                     />
 
-                    <NumberDisplay
-                        title="LOCKED STAKED ADX"
-                        nb={totalStakedAdx}
-                        format="number"
-                        suffix='ADX'
-                        precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
-                    />
-
-                    {totalStakedAlp > 0 ? <NumberDisplay
-                        title="LOCKED STAKED ALP"
-                        nb={totalStakedAlp}
-                        format="number"
-                        suffix='ALP'
-                        precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
-                    /> : null}
-
-                    <NumberDisplay
-                        title="TOTAL CLAIMED USDC"
-                        nb={allTimeClaimedUsdc}
-                        format="currency"
-                        precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
-                    />
-
-                    <NumberDisplay
-                        title="TOTAL CLAIMED ADX"
-                        nb={allTimeClaimedAdx}
-                        format="number"
-                        suffix='ADX'
-                        precision={0}
-                        className='border-0 min-w-[12em]'
-                        bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                        headerClassName='pb-2'
-                        titleClassName='text-[0.7em] sm:text-[0.7em]'
-                    />
+                    <div className={twMerge('text-sm', !targetWallet?.length ? 'opacity-0' : 'opacity-50 hover:opacity-100 cursor-pointer')} onClick={() => {
+                        setTargetWalletPubkey(null);
+                        setTargetWallet(null);
+                    }}>reset</div>
                 </div>
 
-                {moreStakingInfo ? <>
-                    <div className='w-full h-[1px] bg-bcolor mt-2' />
-
-                    <h4 className='ml-4 mt-4'>Staking List</h4>
-
-                    <div className='flex w-full pl-4 pr-4'>
-                        <div className='flex flex-col w-full'>
-                            <div className='flex w-full gap-4 flex-wrap'>
-                                {adxLockedStakes ? <LockedStakes
-                                    readonly={true}
-                                    lockedStakes={adxLockedStakes}
-                                    className='gap-3 mt-4 w-[25em] grow'
-                                    handleRedeem={() => { /* readonly */ }}
-                                    handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
-                                    handleClickOnUpdateLockedStake={() => { /* readonly */ }}
-                                /> : null}
-
-                                {alpLockedStakes && alpLockedStakes.length ? <LockedStakes
-                                    readonly={true}
-                                    lockedStakes={alpLockedStakes}
-                                    className='gap-3 mt-4 w-[25em] grow'
-                                    handleRedeem={() => { /* readonly */ }}
-                                    handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
-                                    handleClickOnUpdateLockedStake={() => { /* readonly */ }}
-                                /> : null}
-                            </div>
-
-                            <div className='flex w-full gap-4 mt-2 flex-wrap'>
-                                <div className='flex flex-col w-[30em] grow'>
-                                    <h4 className='ml-4 mt-4 mb-4'>ADX Staking claim history</h4>
-
-                                    {paginatedAdxClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
-
-                                    <Pagination
-                                        currentPage={adxClaimHistoryCurrentPage}
-                                        totalItems={claimsHistoryAdx ? claimsHistoryAdx.length : 0}
-                                        itemsPerPage={claimHistoryItemsPerPage}
-                                        onPageChange={setAdxClaimHistoryCurrentPage}
-                                    />
-                                </div>
-
-                                <div className='flex flex-col w-[30em] grow'>
-                                    <h4 className='ml-4 mt-4 mb-4'>ALP Staking claim history</h4>
-
-                                    {paginatedAlpClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
-
-                                    <Pagination
-                                        currentPage={alpClaimHistoryCurrentPage}
-                                        totalItems={claimsHistoryAlp ? claimsHistoryAlp.length : 0}
-                                        itemsPerPage={claimHistoryItemsPerPage}
-                                        onPageChange={setAlpClaimHistoryCurrentPage}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </> : null}
-
-                {seeDetails(moreStakingInfo, setMoreStakingInfo)}
-            </StyledContainer> : null
-        }
-
-        {
-            targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
-                <h1 className='ml-auto mr-auto'>POSITIONS</h1>
-
-                {morePositionInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMorePositionInfo(false)}>hide details</div> : null}
-
-                {userProfile ? <>
-                    <TradingStats
-                        traderInfo={traderInfo}
-                        livePositionsNb={positions === null ? null : positions.length}
-                        className="gap-y-4 mb-2"
-                    />
-
-                    <div className='w-full h-[1px] bg-bcolor mt-2' />
-                </> : null}
-
-                {morePositionInfo ? <>
-                    <div className='w-full h-[1px] bg-bcolor mt-2' />
-
-                    <h4 className='ml-4 mt-4 mb-4'>Live Positions</h4>
-
-                    <div className='flex flex-col w-full pl-4 pr-4'>
-                        <div className="flex flex-wrap justify-between gap-2">
-                            {positions !== null && positions.length ? (
-                                <div className="flex flex-col w-full gap-2">
-                                    {positions.map((position) => (
-                                        <PositionBlock
-                                            readOnly={true}
-                                            key={position.pubkey.toBase58()}
-                                            position={position}
-                                            setTokenB={() => { }}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center w-full py-4 opacity-50">
-                                    No positions 📭
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <h4 className='ml-4 mt-4 mb-4'>History</h4>
-
-                    <div className='flex flex-col w-full pl-4 pr-4'>
-                        <PositionsHistory
-                            walletAddress={targetWalletPubkey?.toBase58() ?? null}
-                            connected={true}
-                            exportButtonPosition='bottom-left'
-                        />
-                    </div></> : null}
-
-                {seeDetails(morePositionInfo, setMorePositionInfo)}
-            </StyledContainer> : null
-        }
-
-        {
-            targetWalletPubkey && userVest ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
-                <VestStats vest={userVest} readonly={true} />
-            </StyledContainer> : null
-        }
-
-        {targetWalletPubkey && userProfile ? <Achievements {...props} userProfile={userProfile} defaultSort='points' defaultShowOwned={true} defaultShowNotOwned={false} /> : null}
-
-        {
-            targetWalletPubkey && expanseRanking && awakeningRanking ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
-                <h1 className='ml-auto mr-auto'>TRADING COMPETITION</h1>
-
-                <RankingStats
-                    expanseRanking={expanseRanking}
-                    awakeningRanking={awakeningRanking}
-                    className="gap-y-4 pt-2 pb-2"
+                <Image
+                    className="h-[15em] w-[15em] absolute -bottom-2 right-0 -z-10 opacity-40 grayscale"
+                    src={shovelMonster}
+                    height={600}
+                    width={600}
+                    alt="Shovel monster"
                 />
-            </StyledContainer> : null
-        }
-    </div >;
+            </StyledContainer >
+
+            {targetWalletPubkey ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
+                <UserRelatedAdrenaAccounts
+                    className="h-auto flex mt-auto rounded-lg"
+                    userProfile={userProfile ?? false}
+                    userVest={userVest ? userVest : null}
+                    positions={positions}
+                    stakingAccounts={stakingAccounts}
+                />
+            </StyledContainer > : null}
+
+            {
+                targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
+                    <h1 className='ml-auto mr-auto'>STAKING</h1>
+
+                    {moreStakingInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMoreStakingInfo(false)}>hide details</div> : null}
+
+                    <div className='w-full h-[1px] bg-bcolor mt-2' />
+
+                    <div className='flex gap-y-4 mt-2 flex-wrap'>
+                        <NumberDisplay
+                            title="LIQUID STAKED ADX"
+                            nb={stakingAccounts?.ADX?.liquidStake.amount ? nativeToUi(stakingAccounts.ADX.liquidStake.amount, window.adrena.client.adxToken.decimals) : 0}
+                            format="number"
+                            suffix='ADX'
+                            precision={0}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        />
+
+                        <NumberDisplay
+                            title="LOCKED STAKED ADX"
+                            nb={totalStakedAdx}
+                            format="number"
+                            suffix='ADX'
+                            precision={0}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        />
+
+                        {totalStakedAlp > 0 ? <NumberDisplay
+                            title="LOCKED STAKED ALP"
+                            nb={totalStakedAlp}
+                            format="number"
+                            suffix='ALP'
+                            precision={0}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        /> : null}
+
+                        <NumberDisplay
+                            title="TOTAL CLAIMED USDC"
+                            nb={allTimeClaimedUsdc}
+                            format="currency"
+                            precision={0}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        />
+
+                        <NumberDisplay
+                            title="TOTAL CLAIMED ADX"
+                            nb={allTimeClaimedAdx}
+                            format="number"
+                            suffix='ADX'
+                            precision={0}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        />
+                    </div>
+
+                    {moreStakingInfo ? <>
+                        <div className='w-full h-[1px] bg-bcolor mt-2' />
+
+                        <h4 className='ml-4 mt-4'>Staking List</h4>
+
+                        <div className='flex w-full pl-4 pr-4'>
+                            <div className='flex flex-col w-full'>
+                                <div className='flex w-full gap-4 flex-wrap'>
+                                    {adxLockedStakes ? <LockedStakes
+                                        readonly={true}
+                                        lockedStakes={adxLockedStakes}
+                                        className='gap-3 mt-4 w-[25em] grow'
+                                        handleRedeem={() => { /* readonly */ }}
+                                        handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
+                                        handleClickOnUpdateLockedStake={() => { /* readonly */ }}
+                                    /> : null}
+
+                                    {alpLockedStakes && alpLockedStakes.length ? <LockedStakes
+                                        readonly={true}
+                                        lockedStakes={alpLockedStakes}
+                                        className='gap-3 mt-4 w-[25em] grow'
+                                        handleRedeem={() => { /* readonly */ }}
+                                        handleClickOnFinalizeLockedRedeem={() => { /* readonly */ }}
+                                        handleClickOnUpdateLockedStake={() => { /* readonly */ }}
+                                    /> : null}
+                                </div>
+
+                                <div className='flex w-full gap-4 mt-2 flex-wrap'>
+                                    <div className='flex flex-col w-[30em] grow'>
+                                        <h4 className='ml-4 mt-4 mb-4'>ADX Staking claim history</h4>
+
+                                        {paginatedAdxClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
+
+                                        <Pagination
+                                            currentPage={adxClaimHistoryCurrentPage}
+                                            totalItems={claimsHistoryAdx ? claimsHistoryAdx.length : 0}
+                                            itemsPerPage={claimHistoryItemsPerPage}
+                                            onPageChange={setAdxClaimHistoryCurrentPage}
+                                        />
+                                    </div>
+
+                                    <div className='flex flex-col w-[30em] grow'>
+                                        <h4 className='ml-4 mt-4 mb-4'>ALP Staking claim history</h4>
+
+                                        {paginatedAlpClaimsHistory?.map((claim) => <ClaimBlock key={claim.claim_id} claim={claim} />)}
+
+                                        <Pagination
+                                            currentPage={alpClaimHistoryCurrentPage}
+                                            totalItems={claimsHistoryAlp ? claimsHistoryAlp.length : 0}
+                                            itemsPerPage={claimHistoryItemsPerPage}
+                                            onPageChange={setAlpClaimHistoryCurrentPage}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </> : null}
+
+                    {seeDetails(moreStakingInfo, setMoreStakingInfo)}
+                </StyledContainer> : null
+            }
+
+            {
+                targetWalletPubkey ? <StyledContainer className="p-2 w-full relative" bodyClassName='gap-1'>
+                    <h1 className='ml-auto mr-auto'>POSITIONS</h1>
+
+                    {morePositionInfo ? <div className='absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2' onClick={() => setMorePositionInfo(false)}>hide details</div> : null}
+
+                    {userProfile ? <>
+                        <TradingStats
+                            traderInfo={traderInfo}
+                            livePositionsNb={positions === null ? null : positions.length}
+                            className="gap-y-4 mb-2"
+                        />
+
+                        <div className='w-full h-[1px] bg-bcolor mt-2' />
+                    </> : null}
+
+                    {morePositionInfo ? <>
+                        <div className='w-full h-[1px] bg-bcolor mt-2' />
+
+                        <h4 className='ml-4 mt-4 mb-4'>Live Positions</h4>
+
+                        <div className='flex flex-col w-full pl-4 pr-4'>
+                            <div className="flex flex-wrap justify-between gap-2">
+                                {positions !== null && positions.length ? (
+                                    <div className="flex flex-col w-full gap-2">
+                                        {positions.map((position) => (
+                                            <PositionBlock
+                                                readOnly={true}
+                                                key={position.pubkey.toBase58()}
+                                                position={position}
+                                                setTokenB={() => { }}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center w-full py-4 opacity-50">
+                                        No positions 📭
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <h4 className='ml-4 mt-4 mb-4'>History</h4>
+
+                        <div className='flex flex-col w-full pl-4 pr-4'>
+                            <PositionsHistory
+                                walletAddress={targetWalletPubkey?.toBase58() ?? null}
+                                connected={true}
+                                exportButtonPosition='bottom-left'
+                            />
+                        </div></> : null}
+
+                    {seeDetails(morePositionInfo, setMorePositionInfo)}
+                </StyledContainer> : null
+            }
+
+            {
+                targetWalletPubkey && userVest ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
+                    <VestStats vest={userVest} readonly={true} />
+                </StyledContainer> : null
+            }
+
+            {
+                targetWalletPubkey && expanseRanking && awakeningRanking ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
+                    <h1 className='ml-auto mr-auto'>TRADING COMPETITION</h1>
+
+                    <RankingStats
+                        expanseRanking={expanseRanking}
+                        awakeningRanking={awakeningRanking}
+                        className="gap-y-4 pt-2 pb-2"
+                    />
+                </StyledContainer> : null
+            }
+
+            {
+                targetWalletPubkey && allRefereesProfiles !== null ? <StyledContainer className="p-2 w-full" bodyClassName='gap-1'>
+                    <h1 className='ml-auto mr-auto'>REFERRALS</h1>
+
+                    <div className='w-full h-[1px] bg-bcolor mt-2' />
+
+                    <div className='flex w-full'>
+                        <NumberDisplay
+                            title="REFERRED PROFILES"
+                            nb={allRefereesProfiles.length}
+                            format="number"
+                            precision={0}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        />
+
+                        <NumberDisplay
+                            title="CLAIMABLE REWARDS"
+                            nb={userProfile ? userProfile.claimableReferralFeeUsd : 0}
+                            format="currency"
+                            precision={2}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        />
+
+                        <NumberDisplay
+                            title="TOTAL GENERATED"
+                            nb={userProfile ? userProfile.totalReferralFeeUsd : 0}
+                            format="currency"
+                            precision={2}
+                            className='border-0 min-w-[12em]'
+                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                            headerClassName='pb-2'
+                            titleClassName='text-[0.7em] sm:text-[0.7em]'
+                        />
+                    </div>
+
+                    <div className='flex flex-col gap-2 items-center w-full border pt-2 pb-2 bg-third/40'>
+                        {allRefereesProfiles !== null ? allRefereesProfiles.map((referee, i) => <div key={`one-referee-${i}`} className="w-full gap-2 flex flex-col">
+                            {i > 0 ? <div className='w-full h-[1px] bg-bcolor' /> : null}
+
+                            <div className='w-full items-center justify-center flex flex-col gap-2  opacity-70 hover:opacity-100 cursor-pointer' onClick={() => {
+                                setActiveProfile(referee);
+                            }}>
+                                <div className='flex text-sm text-white'>
+                                    {referee.nickname.length ? referee.nickname : referee.owner.toBase58()}
+                                </div>
+                            </div>
+                        </div>) : <></>}
+
+                        {allRefereesProfiles !== null && allRefereesProfiles.length === 0 ? <div className='w-full items-center justify-center flex font-archivo text-sm opacity-80 pt-8 pb-8'>
+                            No referee yet.
+                        </div> : null}
+                    </div>
+                </StyledContainer> : null
+            }
+
+            {targetWalletPubkey && userProfile ? <Achievements {...props} userProfile={userProfile} defaultSort='points' defaultShowOwned={true} defaultShowNotOwned={false} /> : null}
+        </div>
+
+        <AnimatePresence>
+            {activeProfile && (
+                <Modal
+                    className="h-[80vh] w-full overflow-y-auto"
+                    wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+                    title=""
+                    close={() => setActiveProfile(null)}
+                    isWrapped={false}
+                >
+                    <ViewProfileModal
+                        profile={activeProfile}
+                        close={() => setActiveProfile(null)}
+                    />
+                </Modal>
+            )}
+        </AnimatePresence>
+    </>
+        ;
 }
