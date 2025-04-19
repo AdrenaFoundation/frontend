@@ -4,11 +4,13 @@ import React, { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
+import FormatNumber from '@/components/Number/FormatNumber';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import AdrenaLoreBook from '@/components/pages/ranked/lore/AdrenaLoreBook';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useInterseason2Data from '@/hooks/useInterseason2Data';
+import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 
@@ -134,6 +136,7 @@ function Rank({
 }
 
 export default function Factions() {
+    const wallet = useSelector((state) => state.walletState.wallet);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
     const isMobile = useBetterMediaQuery('(max-width: 1000px)');
@@ -144,6 +147,10 @@ export default function Factions() {
     const top10 = useMemo(() => {
         return data?.seasonLeaderboard?.sort((a, b) => b.totalPoints - a.totalPoints).slice(0, 10);
     }, [data]);
+
+    const userData = useMemo(() => {
+        return data?.seasonLeaderboard?.find((u) => u.wallet.toBase58() === wallet?.walletAddress);
+    }, [data?.seasonLeaderboard, wallet?.walletAddress]);
 
     return (
         <>
@@ -180,7 +187,25 @@ export default function Factions() {
                     </div>}
                 </div>
 
-                <div className='w-full h-[1px] bg-bcolor mt-10 mb-10' />
+                <div className='w-full h-[1px] bg-bcolor mt-6' />
+
+                {userData ? <>
+                    <div className="flex w-full items-center justify-center flex-col gap-2">
+                        <div className="text-sm tracking-[0.2rem] uppercase">So far you have generated</div>
+
+                        <FormatNumber
+                            nb={userData.totalPoints}
+                            format="number"
+                            precision={0}
+                            suffix='mutagens'
+                            suffixClassName='font-archivo tracking-widest text-xs text-[#ff47b5]'
+                            isDecimalDimmed={false}
+                            className='border-0 font-archivo tracking-widest text-xs text-[#ff47b5]'
+                        />
+                    </div>
+
+                    <div className='w-full h-[1px] bg-bcolor mb-4' />
+                </> : null}
 
                 <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>
                     INTRODUCING ADRENA LORE
