@@ -26,7 +26,12 @@ const useSolanaID = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (walletAddress === null) {
+    if (
+      // Do not call Solana ID in localhost as the call is restricted to the domain
+      walletAddress === null ||
+      typeof window === "undefined" ||
+      window.location.hostname === "localhost"
+    ) {
       setData(null);
       return;
     }

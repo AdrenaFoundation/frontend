@@ -61,19 +61,19 @@ export default function StakingRewardVaults({
         </p>
       </div>
 
-      <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow">
+      <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow items-center justify-center w-full">
         <NumberDisplay
           nb={nextAdxRoundUsdcRewards}
           precision={0}
           suffix='USDC'
-          className='border-0 p-0 items-start'
+          className='border-0 p-0'
         />
 
         <NumberDisplay
           nb={nextAdxRoundAdxRewards}
           precision={0}
           suffix='ADX'
-          className='border-0 p-0 items-start'
+          className='border-0 p-0'
         />
       </div>
     </div>

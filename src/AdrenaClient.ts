@@ -5851,8 +5851,9 @@ export class AdrenaClient {
       payerKey: wallet.publicKey,
       recentBlockhash: latestBlockHash.blockhash,
       instructions: transaction.instructions,
-    }).compileToV0Message([]); // Deactivated lookup table for now
-    //.compileToV0Message([lookupTableAccount]);
+    })
+      // .compileToV0Message([]); // Deactivated lookup table
+      .compileToV0Message([lookupTableAccount]);
 
     const versionedTx = new VersionedTransaction(messageV0);
 
