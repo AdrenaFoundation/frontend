@@ -5,11 +5,11 @@ import { twMerge } from 'tailwind-merge';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
+import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { PageProps } from '@/types';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
-import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 
 export default function Buy({ connected, mainPool }: PageProps) {
   const aumUsd = useAssetsUnderManagement();
