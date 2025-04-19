@@ -170,6 +170,13 @@ export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: b
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allPositions.map((x) => x.exitFeeUsd ?? 0).join(',')]);
 
+    const sizeUsd = useMemo(() => {
+        return allPositions.reduce((total, position) => {
+            return total + position.sizeUsd;
+        }, 0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allPositions.map((x) => x.sizeUsd).join(',')]);
+
     return (
         <div className='flex flex-col gap-2'>
             <StyledContainer className="p-0">
@@ -178,6 +185,17 @@ export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: b
                         title="POSITION COUNT"
                         nb={allPositions.length}
                         format="number"
+                        precision={0}
+                        className="border-0 min-w-[12em]"
+                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                        headerClassName="pb-2"
+                        titleClassName="text-[0.7em] sm:text-[0.7em]"
+                    />
+
+                    <NumberDisplay
+                        title="OPEN INTEREST"
+                        nb={sizeUsd}
+                        format="currency"
                         precision={0}
                         className="border-0 min-w-[12em]"
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
