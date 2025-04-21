@@ -39,7 +39,7 @@ export type WalletAdapterName = typeof SUPPORTED_WALLETS[number];
 export const WALLET_COLORS = {
     Phantom: '#ab9ff2',
     Backpack: '#E33E3F',
-    Solflare: '#fda518',
+    Solflare: '#FFEF46',
     WalletConnect: '#0798fe',
     'Coinbase Wallet': '#072b79',
     SquadsX: '#000000',
