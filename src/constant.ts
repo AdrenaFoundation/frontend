@@ -611,11 +611,11 @@ export const USER_PROFILE_TITLES = {
   47: 'Wet and Losing',
   48: 'Underwater',
   49: 'Boss Muncher',
-  50: 'Mutagenic Initiate',
-  51: 'Mutagenic Ascendant',
+  50: 'Initiate',
+  51: 'Ascendant',
   52: 'Mutagenic Apex',
   53: 'Tacticlaws',
-  54: 'Enraged Mastermind',
+  54: 'Mastermind',
 } as const;
 
 export const PROFILE_PICTURES = {
