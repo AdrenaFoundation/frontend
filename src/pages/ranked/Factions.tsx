@@ -1,22 +1,22 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import jtoLogo from '@/../../public/images/jito-logo-2.png';
 import bonkLogo from '@/../public/images/bonk.png';
 import Modal from '@/components/common/Modal/Modal';
 import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import DamageBar from '@/components/pages/ranked/factions/DamageBar';
 import FactionsWeeklyLeaderboard from '@/components/pages/ranked/factions/FactionsWeeklyLeaderboard';
-import HealthBar, { HEALTH_BAR_MUTAGEN } from '@/components/pages/ranked/factions/HealthBar';
+import HealthBar, { HEALTH_BAR_MUTAGEN, TOTAL_ADX_DEFEATED_BOSS, TOTAL_ADX_REWARDS, TOTAL_BONK_REWARDS, TOTAL_JTO_REWARDS } from '@/components/pages/ranked/factions/HealthBar';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useInterseason2Data from '@/hooks/useFactionsData';
 import { UserProfileExtended } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
-import Tippy from '@tippyjs/react';
-import DamageBar from '@/components/pages/ranked/factions/DamageBar';
-import jtoLogo from '@/../../public/images/jito-logo-2.png';
+import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
@@ -95,70 +95,67 @@ export default function Factions() {
                     <div className="text-xxs font-archivo tracking-widest mt-3 text-txtfade w-1/2 text-center uppercase">DAMAGE THE BOSS AND UNLOCK BONK, JTO AND ADX REWARDS</div>
 
                     <div className='flex h-[2em] items-center justify-center gap-4 mb-4 opacity-80'>
-                        <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
-                            <Image
-                                src={window.adrena.client.adxToken.image}
-                                alt="ADX Token"
-                                width={20}
-                                height={20}
-                                loading="eager"
-                                draggable="false"
-                                className="w-5 h-5"
-                            />
-                            1000000 ADX
+                        <div className='flex flex-col'>
+                            <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
+                                <Image
+                                    src={window.adrena.client.adxToken.image}
+                                    alt="ADX Token"
+                                    width={20}
+                                    height={20}
+                                    loading="eager"
+                                    draggable="false"
+                                    className="w-4 h-4"
+                                />
+                                1000000 ADX
+                            </div>
+
+                            <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
+                                max {formatNumber((TOTAL_ADX_REWARDS + TOTAL_ADX_DEFEATED_BOSS) / 10, 0)} ADX
+                            </div>
                         </div>
+
                         <div className='h-full w-[1px] bg-bcolor' />
-                        <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
-                            <Image
-                                src={bonkLogo}
-                                alt="BONK Token"
-                                width={20}
-                                height={20}
-                                loading="eager"
-                                draggable="false"
-                                className="w-5 h-5"
-                            />
-                            1000000 BONK
+
+                        <div className='flex flex-col'>
+                            <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
+                                <Image
+                                    src={bonkLogo}
+                                    alt="BONK Token"
+                                    width={20}
+                                    height={20}
+                                    loading="eager"
+                                    draggable="false"
+                                    className="w-4 h-4"
+                                />
+                                1000000 BONK
+                            </div>
+
+                            <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
+                                max {formatNumber(TOTAL_BONK_REWARDS / 10, 0)} BONK
+                            </div>
                         </div>
+
                         <div className='h-full w-[1px] bg-bcolor' />
-                        <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
-                            <Image
-                                src={jtoLogo}
-                                alt="JTO Token"
-                                width={20}
-                                height={20}
-                                loading="eager"
-                                draggable="false"
-                                className="w-7 h-7"
-                            />
-                            1000000 JTO
+
+                        <div className='flex flex-col'>
+                            <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
+                                <Image
+                                    src={jtoLogo}
+                                    alt="JTO Token"
+                                    width={20}
+                                    height={20}
+                                    loading="eager"
+                                    draggable="false"
+                                    className="w-6 h-6"
+                                />
+                                1000000 JTO
+                            </div>
+
+                            <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
+                                max {formatNumber(TOTAL_JTO_REWARDS / 10, 0)} JTO
+                            </div>
                         </div>
                     </div>
-
-                    {/* 
-                    <div className='flex gap-8'>
-                        <div className='flex flex-col gap-4'>
-                            <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">MAX REWARDS</div>
-
-                            <div className='border h-[4em] w-[8em] flex items-center justify-center flex-col'>
-                                <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">1000000 ADX</div>
-                                <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">1000000 JTO</div>
-                                <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">1000000 BONK</div>
-                            </div>
-                        </div>
-
-                        <div className='h-full w-[1px] bg-bcolor shrink-0' />
-
-                        <div className='flex flex-col gap-4'>
-                            <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">UNLOCKED REWARDS</div>
-
-                            <div className='border h-[4em] w-[8em] flex items-center justify-center flex-col'>
-                                <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">1000000 ADX</div>
-                                <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">1000000 JTO</div>
-                                <div className="text-xxs font-archivo tracking-widest text-txtfade text-center uppercase">1000000 BONK</div>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
 
                 <div className='w-full h-[1px] bg-bcolor' />

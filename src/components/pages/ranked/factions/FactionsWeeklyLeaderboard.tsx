@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,12 +12,8 @@ import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import Rank from './Rank';
-import Tippy from '@tippyjs/react';
 
 const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
-
-const teamAColor = "#FA6724"; // Richer electric blue
-const teamBColor = "#5AA6FA"; // Deep burnt orange
 
 export default function FactionsWeeklyLeaderboard({
     team,
@@ -72,7 +69,7 @@ export default function FactionsWeeklyLeaderboard({
         return data.ranks.map((d, i) => {
             const filler = d.wallet.equals(PublicKey.default);
 
-            const title = Object.entries(officers).find(([title, v]) => v.wallet.equals(d.wallet))?.[0];
+            const title = Object.entries(officers).find(([, v]) => v.wallet.equals(d.wallet))?.[0];
 
             return {
                 rowTitle: '',
@@ -191,7 +188,7 @@ export default function FactionsWeeklyLeaderboard({
                     : title ? team === 'A' ? 'bg-[#FA6724]/20' : 'bg-[#5AA6FA]/10' : null),
             };
         });
-    }, [data, onClickUserProfile, wallet]);
+    }, [data, officers, onClickUserProfile, team, wallet?.walletAddress]);
 
     if (!data || !dataReady) {
         return null;
