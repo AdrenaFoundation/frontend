@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import bonkLogo from '@/../../public/images/bonk.png';
 import timerBg from '@/../../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../../public/images/jito-logo.svg';
 import jtoLogo from '@/../../public/images/jito-logo-2.png';
@@ -181,19 +182,28 @@ export default function CompetitionBanner({
                     </div>
                 </div> : null}
 
-                {seasonName !== 'factions' ? <div
+                <div
                     className={twMerge(
                         'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
                         startDate && startDate.getTime() >= Date.now() ? 'mt-[2em]' : 'mt-[4em]',
                     )}
                 >
                     <p className="tracking-[0.2rem] uppercase">Sponsored by</p>
+
                     <Image
                         src={jitoLogo}
                         alt="jito logo"
                         className="w-[3em] md:w-[4em]"
                     />
-                </div> : null}
+
+                    <p className="tracking-[0.2rem] uppercase">And</p>
+
+                    <Image
+                        src={bonkLogo}
+                        alt="BONK logo"
+                        className="w-[1.7em] md:w-[2.5em]"
+                    />
+                </div>
             </div>
 
             <div className="flex items-center justify-center">

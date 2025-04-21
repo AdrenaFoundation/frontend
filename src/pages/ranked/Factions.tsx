@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import React, { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
@@ -17,7 +18,7 @@ import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange
 
-const PICTURES = {
+export const PICTURES = {
     'A-General': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-general-XslAAKuuLulnWZjojoSgUfpcvPSUao.jpg',
     'A-Lieutenant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-lieutenant-rlj75BR7yTwcCLDqghVw8pGQuqDdGp.jpg',
     'A-Sergeant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-sergeant-TOF5salEAeiwnZNQTqmcRLk0078M54.jpg',
@@ -152,9 +153,109 @@ export default function Factions() {
         return data?.seasonLeaderboard?.find((u) => u.wallet.toBase58() === wallet?.walletAddress);
     }, [data?.seasonLeaderboard, wallet?.walletAddress]);
 
+    const [pickingTeamHover, setPickingTeamHover] = useState<false | 'bonk' | 'jito'>(false);
+
+    // TODO: Fill with the TOP 20 accounts by all time volume that have picked BONK team
+    const bonkTeamTop20 = useMemo(() => {
+        return [];
+    }, []);
+
+    // TODO: Fill with the TOP 20 accounts by all time volume that have picked BONK team
+    const jitoTeamTop20 = useMemo(() => {
+        return [];
+    }, []);
+
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col pb-20 items-center gap-10">
+                <div className='flex flex-col gap-6 items-center w-full relative pt-10 border-t border-b pb-10'>
+                    <div
+                        className={twMerge(
+                            'w-1/2 h-full absolute left-0 top-0 bg-cover bg-no-repeat bg-center',
+                            pickingTeamHover === 'bonk' ? 'grayscale-0 opacity-20' : 'grayscale opacity-10',
+                        )}
+                        style={{
+                            backgroundImage: `url(${PICTURES['A-General']})`,
+                        }}
+                    />
+
+                    <div
+                        className={twMerge(
+                            'w-1/2 h-full absolute right-0 top-0 bg-cover bg-no-repeat bg-center',
+                            pickingTeamHover === 'jito' ? 'grayscale-0 opacity-20' : 'grayscale opacity-10',
+                        )}
+                        style={{
+                            backgroundImage: `url(${PICTURES['B-General']})`,
+                        }}
+                    />
+
+                    <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>SOLDIER IT&apos;S TIME TO PICK YOUR TEAM!</div>
+
+                    <div className='flex gap-6'>
+                        <Button
+                            className={twMerge('opacity-70 hover:opacity-100 w-40 bg-[#FA6724] text-white')}
+                            title="BONK TEAM"
+                            variant='primary'
+                            onMouseEnter={() => setPickingTeamHover('bonk')}
+                            onMouseLeave={() => setPickingTeamHover(false)}
+                            onClick={() => {
+                                //
+                            }}
+                        />
+
+                        <Button
+                            className={twMerge('opacity-70 hover:opacity-100 w-40 bg-[#5AA6FA] text-white')}
+                            title="JITO TEAM"
+                            variant='primary'
+                            onMouseEnter={() => setPickingTeamHover('jito')}
+                            onMouseLeave={() => setPickingTeamHover(false)}
+                            onClick={() => {
+                                //
+                            }}
+                        />
+                    </div>
+
+                    <div className='border p-4 bg-third/80 z-10 rounded flex flex-col gap-4 items-center max-w-[40em]'>
+                        <div className='flex text-center items-center gap-4 w-full'>
+                            <div className='w-1/2 bg-white/50 h-[1px]' />
+                            <div className='text-sm flex sm:text-md tracking-[0.1rem] flex-shrink-0'>READ THIS</div>
+                            <div className='w-1/2 bg-white/50 h-[1px]' />
+                        </div>
+
+                        <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
+                            1 - Be careful this choice is definitive for the rest of the season.
+                        </div>
+
+                        <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
+                            2 - Weekly rewards are split 50/50 between the two teams. However, one team can steal up to 30% of the other&apos;s rewards based on the mutagen damage gap. Within each team, rewards are distributed proportionally to the mutagen generated by each trader.
+                        </div>
+
+                        <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
+                            3 - Best 3 traders of each team will become officer of that team. A team MUST be picked before the season starts to be eligible for the officer role.
+                        </div>
+
+                        <div className='w-full bg-white/50 h-[1px]' />
+                    </div>
+
+                    <div className='flex gap-20'>
+                        <div className='flex flex-col'>
+                            <div className='text-sm flex sm:text-md tracking-[0.1rem]'>BONK TEAM OVERVIEW</div>
+
+                            <div>
+                                {/* TODO DISPLAY THE LIST OF TOP 20 BONK TEAM MEMBERS */}
+                            </div>
+                        </div>
+
+                        <div className='flex flex-col'>
+                            <div className='text-sm flex sm:text-md tracking-[0.1rem]'>JITO TEAM OVERVIEW</div>
+
+                            <div>
+                                {/* TODO DISPLAY THE LIST OF TOP 20 JITO TEAM MEMBERS */}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>Those who rise now will lead the next war...</div>
 
                 <div className="flex items-center pl-4 pr-4 max-w-full mt-8">
@@ -212,7 +313,7 @@ export default function Factions() {
                 </div>
 
                 <AdrenaLoreBook />
-            </div>
+            </div >
 
             <AnimatePresence>
                 {activeProfile ? (
