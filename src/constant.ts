@@ -608,7 +608,7 @@ export const USER_PROFILE_TITLES = {
   44: 'Traitor',
   45: 'Opportunist',
   46: 'Relentless',
-  47: 'Submerged',
+  47: 'Wet and Losing',
   48: 'Underwater',
   49: 'Boss Muncher',
   50: 'Mutagenic Initiate',
