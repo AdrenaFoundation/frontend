@@ -12,15 +12,87 @@ import Loader from '@/components/Loader/Loader';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import DamageBar from '@/components/pages/ranked/factions/DamageBar';
 import FactionsWeeklyLeaderboard from '@/components/pages/ranked/factions/FactionsWeeklyLeaderboard';
-import HealthBar, { HEALTH_BAR_MUTAGEN, TOTAL_ADX_DEFEATED_BOSS, TOTAL_ADX_REWARDS, TOTAL_BONK_REWARDS, TOTAL_JTO_REWARDS } from '@/components/pages/ranked/factions/HealthBar';
+import HealthBar from '@/components/pages/ranked/factions/HealthBar';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useInterseason2Data from '@/hooks/useFactionsData';
 import { UserProfileExtended } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 
+// TODO: Figure out numbers
+// $4B volume target
+export const S2_HEALTH_BAR_MUTAGEN = 500;
+export const S2_NB_HEALTH_BAR = 20;
+export const S2_BONK_REWARDS = 4_000_000_000;
+export const S2_JTO_REWARDS = 25_000;
+export const S2_ADX_REWARDS = 2_000_000;
+export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
+
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
 }
+
+export type FactionsComputedData = {
+    oneHealthBarRewards: {
+        seasonal: {
+            ADX: number;
+        };
+        weekly: {
+            JTO: number;
+            ADX: number;
+            BONK: number;
+        };
+    };
+    maxWeeklyRewards: {
+        JTO: number;
+        ADX: number;
+        BONK: number;
+    };
+    weeklyUnlockedRewards: {
+        JTO: number;
+        ADX: number;
+        BONK: number;
+    };
+    isBossDefeated: boolean;
+    bossDefeatedExtraReward: number;
+    nbHealthBar: number;
+    bossMaxMutagenLife: number;
+    // Weekly info
+    bossLifePercentage: number;
+    weeklyDamage: number;
+    weeklyDamageBonkTeam: number;
+    weeklyDamageJitoTeam: number;
+
+    officers: {
+        BONK: {
+            general: {
+                wallet: PublicKey;
+                nickname: string;
+            };
+            lieutenant: {
+                wallet: PublicKey;
+                nickname: string;
+            };
+            sergeant: {
+                wallet: PublicKey;
+                nickname: string;
+            };
+        };
+        JITO: {
+            general: {
+                wallet: PublicKey;
+                nickname: string;
+            };
+            lieutenant: {
+                wallet: PublicKey;
+                nickname: string;
+            };
+            sergeant: {
+                wallet: PublicKey;
+                nickname: string;
+            };
+        };
+    };
+};
 
 export default function Factions() {
     const [week, setWeek] = useState<string>('Week 1');
@@ -47,6 +119,86 @@ export default function Factions() {
 
     const totalWeeklyMutagen = useMemo(() => weekInfo?.ranks.reduce((tmp, r) => r.totalPoints += tmp, 0) ?? 0, [weekInfo]);
 
+    const s2Computed: FactionsComputedData = useMemo(() => {
+        const howManyHealthBarBroken = Math.floor(totalWeeklyMutagen / (S2_HEALTH_BAR_MUTAGEN / S2_NB_HEALTH_BAR));
+
+        console.log('HOW MANY HEALTH BAR BROKEN', howManyHealthBarBroken, totalWeeklyMutagen);
+
+        const NB_WEEKS = 10;
+
+        const data = {
+            oneHealthBarRewards: {
+                weekly: {
+                    ADX: S2_ADX_REWARDS / NB_WEEKS / 2 / S2_NB_HEALTH_BAR, // Half ADX rewards are seasonal, half are weekly
+                    BONK: S2_BONK_REWARDS / NB_WEEKS / S2_NB_HEALTH_BAR,
+                    JTO: S2_JTO_REWARDS / NB_WEEKS / S2_NB_HEALTH_BAR,
+                },
+                seasonal: {
+                    ADX: S2_ADX_REWARDS / NB_WEEKS / 2 / S2_NB_HEALTH_BAR,
+                },
+            },
+            maxWeeklyRewards: {
+                ADX: S2_ADX_REWARDS / NB_WEEKS,
+                BONK: S2_BONK_REWARDS / NB_WEEKS,
+                JTO: S2_JTO_REWARDS / NB_WEEKS,
+            },
+            weeklyUnlockedRewards: {
+                ADX: 0,
+                BONK: 0,
+                JTO: 0,
+            },
+            isBossDefeated: totalWeeklyMutagen >= S2_HEALTH_BAR_MUTAGEN,
+            bossDefeatedExtraReward: S2_ADX_DEFEATED_BOSS_REWARDS,
+            bossLifePercentage: (S2_HEALTH_BAR_MUTAGEN - totalWeeklyMutagen) * 100 / S2_HEALTH_BAR_MUTAGEN,
+            weeklyDamage: totalWeeklyMutagen,
+            weeklyDamageBonkTeam: totalWeeklyMutagen / 3, // TODO: calculate well
+            weeklyDamageJitoTeam: totalWeeklyMutagen / 3 * 2,  // TODO: calculate well
+            nbHealthBar: S2_NB_HEALTH_BAR,
+            bossMaxMutagenLife: S2_HEALTH_BAR_MUTAGEN,
+            officers: {
+                BONK: {
+                    general: {
+                        wallet: new PublicKey('DaVA8ciisvFhW5fLfmHYEDfNDXjKJv8NtBdYUzZ2iY86'),
+                        nickname: 'trading',
+                    },
+                    lieutenant: {
+                        wallet: new PublicKey('8umPs96cv2UYpnDKeUshdUx6Xd3g4CfknrrM1gUg6fbN'),
+                        nickname: 'yes',
+                    },
+                    sergeant: {
+                        wallet: new PublicKey('EnJC3nhLEJMKwifd6pmjmawhLpUHxoebm35rjb7BLuHa'),
+                        nickname: 'bye',
+                    },
+                },
+                JITO: {
+                    general: {
+                        wallet: new PublicKey('DWcFRJrpzsrn624983W3qTuYccYnwLnL582gQ8CLohvY'),
+                        nickname: 'nope',
+                    },
+                    lieutenant: {
+                        wallet: new PublicKey('7N4svgHrtktxUQCvwY9UioMUb8PtBFiQNnc5SismGbor'),
+                        nickname: 'hello',
+                    },
+                    sergeant: {
+                        wallet: new PublicKey('7opL4DnyDkUkn9mSZ4hBBQq9AqU15n2uqnQbePYV1Nsh'),
+                        nickname: 'diz',
+                    },
+                },
+            },
+        };
+
+        // Calculate unlocked weekly rewards
+        data.weeklyUnlockedRewards.ADX = data.oneHealthBarRewards.weekly.ADX * howManyHealthBarBroken;
+        data.weeklyUnlockedRewards.BONK = data.oneHealthBarRewards.weekly.BONK * howManyHealthBarBroken;
+        data.weeklyUnlockedRewards.JTO = data.oneHealthBarRewards.weekly.JTO * howManyHealthBarBroken;
+
+        if (howManyHealthBarBroken >= S2_NB_HEALTH_BAR) {
+            data.weeklyUnlockedRewards.ADX += data.bossDefeatedExtraReward;
+        }
+
+        return data;
+    }, [totalWeeklyMutagen]);
+
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col items-center gap-6">
@@ -68,7 +220,7 @@ export default function Factions() {
                     <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : Grunervald</div>
                 </div>
 
-                {totalWeeklyMutagen >= HEALTH_BAR_MUTAGEN ?
+                {s2Computed.isBossDefeated ?
                     //
                     // Boss is Defeated
                     //
@@ -89,7 +241,7 @@ export default function Factions() {
                         backgroundImage: `url(https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/boss-1-a1UXysjRKT3OYDhy5rVJMA3enmxFM5.jpg)`,
                     }} />}
 
-                <HealthBar mutagenDamage={totalWeeklyMutagen} />
+                <HealthBar {...s2Computed} />
 
                 <div className="w-full flex justify-center items-center flex-col gap-6">
                     <div className="text-xxs font-archivo tracking-widest mt-3 text-txtfade w-1/2 text-center uppercase">DAMAGE THE BOSS AND UNLOCK BONK, JTO AND ADX REWARDS</div>
@@ -106,11 +258,11 @@ export default function Factions() {
                                     draggable="false"
                                     className="w-4 h-4"
                                 />
-                                1000000 ADX
+                                {formatNumber(s2Computed.weeklyUnlockedRewards.ADX, 0)} ADX
                             </div>
 
                             <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
-                                max {formatNumber((TOTAL_ADX_REWARDS + TOTAL_ADX_DEFEATED_BOSS) / 10, 0)} ADX
+                                max {formatNumber(s2Computed.maxWeeklyRewards.ADX, 0)} ADX
                             </div>
                         </div>
 
@@ -127,11 +279,11 @@ export default function Factions() {
                                     draggable="false"
                                     className="w-4 h-4"
                                 />
-                                1000000 BONK
+                                {formatNumber(s2Computed.weeklyUnlockedRewards.BONK, 0)} BONK
                             </div>
 
                             <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
-                                max {formatNumber(TOTAL_BONK_REWARDS / 10, 0)} BONK
+                                max {formatNumber(s2Computed.maxWeeklyRewards.BONK, 0)} BONK
                             </div>
                         </div>
 
@@ -148,11 +300,11 @@ export default function Factions() {
                                     draggable="false"
                                     className="w-6 h-6"
                                 />
-                                1000000 JTO
+                                {formatNumber(s2Computed.weeklyUnlockedRewards.JTO, 0)} JTO
                             </div>
 
                             <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
-                                max {formatNumber(TOTAL_JTO_REWARDS / 10, 0)} JTO
+                                max {formatNumber(s2Computed.maxWeeklyRewards.JTO, 0)} JTO
                             </div>
                         </div>
                     </div>
@@ -162,7 +314,7 @@ export default function Factions() {
 
                 <div className='font-boldy text-sm tracking-[0.2rem] uppercase'>DAMAGE METER</div>
 
-                <DamageBar bonkMutagen={totalWeeklyMutagen} jitoMutagen={totalWeeklyMutagen} />
+                <DamageBar bonkMutagen={s2Computed.weeklyDamageBonkTeam} jitoMutagen={s2Computed.weeklyDamageJitoTeam} />
 
                 <div className='text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase'>TEAM WITH MOST DAMAGE GET MOST OF THE REWARDS, UP TO 65% OF TOTAL REWARDS.</div>
 
@@ -197,20 +349,7 @@ export default function Factions() {
                         startDate={weekInfo.startDate}
                         endDate={weekInfo.endDate}
                         setActiveProfile={setActiveProfile}
-                        officers={{
-                            general: {
-                                wallet: new PublicKey('DaVA8ciisvFhW5fLfmHYEDfNDXjKJv8NtBdYUzZ2iY86'),
-                                nickname: 'trading',
-                            },
-                            lieutenant: {
-                                wallet: new PublicKey('8umPs96cv2UYpnDKeUshdUx6Xd3g4CfknrrM1gUg6fbN'),
-                                nickname: 'yes',
-                            },
-                            sergeant: {
-                                wallet: new PublicKey('EnJC3nhLEJMKwifd6pmjmawhLpUHxoebm35rjb7BLuHa'),
-                                nickname: 'bye',
-                            },
-                        }}
+                        officers={s2Computed.officers.BONK}
                     />
 
                     <FactionsWeeklyLeaderboard
@@ -241,20 +380,7 @@ export default function Factions() {
                         startDate={weekInfo.startDate}
                         endDate={weekInfo.endDate}
                         setActiveProfile={setActiveProfile}
-                        officers={{
-                            general: {
-                                wallet: new PublicKey('DWcFRJrpzsrn624983W3qTuYccYnwLnL582gQ8CLohvY'),
-                                nickname: 'nope',
-                            },
-                            lieutenant: {
-                                wallet: new PublicKey('7N4svgHrtktxUQCvwY9UioMUb8PtBFiQNnc5SismGbor'),
-                                nickname: 'hello',
-                            },
-                            sergeant: {
-                                wallet: new PublicKey('7opL4DnyDkUkn9mSZ4hBBQq9AqU15n2uqnQbePYV1Nsh'),
-                                nickname: 'diz',
-                            },
-                        }}
+                        officers={s2Computed.officers.JITO}
                     />
                 </div> : <Loader className='self-center mt-8 mb-8' />}
             </div>

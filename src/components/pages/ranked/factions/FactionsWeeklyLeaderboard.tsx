@@ -190,6 +190,16 @@ export default function FactionsWeeklyLeaderboard({
         });
     }, [data, officers, onClickUserProfile, team, wallet?.walletAddress]);
 
+    const totalMutagenWeekly = useMemo(() => {
+        return data?.ranks.reduce((acc, rank) => {
+            if (!rank.wallet.equals(PublicKey.default)) {
+                acc += rank.totalPoints;
+            }
+
+            return acc;
+        }, 0);
+    }, [data?.ranks]);
+
     if (!data || !dataReady) {
         return null;
     }
@@ -214,7 +224,7 @@ export default function FactionsWeeklyLeaderboard({
 
                 <NumberDisplay
                     title="Mutagens"
-                    nb={weeklyStats?.totalFees ?? null}
+                    nb={totalMutagenWeekly ?? null}
                     format="number"
                     isAbbreviate={true}
                     isAbbreviateIcon={false}
