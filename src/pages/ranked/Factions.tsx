@@ -180,7 +180,7 @@ export default function Factions() {
     const [pickingTeamHover, setPickingTeamHover] = useState<false | 'bonk' | 'jito'>(false);
 
     const bonkTeamTop20 = useMemo(() => {
-        const top20Bonk = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 2)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
+        const top20Bonk = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 1)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
         return top20Bonk;
     }, [leaderboardData, userProfilesMap]);
 
