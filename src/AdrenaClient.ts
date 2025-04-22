@@ -56,6 +56,7 @@ import {
   Custody,
   CustodyExtended,
   ExitPriceAndFee,
+  FeesStats,
   GenesisLock,
   ImageRef,
   LimitOrderBookExtended,
@@ -769,7 +770,7 @@ export class AdrenaClient {
       totalFeeCollected: custodies.reduce(
         (tmp, custody) =>
           tmp +
-          Object.values(custody.nativeObject.collectedFees).reduce(
+          Object.values(custody.nativeObject.collectedFees as FeesStats).reduce(
             (total, custodyFee) => total + nativeToUi(custodyFee, USD_DECIMALS),
             0,
           ),
@@ -2418,6 +2419,8 @@ export class AdrenaClient {
         profilePicture,
         wallpaper,
         title,
+        team: 0,
+        continent: 0,
       })
       .accountsStrict({
         payer: wallet.publicKey,
@@ -2427,6 +2430,7 @@ export class AdrenaClient {
         user: wallet.publicKey,
         userNickname: this.getUserNicknamePda(nickname),
         referrerProfile,
+        caller: wallet.publicKey,
       })
       .instruction();
   }
@@ -2496,6 +2500,7 @@ export class AdrenaClient {
         payer: wallet.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         rent: SYSVAR_RENT_PUBKEY,
+        caller: wallet.publicKey,
       })
       .transaction();
 
@@ -2562,11 +2567,15 @@ export class AdrenaClient {
     wallpaper,
     title,
     referrerProfile,
+    // team,
+    // continent,
   }: {
     profilePicture?: number;
     wallpaper?: number;
     title?: number;
     referrerProfile?: PublicKey | null; // use null to cancel referrer
+    team?: number;
+    continent?: number;
   }): Promise<TransactionInstruction> {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error("adrena program not ready");
@@ -2594,6 +2603,8 @@ export class AdrenaClient {
             ? wallpaper
             : userProfileAccount.wallpaper,
         title: typeof title !== "undefined" ? title : userProfileAccount.title,
+        team: null, // TODO: use new value
+        continent: null, // TODO: use new value
       })
       .accountsStrict({
         systemProgram: SystemProgram.programId,

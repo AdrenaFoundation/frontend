@@ -627,22 +627,22 @@ export const PROFILE_PICTURES = {
   6: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/6-pfp-moby-dick-5RAmIKXc0j8LmZ0QJIelgph4j3QEJF.png",
   7: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/7-pfp-strike-z7GdI3G1Dorp2hcnWqG2CcRho2yeSF.jpg",
   8: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/8-pfp-prison-Qnl20EbJ5KsfKMKRFxpL6GcILngDbm.jpg",
-  9: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/9-new-profile-picture.jpg", // soldier
-  10: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/10-new-profile-picture.jpg", // sergeant
-  11: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/11-new-profile-picture.jpg", // lieutenant
-  12: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/12-new-profile-picture.jpg", // general
-  13: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/13-new-profile-picture.jpg", // team bonk
-  14: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/14-new-profile-picture.jpg", // team jito
-  15: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/15-new-profile-picture.jpg", // top 1 factions
-  16: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/16-new-profile-picture.jpg", // top 1 factions weekly
-  17: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/17-new-profile-picture.jpg", // sabotage
-  18: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/18-new-profile-picture.jpg", // traitor
-  19: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/19-new-profile-picture.jpg", // Stop! He's already dead!
-  20: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/19-new-profile-picture.jpg", // Show 'em
-  21: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/20-new-profile-picture.jpg", // The Painmaker
-  22: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-new-profile-picture.jpg", // Nice Guy
-  23: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-new-profile-picture.jpg", // Golden Hands
-  24: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-new-profile-picture.jpg", // Diamond Hands
+  9: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/9-pfp-call-of-muty-YSKShonOkwWMmVtc8WMQDQzFrcpFdH.jpg",
+  10: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/10-pfp-sarge-D4KUMMVjA0ShdhDXFxaHvnxOevEeDS.jpg",
+  11: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/11-pfp-lieutenant-hOHSwWm4kXDiE46hVnl2U0LgnvOt6E.jpg",
+  12: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/12-pfp-general-Y0fqtroRsXFdtt43J4Mzg1eZXaIjiR.jpg",
+  13: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/13-pfp-bonk-team-VkmuMYSqzAzQcsxZ9yGFEhPqQ2iFdm.jpg",
+  14: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/14-pfp-jito-team-MLizGfqXvQ9owRNAoCj5HIk8SAjh3u.jpg",
+  15: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/15-pfp-king-of-the-hill-9OcD3XyW7X86mFqnxc3ECJCTxo8N1i.jpg",
+  16: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/16-pfp-pressing-the-attack-9YBUNShqXt17ViAZlvzRJjj26peFqM.jpg",
+  17: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/17-pfp-sabotage-0CdMJvJqDhoMTPBVVB6OJ4uxxKmA1D.jpg",
+  18: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/18-pfp-traitor-iifgsy1wCbCinnbESV9zZH011C5ywJ.jpg",
+  19: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/19-pfp-stop-U58xEO7YQodQGfdSXjAsdMEimsqAi0.jpg",
+  20: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/20-pfp-show%27em-wGfr4bpVRGgB2cZmpagViWyrkdHHa8.jpg",
+  21: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/21-pfp-painmaker-THdmLYLP3SmLzvEkXuo67AQ4AfJSjM.jpg",
+  22: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-pfp-nice-guy-nLGtHD96mHRp51JnfiIxsDebeeKrem.jpg",
+  23: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/23-pfp-golden-hands-occI1rGgXsUlxrm3YKnsjoDiV626LV.jpg",
+  24: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/24-pfp-diamond-hands-AureSewhVLVFQEUfJpHQiOb1tjcGcp.jpg",
 } as const;
 
 export const WALLPAPERS = {
@@ -653,15 +653,15 @@ export const WALLPAPERS = {
   4: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/4-wallpaper-IlGz8KZHUzxDbooXzxuBVAXHLwpgST.jpg",
   5: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/5-wallpaper-bank-i0YXhqCzvVOTWVMxbCjApsULLbcEWg.jpg",
   6: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/6-wallpaper-beast-k3nXlpiTRf30vDAZHRTRL9LNshF16W.jpg",
-  7: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/7-new-wallpaper.jpg", // soldier
-  8: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/8-new-wallpaper.jpg", // sergeant
-  9: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/9-new-wallpaper.jpg", // lieutenant
-  10: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/10-new-wallpaper.jpg", // general
-  11: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/11-new-wallpaper.jpg", // team bonk
-  12: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/12-new-wallpaper.jpg", // team jito
-  13: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/13-new-wallpaper.jpg", // top 1 factions
-  14: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/14-new-wallpaper.jpg", // The Painmaker
-  15: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/15-new-wallpaper.jpg", // Nice Guy
+  7: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/7-wallpaper-soldier-JJ3e6nbhAKXAzQ62FvfEcH1JhI5ysC.jpg",
+  8: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/8-wallpaper-seargent-47gcP6lHwPu1ZiIEI2U0XY2Q9a1Cq8.jpg",
+  9: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/9-wallpaper-lieutenant-LcN0ZPAts1ZLNVPpKTuMrIq15QIciy.jpg",
+  10: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/10-wallpaper-general-Lc73heKd5DbW2LoSvbM1kCE3DNB3DC.jpg",
+  11: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/11-wallpaper-bonk-team-HsLXFXe3Cn46FSkZ2IXL1fk2OkuTDH.jpg",
+  12: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/12-wallpaper-jito-team-0KPMRDeRQH3JPevvR0FXLdI3IzGoYa.jpg",
+  13: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/13-wallpaper-king-A6njrefqoKwGzjU6sL4J5obH9iKupS.jpg",
+  14: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/14-wallpaper-painmaker-A9ya49YXLk8tuPeNX88coAWzmaMCAE.jpg",
+  15: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/15-wallpaper-nice-guy-M6ZGRR6z3oX4BlEQWxH50EMY4eb1ag.jpg",
 } as const;
 
 export const ACHIEVEMENTS: AchievementInfo[] = [
@@ -1291,7 +1291,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Open a trade during season 2",
     story: "Report for duty, soldier. Your first mission starts now",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/soldier.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/56-call-of-muty-m6HdtIp3QIp7dNkXyihIOv9rg1s4Gc.jpg",
     points: 5,
     titleUnlock: 31,
     pfpUnlock: 9,
@@ -1304,7 +1304,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Become a Sergeant during season 2",
     story: "You've earned your stripes, Sergeant. Now, lead with honor",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/sergeant.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/57-sarge-IHpa36NFcS8eYogU8S6UWcunK4Tv2b.jpg",
     points: 15,
     titleUnlock: 32,
     pfpUnlock: 10,
@@ -1318,7 +1318,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "You've braved chaos and kept your head. Some say you're destined for shrimp and glory",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/lieutenant.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/58-lieutenant-twDgt3YUjxH5VUwGMbbnUL5uDVmrfC.jpg",
     points: 50,
     titleUnlock: 33,
     pfpUnlock: 11,
@@ -1332,7 +1332,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "You've led squads through chaos, rallied worlds, and stood at the edge of the unknown. Command suits you",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/general.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/59-general-eTLcZlzVIVBYOPZjGz5sI5bwXLligg.jpg",
     points: 100,
     titleUnlock: 34,
     pfpUnlock: 12,
@@ -1346,7 +1346,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "An army forged in chaos, barking through the smoke of liquidations. You are the BONKing Dead — and every trade is a step closer to victory",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/team-bonk.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/60-bonk-team-JTFbin6qiHvus053mJGClkr2kjB0dI.jpg",
     points: 5,
     titleUnlock: 35,
     pfpUnlock: 13,
@@ -1360,7 +1360,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "Strength. Loyalty. Arms like Jito nodes. You chose gains over games",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/team-jito.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/61-jito-team-BhRwnHrBIjX6A5qb5DXFSe1YfFCyLK.jpg",
     points: 5,
     titleUnlock: 36,
     pfpUnlock: 14,
@@ -1373,7 +1373,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Set a continent in your profile",
     story: "This is my home. This is my continent",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/continent.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/62-hello-world-d8diwnYRh0ySOuXOSKB1vp2QODP91k.jpg",
     points: 5,
     category: "bronze",
   },
@@ -1383,7 +1383,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Rank top 1 during season 2",
     story: "As the king, your dominance is undisputed. All hail the new king",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-1-factions.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/63-king-of-the-hill-mdzBh13hkt9bbbn80vn8j4kLSOqCot.jpg",
     points: 100,
     titleUnlock: 37,
     pfpUnlock: 15,
@@ -1396,7 +1396,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Rank top 1 on a week during season 2",
     story: "They followed your lead. And your lead was carnage",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-1-weekly.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/64-pressing-the-attack-oMeZ4UvVi56GxWgRj1QlEsu4slZEz7.jpg",
     points: 25,
     pfpUnlock: 16,
     titleUnlock: 38,
@@ -1408,7 +1408,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Rank top 5 during season 2",
     story: "So close you can smell the throne. Just one more step...",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-5.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/65-calife-tccziEh6ZIrAKFUViiNyc5QC0TvVi2.jpg",
     points: 50,
     titleUnlock: 39,
     category: "gold",
@@ -1419,7 +1419,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Rank top 5 on a week during season 2",
     story: "You are a remarkable member of your team",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-5-weekly.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/66-high-five-bQf2GEGTa64QWdEwyDC47O5myZsoa7.jpg",
     points: 10,
     titleUnlock: 40,
     category: "bronze",
@@ -1431,7 +1431,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "You didn't just win—you ravaged their coffers. It is a feast for tonight",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/absolute-pillage.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/67-breaking-bags-jJMoBafIjloclGB4bkdOrQiG1CtSCt.jpg",
     points: 50,
     titleUnlock: 41,
     category: "gold",
@@ -1444,7 +1444,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "Silent steps. Poisoned goods. A well-placed 'proof'. You didn't just disrupt them—you made their whole plan rot from the inside",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/sabotage.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/68-sabotage-glLt7G1sLdckP9Rzwgznet3cfDmQor.jpg",
     points: 25,
     titleUnlock: 42,
     pfpUnlock: 17,
@@ -1457,7 +1457,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "You crossed over. You took their deals. Hope the snacks were worth it",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/traitor.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/69-traitor-GyrrYb0yNLjNzIpk1jMTURogYLtwEH.jpg",
     points: 5,
     titleUnlock: 43,
     pfpUnlock: 18,
@@ -1470,7 +1470,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "Two strikes. No mercy. The enemy's morale is cracking—and you're just getting started",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/winning-streak.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/70-back-to-back-7AuN3UHeg5LY0qIjHEmdYcfD80bP07.jpg",
     points: 25,
     titleUnlock: 44,
     category: "silver",
@@ -1482,7 +1482,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "For you, the battlefield is a playground. For them it's a no monster's land. Run",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/domination.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/71-stop-rPc9gINLbwbsEo55Xi39QnUvBhyqSW.jpg",
     points: 50,
     titleUnlock: 45,
     pfpUnlock: 19,
@@ -1495,7 +1495,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "Son, this may seem like your worst day... *so far*. Get back up and prove them wrong",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/losing-streak.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/72-worst-day-so-far-R7Ol75O1ptrIzlcZBDARzaB3PhhXKe.jpg",
     points: 5,
     titleUnlock: 46,
     category: "bronze",
@@ -1506,7 +1506,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Lose against the enemy faction five times in a row",
     story: "Five defeats later… it's still not game over. Git gud.",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/death-spiral.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/73-died-HapENmkoRNxR7RdBm71XSSHXAcHxB4.jpg",
     points: 15,
     titleUnlock: 47,
     category: "silver",
@@ -1517,7 +1517,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Kill the weekly boss",
     story: "You're a boss killer. Time to show them who's boss",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/kill-boss.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/74-show%27em-IJOPKiwtXuFNp54Ns6QXT9hXoG1fu9.jpg",
     points: 15,
     titleUnlock: 48,
     pfpUnlock: 20,
@@ -1529,7 +1529,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description: "Generate 100 mutagens during season 2",
     story: "You called it a scratch. The boss called in sick.",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/generate-100-mutagens.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/75-just-a-scratch-V8yjFxCGmCgBxeKI8ZTsawt1rvEr0R.jpg",
     points: 50,
     titleUnlock: 49,
     category: "gold",
@@ -1541,7 +1541,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "When legends speak of this fight, they’ll start with your blow. Clean. Brutal. Super effective.",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/generate-500-mutagens.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/76-super-effective-CUN6NIPvcnVR6IdT5lZvaKg3SM0QRV.jpg",
     points: 100,
     titleUnlock: 50,
     category: "platinum",
@@ -1553,7 +1553,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "Not to be confused with a Peacemaker. You showed up, dealt 1k mutagens, and left a crater",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/generate-1000-mutagens.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/77-painmaker-OpwkbU9fEdkdJixU1AhnqWt9cwXpBC.jpg",
     points: 200,
     titleUnlock: 51,
     pfpUnlock: 21,
@@ -1567,7 +1567,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
       "Complete the officer steps for a week. Your leadership is commendable",
     story: "You cooked up a 7-step combo bucket of glory. Finger-lickin' good!",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/skilled-officer.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/78-sanders-I0OMTH4NdhPr4VIeWMhmRrrqhcrL7I.jpg",
     points: 15,
     titleUnlock: 52,
     category: "silver",
@@ -1579,7 +1579,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     story:
       "Didn’t chase glory. Didn’t farm for self. Just showed up, did the job, and made life better for everyone",
     image:
-      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/zealous-officer.jpg",
+      "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/79-nice-guy-rLi4pZy0g4b6aek9nUoID8In4dgnkB.jpg",
     points: 100,
     titleUnlock: 53,
     pfpUnlock: 22,

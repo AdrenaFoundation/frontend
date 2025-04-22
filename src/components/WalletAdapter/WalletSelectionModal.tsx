@@ -42,7 +42,7 @@ export default function WalletSelectionModal({
                   // Add custom classes here for each wallet if needed
                   'Phantom': 'w-[10em] left-14',
                   'Coinbase Wallet': 'w-[6em] left-6 top-6',
-                  Solflare: 'w-[8em] left-8 top-10',
+                  Solflare: 'w-[6em] -left-2 top-12',
                   'Backpack': 'w-[5em] left-2 top-6',
                   'WalletConnect': 'w-[7em] left-8 top-2',
                   SquadsX: 'w-[6em] left-4 top-10',
