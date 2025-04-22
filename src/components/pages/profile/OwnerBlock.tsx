@@ -104,6 +104,8 @@ export default function OwnerBloc({
         profilePicture: updatingMetadata.profilePicture,
         wallpaper: updatingMetadata.wallpaper,
         title: updatingMetadata.title,
+        team: null, //TODO: replace with updatingMetadata.team if team selectable in profile,
+        continent: null, //TODO: replace with updatingMetadata.continent when continent selectable in profile,
         notification,
       });
 
