@@ -271,7 +271,7 @@ export default function Factions() {
                         <div className='flex flex-col items-end w-1/2 pr-10'>
                             <div className='text-sm sm:text-md tracking-[0.1rem] mb-4' style={{ color: teamAColor }}>BONK TEAM TOP20 (TOTAL {numberBonkTraders})</div>
 
-                            <div className='flex flex-col max-h-[50em] overflow-y-auto w-full pl-4 max-w-[30em]'>
+                            <div className='flex flex-col max-h-[50em] overflow-y-auto w-full pl-4 max-w-[30em] z-10'>
                                 {bonkTeamTop20?.map((trader) => {
                                     const profile = allUserProfilesMetadata.find(u => u.owner.toBase58() === trader.userWallet.toBase58());
                                     const nickname = profile?.nickname || getAbbrevWalletAddress(trader.userWallet.toBase58());
@@ -302,7 +302,7 @@ export default function Factions() {
                         <div className='flex flex-col items-start w-1/2 pl-10'>
                             <div className='text-sm sm:text-md tracking-[0.1rem] mb-4' style={{ color: teamBColor }}>JITO TEAM TOP20 (TOTAL {numberJitoTraders})</div>
 
-                            <div className='flex flex-col gap-3 max-h-[50em] overflow-y-auto w-full pr-4 max-w-[30em]'>
+                            <div className='flex flex-col gap-3 max-h-[50em] overflow-y-auto w-full pr-4 max-w-[30em] z-10'>
                                 {jitoTeamTop20?.map((trader) => {
                                     const profile = allUserProfilesMetadata.find(u => u.owner.toBase58() === trader.userWallet.toBase58());
                                     const nickname = profile?.nickname || getAbbrevWalletAddress(trader.userWallet.toBase58());
