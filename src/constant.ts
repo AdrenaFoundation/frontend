@@ -592,30 +592,29 @@ export const USER_PROFILE_TITLES = {
   28: "Bad Luck Brian",
   29: "Le Cramer",
   30: "The Chameleon",
-  // 31: "The Voter",
-  32: "Soldier",
-  33: "Sergeant",
-  34: "Lieutenant",
-  35: "General",
-  36: "Bonk Operative",
-  37: "Jito Juggernaut",
-  38: "Season 2 Champion",
-  39: "Season 2 Destroyer",
-  40: "Crown-Sniffer",
-  41: "Certified Menace",
-  42: "Loot Lurker",
-  43: "Saboteur",
-  44: "Traitor",
-  45: "Opportunist",
-  46: "Relentless",
-  47: "Wet and Losing",
-  48: "Underwater",
-  49: "Boss Muncher",
-  50: "Initiate",
-  51: "Ascendant",
-  52: "Mutagenic Apex",
-  53: "Tacticlaws",
-  54: "Mastermind",
+  31: "Soldier",
+  32: "Sergeant",
+  33: "Lieutenant",
+  34: "General",
+  35: "Bonk Operative",
+  36: "Jito Juggernaut",
+  37: "Season 2 Champion",
+  38: "Season 2 Destroyer",
+  39: "Crown-Sniffer",
+  40: "Certified Menace",
+  41: "Tomb Raider",
+  42: "Saboteur",
+  43: "Traitor",
+  44: "Opportunist",
+  45: "Relentless",
+  46: "Wet and Losing",
+  47: "Underwater",
+  48: "Boss Muncher",
+  49: "Scratcher",
+  50: "Paper Beat Rock",
+  51: "The Painmaker",
+  52: "Chicken Wings",
+  53: "Nice Guy",
 } as const;
 
 export const PROFILE_PICTURES = {
@@ -638,10 +637,12 @@ export const PROFILE_PICTURES = {
   16: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/16-new-profile-picture.jpg", // top 1 factions weekly
   17: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/17-new-profile-picture.jpg", // sabotage
   18: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/18-new-profile-picture.jpg", // traitor
-  19: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/19-new-profile-picture.jpg", // Is it a war or a massacre?
+  19: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/19-new-profile-picture.jpg", // Stop! He's already dead!
   20: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/19-new-profile-picture.jpg", // Show 'em
-  21: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/20-new-profile-picture.jpg", // mutagenic apex
-  22: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-new-profile-picture.jpg", // zealous officer
+  21: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/20-new-profile-picture.jpg", // The Painmaker
+  22: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-new-profile-picture.jpg", // Nice Guy
+  23: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-new-profile-picture.jpg", // Golden Hands
+  24: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/profile-pictures/22-new-profile-picture.jpg", // Diamond Hands
 } as const;
 
 export const WALLPAPERS = {
@@ -659,8 +660,8 @@ export const WALLPAPERS = {
   11: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/11-new-wallpaper.jpg", // team bonk
   12: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/12-new-wallpaper.jpg", // team jito
   13: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/13-new-wallpaper.jpg", // top 1 factions
-  14: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/14-new-wallpaper.jpg", // mutagenic Apex
-  15: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/15-new-wallpaper.jpg", // zealous officer
+  14: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/14-new-wallpaper.jpg", // The Painmaker
+  15: "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wallpapers/15-new-wallpaper.jpg", // Nice Guy
 } as const;
 
 export const ACHIEVEMENTS: AchievementInfo[] = [
@@ -688,6 +689,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     points: 25,
     titleUnlock: 1,
     category: "gold",
+    pfpUnlock: 23,
   },
   {
     index: 2,
@@ -700,6 +702,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     points: 50,
     titleUnlock: 2,
     category: "gold",
+    pfpUnlock: 24,
   },
   {
     index: 3,
@@ -1290,7 +1293,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/soldier.jpg",
     points: 5,
-    titleUnlock: 32,
+    titleUnlock: 31,
     pfpUnlock: 9,
     wallpaperUnlock: 7,
     category: "bronze",
@@ -1303,7 +1306,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/sergeant.jpg",
     points: 15,
-    titleUnlock: 33,
+    titleUnlock: 32,
     pfpUnlock: 10,
     wallpaperUnlock: 8,
     category: "silver",
@@ -1317,7 +1320,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/lieutenant.jpg",
     points: 50,
-    titleUnlock: 34,
+    titleUnlock: 33,
     pfpUnlock: 11,
     wallpaperUnlock: 9,
     category: "gold",
@@ -1331,7 +1334,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/general.jpg",
     points: 100,
-    titleUnlock: 35,
+    titleUnlock: 34,
     pfpUnlock: 12,
     wallpaperUnlock: 10,
     category: "platinum",
@@ -1345,7 +1348,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/team-bonk.jpg",
     points: 5,
-    titleUnlock: 36,
+    titleUnlock: 35,
     pfpUnlock: 13,
     wallpaperUnlock: 11,
     category: "bronze",
@@ -1359,7 +1362,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/team-jito.jpg",
     points: 5,
-    titleUnlock: 37,
+    titleUnlock: 36,
     pfpUnlock: 14,
     wallpaperUnlock: 12,
     category: "bronze",
@@ -1382,7 +1385,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-1-factions.jpg",
     points: 100,
-    titleUnlock: 38,
+    titleUnlock: 37,
     pfpUnlock: 15,
     wallpaperUnlock: 13,
     category: "platinum",
@@ -1396,7 +1399,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-1-weekly.jpg",
     points: 25,
     pfpUnlock: 16,
-    titleUnlock: 39,
+    titleUnlock: 38,
     category: "silver",
   },
   {
@@ -1407,7 +1410,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-5.jpg",
     points: 50,
-    titleUnlock: 40,
+    titleUnlock: 39,
     category: "gold",
   },
   {
@@ -1418,7 +1421,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/top-5-weekly.jpg",
     points: 10,
-    titleUnlock: 41,
+    titleUnlock: 40,
     category: "bronze",
   },
   {
@@ -1430,7 +1433,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/absolute-pillage.jpg",
     points: 50,
-    titleUnlock: 42,
+    titleUnlock: 41,
     category: "gold",
   },
   {
@@ -1443,7 +1446,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/sabotage.jpg",
     points: 25,
-    titleUnlock: 43,
+    titleUnlock: 42,
     pfpUnlock: 17,
     category: "silver",
   },
@@ -1456,7 +1459,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/traitor.jpg",
     points: 5,
-    titleUnlock: 44,
+    titleUnlock: 43,
     pfpUnlock: 18,
     category: "bronze",
   },
@@ -1469,7 +1472,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/winning-streak.jpg",
     points: 25,
-    titleUnlock: 45,
+    titleUnlock: 44,
     category: "silver",
   },
   {
@@ -1481,7 +1484,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/domination.jpg",
     points: 50,
-    titleUnlock: 46,
+    titleUnlock: 45,
     pfpUnlock: 19,
     category: "gold",
   },
@@ -1494,7 +1497,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/losing-streak.jpg",
     points: 5,
-    titleUnlock: 47,
+    titleUnlock: 46,
     category: "bronze",
   },
   {
@@ -1505,7 +1508,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/death-spiral.jpg",
     points: 15,
-    titleUnlock: 48,
+    titleUnlock: 47,
     category: "silver",
   },
   {
@@ -1516,7 +1519,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/kill-boss.jpg",
     points: 15,
-    titleUnlock: 49,
+    titleUnlock: 48,
     pfpUnlock: 20,
     category: "silver",
   },
@@ -1528,7 +1531,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/generate-100-mutagens.jpg",
     points: 50,
-    titleUnlock: 50,
+    titleUnlock: 49,
     category: "gold",
   },
   {
@@ -1540,7 +1543,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/generate-500-mutagens.jpg",
     points: 100,
-    titleUnlock: 51,
+    titleUnlock: 50,
     category: "platinum",
   },
   {
@@ -1552,7 +1555,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/generate-1000-mutagens.jpg",
     points: 200,
-    titleUnlock: 52,
+    titleUnlock: 51,
     pfpUnlock: 21,
     wallpaperUnlock: 14,
     category: "diamond",
@@ -1566,7 +1569,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/skilled-officer.jpg",
     points: 15,
-    titleUnlock: 53,
+    titleUnlock: 52,
     category: "silver",
   },
   {
@@ -1578,7 +1581,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     image:
       "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/zealous-officer.jpg",
     points: 100,
-    titleUnlock: 54,
+    titleUnlock: 53,
     pfpUnlock: 22,
     wallpaperUnlock: 15,
     category: "platinum",
