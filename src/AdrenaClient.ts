@@ -2567,8 +2567,8 @@ export class AdrenaClient {
     wallpaper,
     title,
     referrerProfile,
-    team,
-    continent,
+    // team,
+    // continent,
   }: {
     profilePicture?: number;
     wallpaper?: number;
