@@ -91,6 +91,8 @@ export default function Index() {
                             wallpaper: 0,
                             title: 0,
                             achievements: [],
+                            team: 0,
+                            continent: 0,
                         });
                     } else {
                         setActiveProfile(p);

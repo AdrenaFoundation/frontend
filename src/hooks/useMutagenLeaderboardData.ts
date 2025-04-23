@@ -8,7 +8,10 @@ import {
   UserProfileTitle,
 } from '@/types';
 
-function applyProfile(leaderboardData: MutagenLeaderboardData | null, allMetadata: Record<string, UserProfileMetadata>) {
+function applyProfile(
+  leaderboardData: MutagenLeaderboardData | null,
+  allMetadata: Record<string, UserProfileMetadata>,
+) {
   if (!leaderboardData || !allMetadata) {
     return;
   }
@@ -28,38 +31,46 @@ function applyProfile(leaderboardData: MutagenLeaderboardData | null, allMetadat
 
 export default function useMutagenLeaderboardData({
   allUserProfilesMetadata,
+  refreshInterval = 20_000,
 }: {
   allUserProfilesMetadata: UserProfileMetadata[];
+  refreshInterval?: number;
 }): MutagenLeaderboardData | null {
-  const [leaderboardData, setLeaderboardData] = useState<MutagenLeaderboardData | null>(null);
+  const [leaderboardData, setLeaderboardData] =
+    useState<MutagenLeaderboardData | null>(null);
 
-  const allMetadata = useMemo(() => allUserProfilesMetadata.reduce((acc, profile) => {
-    acc[profile.owner.toBase58()] = profile;
-    return acc;
-  }, {} as Record<string, UserProfileMetadata>), [allUserProfilesMetadata]);
+  const allMetadata = useMemo(
+    () =>
+      allUserProfilesMetadata.reduce(
+        (acc, profile) => {
+          acc[profile.owner.toBase58()] = profile;
+          return acc;
+        },
+        {} as Record<string, UserProfileMetadata>,
+      ),
+    [allUserProfilesMetadata],
+  );
 
   useEffect(() => {
     if (!allMetadata) return;
 
-    DataApiClient.getMutagenLeaderboard()
-      .then((data) => {
+    const fetchLeaderboardData = () => {
+      DataApiClient.getMutagenLeaderboard()
+        .then((data) => {
           applyProfile(data, allMetadata);
           setLeaderboardData(data);
-      }).catch((error) => {
+        })
+        .catch((error) => {
           console.log(error);
-      });
-
-    const interval = setInterval(() => {
-        DataApiClient.getMutagenLeaderboard().then((data) => {
-          applyProfile(data, allMetadata);
-          setLeaderboardData(data);
-        }).catch((error) => {
-            console.log(error);
         });
-    }, 20_000);
+    };
+
+    fetchLeaderboardData();
+
+    const interval = setInterval(fetchLeaderboardData, refreshInterval);
 
     return () => clearInterval(interval);
-  }, [allMetadata]);
+  }, [allMetadata, refreshInterval]);
 
   return leaderboardData;
 }
