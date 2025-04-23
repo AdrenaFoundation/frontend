@@ -564,7 +564,7 @@ export const TEAMS_MAPPING = {
   DEFAULT: 0,
   BONK: 1,
   JITO: 2,
-};
+} as const;
 
 export const TEAMS = {
   0: 'Default',

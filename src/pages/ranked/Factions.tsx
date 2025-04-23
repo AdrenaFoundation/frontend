@@ -168,9 +168,66 @@ export default function Factions({
     const data = useInterseason2Data({ allUserProfilesMetadata, refreshInterval: 60_000 });
     const leaderboardData = useMutagenLeaderboardData({ allUserProfilesMetadata, refreshInterval: 60_000 });
 
-    const top10 = useMemo(() => {
-        return data?.seasonLeaderboard?.sort((a, b) => b.totalPoints - a.totalPoints).slice(0, 10);
-    }, [data]);
+    const officers = useMemo(() => {
+        if (!data?.seasonLeaderboard) return null;
+
+        const roleByRank = ["General", "Lieutenant", "Seargent"] as const;
+
+        const teamRoles: Record<typeof TEAMS_MAPPING.BONK | typeof TEAMS_MAPPING.JITO, Partial<Record<typeof roleByRank[number], typeof data.seasonLeaderboard[0]>>> = {
+            [TEAMS_MAPPING.BONK]: {},
+            [TEAMS_MAPPING.JITO]: {},
+        };
+
+        const allAssigned = new Set<string>();
+
+        const sorted = data.seasonLeaderboard
+            .sort((a, b) => b.totalPoints - a.totalPoints)
+            .map((d) => {
+                const team = userProfilesMap[d.wallet.toBase58()]; // 0 = no team, 1 = BONK, 2 = JITO
+                return { ...d, team };
+            });
+
+        const isTeamFull = (team: typeof TEAMS_MAPPING.BONK | typeof TEAMS_MAPPING.JITO) => {
+            return roleByRank.every((role) => !!teamRoles[team][role]);
+        };
+
+        for (const user of sorted) {
+            if (allAssigned.has(user.wallet.toBase58())) continue;
+
+            const preferredTeam = user.team === TEAMS_MAPPING.BONK || user.team === TEAMS_MAPPING.JITO
+                ? user.team
+                : undefined;
+
+            const teamsToTry = preferredTeam
+                ? [preferredTeam]
+                : [TEAMS_MAPPING.BONK, TEAMS_MAPPING.JITO]; // users without a team can go anywhere
+
+            for (const team of teamsToTry) {
+                if (user.team !== TEAMS_MAPPING.DEFAULT && user.team !== team) continue; // don't assign to a team they didn't pick
+                if (isTeamFull(team)) continue;
+
+                for (const role of roleByRank) {
+                    if (!teamRoles[team][role]) {
+                        // If role isn't picked, assign user to it
+                        teamRoles[team][role] = user;
+                        allAssigned.add(user.wallet.toBase58());
+                        break;
+                    }
+                }
+
+                // Break outer loop if this user got assigned
+                if (allAssigned.has(user.wallet.toBase58())) break;
+            }
+
+            // Stop looping if both teams are full
+            if (isTeamFull(TEAMS_MAPPING.BONK) && isTeamFull(TEAMS_MAPPING.JITO)) break;
+        }
+
+        return {
+            BONK: teamRoles[TEAMS_MAPPING.BONK],
+            JITO: teamRoles[TEAMS_MAPPING.JITO],
+        };
+    }, [data, userProfilesMap]);
 
     const userData = useMemo(() => {
         return data?.seasonLeaderboard?.find((u) => u.wallet.toBase58() === wallet?.walletAddress);
@@ -363,29 +420,29 @@ export default function Factions({
                     {isMobile ? <div className='flex flex-wrap items-center justify-center gap-10'>
                         {/* Team A */}
                         <div className='flex flex-col items-center gap-[6em] mt-16'>
-                            <Rank team='A' rank="General" user={top10?.[0]} setActiveProfile={setActiveProfile} />
-                            <Rank team='A' rank="Lieutenant" user={top10?.[2]} setActiveProfile={setActiveProfile} />
-                            <Rank team='A' rank="Sergeant" user={top10?.[4]} setActiveProfile={setActiveProfile} />
+                            <Rank team='A' rank="General" user={officers?.BONK.General} setActiveProfile={setActiveProfile} />
+                            <Rank team='A' rank="Lieutenant" user={officers?.BONK.Lieutenant} setActiveProfile={setActiveProfile} />
+                            <Rank team='A' rank="Sergeant" user={officers?.BONK.Seargent} setActiveProfile={setActiveProfile} />
                         </div>
 
                         {/* Team B */}
                         <div className='flex flex-col items-center gap-[6em] mt-16'>
-                            <Rank team='B' rank="General" user={top10?.[1]} setActiveProfile={setActiveProfile} />
-                            <Rank team='B' rank="Lieutenant" user={top10?.[3]} setActiveProfile={setActiveProfile} />
-                            <Rank team='B' rank="Sergeant" user={top10?.[5]} setActiveProfile={setActiveProfile} />
+                            <Rank team='B' rank="General" user={officers?.JITO.General} setActiveProfile={setActiveProfile} />
+                            <Rank team='B' rank="Lieutenant" user={officers?.JITO.Lieutenant} setActiveProfile={setActiveProfile} />
+                            <Rank team='B' rank="Sergeant" user={officers?.JITO.Seargent} setActiveProfile={setActiveProfile} />
                         </div>
                     </div> : <div className='flex w-full items-end mt-8 gap-2'>
                         {/* Team A */}
 
-                        <Rank team='A' rank="Sergeant" user={top10?.[4]} setActiveProfile={setActiveProfile} />
-                        <Rank team='A' rank="Lieutenant" user={top10?.[2]} setActiveProfile={setActiveProfile} />
-                        <Rank team='A' rank="General" user={top10?.[0]} setActiveProfile={setActiveProfile} />
+                        <Rank team='A' rank="Sergeant" user={officers?.BONK.Seargent} setActiveProfile={setActiveProfile} />
+                        <Rank team='A' rank="Lieutenant" user={officers?.BONK.Lieutenant} setActiveProfile={setActiveProfile} />
+                        <Rank team='A' rank="General" user={officers?.BONK.General} setActiveProfile={setActiveProfile} />
 
                         {/* Team B */}
 
-                        <Rank team='B' rank="General" user={top10?.[1]} setActiveProfile={setActiveProfile} />
-                        <Rank team='B' rank="Lieutenant" user={top10?.[3]} setActiveProfile={setActiveProfile} />
-                        <Rank team='B' rank="Sergeant" user={top10?.[5]} setActiveProfile={setActiveProfile} />
+                        <Rank team='B' rank="General" user={officers?.JITO.General} setActiveProfile={setActiveProfile} />
+                        <Rank team='B' rank="Lieutenant" user={officers?.JITO.Lieutenant} setActiveProfile={setActiveProfile} />
+                        <Rank team='B' rank="Sergeant" user={officers?.JITO.Seargent} setActiveProfile={setActiveProfile} />
                     </div>}
                 </div>
 
