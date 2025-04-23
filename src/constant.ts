@@ -560,6 +560,12 @@ export const QUESTS = {
   },
 };
 
+export const TEAMS_MAPPING = {
+  DEFAULT: 0,
+  BONK: 1,
+  JITO: 2,
+};
+
 export const TEAMS = {
   0: 'Default',
   1: 'Bonk',
