@@ -86,6 +86,8 @@ export default function TopTraders({ startDate, endDate, allUserProfilesMetadata
                 wallpaper: 0,
                 title: 0,
                 achievements: [],
+                team: 0,
+                continent: 0,
             });
         } else {
             setProfile(p);
