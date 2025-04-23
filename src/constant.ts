@@ -1617,3 +1617,7 @@ export const SOLANA_ID_TIERS_MUTAGEN = {
   tier_3: { mutagen: 3, title: 'Tier 3' },
   tier_4: { mutagen: 1, title: 'Tier 4' },
 } as const;
+
+export const GENERAL_CHAT_ROOM_ID = 0;
+export const JITO_CHAT_ROOM_ID = 1;
+export const BONK_CHAT_ROOM_ID = 2;

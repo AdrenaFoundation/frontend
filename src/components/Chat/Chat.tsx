@@ -9,7 +9,7 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import { openCloseConnectionModalAction } from "@/actions/walletActions";
-import { PROFILE_PICTURES, WALLPAPERS } from "@/constant";
+import { BONK_CHAT_ROOM_ID, GENERAL_CHAT_ROOM_ID, JITO_CHAT_ROOM_ID, PROFILE_PICTURES, TEAMS_MAPPING, WALLPAPERS } from "@/constant";
 import DataApiClient from "@/DataApiClient";
 import { useAllUserProfilesMetadata } from "@/hooks/useAllUserProfilesMetadata";
 import { useDispatch } from "@/store/store";
@@ -27,8 +27,6 @@ const supabase = createClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!
 );
-
-const roomId = 0;
 
 const MAX_MESSAGES = 1000;
 const OPEN_CHAT_TTL = 600000; // 10 minute TTL - in millisecond
@@ -114,6 +112,7 @@ function Chat({
     // onToggleUserList,
 }: ChatProps) {
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+    const [roomId, setRoomId] = useState<number>(GENERAL_CHAT_ROOM_ID);
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const containerRef = useRef<HTMLDivElement>(null);
@@ -155,7 +154,8 @@ function Chat({
             console.log('Error loading connected users', e);
             return [];
         }
-    }, [userProfilesMap]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userProfilesMap, roomId]);
 
     useEffect(() => {
         const updateUsers = () => {
@@ -169,7 +169,7 @@ function Chat({
         const interval = setInterval(updateUsers, 20000);
 
         return () => clearInterval(interval);
-    }, [fetchDetailedConnectedUsers]);
+    }, [fetchDetailedConnectedUsers, roomId]);
 
     useEffect(() => {
         // Fetch initial messages
@@ -219,7 +219,15 @@ function Chat({
         return () => {
             supabase.removeChannel(channel); // Cleanup subscription
         };
-    }, []);
+    }, [roomId]);
+
+    const userTeam = useMemo(() => {
+        if (!userProfile || !wallet) {
+            setRoomId(GENERAL_CHAT_ROOM_ID);
+            return TEAMS_MAPPING.DEFAULT
+        }
+        return userProfile ? userProfile.team : TEAMS_MAPPING.DEFAULT;
+    }, [userProfile, wallet]);
 
     const sendMessage = async () => {
         if (input.trim()) {
@@ -262,7 +270,7 @@ function Chat({
             });
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, !!wallet]);
+    }, [isOpen, !!wallet, roomId]);
 
     const loadProfile = useCallback((wallet: string) => {
         if (profileLoading === wallet || profileCache[wallet]) return; // Do not load multiple time the same wallet
@@ -398,11 +406,12 @@ function Chat({
             </div>;
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, loadProfile, messages, profileCache?.length ?? 0, userProfilesMap, wallet]);
+    }, [isOpen, roomId, loadProfile, messages, profileCache?.length ?? 0, userProfilesMap, wallet]);
 
     return (
         <>
             <div className={className} style={style}>
+
                 <div
                     className="h-[3em] flex gap-2 items-center justify-between pl-4 pr-4 border-b flex-shrink-0 opacity-90 hover:opacity-100 cursor-pointer"
                     onClick={() => clickOnHeader()}
@@ -440,6 +449,26 @@ function Chat({
                         </div>
                     </div>
                 </div>
+
+                {userProfile && userTeam !== 0 ? <div className="flex flex-row gap-2 p-1 border-b">
+                    <div className={twMerge("border p-1 flex-1 text-center rounded-md transition duration-300 opacity-50 cursor-pointer hover:opacity-100", roomId === 0 && 'opacity-100 border-white')} onClick={() => setRoomId(0)}>
+                        <p className="text-xs font-boldy">General</p>
+                    </div>
+
+                    <div className={twMerge("relative border p-1 flex-1 text-center rounded-md transition duration-300 cursor-pointer", roomId !== 0 ? userTeam === TEAMS_MAPPING.BONK ? 'opacity-100 border-[#fa6724]' : 'opacity-100 border-[#5AA6FA]' : '')} onClick={() => setRoomId(userTeam === TEAMS_MAPPING.BONK ? BONK_CHAT_ROOM_ID : JITO_CHAT_ROOM_ID)}>
+                        <p className={twMerge("relative text-xs font-boldy z-10", userTeam === TEAMS_MAPPING.BONK ? 'text-[#fa6724]' : 'text-[#5AA6FA]')}>Team {userTeam === TEAMS_MAPPING.BONK ? 'BONK' : 'JITO'}</p>
+
+                        <div
+                            className={twMerge(
+                                'w-full h-full absolute left-0 top-0 bg-cover bg-no-repeat bg-center grayscale-0 opacity-20',
+                            )}
+                            style={{
+                                backgroundImage: `url(${WALLPAPERS[userTeam === TEAMS_MAPPING.BONK ? 11 : 12]})`,
+                            }}
+                        />
+
+                    </div>
+                </div> : null}
 
                 <div className="relative flex grow overflow-hidden">
                     <div className={twMerge(
