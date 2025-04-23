@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from 'react';
 
-import DataApiClient from "@/DataApiClient";
+import DataApiClient from '@/DataApiClient';
 import {
   ProfilePicture,
   SeasonLeaderboardsData,
   UserProfileMetadata,
   UserProfileTitle,
-} from "@/types";
+} from '@/types';
 
 function applyProfile(
   leaderboardData: SeasonLeaderboardsData | null,
@@ -44,8 +44,10 @@ function applyProfile(
 // TODO: refactor later and have only one hook for all seasons. When implementing S2
 export default function useInterseason2Data({
   allUserProfilesMetadata,
+  refreshInterval = 20_000,
 }: {
   allUserProfilesMetadata: UserProfileMetadata[];
+  refreshInterval?: number;
 }): SeasonLeaderboardsData | null {
   const [leaderboardData, setLeaderboardData] =
     useState<SeasonLeaderboardsData | null>(null);
@@ -66,7 +68,7 @@ export default function useInterseason2Data({
     if (!allMetadata) return;
 
     DataApiClient.getSeasonLeaderboards({
-      season: "interseason2",
+      season: 'interseason2',
     })
       .then((data) => {
         applyProfile(data, allMetadata);
@@ -78,7 +80,7 @@ export default function useInterseason2Data({
 
     const interval = setInterval(() => {
       DataApiClient.getSeasonLeaderboards({
-        season: "interseason2",
+        season: 'interseason2',
       })
         .then((data) => {
           applyProfile(data, allMetadata);
@@ -87,10 +89,10 @@ export default function useInterseason2Data({
         .catch((error) => {
           console.log(error);
         });
-    }, 20_000);
+    }, refreshInterval);
 
     return () => clearInterval(interval);
-  }, [allMetadata]);
+  }, [allMetadata, refreshInterval]);
 
   return leaderboardData;
 }

@@ -29,6 +29,8 @@ export default function Button({
   width = 12,
   // isLoading,
   icon,
+  onMouseEnter,
+  onMouseLeave,
   ...rest
 }: {
   title?: ReactNode;
@@ -52,6 +54,8 @@ export default function Button({
   width?: number;
   // isLoading?: boolean;
   icon?: ImageRef;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) {
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
 
@@ -83,6 +87,8 @@ export default function Button({
 
   const styledButton = (
     <button
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={style}
       className={twMerge(
         'flex flex-row items-center justify-center gap-3 font-mono h-[2.5em] overflow-hidden relative',
