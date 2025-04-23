@@ -3,13 +3,16 @@ import { AnimatePresence } from 'framer-motion';
 import React, { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import AdrenaLoreBook from '@/components/pages/ranked/lore/AdrenaLoreBook';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useInterseason2Data from '@/hooks/useInterseason2Data';
+import useMutagenLeaderboardData from '@/hooks/useMutagenLeaderboardData';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
@@ -17,7 +20,7 @@ import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange
 
-const PICTURES = {
+export const PICTURES = {
     'A-General': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-general-XslAAKuuLulnWZjojoSgUfpcvPSUao.jpg',
     'A-Lieutenant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-lieutenant-rlj75BR7yTwcCLDqghVw8pGQuqDdGp.jpg',
     'A-Sergeant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-sergeant-TOF5salEAeiwnZNQTqmcRLk0078M54.jpg',
@@ -112,6 +115,8 @@ function Rank({
                                         profilePicture: 0,
                                         wallpaper: 0,
                                         title: 0,
+                                        team: 0,
+                                        continent: 0,
                                         achievements: [],
                                     });
                                 } else {
@@ -142,7 +147,19 @@ export default function Factions() {
     const isMobile = useBetterMediaQuery('(max-width: 1000px)');
 
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
-    const data = useInterseason2Data({ allUserProfilesMetadata });
+
+    const userProfilesMap = useMemo(() => {
+        return allUserProfilesMetadata.reduce(
+            (acc, profile) => {
+                acc[profile.owner.toBase58()] = profile.team;
+                return acc;
+            },
+            {} as Record<string, number>,
+        );
+    }, [allUserProfilesMetadata]);
+
+    const data = useInterseason2Data({ allUserProfilesMetadata, refreshInterval: 60_000 });
+    const leaderboardData = useMutagenLeaderboardData({ allUserProfilesMetadata, refreshInterval: 60_000 });
 
     const top10 = useMemo(() => {
         return data?.seasonLeaderboard?.sort((a, b) => b.totalPoints - a.totalPoints).slice(0, 10);
@@ -152,9 +169,169 @@ export default function Factions() {
         return data?.seasonLeaderboard?.find((u) => u.wallet.toBase58() === wallet?.walletAddress);
     }, [data?.seasonLeaderboard, wallet?.walletAddress]);
 
+    const numberBonkTraders = useMemo(() => {
+        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 1)?.length;
+    }, [leaderboardData, userProfilesMap]);
+
+    const numberJitoTraders = useMemo(() => {
+        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 2)?.length;
+    }, [leaderboardData, userProfilesMap]);
+
+    const [pickingTeamHover, setPickingTeamHover] = useState<false | 'bonk' | 'jito'>(false);
+
+    const bonkTeamTop20 = useMemo(() => {
+        const top20Bonk = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 1)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
+        return top20Bonk;
+    }, [leaderboardData, userProfilesMap]);
+
+    const jitoTeamTop20 = useMemo(() => {
+        const top20Jito = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 2)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
+        return top20Jito;
+    }, [leaderboardData, userProfilesMap]);
+
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col pb-20 items-center gap-10">
+                <div className='flex flex-col gap-6 items-center w-full relative pt-10 border-t border-b pb-10'>
+                    <div
+                        className={twMerge(
+                            'w-1/2 h-full absolute left-0 top-0 bg-cover bg-no-repeat bg-center',
+                            pickingTeamHover === 'bonk' ? 'grayscale-0 opacity-20' : 'grayscale opacity-10',
+                        )}
+                        style={{
+                            backgroundImage: `url(${PICTURES['A-General']})`,
+                        }}
+                    />
+
+                    <div
+                        className={twMerge(
+                            'w-1/2 h-full absolute right-0 top-0 bg-cover bg-no-repeat bg-center',
+                            pickingTeamHover === 'jito' ? 'grayscale-0 opacity-20' : 'grayscale opacity-10',
+                        )}
+                        style={{
+                            backgroundImage: `url(${PICTURES['B-General']})`,
+                        }}
+                    />
+
+                    <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>SOLDIER IT&apos;S TIME TO PICK YOUR TEAM!</div>
+
+                    <div className='flex gap-6'>
+                        <Button
+                            className={twMerge('opacity-70 hover:opacity-100 w-40 bg-[#FA6724] text-white')}
+                            title="BONK TEAM"
+                            variant='primary'
+                            onMouseEnter={() => setPickingTeamHover('bonk')}
+                            onMouseLeave={() => setPickingTeamHover(false)}
+                            onClick={() => {
+                                window.adrena.client.editUserProfile({
+                                    notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
+                                    team: 1,
+                                });
+                            }}
+                        />
+
+                        <Button
+                            className={twMerge('opacity-70 hover:opacity-100 w-40 bg-[#5AA6FA] text-white')}
+                            title="JITO TEAM"
+                            variant='primary'
+                            onMouseEnter={() => setPickingTeamHover('jito')}
+                            onMouseLeave={() => setPickingTeamHover(false)}
+                            onClick={() => {
+                                window.adrena.client.editUserProfile({
+                                    notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
+                                    team: 2,
+                                });
+                            }}
+                        />
+                    </div>
+
+                    <div className='border p-4 bg-third/80 z-10 rounded flex flex-col gap-4 items-center max-w-[80em]'>
+                        <div className='flex text-center items-center gap-4 w-full'>
+                            <div className='w-1/2 bg-white/50 h-[1px]' />
+                            <div className='text-sm flex sm:text-md tracking-[0.1rem] flex-shrink-0'>READ THIS</div>
+                            <div className='w-1/2 bg-white/50 h-[1px]' />
+                        </div>
+
+                        <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
+                            1 - Be careful this choice is definitive for the rest of the season.
+                        </div>
+
+                        <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
+                            2 - Weekly rewards are split 50/50 between the two teams. However, one team can steal up to 30% of the other&apos;s rewards based on the mutagen damage gap. Within each team, rewards are distributed proportionally to the mutagen generated by each trader.
+                        </div>
+
+                        <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
+                            3 - Best 3 traders of each team will become officer of that team. A team MUST be picked before the season starts to be eligible for the officer role.
+                        </div>
+
+                        <div className='w-full bg-white/50 h-[1px]' />
+                    </div>
+
+                    <div className='flex justify-between w-full'>
+                        <div className='flex flex-col items-end w-1/2 pr-10'>
+                            <div className='text-sm sm:text-md tracking-[0.1rem] mb-4' style={{ color: teamAColor }}>BONK TEAM TOP20 (TOTAL {numberBonkTraders})</div>
+
+                            <div className='flex flex-col max-h-[50em] overflow-y-auto w-full pl-4 max-w-[30em] z-10'>
+                                {bonkTeamTop20?.map((trader) => {
+                                    const profile = allUserProfilesMetadata.find(u => u.owner.toBase58() === trader.userWallet.toBase58());
+                                    const nickname = profile?.nickname || getAbbrevWalletAddress(trader.userWallet.toBase58());
+                                    return (
+                                        <div
+                                            key={trader.userWallet.toBase58()}
+                                            className='flex justify-between items-center px-3 py-2 border border-[#FA6724]/30 rounded bg-third/30 hover:bg-third/60 transition-all'
+                                        >
+                                            <div className='flex items-center'>
+                                                <Button
+                                                    title={nickname}
+                                                    className='font-archivo tracking-wider hover:text-white cursor-pointer p-0 m-0 h-auto min-h-0 flex justify-start'
+                                                    variant='text'
+                                                    onClick={() => {
+                                                        if (profile) {
+                                                            setActiveProfile(profile as unknown as UserProfileExtended);
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className='text-xs text-white/70'>volume: <FormatNumber nb={trader.totalVolume} format='currency' precision={0} isAbbreviate={true} isAbbreviateIcon={false} prefix='$' className='text-sm font-mono' /></div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className='flex flex-col items-start w-1/2 pl-10'>
+                            <div className='text-sm sm:text-md tracking-[0.1rem] mb-4' style={{ color: teamBColor }}>JITO TEAM TOP20 (TOTAL {numberJitoTraders})</div>
+
+                            <div className='flex flex-col gap-3 max-h-[50em] overflow-y-auto w-full pr-4 max-w-[30em] z-10'>
+                                {jitoTeamTop20?.map((trader) => {
+                                    const profile = allUserProfilesMetadata.find(u => u.owner.toBase58() === trader.userWallet.toBase58());
+                                    const nickname = profile?.nickname || getAbbrevWalletAddress(trader.userWallet.toBase58());
+                                    return (
+                                        <div
+                                            key={trader.userWallet.toBase58()}
+                                            className='flex justify-between items-center px-3 py-2 border border-[#5AA6FA]/30 rounded bg-third/30 hover:bg-third/60 transition-all'
+                                        >
+                                            <div className='flex items-center'>
+                                                <Button
+                                                    title={nickname}
+                                                    className='font-archivo tracking-wider hover:text-white cursor-pointer p-0 m-0 h-auto min-h-0 flex justify-start'
+                                                    variant='text'
+                                                    onClick={() => {
+                                                        if (profile) {
+                                                            setActiveProfile(profile as unknown as UserProfileExtended);
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className='text-xs text-white/70'>volume: <FormatNumber nb={trader.totalVolume} format='currency' precision={0} isAbbreviate={true} isAbbreviateIcon={false} prefix='$' className='text-sm font-mono' /></div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>Those who rise now will lead the next war...</div>
 
                 <div className="flex items-center pl-4 pr-4 max-w-full mt-8">
@@ -212,7 +389,7 @@ export default function Factions() {
                 </div>
 
                 <AdrenaLoreBook />
-            </div>
+            </div >
 
             <AnimatePresence>
                 {activeProfile ? (
