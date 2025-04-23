@@ -121,6 +121,7 @@ function Chat({
     const dispatch = useDispatch();
     const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
     const [, setConnectedUsers] = useState<ConnectedUser[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const userProfilesMap = useMemo(() => {
         return allUserProfilesMetadata.reduce(
@@ -172,20 +173,31 @@ function Chat({
     }, [fetchDetailedConnectedUsers, roomId]);
 
     useEffect(() => {
+        setIsLoading(true);
+
         // Fetch initial messages
         const fetchMessages = async () => {
-            const { data } = await supabase
-                .from("messages")
-                .select("*")
-                .eq("room_id", roomId)
-                .order('timestamp', { ascending: false }) // Get newest first
-                .limit(MAX_MESSAGES)
-                .then(result => ({
-                    ...result,
-                    data: result.data?.reverse() // Reverse to display in correct order
-                }));
-            setMessages(data || []);
+            try {
+                const { data } = await supabase
+                    .from("messages")
+                    .select("*")
+                    .eq("room_id", roomId)
+                    .order('timestamp', { ascending: false }) // Get newest first
+                    .limit(MAX_MESSAGES)
+                    .then(result => ({
+                        ...result,
+                        data: result.data?.reverse() // Reverse to display in correct order
+                    }));
+                setMessages(data || []);
+
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            } finally {
+                setIsLoading(false);
+            }
+
         };
+
 
         fetchMessages();
 
@@ -475,7 +487,7 @@ function Chat({
                         "p-4 flex flex-col h-[calc(100% - 9em)] max-h-[calc(100% - 9em)] flex-grow w-full overflow-auto custom-chat-scrollbar transition-all duration-300",
                         showUserList && "w-[calc(100%-160px)] blur-[2px]"
                     )} ref={containerRef}>
-                        {messagesDOM}
+                        {!isLoading ? messagesDOM : <div className="flex items-center justify-center h-full"> <Loader /> </div>}
                     </div>
 
                     <div className={twMerge(
