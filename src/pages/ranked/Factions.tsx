@@ -17,7 +17,6 @@ import useMutagenLeaderboardData from '@/hooks/useMutagenLeaderboardData';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
 import { addNotification, formatNumber, getAbbrevWalletAddress } from '@/utils';
-import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange
