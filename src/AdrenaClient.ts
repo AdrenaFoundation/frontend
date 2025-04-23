@@ -5262,6 +5262,8 @@ export class AdrenaClient {
         profilePicture: 0,
         wallpaper: 0,
         title: 0,
+        team: 0,
+        continent: 0,
       };
     });
 
