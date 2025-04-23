@@ -247,7 +247,7 @@ export default function Factions({
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col pb-20 items-center gap-10">
-                <div className='flex flex-col gap-6 items-center w-full relative pt-10 border-t border-b pb-10'>
+                <div className='flex flex-col gap-6 items-center w-full relative border-t border-b pb-10'>
                     {userTeam === TEAMS_MAPPING.DEFAULT ? <div className='flex flex-col w-full items-center gap-6'>
                         <div
                             className={twMerge(
@@ -269,7 +269,7 @@ export default function Factions({
                             }}
                         />
 
-                        <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>SOLDIER IT&apos;S TIME TO PICK YOUR TEAM!</div>
+                        <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center pt-10'>SOLDIER IT&apos;S TIME TO PICK YOUR TEAM!</div>
 
                         <div className='flex relative'>
                             {!wallet ? <div className='absolute w-full items-center flex justify-center z-10 text-sm text-white/90'>Please connect your wallet</div> : null}
