@@ -375,7 +375,20 @@ export default function Factions({
                                                     }
                                                 }}
                                             >{nickname}</div>
-                                            <div className='text-xs text-white/70'>volume: <FormatNumber nb={trader.totalVolume} format='currency' precision={0} isAbbreviate={true} isAbbreviateIcon={false} prefix='$' className='text-sm font-mono' /></div>
+
+                                            <div className='text-sm text-white/70 flex min-w-[11em] justify-end gap-1'>
+                                                all time volume:
+
+                                                <FormatNumber
+                                                    nb={trader.totalVolume}
+                                                    format='currency'
+                                                    precision={0}
+                                                    isAbbreviate={true}
+                                                    isAbbreviateIcon={false}
+                                                    prefix='$'
+                                                    className='text-sm font-mono'
+                                                />
+                                            </div>
                                         </div>
                                     );
                                 }) : <div className='w-full items-center flex justify-center'>-</div>}
@@ -402,8 +415,22 @@ export default function Factions({
                                                         setActiveProfile(profile as unknown as UserProfileExtended);
                                                     }
                                                 }}
-                                            >{nickname}</div>
-                                            <div className='text-sm text-white/70'>volume: <FormatNumber nb={trader.totalVolume} format='currency' precision={0} isAbbreviate={true} isAbbreviateIcon={false} prefix='$' className='text-sm font-mono' /></div>
+                                            >
+                                                {nickname}
+                                            </div>
+                                            <div className='text-sm text-white/70 flex min-w-[11em] justify-end gap-1'>
+                                                all time volume:
+
+                                                <FormatNumber
+                                                    nb={trader.totalVolume}
+                                                    format='currency'
+                                                    precision={0}
+                                                    isAbbreviate={true}
+                                                    isAbbreviateIcon={false}
+                                                    prefix='$'
+                                                    className='text-sm font-mono'
+                                                />
+                                            </div>
                                         </div>
                                     );
                                 })}
