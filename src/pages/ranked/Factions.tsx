@@ -16,7 +16,7 @@ import useInterseason2Data from '@/hooks/useInterseason2Data';
 import useMutagenLeaderboardData from '@/hooks/useMutagenLeaderboardData';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
-import { formatNumber, getAbbrevWalletAddress } from '@/utils';
+import { addNotification, formatNumber, getAbbrevWalletAddress } from '@/utils';
 
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange
@@ -234,23 +234,21 @@ export default function Factions({
     }, [data?.seasonLeaderboard, wallet?.walletAddress]);
 
     const numberBonkTraders = useMemo(() => {
-        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 1)?.length;
-    }, [leaderboardData, userProfilesMap]);
+        return allUserProfilesMetadata?.reduce((tot, trader) => tot + (trader.team === TEAMS_MAPPING.BONK ? 1 : 0), 0);
+    }, [allUserProfilesMetadata]);
 
     const numberJitoTraders = useMemo(() => {
-        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 2)?.length;
-    }, [leaderboardData, userProfilesMap]);
+        return allUserProfilesMetadata?.reduce((tot, trader) => tot + (trader.team === TEAMS_MAPPING.JITO ? 1 : 0), 0);
+    }, [allUserProfilesMetadata]);
 
     const [pickingTeamHover, setPickingTeamHover] = useState<false | 'bonk' | 'jito'>(false);
 
     const bonkTeamTop10 = useMemo(() => {
-        const top10Bonk = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 1)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
-        return top10Bonk;
+        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === TEAMS_MAPPING.BONK)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 10);
     }, [leaderboardData, userProfilesMap]);
 
     const jitoTeamTop10 = useMemo(() => {
-        const top10Jito = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 2)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
-        return top10Jito;
+        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === TEAMS_MAPPING.JITO)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 10);
     }, [leaderboardData, userProfilesMap]);
 
     const userTeam = useMemo(() => {
@@ -292,6 +290,15 @@ export default function Factions({
                                 onMouseEnter={() => setPickingTeamHover('bonk')}
                                 onMouseLeave={() => setPickingTeamHover(false)}
                                 onClick={async () => {
+                                    if (!wallet) return;
+                                    if (userProfile === false) {
+                                        addNotification({
+                                            title: 'No profile',
+                                            message: 'You need to create a user profile before picking a team',
+                                        });
+                                        return;
+                                    }
+
                                     await window.adrena.client.editUserProfile({
                                         notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
                                         team: TEAMS_MAPPING.BONK,
@@ -309,6 +316,15 @@ export default function Factions({
                                 onMouseEnter={() => setPickingTeamHover('jito')}
                                 onMouseLeave={() => setPickingTeamHover(false)}
                                 onClick={async () => {
+                                    if (!wallet) return;
+                                    if (userProfile === false) {
+                                        addNotification({
+                                            title: 'No profile',
+                                            message: 'You need to create a user profile before picking a team',
+                                        });
+                                        return;
+                                    }
+
                                     await window.adrena.client.editUserProfile({
                                         notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
                                         team: TEAMS_MAPPING.JITO,
@@ -377,7 +393,20 @@ export default function Factions({
                                                     }
                                                 }}
                                             >{nickname}</div>
-                                            <div className='text-xs text-white/70'>volume: <FormatNumber nb={trader.totalVolume} format='currency' precision={0} isAbbreviate={true} isAbbreviateIcon={false} prefix='$' className='text-sm font-mono' /></div>
+
+                                            <div className='text-sm text-white/70 flex min-w-[11em] justify-end gap-1'>
+                                                all time volume:
+
+                                                <FormatNumber
+                                                    nb={trader.totalVolume}
+                                                    format='currency'
+                                                    precision={0}
+                                                    isAbbreviate={true}
+                                                    isAbbreviateIcon={false}
+                                                    prefix='$'
+                                                    className='text-sm font-mono'
+                                                />
+                                            </div>
                                         </div>
                                     );
                                 }) : <div className='w-full items-center flex justify-center'>-</div>}
@@ -404,8 +433,22 @@ export default function Factions({
                                                         setActiveProfile(profile as unknown as UserProfileExtended);
                                                     }
                                                 }}
-                                            >{nickname}</div>
-                                            <div className='text-sm text-white/70'>volume: <FormatNumber nb={trader.totalVolume} format='currency' precision={0} isAbbreviate={true} isAbbreviateIcon={false} prefix='$' className='text-sm font-mono' /></div>
+                                            >
+                                                {nickname}
+                                            </div>
+                                            <div className='text-sm text-white/70 flex min-w-[11em] justify-end gap-1'>
+                                                all time volume:
+
+                                                <FormatNumber
+                                                    nb={trader.totalVolume}
+                                                    format='currency'
+                                                    precision={0}
+                                                    isAbbreviate={true}
+                                                    isAbbreviateIcon={false}
+                                                    prefix='$'
+                                                    className='text-sm font-mono'
+                                                />
+                                            </div>
                                         </div>
                                     );
                                 })}
