@@ -246,7 +246,7 @@ export default function Factions({
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col pb-20 items-center gap-10">
-                <div className='flex flex-col gap-6 items-center w-full relative pt-10 border-t border-b pb-10'>
+                <div className='flex flex-col gap-6 items-center w-full relative border-t border-b pb-10'>
                     {userTeam === TEAMS_MAPPING.DEFAULT ? <div className='flex flex-col w-full items-center gap-6'>
                         <div
                             className={twMerge(
@@ -268,60 +268,64 @@ export default function Factions({
                             }}
                         />
 
-                        <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center'>SOLDIER IT&apos;S TIME TO PICK YOUR TEAM!</div>
+                        <div className='text-sm sm:text-md tracking-[0.2rem] uppercase text-center pt-10'>SOLDIER IT&apos;S TIME TO PICK YOUR TEAM!</div>
 
-                        <div className='flex gap-16'>
-                            <Button
-                                className={twMerge('opacity-90 hover:opacity-100 w-40 bg-[#FA6724] text-white')}
-                                title='JOIN BONK TEAM'
-                                variant='primary'
-                                onMouseEnter={() => setPickingTeamHover('bonk')}
-                                onMouseLeave={() => setPickingTeamHover(false)}
-                                onClick={async () => {
-                                    if (!wallet) return;
-                                    if (userProfile === false) {
-                                        addNotification({
-                                            title: 'No profile',
-                                            message: 'You need to create a user profile before picking a team',
+                        <div className='flex relative'>
+                            {!wallet ? <div className='absolute w-full items-center flex justify-center z-10 text-sm text-white/90'>Please connect your wallet</div> : null}
+
+                            <div className={twMerge('flex gap-16', !wallet ? 'blur-xl' : '')}>
+                                <Button
+                                    className={twMerge('opacity-90 hover:opacity-100 w-40 bg-[#FA6724] text-white')}
+                                    title='JOIN BONK TEAM'
+                                    variant='primary'
+                                    onMouseEnter={() => setPickingTeamHover('bonk')}
+                                    onMouseLeave={() => setPickingTeamHover(false)}
+                                    onClick={async () => {
+                                        if (!wallet) return;
+                                        if (userProfile === false) {
+                                            addNotification({
+                                                title: 'No profile',
+                                                message: 'You need to create a user profile before picking a team',
+                                            });
+                                            return;
+                                        }
+
+                                        await window.adrena.client.editUserProfile({
+                                            notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
+                                            team: TEAMS_MAPPING.BONK,
                                         });
-                                        return;
-                                    }
 
-                                    await window.adrena.client.editUserProfile({
-                                        notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
-                                        team: TEAMS_MAPPING.BONK,
-                                    });
+                                        triggerAllUserProfilesMetadataReload();
+                                        triggerUserProfileReload();
+                                    }}
+                                />
 
-                                    triggerAllUserProfilesMetadataReload();
-                                    triggerUserProfileReload();
-                                }}
-                            />
+                                <Button
+                                    className={twMerge('opacity-90 hover:opacity-100 w-40 bg-[#5AA6FA] text-white')}
+                                    title="JOIN JITO TEAM"
+                                    variant='primary'
+                                    onMouseEnter={() => setPickingTeamHover('jito')}
+                                    onMouseLeave={() => setPickingTeamHover(false)}
+                                    onClick={async () => {
+                                        if (!wallet) return;
+                                        if (userProfile === false) {
+                                            addNotification({
+                                                title: 'No profile',
+                                                message: 'You need to create a user profile before picking a team',
+                                            });
+                                            return;
+                                        }
 
-                            <Button
-                                className={twMerge('opacity-90 hover:opacity-100 w-40 bg-[#5AA6FA] text-white')}
-                                title="JOIN JITO TEAM"
-                                variant='primary'
-                                onMouseEnter={() => setPickingTeamHover('jito')}
-                                onMouseLeave={() => setPickingTeamHover(false)}
-                                onClick={async () => {
-                                    if (!wallet) return;
-                                    if (userProfile === false) {
-                                        addNotification({
-                                            title: 'No profile',
-                                            message: 'You need to create a user profile before picking a team',
+                                        await window.adrena.client.editUserProfile({
+                                            notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
+                                            team: TEAMS_MAPPING.JITO,
                                         });
-                                        return;
-                                    }
 
-                                    await window.adrena.client.editUserProfile({
-                                        notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
-                                        team: TEAMS_MAPPING.JITO,
-                                    });
-
-                                    triggerAllUserProfilesMetadataReload();
-                                    triggerUserProfileReload();
-                                }}
-                            />
+                                        triggerAllUserProfilesMetadataReload();
+                                        triggerUserProfileReload();
+                                    }}
+                                />
+                            </div>
                         </div>
 
                         <div className='border p-4 bg-third/80 z-10 rounded flex flex-col gap-4 items-center max-w-[80em]'>
@@ -340,7 +344,7 @@ export default function Factions({
                             </div>
 
                             <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
-                                3 - Best 3 traders of each team will become officer of that team. A team MUST be picked before the season starts to be eligible for the officer role.
+                                3 – The top 3 traders from each team during interseason will become officers of their team. A team MUST be picked before the season starts to be eligible for an officer role.
                             </div>
 
                             <div className='w-full bg-white/50 h-[1px]' />
