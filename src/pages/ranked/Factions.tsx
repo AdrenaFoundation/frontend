@@ -173,7 +173,10 @@ export default function Factions({
 
         const roleByRank = ["General", "Lieutenant", "Seargent"] as const;
 
-        const teamRoles: Record<typeof TEAMS_MAPPING.BONK | typeof TEAMS_MAPPING.JITO, Partial<Record<typeof roleByRank[number], typeof data.seasonLeaderboard[0]>>> = {
+        const teamRoles: Record<
+            typeof TEAMS_MAPPING.BONK | typeof TEAMS_MAPPING.JITO,
+            Partial<Record<typeof roleByRank[number], typeof data.seasonLeaderboard[0]>>
+        > = {
             [TEAMS_MAPPING.BONK]: {},
             [TEAMS_MAPPING.JITO]: {},
         };
@@ -187,40 +190,25 @@ export default function Factions({
                 return { ...d, team };
             });
 
-        const isTeamFull = (team: typeof TEAMS_MAPPING.BONK | typeof TEAMS_MAPPING.JITO) => {
-            return roleByRank.every((role) => !!teamRoles[team][role]);
-        };
+        for (let roleIndex = 0; roleIndex < roleByRank.length; roleIndex++) {
+            const role = roleByRank[roleIndex];
 
-        for (const user of sorted) {
-            if (allAssigned.has(user.wallet.toBase58())) continue;
+            for (const team of [TEAMS_MAPPING.BONK, TEAMS_MAPPING.JITO]) {
+                // Skip if already filled
+                if (teamRoles[team][role]) continue;
 
-            const preferredTeam = user.team === TEAMS_MAPPING.BONK || user.team === TEAMS_MAPPING.JITO
-                ? user.team
-                : undefined;
+                // Find the first eligible user for this team who hasn't been assigned yet
+                const eligibleUser = sorted.find((user) => {
+                    if (allAssigned.has(user.wallet.toBase58())) return false;
+                    if (user.team === 0 || user.team === team) return true;
+                    return false;
+                });
 
-            const teamsToTry = preferredTeam
-                ? [preferredTeam]
-                : [TEAMS_MAPPING.BONK, TEAMS_MAPPING.JITO]; // users without a team can go anywhere
-
-            for (const team of teamsToTry) {
-                if (user.team !== TEAMS_MAPPING.DEFAULT && user.team !== team) continue; // don't assign to a team they didn't pick
-                if (isTeamFull(team)) continue;
-
-                for (const role of roleByRank) {
-                    if (!teamRoles[team][role]) {
-                        // If role isn't picked, assign user to it
-                        teamRoles[team][role] = user;
-                        allAssigned.add(user.wallet.toBase58());
-                        break;
-                    }
+                if (eligibleUser) {
+                    teamRoles[team][role] = eligibleUser;
+                    allAssigned.add(eligibleUser.wallet.toBase58());
                 }
-
-                // Break outer loop if this user got assigned
-                if (allAssigned.has(user.wallet.toBase58())) break;
             }
-
-            // Stop looping if both teams are full
-            if (isTeamFull(TEAMS_MAPPING.BONK) && isTeamFull(TEAMS_MAPPING.JITO)) break;
         }
 
         return {
