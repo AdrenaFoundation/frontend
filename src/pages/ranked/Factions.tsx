@@ -16,7 +16,7 @@ import useInterseason2Data from '@/hooks/useInterseason2Data';
 import useMutagenLeaderboardData from '@/hooks/useMutagenLeaderboardData';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
-import { formatNumber, getAbbrevWalletAddress } from '@/utils';
+import { addNotification, formatNumber, getAbbrevWalletAddress } from '@/utils';
 
 const teamAColor = "#FA6724"; // Richer electric blue
 const teamBColor = "#5AA6FA"; // Deep burnt orange
@@ -290,6 +290,15 @@ export default function Factions({
                                 onMouseEnter={() => setPickingTeamHover('bonk')}
                                 onMouseLeave={() => setPickingTeamHover(false)}
                                 onClick={async () => {
+                                    if (!wallet) return;
+                                    if (userProfile === false) {
+                                        addNotification({
+                                            title: 'No profile',
+                                            message: 'You need to create a user profile before picking a team',
+                                        });
+                                        return;
+                                    }
+
                                     await window.adrena.client.editUserProfile({
                                         notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
                                         team: TEAMS_MAPPING.BONK,
@@ -307,6 +316,15 @@ export default function Factions({
                                 onMouseEnter={() => setPickingTeamHover('jito')}
                                 onMouseLeave={() => setPickingTeamHover(false)}
                                 onClick={async () => {
+                                    if (!wallet) return;
+                                    if (userProfile === false) {
+                                        addNotification({
+                                            title: 'No profile',
+                                            message: 'You need to create a user profile before picking a team',
+                                        });
+                                        return;
+                                    }
+
                                     await window.adrena.client.editUserProfile({
                                         notification: MultiStepNotification.newForRegularTransaction('Update Team').fire(),
                                         team: TEAMS_MAPPING.JITO,
