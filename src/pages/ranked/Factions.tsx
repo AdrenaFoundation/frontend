@@ -234,23 +234,21 @@ export default function Factions({
     }, [data?.seasonLeaderboard, wallet?.walletAddress]);
 
     const numberBonkTraders = useMemo(() => {
-        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 1)?.length;
-    }, [leaderboardData, userProfilesMap]);
+        return allUserProfilesMetadata?.reduce((tot, trader) => tot + (trader.team === TEAMS_MAPPING.BONK ? 1 : 0), 0);
+    }, [allUserProfilesMetadata]);
 
     const numberJitoTraders = useMemo(() => {
-        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 2)?.length;
-    }, [leaderboardData, userProfilesMap]);
+        return allUserProfilesMetadata?.reduce((tot, trader) => tot + (trader.team === TEAMS_MAPPING.JITO ? 1 : 0), 0);
+    }, [allUserProfilesMetadata]);
 
     const [pickingTeamHover, setPickingTeamHover] = useState<false | 'bonk' | 'jito'>(false);
 
     const bonkTeamTop10 = useMemo(() => {
-        const top10Bonk = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 1)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
-        return top10Bonk;
+        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === TEAMS_MAPPING.BONK)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 10);
     }, [leaderboardData, userProfilesMap]);
 
     const jitoTeamTop10 = useMemo(() => {
-        const top10Jito = leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === 2)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 20);
-        return top10Jito;
+        return leaderboardData?.filter((trader) => userProfilesMap[trader.userWallet.toBase58()] === TEAMS_MAPPING.JITO)?.sort((a, b) => b.totalVolume - a.totalVolume).slice(0, 10);
     }, [leaderboardData, userProfilesMap]);
 
     const userTeam = useMemo(() => {
