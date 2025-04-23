@@ -340,7 +340,7 @@ export default function Factions({
                             </div>
 
                             <div className='text-sm flex sm:text-md tracking-[0.1rem] text-center gap-1'>
-                                3 - The top 3 traders of the interseason will become officers of their team. A team MUST be picked before the season starts to be eligible for an officer role.
+                                3 – The top 3 traders from each team during interseason will become officers of their team. A team MUST be picked before the season starts to be eligible for an officer role.
                             </div>
 
                             <div className='w-full bg-white/50 h-[1px]' />
