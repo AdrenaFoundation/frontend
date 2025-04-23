@@ -32,6 +32,8 @@ export default function UserProfileBlock({ superchargedProfile, setActiveProfile
                         wallpaper: 0,
                         title: 0,
                         achievements: [],
+                        team: 0,
+                        continent: 0,
                     })
                 }>
                     <div className="flex w-full font-mono text-xxs">
