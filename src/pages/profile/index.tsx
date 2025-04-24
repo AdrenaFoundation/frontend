@@ -18,6 +18,7 @@ import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
+import useFavorite from '@/hooks/useFavorite';
 
 export default function Profile({
   connected,
@@ -36,6 +37,8 @@ export default function Profile({
   const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
     walletAddress,
   });
+
+  const { favoriteAchievements, fetchFavoriteAchievements, updateFavoriteAchievements, createFavoriteAchievements, isFavoriteLoading } = useFavorite();
 
   const {
     activityCalendarData,
@@ -122,6 +125,10 @@ export default function Profile({
                 canUpdateNickname={!readonly}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={wallet?.publicKey}
+                favoriteAchievements={favoriteAchievements ?? null}
+                fetchFavoriteAchievements={fetchFavoriteAchievements}
+                updateFavoriteAchievements={updateFavoriteAchievements}
+                createFavoriteAchievements={createFavoriteAchievements}
               />
 
               <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl'>

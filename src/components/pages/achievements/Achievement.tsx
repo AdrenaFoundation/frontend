@@ -12,9 +12,11 @@ import { AchievementInfoExtended } from "@/types";
 export default function Achievement({
     achievement,
     unlocked,
+    className,
 }: {
     achievement: AchievementInfoExtended;
     unlocked: boolean;
+    className?: string;
 }) {
     const [hover, setHover] = useState(false);
 
@@ -28,7 +30,7 @@ export default function Achievement({
     }[achievement.category]), [achievement.category]);
 
     return (
-        <div className='flex flex-col gap-2 items-center'>
+        <div className={twMerge('flex flex-col gap-2 items-center', className)}>
             <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
                 <div className={twMerge('h-[21.44em] w-[16em] relative', unlocked ? '' : 'opacity-50')}>
                     {/* Title */}
