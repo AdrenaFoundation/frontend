@@ -660,9 +660,11 @@ export default function LongShortTradingInputs({
       }));
     }
 
-    const projectedSize = openedPosition ? (inputState.inputB - openedPosition.size) : inputState.inputB;
+    const projectedSize = openedPosition ? (inputState.inputB - (openedPosition.sizeUsd / tokenPriceBTrade)) : inputState.inputB;
+
     // In the case of an increase, this is different from the fullProjectedSizeUsd
     const projectedSizeUsd = projectedSize * tokenPriceBTrade;
+
     const fullProjectedSizeUsd = inputState.inputB * tokenPriceBTrade;
 
     if (side === "long" && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
@@ -671,7 +673,7 @@ export default function LongShortTradingInputs({
         errorMessage: `Position Exceeds Max Size`,
       }));
 
-    if (side === "short" && usdcCustody && projectedSizeUsd > usdcCustody.maxPositionLockedUsd)
+    if (side === "short" && usdcCustody && fullProjectedSizeUsd > usdcCustody.maxPositionLockedUsd)
       return setPositionInfo((prev) => ({
         ...prev,
         errorMessage: `Position Exceeds Max Size`,
@@ -694,7 +696,7 @@ export default function LongShortTradingInputs({
       if (projectedSizeUsd > availableLiquidityShort)
         return setPositionInfo((prev) => ({
           ...prev,
-          errorMessage: `Position Exceeds Max Size`,
+          errorMessage: `Position Exceeds USDC liquidity`,
         }));
     }
 
