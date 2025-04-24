@@ -17,43 +17,54 @@ import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useInterseason2Data from '@/hooks/useFactionsData';
 import { UserProfileExtended } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
+import { useSelector } from '@/store/store';
+import { twMerge } from 'tailwind-merge';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 // TODO: Figure out numbers
 // $4B volume target
 export const S2_HEALTH_BAR_MUTAGEN = 500;
 export const S2_NB_HEALTH_BAR = 20;
-export const S2_BONK_REWARDS = 4_000_000_000;
+export const S2_BONK_REWARDS = 4_200_000_000;
 export const S2_JTO_REWARDS = 25_000;
-export const S2_ADX_REWARDS = 2_000_000;
+
+// TODO: Split properly with BOSS DEFEATED
+// TODO: Add officer reserve
+export const S2_ADX_REWARDS = 12_000_000;
 export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
 }
 
+type TokensOrUsd = {
+    usd: number;
+    tokens: number;
+};
+
 export type FactionsComputedData = {
     oneHealthBarRewards: {
         seasonal: {
-            ADX: number;
+            ADX: TokensOrUsd;
         };
         weekly: {
-            JTO: number;
-            ADX: number;
-            BONK: number;
+            JTO: TokensOrUsd;
+            ADX: TokensOrUsd;
+            BONK: TokensOrUsd;
         };
     };
     maxWeeklyRewards: {
-        JTO: number;
-        ADX: number;
-        BONK: number;
+        JTO: TokensOrUsd;
+        ADX: TokensOrUsd;
+        BONK: TokensOrUsd;
     };
     weeklyUnlockedRewards: {
-        JTO: number;
-        ADX: number;
-        BONK: number;
+        JTO: TokensOrUsd;
+        ADX: TokensOrUsd;
+        BONK: TokensOrUsd;
     };
     isBossDefeated: boolean;
-    bossDefeatedExtraReward: number;
+    bossDefeatedExtraReward: TokensOrUsd;
     nbHealthBar: number;
     bossMaxMutagenLife: number;
     // Weekly info
@@ -95,12 +106,14 @@ export type FactionsComputedData = {
 };
 
 export default function Factions() {
+    const tokenPrices = useSelector((s) => s.tokenPrices);
     const [week, setWeek] = useState<string>('Week 1');
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
     const leaderboardData = useInterseason2Data({ allUserProfilesMetadata });
+    const [rewardsAs, setRewardsAs] = useState<'tokens' | 'usd'>('tokens');
 
     useEffect(() => {
         if (!leaderboardData) return;
@@ -122,33 +135,65 @@ export default function Factions() {
     const s2Computed: FactionsComputedData = useMemo(() => {
         const howManyHealthBarBroken = Math.floor(totalWeeklyMutagen / (S2_HEALTH_BAR_MUTAGEN / S2_NB_HEALTH_BAR));
 
-        console.log('HOW MANY HEALTH BAR BROKEN', howManyHealthBarBroken, totalWeeklyMutagen);
-
         const NB_WEEKS = 10;
 
         const data = {
             oneHealthBarRewards: {
                 weekly: {
-                    ADX: S2_ADX_REWARDS / NB_WEEKS / 2 / S2_NB_HEALTH_BAR, // Half ADX rewards are seasonal, half are weekly
-                    BONK: S2_BONK_REWARDS / NB_WEEKS / S2_NB_HEALTH_BAR,
-                    JTO: S2_JTO_REWARDS / NB_WEEKS / S2_NB_HEALTH_BAR,
+                    ADX: {
+                        tokens: S2_ADX_REWARDS / NB_WEEKS / 2 / S2_NB_HEALTH_BAR, // Half ADX rewards are seasonal, half are weekly
+                        usd: 0,
+                    },
+                    BONK: {
+                        tokens: S2_BONK_REWARDS / NB_WEEKS / S2_NB_HEALTH_BAR,
+                        usd: 0,
+                    },
+                    JTO: {
+                        tokens: S2_JTO_REWARDS / NB_WEEKS / S2_NB_HEALTH_BAR,
+                        usd: 0,
+                    },
                 },
                 seasonal: {
-                    ADX: S2_ADX_REWARDS / NB_WEEKS / 2 / S2_NB_HEALTH_BAR,
+                    ADX: {
+                        tokens: S2_ADX_REWARDS / NB_WEEKS / 2 / S2_NB_HEALTH_BAR,
+                        usd: 0,
+                    },
                 },
             },
             maxWeeklyRewards: {
-                ADX: S2_ADX_REWARDS / NB_WEEKS,
-                BONK: S2_BONK_REWARDS / NB_WEEKS,
-                JTO: S2_JTO_REWARDS / NB_WEEKS,
+                ADX: {
+                    tokens: S2_ADX_REWARDS / NB_WEEKS,
+                    usd: 0,
+                },
+                BONK: {
+                    tokens: S2_BONK_REWARDS / NB_WEEKS,
+                    usd: 0,
+                },
+                JTO: {
+                    tokens: S2_JTO_REWARDS / NB_WEEKS,
+                    usd: 0,
+                },
             },
+            // Calculate bellow
             weeklyUnlockedRewards: {
-                ADX: 0,
-                BONK: 0,
-                JTO: 0,
+                ADX: {
+                    tokens: 0,
+                    usd: 0,
+                },
+                BONK: {
+                    tokens: 0,
+                    usd: 0,
+                },
+                JTO: {
+                    tokens: 0,
+                    usd: 0,
+                },
             },
             isBossDefeated: totalWeeklyMutagen >= S2_HEALTH_BAR_MUTAGEN,
-            bossDefeatedExtraReward: S2_ADX_DEFEATED_BOSS_REWARDS,
+            bossDefeatedExtraReward: {
+                tokens: S2_ADX_DEFEATED_BOSS_REWARDS,
+                usd: 0,
+            },
             bossLifePercentage: (S2_HEALTH_BAR_MUTAGEN - totalWeeklyMutagen) * 100 / S2_HEALTH_BAR_MUTAGEN,
             weeklyDamage: totalWeeklyMutagen,
             weeklyDamageBonkTeam: totalWeeklyMutagen / 3, // TODO: calculate well
@@ -188,13 +233,34 @@ export default function Factions() {
         };
 
         // Calculate unlocked weekly rewards
-        data.weeklyUnlockedRewards.ADX = data.oneHealthBarRewards.weekly.ADX * howManyHealthBarBroken;
-        data.weeklyUnlockedRewards.BONK = data.oneHealthBarRewards.weekly.BONK * howManyHealthBarBroken;
-        data.weeklyUnlockedRewards.JTO = data.oneHealthBarRewards.weekly.JTO * howManyHealthBarBroken;
+        data.weeklyUnlockedRewards.ADX.tokens = data.oneHealthBarRewards.weekly.ADX.tokens * howManyHealthBarBroken;
+        data.weeklyUnlockedRewards.BONK.tokens = data.oneHealthBarRewards.weekly.BONK.tokens * howManyHealthBarBroken;
+        data.weeklyUnlockedRewards.JTO.tokens = data.oneHealthBarRewards.weekly.JTO.tokens * howManyHealthBarBroken;
 
         if (howManyHealthBarBroken >= S2_NB_HEALTH_BAR) {
-            data.weeklyUnlockedRewards.ADX += data.bossDefeatedExtraReward;
+            data.weeklyUnlockedRewards.ADX.tokens += data.bossDefeatedExtraReward.tokens;
         }
+
+        // Calculate USD values
+        if (!tokenPrices || !tokenPrices.ADX || !tokenPrices.BONK || !tokenPrices.JTO) {
+            return data;
+        }
+
+        data.weeklyUnlockedRewards.ADX.usd = data.weeklyUnlockedRewards.ADX.tokens * tokenPrices.ADX;
+        data.weeklyUnlockedRewards.BONK.usd = data.weeklyUnlockedRewards.BONK.tokens * tokenPrices.BONK;
+        data.weeklyUnlockedRewards.JTO.usd = data.weeklyUnlockedRewards.JTO.tokens * tokenPrices.JTO;
+
+        data.maxWeeklyRewards.ADX.usd = data.maxWeeklyRewards.ADX.tokens * tokenPrices.ADX;
+        data.maxWeeklyRewards.BONK.usd = data.maxWeeklyRewards.BONK.tokens * tokenPrices.BONK;
+        data.maxWeeklyRewards.JTO.usd = data.maxWeeklyRewards.JTO.tokens * tokenPrices.JTO;
+
+        data.oneHealthBarRewards.weekly.ADX.usd = data.oneHealthBarRewards.weekly.ADX.tokens * tokenPrices.ADX;
+        data.oneHealthBarRewards.weekly.BONK.usd = data.oneHealthBarRewards.weekly.BONK.tokens * tokenPrices.BONK;
+        data.oneHealthBarRewards.weekly.JTO.usd = data.oneHealthBarRewards.weekly.JTO.tokens * tokenPrices.JTO;
+
+        data.oneHealthBarRewards.seasonal.ADX.usd = data.oneHealthBarRewards.seasonal.ADX.tokens * tokenPrices.ADX;
+
+        data.bossDefeatedExtraReward.usd = data.bossDefeatedExtraReward.tokens * tokenPrices.ADX;
 
         return data;
     }, [totalWeeklyMutagen]);
@@ -246,9 +312,9 @@ export default function Factions() {
                 <div className="w-full flex justify-center items-center flex-col gap-6">
                     <div className="text-xxs font-archivo tracking-widest mt-3 text-txtfade w-1/2 text-center uppercase">DAMAGE THE BOSS AND UNLOCK BONK, JTO AND ADX REWARDS</div>
 
-                    <div className='flex h-[2em] items-center justify-center gap-4 mb-4 opacity-80'>
+                    <div className='flex h-[2em] items-center justify-center gap-4 opacity-80'>
                         <div className='flex flex-col'>
-                            <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
+                            <div className="text-md flex gap-2 justify-center items-center">
                                 <Image
                                     src={window.adrena.client.adxToken.image}
                                     alt="ADX Token"
@@ -258,18 +324,38 @@ export default function Factions() {
                                     draggable="false"
                                     className="w-4 h-4"
                                 />
-                                {formatNumber(s2Computed.weeklyUnlockedRewards.ADX, 0)} ADX
+
+                                <FormatNumber
+                                    nb={s2Computed.weeklyUnlockedRewards.ADX[rewardsAs]}
+                                    format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                    precision={0}
+                                    isDecimalDimmed={false}
+                                    suffix='ADX'
+                                    suffixClassName='text-lg'
+                                    className='border-0 text-lg'
+                                    isAbbreviate={false}
+                                />
                             </div>
 
-                            <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
-                                max {formatNumber(s2Computed.maxWeeklyRewards.ADX, 0)} ADX
+                            <div className='ml-auto'>
+                                <FormatNumber
+                                    nb={s2Computed.maxWeeklyRewards.ADX[rewardsAs]}
+                                    format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                    precision={0}
+                                    prefix='MAX '
+                                    isDecimalDimmed={false}
+                                    suffix='ADX'
+                                    suffixClassName='text-xs text-txtfade'
+                                    className='border-0 text-xs text-txtfade'
+                                    isAbbreviate={false}
+                                />
                             </div>
                         </div>
 
                         <div className='h-full w-[1px] bg-bcolor' />
 
                         <div className='flex flex-col'>
-                            <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
+                            <div className="text-md flex gap-2 justify-center items-center">
                                 <Image
                                     src={bonkLogo}
                                     alt="BONK Token"
@@ -279,18 +365,38 @@ export default function Factions() {
                                     draggable="false"
                                     className="w-4 h-4"
                                 />
-                                {formatNumber(s2Computed.weeklyUnlockedRewards.BONK, 0)} BONK
+
+                                <FormatNumber
+                                    nb={s2Computed.weeklyUnlockedRewards.BONK[rewardsAs]}
+                                    format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                    precision={0}
+                                    isDecimalDimmed={false}
+                                    suffix='BONK'
+                                    suffixClassName='text-lg'
+                                    className='border-0 text-lg'
+                                    isAbbreviate={false}
+                                />
                             </div>
 
-                            <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
-                                max {formatNumber(s2Computed.maxWeeklyRewards.BONK, 0)} BONK
+                            <div className='ml-auto'>
+                                <FormatNumber
+                                    nb={s2Computed.maxWeeklyRewards.BONK[rewardsAs]}
+                                    format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                    precision={0}
+                                    prefix='MAX '
+                                    isDecimalDimmed={false}
+                                    suffix='BONK'
+                                    suffixClassName='text-xs text-txtfade'
+                                    className='border-0 text-xs text-txtfade'
+                                    isAbbreviate={false}
+                                />
                             </div>
                         </div>
 
                         <div className='h-full w-[1px] bg-bcolor' />
 
                         <div className='flex flex-col'>
-                            <div className="text-md font-archivo tracking-widest text-center uppercase flex gap-2 justify-center items-center">
+                            <div className="text-md flex gap-2 justify-center items-center">
                                 <Image
                                     src={jtoLogo}
                                     alt="JTO Token"
@@ -300,11 +406,51 @@ export default function Factions() {
                                     draggable="false"
                                     className="w-6 h-6"
                                 />
-                                {formatNumber(s2Computed.weeklyUnlockedRewards.JTO, 0)} JTO
+
+                                <FormatNumber
+                                    nb={s2Computed.weeklyUnlockedRewards.JTO[rewardsAs]}
+                                    format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                    precision={0}
+                                    isDecimalDimmed={false}
+                                    suffix='JTO'
+                                    suffixClassName='text-lg'
+                                    className='border-0 text-lg'
+                                    isAbbreviate={false}
+                                />
                             </div>
 
-                            <div className='text-xxs font-archivo tracking-widest text-center uppercase ml-auto text-txtfade'>
-                                max {formatNumber(s2Computed.maxWeeklyRewards.JTO, 0)} JTO
+                            <div className='ml-auto'>
+                                <FormatNumber
+                                    nb={s2Computed.maxWeeklyRewards.JTO[rewardsAs]}
+                                    format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                    precision={0}
+                                    prefix='MAX '
+                                    isDecimalDimmed={false}
+                                    suffix='JTO'
+                                    suffixClassName='text-xs text-txtfade'
+                                    className='border-0 text-xs text-txtfade'
+                                    isAbbreviate={false}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='flex flex-col gap-3 items-center'>
+                        <div className='w-[20em] h-[1px] bg-bcolor' />
+
+                        <div className='flex gap-2'>
+                            <div
+                                className={twMerge('text-xs cursor-pointer', rewardsAs === 'tokens' ? 'text-white' : 'text-txtfade')}
+                                onClick={() => setRewardsAs('tokens')}
+                            >
+                                in tokens
+                            </div>
+                            <div className='text-xs text-txtfade'>/</div>
+                            <div
+                                className={twMerge('text-xs cursor-pointer', rewardsAs === 'usd' ? 'text-white' : 'text-txtfade')}
+                                onClick={() => setRewardsAs('usd')}
+                            >
+                                in us dollar
                             </div>
                         </div>
                     </div>

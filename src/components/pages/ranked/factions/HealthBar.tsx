@@ -19,11 +19,11 @@ export default function HealthBar({
                         <div className="flex">Deal {bossMaxMutagenLife / nbHealthBar} mutagen damage to {i === 0 ? 'kill the boss and' : null} unlock:</div>
 
                         <div className="flex">
-                            Weekly rewards: {oneHealthBarRewards.weekly.BONK} BONK, {oneHealthBarRewards.weekly.JTO} JTO and {(oneHealthBarRewards.weekly.ADX) + (i === 0 ? bossDefeatedExtraReward : 0)} ADX.
+                            Weekly rewards: {oneHealthBarRewards.weekly.BONK.tokens} BONK, {oneHealthBarRewards.weekly.JTO.tokens} JTO and {(oneHealthBarRewards.weekly.ADX.tokens) + (i === 0 ? bossDefeatedExtraReward.tokens : 0)} ADX.
                         </div>
 
                         <div className="flex">
-                            Season rewards: {oneHealthBarRewards.seasonal.ADX} ADX.
+                            Season rewards: {oneHealthBarRewards.seasonal.ADX.tokens} ADX.
                         </div>
                     </div>} key={`healthbar-${i}`}>
                         <div

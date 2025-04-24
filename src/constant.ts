@@ -341,6 +341,22 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
     description: `ALP becomes liquid.`,
     type: 'Global',
   },
+  {
+    label: '',
+    time: '4/11',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Season 1: Expanse trading competition ends.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '4/26',
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Season 2: Factions trading competition starts.`,
+    type: 'Global',
+  },
 ];
 
 export const TRADING_COMPETITION_SEASONS = {
