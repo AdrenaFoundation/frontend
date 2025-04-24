@@ -52,12 +52,19 @@ const generateColorFromString = (str: string): string => {
 const trackOpenChat = async (roomId: number, walletAddress: PublicKey) => {
     try {
         const expiryInSeconds = OPEN_CHAT_TTL / 1000;
+        const key = `connected:${roomId}:${walletAddress.toBase58()}`;
 
-        // Set the key with a value and expiry time
-        await kv.set(`connected:${roomId}:${walletAddress.toBase58()}`, true, { ex: expiryInSeconds });
+        // Check if key exists first
+        const exists = await kv.exists(key);
+
+        // Only set if it doesn't exist or is about to expire
+        if (!exists) {
+            await kv.set(key, true, { ex: expiryInSeconds });
+            // Clear cache to force refresh
+            connectedUsersCache.delete(`room_${roomId}`);
+        }
     } catch (e) {
-        // ignore error - it's not a big deal if we can't save that info
-        console.log('Error tracking open chat', e);
+        console.error('Error tracking open chat:', e);
     }
 };
 
@@ -70,13 +77,29 @@ const trackCloseChat = async (roomId: number, walletAddress: PublicKey) => {
     }
 };
 
+const connectedUsersCache = new Map<string, { count: number, timestamp: number }>();
+const CACHE_TTL = 5000;
+
 const fetchConnectedUsers = async (roomId: number) => {
     try {
-        const keys = await kv.keys(`connected:${roomId}:*`);
+        const cacheKey = `room_${roomId}`;
+        const cached = connectedUsersCache.get(cacheKey);
 
-        return keys.length;
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+            return cached.count;
+        }
+
+        const keys = await kv.keys(`connected:${roomId}:*`);
+        const count = keys.length;
+
+        connectedUsersCache.set(cacheKey, {
+            count,
+            timestamp: Date.now()
+        });
+
+        return count;
     } catch (e) {
-        console.log('Error loading connected users', e);
+        console.error('Error loading connected users', e);
         return null;
     }
 };
@@ -122,6 +145,7 @@ function Chat({
     const smileys = ['😀', '😂', '❤️', '🔥', '👍']; // Predefined smileys
     const [, setConnectedUsers] = useState<ConnectedUser[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingNbConnectedUsers, setIsLoadingNbConnectedUsers] = useState(false);
 
     const userProfilesMap = useMemo(() => {
         return allUserProfilesMetadata.reduce(
@@ -139,7 +163,7 @@ function Chat({
 
     const fetchDetailedConnectedUsers = useCallback(async (roomId: number): Promise<ConnectedUser[]> => {
         if (!Object.keys(userProfilesMap).length) return [];
-
+        setIsLoadingNbConnectedUsers(true);
         try {
             const keys = await kv.keys(`connected:${roomId}:*`);
 
@@ -154,9 +178,23 @@ function Chat({
         } catch (e) {
             console.log('Error loading connected users', e);
             return [];
+        } finally {
+            setIsLoadingNbConnectedUsers(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userProfilesMap, roomId]);
+    }, [userProfilesMap]);
+
+    const handleRoomChange = useCallback((newRoomId: number) => {
+        setRoomId(newRoomId);
+        setNbConnectedUsers(null);
+        setIsLoadingNbConnectedUsers(true);
+
+        fetchConnectedUsers(newRoomId).then((count) => {
+            setNbConnectedUsers(count);
+            setIsLoadingNbConnectedUsers(false);
+        });
+    }, []);
+
 
     useEffect(() => {
         const updateUsers = () => {
@@ -167,10 +205,11 @@ function Chat({
         };
 
         updateUsers();
-        const interval = setInterval(updateUsers, 20000);
+        const interval = setInterval(updateUsers, 30000);
 
         return () => clearInterval(interval);
-    }, [fetchDetailedConnectedUsers, roomId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userProfilesMap]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -197,7 +236,6 @@ function Chat({
             }
 
         };
-
 
         fetchMessages();
 
@@ -256,33 +294,40 @@ function Chat({
     }, [messages, isOpen]);
 
     useEffect(() => {
-        if (!wallet?.publicKey) return;
+        if (!wallet?.publicKey || !isOpen) return;
 
-        if (isOpen) {
-            trackOpenChat(roomId, wallet.publicKey)
-                .then(() => {
-                    // Force refresh the number, which should be +1
-                    fetchConnectedUsers(roomId).then(setNbConnectedUsers);
-                });
-        }
+        let mounted = true;
 
-        const interval = setInterval(() => {
-            trackOpenChat(roomId, wallet.publicKey);
-        }, OPEN_CHAT_TTL - 30000); // Refresh 30s before expiry
+        const updateUserCount = async () => {
+            try {
+                await trackOpenChat(roomId, wallet.publicKey);
+                if (mounted) {
+                    const count = await fetchConnectedUsers(roomId);
+                    setNbConnectedUsers(count);
+                }
+            } catch (error) {
+                console.error('Error updating user count:', error);
+            }
+        };
+
+        updateUserCount();
+
+        const interval = setInterval(updateUserCount, OPEN_CHAT_TTL - 30000);
 
         return () => {
+            mounted = false;
             clearInterval(interval);
 
-            if (isOpen === false) return;
-
-            // Meaning the chat was closed
-            trackCloseChat(roomId, wallet.publicKey).then(() => {
-                // Force refresh the number, which should be -1
-                fetchConnectedUsers(roomId).then(setNbConnectedUsers);
-            });
+            if (isOpen) {
+                trackCloseChat(roomId, wallet.publicKey).then(() => {
+                    connectedUsersCache.delete(`room_${roomId}`);
+                    fetchConnectedUsers(roomId).then((count) => {
+                        setNbConnectedUsers(count);
+                    });
+                });
+            }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, !!wallet, roomId]);
+    }, [isOpen, wallet, roomId]);
 
     const loadProfile = useCallback((wallet: string) => {
         if (profileLoading === wallet || profileCache[wallet]) return; // Do not load multiple time the same wallet
@@ -449,8 +494,8 @@ function Chat({
                                 // onToggleUserList?.();
                             }}
                         >
-                            <div className="text-xs flex mt-[0.1em] font-archivoblack text-txtfade">
-                                {nbConnectedUsers === null ? '-' : nbConnectedUsers}
+                            <div className="text-xs mt-[0.1em] font-archivoblack text-txtfade min-w-[2em] text-center">
+                                {isLoadingNbConnectedUsers ? '...' : nbConnectedUsers === null ? '-' : nbConnectedUsers}
                             </div>
                             <Image
                                 src={groupIcon}
@@ -463,11 +508,11 @@ function Chat({
                 </div>
 
                 {userProfile && userTeam !== 0 ? <div className="flex flex-row gap-2 p-1 border-b">
-                    <div className={twMerge("border p-1 flex-1 text-center rounded-md transition duration-300 opacity-50 cursor-pointer hover:opacity-100", roomId === 0 && 'opacity-100 border-white')} onClick={() => setRoomId(0)}>
+                    <div className={twMerge("border p-1 flex-1 text-center rounded-md transition duration-300 opacity-50 cursor-pointer hover:opacity-100", roomId === 0 && 'opacity-100 border-white')} onClick={() => { handleRoomChange(0); }}>
                         <p className="text-xs font-boldy">General</p>
                     </div>
 
-                    <div className={twMerge("relative border p-1 flex-1 text-center rounded-md transition duration-300 cursor-pointer", roomId !== 0 ? userTeam === TEAMS_MAPPING.BONK ? 'opacity-100 border-[#fa6724]' : 'opacity-100 border-[#5AA6FA]' : '')} onClick={() => setRoomId(userTeam === TEAMS_MAPPING.BONK ? BONK_CHAT_ROOM_ID : JITO_CHAT_ROOM_ID)}>
+                    <div className={twMerge("relative border p-1 flex-1 text-center rounded-md transition duration-300 cursor-pointer", roomId !== 0 ? userTeam === TEAMS_MAPPING.BONK ? 'opacity-100 border-[#fa6724]' : 'opacity-100 border-[#5AA6FA]' : '')} onClick={() => { handleRoomChange(userTeam === TEAMS_MAPPING.BONK ? BONK_CHAT_ROOM_ID : JITO_CHAT_ROOM_ID) }}>
                         <p className={twMerge("relative text-xs font-boldy z-10", userTeam === TEAMS_MAPPING.BONK ? 'text-[#fa6724]' : 'text-[#5AA6FA]')}>Team {userTeam === TEAMS_MAPPING.BONK ? 'BONK' : 'JITO'}</p>
 
                         <div
