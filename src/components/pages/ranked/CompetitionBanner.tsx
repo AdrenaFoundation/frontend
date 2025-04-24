@@ -13,6 +13,8 @@ import useCountDown from '@/hooks/useCountDown';
 import { useSelector } from '@/store/store';
 import { formatNumber } from '@/utils';
 
+// TODO: Need to refactor how we display seasons, we can't have something generic, too many things change between seasons
+// Should be one banner per season
 export default function CompetitionBanner({
     banner,
     title,
@@ -22,6 +24,7 @@ export default function CompetitionBanner({
     endDate,
     seasonName,
     adxRewards,
+    bonkRewards,
     jtoRewards,
     bannerClassName,
 }: {
@@ -33,6 +36,7 @@ export default function CompetitionBanner({
     gradientColor?: string;
     seasonName: string;
     adxRewards: number;
+    bonkRewards: number;
     jtoRewards: number;
     bannerClassName: string;
 }) {
@@ -44,7 +48,7 @@ export default function CompetitionBanner({
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
     const totalPrize = useMemo(() => {
-        return adxRewards * (tokenPrices['ADX'] ?? 0) + jtoRewards * (tokenPrices['JTO'] ?? 0);
+        return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (tokenPrices.JTO ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0);
     }, [adxRewards, jtoRewards, tokenPrices]);
 
     return (
@@ -144,11 +148,11 @@ export default function CompetitionBanner({
                     </ul>
                 ) : null}
 
-                {(adxRewards + jtoRewards) > 0 ? <div className='flex flex-col mt-8 z-10 items-center'>
-                    <div className='text-xs font-thin text-txtfade'>PRIZE POOL</div>
+                {(adxRewards + jtoRewards + bonkRewards) > 0 ? <div className='flex flex-col mt-8 z-10 items-center'>
+                    <div className='text-xs font-thin text-txtfade'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
 
-                    <div className='w-[20em] flex items-center justify-center rounded-lg flex-col'>
-                        {!tokenPrices["ADX"] || !tokenPrices["JTO"] ? '-' :
+                    <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-lg flex-col')}>
+                        {!tokenPrices.ADX || !tokenPrices.JTO || !tokenPrices.BONK ? '-' :
                             <FormatNumber
                                 format='currency'
                                 nb={totalPrize}
@@ -164,20 +168,58 @@ export default function CompetitionBanner({
                                     className="w-4 h-4"
                                 />
 
-                                <p className="text-md font-boldy text-txtfade">
-                                    {formatNumber(adxRewards, 2, 0)} ADX
-                                </p>
+                                <FormatNumber
+                                    format='number'
+                                    suffix='ADX'
+                                    nb={adxRewards}
+                                    precision={0}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
+                                    className="text-md font-boldy text-txtfade"
+                                    suffixClassName='text-base font-boldy text-txtfade'
+                                    isDecimalDimmed={false}
+                                />
                             </div>
 
-                            <div className='flex text-txtfade'>/</div>
+                            {jtoRewards ? <>
+                                <div className='flex text-md text-txtfade'>/</div>
 
-                            <div className="flex flex-row gap-1 items-center justify-center">
-                                <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
+                                <div className="flex flex-row gap-1 items-center justify-center">
+                                    <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
 
-                                <p className="text-md font-boldy text-txtfade">
-                                    {formatNumber(jtoRewards, 2, 0)} JTO
-                                </p>
-                            </div>
+                                    <FormatNumber
+                                        format='number'
+                                        suffix='JTO'
+                                        nb={jtoRewards}
+                                        precision={0}
+                                        isAbbreviate={true}
+                                        isAbbreviateIcon={false}
+                                        className="text-md font-boldy text-txtfade"
+                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        isDecimalDimmed={false}
+                                    />
+                                </div>
+                            </> : null}
+
+                            {bonkRewards ? <>
+                                <div className='flex text-md text-txtfade'>/</div>
+
+                                <div className="flex flex-row gap-1 items-center justify-center">
+                                    <Image src={bonkLogo} alt="BONK logo" className="w-4 h-4" />
+
+                                    <FormatNumber
+                                        format='number'
+                                        suffix='BONK'
+                                        nb={bonkRewards}
+                                        precision={0}
+                                        isAbbreviate={true}
+                                        isAbbreviateIcon={false}
+                                        className="text-md font-boldy text-txtfade"
+                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        isDecimalDimmed={false}
+                                    />
+                                </div>
+                            </> : null}
                         </div>
                     </div>
                 </div> : null}
@@ -196,13 +238,15 @@ export default function CompetitionBanner({
                         className="w-[3em] md:w-[4em]"
                     />
 
-                    <p className="tracking-[0.2rem] uppercase">And</p>
+                    {seasonName === 'factions' ? <>
+                        <p className="tracking-[0.2rem] uppercase">And</p>
 
-                    <Image
-                        src={bonkLogo}
-                        alt="BONK logo"
-                        className="w-[1.7em] md:w-[2.5em]"
-                    />
+                        <Image
+                            src={bonkLogo}
+                            alt="BONK logo"
+                            className="w-[1.7em] md:w-[2.5em]"
+                        />
+                    </> : null}
                 </div>
             </div>
 

@@ -370,6 +370,7 @@ export const TRADING_COMPETITION_SEASONS = {
     primaryColor: '#E5B958',
     adxRewards: 2270000,
     jtoRewards: 25000,
+    bonkRewards: 0,
     description: [
       "Welcome to Adrena's trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons. From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions. Your total trading volume during the six-week event determines your division qualification. Check out the divisions below, continuously updated based on onchain events.",
       "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
@@ -387,6 +388,7 @@ export const TRADING_COMPETITION_SEASONS = {
     primaryColor: '#FA6724',
     adxRewards: 5000000,
     jtoRewards: 50000,
+    bonkRewards: 0,
     description: [
       `Adrena's first Trading Season: The Expanse. Get ready for Adrena's inaugural trading season, The Expanse. Engage in our division-based trading competition where you can:`,
       `- Farm Mutagen through daily and weekly quests. By accumulating Mutagen through leverage trading, you can improve your ranking in the upcoming season and secure a share in the upcoming $ADX Airdrop. Can only generate through trading activities.`,
@@ -403,14 +405,15 @@ export const TRADING_COMPETITION_SEASONS = {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/factions-banner-OKwsUEBqusOest7hhIPaKsklmSlNdh.jpg',
     title: 'Factions',
     subTitle: 'Season 2',
-    startDate: new Date('2025-04-30T23:59:59.999Z'),
-    endDate: new Date('2025-07-09T23:59:59.999Z'),
+    startDate: new Date('2025-04-25T23:59:59.999Z'),
+    endDate: new Date('2025-07-04T23:59:59.999Z'),
     gradient: '', // Not used. Specific if in CompetitionBanner component
     primaryColor: '#247CFA',
-    adxRewards: 0,
-    jtoRewards: 0,
+    adxRewards: 12000000,
+    jtoRewards: 25000,
+    bonkRewards: 4200000000,
     description: [``] as string[],
-    bannerClassName: 'h-[30em] pt-20',
+    bannerClassName: 'h-[38em] pt-20',
   },
 } as const;
 

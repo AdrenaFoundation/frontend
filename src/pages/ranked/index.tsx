@@ -40,13 +40,14 @@ export default function Ranked({
                 seasonName={activeSeason}
                 adxRewards={data.adxRewards}
                 jtoRewards={data.jtoRewards}
+                bonkRewards={data.bonkRewards}
                 bannerClassName={data.bannerClassName}
             />
 
             <div className=" sm:px-8 max-w-[2200px] mx-auto w-full mt-10">
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
-                {activeSeason === 'factions' ? <Factions userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} /> : null}
+                {activeSeason === 'factions' ? <Factions /> : null}
             </div>
         </div>
     );

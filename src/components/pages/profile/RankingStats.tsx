@@ -2,17 +2,20 @@ import { useRouter } from 'next/navigation'
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import { TRADING_COMPETITION_SEASONS } from '@/constant';
+import { TEAMS_MAPPING, TRADING_COMPETITION_SEASONS } from '@/constant';
 import { AwakeningRankingTraderInfo, ExpanseRankingTraderInfo } from '@/hooks/useTraderInfo';
+import { UserProfileExtended } from '@/types';
 
 export default function RankingStats({
     expanseRanking,
     awakeningRanking,
     className,
+    userProfile,
 }: {
     className?: string;
     expanseRanking: ExpanseRankingTraderInfo | null;
     awakeningRanking: AwakeningRankingTraderInfo | null;
+    userProfile: UserProfileExtended | null | false;
 }) {
     const router = useRouter();
 
@@ -139,6 +142,44 @@ export default function RankingStats({
                     bodyClassName='text-base'
                 />
             </div>
+        </div>
+
+        <div className={`w-full sm:w-[15em] min-h-[10em] grow relative overflow-hidden flex flex-col items-center cursor-pointer opacity-90 hover:opacity-100`}
+            onClick={() => {
+                router.push('/ranked?view=leaderboard');
+            }}>
+
+            <div
+                className='w-full h-full absolute opacity-20'
+                style={{
+                    backgroundImage: `url(${TRADING_COMPETITION_SEASONS.factions.img})`,
+                    backgroundSize: 'cover',
+                    backgroundPositionX: 'center',
+                }}
+            />
+
+            <div className='flex items-center flex-col mt-8'>
+                <h1
+                    className={twMerge(
+                        'text-[1em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] z-10 text-center',
+                        'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
+                    )}
+                >
+                    SEASON 2: FACTIONS
+                </h1>
+
+                {<div className='text-sm text-txtfade'>
+                    {TRADING_COMPETITION_SEASONS.factions.startDate.toLocaleDateString()} - {TRADING_COMPETITION_SEASONS.factions.endDate.toLocaleDateString()}
+                </div>}
+            </div>
+
+            {<div className='font-archivo tracking-widest text-sm mt-auto mb-auto'>
+                {userProfile ? ({
+                    [TEAMS_MAPPING.DEFAULT]: 'NO TEAM',
+                    [TEAMS_MAPPING.BONK]: 'TEAM BONK',
+                    [TEAMS_MAPPING.JITO]: 'TEAM JITO',
+                })[userProfile.team] : '-'}
+            </div>}
         </div>
     </div>;
 }
