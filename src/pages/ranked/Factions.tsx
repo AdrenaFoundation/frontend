@@ -340,6 +340,8 @@ export default function Factions() {
                                     wallpaper: 0,
                                     title: 0,
                                     achievements: [],
+                                    team: 0,
+                                    continent: 0,
                                 });
                             } else {
                                 setActiveProfile(p);
@@ -371,6 +373,8 @@ export default function Factions() {
                                     wallpaper: 0,
                                     title: 0,
                                     achievements: [],
+                                    team: 0,
+                                    continent: 0,
                                 });
                             } else {
                                 setActiveProfile(p);

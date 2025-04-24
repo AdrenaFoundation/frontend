@@ -93,10 +93,10 @@ export default function Trade({
   ]);
 
   const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(
-    cookies?.showBreakEvenLine === 'true',
+    cookies?.showBreakEvenLine !== false,
   );
   const [toggleSizeUsdInChart, setToggleSizeUsdInChart] = useState<boolean>(
-    cookies?.toggleSizeUsdInChart === 'true',
+    cookies?.toggleSizeUsdInChart === true,
   );
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);

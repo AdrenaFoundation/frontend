@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -9,9 +10,8 @@ import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token, UserProfileMetadata } from '@/types';
-import { formatTimeDifference, getFullTimeDifference, getTokenSymbol } from '@/utils';
+import { formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getTokenSymbol } from '@/utils';
 
-import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import ViewProfileModal from '../../profile/ViewProfileModal';
 import { ButtonGroup } from './PositionBlockComponents/ButtonGroup';
 import { LiquidationWarning } from './PositionBlockComponents/LiquidationWarning';
@@ -148,16 +148,12 @@ export function PositionBlock({
         Owner
       </div>
 
-      {position.userProfile && position.userProfile.nickname.length > 0 ?
-        <div className='text-sm border-b border-transparent hover:border-white cursor-pointer' onClick={() => setIsProfileOpen(true)}>
-          {position.userProfile.nickname}
-        </div> :
-        <OnchainAccountInfo
-          address={position.owner}
-          shorten={true}
-          className="text-xs"
-          iconClassName="w-2 h-2"
-        />}
+      {position.userProfile && position.userProfile.nickname.length > 0 ? <div className='text-sm border-b border-transparent hover:border-white cursor-pointer' onClick={() => setIsProfileOpen(true)}>
+        {position.userProfile.nickname}
+      </div> :
+        <div className='text-xs text-txtfade border-b border-transparent hover:border-txtfade cursor-pointer' onClick={() => setIsProfileOpen(true)}>
+          {getAbbrevWalletAddress(position.owner.toBase58())}
+        </div>}
     </div>
   );
 
@@ -474,7 +470,7 @@ export function PositionBlock({
         </AnimatePresence>
 
         <AnimatePresence>
-          {isProfileOpen && position.userProfile && (
+          {isProfileOpen && (
             <Modal
               className="h-[80vh] w-full overflow-y-auto"
               wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
@@ -483,7 +479,22 @@ export function PositionBlock({
               isWrapped={false}
             >
               <ViewProfileModal
-                profile={position.userProfile}
+                profile={position.userProfile || {
+                  version: -1, // Not a real profile
+                  pubkey: PublicKey.default, // Not a real profile
+                  nickname: getAbbrevWalletAddress(position.owner.toBase58()),
+                  createdAt: Date.now(),
+                  owner: position.owner,
+                  referrerProfile: null,
+                  claimableReferralFeeUsd: 0,
+                  totalReferralFeeUsd: 0,
+                  profilePicture: 0,
+                  wallpaper: 0,
+                  title: 0,
+                  achievements: [],
+                  team: 0,
+                  continent: 0,
+                }}
                 close={() => setIsProfileOpen(false)}
               />
             </Modal>
