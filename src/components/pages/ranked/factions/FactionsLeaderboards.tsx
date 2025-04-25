@@ -17,9 +17,9 @@ import FactionsWeeklyLeaderboard from '@/components/pages/ranked/factions/Factio
 import HealthBar from '@/components/pages/ranked/factions/HealthBar';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useFactionsData from '@/hooks/useFactionsData';
+import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
-import { useSelector } from '@/store/store';
 
 export const S2_NB_HEALTH_BAR = 20;
 export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;

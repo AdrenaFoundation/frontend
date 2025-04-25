@@ -1,8 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import jtoLogo from '@/../../public/images/jito-logo-2.png';
+import bonkLogo from '@/../public/images/bonk.png';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
@@ -41,6 +44,7 @@ export default function FactionsWeeklyLeaderboard({
     };
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
+    const tokenPrices = useSelector((s) => s.tokenPrices);
 
     const weeklyStats = useMemo(() => {
         if (!data) return null;
@@ -58,11 +62,22 @@ export default function FactionsWeeklyLeaderboard({
         });
     }, [data]);
 
+    const calculateRewardValue = (rewardTokens: { ADX?: number; BONK?: number; JTO?: number }) => {
+        if (!tokenPrices) return 0;
+
+        const adxValue = (rewardTokens.ADX || 0) * (tokenPrices.ADX || 0);
+        const bonkValue = (rewardTokens.BONK || 0) * (tokenPrices.BONK || 0);
+        const jtoValue = (rewardTokens.JTO || 0) * (tokenPrices.JTO || 0);
+
+        return adxValue + bonkValue + jtoValue;
+    };
+
     const dataReady = useMemo(() => {
         if (!data) return null;
 
         return data.map((d, i) => {
             const title = Object.entries(officers).find(([, v]) => v.wallet.toBase58() === d.userWallet)?.[0];
+            const totalRewardUsd = calculateRewardValue(d.rewards || {});
 
             return {
                 rowTitle: '',
@@ -169,14 +184,94 @@ export default function FactionsWeeklyLeaderboard({
                                 isAbbreviateIcon={false}
                             />
                         ) : null}
-                    </div>
+                    </div>,
+
+                    <Tippy
+                        key={`rewards-${i}`}
+                        content={
+                            <div className="text-xs font-boldy min-w-[15em]">
+                                <div className='flex gap-1 justify-center p-2 bg-third rounded mb-1'>
+                                    <div className="flex items-center gap-1">
+                                        <Image
+                                            src={window.adrena.client.adxToken.image}
+                                            alt="ADX Token"
+                                            width={16}
+                                            height={16}
+                                            className="w-4 h-4"
+                                        />
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <FormatNumber
+                                            nb={d.rewards?.ADX || 0}
+                                            className="text-xs font-boldy"
+                                            precision={0}
+                                            isDecimalDimmed={false}
+                                        />
+                                        <span>ADX</span>
+                                    </div>
+                                </div>
+                                <div className='flex gap-1 justify-center p-2 bg-third rounded mb-1'>
+                                    <div className="flex items-center gap-1">
+                                        <Image
+                                            src={bonkLogo}
+                                            alt="BONK Token"
+                                            width={16}
+                                            height={16}
+                                            className="w-4 h-4"
+                                        />
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <FormatNumber
+                                            nb={d.rewards?.BONK || 0}
+                                            className="text-xs font-boldy"
+                                            precision={0}
+                                            isDecimalDimmed={false}
+                                        />
+                                        <span>BONK</span>
+                                    </div>
+                                </div>
+                                <div className='flex gap-1 justify-center p-2 bg-third rounded'>
+                                    <div className="flex items-center gap-1">
+                                        <Image
+                                            src={jtoLogo}
+                                            alt="JTO Token"
+                                            width={16}
+                                            height={16}
+                                            className="w-5 h-5"
+                                        />
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <FormatNumber
+                                            nb={d.rewards?.JTO || 0}
+                                            className="text-xs font-boldy"
+                                            precision={0}
+                                            isDecimalDimmed={false}
+                                        />
+                                        <span>JTO</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    >
+                        <div className="flex flex-col items-center justify-center ml-auto mr-auto">
+                            <FormatNumber
+                                nb={totalRewardUsd}
+                                className="text-xs font-boldy text-[#24af54]"
+                                format='currency'
+                                prefix='$'
+                                isDecimalDimmed={false}
+                                isAbbreviate={true}
+                                isAbbreviateIcon={false}
+                            />
+                        </div>
+                    </Tippy>
                 ],
                 specificRowClassName: twMerge(wallet?.walletAddress === d.userWallet ?
                     'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
                     : title ? team === 'A' ? 'bg-[#FA6724]/20' : 'bg-[#5AA6FA]/10' : null),
             };
         });
-    }, [data, officers, onClickUserProfile, team, wallet?.walletAddress]);
+    }, [data, officers, onClickUserProfile, team, wallet?.walletAddress, tokenPrices]);
 
     if (!data || !dataReady) {
         return null;
@@ -272,8 +367,12 @@ export default function FactionsWeeklyLeaderboard({
                         mutagen
                     </div>,
 
-                    <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
+                    <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="volume">
                         volume
+                    </div>,
+
+                    <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
+                        rewards
                     </div>,
                 ]}
                 rowHovering={true}
@@ -290,4 +389,3 @@ export default function FactionsWeeklyLeaderboard({
         </div >
     );
 }
-
