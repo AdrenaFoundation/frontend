@@ -261,7 +261,7 @@ export default function FactionsLeaderboards() {
         data.bossDefeatedExtraReward.usd = data.bossDefeatedExtraReward.tokens * tokenPrices.ADX;
 
         return data;
-    }, [totalWeeklyMutagen]);
+    }, [tokenPrices, totalWeeklyMutagen]);
 
     return (
         <>
@@ -327,11 +327,12 @@ export default function FactionsLeaderboards() {
                                     nb={s2Computed.weeklyUnlockedRewards.ADX[rewardsAs]}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
                                     isDecimalDimmed={false}
                                     suffix='ADX'
                                     suffixClassName='text-lg'
                                     className='border-0 text-lg'
-                                    isAbbreviate={false}
                                 />
                             </div>
 
@@ -345,7 +346,8 @@ export default function FactionsLeaderboards() {
                                     suffix='ADX'
                                     suffixClassName='text-xs text-txtfade'
                                     className='border-0 text-xs text-txtfade'
-                                    isAbbreviate={false}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
                                 />
                             </div>
                         </div>
@@ -372,7 +374,8 @@ export default function FactionsLeaderboards() {
                                     suffix='BONK'
                                     suffixClassName='text-lg'
                                     className='border-0 text-lg'
-                                    isAbbreviate={false}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
                                 />
                             </div>
 
@@ -386,7 +389,8 @@ export default function FactionsLeaderboards() {
                                     suffix='BONK'
                                     suffixClassName='text-xs text-txtfade'
                                     className='border-0 text-xs text-txtfade'
-                                    isAbbreviate={false}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
                                 />
                             </div>
                         </div>
@@ -413,7 +417,8 @@ export default function FactionsLeaderboards() {
                                     suffix='JTO'
                                     suffixClassName='text-lg'
                                     className='border-0 text-lg'
-                                    isAbbreviate={false}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
                                 />
                             </div>
 
@@ -427,7 +432,8 @@ export default function FactionsLeaderboards() {
                                     suffix='JTO'
                                     suffixClassName='text-xs text-txtfade'
                                     className='border-0 text-xs text-txtfade'
-                                    isAbbreviate={false}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
                                 />
                             </div>
                         </div>
