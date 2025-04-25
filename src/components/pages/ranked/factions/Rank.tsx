@@ -3,9 +3,9 @@ import Tippy from "@tippyjs/react";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+import { useSelector } from "@/store/store";
 import { UserProfileExtended } from "@/types";
 import { getAbbrevWalletAddress, getNonUserProfile } from "@/utils";
-import { useSelector } from "@/store/store";
 
 export const PICTURES = {
     'A-General': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-general-XslAAKuuLulnWZjojoSgUfpcvPSUao.jpg',
