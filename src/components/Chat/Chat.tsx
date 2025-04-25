@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import { createClient } from '@supabase/supabase-js';
 import Tippy from '@tippyjs/react';
 import { kv } from '@vercel/kv';
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -29,7 +30,7 @@ import {
     Wallpaper,
 } from '@/types';
 
-// import collapseIcon from '../../../public/images/collapse-all.svg';
+import collapseIcon from '../../../public/images/collapse-all.svg';
 // import groupIcon from '../../../public/images/group.svg';
 import Button from '../common/Button/Button';
 import InputString from '../common/inputString/InputString';
@@ -654,7 +655,12 @@ function Chat({
 
                     {!isMobile ? (
                         <div className="border hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300">
-                            –
+                            <Image
+                                src={collapseIcon}
+                                alt="collapse logo"
+                                width={6}
+                                height={6}
+                            />
                         </div>
                     ) : null}
                 </div>
