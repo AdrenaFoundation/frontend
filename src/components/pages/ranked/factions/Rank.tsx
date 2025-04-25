@@ -1,9 +1,10 @@
 import { PublicKey } from "@solana/web3.js";
+import Tippy from "@tippyjs/react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { UserProfileExtended } from "@/types";
-import { getAbbrevWalletAddress } from "@/utils";
+import { getAbbrevWalletAddress, getNonUserProfile } from "@/utils";
 
 export const PICTURES = {
     'A-General': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-general-XslAAKuuLulnWZjojoSgUfpcvPSUao.jpg',
@@ -44,89 +45,100 @@ export default function Rank({
     const [hover, setHover] = useState(false);
 
     return (
-        <div className={twMerge(
-            'relative flex flex-col gap-2',
-        )}
-            onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-        >
+        <div className="flex flex-col gap-2">
             <div className={twMerge(
-                'flex flex-col w-full left-0 items-center justify-center font-archivo tracking-[0.3em] uppercase',
-                'text-[0.7em]',
-                hover ? 'text-white' : 'text-txtfade',
-            )}>
-                {rank}
-            </div>
+                'relative flex flex-col gap-2',
+            )}
+                onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+            >
+                <div className={twMerge(
+                    'flex flex-col w-full left-0 items-center justify-center font-archivo tracking-[0.3em] uppercase',
+                    'text-[0.7em]',
+                    hover ? 'text-white' : 'text-txtfade',
+                )}>
+                    {rank}
+                </div>
 
-            <div className={twMerge('w-[10em] h-[15em] z-10 border-2 relative', hover ? 'opacity-100' : 'opacity-50')}>
-                {showVideo || hover ? <video
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className={twMerge('w-full h-full object-cover', className)}
-                    src={VIDEOS[`${team}-${rank}` as keyof typeof VIDEOS]}
-                /> : <div
-                    className={twMerge('bg-cover bg-no-repeat bg-center w-full h-full', className)}
-                    style={{
-                        backgroundImage: `url(${PICTURES[`${team}-${rank}` as keyof typeof PICTURES]}`,
-                    }}
-                />}
+                <div className={twMerge('w-[10em] h-[15em] z-10 border-2 relative', hover ? 'opacity-100' : 'opacity-50')}>
+                    {showVideo || hover ? <video
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className={twMerge('w-full h-full object-cover', className)}
+                        src={VIDEOS[`${team}-${rank}` as keyof typeof VIDEOS]}
+                    /> : <div
+                        className={twMerge('bg-cover bg-no-repeat bg-center w-full h-full', className)}
+                        style={{
+                            backgroundImage: `url(${PICTURES[`${team}-${rank}` as keyof typeof PICTURES]}`,
+                        }}
+                    />}
 
-                <div
-                    className={twMerge(
-                        'z-20 bg-contain bg-no-repeat bg-center rounded-full top-2 right-2 absolute grayscale',
-                        ({
-                            General: 'w-[2em] h-[2em]',
-                            Lieutenant: 'w-[1.5em] h-[1.5em]',
-                            Sergeant: 'w-[1em] h-[1em]',
-                        } as const)[rank],
-                    )}
-                    style={{
-                        backgroundImage: `url(images/${rank.toLowerCase()}-badge.png)`,
-                    }}
-                />
-            </div>
+                    <div
+                        className={twMerge(
+                            'z-20 bg-contain bg-no-repeat bg-center rounded-full top-2 right-2 absolute grayscale',
+                            ({
+                                General: 'w-[2em] h-[2em]',
+                                Lieutenant: 'w-[1.5em] h-[1.5em]',
+                                Sergeant: 'w-[1em] h-[1em]',
+                            } as const)[rank],
+                        )}
+                        style={{
+                            backgroundImage: `url(images/${rank.toLowerCase()}-badge.png)`,
+                        }}
+                    />
+                </div>
 
-            <div className={twMerge(
-                'flex flex-col w-full items-center justify-center',
-            )}>
-                {user && user.wallet.toBase58() !== PublicKey.default.toBase58() ?
-                    <>
-                        <div
-                            className={twMerge(
-                                'font-archivo tracking-widest text-xs cursor-pointer hover:underline',
-                                hover ? 'text-white' : 'text-txtfade',
-                            )}
-                            onClick={async () => {
-                                const p = await window.adrena.client.loadUserProfile({ user: user.wallet });
+                <div className={twMerge(
+                    'flex flex-col w-full items-center justify-center',
+                )}>
+                    {user && user.wallet.toBase58() !== PublicKey.default.toBase58() ?
+                        <>
+                            <div
+                                className={twMerge(
+                                    'font-archivo tracking-widest text-xs cursor-pointer hover:underline',
+                                    hover ? 'text-white' : 'text-txtfade',
+                                )}
+                                onClick={async () => {
+                                    const p = await window.adrena.client.loadUserProfile({ user: user.wallet });
 
-                                if (p === false) {
-                                    setActiveProfile({
-                                        version: -1, // Not a real profile
-                                        pubkey: PublicKey.default, // Not a real profile
-                                        nickname: getAbbrevWalletAddress(user.wallet.toBase58()),
-                                        createdAt: Date.now(),
-                                        owner: user.wallet,
-                                        referrerProfile: null,
-                                        claimableReferralFeeUsd: 0,
-                                        totalReferralFeeUsd: 0,
-                                        profilePicture: 0,
-                                        wallpaper: 0,
-                                        title: 0,
-                                        achievements: [],
-                                    });
-                                } else {
-                                    setActiveProfile(p);
-                                }
-                            }}
-                        >
-                            {user.nickname && user.nickname.length ? user.nickname : getAbbrevWalletAddress(user.wallet.toBase58())}
+                                    if (p === false) {
+                                        setActiveProfile(getNonUserProfile(user.wallet.toBase58()));
+                                    } else {
+                                        setActiveProfile(p);
+                                    }
+                                }}
+                            >
+                                {user.nickname && user.nickname.length ? user.nickname : getAbbrevWalletAddress(user.wallet.toBase58())}
+                            </div>
+                        </> : <div
+                            className={twMerge('font-archivo tracking-widest text-xs')}>
+                            Not assigned
                         </div>
-                    </> : <div
-                        className={twMerge('font-archivo tracking-widest text-xs')}>
-                        Not assigned
-                    </div>
-                }
+                    }
+                </div>
+            </div>
+
+            <div className="flex items-center justify-center text-xs">
+                <div className="flex gap-4">
+                    <Tippy content={<div>
+                        Step 1
+                    </div>}>
+                        <div className={twMerge("w-4 h-4 rounded-full bg-bcolor flex items-center justify-center text-xxs text-txtfade")}>1</div>
+                    </Tippy>
+
+                    <Tippy content={<div>
+                        Step 2
+                    </div>}>
+                        <div className={twMerge("w-4 h-4 rounded-full bg-bcolor flex items-center justify-center text-xxs text-txtfade")}>2</div>
+                    </Tippy>
+
+                    <Tippy content={<div>
+                        Step 3
+                    </div>}>
+                        <div className={twMerge("w-4 h-4 rounded-full bg-bcolor flex items-center justify-center text-xxs text-txtfade")}>3</div>
+                    </Tippy>
+                </div>
             </div>
         </div >
     );

@@ -3,23 +3,23 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import jtoLogo from '@/../../public/images/jito-logo-2.png';
 import bonkLogo from '@/../public/images/bonk.png';
 import Modal from '@/components/common/Modal/Modal';
 import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
+import FormatNumber from '@/components/Number/FormatNumber';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import DamageBar from '@/components/pages/ranked/factions/DamageBar';
 import FactionsWeeklyLeaderboard from '@/components/pages/ranked/factions/FactionsWeeklyLeaderboard';
 import HealthBar from '@/components/pages/ranked/factions/HealthBar';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useInterseason2Data from '@/hooks/useFactionsData';
-import { UserProfileExtended } from '@/types';
-import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 import { useSelector } from '@/store/store';
-import { twMerge } from 'tailwind-merge';
-import FormatNumber from '@/components/Number/FormatNumber';
+import { UserProfileExtended } from '@/types';
+import { getNonUserProfile } from '@/utils';
 
 // TODO: Figure out numbers
 // $4B volume target
@@ -488,22 +488,7 @@ export default function FactionsLeaderboards() {
                             const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
                             if (p === false) {
-                                setActiveProfile({
-                                    version: -1, // Not a real profile
-                                    pubkey: PublicKey.default, // Not a real profile
-                                    nickname: getAbbrevWalletAddress(wallet.toBase58()),
-                                    createdAt: Date.now(),
-                                    owner: wallet,
-                                    referrerProfile: null,
-                                    claimableReferralFeeUsd: 0,
-                                    totalReferralFeeUsd: 0,
-                                    profilePicture: 0,
-                                    wallpaper: 0,
-                                    title: 0,
-                                    achievements: [],
-                                    team: 0,
-                                    continent: 0,
-                                });
+                                setActiveProfile(getNonUserProfile(wallet.toBase58()));
                             } else {
                                 setActiveProfile(p);
                             }
@@ -521,22 +506,7 @@ export default function FactionsLeaderboards() {
                             const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
                             if (p === false) {
-                                setActiveProfile({
-                                    version: -1, // Not a real profile
-                                    pubkey: PublicKey.default, // Not a real profile
-                                    nickname: getAbbrevWalletAddress(wallet.toBase58()),
-                                    createdAt: Date.now(),
-                                    owner: wallet,
-                                    referrerProfile: null,
-                                    claimableReferralFeeUsd: 0,
-                                    totalReferralFeeUsd: 0,
-                                    profilePicture: 0,
-                                    wallpaper: 0,
-                                    title: 0,
-                                    achievements: [],
-                                    team: 0,
-                                    continent: 0,
-                                });
+                                setActiveProfile(getNonUserProfile(wallet.toBase58()));
                             } else {
                                 setActiveProfile(p);
                             }

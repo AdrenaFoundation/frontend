@@ -9,7 +9,7 @@ import Table from '@/components/pages/monitoring/Table';
 import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Trader, UserProfileExtended, UserProfileMetadata } from '@/types';
-import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
+import { getAbbrevNickname, getAbbrevWalletAddress, getNonUserProfile } from '@/utils';
 
 
 interface TopTradersProps {
@@ -73,22 +73,7 @@ export default function TopTraders({ startDate, endDate, allUserProfilesMetadata
         const p = await window.adrena.client.loadUserProfile({ user: new PublicKey(pubkey) });
 
         if (p === false) {
-            setProfile({
-                version: -1, // Not a real profile
-                pubkey: PublicKey.default, // Not a real profile
-                nickname: getAbbrevWalletAddress(pubkey),
-                createdAt: Date.now(),
-                owner: new PublicKey(pubkey),
-                referrerProfile: null,
-                claimableReferralFeeUsd: 0,
-                totalReferralFeeUsd: 0,
-                profilePicture: 0,
-                wallpaper: 0,
-                title: 0,
-                achievements: [],
-                team: 0,
-                continent: 0,
-            });
+            setProfile(getNonUserProfile(pubkey));
         } else {
             setProfile(p);
         }

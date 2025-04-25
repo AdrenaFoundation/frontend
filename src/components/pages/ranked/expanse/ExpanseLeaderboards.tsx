@@ -15,7 +15,7 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useExpanseData from '@/hooks/useExpanseData';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
+import { getNonUserProfile } from '@/utils';
 
 import ExpanseChampionshipLeaderboard from './ExpanseChampionshipLeaderboard';
 import ExpanseWeeklyLeaderboard from './ExpanseWeeklyLeaderboard';
@@ -247,22 +247,7 @@ export default function ExpanseLeaderboards() {
                                     const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
                                     if (p === false) {
-                                        setActiveProfile({
-                                            version: -1, // Not a real profile
-                                            pubkey: PublicKey.default, // Not a real profile
-                                            nickname: getAbbrevWalletAddress(wallet.toBase58()),
-                                            createdAt: Date.now(),
-                                            owner: wallet,
-                                            referrerProfile: null,
-                                            claimableReferralFeeUsd: 0,
-                                            totalReferralFeeUsd: 0,
-                                            profilePicture: 0,
-                                            wallpaper: 0,
-                                            title: 0,
-                                            achievements: [],
-                                            team: 0,
-                                            continent: 0,
-                                        });
+                                        setActiveProfile(getNonUserProfile(wallet.toBase58()));
                                     } else {
                                         setActiveProfile(p);
                                     }
@@ -374,22 +359,7 @@ export default function ExpanseLeaderboards() {
                                     const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
                                     if (p === false) {
-                                        setActiveProfile({
-                                            version: -1, // Not a real profile
-                                            pubkey: PublicKey.default, // Not a real profile
-                                            nickname: getAbbrevWalletAddress(wallet.toBase58()),
-                                            createdAt: Date.now(),
-                                            owner: wallet,
-                                            referrerProfile: null,
-                                            claimableReferralFeeUsd: 0,
-                                            totalReferralFeeUsd: 0,
-                                            profilePicture: 0,
-                                            wallpaper: 0,
-                                            title: 0,
-                                            achievements: [],
-                                            team: 0,
-                                            continent: 0,
-                                        });
+                                        setActiveProfile(getNonUserProfile(wallet.toBase58()));
                                     } else {
                                         setActiveProfile(p);
                                     }
