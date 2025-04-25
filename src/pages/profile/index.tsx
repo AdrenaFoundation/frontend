@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
+import FavAchievements from '@/components/pages/profile/FavAchievements';
 import OwnerBlock from '@/components/pages/profile/OwnerBlock';
 import ProfileCreation from '@/components/pages/profile/ProfileCreation';
 import RankingStats from '@/components/pages/profile/RankingStats';
@@ -11,6 +12,7 @@ import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { WALLPAPERS } from '@/constant';
+import useFavorite from '@/hooks/useFavorite';
 import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
 import useTraderInfo from '@/hooks/useTraderInfo';
@@ -36,6 +38,12 @@ export default function Profile({
   const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
     walletAddress,
   });
+
+  const [isUpdatingMetadata, setIsUpdatingMetadata] = useState<boolean>(false);
+  const [activeUpdateTab, setActiveUpdateTab] =
+    useState<'profilePicture' | 'wallpaper' | 'title' | 'achievements'>('profilePicture');
+
+  const { favoriteAchievements, fetchFavoriteAchievements, updateFavoriteAchievements, createFavoriteAchievements } = useFavorite();
 
   const {
     activityCalendarData,
@@ -122,9 +130,26 @@ export default function Profile({
                 canUpdateNickname={!readonly}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={wallet?.publicKey}
+                favoriteAchievements={favoriteAchievements}
+                fetchFavoriteAchievements={fetchFavoriteAchievements}
+                updateFavoriteAchievements={updateFavoriteAchievements}
+                createFavoriteAchievements={createFavoriteAchievements}
+                isUpdatingMetadata={isUpdatingMetadata}
+                setIsUpdatingMetadata={setIsUpdatingMetadata}
+                activeUpdateTab={activeUpdateTab}
+                setActiveUpdateTab={setActiveUpdateTab}
               />
 
-              <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl'>
+              <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl border-t'>
+                <FavAchievements
+                  userProfile={userProfile}
+                  favoriteAchievements={favoriteAchievements}
+                  setIsUpdatingMetadata={setIsUpdatingMetadata}
+                  setActiveUpdateTab={setActiveUpdateTab}
+                />
+
+                <div className="h-[1px] w-full bg-bcolor mb-2" />
+
                 <TradingStats
                   traderInfo={traderInfo}
                   livePositionsNb={positions === null ? null : positions.length}
@@ -143,6 +168,7 @@ export default function Profile({
                 <RankingStats
                   expanseRanking={expanseRanking}
                   awakeningRanking={awakeningRanking}
+                  userProfile={userProfile}
                   className="gap-y-4 pt-2 pb-2"
                 />
 

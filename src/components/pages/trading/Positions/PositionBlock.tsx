@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -10,7 +9,7 @@ import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token, UserProfileMetadata } from '@/types';
-import { formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getTokenSymbol } from '@/utils';
+import { formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getNonUserProfile, getTokenSymbol } from '@/utils';
 
 import ViewProfileModal from '../../profile/ViewProfileModal';
 import { ButtonGroup } from './PositionBlockComponents/ButtonGroup';
@@ -479,22 +478,7 @@ export function PositionBlock({
               isWrapped={false}
             >
               <ViewProfileModal
-                profile={position.userProfile || {
-                  version: -1, // Not a real profile
-                  pubkey: PublicKey.default, // Not a real profile
-                  nickname: getAbbrevWalletAddress(position.owner.toBase58()),
-                  createdAt: Date.now(),
-                  owner: position.owner,
-                  referrerProfile: null,
-                  claimableReferralFeeUsd: 0,
-                  totalReferralFeeUsd: 0,
-                  profilePicture: 0,
-                  wallpaper: 0,
-                  title: 0,
-                  achievements: [],
-                  team: 0,
-                  continent: 0,
-                }}
+                profile={position.userProfile || getNonUserProfile(position.owner.toBase58())}
                 close={() => setIsProfileOpen(false)}
               />
             </Modal>

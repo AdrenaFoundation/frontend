@@ -54,6 +54,7 @@ export default function ViewProfileModal({
                 className="flex w-full w-min-[30em] border "
                 walletPubkey={profile.owner}
                 readonly={true}
+                favoriteAchievements={null}
             />
 
             <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border border-t-transparent">
@@ -74,6 +75,7 @@ export default function ViewProfileModal({
                     expanseRanking={expanseRanking}
                     awakeningRanking={awakeningRanking}
                     className="gap-y-4 pt-2 pb-2"
+                    userProfile={profile}
                 />
 
                 <div className="flex flex-col gap-3 p-4">
