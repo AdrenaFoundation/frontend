@@ -347,9 +347,9 @@ export default function FactionsWeeklyLeaderboard({
             <div className='w-full h-[1px] bg-bcolor mt-8 mb-4' />
 
             <div className='flex items-center w-full justify-center scale-[72%] sm:scale-100'>
-                <Rank team={team} rank="Lieutenant" user={officers.lieutenant} setActiveProfile={setActiveProfile} />
-                <Rank team={team} rank="General" user={officers.general} setActiveProfile={setActiveProfile} />
-                <Rank team={team} rank="Sergeant" user={officers.sergeant} setActiveProfile={setActiveProfile} />
+                <Rank team={team} rank="Lieutenant" user={officers.lieutenant} setActiveProfile={setActiveProfile} unlockStep={officers.lieutenant.steps} />
+                <Rank team={team} rank="General" user={officers.general} setActiveProfile={setActiveProfile} unlockStep={officers.general.steps} />
+                <Rank team={team} rank="Sergeant" user={officers.sergeant} setActiveProfile={setActiveProfile} unlockStep={officers.sergeant.steps} />
             </div>
 
             <div className='w-full h-[1px] bg-bcolor mt-4 mb-8' />
@@ -372,9 +372,11 @@ export default function FactionsWeeklyLeaderboard({
                         volume
                     </div>,
 
-                    <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
-                        rewards
-                    </div>,
+                    <Tippy content={'Rewards are distributed in ADX, JTO, and BONK tokens. USD values are indicative. Prizes are officially attributed at the end of each week and are for information purposes only before then.'}>
+                        <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
+                            rewards *
+                        </div>
+                    </Tippy>,
                 ]}
                 rowHovering={true}
                 pagination={true}

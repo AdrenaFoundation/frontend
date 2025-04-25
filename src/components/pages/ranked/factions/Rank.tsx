@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import Tippy from "@tippyjs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { UserProfileExtended } from "@/types";
@@ -47,7 +47,15 @@ export default function Rank({
     showVideo?: boolean;
     unlockStep?: number;
 }) {
+    const [displayVideo, setDisplayVideo] = useState(false);
+
     const [hover, setHover] = useState(false);
+
+    useEffect(() => {
+        if (unlockStep === 3) {
+            setDisplayVideo(true);
+        }
+    }, [unlockStep]);
 
     const expectedBonusPillage = rank === 'Sergeant' ? 2.5 : rank === 'Lieutenant' ? 5 : 10;
 
@@ -56,7 +64,11 @@ export default function Rank({
             <div className={twMerge(
                 'relative flex flex-col gap-2',
             )}
-                onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+                onMouseEnter={() => {
+                    setDisplayVideo(true);
+                    setHover(true);
+                }}
+                onMouseLeave={() => setHover(false)}
             >
                 <div className={twMerge(
                     'flex flex-col w-full left-0 items-center justify-center font-archivo tracking-[0.3em] uppercase',
@@ -71,16 +83,17 @@ export default function Rank({
                     hover ? 'opacity-100' : 'opacity-50',
                     user.steps === 1 ? 'opacity-70' : '',
                     user.steps === 2 ? 'opacity-80' : '',
-                    user.steps === 3 ? 'border-[#e47dbb] shadow-[0_0_12px_#e47dbb] animate-pulse opacity-100' : ''
+                    user.steps === 3 ? team === 'A' ? 'border-[#FA6724] shadow-[0_0_12px_#FA6724] animate-pulse opacity-100' : 'border-[#5AA6FA] shadow-[0_0_12px_#5AA6FA] animate-pulse opacity-100' : ''
                 )}>
                     <div className="w-full h-full">
-                        {showVideo || hover || user.steps === 3 ? <video
+                        {displayVideo ? <video
                             autoPlay
                             muted
-                            loop={user.steps === 3 ? false : true}
+                            loop={false}
                             playsInline
                             className={twMerge('w-full h-full object-cover z-10 absolute', className)}
                             src={VIDEOS[`${team}-${rank}` as keyof typeof VIDEOS]}
+                            onEnded={() => setDisplayVideo(false)}
                         /> : null}
 
                         <div
@@ -179,7 +192,6 @@ export default function Rank({
                             className={twMerge(
                                 "w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold",
                                 user.steps >= 3 ? team === 'A' ? 'bg-[#FA6724] shadow-[0_0_8px_#FA6724]' : 'bg-[#5AA6FA] shadow-[0_0_8px_#5AA6FA]' : 'bg-bcolor text-txtfade',
-                                unlockStep === 3 ? 'ring-2 ring-[#e47dbb] shadow-[0_0_12px_#e47dbb] animate-pulse' : '',
                             )}
                         >3</div>
                     </Tippy>
@@ -189,12 +201,9 @@ export default function Rank({
             <div className={twMerge(
                 "text-xs ml-auto mr-auto transition-all duration-300",
                 user.percentagePillage > 0 ? 'text-txtfade/50' : 'text-transparent',
-                unlockStep === 3 ? 'text-[#e47dbb] font-bold' : '',
+                unlockStep === 3 ? 'text-[#FA6724FA] font-archivo tracking-widest' : '',
             )}>
                 max pillage +{user.percentagePillage}%
-                {unlockStep === 3 && (
-                    <span className="ml-2 text-[#e47dbb] inline-block">+15% mutagen</span>
-                )}
             </div>
         </div>
     );
