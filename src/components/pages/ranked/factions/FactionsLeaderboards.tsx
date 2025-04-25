@@ -34,7 +34,7 @@ export const S2_BOSSES_NAME = [
     'Shathyr of the Maw',
     'Malivex',
     'Grunervald',
-];
+] as const;
 export const S2_BOSSES_PICTURES = [
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/VoxPetros-GbdgGlJdXkEOR5jZdGkE31kCtYmaKw.jpg',
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Archivist-ngNaUyzLkYkEwcSGE66BNMzGVh2q9L.jpg',
@@ -46,7 +46,19 @@ export const S2_BOSSES_PICTURES = [
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/ShathyrOfTheMaw-dHQ3kEkVoUQv5nuDmbPVlS3ISD9kzS.jpg',
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Malivex-ijuDc6upvLbOXZPIEXT1MZc9kqY8PK.jpg',
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Grunervald-nR46KHdbVKAq8917wppGWeWOTU0B57.jpg',
-];
+] as const;
+export const S2_BOSSES_VIDEOS = [
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/VoxPretros-ZFOly0pzkO4xWgKA4KrFrlxpAitglv.mp4',
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+] as const;
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
@@ -116,6 +128,8 @@ export default function FactionsLeaderboards() {
         } as const;
     }, [leaderboardData, weekIndex, tokenPrices]);
 
+    const [displayBossVideo, setDisplayBossVideo] = useState(false);
+
     if (!leaderboardData || !weekInfo) {
         return <div className="h-full w-full flex items-center justify-center text-sm">
             <Loader />
@@ -143,26 +157,42 @@ export default function FactionsLeaderboards() {
                     <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : {S2_BOSSES_NAME[weekIndex]}</div>
                 </div>
 
-                {weekInfo.isBossDefeated ?
-                    //
-                    // Boss is Defeated
-                    //
-                    <Tippy content="Congratulation, the boss has been defeated!">
-                        <div className='border-t-4 border-b-4 sm:border-4 border-white/80 h-[15em] w-full sm:w-[30em] max-w-full overflow-hidden relative flex items-center justify-center' >
-                            <div className='h-full w-full absolute bg-center bg-cover grayscale opacity-30' style={{
-                                backgroundImage: `url(https://iyd8atls7janm7g4.public.blob.vercel-storage.com/boss-2-w73xkThgDIw0NxK3OxKQ3oDMAKdyly.jpg)`,
-                            }} />
+                <div
+                    className='h-[15em] w-full sm:w-[30em] max-w-full overflow-hidden relative border-t-4 border-b-4 sm:border-4 border-white/80'
+                    onMouseEnter={() => setDisplayBossVideo(true)}
+                >
+                    {weekInfo.isBossDefeated ?
+                        //
+                        // Boss is Defeated
+                        //
+                        <Tippy content="Congratulation, the boss has been defeated!">
+                            <div className='z-10 flex h-full w-full items-center justify-center' >
+                                <div className='h-full w-full absolute bg-center bg-cover grayscale opacity-30' style={{
+                                    backgroundImage: `url(https://iyd8atls7janm7g4.public.blob.vercel-storage.com/boss-2-w73xkThgDIw0NxK3OxKQ3oDMAKdyly.jpg)`,
+                                }} />
 
-                            <div className='font-archivo tracking-widest text-center uppercase text-2xl opacity-50'>DEFEATED</div>
-                        </div>
-                    </Tippy>
-                    :
-                    //
-                    // Boss alive
-                    //
-                    <div className='border-t-4 border-b-4 sm:border-4 border-white/80 h-[15em] w-full sm:w-[30em] bg-center bg-cover max-w-full' style={{
-                        backgroundImage: `url(${S2_BOSSES_PICTURES[weekIndex]})`,
-                    }} />}
+                                <div className='font-archivo tracking-widest text-center uppercase text-2xl opacity-50'>DEFEATED</div>
+                            </div>
+                        </Tippy>
+                        :
+                        //
+                        // Boss alive
+                        //
+                        <div className='z-10 h-full w-full bg-center bg-cover' style={{
+                            backgroundImage: `url(${S2_BOSSES_PICTURES[weekIndex]})`,
+                        }} />}
+
+                    {displayBossVideo && S2_BOSSES_VIDEOS[weekIndex] ? <video
+                        autoPlay
+                        muted
+                        loop={false}
+                        playsInline
+                        className={twMerge('w-full h-full object-cover z-[30] absolute top-0 left-0')}
+                        src={S2_BOSSES_VIDEOS[weekIndex]}
+                        onEnded={() => setDisplayBossVideo(false)}
+                    /> : null}
+                </div>
+
 
                 <HealthBar leaderboardData={leaderboardData} weekIndex={weekIndex} />
 
