@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 import { FactionsLeaderboardsData } from "@/types";
 
-import { S2_NB_HEALTH_BAR } from "./FactionsLeaderboards";
+import { S2_ADX_DEFEATED_BOSS_REWARDS, S2_NB_HEALTH_BAR } from "./FactionsLeaderboards";
 
 export default function HealthBar({
     leaderboardData,
@@ -22,7 +22,7 @@ export default function HealthBar({
 
                         <div className="flex">
                             Weekly rewards: {leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.BONK} BONK,
-                            {leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.JTO} JTO and {(leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.ADX) + (i === 0 ? 200_000 : 0)} ADX.
+                            {leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.JTO} JTO and {(leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.ADX) + (i === 0 ? S2_ADX_DEFEATED_BOSS_REWARDS : 0)} ADX.
                         </div>
 
                         <div className="flex">

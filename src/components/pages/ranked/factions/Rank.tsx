@@ -173,7 +173,7 @@ export default function Rank({
                 </div>
             </div>
 
-            <div className={twMerge("text-xs ml-auto mr-auto", user.bonusPillage ? 'text-txtfade/50' : 'text-transparent')}>+{user.bonusPillage}% pillage bonus</div>
+            <div className={twMerge("text-xs ml-auto mr-auto", user.bonusPillage ? 'text-txtfade/50' : 'text-transparent')}>max pillage +{user.bonusPillage}%</div>
         </div >
     );
 }

@@ -20,15 +20,8 @@ import useFactionsData from '@/hooks/useFactionsData';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 
-// TODO: Figure out numbers
-// $4B volume target
-export const S2_HEALTH_BAR_MUTAGEN = 500;
 export const S2_NB_HEALTH_BAR = 20;
-export const S2_BONK_REWARDS = 4_200_000_000;
-export const S2_JTO_REWARDS = 25_000;
-
-export const S2_ADX_REWARDS = 12_000_000;
-export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000; // Taken out of 12m prize pool
+export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
@@ -67,7 +60,35 @@ export default function FactionsLeaderboards() {
         return getWeekIndexFromWeek(week);
     }, [week]);
 
-    if (!leaderboardData) {
+    const weekInfo = useMemo(() => {
+        if (!leaderboardData) return null;
+
+        return {
+            isBossDefeated: leaderboardData.weekly.isBossDefeated[weekIndex],
+            damageBonkTeam: leaderboardData.weekly.weeklyDamageBonkTeam[weekIndex],
+            damageJitoTeam: leaderboardData.weekly.weeklyDamageJitoTeam[weekIndex],
+            pillageBonkPercentage: leaderboardData.weekly.pillageBonkPercentage[weekIndex],
+            pillageJitoPercentage: leaderboardData.weekly.pillageJitoPercentage[weekIndex],
+            bonkLeaderboard: leaderboardData.weekly.bonkLeaderboard[weekIndex],
+            startDate: leaderboardData.weekly.weekDatesStart[weekIndex],
+            endDate: leaderboardData.weekly.weekDatesEnd[weekIndex],
+            bonkOfficers: {
+                general: leaderboardData.weekly.officers[weekIndex].bonkGeneral,
+                lieutenant: leaderboardData.weekly.officers[weekIndex].bonkLieutenant,
+                sergeant: leaderboardData.weekly.officers[weekIndex].bonkSergeant,
+            },
+            jitoLeaderboard: leaderboardData.weekly.jitoLeaderboard[weekIndex],
+            jitoOfficers: {
+                general: leaderboardData.weekly.officers[weekIndex].jitoGeneral,
+                lieutenant: leaderboardData.weekly.officers[weekIndex].jitoLieutenant,
+                sergeant: leaderboardData.weekly.officers[weekIndex].jitoSergeant,
+            },
+            weeklyUnlockedRewards: leaderboardData.weekly.weeklyUnlockedRewards[weekIndex],
+            maxWeeklyRewards: leaderboardData.weekly.maxWeeklyRewards[weekIndex],
+        } as const;
+    }, [leaderboardData]);
+
+    if (!leaderboardData || !weekInfo) {
         return <Loader />;
     }
 
@@ -92,7 +113,7 @@ export default function FactionsLeaderboards() {
                     <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : Grunervald</div>
                 </div>
 
-                {leaderboardData.weekly.isBossDefeated[weekIndex] ?
+                {weekInfo.isBossDefeated ?
                     //
                     // Boss is Defeated
                     //
@@ -132,7 +153,7 @@ export default function FactionsLeaderboards() {
                                 />
 
                                 <FormatNumber
-                                    nb={leaderboardData.weekly.weeklyUnlockedRewards[weekIndex].ADX}
+                                    nb={weekInfo.weeklyUnlockedRewards.ADX}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
                                     isAbbreviate={true}
@@ -146,7 +167,7 @@ export default function FactionsLeaderboards() {
 
                             <div className='ml-auto'>
                                 <FormatNumber
-                                    nb={leaderboardData.weekly.maxWeeklyRewards[weekIndex].ADX}
+                                    nb={weekInfo.maxWeeklyRewards.ADX}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
                                     prefix='MAX '
@@ -175,7 +196,7 @@ export default function FactionsLeaderboards() {
                                 />
 
                                 <FormatNumber
-                                    nb={leaderboardData.weekly.weeklyUnlockedRewards[weekIndex].BONK}
+                                    nb={weekInfo.weeklyUnlockedRewards.BONK}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
                                     isDecimalDimmed={false}
@@ -189,7 +210,7 @@ export default function FactionsLeaderboards() {
 
                             <div className='ml-auto'>
                                 <FormatNumber
-                                    nb={leaderboardData.weekly.maxWeeklyRewards[weekIndex].BONK}
+                                    nb={weekInfo.maxWeeklyRewards.BONK}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
                                     prefix='MAX '
@@ -218,7 +239,7 @@ export default function FactionsLeaderboards() {
                                 />
 
                                 <FormatNumber
-                                    nb={leaderboardData.weekly.weeklyUnlockedRewards[weekIndex].JTO}
+                                    nb={weekInfo.weeklyUnlockedRewards.JTO}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
                                     isDecimalDimmed={false}
@@ -232,7 +253,7 @@ export default function FactionsLeaderboards() {
 
                             <div className='ml-auto'>
                                 <FormatNumber
-                                    nb={leaderboardData.weekly.maxWeeklyRewards[weekIndex].JTO}
+                                    nb={weekInfo.maxWeeklyRewards.JTO}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
                                     prefix='MAX '
@@ -272,27 +293,19 @@ export default function FactionsLeaderboards() {
 
                 <div className='font-boldy text-sm tracking-[0.2rem] uppercase'>DAMAGE METER</div>
 
-                <DamageBar bonkMutagen={leaderboardData.weekly.weeklyDamageBonkTeam[weekIndex]} jitoMutagen={leaderboardData.weekly.weeklyDamageJitoTeam[weekIndex]} />
-
-                <div className='text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase'>TEAM WITH MOST DAMAGE GET MOST OF THE REWARDS, <Tippy content={<div>
-                    <p>Each team gets 50% of the rewards. On top of that, there’s a mechanism where the team dealing more damage can <strong>pillage up to 30%</strong> of the opposing team’s rewards.</p>
-
-                    <p className='mt-2'>The exact percentage depends on two factors:</p>
-
-                    <div className='flex flex-col'>
-                        <p>1. Whether the officers hit their weekly goals</p>
-                        <p>2. Whether the team outdamaged the other by 30% or more</p>
-                    </div>
-                </div>}>
-                    <span className='underline-dashed text-xxs font-archivo tracking-widest text-txtfade'>UP TO 65%</span>
-                </Tippy> OF TOTAL REWARDS.</div>
+                <DamageBar
+                    bonkMutagen={weekInfo.damageBonkTeam}
+                    jitoMutagen={weekInfo.damageJitoTeam}
+                    pillageBonkPercentage={weekInfo.pillageBonkPercentage}
+                    pillageJitoPercentage={weekInfo.pillageJitoPercentage}
+                />
 
                 <div className='w-full h-[1px] bg-bcolor' />
 
                 <div className='flex  w-full justify-center gap-14 flex-col lg:flex-row gap-y-16 lg:gap-y-4 pb-6'>
                     <FactionsWeeklyLeaderboard
                         team='A'
-                        weeklyDamageTeam={leaderboardData.weekly.weeklyDamageBonkTeam[weekIndex]}
+                        weeklyDamageTeam={weekInfo.damageBonkTeam}
                         onClickUserProfile={async (wallet: PublicKey) => {
                             const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
@@ -302,20 +315,16 @@ export default function FactionsLeaderboards() {
                                 setActiveProfile(p);
                             }
                         }}
-                        data={leaderboardData.weekly.bonkLeaderboard[weekIndex]}
-                        startDate={leaderboardData.weekly.weekDatesStart[weekIndex]}
-                        endDate={leaderboardData.weekly.weekDatesEnd[weekIndex]}
+                        data={weekInfo.bonkLeaderboard}
+                        startDate={weekInfo.startDate}
+                        endDate={weekInfo.endDate}
+                        officers={weekInfo.bonkOfficers}
                         setActiveProfile={setActiveProfile}
-                        officers={{
-                            general: leaderboardData.weekly.officers[weekIndex].bonkGeneral,
-                            lieutenant: leaderboardData.weekly.officers[weekIndex].bonkLieutenant,
-                            sergeant: leaderboardData.weekly.officers[weekIndex].bonkSergeant,
-                        }}
                     />
 
                     <FactionsWeeklyLeaderboard
                         team='B'
-                        weeklyDamageTeam={leaderboardData.weekly.weeklyDamageJitoTeam[weekIndex]}
+                        weeklyDamageTeam={weekInfo.damageJitoTeam}
                         onClickUserProfile={async (wallet: PublicKey) => {
                             const p = await window.adrena.client.loadUserProfile({ user: wallet });
 
@@ -325,15 +334,11 @@ export default function FactionsLeaderboards() {
                                 setActiveProfile(p);
                             }
                         }}
-                        data={leaderboardData.weekly.jitoLeaderboard[weekIndex]}
-                        startDate={leaderboardData.weekly.weekDatesStart[weekIndex]}
-                        endDate={leaderboardData.weekly.weekDatesEnd[weekIndex]}
+                        data={weekInfo.jitoLeaderboard}
+                        startDate={weekInfo.startDate}
+                        endDate={weekInfo.endDate}
+                        officers={weekInfo.jitoOfficers}
                         setActiveProfile={setActiveProfile}
-                        officers={{
-                            general: leaderboardData.weekly.officers[weekIndex].jitoGeneral,
-                            lieutenant: leaderboardData.weekly.officers[weekIndex].jitoLieutenant,
-                            sergeant: leaderboardData.weekly.officers[weekIndex].jitoSergeant,
-                        }}
                     />
                 </div>
             </div>
