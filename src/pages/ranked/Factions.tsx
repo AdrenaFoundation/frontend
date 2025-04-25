@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import FactionsLeaderboards from '@/components/pages/ranked/factions/FactionsLeaderboards';
 import FactionsDocs from '@/components/pages/ranked/factions/FactionsDocs';
+import FactionsLeaderboards from '@/components/pages/ranked/factions/FactionsLeaderboards';
 
 export default function Factions() {
     const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
