@@ -84,7 +84,7 @@ export default function DamageBar({
                 width: `${isBalanced ? "50%" : Math.max(Math.min(bonkPercentage, 90), 10) + "%"}`,
             }}>
                 <div className={twMerge(
-                    "absolute text-sm font-bold z-20",
+                    "absolute text-sm font-boldy z-20",
                     (dominantTeam === 'BONK' || isBalanced) ? "text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]" : ""
                 )}>
                     {isBalanced ? "50.00%" : bonkPercentage.toFixed(2) + "%"}
@@ -107,7 +107,7 @@ export default function DamageBar({
                 width: `${isBalanced ? "50%" : Math.ceil(Math.max(Math.min(jitoPercentage, 90), 10)) + "%"}`,
             }}>
                 <div className={twMerge(
-                    "absolute text-sm font-bold z-20",
+                    "absolute text-sm font-boldy z-20",
                     (dominantTeam === 'JITO' || isBalanced) ? "text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]" : ""
                 )}>
                     {isBalanced ? "50.00%" : jitoPercentage.toFixed(2) + "%"}
@@ -134,7 +134,7 @@ export default function DamageBar({
                 )}
                 style={{ color: isBalanced ? whiteColor : dominanceColor }}
             >
-                {isBalanced ? "NO TEAM DOMINATING" : `${dominantTeam} TEAM DOMINATING`}
+                {isBalanced ? "NO TEAM DOMINATING" : `${dominantTeam} TEAM ${pillagePercentage >= 15 ? 'DOMINATING' : 'LEADING'}`}
             </div>
 
             {isBalanced ?
