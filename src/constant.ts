@@ -1635,3 +1635,35 @@ export const SOLANA_ID_TIERS_MUTAGEN = {
   tier_3: { mutagen: 3, title: 'Tier 3' },
   tier_4: { mutagen: 1, title: 'Tier 4' },
 } as const;
+
+export const GENERAL_CHAT_ROOM_ID = 0;
+export const JITO_CHAT_ROOM_ID = 1;
+export const BONK_CHAT_ROOM_ID = 2;
+export const ANNOUNCEMENTS_CHAT_ROOM_ID = 3;
+
+export const ALL_CHAT_ROOMS = {
+  0: {
+    id: GENERAL_CHAT_ROOM_ID,
+    name: 'General',
+    description: 'General chat room for all players',
+    group: 'channels',
+  },
+  1: {
+    id: JITO_CHAT_ROOM_ID,
+    name: 'Team Jito',
+    description: 'Jito chat room for Jito players',
+    group: 'channels',
+  },
+  2: {
+    id: BONK_CHAT_ROOM_ID,
+    name: 'Team Bonk',
+    description: 'Bonk chat room for Bonk players',
+    group: 'channels',
+  },
+  3: {
+    id: ANNOUNCEMENTS_CHAT_ROOM_ID,
+    name: 'Announcements',
+    description: 'Announcements chat room for all players',
+    group: 'information',
+  },
+} as const;
