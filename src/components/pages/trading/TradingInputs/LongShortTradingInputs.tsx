@@ -367,15 +367,17 @@ export default function LongShortTradingInputs({
     try {
       const r = await referrer;
 
-      let stopLossLimitPrice = null;
-      let takeProfitLimitPrice = null;
+      // Undefined means user doesn't want to touch it
+      let stopLossLimitPrice = undefined;
+      let takeProfitLimitPrice = undefined;
 
-      if (validateTPSLInputs({
+      if (isTPSL && validateTPSLInputs({
         takeProfitInput,
         stopLossInput,
         markPrice: tokenPriceBTrade,
         position: { ...positionInfo.newPositionInfo, side } as unknown as PositionExtended,
       })) {
+        // null means we cancel it, otherwise we set it
         stopLossLimitPrice = stopLossInput ? new BN(stopLossInput * 10 ** PRICE_DECIMALS) : null;
         takeProfitLimitPrice = takeProfitInput ? new BN(takeProfitInput * 10 ** PRICE_DECIMALS) : null;
       } else {
