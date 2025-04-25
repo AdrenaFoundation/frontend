@@ -20,7 +20,6 @@ export default async function handler(
         favoriteAchievements: null,
       });
     }
-
     const { error } = await supabase.from('user_favorite_achievements').upsert({
       wallet_address,
       favorite_achievements,

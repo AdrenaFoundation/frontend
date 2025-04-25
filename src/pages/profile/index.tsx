@@ -130,7 +130,7 @@ export default function Profile({
                 canUpdateNickname={!readonly}
                 className="flex w-full w-min-[30em]"
                 walletPubkey={wallet?.publicKey}
-                favoriteAchievements={favoriteAchievements ?? null}
+                favoriteAchievements={favoriteAchievements}
                 fetchFavoriteAchievements={fetchFavoriteAchievements}
                 updateFavoriteAchievements={updateFavoriteAchievements}
                 createFavoriteAchievements={createFavoriteAchievements}

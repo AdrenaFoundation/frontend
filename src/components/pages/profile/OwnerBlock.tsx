@@ -93,7 +93,7 @@ export default function OwnerBloc({
     profilePicture: userProfile.profilePicture,
     wallpaper: userProfile.wallpaper,
     title: userProfile.title,
-    favoriteAchievements: favoriteAchievements,
+    favoriteAchievements: favoriteAchievements ?? [],
   });
 
   useEffect(() => {
@@ -163,6 +163,7 @@ export default function OwnerBloc({
         walletPubkey.toBase58(),
         updatingMetadata.favoriteAchievements ?? [],
       );
+      console.log(updatingMetadata.favoriteAchievements);
     } else {
       const hasSameValues =
         currentFavoriteAchievements.length > 0 &&

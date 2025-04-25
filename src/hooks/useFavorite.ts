@@ -3,9 +3,9 @@ import { useState } from 'react';
 // filepath: /Users/abdirahim/Documents/GitHub/frontend/src/hooks/useFavorite.ts
 
 export default function useFavorite() {
-  const [favoriteAchievements, setFavoriteAchievements] = useState<number[]>(
-    [],
-  );
+  const [favoriteAchievements, setFavoriteAchievements] = useState<
+    number[] | null
+  >(null);
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

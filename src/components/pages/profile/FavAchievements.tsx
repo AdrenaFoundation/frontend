@@ -7,7 +7,7 @@ import Achievement from '../achievements/Achievement'
 
 export default function FavAchievements({ userProfile, favoriteAchievements, setIsUpdatingMetadata, setActiveUpdateTab }: {
   userProfile: UserProfileExtended
-  favoriteAchievements: number[]
+  favoriteAchievements: number[] | null
   setIsUpdatingMetadata: React.Dispatch<React.SetStateAction<boolean>>
   setActiveUpdateTab: React.Dispatch<React.SetStateAction<'profilePicture' | 'wallpaper' | 'title' | 'achievements'>>
 }) {
