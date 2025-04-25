@@ -32,8 +32,7 @@ export default function FavAchievements({ userProfile, favoriteAchievements, set
             unlocked={true}
             achievement={achievement as AchievementInfoExtended}
             statPlacement='top'
-            className="scale-[0.5] sm:scale-[0.8] w-[50px] sm:w-[100px] h-[150px]"
-            // className="scale-[0.5] sm:scale-[1]"
+            className="scale-[0.5] sm:scale-[0.8] w-[3.125rem] h-[10.375rem] sm:w-[6.25rem] sm:h-[14.375rem]"
             key={`achievement-${achievement.index}`}
           />
         ))}

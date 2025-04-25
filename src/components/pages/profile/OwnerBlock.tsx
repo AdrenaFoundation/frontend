@@ -148,6 +148,38 @@ export default function OwnerBloc({
   ]);
 
   const updateProfile = useCallback(async () => {
+    const onlyUpdateAchievements = updatingMetadata.wallpaper === userProfile.wallpaper &&
+      updatingMetadata.profilePicture === userProfile.profilePicture &&
+      updatingMetadata.title === userProfile.title
+
+    const currentFavoriteAchievements = favoriteAchievements;
+
+    if (!walletPubkey) return;
+
+    if (currentFavoriteAchievements === null) {
+      createFavoriteAchievements?.(
+        walletPubkey.toBase58(),
+        updatingMetadata.favoriteAchievements ?? [],
+      );
+
+    } else {
+      const isNewChanges = currentAchievements.some(
+        (achievement) =>
+          !updatingMetadata.favoriteAchievements?.includes(achievement.index),
+      );
+
+      if (isNewChanges) {
+        updateFavoriteAchievements?.(
+          walletPubkey.toBase58(),
+          updatingMetadata.favoriteAchievements ?? [],
+        );
+      }
+    }
+
+    if (onlyUpdateAchievements) {
+      return setIsUpdatingMetadata?.(false);
+    }
+
     const notification =
       MultiStepNotification.newForRegularTransaction('Update Profile').fire();
 
@@ -155,29 +187,6 @@ export default function OwnerBloc({
       return notification.currentStepErrored(
         'You must be connected to update your profile',
       );
-
-    const currentFavoriteAchievements = favoriteAchievements;
-
-    if (currentFavoriteAchievements === null) {
-      createFavoriteAchievements?.(
-        walletPubkey.toBase58(),
-        updatingMetadata.favoriteAchievements ?? [],
-      );
-      console.log(updatingMetadata.favoriteAchievements);
-    } else {
-      const hasSameValues =
-        currentFavoriteAchievements.length > 0 &&
-        currentFavoriteAchievements.every((value) =>
-          updatingMetadata.favoriteAchievements?.includes(value),
-        );
-
-      if (!hasSameValues) {
-        updateFavoriteAchievements?.(
-          walletPubkey.toBase58(),
-          updatingMetadata.favoriteAchievements ?? [],
-        );
-      }
-    }
 
     try {
       await window.adrena.client.editUserProfile({
