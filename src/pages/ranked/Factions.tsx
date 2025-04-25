@@ -188,7 +188,8 @@ export default function Factions({
             .map((d) => {
                 const team = userProfilesMap[d.wallet.toBase58()]; // 0 = no team, 1 = BONK, 2 = JITO
                 return { ...d, team };
-            });
+            })
+            .filter((d) => d.team !== 0);
 
         for (let roleIndex = 0; roleIndex < roleByRank.length; roleIndex++) {
             const role = roleByRank[roleIndex];
