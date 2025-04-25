@@ -1383,7 +1383,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   {
     index: 59,
     title: 'The BONKing Dead',
-    description: 'Be a part of the BONK team during season 2',
+    description: 'Join the BONK team in Season 2',
     story:
       'An army forged in chaos, barking through the smoke of liquidations. You are the BONKing Dead — and every trade is a step closer to victory',
     image:
@@ -1483,7 +1483,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     description:
       'Open 5 trades with the other faction assets with max size 4.4M on JitoSol asset or >240k on BONK',
     story:
-      "Silent steps. Poisoned goods. A well-placed 'proof'. You didn't just disrupt them—you made their whole plan rot from the inside",
+      "A silent strike. You didn't just disrupt them — you poisoned the whole plan.",
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/68-sabotage-glLt7G1sLdckP9Rzwgznet3cfDmQor.jpg',
     points: 25,
