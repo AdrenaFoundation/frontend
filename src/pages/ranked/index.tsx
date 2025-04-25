@@ -2,17 +2,13 @@ import { useMemo, useState } from 'react';
 
 import CompetitionBanner from '@/components/pages/ranked/CompetitionBanner';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
-import { PageProps } from '@/types';
 
 import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
 import Competition from './Awakening';
 import Expanse from './Expanse';
 import Factions from './Factions';
 
-export default function Ranked({
-    userProfile,
-    triggerUserProfileReload,
-}: PageProps) {
+export default function Ranked() {
     //
     // Ignore following for inter-season
     //
