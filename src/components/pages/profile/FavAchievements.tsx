@@ -46,7 +46,7 @@ export default function FavAchievements({ userProfile, favoriteAchievements, set
       <AnimatePresence>
         {isModalOpen ? <Modal
           close={() => setIsModalOpen(false)}
-          title="Achievements"
+          title="Favorite Achievements"
           className="p-5"
         >
           <div className='flex flex-col sm:flex-row justify-center items-center gap-6 px-4 overflow-hidden'>
