@@ -307,7 +307,7 @@ export default function FactionsWeeklyLeaderboard({
                     className={numberDisplayClasses}
                     prefixClassName="text-[0.9em]"
                     headerClassName='pb-2'
-                    bodyClassName='text-[0.8em]'
+                    bodyClassName='text-[0.8em] text-[#e47dbb]'
                     titleClassName='text-[0.7em] text-base'
                 />
 

@@ -31,6 +31,7 @@ export default function Rank({
     className,
     setActiveProfile,
     showVideo = false,
+    unlockStep = 0
 }: {
     team: 'A' | 'B';
     rank: 'Sergeant' | 'Lieutenant' | 'General';
@@ -44,11 +45,14 @@ export default function Rank({
     className?: string;
     setActiveProfile: (u: UserProfileExtended | null) => void;
     showVideo?: boolean;
+    unlockStep?: number;
 }) {
     const [hover, setHover] = useState(false);
 
+    const expectedBonusPillage = rank === 'Sergeant' ? 2.5 : rank === 'Lieutenant' ? 5 : 10;
+
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 relative">
             <div className={twMerge(
                 'relative flex flex-col gap-2',
             )}
@@ -62,12 +66,18 @@ export default function Rank({
                     {rank}
                 </div>
 
-                <div className={twMerge('w-[10em] h-[15em] z-10 border-2 relative', hover ? 'opacity-100' : 'opacity-50')}>
+                <div className={twMerge(
+                    'w-[10em] h-[15em] z-10 border-2 relative',
+                    hover ? 'opacity-100' : 'opacity-50',
+                    user.steps === 1 ? 'opacity-70' : '',
+                    user.steps === 2 ? 'opacity-80' : '',
+                    user.steps === 3 ? 'border-[#e47dbb] shadow-[0_0_12px_#e47dbb] animate-pulse opacity-100' : ''
+                )}>
                     <div className="w-full h-full">
-                        {showVideo || hover ? <video
+                        {showVideo || hover || user.steps === 3 ? <video
                             autoPlay
                             muted
-                            loop
+                            loop={user.steps === 3 ? false : true}
                             playsInline
                             className={twMerge('w-full h-full object-cover z-10 absolute', className)}
                             src={VIDEOS[`${team}-${rank}` as keyof typeof VIDEOS]}
@@ -136,8 +146,8 @@ export default function Rank({
                         }
                     </div>}>
                         <div className={twMerge(
-                            "w-4 h-4 rounded-full flex items-center justify-center text-xxs",
-                            user.steps >= 1 ? team === 'A' ? 'bg-[#FA6724BB]' : 'bg-[#5AA6FABB]' : 'bg-bcolor text-txtfade',
+                            "w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold",
+                            user.steps >= 1 ? team === 'A' ? 'bg-[#FA6724] shadow-[0_0_8px_#FA6724]' : 'bg-[#5AA6FA] shadow-[0_0_8px_#5AA6FA]' : 'bg-bcolor text-txtfade',
                         )}>1</div>
                     </Tippy>
 
@@ -151,8 +161,8 @@ export default function Rank({
                         }
                     </div>}>
                         <div className={twMerge(
-                            "w-4 h-4 rounded-full flex items-center justify-center text-xxs",
-                            user.steps >= 2 ? team === 'A' ? 'bg-[#FA6724BB]' : 'bg-[#5AA6FABB]' : 'bg-bcolor text-txtfade',
+                            "w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold",
+                            user.steps >= 2 ? team === 'A' ? 'bg-[#FA6724] shadow-[0_0_8px_#FA6724]' : 'bg-[#5AA6FA] shadow-[0_0_8px_#5AA6FA]' : 'bg-bcolor text-txtfade',
                         )}>2</div>
                     </Tippy>
 
@@ -161,19 +171,31 @@ export default function Rank({
                     <Tippy content={<div>
                         {
                             user.steps >= 3 ?
-                                `Step 3 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage` :
-                                `Step 3 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage`
+                                `Step 3 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage AND getting ${user.bonusPillage}%  bonus mutagens based on the team's total damage` :
+                                `Step 3 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage AND getting ${expectedBonusPillage}% bonus mutagens based on the team's total damage`
                         }
                     </div>}>
-                        <div className={twMerge(
-                            "w-4 h-4 rounded-full flex items-center justify-center text-xxs",
-                            user.steps >= 3 ? team === 'A' ? 'bg-[#FA6724BB]' : 'bg-[#5AA6FABB]' : 'bg-bcolor text-txtfade',
-                        )}>3</div>
+                        <div
+                            className={twMerge(
+                                "w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold",
+                                user.steps >= 3 ? team === 'A' ? 'bg-[#FA6724] shadow-[0_0_8px_#FA6724]' : 'bg-[#5AA6FA] shadow-[0_0_8px_#5AA6FA]' : 'bg-bcolor text-txtfade',
+                                unlockStep === 3 ? 'ring-2 ring-[#e47dbb] shadow-[0_0_12px_#e47dbb] animate-pulse' : '',
+                            )}
+                        >3</div>
                     </Tippy>
                 </div>
             </div>
 
-            <div className={twMerge("text-xs ml-auto mr-auto", user.percentagePillage > 0 ? 'text-txtfade/50' : 'text-transparent')}>max pillage +{user.percentagePillage}%</div>
-        </div >
+            <div className={twMerge(
+                "text-xs ml-auto mr-auto transition-all duration-300",
+                user.percentagePillage > 0 ? 'text-txtfade/50' : 'text-transparent',
+                unlockStep === 3 ? 'text-[#e47dbb] font-bold' : '',
+            )}>
+                max pillage +{user.percentagePillage}%
+                {unlockStep === 3 && (
+                    <span className="ml-2 text-[#e47dbb] inline-block">+15% mutagen</span>
+                )}
+            </div>
+        </div>
     );
 }
