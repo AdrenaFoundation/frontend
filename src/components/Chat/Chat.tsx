@@ -577,7 +577,8 @@ function Chat({
                             .filter((a) => a.group === 'channels')
                             .map(({ id, name }) => {
 
-                                const isLocked = (userTeam === TEAMS_MAPPING.BONK && id === JITO_CHAT_ROOM_ID) || ((!wallet || !userProfile) && (id === BONK_CHAT_ROOM_ID || id === JITO_CHAT_ROOM_ID))
+                                const isLocked = id === 0 ? false : (((!wallet || !userProfile) && (id === BONK_CHAT_ROOM_ID || id === JITO_CHAT_ROOM_ID)) || (userTeam === id))
+
                                 return (
                                     <div
                                         className={twMerge(
