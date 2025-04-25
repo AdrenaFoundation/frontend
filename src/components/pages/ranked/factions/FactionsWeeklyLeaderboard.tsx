@@ -62,6 +62,7 @@ export default function FactionsWeeklyLeaderboard({
         });
     }, [data]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const calculateRewardValue = (rewardTokens: { ADX?: number; BONK?: number; JTO?: number }) => {
         if (!tokenPrices) return 0;
 
@@ -271,7 +272,7 @@ export default function FactionsWeeklyLeaderboard({
                     : title ? team === 'A' ? 'bg-[#FA6724]/20' : 'bg-[#5AA6FA]/10' : null),
             };
         });
-    }, [data, officers, onClickUserProfile, team, wallet?.walletAddress, tokenPrices]);
+    }, [data, officers, calculateRewardValue, team, wallet?.walletAddress, onClickUserProfile]);
 
     if (!data || !dataReady) {
         return null;

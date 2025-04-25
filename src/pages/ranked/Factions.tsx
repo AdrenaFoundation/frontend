@@ -32,7 +32,7 @@ export default function Factions() {
     }, [activeTab, searchParams]);
 
     return (
-        <div className="max-w-[1400px] w-full mx-auto px-4 relative flex flex-col pb-4">
+        <div className="max-w-[1920px] w-full mx-auto px-4 relative flex flex-col pb-4">
             <div
                 className='tracking-[0.1rem] uppercase self-center mb-8 sm:mb-0 font-boldy sm:absolute sm:-top-[6em] sm:right-2 text-sm underline opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1'
                 onClick={() => setActiveTab(activeTab === 'leaderboard' ? 'mechanics' : 'leaderboard')}

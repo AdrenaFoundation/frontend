@@ -23,6 +23,7 @@ import { getNonUserProfile } from '@/utils';
 
 export const S2_NB_HEALTH_BAR = 20;
 export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
+export const S2_BOSSES_NAME = ['Grunervald', 'Vox Petros', 'The Archivist', 'Choirmeat', 'Cryorune', 'Aethermire', 'Kravhex the Returning', 'Dendrothex', 'Shathyr of the Maw', 'Malivex'];
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
@@ -90,7 +91,7 @@ export default function FactionsLeaderboards() {
                 [token]: tokenPrices && tokenPrices[token] ? count * tokenPrices[token] : 0,
             }), {} as Record<string, number>),
         } as const;
-    }, [leaderboardData]);
+    }, [leaderboardData, weekIndex, tokenPrices]);
 
     if (!leaderboardData || !weekInfo) {
         return <Loader />;
@@ -114,7 +115,7 @@ export default function FactionsLeaderboards() {
                         }}
                     />
 
-                    <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : Grunervald</div>
+                    <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : {S2_BOSSES_NAME[weekIndex]}</div>
                 </div>
 
                 {weekInfo.isBossDefeated ?
