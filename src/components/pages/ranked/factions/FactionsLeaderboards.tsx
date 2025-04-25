@@ -19,6 +19,7 @@ import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useFactionsData from '@/hooks/useFactionsData';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
+import { useSelector } from '@/store/store';
 
 export const S2_NB_HEALTH_BAR = 20;
 export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
@@ -27,13 +28,8 @@ function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
 }
 
-// type TokensOrUsd = {
-//     usd: number;
-//     tokens: number;
-// };
-
 export default function FactionsLeaderboards() {
-    // const tokenPrices = useSelector((s) => s.tokenPrices);
+    const tokenPrices = useSelector((s) => s.tokenPrices);
     const [week, setWeek] = useState<string>('Week 1');
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
@@ -83,8 +79,16 @@ export default function FactionsLeaderboards() {
                 lieutenant: leaderboardData.weekly.officers[weekIndex].jitoLieutenant,
                 sergeant: leaderboardData.weekly.officers[weekIndex].jitoSergeant,
             },
-            weeklyUnlockedRewards: leaderboardData.weekly.weeklyUnlockedRewards[weekIndex],
-            maxWeeklyRewards: leaderboardData.weekly.maxWeeklyRewards[weekIndex],
+            weeklyUnlockedRewardsTokens: leaderboardData.weekly.weeklyUnlockedRewards[weekIndex],
+            maxWeeklyRewardsTokens: leaderboardData.weekly.maxWeeklyRewards[weekIndex],
+            weeklyUnlockedRewardsUsd: Object.entries(leaderboardData.weekly.weeklyUnlockedRewards[weekIndex]).reduce((acc, [token, count]) => ({
+                ...acc,
+                [token]: tokenPrices && tokenPrices[token] ? count * tokenPrices[token] : 0,
+            }), {} as Record<string, number>),
+            maxWeeklyRewardsUsd: Object.entries(leaderboardData.weekly.maxWeeklyRewards[weekIndex]).reduce((acc, [token, count]) => ({
+                ...acc,
+                [token]: tokenPrices && tokenPrices[token] ? count * tokenPrices[token] : 0,
+            }), {} as Record<string, number>),
         } as const;
     }, [leaderboardData]);
 
@@ -153,9 +157,10 @@ export default function FactionsLeaderboards() {
                                 />
 
                                 <FormatNumber
-                                    nb={weekInfo.weeklyUnlockedRewards.ADX}
+                                    nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.ADX : weekInfo.weeklyUnlockedRewardsTokens.ADX}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
+                                    prefix={rewardsAs === 'usd' ? '$' : ''}
                                     isAbbreviate={true}
                                     isAbbreviateIcon={false}
                                     isDecimalDimmed={false}
@@ -167,10 +172,10 @@ export default function FactionsLeaderboards() {
 
                             <div className='ml-auto'>
                                 <FormatNumber
-                                    nb={weekInfo.maxWeeklyRewards.ADX}
+                                    nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.ADX : weekInfo.maxWeeklyRewardsTokens.ADX}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
-                                    prefix='MAX '
+                                    prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
                                     isDecimalDimmed={false}
                                     suffix='ADX'
                                     suffixClassName='text-xs text-txtfade'
@@ -196,9 +201,10 @@ export default function FactionsLeaderboards() {
                                 />
 
                                 <FormatNumber
-                                    nb={weekInfo.weeklyUnlockedRewards.BONK}
+                                    nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.BONK : weekInfo.weeklyUnlockedRewardsTokens.BONK}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
+                                    prefix={rewardsAs === 'usd' ? '$' : ''}
                                     isDecimalDimmed={false}
                                     suffix='BONK'
                                     suffixClassName='text-lg'
@@ -210,10 +216,10 @@ export default function FactionsLeaderboards() {
 
                             <div className='ml-auto'>
                                 <FormatNumber
-                                    nb={weekInfo.maxWeeklyRewards.BONK}
+                                    nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.BONK : weekInfo.maxWeeklyRewardsTokens.BONK}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
-                                    prefix='MAX '
+                                    prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
                                     isDecimalDimmed={false}
                                     suffix='BONK'
                                     suffixClassName='text-xs text-txtfade'
@@ -239,9 +245,10 @@ export default function FactionsLeaderboards() {
                                 />
 
                                 <FormatNumber
-                                    nb={weekInfo.weeklyUnlockedRewards.JTO}
+                                    nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.JTO : weekInfo.weeklyUnlockedRewardsTokens.JTO}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
+                                    prefix={rewardsAs === 'usd' ? '$' : ''}
                                     isDecimalDimmed={false}
                                     suffix='JTO'
                                     suffixClassName='text-lg'
@@ -253,10 +260,10 @@ export default function FactionsLeaderboards() {
 
                             <div className='ml-auto'>
                                 <FormatNumber
-                                    nb={weekInfo.maxWeeklyRewards.JTO}
+                                    nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.JTO : weekInfo.maxWeeklyRewardsTokens.JTO}
                                     format={rewardsAs === 'usd' ? "currency" : 'number'}
                                     precision={0}
-                                    prefix='MAX '
+                                    prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
                                     isDecimalDimmed={false}
                                     suffix='JTO'
                                     suffixClassName='text-xs text-txtfade'

@@ -82,7 +82,13 @@ export default function DamageBar({
 
         {bonkMutagen !== jitoMutagen ?
             <div className='text-xxs text-txtfade font-archivo tracking-widest uppercase'>
-                {dominantTeam} TEAM TO PILLAGE {pillagePercentage}% OF {dominatedTeam} TEAM REWARDS
+                {dominantTeam} TEAM TO PILLAGE <Tippy content={<div>
+                    Due to {dominantTeam} team dealing {Math.abs(bonkMutagen - jitoMutagen).toFixed(2)} more damage and their officer unlocking up to {dominantTeam === 'bonk' ? pillageBonkPercentage : pillageJitoPercentage}% maximum pillage threshold, they can pillage {pillagePercentage}% of the {dominatedTeam} team’s rewards.
+                </div>}>
+                    <span className="text-xxs text-txtfade font-archivo tracking-widest uppercase underline-dashed">
+                        {pillagePercentage}%
+                    </span>
+                </Tippy> OF {dominatedTeam} TEAM REWARDS
             </div> :
             <div className='text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase'>TEAM WITH MOST DAMAGE GET MOST OF THE REWARDS, <Tippy content={<div>
                 <p>Each team gets 50% of the rewards. On top of that, there’s a mechanism where the team dealing more damage can <strong>pillage up to 30%</strong> of the opposing team’s rewards.</p>
