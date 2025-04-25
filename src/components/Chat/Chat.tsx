@@ -582,7 +582,7 @@ function Chat({
                                     isLocked = false
                                 }
 
-                                if (id === userTeam) {
+                                if (id !== userTeam) {
                                     isLocked = false
                                 }
 
