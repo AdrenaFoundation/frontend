@@ -1,10 +1,9 @@
-import { PublicKey } from '@solana/web3.js';
 import React from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
 import { UserProfileExtended } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
+import { getAbbrevWalletAddress, getNonUserProfile } from '@/utils';
 
 import OnchainAccountInfo from './OnchainAccountInfo';
 
@@ -19,22 +18,7 @@ export default function UserProfileBlock({ superchargedProfile, setActiveProfile
         <div className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden p-3 ${className}`}>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-row gap-6 justify-between items-center">
                 <div className="flex flex-1 flex-col items-start" onClick={
-                    () => setActiveProfile(superchargedProfile.profile || {
-                        version: -1, // Not a real profile
-                        pubkey: PublicKey.default, // Not a real profile
-                        nickname: getAbbrevWalletAddress(superchargedProfile.wallet.toBase58()),
-                        createdAt: Date.now(),
-                        owner: superchargedProfile.wallet,
-                        referrerProfile: null,
-                        claimableReferralFeeUsd: 0,
-                        totalReferralFeeUsd: 0,
-                        profilePicture: 0,
-                        wallpaper: 0,
-                        title: 0,
-                        achievements: [],
-                        team: 0,
-                        continent: 0,
-                    })
+                    () => setActiveProfile(superchargedProfile.profile || getNonUserProfile(superchargedProfile.wallet.toBase58()))
                 }>
                     <div className="flex w-full font-mono text-xxs">
                         <span className="text-blue cursor-pointer hover:underline text-base sm:text-lg">

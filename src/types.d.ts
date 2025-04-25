@@ -597,6 +597,219 @@ export type ConnectedWalletTickets = {
   jito: number | null;
 } | null;
 
+export type FactionsLeaderboardsData = {
+  weekly: {
+    weekDatesStart: Date[];
+    weekDatesEnd: Date[];
+    howManyHealthBarBroken: number[];
+    isBossDefeated: boolean[];
+    weeklyUnlockedRewards: { ADX: number; BONK: number; JTO: number }[];
+    weeklyRewardsJito: { ADX: number; BONK: number; JTO: number }[];
+    weeklyRewardsBonk: { ADX: number; BONK: number; JTO: number }[];
+    bossLifePercentage: number[];
+    seasonRewardsAdx: number;
+    weeklyDamage: number[];
+    weeklyDamageBonkTeam: number[];
+    weeklyDamageJitoTeam: number[];
+    weeklyAdxRewards: number[];
+    weeklyJtoRewards: number[];
+    bossMaxMutagenLife: number[];
+    maxWeeklyRewards: { ADX: number; BONK: number; JTO: number }[];
+    oneHealthBarRewards: {
+      weekly: { ADX: number; BONK: number; JTO: number };
+      seasonal: { ADX: number };
+    }[];
+    pillageBonkPercentage: number[];
+    pillageJitoPercentage: number[];
+    officers: {
+      [rank in
+        | 'bonkGeneral'
+        | 'bonkLieutenant'
+        | 'bonkSergeant'
+        | 'jitoGeneral'
+        | 'jitoLieutenant'
+        | 'jitoSergeant']: {
+        wallet: PublicKey;
+        steps: number;
+        percentagePillage: number;
+        bonusPillage: number;
+        nickname: string | null;
+      };
+    }[];
+    dominantFaction: string[];
+    dominancePercentage: number[];
+    bonkLeaderboard: {
+      userWallet: string;
+      team: number;
+      weekDateId: number;
+      totalPoints: number;
+      volume: number;
+      pnl: number;
+      borrowFees: number;
+      closeFees: number;
+      fees: number;
+      rank: number;
+      rewards: { ADX: number; BONK: number; JTO: number };
+      nickname: string | null;
+      profilePicture: ProfilePicture | null;
+      title: UserProfileTitle | null;
+    }[][];
+    jitoLeaderboard: {
+      userWallet: string;
+      team: number;
+      weekDateId: number;
+      totalPoints: number;
+      volume: number;
+      pnl: number;
+      borrowFees: number;
+      closeFees: number;
+      fees: number;
+      rank: number;
+      rewards: { ADX: number; BONK: number; JTO: number };
+      nickname: string | null;
+      profilePicture: ProfilePicture | null;
+      title: UserProfileTitle | null;
+    }[][];
+  };
+  seasonLeaderboard: {
+    userWallet: string;
+    team: number;
+    totalPoints: number;
+    volume: number;
+    pnl: number;
+    borrowFees: number;
+    closeFees: number;
+    fees: number;
+    rank: number;
+    rewards: { ADX: number };
+    nickname: string | null;
+    profilePicture: ProfilePicture | null;
+    title: UserProfileTitle | null;
+  }[];
+  name: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  weekDate: Date;
+  weekStart: Date;
+  weekEnd: Date;
+};
+
+export type FactionsLeaderboardsRawAPI = {
+  success: boolean;
+  data: {
+    weekly: {
+      week_dates_start: string[];
+      week_dates_end: string[];
+      how_many_health_bar_broken: number[];
+      is_boss_defeated: boolean[];
+      weekly_unlocked_rewards: { ADX: number; BONK: number; JTO: number }[];
+      weekly_rewards_jito: { ADX: number; BONK: number; JTO: number }[];
+      weekly_rewards_bonk: { ADX: number; BONK: number; JTO: number }[];
+      boss_life_percentage: number[];
+      season_rewards_adx: number;
+      weekly_damage: number[];
+      weekly_damage_bonk_team: number[];
+      weekly_damage_jito_team: number[];
+      weekly_adx_rewards: number[];
+      weekly_jto_rewards: number[];
+      boss_max_mutagen_life: number[];
+      max_weekly_rewards: { ADX: number; BONK: number; JTO: number }[];
+      one_health_bar_rewards: {
+        weekly: { ADX: number; BONK: number; JTO: number };
+        seasonal: { ADX: number };
+      }[];
+      pillage_bonk_percentage: number[];
+      pillage_jito_percentage: number[];
+      officers: {
+        bonk_general: {
+          wallet: string;
+          steps: number;
+          percentage_pillage: number;
+          bonus_pillage: number;
+        };
+        jito_general: {
+          wallet: string;
+          steps: number;
+          percentage_pillage: number;
+          bonus_pillage: number;
+        };
+        bonk_lieutenant: {
+          wallet: string;
+          steps: number;
+          percentage_pillage: number;
+          bonus_pillage: number;
+        };
+        jito_lieutenant: {
+          wallet: string;
+          steps: number;
+          percentage_pillage: number;
+          bonus_pillage: number;
+        };
+        bonk_sergeant: {
+          wallet: string;
+          steps: number;
+          percentage_pillage: number;
+          bonus_pillage: number;
+        };
+        jito_sergeant: {
+          wallet: string;
+          steps: number;
+          percentage_pillage: number;
+          bonus_pillage: number;
+        };
+      }[];
+      dominant_faction: string[];
+      dominance_percentage: number[];
+      bonk_leaderboard: {
+        user_wallet: string;
+        team: number;
+        week_date_id: number;
+        total_points: number;
+        volume: number;
+        pnl: number;
+        borrow_fees: number;
+        close_fees: number;
+        fees: number;
+        rank: number;
+        rewards: { ADX: number; BONK: number; JTO: number };
+      }[][];
+      jito_leaderboard: {
+        user_wallet: string;
+        team: number;
+        week_date_id: number;
+        total_points: number;
+        volume: number;
+        pnl: number;
+        borrow_fees: number;
+        close_fees: number;
+        fees: number;
+        rank: number;
+        rewards: { ADX: number; BONK: number; JTO: number };
+      }[][];
+    };
+    season_leaderboard: {
+      user_wallet: string;
+      team: number;
+      total_points: number;
+      volume: number;
+      pnl: number;
+      borrow_fees: number;
+      close_fees: number;
+      fees: number;
+      rank: number;
+      rewards: { ADX: number };
+    }[];
+    name: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    week_date: string;
+    week_start: string;
+    week_end: string;
+  };
+};
+
 type SeasonLeaderboardsRawAPI = {
   success: boolean;
   data: {

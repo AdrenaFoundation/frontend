@@ -2,17 +2,13 @@ import { useMemo, useState } from 'react';
 
 import CompetitionBanner from '@/components/pages/ranked/CompetitionBanner';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
-import { PageProps } from '@/types';
 
 import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
 import Competition from './Awakening';
 import Expanse from './Expanse';
 import Factions from './Factions';
 
-export default function Ranked({
-    userProfile,
-    triggerUserProfileReload,
-}: PageProps) {
+export default function Ranked() {
     //
     // Ignore following for inter-season
     //
@@ -40,13 +36,14 @@ export default function Ranked({
                 seasonName={activeSeason}
                 adxRewards={data.adxRewards}
                 jtoRewards={data.jtoRewards}
+                bonkRewards={data.bonkRewards}
                 bannerClassName={data.bannerClassName}
             />
 
             <div className=" sm:px-8 max-w-[2200px] mx-auto w-full mt-10">
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
-                {activeSeason === 'factions' ? <Factions userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} /> : null}
+                {activeSeason === 'factions' ? <Factions /> : null}
             </div>
         </div>
     );

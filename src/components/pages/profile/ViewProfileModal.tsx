@@ -74,6 +74,7 @@ export default function ViewProfileModal({
                     expanseRanking={expanseRanking}
                     awakeningRanking={awakeningRanking}
                     className="gap-y-4 pt-2 pb-2"
+                    userProfile={profile}
                 />
 
                 <div className="flex flex-col gap-3 p-4">

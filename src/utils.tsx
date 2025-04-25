@@ -40,6 +40,7 @@ import {
   PositionExtended,
   Token,
   U128Split,
+  UserProfileExtended,
 } from './types';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
@@ -1114,3 +1115,22 @@ export const validateTPSLInputs = ({ takeProfitInput,
 
   return isValid;
 };
+
+export function getNonUserProfile(pubkey: string): UserProfileExtended {
+  return {
+    version: -1, // Not a real profile
+    pubkey: PublicKey.default, // Not a real profile
+    nickname: getAbbrevWalletAddress(pubkey),
+    createdAt: Date.now(),
+    owner: new PublicKey(pubkey),
+    referrerProfile: null,
+    claimableReferralFeeUsd: 0,
+    totalReferralFeeUsd: 0,
+    profilePicture: 0,
+    wallpaper: 0,
+    title: 0,
+    achievements: [],
+    team: 0,
+    continent: 0,
+  };
+}
