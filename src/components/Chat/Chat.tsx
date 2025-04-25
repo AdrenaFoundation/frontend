@@ -582,7 +582,7 @@ function Chat({
                                     isLocked = false
                                 }
 
-                                if (userProfile && wallet && id !== userTeam) {
+                                if (userProfile && wallet && id !== userTeam && userTeam !== 0) {
                                     isLocked = false
                                 }
 
