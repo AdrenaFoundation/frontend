@@ -100,7 +100,8 @@ function ChatContainer({
                             showUserList={showUserList}
                             onToggleUserList={() => setShowUserList(!showUserList)}
                             clickOnHeader={() => setIsChatOpen(!isChatOpen)}
-                            className="bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col w-full h-full grow max-h-full"
+                            className="flex flex-col w-full h-full grow max-h-full"
+                            isMobile={true}
                         />
                     </Modal>
                 ) : null}
@@ -127,11 +128,11 @@ function ChatContainer({
                     if (!isDragging) setIsChatOpen(!isChatOpen);
                 }}
                 className={twMerge(
-                    'bg-[#070F16] rounded-tl-lg rounded-tr-lg flex flex-col shadow-md hover:shadow-lg border-t-2 border-r-2 border-l-2 w-[25em] select-none',
+                    'flex flex-col border-l w-[25em] select-none',
                     isChatOpen ? `h-[${height}px]` : 'h-[3em]',
                 )}
                 style={
-                    isChatOpen ? { height, userSelect: 'none', marginTop: '4px' } : undefined
+                    isChatOpen ? { height, userSelect: 'none', } : undefined
                 }
             />
         </div>
