@@ -54,6 +54,7 @@ export default function ViewProfileModal({
                 className="flex w-full w-min-[30em] border "
                 walletPubkey={profile.owner}
                 readonly={true}
+                favoriteAchievements={null}
             />
 
             <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border border-t-transparent">

@@ -59,19 +59,19 @@ export default function OwnerBloc({
   walletPubkey?: PublicKey;
   readonly?: boolean;
   favoriteAchievements: number[] | null;
-  fetchFavoriteAchievements: (walletAddress: string) => void;
-  updateFavoriteAchievements: (
+  fetchFavoriteAchievements?: (walletAddress: string) => void;
+  updateFavoriteAchievements?: (
     walletAddress: string,
     achievements: number[],
   ) => void;
-  createFavoriteAchievements: (
+  createFavoriteAchievements?: (
     walletAddress: string,
     achievements: number[],
   ) => void;
-  isUpdatingMetadata: boolean;
-  setIsUpdatingMetadata: (updating: boolean) => void;
-  setActiveUpdateTab: (tab: TabType) => void;
-  activeUpdateTab: TabType;
+  isUpdatingMetadata?: boolean;
+  setIsUpdatingMetadata?: (updating: boolean) => void;
+  setActiveUpdateTab?: (tab: TabType) => void;
+  activeUpdateTab?: TabType;
 }) {
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
@@ -159,7 +159,7 @@ export default function OwnerBloc({
     const currentFavoriteAchievements = favoriteAchievements;
 
     if (currentFavoriteAchievements === null) {
-      createFavoriteAchievements(
+      createFavoriteAchievements?.(
         walletPubkey.toBase58(),
         updatingMetadata.favoriteAchievements ?? [],
       );
@@ -171,7 +171,7 @@ export default function OwnerBloc({
         );
 
       if (!hasSameValues) {
-        updateFavoriteAchievements(
+        updateFavoriteAchievements?.(
           walletPubkey.toBase58(),
           updatingMetadata.favoriteAchievements ?? [],
         );
@@ -195,7 +195,7 @@ export default function OwnerBloc({
 
       triggerUserProfileReload();
 
-      setIsUpdatingMetadata(false);
+      setIsUpdatingMetadata?.(false);
     } catch (error) {
       console.error('error', error);
     }
@@ -215,7 +215,7 @@ export default function OwnerBloc({
 
   useEffect(() => {
     if (!walletPubkey) return;
-    fetchFavoriteAchievements(walletPubkey.toBase58());
+    fetchFavoriteAchievements?.(walletPubkey.toBase58());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletPubkey]);
 
@@ -560,8 +560,8 @@ export default function OwnerBloc({
               onMouseLeave={() => !readonly && setProfilePictureHovering(false)}
               onClick={() => {
                 if (readonly) return;
-                setIsUpdatingMetadata(true);
-                setActiveUpdateTab('profilePicture');
+                setIsUpdatingMetadata?.(true);
+                setActiveUpdateTab?.('profilePicture');
               }}
               className={twMerge(
                 'border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30',
@@ -679,8 +679,8 @@ export default function OwnerBloc({
                 <div
                   className="text-xs opacity-70 cursor-pointer hover:opacity-100 relative"
                   onClick={() => {
-                    setIsUpdatingMetadata(true);
-                    setActiveUpdateTab('title');
+                    setIsUpdatingMetadata?.(true);
+                    setActiveUpdateTab?.('title');
                   }}
                 >
                   Edit
@@ -694,8 +694,8 @@ export default function OwnerBloc({
               <div
                 className="text-xs opacity-70 cursor-pointer flex hover:opacity-100"
                 onClick={() => {
-                  setIsUpdatingMetadata(true);
-                  setActiveUpdateTab('wallpaper');
+                  setIsUpdatingMetadata?.(true);
+                  setActiveUpdateTab?.('wallpaper');
                 }}
               >
                 Edit wallpaper
@@ -797,7 +797,7 @@ export default function OwnerBloc({
           <Modal
             title="Update Profile"
             close={() => {
-              setIsUpdatingMetadata(false);
+              setIsUpdatingMetadata?.(false);
             }}
             className="md:w-[50em] md:h-[50vh] flex flex-col"
           >
@@ -833,7 +833,7 @@ export default function OwnerBloc({
                           ? 'opacity-50'
                           : 'opacity-100 bg-third',
                       )}
-                      onClick={() => setActiveUpdateTab(value as TabType)}
+                      onClick={() => setActiveUpdateTab?.(value as TabType)}
                       key={value}
                     >
                       <div className="flex flex-row flex-start gap-1 items-center">
@@ -960,7 +960,7 @@ export default function OwnerBloc({
                       title="Cancel"
                       variant="outline"
                       onClick={() => {
-                        setIsUpdatingMetadata(false);
+                        setIsUpdatingMetadata?.(false);
                       }}
                       className="md:w-60"
                     />
