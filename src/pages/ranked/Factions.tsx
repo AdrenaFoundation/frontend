@@ -12,7 +12,6 @@ export default function Factions() {
     // Page loading
     useEffect(() => {
         let searchParamsView = searchParams.get('view') ?? 'leaderboard'
-
         if (!['leaderboard', 'mechanics'].includes(searchParamsView)) {
             searchParamsView = 'leaderboard';
         }
