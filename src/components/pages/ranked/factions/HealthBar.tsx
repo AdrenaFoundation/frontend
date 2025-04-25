@@ -1,7 +1,6 @@
 import Tippy from "@tippyjs/react";
 import { twMerge } from "tailwind-merge";
-
-import { FactionsComputedData } from "@/pages/ranked/Factions";
+import { FactionsComputedData } from "./FactionsLeaderboards";
 
 export default function HealthBar({
     oneHealthBarRewards,
