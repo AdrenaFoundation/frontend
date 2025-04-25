@@ -372,7 +372,7 @@ export default function FactionsWeeklyLeaderboard({
                         volume
                     </div>,
 
-                    <Tippy content={'Rewards are distributed in ADX, JTO, and BONK tokens. USD values are indicative. Prizes are officially attributed at the end of each week and are for information purposes only before then.'}>
+                    <Tippy key="rewards-tippy" content={'Rewards are distributed in ADX, JTO, and BONK tokens. USD values are indicative. Prizes are officially attributed at the end of each week and are for information purposes only before then.'}>
                         <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
                             rewards *
                         </div>
