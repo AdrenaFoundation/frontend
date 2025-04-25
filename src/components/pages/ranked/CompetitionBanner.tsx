@@ -11,7 +11,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import useCountDown from '@/hooks/useCountDown';
 import { useSelector } from '@/store/store';
-import { formatNumber } from '@/utils';
 
 // TODO: Need to refactor how we display seasons, we can't have something generic, too many things change between seasons
 // Should be one banner per season
@@ -49,7 +48,7 @@ export default function CompetitionBanner({
 
     const totalPrize = useMemo(() => {
         return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (tokenPrices.JTO ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0);
-    }, [adxRewards, jtoRewards, tokenPrices]);
+    }, [adxRewards, bonkRewards, jtoRewards, tokenPrices.ADX, tokenPrices.BONK, tokenPrices.JTO]);
 
     return (
         <div className="relative">

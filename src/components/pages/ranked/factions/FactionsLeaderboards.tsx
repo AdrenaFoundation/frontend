@@ -94,7 +94,9 @@ export default function FactionsLeaderboards() {
     }, [leaderboardData, weekIndex, tokenPrices]);
 
     if (!leaderboardData || !weekInfo) {
-        return <Loader />;
+        return <div className="h-full w-full flex items-center justify-center text-sm">
+            <Loader />
+        </div>
     }
 
     return (
