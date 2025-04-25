@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+
 import { PICTURES } from "./Rank";
 
 export default function DamageBar({
@@ -13,7 +14,7 @@ export default function DamageBar({
     }, [bonkMutagen, jitoMutagen]);
 
     const jitoPercentage = useMemo(() => {
-        return 100 - bonkPercentage;
+        return Number((100 - bonkPercentage).toFixed(2));
     }, [bonkPercentage]);
 
     return <div className="w-[20em] h-[2em] border-2 rounded-2xl overflow-hidden flex">

@@ -8,7 +8,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import { useSelector } from '@/store/store';
-import { SeasonLeaderboardsData, UserProfileExtended } from '@/types';
+import { FactionsLeaderboardsData, UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import Rank from './Rank';
@@ -17,13 +17,15 @@ const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111
 
 export default function FactionsWeeklyLeaderboard({
     team,
+    weeklyDamageTeam,
     data,
     onClickUserProfile,
     setActiveProfile,
     officers,
 }: {
     team: 'B' | 'A';
-    data: SeasonLeaderboardsData['weekLeaderboard'][0] | null;
+    weeklyDamageTeam: number;
+    data: FactionsLeaderboardsData['weekly']['bonkLeaderboard'][0];
     onClickUserProfile: (wallet: PublicKey) => void;
     startDate: Date;
     endDate: Date;
@@ -48,12 +50,10 @@ export default function FactionsWeeklyLeaderboard({
     const weeklyStats = useMemo(() => {
         if (!data) return null;
 
-        return data.ranks.reduce((acc, rank) => {
-            if (!rank.wallet.equals(PublicKey.default)) {
-                acc.totalVolume += rank.volume;
-                acc.totalFees += rank.fees;
-                acc.totalUsers += 1;
-            }
+        return data.reduce((acc, rank) => {
+            acc.totalVolume += rank.volume;
+            acc.totalFees += rank.fees;
+            acc.totalUsers += 1;
 
             return acc;
         }, {
@@ -66,10 +66,8 @@ export default function FactionsWeeklyLeaderboard({
     const dataReady = useMemo(() => {
         if (!data) return null;
 
-        return data.ranks.map((d, i) => {
-            const filler = d.wallet.equals(PublicKey.default);
-
-            const title = Object.entries(officers).find(([, v]) => v.wallet.equals(d.wallet))?.[0];
+        return data.map((d, i) => {
+            const title = Object.entries(officers).find(([, v]) => v.wallet.toBase58() === d.userWallet)?.[0];
 
             return {
                 rowTitle: '',
@@ -81,7 +79,7 @@ export default function FactionsWeeklyLeaderboard({
                     </div>,
 
                     <div className="flex flex-row gap-2 w-[12em] max-w-[12em] overflow-hidden items-center" key={`rank-${i}`}>
-                        {d.profilePicture !== null && !filler ? (
+                        {d.profilePicture !== null ? (
                             <>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
@@ -95,8 +93,8 @@ export default function FactionsWeeklyLeaderboard({
                             </>
                         ) : <div className='h-8 w-8 bg-third rounded-full' />}
 
-                        <div id={`user-weekly-${d.wallet.toBase58()}`}>
-                            {!filler && d.nickname ? (
+                        <div id={`user-weekly-${d.userWallet}`}>
+                            {d.nickname ? (
                                 <p
                                     key={`trader-${i}`}
                                     className={twMerge(
@@ -104,7 +102,7 @@ export default function FactionsWeeklyLeaderboard({
                                         title ? team === 'A' ? 'text-[#FA6724]' : 'text-[#5AA6FA]' : '',
                                     )}
                                     onClick={() => {
-                                        onClickUserProfile(d.wallet);
+                                        onClickUserProfile(new PublicKey(d.userWallet));
                                     }}
                                 >
                                     {d.nickname.length > 16
@@ -113,29 +111,26 @@ export default function FactionsWeeklyLeaderboard({
                                 </p>
                             ) : null}
 
-                            {!filler && !d.nickname ? (
+                            {!d.nickname ? (
                                 <p
                                     key={`trader-${i}`}
                                     className={twMerge(
                                         'text-xs text-txtfade font-boldy hover:underline transition duration-300 cursor-pointer',
                                     )}
                                     onClick={() => {
-                                        onClickUserProfile(d.wallet);
+                                        onClickUserProfile(new PublicKey(d.userWallet));
                                     }}
                                 >
-                                    {getAbbrevWalletAddress(d.wallet.toBase58(), 4)}
+                                    {getAbbrevWalletAddress(d.userWallet, 4)}
                                 </p>
                             ) : null}
 
-                            {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
 
-                            {!filler && d.title !== null ? (
+                            {d.title !== null ? (
                                 <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
                                     {USER_PROFILE_TITLES[d.title]}
                                 </div>
                             ) : null}
-
-                            {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
                         </div>
 
                         {title ? <Tippy content={title}>
@@ -156,19 +151,19 @@ export default function FactionsWeeklyLeaderboard({
                         className={twMerge("flex items-center justify-center grow p-2")}
                         key={`mutagens-${i}`}
                     >
-                        {!filler ? <FormatNumber
+                        <FormatNumber
                             nb={d.totalPoints}
                             className="text-xs font-boldy text-[#e47dbb]"
                             precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
                             isDecimalDimmed={false}
-                        /> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                        />
                     </div>,
 
                     <div
                         className="flex flex-col items-center justify-center ml-auto mr-auto"
                         key={`volume-${i}`}
                     >
-                        {!filler && d.volume ? (
+                        {d.volume ? (
                             <FormatNumber
                                 nb={d.volume}
                                 className="text-xs font-boldy"
@@ -179,26 +174,14 @@ export default function FactionsWeeklyLeaderboard({
                                 isAbbreviateIcon={false}
                             />
                         ) : null}
-
-                        {filler ? <div className="w-10 h-2 bg-gray-800 rounded-xl" /> : null}
                     </div>
                 ],
-                specificRowClassName: twMerge(wallet?.walletAddress === d.wallet.toBase58() ?
+                specificRowClassName: twMerge(wallet?.walletAddress === d.userWallet ?
                     'bg-[#741e4c]/30 border border-[#ff47b5]/30 hover:border-[#ff47b5]/50'
                     : title ? team === 'A' ? 'bg-[#FA6724]/20' : 'bg-[#5AA6FA]/10' : null),
             };
         });
     }, [data, officers, onClickUserProfile, team, wallet?.walletAddress]);
-
-    const totalMutagenWeekly = useMemo(() => {
-        return data?.ranks.reduce((acc, rank) => {
-            if (!rank.wallet.equals(PublicKey.default)) {
-                acc += rank.totalPoints;
-            }
-
-            return acc;
-        }, 0);
-    }, [data?.ranks]);
 
     if (!data || !dataReady) {
         return null;
@@ -224,7 +207,7 @@ export default function FactionsWeeklyLeaderboard({
 
                 <NumberDisplay
                     title="Mutagens"
-                    nb={totalMutagenWeekly ?? null}
+                    nb={weeklyDamageTeam}
                     format="number"
                     isAbbreviate={true}
                     isAbbreviateIcon={false}
@@ -301,7 +284,7 @@ export default function FactionsWeeklyLeaderboard({
                 rowHovering={true}
                 pagination={true}
                 paginationClassName="scale-[80%] p-0"
-                nbItemPerPage={100}
+                nbItemPerPage={50}
                 nbItemPerPageWhenBreakpoint={3}
                 breakpoint="0" // No breakpoint
                 rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
