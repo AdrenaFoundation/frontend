@@ -594,7 +594,7 @@ function Chat({
                                         }}
                                         key={id}
                                     >
-                                        <p className="text-sm font-boldy">{name}</p>
+                                        <p className="text-sm font-boldy"># {name}</p>
                                     </div>
                                 );
                             })}
@@ -618,7 +618,7 @@ function Chat({
                                         }}
                                         key={id}
                                     >
-                                        <p className="text-sm font-boldy">{name}</p>
+                                        <p className="text-sm font-boldy"># {name}</p>
                                     </div>
                                 );
                             })}
@@ -638,8 +638,8 @@ function Chat({
                     }}
                 >
                     <div className="flex flex-row items-center gap-2">
-                        <p className="font-boldy">
-                            {ALL_CHAT_ROOMS[roomId as keyof typeof ALL_CHAT_ROOMS].name}
+                        <p className="text-lg font-boldy ml-2">
+                            <span className='text-lg opacity-50'># </span> {ALL_CHAT_ROOMS[roomId as keyof typeof ALL_CHAT_ROOMS].name}
                         </p>
                         <div className="flex flex-row gap-1 font-mono items-center">
                             <LiveIcon className="h-[0.6250em] w-[0.6250em]" />{' '}
@@ -676,7 +676,7 @@ function Chat({
                                 handleRoomChange(0);
                             }}
                         >
-                            <p className="text-xs font-boldy">General</p>
+                            <p className="text-xs font-boldy"># General</p>
                         </div>
 
                         <div
@@ -704,7 +704,7 @@ function Chat({
                                         : 'text-[#5AA6FA]',
                                 )}
                             >
-                                Team {userTeam === TEAMS_MAPPING.BONK ? 'BONK' : 'JITO'}
+                                # Team {userTeam === TEAMS_MAPPING.BONK ? 'BONK' : 'JITO'}
                             </p>
 
                             <div
