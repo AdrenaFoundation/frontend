@@ -31,17 +31,12 @@ export default function FactionsWeeklyLeaderboard({
     endDate: Date;
     setActiveProfile: (u: UserProfileExtended | null) => void;
     officers: {
-        general: {
+        [rank in 'general' | 'lieutenant' | 'sergeant']: {
             wallet: PublicKey;
-            nickname: string;
-        };
-        lieutenant: {
-            wallet: PublicKey;
-            nickname: string;
-        };
-        sergeant: {
-            wallet: PublicKey;
-            nickname: string;
+            steps: number;
+            percentagePillage: number;
+            bonusPillage: number;
+            nickname: string | null;
         };
     };
 }) {

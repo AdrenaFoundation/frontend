@@ -34,9 +34,12 @@ export default function Rank({
 }: {
     team: 'A' | 'B';
     rank: 'Sergeant' | 'Lieutenant' | 'General';
-    user?: {
+    user: {
         wallet: PublicKey;
-        nickname: string;
+        steps: number;
+        percentagePillage: number;
+        bonusPillage: number;
+        nickname: string | null;
     };
     className?: string;
     setActiveProfile: (u: UserProfileExtended | null) => void;
@@ -60,19 +63,23 @@ export default function Rank({
                 </div>
 
                 <div className={twMerge('w-[10em] h-[15em] z-10 border-2 relative', hover ? 'opacity-100' : 'opacity-50')}>
-                    {showVideo || hover ? <video
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className={twMerge('w-full h-full object-cover', className)}
-                        src={VIDEOS[`${team}-${rank}` as keyof typeof VIDEOS]}
-                    /> : <div
-                        className={twMerge('bg-cover bg-no-repeat bg-center w-full h-full', className)}
-                        style={{
-                            backgroundImage: `url(${PICTURES[`${team}-${rank}` as keyof typeof PICTURES]}`,
-                        }}
-                    />}
+                    <div className="w-full h-full">
+                        {showVideo || hover ? <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className={twMerge('w-full h-full object-cover z-10 absolute', className)}
+                            src={VIDEOS[`${team}-${rank}` as keyof typeof VIDEOS]}
+                        /> : null}
+
+                        <div
+                            className={twMerge('bg-cover bg-no-repeat bg-center w-full h-full', className)}
+                            style={{
+                                backgroundImage: `url(${PICTURES[`${team}-${rank}` as keyof typeof PICTURES]}`,
+                            }}
+                        />
+                    </div>
 
                     <div
                         className={twMerge(
@@ -120,26 +127,53 @@ export default function Rank({
             </div>
 
             <div className="flex items-center justify-center text-xs">
-                <div className="flex gap-4">
+                <div className="flex items-center">
                     <Tippy content={<div>
-                        Step 1
+                        {
+                            user.steps >= 1 ?
+                                `Step 1 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage` :
+                                `Step 1 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage`
+                        }
                     </div>}>
-                        <div className={twMerge("w-4 h-4 rounded-full bg-bcolor flex items-center justify-center text-xxs text-txtfade")}>1</div>
+                        <div className={twMerge(
+                            "w-4 h-4 rounded-full flex items-center justify-center text-xxs",
+                            user.steps >= 1 ? team === 'A' ? 'bg-[#FA6724BB]' : 'bg-[#5AA6FABB]' : 'bg-bcolor text-txtfade',
+                        )}>1</div>
                     </Tippy>
 
-                    <Tippy content={<div>
-                        Step 2
-                    </div>}>
-                        <div className={twMerge("w-4 h-4 rounded-full bg-bcolor flex items-center justify-center text-xxs text-txtfade")}>2</div>
-                    </Tippy>
+                    <div className="w-[2em] grow h-[1px] bg-bcolor" />
 
                     <Tippy content={<div>
-                        Step 3
+                        {
+                            user.steps >= 2 ?
+                                `Step 2 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage` :
+                                `Step 2 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage`
+                        }
                     </div>}>
-                        <div className={twMerge("w-4 h-4 rounded-full bg-bcolor flex items-center justify-center text-xxs text-txtfade")}>3</div>
+                        <div className={twMerge(
+                            "w-4 h-4 rounded-full flex items-center justify-center text-xxs",
+                            user.steps >= 2 ? team === 'A' ? 'bg-[#FA6724BB]' : 'bg-[#5AA6FABB]' : 'bg-bcolor text-txtfade',
+                        )}>2</div>
+                    </Tippy>
+
+                    <div className="w-[2em] grow h-[1px] bg-bcolor" />
+
+                    <Tippy content={<div>
+                        {
+                            user.steps >= 3 ?
+                                `Step 3 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage` :
+                                `Step 3 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage`
+                        }
+                    </div>}>
+                        <div className={twMerge(
+                            "w-4 h-4 rounded-full flex items-center justify-center text-xxs",
+                            user.steps >= 3 ? team === 'A' ? 'bg-[#FA6724BB]' : 'bg-[#5AA6FABB]' : 'bg-bcolor text-txtfade',
+                        )}>3</div>
                     </Tippy>
                 </div>
             </div>
+
+            <div className={twMerge("text-xs ml-auto mr-auto", user.bonusPillage ? 'text-txtfade/50' : 'text-transparent')}>+{user.bonusPillage}% pillage bonus</div>
         </div >
     );
 }

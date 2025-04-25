@@ -44,7 +44,7 @@ function applyProfile(
 
   leaderboardData.weekly.officers.forEach((u) => {
     Object.values(u).forEach((u) => {
-      const metadata = allMetadata[u.wallet];
+      const metadata = allMetadata[u.wallet.toBase58()];
 
       if (metadata) {
         u.nickname = metadata.nickname;

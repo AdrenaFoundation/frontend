@@ -622,43 +622,14 @@ export type FactionsLeaderboardsData = {
     pillageBonkPercentage: number[];
     pillageJitoPercentage: number[];
     officers: {
-      bonkGeneral: {
-        wallet: string;
-        steps: number;
-        percentagePillage: number;
-        bonusPillage: number;
-        nickname: string | null;
-      };
-      bonkLieutenant: {
-        wallet: string;
-        steps: number;
-        percentagePillage: number;
-        bonusPillage: number;
-        nickname: string | null;
-      };
-      bonkSergeant: {
-        wallet: string;
-        steps: number;
-        percentagePillage: number;
-        bonusPillage: number;
-        nickname: string | null;
-      };
-      jitoGeneral: {
-        wallet: string;
-        steps: number;
-        percentagePillage: number;
-        bonusPillage: number;
-        nickname: string | null;
-      };
-      jitoLieutenant: {
-        wallet: string;
-        steps: number;
-        percentagePillage: number;
-        bonusPillage: number;
-        nickname: string | null;
-      };
-      jitoSergeant: {
-        wallet: string;
+      [rank in
+        | 'bonkGeneral'
+        | 'bonkLieutenant'
+        | 'bonkSergeant'
+        | 'jitoGeneral'
+        | 'jitoLieutenant'
+        | 'jitoSergeant']: {
+        wallet: PublicKey;
         steps: number;
         percentagePillage: number;
         bonusPillage: number;

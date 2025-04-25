@@ -307,18 +307,9 @@ export default function FactionsLeaderboards() {
                         endDate={leaderboardData.weekly.weekDatesEnd[weekIndex]}
                         setActiveProfile={setActiveProfile}
                         officers={{
-                            general: {
-                                wallet: new PublicKey(leaderboardData.weekly.officers[weekIndex].bonkGeneral.wallet),
-                                nickname: leaderboardData.weekly.officers[weekIndex].bonkGeneral.nickname ?? '',
-                            },
-                            lieutenant: {
-                                wallet: new PublicKey(leaderboardData.weekly.officers[weekIndex].bonkLieutenant.wallet),
-                                nickname: leaderboardData.weekly.officers[weekIndex].bonkLieutenant.nickname ?? '',
-                            },
-                            sergeant: {
-                                wallet: new PublicKey(leaderboardData.weekly.officers[weekIndex].bonkSergeant.wallet),
-                                nickname: leaderboardData.weekly.officers[weekIndex].bonkSergeant.nickname ?? '',
-                            },
+                            general: leaderboardData.weekly.officers[weekIndex].bonkGeneral,
+                            lieutenant: leaderboardData.weekly.officers[weekIndex].bonkLieutenant,
+                            sergeant: leaderboardData.weekly.officers[weekIndex].bonkSergeant,
                         }}
                     />
 
@@ -339,18 +330,9 @@ export default function FactionsLeaderboards() {
                         endDate={leaderboardData.weekly.weekDatesEnd[weekIndex]}
                         setActiveProfile={setActiveProfile}
                         officers={{
-                            general: {
-                                wallet: new PublicKey(leaderboardData.weekly.officers[weekIndex].jitoGeneral.wallet),
-                                nickname: leaderboardData.weekly.officers[weekIndex].jitoGeneral.nickname ?? '',
-                            },
-                            lieutenant: {
-                                wallet: new PublicKey(leaderboardData.weekly.officers[weekIndex].jitoLieutenant.wallet),
-                                nickname: leaderboardData.weekly.officers[weekIndex].jitoLieutenant.nickname ?? '',
-                            },
-                            sergeant: {
-                                wallet: new PublicKey(leaderboardData.weekly.officers[weekIndex].jitoSergeant.wallet),
-                                nickname: leaderboardData.weekly.officers[weekIndex].jitoSergeant.nickname ?? '',
-                            },
+                            general: leaderboardData.weekly.officers[weekIndex].jitoGeneral,
+                            lieutenant: leaderboardData.weekly.officers[weekIndex].jitoLieutenant,
+                            sergeant: leaderboardData.weekly.officers[weekIndex].jitoSergeant,
                         }}
                     />
                 </div>
