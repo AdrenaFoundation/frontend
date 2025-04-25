@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge";
 
 import { UserProfileExtended } from "@/types";
 import { getAbbrevWalletAddress, getNonUserProfile } from "@/utils";
+import { useSelector } from "@/store/store";
 
 export const PICTURES = {
     'A-General': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/A-general-XslAAKuuLulnWZjojoSgUfpcvPSUao.jpg',
@@ -24,13 +25,30 @@ export const VIDEOS = {
     'B-Sergeant': 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/B-sergeant-min-4JzRx87YHLqqrVBR3aUjI1WZNjwwKU.mp4',
 } as const;
 
+const STEPS = {
+    General: {
+        step3: 100,
+        step2: 75,
+        step1: 50,
+    },
+    Lieutenant: {
+        step3: 75,
+        step2: 50,
+        step1: 25,
+    },
+    Sergeant: {
+        step3: 50,
+        step2: 25,
+        step1: 10,
+    },
+} as const;
+
 export default function Rank({
     team,
     rank,
     user,
     className,
     setActiveProfile,
-    showVideo = false,
     unlockStep = 0
 }: {
     team: 'A' | 'B';
@@ -44,9 +62,10 @@ export default function Rank({
     };
     className?: string;
     setActiveProfile: (u: UserProfileExtended | null) => void;
-    showVideo?: boolean;
     unlockStep?: number;
 }) {
+    const wallet = useSelector((s) => s.walletState.wallet);
+
     const [displayVideo, setDisplayVideo] = useState(false);
 
     const [hover, setHover] = useState(false);
@@ -152,7 +171,12 @@ export default function Rank({
             <div className="flex items-center justify-center text-xs">
                 <div className="flex items-center">
                     <Tippy content={<div>
-                        {
+                        {wallet?.walletAddress === user.wallet.toBase58() ?
+                            // Talking to the officer
+                            user.steps >= 1 ?
+                                `You've unlocked Step 1 by generating more than ${STEPS[rank].step1} mutagens and increased the team's maximum pillage percentage!` :
+                                `Generate more than ${STEPS[rank].step1} mutagens to unlock Step 1 and increase the team's maximum pillage percentage` :
+                            // Talking to other people
                             user.steps >= 1 ?
                                 `Step 1 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage` :
                                 `Step 1 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage`
@@ -168,9 +192,15 @@ export default function Rank({
 
                     <Tippy content={<div>
                         {
-                            user.steps >= 2 ?
-                                `Step 2 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage` :
-                                `Step 2 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage`
+                            wallet?.walletAddress === user.wallet.toBase58() ?
+                                // Talking to the officer
+                                user.steps >= 2 ?
+                                    `You've unlocked Step 2 by generating more than ${STEPS[rank].step2} mutagens and increased the team's maximum pillage percentage!` :
+                                    `Generate more than ${STEPS[rank].step2} mutagens to unlock Step 2 and increase the team's maximum pillage percentage` :
+                                // Talking to other people
+                                user.steps >= 2 ?
+                                    `Step 2 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage` :
+                                    `Step 2 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage`
                         }
                     </div>}>
                         <div className={twMerge(
@@ -183,9 +213,15 @@ export default function Rank({
 
                     <Tippy content={<div>
                         {
-                            user.steps >= 3 ?
-                                `Step 3 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage AND getting ${user.bonusPillage}%  bonus mutagens based on the team's total damage` :
-                                `Step 3 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage AND getting ${expectedBonusPillage}% bonus mutagens based on the team's total damage`
+                            wallet?.walletAddress === user.wallet.toBase58() ?
+                                // Talking to the officer
+                                user.steps >= 3 ?
+                                    `You've unlocked Step 3 by generating more than ${STEPS[rank].step3} mutagens and increased the team's maximum pillage percentage AND will receive ${expectedBonusPillage}% bonus mutagens based on the team's total damage (excluding your own)!` :
+                                    `Generate more than ${STEPS[rank].step3} mutagens to unlock Step 3 and increase the team's maximum pillage percentage AND to receive ${expectedBonusPillage}% bonus mutagens based on the team's total damage (excluding your own)` :
+                                // Talking to other people
+                                user.steps >= 3 ?
+                                    `Step 3 has been unlocked by ${user.nickname} increasing the team's maximum pillage percentage AND getting ${expectedBonusPillage}%  bonus mutagens based on the team's total damage` :
+                                    `Step 3 to be unlocked by ${user.nickname} to increase the team's maximum pillage percentage AND getting ${expectedBonusPillage}% bonus mutagens based on the team's total damage`
                         }
                     </div>}>
                         <div
@@ -198,12 +234,21 @@ export default function Rank({
                 </div>
             </div>
 
-            <div className={twMerge(
-                "text-xs ml-auto mr-auto transition-all duration-300",
-                user.percentagePillage > 0 ? 'text-txtfade/50' : 'text-transparent',
-                unlockStep === 3 ? 'text-[#FA6724FA] font-archivo tracking-widest' : '',
-            )}>
-                max pillage +{user.percentagePillage}%
+            <div className="flex flex-col">
+                <div className={twMerge(
+                    "text-xs ml-auto mr-auto transition-all duration-300",
+                    user.percentagePillage > 0 ? 'text-txtfade/50' : 'text-transparent',
+                    unlockStep === 3 ? 'text-[#FA6724FA] font-archivo tracking-widest' : '',
+                )}>
+                    max pillage +{user.percentagePillage}%
+                </div>
+
+                <div className={twMerge(
+                    "text-xs ml-auto mr-auto transition-all duration-300",
+                    unlockStep === 3 ? 'text-[#FA6724FA] font-archivo tracking-widest' : 'text-transparent',
+                )}>
+                    {expectedBonusPillage}% mutagen revshare
+                </div>
             </div>
         </div>
     );
