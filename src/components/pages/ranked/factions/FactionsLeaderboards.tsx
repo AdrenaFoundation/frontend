@@ -23,7 +23,30 @@ import { getNonUserProfile } from '@/utils';
 
 export const S2_NB_HEALTH_BAR = 20;
 export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
-export const S2_BOSSES_NAME = ['Vox Petros', 'The Archivist', 'Choirmeat', 'Cryorune', 'Aethermire', 'Kravhex the Returning', 'Dendrothex', 'Shathyr of the Maw', 'Malivex', 'Grunervald'];
+export const S2_BOSSES_NAME = [
+    'Vox Petros',
+    'The Archivist',
+    'Choirmeat',
+    'Cryorune',
+    'Aethermire',
+    'Kravhex the Returning',
+    'Dendrothex',
+    'Shathyr of the Maw',
+    'Malivex',
+    'Grunervald',
+];
+export const S2_BOSSES_PICTURES = [
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/VoxPetros-GbdgGlJdXkEOR5jZdGkE31kCtYmaKw.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Archivist-ngNaUyzLkYkEwcSGE66BNMzGVh2q9L.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Choirmeat-RZRGFk3bJXW4lehFWWnK7Ol1abwftD.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Cryorune-5X2B0fg0TFPsWixk1MrIb5FWYxEGTP.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Aethermire-MhQN845eVolQsewdtR45f6VsNTtKqk.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/KravhexTheReturning-lgRmJHuEAI0kaXUQbNRA6yjm0nyI4j.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Dendrothex-XskfghQl0kxvwcIcLTeLH1yC8ptxp2.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/ShathyrOfTheMaw-dHQ3kEkVoUQv5nuDmbPVlS3ISD9kzS.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Malivex-ijuDc6upvLbOXZPIEXT1MZc9kqY8PK.jpg',
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/bosses/Grunervald-nR46KHdbVKAq8917wppGWeWOTU0B57.jpg',
+];
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
@@ -138,7 +161,7 @@ export default function FactionsLeaderboards() {
                     // Boss alive
                     //
                     <div className='border-t-4 border-b-4 sm:border-4 border-white/80 h-[15em] w-full sm:w-[30em] bg-center bg-cover max-w-full' style={{
-                        backgroundImage: `url(https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/boss-1-a1UXysjRKT3OYDhy5rVJMA3enmxFM5.jpg)`,
+                        backgroundImage: `url(${S2_BOSSES_PICTURES[weekIndex]})`,
                     }} />}
 
                 <HealthBar leaderboardData={leaderboardData} weekIndex={weekIndex} />
