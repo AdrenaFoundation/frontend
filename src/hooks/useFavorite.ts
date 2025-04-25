@@ -23,6 +23,7 @@ export default function useFavorite() {
         setFavoriteAchievements(data.favoriteAchievements);
       }
     } catch (err) {
+      console.error('Error fetching favorite achievements:', err);
       setError('Failed to fetch favorite achievements');
     } finally {
       setIsFavoriteLoading(false);
@@ -54,6 +55,7 @@ export default function useFavorite() {
 
       setFavoriteAchievements(achievements);
     } catch (err) {
+      console.error('Error creating favorite achievements:', err);
       setError('Failed to create favorite achievements');
     } finally {
       setIsFavoriteLoading(false);
@@ -85,6 +87,7 @@ export default function useFavorite() {
 
       setFavoriteAchievements(achievements);
     } catch (err) {
+      console.error('Error updating favorite achievements:', err);
       setError('Failed to update favorite achievements');
     } finally {
       setIsFavoriteLoading(false);

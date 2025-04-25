@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
+import FavAchievements from '@/components/pages/profile/FavAchievements';
 import OwnerBlock from '@/components/pages/profile/OwnerBlock';
 import ProfileCreation from '@/components/pages/profile/ProfileCreation';
 import RankingStats from '@/components/pages/profile/RankingStats';
@@ -11,6 +12,7 @@ import TradingStats from '@/components/pages/profile/TradingStats';
 import UserRelatedAdrenaAccounts from '@/components/pages/profile/UserRelatedAdrenaAccounts';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { WALLPAPERS } from '@/constant';
+import useFavorite from '@/hooks/useFavorite';
 import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
 import useTraderInfo from '@/hooks/useTraderInfo';
@@ -18,8 +20,6 @@ import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
-import useFavorite from '@/hooks/useFavorite';
-import FavAchievements from '@/components/pages/profile/FavAchievements';
 
 export default function Profile({
   connected,

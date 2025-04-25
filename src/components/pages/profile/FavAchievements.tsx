@@ -1,6 +1,8 @@
+import React from 'react'
+
 import { ACHIEVEMENTS } from '@/constant'
 import { AchievementInfoExtended, UserProfileExtended } from '@/types'
-import React from 'react'
+
 import Achievement from '../achievements/Achievement'
 
 export default function FavAchievements({ userProfile, favoriteAchievements, setIsUpdatingMetadata, setActiveUpdateTab }: {

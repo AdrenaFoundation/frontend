@@ -27,12 +27,11 @@ import {
 } from '@/types';
 import { addNotification } from '@/utils';
 
-import lockIcon from '../../../../public/images/Icons/lock.svg';
-
-import trophyIcon from '../../../../public/images/Icons/trophy.svg';
 import imageIcon from '../../../../public/images/Icons/image.svg';
 import imagesIcon from '../../../../public/images/Icons/images.svg';
+import lockIcon from '../../../../public/images/Icons/lock.svg';
 import personIcon from '../../../../public/images/Icons/person-fill.svg';
+import trophyIcon from '../../../../public/images/Icons/trophy.svg';
 import Achievement from '../achievements/Achievement';
 
 type TabType = 'profilePicture' | 'wallpaper' | 'title' | 'achievements';
@@ -200,6 +199,7 @@ export default function OwnerBloc({
     } catch (error) {
       console.error('error', error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     triggerUserProfileReload,
     updatingMetadata.profilePicture,
@@ -216,6 +216,7 @@ export default function OwnerBloc({
   useEffect(() => {
     if (!walletPubkey) return;
     fetchFavoriteAchievements(walletPubkey.toBase58());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletPubkey]);
 
   useEffect(() => {
@@ -493,7 +494,7 @@ export default function OwnerBloc({
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-20 cursor-disabled">
           {lockedTitles.map((title) => {
             return (
-              <div className="h-auto flex z-30 relative ml-auto mr-auto text-base text-txtfade">
+              <div className="h-auto flex z-30 relative ml-auto mr-auto text-base text-txtfade" key={`locked-title-${title}`}>
                 {title}
               </div>
             );
@@ -926,6 +927,7 @@ export default function OwnerBloc({
                                     : null,
                               }));
                             }}
+                            key={`achievement-${achievement.index}`}
                           >
                             <Achievement
                               unlocked={true}
