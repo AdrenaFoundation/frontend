@@ -346,7 +346,7 @@ export default function FactionsWeeklyLeaderboard({
 
             <div className='w-full h-[1px] bg-bcolor mt-8 mb-4' />
 
-            <div className='flex items-center w-full justify-center scale-[70%] sm:scale-100'>
+            <div className='flex items-center w-full justify-center scale-[72%] sm:scale-100'>
                 <Rank team={team} rank="Lieutenant" user={officers.lieutenant} setActiveProfile={setActiveProfile} />
                 <Rank team={team} rank="General" user={officers.general} setActiveProfile={setActiveProfile} />
                 <Rank team={team} rank="Sergeant" user={officers.sergeant} setActiveProfile={setActiveProfile} />

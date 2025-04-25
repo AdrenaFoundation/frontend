@@ -77,7 +77,7 @@ export default function DamageBar({
     }, [bonkPercentage, jitoPercentage, dominantTeam, pillageBonkPercentage, pillageJitoPercentage, isBalanced]);
 
     return <div className="flex flex-col gap-4 items-center">
-        <div className="w-full min-w-[30em] h-[2.5em] border-2 border-white/20 rounded-xl overflow-hidden flex relative">
+        <div className="max-w-full w-[20em] sm:w-[30em] h-[2.5em] border-2 border-white/20 rounded-xl overflow-hidden flex relative">
             <div className={twMerge(
                 "bg-[#FA6724] h-full relative flex items-center justify-center transition-all duration-500",
             )} style={{

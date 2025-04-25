@@ -23,7 +23,7 @@ import { getNonUserProfile } from '@/utils';
 
 export const S2_NB_HEALTH_BAR = 20;
 export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
-export const S2_BOSSES_NAME = ['Grunervald', 'Vox Petros', 'The Archivist', 'Choirmeat', 'Cryorune', 'Aethermire', 'Kravhex the Returning', 'Dendrothex', 'Shathyr of the Maw', 'Malivex'];
+export const S2_BOSSES_NAME = ['Vox Petros', 'The Archivist', 'Choirmeat', 'Cryorune', 'Aethermire', 'Kravhex the Returning', 'Dendrothex', 'Shathyr of the Maw', 'Malivex', 'Grunervald'];
 
 function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
