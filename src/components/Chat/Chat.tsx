@@ -576,8 +576,15 @@ function Chat({
                         {Object.values(ALL_CHAT_ROOMS)
                             .filter((a) => a.group === 'channels')
                             .map(({ id, name }) => {
+                                let isLocked = true
 
-                                const isLocked = id === 0 ? false : (((!wallet || !userProfile) && (id === BONK_CHAT_ROOM_ID || id === JITO_CHAT_ROOM_ID)) || (userTeam === id))
+                                if (id === 0) {
+                                    isLocked = false
+                                }
+
+                                if (id === userTeam) {
+                                    isLocked = false
+                                }
 
                                 return (
                                     <div
