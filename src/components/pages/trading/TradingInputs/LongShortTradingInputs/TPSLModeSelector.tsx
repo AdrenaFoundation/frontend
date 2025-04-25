@@ -32,8 +32,6 @@ export default function TPSLModeSelector({
   isConnected: boolean;
   openedPosition: PositionExtended | null;
 }) {
-
-
   const position = {
     price: positionInfo.newPositionInfo?.entryPrice,
     liquidationPrice: positionInfo.newPositionInfo?.liquidationPrice,
