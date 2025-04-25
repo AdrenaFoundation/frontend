@@ -13,10 +13,12 @@ export default function Achievement({
     achievement,
     unlocked,
     className,
+    statPlacement = 'bottom',
 }: {
     achievement: AchievementInfoExtended;
     unlocked: boolean;
     className?: string;
+    statPlacement?: 'bottom' | 'top';
 }) {
     const [hover, setHover] = useState(false);
 
@@ -29,8 +31,50 @@ export default function Achievement({
         diamond: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements-categories/cat-diamond-qXRUCzTau4zTeQYJoamX9DclelnNyw.png',
     }[achievement.category]), [achievement.category]);
 
+    const stat = <div className='flex gap-1 text-nowrap'>
+        <div className='text-xs text-txtfade font-archivo tracking-widest'>Unlocked by</div>
+
+        <div className='flex gap-0.5'>
+            <FormatNumber
+                nb={achievement.nbCompletions}
+                format="number"
+                minimumFractionDigits={0}
+                precisionIfPriceDecimalsBelow={4}
+                isDecimalDimmed={false}
+                className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+            />
+
+            <div className='text-xs text-txtfade font-archivo tracking-widest'>/</div>
+
+            <FormatNumber
+                nb={achievement.nbUserProfiles}
+                format="number"
+                minimumFractionDigits={0}
+                precisionIfPriceDecimalsBelow={4}
+                isDecimalDimmed={false}
+                className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+            />
+        </div>
+
+        <div className='text-xs text-txtfade font-archivo tracking-widest'>users</div>
+
+        <FormatNumber
+            nb={achievement.completionPercentage}
+            format="percentage"
+            prefix='('
+            suffix=')'
+            minimumFractionDigits={0}
+            precisionIfPriceDecimalsBelow={4}
+            isDecimalDimmed={false}
+            className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+            prefixClassName='text-txtfade font-archivo tracking-widest'
+            suffixClassName='text-xs text-txtfade font-archivo tracking-widest relative right-1'
+        />
+    </div>
     return (
         <div className={twMerge('flex flex-col gap-2 items-center', className)}>
+            {statPlacement === 'top' ? stat : null}
+
             <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
                 <div className={twMerge('h-[21.44em] w-[16em] relative', unlocked ? '' : 'opacity-50')}>
                     {/* Title */}
@@ -162,46 +206,7 @@ export default function Achievement({
                 </div>
             </div>
 
-            <div className='flex gap-1'>
-                <div className='text-xs text-txtfade font-archivo tracking-widest'>Unlocked by</div>
-
-                <div className='flex gap-0.5'>
-                    <FormatNumber
-                        nb={achievement.nbCompletions}
-                        format="number"
-                        minimumFractionDigits={0}
-                        precisionIfPriceDecimalsBelow={4}
-                        isDecimalDimmed={false}
-                        className='border-0 text-xs text-txtfade font-archivo tracking-widest'
-                    />
-
-                    <div className='text-xs text-txtfade font-archivo tracking-widest'>/</div>
-
-                    <FormatNumber
-                        nb={achievement.nbUserProfiles}
-                        format="number"
-                        minimumFractionDigits={0}
-                        precisionIfPriceDecimalsBelow={4}
-                        isDecimalDimmed={false}
-                        className='border-0 text-xs text-txtfade font-archivo tracking-widest'
-                    />
-                </div>
-
-                <div className='text-xs text-txtfade font-archivo tracking-widest'>users</div>
-
-                <FormatNumber
-                    nb={achievement.completionPercentage}
-                    format="percentage"
-                    prefix='('
-                    suffix=')'
-                    minimumFractionDigits={0}
-                    precisionIfPriceDecimalsBelow={4}
-                    isDecimalDimmed={false}
-                    className='border-0 text-xs text-txtfade font-archivo tracking-widest'
-                    prefixClassName='text-txtfade font-archivo tracking-widest'
-                    suffixClassName='text-xs text-txtfade font-archivo tracking-widest relative right-1'
-                />
-            </div>
+            {statPlacement === 'bottom' ? stat : null}
         </div>
     );
 }

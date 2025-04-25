@@ -12,14 +12,30 @@ import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
-import { ACHIEVEMENTS, PROFILE_PICTURES, USER_PROFILE_TITLES, WALLPAPERS } from '@/constant';
-import { ProfilePicture, UserProfileExtended, UserProfileTitle, Wallpaper } from '@/types';
+import {
+  ACHIEVEMENTS,
+  PROFILE_PICTURES,
+  USER_PROFILE_TITLES,
+  WALLPAPERS,
+} from '@/constant';
+import {
+  AchievementInfoExtended,
+  ProfilePicture,
+  UserProfileExtended,
+  UserProfileTitle,
+  Wallpaper,
+} from '@/types';
 import { addNotification } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
-import walletIcon from '../../../../public/images/wallet-icon.svg';
-import settingsIcon from '../../../../public/images/Icons/settings.svg';
+
+import trophyIcon from '../../../../public/images/Icons/trophy.svg';
+import imageIcon from '../../../../public/images/Icons/image.svg';
+import imagesIcon from '../../../../public/images/Icons/images.svg';
+import personIcon from '../../../../public/images/Icons/person-fill.svg';
 import Achievement from '../achievements/Achievement';
+
+type TabType = 'profilePicture' | 'wallpaper' | 'title' | 'achievements';
 
 export default function OwnerBloc({
   userProfile,
@@ -31,7 +47,11 @@ export default function OwnerBloc({
   favoriteAchievements,
   fetchFavoriteAchievements,
   updateFavoriteAchievements,
-  createFavoriteAchievement,
+  createFavoriteAchievements,
+  isUpdatingMetadata,
+  setIsUpdatingMetadata,
+  setActiveUpdateTab,
+  activeUpdateTab,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
@@ -41,8 +61,18 @@ export default function OwnerBloc({
   readonly?: boolean;
   favoriteAchievements: number[] | null;
   fetchFavoriteAchievements: (walletAddress: string) => void;
-  updateFavoriteAchievements: (walletAddress: string, achievements: number[]) => void;
-  createFavoriteAchievement: (walletAddress: string, achievements: number[]) => void;
+  updateFavoriteAchievements: (
+    walletAddress: string,
+    achievements: number[],
+  ) => void;
+  createFavoriteAchievements: (
+    walletAddress: string,
+    achievements: number[],
+  ) => void;
+  isUpdatingMetadata: boolean;
+  setIsUpdatingMetadata: (updating: boolean) => void;
+  setActiveUpdateTab: (tab: TabType) => void;
+  activeUpdateTab: TabType;
 }) {
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
@@ -54,15 +84,12 @@ export default function OwnerBloc({
   const [trimmedUpdatedNickname, setTrimmedUpdatedNickname] = useState<string>(
     updatedNickname ?? '',
   );
-  const [isUpdatingMetadata, setIsUpdatingMetadata] = useState<boolean>(false);
-  const [activeUpdateTab, setActiveUpdateTab] = useState<
-    'profilePicture' | 'wallpaper' | 'title' | 'achievements'
-  >('profilePicture');
+
   const [updatingMetadata, setUpdatingMetadata] = useState<{
     profilePicture: ProfilePicture;
     wallpaper: Wallpaper;
     title: UserProfileTitle;
-    favoriteAchievements: number[] | null
+    favoriteAchievements: number[] | null;
   }>({
     profilePicture: userProfile.profilePicture,
     wallpaper: userProfile.wallpaper,
@@ -133,12 +160,22 @@ export default function OwnerBloc({
     const currentFavoriteAchievements = favoriteAchievements;
 
     if (currentFavoriteAchievements === null) {
-      createFavoriteAchievement(walletPubkey.toBase58(), updatingMetadata.favoriteAchievements ?? []);
+      createFavoriteAchievements(
+        walletPubkey.toBase58(),
+        updatingMetadata.favoriteAchievements ?? [],
+      );
     } else {
-      const hasSameValues = currentFavoriteAchievements.length > 0 && currentFavoriteAchievements.every((value) => updatingMetadata.favoriteAchievements?.includes(value))
+      const hasSameValues =
+        currentFavoriteAchievements.length > 0 &&
+        currentFavoriteAchievements.every((value) =>
+          updatingMetadata.favoriteAchievements?.includes(value),
+        );
 
       if (!hasSameValues) {
-        updateFavoriteAchievements(walletPubkey.toBase58(), updatingMetadata.favoriteAchievements ?? []);
+        updateFavoriteAchievements(
+          walletPubkey.toBase58(),
+          updatingMetadata.favoriteAchievements ?? [],
+        );
       }
     }
 
@@ -189,7 +226,6 @@ export default function OwnerBloc({
       }));
     }
   }, [favoriteAchievements]);
-
 
   useEffect(() => {
     if (
@@ -375,65 +411,96 @@ export default function OwnerBloc({
   }, [updatingMetadata, userProfile.achievements]);
 
   const titlesDOM = useMemo(() => {
-    const unlockedTitles = Object.keys(USER_PROFILE_TITLES).reduce(
-      (unlocked, i) => {
-        const index = Number(i);
-        // Look if there is an achievement that unlocks this title
+    const unlockedTitles = Object.values(USER_PROFILE_TITLES).filter(
+      (_, index) => {
         const achievement = ACHIEVEMENTS.find(
           (achievement) => achievement.titleUnlock === index,
         );
 
         if (!achievement) {
           // No requirement for the title
-          return [...unlocked, index];
+          return true;
         }
 
         // Check if the user have the Achievement
         if (userProfile.achievements?.[achievement.index]) {
-          return [...unlocked, index];
+          return true;
         }
 
-        return unlocked;
+        return false;
       },
-      [] as number[],
     );
 
-    return Object.entries(USER_PROFILE_TITLES).map(([v, title]) => {
-      const unlocked = unlockedTitles.includes(Number(v));
+    const lockedTitles = Object.values(USER_PROFILE_TITLES).filter(
+      (_, index) => {
+        const achievement = ACHIEVEMENTS.find(
+          (achievement) => achievement.titleUnlock === index,
+        );
 
-      return (
-        <Tippy
-          content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === Number(v))?.title ?? ''}"`}
-          key={`title-${v}`}
-          disabled={unlocked}
-        >
-          <div
-            className={twMerge(
-              'h-auto flex z-30 relative border-b-4 ml-auto mr-auto text-base',
-              updatingMetadata.title ===
-                (Number(v) as unknown as ProfilePicture)
-                ? 'border-yellow-400/80'
-                : 'border-transparent grayscale',
-              unlocked
-                ? 'grayscale-0 hover:grayscale-0 cursor-pointer'
-                : 'text-txtfade cursor-disabled',
-            )}
-            onClick={() => {
-              if (!unlocked) return;
+        if (!achievement) {
+          // No requirement for the title
+          return false;
+        }
 
-              setUpdatingMetadata((u) => ({
-                profilePicture: u.profilePicture,
-                wallpaper: u.wallpaper,
-                favoriteAchievements: u.favoriteAchievements,
-                title: Number(v) as unknown as UserProfileTitle,
-              }));
-            }}
-          >
-            {title}
-          </div>
-        </Tippy>
-      );
-    });
+        // Check if the user have the Achievement
+        if (userProfile.achievements?.[achievement.index]) {
+          return false;
+        }
+
+        return true;
+      },
+    );
+
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {unlockedTitles.map((title, i) => {
+            const index = Object.values(USER_PROFILE_TITLES).findIndex(
+              (t) => t === title,
+            );
+
+            return (
+              <Tippy
+                content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === Number(i))?.title ?? ''}"`}
+                key={`title-${i}`}
+              >
+                <div
+                  className={twMerge(
+                    'h-auto flex z-30 relative border-b-4 ml-auto mr-auto text-base',
+                    updatingMetadata.title ===
+                      (index as unknown as ProfilePicture)
+                      ? 'border-yellow-400/80'
+                      : 'border-transparent grayscale',
+                  )}
+                  onClick={() => {
+                    // if (!unlocked) return;
+
+                    setUpdatingMetadata((u) => ({
+                      profilePicture: u.profilePicture,
+                      wallpaper: u.wallpaper,
+                      favoriteAchievements: u.favoriteAchievements,
+                      title: index as unknown as UserProfileTitle,
+                    }));
+                  }}
+                >
+                  {title}
+                </div>
+              </Tippy>
+            );
+          })}
+        </div>
+        <div className="w-full h-[1px] bg-bcolor" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-20 cursor-disabled">
+          {lockedTitles.map((title) => {
+            return (
+              <div className="h-auto flex z-30 relative ml-auto mr-auto text-base text-txtfade">
+                {title}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   }, [updatingMetadata, userProfile.achievements]);
 
   const { profilePicture, profilePictureUnlockedByAchievement } =
@@ -454,6 +521,10 @@ export default function OwnerBloc({
       ),
     };
   }, [userProfile.title]);
+
+  const currentAchievements = ACHIEVEMENTS.filter(
+    (achievement) => userProfile.achievements?.[achievement.index] > 0,
+  );
 
   return (
     <>
@@ -486,7 +557,11 @@ export default function OwnerBloc({
             <div
               onMouseEnter={() => !readonly && setProfilePictureHovering(true)}
               onMouseLeave={() => !readonly && setProfilePictureHovering(false)}
-              onClick={() => !readonly && setIsUpdatingMetadata(true)}
+              onClick={() => {
+                if (readonly) return;
+                setIsUpdatingMetadata(true);
+                setActiveUpdateTab('profilePicture');
+              }}
               className={twMerge(
                 'border-2 border-[#ffffff50] rounded-full w-[10em] h-[10em] left-[1.5em] top-[-0.8em] flex shrink-0 absolute overflow-hidden z-30',
                 !readonly && 'cursor-pointer',
@@ -516,38 +591,42 @@ export default function OwnerBloc({
         </Tippy>
 
         <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
-          <div className='flex'>
-            {walletPubkey ? <Tippy content={"Wallet address"}>
-              <div className='z-20 flex gap-1'>
-                <Image
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(walletPubkey.toBase58());
+          <div className="flex">
+            {walletPubkey ? (
+              <Tippy content={'Wallet address'}>
+                <div className="z-20 flex gap-1">
+                  <Image
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(
+                          walletPubkey.toBase58(),
+                        );
 
-                      addNotification({
-                        title: 'Wallet address copied to clipboard',
-                        message: '',
-                        type: 'info',
-                        duration: 'regular',
-                      });
-                    } catch (err) {
-                      console.error('Could not copy text: ', err);
-                    }
-                  }}
-                  src={copyIcon}
-                  className="w-3 h-3 opacity-90 cursor-pointer hover:opacity-100 mr-1"
-                  alt="copy icon"
-                />
+                        addNotification({
+                          title: 'Wallet address copied to clipboard',
+                          message: '',
+                          type: 'info',
+                          duration: 'regular',
+                        });
+                      } catch (err) {
+                        console.error('Could not copy text: ', err);
+                      }
+                    }}
+                    src={copyIcon}
+                    className="w-3 h-3 opacity-90 cursor-pointer hover:opacity-100 mr-1"
+                    alt="copy icon"
+                  />
 
-                <OnchainAccountInfo
-                  address={walletPubkey}
-                  className="text-sm opacity-90"
-                  addressClassName="text-xs tracking-[0.12em]"
-                  iconClassName='ml-1'
-                  shorten={true}
-                />
-              </div>
-            </Tippy> : null}
+                  <OnchainAccountInfo
+                    address={walletPubkey}
+                    className="text-sm opacity-90"
+                    addressClassName="text-xs tracking-[0.12em]"
+                    iconClassName="ml-1"
+                    shorten={true}
+                  />
+                </div>
+              </Tippy>
+            ) : null}
           </div>
 
           <div className="flex mt-1">
@@ -598,7 +677,10 @@ export default function OwnerBloc({
               {canUpdateNickname && userProfile.version > 1 ? (
                 <div
                   className="text-xs opacity-70 cursor-pointer hover:opacity-100 relative"
-                  onClick={() => setIsUpdatingMetadata(true)}
+                  onClick={() => {
+                    setIsUpdatingMetadata(true);
+                    setActiveUpdateTab('title');
+                  }}
                 >
                   Edit
                 </div>
@@ -610,7 +692,10 @@ export default function OwnerBloc({
             <div className="absolute top-2 right-4 z-20 ">
               <div
                 className="text-xs opacity-70 cursor-pointer flex hover:opacity-100"
-                onClick={() => setIsUpdatingMetadata(true)}
+                onClick={() => {
+                  setIsUpdatingMetadata(true);
+                  setActiveUpdateTab('wallpaper');
+                }}
               >
                 Edit wallpaper
               </div>
@@ -707,50 +792,54 @@ export default function OwnerBloc({
           </Modal>
         ) : null}
 
-        {!isUpdatingMetadata ? (
+        {isUpdatingMetadata ? (
           <Modal
             title="Update Profile"
             close={() => {
               setIsUpdatingMetadata(false);
             }}
-            className="w-[50em] h-[50vh] flex flex-col"
+            className="md:w-[50em] md:h-[50vh] flex flex-col"
           >
-            <div className="flex flex-row h-full">
-              <div className="w-[12em] p-3  border-r border-bcolor h-full">
-                <ul className="flex flex-col gap-3">
+            <div className="flex flex-col md:flex-row h-full">
+              <div className="md:w-[12em] p-3 border-b md:border-r border-bcolor h-full">
+                <ul className="grid grid-cols-2 sm:flex sm:flex-row md:flex-col gap-3 items-center justify-center md:justify-start md:items-start">
                   {[
                     {
                       name: 'Profile Picture',
                       value: 'profilePicture',
+                      icon: imageIcon,
                     },
                     {
                       name: 'Wallpaper',
                       value: 'wallpaper',
+                      icon: imagesIcon,
                     },
                     {
                       name: 'Title',
                       value: 'title',
+                      icon: personIcon,
                     },
                     {
                       name: 'Achievements',
                       value: 'achievements',
+                      icon: trophyIcon,
                     },
-                  ].map(({ name, value }) => (
+                  ].map(({ name, value, icon }) => (
                     <li
                       className={twMerge(
-                        'p-1 px-2 hover:opacity-100 cursor-pointer transition-opacity duration-300 rounded-md',
+                        'p-1 px-2 hover:opacity-100 cursor-pointer transition-opacity duration-300 rounded-md w-full',
                         activeUpdateTab !== value
                           ? 'opacity-50'
                           : 'opacity-100 bg-third',
                       )}
-                      onClick={() => setActiveUpdateTab(value)}
+                      onClick={() => setActiveUpdateTab(value as TabType)}
                       key={value}
                     >
                       <div className="flex flex-row flex-start gap-1 items-center">
                         <Image
-                          src={settingsIcon}
+                          src={icon}
                           alt="settings icon"
-                          className="w-[1em] h-[1em]"
+                          className="w-[0.7em] h-[0.7em]"
                         />
                         <p className="text-nowrap font-boldy text-sm">{name}</p>
                       </div>
@@ -762,66 +851,97 @@ export default function OwnerBloc({
               <div className="flex flex-col justify-between w-full h-full">
                 <div className="overflow-auto">
                   {activeUpdateTab === 'profilePicture' ? (
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(7em,1fr))] gap-3 p-3">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 p-3">
                       {profilePictureDOM}
                     </div>
                   ) : null}
 
                   {activeUpdateTab === 'wallpaper' ? (
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(12em,1fr))] gap-3 p-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3">
                       {wallpapersDOM}
                     </div>
                   ) : null}
 
                   {activeUpdateTab === 'title' ? (
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(15em,1fr))] p-3 gap-2">
-                      {titlesDOM}
-                    </div>
+                    <div className="p-3">{titlesDOM}</div>
                   ) : null}
 
                   {activeUpdateTab === 'achievements' ? (
                     <div className="flex flex-col gap-3 p-3">
-                      <div className="text-sm font-boldy">
-                        You have unlocked achievements
+                      <div>
+                        <h4 className="font-boldy">
+                          Select your favorite achievements
+                        </h4>
+
+                        <p className="text-sm font-boldy opacity-50">
+                          Selected{' '}
+                          {updatingMetadata.favoriteAchievements?.length
+                            ? updatingMetadata.favoriteAchievements.length
+                            : 0}{' '}
+                          / 3
+                        </p>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        {ACHIEVEMENTS.filter(
-                          (achievement) =>
-                            userProfile.achievements?.[achievement.index] > 0,
-                        ).map((achievement) => (
-                          <div className={twMerge("flex flex-row gap-3 items-center border-4 h-[80px] rounded-lg cursor-pointer transition duration-200", updatingMetadata.favoriteAchievements?.includes(achievement.index)
-                            ? 'border-yellow-400/80'
-                            : 'border-[#ffffff20] grayscale',
-                            (updatingMetadata.favoriteAchievements?.length === 3 && !updatingMetadata.favoriteAchievements.includes(achievement.index)) && 'opacity-50 hover:opacity-50 cursor-disabled',
-                          )}
+                        {currentAchievements.map((achievement) => (
+                          <div
+                            className={twMerge(
+                              'relative flex flex-row gap-3 items-center border-4 p-3 rounded-lg cursor-pointer transition duration-200 overflow-hidden',
+                              updatingMetadata.favoriteAchievements?.includes(
+                                achievement.index,
+                              )
+                                ? 'border-yellow-400/80'
+                                : 'border-[#ffffff20] grayscale',
+                              updatingMetadata.favoriteAchievements?.length ===
+                              3 &&
+                              !updatingMetadata.favoriteAchievements.includes(
+                                achievement.index,
+                              ) &&
+                              'opacity-20 hover:opacity-20 cursor-disabled',
+                            )}
                             onClick={() => {
-                              if (updatingMetadata.favoriteAchievements?.length === 3 && !updatingMetadata.favoriteAchievements?.includes(achievement.index)) return;
+                              if (
+                                updatingMetadata.favoriteAchievements
+                                  ?.length === 3 &&
+                                !updatingMetadata.favoriteAchievements?.includes(
+                                  achievement.index,
+                                )
+                              )
+                                return;
 
                               setUpdatingMetadata((u) => ({
                                 ...u,
-                                favoriteAchievements: u.favoriteAchievements !== null ? u.favoriteAchievements.includes(achievement.index)
-                                  ? u.favoriteAchievements?.filter((a) => a !== achievement.index)
-                                  : [...u.favoriteAchievements, achievement.index] : null
+                                favoriteAchievements:
+                                  u.favoriteAchievements !== null
+                                    ? u.favoriteAchievements.includes(
+                                      achievement.index,
+                                    )
+                                      ? u.favoriteAchievements?.filter(
+                                        (a) => a !== achievement.index,
+                                      )
+                                      : [
+                                        ...u.favoriteAchievements,
+                                        achievement.index,
+                                      ]
+                                    : null,
                               }));
-
                             }}
                           >
                             <Achievement
-                              unlocked={
-                                userProfile
-                                  ? (userProfile?.achievements[
-                                    achievement.index
-                                  ] ?? 0) > 0
-                                  : false
+                              unlocked={true}
+                              achievement={
+                                achievement as AchievementInfoExtended
                               }
-                              achievement={achievement}
-                              className="scale-[0.15] w-[70px]"
+                              className="absolute -top-9 scale-[1.5] w-full rounded-lg opacity-20"
                               key={`achievement-${achievement.index}`}
                             />
-                            <div className=''>
-                              <p className='text-base font-boldy'>{achievement.title}</p>
-                              <p className='opacity-50'>{achievement.description}</p>
+                            <div className="relative z-20">
+                              <p className="text-base font-boldy">
+                                {achievement.title}
+                              </p>
+                              <p className="opacity-75 text-xs">
+                                {achievement.description}
+                              </p>
                             </div>
                           </div>
                         ))}
@@ -840,14 +960,14 @@ export default function OwnerBloc({
                       onClick={() => {
                         setIsUpdatingMetadata(false);
                       }}
-                      className="w-60"
+                      className="md:w-60"
                     />
 
                     <Button
                       title="Save"
                       variant="primary"
                       onClick={() => updateProfile()}
-                      className="w-60"
+                      className="md:w-60"
                     />
                   </div>
                 </div>

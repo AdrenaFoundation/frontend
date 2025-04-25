@@ -19,6 +19,7 @@ import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 import useFavorite from '@/hooks/useFavorite';
+import FavAchievements from '@/components/pages/profile/FavAchievements';
 
 export default function Profile({
   connected,
@@ -38,7 +39,11 @@ export default function Profile({
     walletAddress,
   });
 
-  const { favoriteAchievements, fetchFavoriteAchievements, updateFavoriteAchievements, createFavoriteAchievements, isFavoriteLoading } = useFavorite();
+  const [isUpdatingMetadata, setIsUpdatingMetadata] = useState<boolean>(false);
+  const [activeUpdateTab, setActiveUpdateTab] =
+    useState<'profilePicture' | 'wallpaper' | 'title' | 'achievements'>('profilePicture');
+
+  const { favoriteAchievements, fetchFavoriteAchievements, updateFavoriteAchievements, createFavoriteAchievements } = useFavorite();
 
   const {
     activityCalendarData,
@@ -129,9 +134,22 @@ export default function Profile({
                 fetchFavoriteAchievements={fetchFavoriteAchievements}
                 updateFavoriteAchievements={updateFavoriteAchievements}
                 createFavoriteAchievements={createFavoriteAchievements}
+                isUpdatingMetadata={isUpdatingMetadata}
+                setIsUpdatingMetadata={setIsUpdatingMetadata}
+                activeUpdateTab={activeUpdateTab}
+                setActiveUpdateTab={setActiveUpdateTab}
               />
 
-              <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl'>
+              <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl border-t'>
+                <FavAchievements
+                  userProfile={userProfile}
+                  favoriteAchievements={favoriteAchievements}
+                  setIsUpdatingMetadata={setIsUpdatingMetadata}
+                  setActiveUpdateTab={setActiveUpdateTab}
+                />
+
+                <div className="h-[1px] w-full bg-bcolor mb-2" />
+
                 <TradingStats
                   traderInfo={traderInfo}
                   livePositionsNb={positions === null ? null : positions.length}
