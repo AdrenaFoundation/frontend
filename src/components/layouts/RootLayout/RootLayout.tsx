@@ -18,6 +18,7 @@ import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
+import { TEAMS_MAPPING } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
@@ -26,11 +27,10 @@ import {
   VestExtended,
   WalletAdapterExtended,
 } from '@/types';
+import { addNotification } from '@/utils';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
-import { TEAMS_MAPPING } from '@/constant';
-import { addNotification } from '@/utils';
 
 export default function RootLayout({
   children,
@@ -127,7 +127,7 @@ export default function RootLayout({
         duration: 'long',
       })
     }
-  }, [userProfile]);
+  }, [userProfile, wallet]);
 
   if (isBigScreen === null || isMobile === null) {
     return null;
