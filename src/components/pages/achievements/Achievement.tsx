@@ -31,7 +31,7 @@ export default function Achievement({
         diamond: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements-categories/cat-diamond-qXRUCzTau4zTeQYJoamX9DclelnNyw.png',
     }[achievement.category]), [achievement.category]);
 
-    const stat = <div className='flex gap-1 text-nowrap'>
+    const stat = achievement.nbUserProfiles ? <div className='flex gap-1 text-nowrap'>
         <div className='text-xs text-txtfade font-archivo tracking-widest'>Unlocked by</div>
 
         <div className='flex gap-0.5'>
@@ -70,7 +70,8 @@ export default function Achievement({
             prefixClassName='text-txtfade font-archivo tracking-widest'
             suffixClassName='text-xs text-txtfade font-archivo tracking-widest relative right-1'
         />
-    </div>
+    </div> : null;
+
     return (
         <div className={twMerge('flex flex-col gap-2 items-center', className)}>
             {statPlacement === 'top' ? stat : null}
