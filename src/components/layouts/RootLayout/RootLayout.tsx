@@ -29,6 +29,8 @@ import {
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
+import { TEAMS_MAPPING } from '@/constant';
+import { addNotification } from '@/utils';
 
 export default function RootLayout({
   children,
@@ -101,6 +103,31 @@ export default function RootLayout({
       );
     }
   }, []);
+
+  // TODO: Remove once all teams are set
+  useEffect(() => {
+    if (!userProfile || !wallet) {
+      return;
+    }
+
+    if (userProfile.team !== TEAMS_MAPPING.DEFAULT) {
+      return;
+    }
+
+    if ([
+      'Am1B44zvUodKPahohUUjdHjs4HbfhaB7vjroqxzxfy9j',
+      'EgDYVEsGJtk3pzxxP2E3ctPyUbnCgDDfXcE1cf4gHPNj',
+    ].includes(wallet.publicKey.toBase58())) {
+      addNotification({
+        title: 'Please pick your team!',
+        message: <div className='font-archivo'>
+          Hello <span className='text-yellow-300 font-boldy'>{userProfile.nickname}</span> please pick your team in Ranked page for S2 before the season starts in few hours to be eligible for officer role. Careful if you pick BONK team you may not be officer, JITO seems to have open spots.
+        </div>,
+        type: 'info',
+        duration: 'long',
+      })
+    }
+  }, [userProfile]);
 
   if (isBigScreen === null || isMobile === null) {
     return null;
