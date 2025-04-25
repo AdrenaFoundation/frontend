@@ -31,6 +31,7 @@ import {
 } from '@/types';
 
 import collapseIcon from '../../../public/images/collapse-all.svg';
+import lockIcon from '../../../public/images/Icons/lock.svg';
 // import groupIcon from '../../../public/images/group.svg';
 import Button from '../common/Button/Button';
 import InputString from '../common/inputString/InputString';
@@ -575,26 +576,29 @@ function Chat({
                         {Object.values(ALL_CHAT_ROOMS)
                             .filter((a) => a.group === 'channels')
                             .map(({ id, name }) => {
-                                if (userTeam === TEAMS_MAPPING.BONK && id === JITO_CHAT_ROOM_ID)
-                                    return null;
                                 if (
                                     (!wallet || !userProfile) &&
                                     (id === BONK_CHAT_ROOM_ID || id === JITO_CHAT_ROOM_ID)
                                 )
                                     return null;
-
+                                const isLocked = userTeam === TEAMS_MAPPING.BONK && id === JITO_CHAT_ROOM_ID
                                 return (
                                     <div
                                         className={twMerge(
                                             'p-1 px-2 flex-1 opacity-50 hover:opacity-100 rounded-md transition duration-300 cursor-pointer',
                                             id === roomId && 'opacity-100 bg-third border-white',
+                                            isLocked && 'opacity-20 cursor-not-allowed hover:opacity-20',
                                         )}
                                         onClick={() => {
+                                            if (isLocked) return;
                                             handleRoomChange(id);
                                         }}
                                         key={id}
                                     >
-                                        <p className="text-sm font-boldy"># {name}</p>
+                                        <div className='flex flex-row gap-1 items-center'>
+                                            {isLocked ? <Image src={lockIcon} alt="collapse logo" width={16} height={16} /> : <p>#</p>}
+                                            <p className="text-sm font-boldy">{name}</p>
+                                        </div>
                                     </div>
                                 );
                             })}
@@ -602,7 +606,7 @@ function Chat({
 
                     <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                    <div className="flex flex-col gap-2">
+                    {/* <div className="flex flex-col gap-2">
                         <p className="text-xs font-boldy opacity-50">Information</p>
                         {Object.values(ALL_CHAT_ROOMS)
                             .filter((a) => a.group === 'information')
@@ -622,7 +626,7 @@ function Chat({
                                     </div>
                                 );
                             })}
-                    </div>
+                    </div> */}
                 </div>
             ) : null}
 
