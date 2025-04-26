@@ -44,7 +44,6 @@ export default function OwnerBloc({
   walletPubkey,
   readonly = false,
   favoriteAchievements,
-  fetchFavoriteAchievements,
   updateFavoriteAchievements,
   createFavoriteAchievements,
   isUpdatingMetadata,
@@ -59,7 +58,6 @@ export default function OwnerBloc({
   walletPubkey?: PublicKey;
   readonly?: boolean;
   favoriteAchievements: number[] | null;
-  fetchFavoriteAchievements?: (walletAddress: string) => void;
   updateFavoriteAchievements?: (
     walletAddress: string,
     achievements: number[],
@@ -222,12 +220,6 @@ export default function OwnerBloc({
 
   const [profilePictureHovering, setProfilePictureHovering] =
     useState<boolean>(false);
-
-  useEffect(() => {
-    if (!walletPubkey) return;
-    fetchFavoriteAchievements?.(walletPubkey.toBase58());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletPubkey]);
 
   useEffect(() => {
     if (favoriteAchievements) {
