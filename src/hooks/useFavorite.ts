@@ -10,6 +10,7 @@ export default function useFavorite() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchFavoriteAchievements = async (walletAddress: string) => {
+    setFavoriteAchievements(null);
     setIsFavoriteLoading(true);
     setError(null);
 

@@ -164,7 +164,8 @@ export default function OwnerBloc({
       const isNewChanges = currentAchievements.some(
         (achievement) =>
           !updatingMetadata.favoriteAchievements?.includes(achievement.index),
-      );
+      ) || (currentFavoriteAchievements.length !== (updatingMetadata.favoriteAchievements?.length ?? 0))
+
 
       if (isNewChanges) {
         updateFavoriteAchievements?.(
