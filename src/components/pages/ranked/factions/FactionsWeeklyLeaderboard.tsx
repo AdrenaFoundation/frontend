@@ -12,12 +12,12 @@ import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import { PROFILE_PICTURES, TEAMS_MAPPING, USER_PROFILE_TITLES } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { FactionsLeaderboardsData, UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import Rank from './Rank';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
 
