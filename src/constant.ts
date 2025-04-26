@@ -413,7 +413,7 @@ export const TRADING_COMPETITION_SEASONS = {
     jtoRewards: 25000,
     bonkRewards: 4200000000,
     description: [``] as string[],
-    bannerClassName: 'h-[38em] pt-20',
+    bannerClassName: 'h-[32em] pt-20',
   },
 } as const;
 
