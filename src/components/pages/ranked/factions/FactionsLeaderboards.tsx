@@ -145,22 +145,26 @@ export default function FactionsLeaderboards({
     return (
         <>
             <div className="w-full mx-auto relative flex flex-col items-center gap-6">
-                <div className='flex w-full items-center justify-center relative'>
-                    <Select
-                        selectedClassName='pr-2'
-                        selectedTextClassName='font-boldy text-lg tracking-[0.2rem] uppercase'
-                        menuTextClassName='uppercase text-lg'
-                        menuItemClassName='h-8'
-                        selected={week}
-                        options={leaderboardData.weekly.weekDatesStart.map((_, i) => ({
-                            title: `Week ${i + 1}`,
-                        })) ?? []}
-                        onSelect={(week: string) => {
-                            setWeek(week);
-                        }}
-                    />
+                <div className='flex flex-col items-center gap-2'>
+                    <div className='flex w-full items-center justify-center relative'>
+                        <Select
+                            selectedClassName='pr-2'
+                            selectedTextClassName='font-boldy text-lg tracking-[0.2rem] uppercase'
+                            menuTextClassName='uppercase text-lg'
+                            menuItemClassName='h-8'
+                            selected={week}
+                            options={leaderboardData.weekly.weekDatesStart.map((_, i) => ({
+                                title: `Week ${i + 1}`,
+                            })) ?? []}
+                            onSelect={(week: string) => {
+                                setWeek(week);
+                            }}
+                        />
 
-                    <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : {S2_BOSSES_NAME[weekIndex]}</div>
+                        <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : {S2_BOSSES_NAME[weekIndex]}</div>
+                    </div>
+
+                    <div className='text-xs'>{weekInfo.startDate.toDateString()} - {weekInfo.endDate.toDateString()}</div>
                 </div>
 
                 <div
@@ -199,11 +203,10 @@ export default function FactionsLeaderboards({
                     /> : null}
                 </div>
 
-
                 <HealthBar leaderboardData={leaderboardData} weekIndex={weekIndex} />
 
                 <div className="w-full flex justify-center items-center flex-col gap-6">
-                    <div className="text-xxs font-archivo tracking-widest mt-3 text-txtfade w-1/2 text-center uppercase">DAMAGE THE BOSS AND UNLOCK ADX, BONK AND JTO REWARDS</div>
+                    <div className="text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase">DAMAGE THE BOSS AND UNLOCK ADX, BONK AND JTO REWARDS</div>
 
                     <div className='flex h-[2em] items-center justify-center gap-4 opacity-80'>
                         <div className='flex flex-col'>
