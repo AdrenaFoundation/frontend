@@ -10,6 +10,7 @@ export default function useFavorite() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchFavoriteAchievements = async (walletAddress: string) => {
+    setFavoriteAchievements(null);
     setIsFavoriteLoading(true);
     setError(null);
 
@@ -19,9 +20,7 @@ export default function useFavorite() {
       );
       const data = await response.json();
 
-      if (data.favoriteAchievements) {
-        setFavoriteAchievements(data.favoriteAchievements);
-      }
+      setFavoriteAchievements(data.favoriteAchievements);
     } catch (err) {
       console.error('Error fetching favorite achievements:', err);
       setError('Failed to fetch favorite achievements');

@@ -40,10 +40,16 @@ export default function Profile({
   });
 
   const [isUpdatingMetadata, setIsUpdatingMetadata] = useState<boolean>(false);
-  const [activeUpdateTab, setActiveUpdateTab] =
-    useState<'profilePicture' | 'wallpaper' | 'title' | 'achievements'>('profilePicture');
+  const [activeUpdateTab, setActiveUpdateTab] = useState<
+    'profilePicture' | 'wallpaper' | 'title' | 'achievements'
+  >('profilePicture');
 
-  const { favoriteAchievements, fetchFavoriteAchievements, updateFavoriteAchievements, createFavoriteAchievements } = useFavorite();
+  const {
+    favoriteAchievements,
+    fetchFavoriteAchievements,
+    updateFavoriteAchievements,
+    createFavoriteAchievements,
+  } = useFavorite();
 
   const {
     activityCalendarData,
@@ -61,6 +67,13 @@ export default function Profile({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (walletAddress) {
+      fetchFavoriteAchievements(walletAddress);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletAddress]);
+
   const initUserProfile = async () => {
     const trimmedNickname = (nickname ?? '').trim();
 
@@ -76,7 +89,8 @@ export default function Profile({
     }
 
     try {
-      if (!wallet) return notification.currentStepErrored('Wallet not connected');
+      if (!wallet)
+        return notification.currentStepErrored('Wallet not connected');
 
       await window.adrena.client.initUserProfile({
         nickname: trimmedNickname,
@@ -108,7 +122,9 @@ export default function Profile({
       <div
         className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: userProfile ? `url(${WALLPAPERS[userProfile.wallpaper]})` : `url(${WALLPAPERS[0]})`,
+          backgroundImage: userProfile
+            ? `url(${WALLPAPERS[userProfile.wallpaper]})`
+            : `url(${WALLPAPERS[0]})`,
         }}
       />
 
@@ -131,7 +147,6 @@ export default function Profile({
                 className="flex w-full w-min-[30em]"
                 walletPubkey={wallet?.publicKey}
                 favoriteAchievements={favoriteAchievements}
-                fetchFavoriteAchievements={fetchFavoriteAchievements}
                 updateFavoriteAchievements={updateFavoriteAchievements}
                 createFavoriteAchievements={createFavoriteAchievements}
                 isUpdatingMetadata={isUpdatingMetadata}
@@ -140,7 +155,7 @@ export default function Profile({
                 setActiveUpdateTab={setActiveUpdateTab}
               />
 
-              <div className='bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl border-t'>
+              <div className="bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl border-t">
                 <FavAchievements
                   userProfile={userProfile}
                   favoriteAchievements={favoriteAchievements}
