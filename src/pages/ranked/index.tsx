@@ -7,8 +7,12 @@ import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
 import Competition from './Awakening';
 import Expanse from './Expanse';
 import Factions from './Factions';
+import { PageProps } from '@/types';
 
-export default function Ranked() {
+export default function Ranked({
+    userProfile,
+    triggerUserProfileReload,
+}: PageProps) {
     //
     // Ignore following for inter-season
     //
@@ -43,7 +47,7 @@ export default function Ranked() {
             <div className=" sm:px-8 max-w-[2200px] mx-auto w-full mt-10">
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
-                {activeSeason === 'factions' ? <Factions /> : null}
+                {activeSeason === 'factions' ? <Factions userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} /> : null}
             </div>
         </div>
     );

@@ -9,12 +9,14 @@ import bonkLogo from '@/../public/images/bonk.png';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
-import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
+import { PROFILE_PICTURES, TEAMS_MAPPING, USER_PROFILE_TITLES } from '@/constant';
 import { useSelector } from '@/store/store';
 import { FactionsLeaderboardsData, UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import Rank from './Rank';
+import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 
 const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
 
@@ -25,6 +27,8 @@ export default function FactionsWeeklyLeaderboard({
     onClickUserProfile,
     setActiveProfile,
     officers,
+    userProfile,
+    triggerUserProfileReload,
 }: {
     team: 'B' | 'A';
     weeklyDamageTeam: number;
@@ -42,6 +46,8 @@ export default function FactionsWeeklyLeaderboard({
             nickname: string | null;
         };
     };
+    userProfile: UserProfileExtended | null | false;
+    triggerUserProfileReload: () => void;
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
     const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -282,7 +288,25 @@ export default function FactionsWeeklyLeaderboard({
         <div
             className={twMerge('w-full max-w-[35em] flex flex-col items-center')}
         >
-            <div className='font-archivo tracking-[0.3em] uppercase mb-8'>{team === 'A' ? 'BONK TEAM' : 'JITO TEAM'}</div>
+            <div className='flex flex-col items-center justify-center mb-8'>
+                <div className='font-archivo tracking-[0.3em] uppercase'>{team === 'A' ? userProfile && userProfile.team === TEAMS_MAPPING.BONK ? 'YOUR TEAM!' : 'BONK TEAM' : userProfile && userProfile.team === TEAMS_MAPPING.JITO ? 'YOUR TEAM!' : 'JITO TEAM'}</div>
+
+                {userProfile && userProfile.team === TEAMS_MAPPING.DEFAULT ? <Button
+                    title='JOIN'
+                    className="mt-2 w-[14em]"
+                    variant='primary'
+                    onClick={async () => {
+                        if (!wallet) return;
+
+                        await window.adrena.client.editUserProfile({
+                            notification: MultiStepNotification.newForRegularTransaction(`Pick ${team === 'A' ? 'BONK' : 'JITO'} Team`).fire(),
+                            team: team === 'A' ? TEAMS_MAPPING.BONK : TEAMS_MAPPING.JITO,
+                        });
+
+                        triggerUserProfileReload();
+                    }}
+                /> : null}
+            </div>
 
             <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4")}>
                 <NumberDisplay

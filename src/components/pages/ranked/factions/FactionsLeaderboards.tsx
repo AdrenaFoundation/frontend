@@ -64,7 +64,13 @@ function getWeekIndexFromWeek(week: string): number {
     return Number(week.split(' ')[1]) - 1;
 }
 
-export default function FactionsLeaderboards() {
+export default function FactionsLeaderboards({
+    userProfile,
+    triggerUserProfileReload,
+}: {
+    userProfile: UserProfileExtended | null | false;
+    triggerUserProfileReload: () => void;
+}) {
     const tokenPrices = useSelector((s) => s.tokenPrices);
     const [week, setWeek] = useState<string>('Week 1');
     const [activeProfile, setActiveProfile] =
@@ -368,6 +374,7 @@ export default function FactionsLeaderboards() {
                 <div className='flex  w-full justify-center gap-14 flex-col lg:flex-row gap-y-16 lg:gap-y-4 pb-6'>
                     <FactionsWeeklyLeaderboard
                         team='A'
+                        userProfile={userProfile}
                         weeklyDamageTeam={weekInfo.damageBonkTeam}
                         onClickUserProfile={async (wallet: PublicKey) => {
                             const p = await window.adrena.client.loadUserProfile({ user: wallet });
@@ -383,10 +390,12 @@ export default function FactionsLeaderboards() {
                         endDate={weekInfo.endDate}
                         officers={weekInfo.bonkOfficers}
                         setActiveProfile={setActiveProfile}
+                        triggerUserProfileReload={triggerUserProfileReload}
                     />
 
                     <FactionsWeeklyLeaderboard
                         team='B'
+                        userProfile={userProfile}
                         weeklyDamageTeam={weekInfo.damageJitoTeam}
                         onClickUserProfile={async (wallet: PublicKey) => {
                             const p = await window.adrena.client.loadUserProfile({ user: wallet });
@@ -402,6 +411,7 @@ export default function FactionsLeaderboards() {
                         endDate={weekInfo.endDate}
                         officers={weekInfo.jitoOfficers}
                         setActiveProfile={setActiveProfile}
+                        triggerUserProfileReload={triggerUserProfileReload}
                     />
                 </div>
             </div>
