@@ -12,6 +12,7 @@ import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/Table';
 import { PROFILE_PICTURES, TEAMS_MAPPING, USER_PROFILE_TITLES } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { FactionsLeaderboardsData, UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
@@ -79,6 +80,8 @@ export default function FactionsWeeklyLeaderboard({
         return adxValue + bonkValue + jtoValue;
     };
 
+    const isMobile = useBetterMediaQuery('(max-width: 640px)');
+
     const dataReady = useMemo(() => {
         if (!data) return null;
 
@@ -95,7 +98,7 @@ export default function FactionsWeeklyLeaderboard({
                         </div>
                     </div>,
 
-                    <div className="flex flex-row gap-2 w-[12em] max-w-[12em] overflow-hidden items-center" key={`rank-${i}`}>
+                    <div className="flex flex-row gap-2 w-[8em] sm:w-[12em] max-w-[12em] overflow-hidden items-center" key={`rank-${i}`}>
                         {d.profilePicture !== null ? (
                             <>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -177,7 +180,7 @@ export default function FactionsWeeklyLeaderboard({
                     </div>,
 
                     <div
-                        className="flex flex-col items-center justify-center ml-auto mr-auto"
+                        className="hidden sm:flex flex-col items-center justify-center ml-auto mr-auto"
                         key={`volume-${i}`}
                     >
                         {d.volume ? (
@@ -261,6 +264,20 @@ export default function FactionsWeeklyLeaderboard({
                         }
                     >
                         <div className="flex flex-col items-center justify-center ml-auto mr-auto">
+
+                            {d.volume ? (
+                                <FormatNumber
+                                    nb={d.volume}
+                                    className="sm:hidden text-xs font-boldy"
+                                    format='currency'
+                                    prefix='$'
+                                    isDecimalDimmed={false}
+                                    isAbbreviate={true}
+                                    isAbbreviateIcon={false}
+                                />
+                            ) : null}
+
+
                             <FormatNumber
                                 nb={totalRewardUsd}
                                 className="text-xs font-boldy text-[#24af54]"
@@ -400,16 +417,16 @@ export default function FactionsWeeklyLeaderboard({
                         mutagen
                     </div>,
 
-                    <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="volume">
+                    !isMobile ? <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="volume">
                         volume
-                    </div>,
+                    </div> : false,
 
                     <Tippy key="rewards-tippy" content={'Rewards are distributed in ADX, JTO, and BONK tokens. USD values are indicative. Prizes are officially attributed at the end of each week and are for information purposes only before then.'}>
                         <div className="ml-auto mr-auto opacity-50 items-center justify-center flex flex-col" key="rewards">
-                            rewards *
+                            {isMobile ? 'vol / rewards *' : 'rewards *'}
                         </div>
                     </Tippy>,
-                ]}
+                ].filter(Boolean)}
                 rowHovering={true}
                 pagination={true}
                 paginationClassName="scale-[80%] p-0"
