@@ -381,8 +381,8 @@ function Chat({
                         [wallet]: null,
                     }));
                 });
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [profileCache?.length ?? 0],
     );
 
@@ -394,6 +394,7 @@ function Chat({
         if (!isOpen) return null;
         if (messages.length === 0) {
             return (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                     src={
                         'https://media.tenor.com/E5SHPD_-vaQAAAAi/no-messages-at-all-capt-aaron-spencer.gif'
@@ -556,6 +557,7 @@ function Chat({
         roomId,
         loadProfile,
         messages,
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         profileCache?.length ?? 0,
         userProfilesMap,
         wallet,

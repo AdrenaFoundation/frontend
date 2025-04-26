@@ -3,8 +3,15 @@ import { twMerge } from 'tailwind-merge';
 
 import FactionsDocs from '@/components/pages/ranked/factions/FactionsDocs';
 import FactionsLeaderboards from '@/components/pages/ranked/factions/FactionsLeaderboards';
+import { UserProfileExtended } from '@/types';
 
-export default function Factions() {
+export default function Factions({
+    userProfile,
+    triggerUserProfileReload,
+}: {
+    userProfile: UserProfileExtended | null | false;
+    triggerUserProfileReload: () => void;
+}) {
     const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
     const [activeTab, setActiveTab] = useState<'leaderboard' | 'mechanics'>('leaderboard');
@@ -61,7 +68,7 @@ export default function Factions() {
                 </button>
             </div>
 
-            {activeTab === 'leaderboard' ? <FactionsLeaderboards /> : <FactionsDocs />}
+            {activeTab === 'leaderboard' ? <FactionsLeaderboards userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} /> : <FactionsDocs />}
         </div>
     );
 }

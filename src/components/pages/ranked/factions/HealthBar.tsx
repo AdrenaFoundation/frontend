@@ -21,8 +21,7 @@ export default function HealthBar({
                         <div className="flex">Deal {leaderboardData.weekly.bossMaxMutagenLife[weekIndex] / S2_NB_HEALTH_BAR} mutagen damage to {i === 0 ? 'kill the boss and' : null} unlock:</div>
 
                         <div className="flex">
-                            Weekly rewards: {leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.BONK} BONK,
-                            {leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.JTO} JTO and {(leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.ADX) + (i === 0 ? S2_ADX_DEFEATED_BOSS_REWARDS : 0)} ADX.
+                            Weekly rewards: {leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.BONK} BONK, {leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.JTO} JTO and {(leaderboardData.weekly.oneHealthBarRewards[weekIndex].weekly.ADX) + (i === 0 ? S2_ADX_DEFEATED_BOSS_REWARDS : 0)} ADX.
                         </div>
 
                         <div className="flex">
