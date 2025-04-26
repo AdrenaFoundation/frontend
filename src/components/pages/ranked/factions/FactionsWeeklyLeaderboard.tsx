@@ -291,21 +291,29 @@ export default function FactionsWeeklyLeaderboard({
             <div className='flex flex-col items-center justify-center mb-8'>
                 <div className='font-archivo tracking-[0.3em] uppercase'>{team === 'A' ? userProfile && userProfile.team === TEAMS_MAPPING.BONK ? 'YOUR TEAM!' : 'BONK TEAM' : userProfile && userProfile.team === TEAMS_MAPPING.JITO ? 'YOUR TEAM!' : 'JITO TEAM'}</div>
 
-                {userProfile && userProfile.team === TEAMS_MAPPING.DEFAULT ? <Button
-                    title='JOIN'
-                    className="mt-2 w-[14em]"
-                    variant='primary'
-                    onClick={async () => {
-                        if (!wallet) return;
+                {wallet && userProfile === false ? <div className='mt-3 text-sm'>
+                    Create a profile to join the competition!
+                </div> : null}
 
-                        await window.adrena.client.editUserProfile({
-                            notification: MultiStepNotification.newForRegularTransaction(`Pick ${team === 'A' ? 'BONK' : 'JITO'} Team`).fire(),
-                            team: team === 'A' ? TEAMS_MAPPING.BONK : TEAMS_MAPPING.JITO,
-                        });
+                {userProfile && userProfile.team === TEAMS_MAPPING.DEFAULT ? <>
+                    <Button
+                        title='JOIN'
+                        className="mt-2 w-[14em]"
+                        variant='primary'
+                        onClick={async () => {
+                            if (!wallet) return;
 
-                        triggerUserProfileReload();
-                    }}
-                /> : null}
+                            await window.adrena.client.editUserProfile({
+                                notification: MultiStepNotification.newForRegularTransaction(`Pick ${team === 'A' ? 'BONK' : 'JITO'} Team`).fire(),
+                                team: team === 'A' ? TEAMS_MAPPING.BONK : TEAMS_MAPPING.JITO,
+                            });
+
+                            triggerUserProfileReload();
+                        }}
+                    />
+
+                    <div className='mt-3 text-sm text-orange'>Careful this choice is definitive for the entire season!</div>
+                </> : null}
             </div>
 
             <div className={twMerge("flex-wrap flex-row w-full flex gap-6 pl-4 pr-4")}>
