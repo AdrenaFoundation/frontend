@@ -30,6 +30,7 @@ interface MarketOrderContentProps {
     onExecute: () => void;
     tokenPriceBTrade: number | undefined | null;
     walletAddress: string | null;
+    custodyLiquidity: number | null;
 }
 
 export const MarketOrderContent = ({
@@ -51,6 +52,7 @@ export const MarketOrderContent = ({
     onExecute,
     tokenPriceBTrade,
     walletAddress,
+    custodyLiquidity,
 }: MarketOrderContentProps) => (
     <div className="flex flex-col transition-opacity duration-500 mt-4">
         <h5 className="flex items-center ml-4">Size</h5>
@@ -138,9 +140,9 @@ export const MarketOrderContent = ({
                 <span className="text-txtfade mr-1">avail. liq.:</span>
                 <FormatNumber
                     nb={side === 'long'
-                        ? custody && tokenPriceB && custody.liquidity * tokenPriceB
-                        : usdcPrice && usdcCustody && custody &&
-                        Math.min(usdcCustody.liquidity * usdcPrice, availableLiquidityShort)
+                        ? custody && tokenPriceB && custodyLiquidity && custodyLiquidity * tokenPriceB
+                        : usdcPrice && usdcCustody && custody && custodyLiquidity &&
+                        Math.min(custodyLiquidity * usdcPrice, availableLiquidityShort)
                     }
                     format="currency"
                     precision={0}
