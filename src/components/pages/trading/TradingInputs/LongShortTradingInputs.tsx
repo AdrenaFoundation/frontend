@@ -9,6 +9,7 @@ import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import {
@@ -79,6 +80,15 @@ export default function LongShortTradingInputs({
     priceA: null,
     priceB: null,
   });
+
+  const usdcMint = window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
+  const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
+  const usdcPrice = tokenPrices['USDC'];
+
+  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(side === 'long' ? positionInfo.custody : usdcCustody);
+
+  // Check of maximum shorts across traders
+  const availableLiquidityShort = (positionInfo.custody && (positionInfo.custody.maxCumulativeShortPositionSizeUsd - (positionInfo.custody.oiShortUsd ?? 0))) ?? 0;
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade: number | undefined | null = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
@@ -605,12 +615,6 @@ export default function LongShortTradingInputs({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenB.symbol]);
 
-  const usdcMint = window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
-  const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
-  const usdcPrice = tokenPrices['USDC'];
-
-  const availableLiquidityShort = (positionInfo.custody && (positionInfo.custody.maxCumulativeShortPositionSizeUsd - (positionInfo.custody.oiShortUsd ?? 0))) ?? 0;
-
   useEffect(() => {
     // Reset error message and insufficient amount when inputs change
     setPositionInfo(prev => ({
@@ -682,14 +686,14 @@ export default function LongShortTradingInputs({
       }));
 
     // If custody doesn't have enough liquidity, tell user
-    if (side === 'long' && projectedSize > custody.liquidity)
+    if (side === 'long' && custodyLiquidity && projectedSize > custodyLiquidity)
       return setPositionInfo((prev) => ({
         ...prev,
         errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
       }));
 
     if (side === 'short' && usdcCustody) {
-      if (projectedSizeUsd > usdcCustody.liquidity)
+      if (custodyLiquidity && projectedSizeUsd > custodyLiquidity)
         return setPositionInfo((prev) => ({
           ...prev,
           errorMessage: `Insufficient USDC liquidity`,
@@ -885,6 +889,7 @@ export default function LongShortTradingInputs({
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
               walletAddress={wallet?.publicKey?.toBase58() ?? null}
+              custodyLiquidity={custodyLiquidity}
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>

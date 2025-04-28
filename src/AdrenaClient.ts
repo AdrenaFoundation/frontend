@@ -901,6 +901,21 @@ export class AdrenaClient {
    * LOADERS
    */
 
+  public async getCustodyLiquidityOnchain(
+    custody: CustodyExtended,
+  ): Promise<number> {
+    if (!this.readonlyAdrenaProgram) return 0;
+
+    const result = await this.readonlyAdrenaProgram.account.custody.fetch(
+      custody.pubkey,
+    );
+
+    return nativeToUi(
+      result.assets.owned.sub(result.assets.locked),
+      custody.decimals,
+    );
+  }
+
   public static async loadMainPool(
     adrenaProgram: Program<Adrena>,
     mainPoolAddress: PublicKey,
