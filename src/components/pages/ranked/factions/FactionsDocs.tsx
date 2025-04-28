@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from 'recharts';
 
 import mutagenIcon from '@/../public/images/mutagen.png';
-import { formatNumber } from '@/utils';
 import Button from '@/components/common/Button/Button';
+import { formatNumber } from '@/utils';
 
 export default function FactionsDocs() {
     // Data for the Size Multiplier chart
