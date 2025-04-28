@@ -335,7 +335,7 @@ export default function FactionsDocs() {
                                     <input
                                         type="range"
                                         min="0"
-                                        max={tradeSize}
+                                        max={1000000}
                                         step="1"
                                         value={projectedPnL}
                                         onChange={e => setProjectedPnL(Number(e.target.value))}
