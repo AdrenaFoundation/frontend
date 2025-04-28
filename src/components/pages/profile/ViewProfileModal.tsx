@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import crossIcon from '@/../public/images/cross.svg';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import useFavorite from '@/hooks/useFavorite';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
 import useTraderInfo from '@/hooks/useTraderInfo';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -10,6 +11,7 @@ import { UserProfileExtended } from '@/types';
 
 import PositionBlock from '../trading/Positions/PositionBlock';
 import PositionsHistory from '../trading/Positions/PositionsHistory';
+import FavAchievements from './FavAchievements';
 import OwnerBlock from './OwnerBlock';
 import RankingStats from './RankingStats';
 import StakingStats from './StakingStats';
@@ -30,8 +32,14 @@ export default function ViewProfileModal({
     const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
         walletAddress,
     });
+    const { favoriteAchievements, fetchFavoriteAchievements, isFavoriteLoading } = useFavorite();
 
     const [selectedTab, setSelectedTab] = useState('Active Positions');
+
+    useEffect(() => {
+        fetchFavoriteAchievements(walletAddress);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [walletAddress]);
 
     return (
         <div className="p-3 w-full">
@@ -58,6 +66,12 @@ export default function ViewProfileModal({
             />
 
             <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border border-t-transparent">
+                <FavAchievements
+                    userProfile={profile}
+                    favoriteAchievements={favoriteAchievements}
+                    isFavoriteLoading={isFavoriteLoading}
+                />
+
                 <TradingStats
                     traderInfo={traderInfo}
                     livePositionsNb={positions === null ? null : positions.length}
@@ -112,11 +126,11 @@ export default function ViewProfileModal({
 
                         {selectedTab === 'Positions History' ? (
                             <PositionsHistory
-                                className='pb-4'
+                                className="pb-4"
                                 connected={true}
                                 walletAddress={profile.owner.toBase58()}
                                 showShareButton={false}
-                                exportButtonPosition='bottom-left'
+                                exportButtonPosition="bottom"
                             />
                         ) : null}
                     </div>

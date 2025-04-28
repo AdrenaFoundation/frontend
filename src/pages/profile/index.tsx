@@ -49,6 +49,7 @@ export default function Profile({
     fetchFavoriteAchievements,
     updateFavoriteAchievements,
     createFavoriteAchievements,
+    isFavoriteLoading,
   } = useFavorite();
 
   const {
@@ -161,6 +162,7 @@ export default function Profile({
                   favoriteAchievements={favoriteAchievements}
                   setIsUpdatingMetadata={setIsUpdatingMetadata}
                   setActiveUpdateTab={setActiveUpdateTab}
+                  isFavoriteLoading={isFavoriteLoading}
                 />
 
                 <div className="h-[1px] w-full bg-bcolor mb-2" />
