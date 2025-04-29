@@ -14,14 +14,14 @@ function PositionsHistory({
   connected,
   walletAddress,
   showShareButton = true,
-  exportButtonPosition = 'top-right',
+  exportButtonPosition = 'top',
   className,
 }: {
   connected: boolean;
   className?: string;
   walletAddress: string | null;
   showShareButton?: boolean;
-  exportButtonPosition: 'top-right' | 'bottom-left';
+  exportButtonPosition: 'top' | 'bottom';
 }) {
   const { positionsHistory } = usePositionsHistory({ walletAddress });
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,6 +89,20 @@ function PositionsHistory({
     document.body.removeChild(a);
   }, [positionsHistory]);
 
+
+  const exportButton = <div className='w-fit flex gap-1 items-center mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer' onClick={() => {
+    downloadPositionHistory();
+  }}>
+    <div className='text-xs tracking-wider' >Export</div>
+
+    <Image
+      src={downloadIcon}
+      width={14}
+      height={12}
+      alt="Download icon"
+    />
+  </div>
+
   return (
     <div className={twMerge("w-full h-full flex flex-col relative", className)}>
       <div
@@ -103,6 +117,7 @@ function PositionsHistory({
               <>
                 {paginatedPositions.length > 0 ? (
                   <div className="flex flex-col gap-3">
+                    {exportButtonPosition === "top" && exportButton}
                     {paginatedPositions.map((positionHistory) => (
                       <PositionHistoryBlock
                         key={positionHistory.positionId}
@@ -110,22 +125,7 @@ function PositionsHistory({
                         showShareButton={showShareButton}
                       />
                     ))}
-
-                    <div className={twMerge('w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute',
-                      exportButtonPosition === "top-right" ? "-top-[2.5em] right-0" : 'bottom-0 left-2'
-                    )} onClick={() => {
-                      downloadPositionHistory();
-                    }}>
-                      <div className='text-xs tracking-wider' >Export</div>
-
-                      <Image
-                        src={downloadIcon}
-                        width={14}
-                        height={12}
-                        alt="Download icon"
-                        className="relative bottom-[1px]"
-                      />
-                    </div>
+                    {exportButtonPosition === "bottom" && exportButton}
                   </div>
                 ) : (
                   <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">

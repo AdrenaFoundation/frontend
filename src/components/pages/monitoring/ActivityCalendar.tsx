@@ -142,7 +142,7 @@ export default function ActivityCalendar({
     }
 
     if (isMobile) {
-        data = data.slice(50);
+        data = data.slice(90);
     }
 
     const monthsInActivityData = data.reduce((acc, curr) => {

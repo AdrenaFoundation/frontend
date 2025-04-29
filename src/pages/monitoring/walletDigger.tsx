@@ -424,7 +424,7 @@ export default function WalletDigger({
                             <PositionsHistory
                                 walletAddress={targetWalletPubkey?.toBase58() ?? null}
                                 connected={true}
-                                exportButtonPosition='bottom-left'
+                                exportButtonPosition='bottom'
                             />
                         </div></> : null}
 

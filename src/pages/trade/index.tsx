@@ -487,7 +487,7 @@ export default function Trade({
         {isBigScreen ? (
           <>
             <div className="bg-secondary mt-4 border rounded-lg relative">
-              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
+              <div className="flex items-center justify-start gap-2 px-3 sm:px-4 pt-2 text-sm">
                 <div
                   className={twMerge(
                     'cursor-pointer hover:opacity-100 transition-opacity duration-300 flex items-center gap-2',
@@ -549,7 +549,7 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top-right'
+                    exportButtonPosition='top'
                   />
                 </div>
               ) : null}
@@ -649,7 +649,7 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top-right'
+                    exportButtonPosition='top'
                   />
                 </div>
               ) : null}
