@@ -146,7 +146,7 @@ export default function FactionsLeaderboards({
         <>
             <div className="w-full mx-auto relative flex flex-col items-center gap-6">
                 <div className='flex flex-col items-center gap-2'>
-                    <div className='flex w-full items-center justify-center relative'>
+                    <div className='flex flex-col sm:flex-row w-full items-center justify-center relative'>
                         <Select
                             selectedClassName='pr-2'
                             selectedTextClassName='font-boldy text-lg tracking-[0.2rem] uppercase'
@@ -161,7 +161,7 @@ export default function FactionsLeaderboards({
                             }}
                         />
 
-                        <div className='font-boldy text-lg tracking-[0.2rem] uppercase'>Boss : {S2_BOSSES_NAME[weekIndex]}</div>
+                        <div className='font-boldy text-lg tracking-[0.2rem] uppercase text-center sm:text-left'>Boss : {S2_BOSSES_NAME[weekIndex]}</div>
                     </div>
 
                     <div className='text-xs'>{weekInfo.startDate.toDateString()} - {weekInfo.endDate.toDateString()}</div>
