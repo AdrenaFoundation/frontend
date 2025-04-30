@@ -21,6 +21,8 @@ import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 
+import RemainingTimeToDate from '../../monitoring/RemainingTimeToDate';
+
 export const S2_NB_HEALTH_BAR = 20;
 export const S2_ADX_DEFEATED_BOSS_REWARDS = 200_000;
 export const S2_BOSSES_NAME = [
@@ -146,6 +148,7 @@ export default function FactionsLeaderboards({
         <>
             <div className="w-full mx-auto relative flex flex-col items-center gap-6">
                 <div className='flex flex-col items-center gap-2'>
+                    <div className='text-xs opacity-50'>{weekInfo.startDate.toDateString()} - {weekInfo.endDate.toDateString()}</div>
                     <div className='flex flex-col sm:flex-row w-full items-center justify-center relative'>
                         <Select
                             selectedClassName='pr-2'
@@ -164,7 +167,7 @@ export default function FactionsLeaderboards({
                         <div className='font-boldy text-lg tracking-[0.2rem] uppercase text-center sm:text-left'>Boss : {S2_BOSSES_NAME[weekIndex]}</div>
                     </div>
 
-                    <div className='text-xs'>{weekInfo.startDate.toDateString()} - {weekInfo.endDate.toDateString()}</div>
+                    <RemainingTimeToDate className='text-base font-mono' timestamp={weekInfo.endDate.getTime() / 1000} stopAtZero />
                 </div>
 
                 <div
