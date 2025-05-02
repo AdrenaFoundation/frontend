@@ -5996,7 +5996,7 @@ export class AdrenaClient {
     let txIsConfirmed = false;
     let confirmTxRet: RpcResponseAndContext<SignatureStatus | null> | null =
       null;
-    const MAX_TIMEOUT = 30000; // Stop after sometime
+    const MAX_TIMEOUT = 120000; // Stop after 120 seconds
     const MIN_LOOP_TIME = 500;
     let txSendAttempts = 1;
 
