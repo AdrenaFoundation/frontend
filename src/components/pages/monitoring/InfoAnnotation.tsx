@@ -9,10 +9,14 @@ export default function InfoAnnotation({
   text,
   className,
   title,
+  iconHeight = 10,
+  iconWidth = 10,
 }: {
   text: ReactNode;
   className?: string;
   title?: string;
+  iconHeight?: number;
+  iconWidth?: number;
 }) {
   return (
     <Tippy
@@ -28,8 +32,8 @@ export default function InfoAnnotation({
           className={twMerge('opacity-50 hover:opacity-100 ml-1', className)}
           src={infoIcon}
           alt="info icon"
-          width="10"
-          height="10"
+          width={iconWidth}
+          height={iconHeight}
         />
       </div>
     </Tippy>
