@@ -168,7 +168,7 @@ export default function ALPSwapSell({
     }, [collateralInput, estimateRemoveLiquidityAndFee]);
 
     return (
-        <div className={twMerge('relative flex flex-col gap-1', className)}>
+        <div className={twMerge('relative flex flex-col gap-1', className, !connected && 'opacity-20 cursor-not-allowed')}>
             <div className='flex flex-row gap-2 items-center justify-between mt-4 mb-1'>
                 <h5 className="text-white">Collateral</h5>
                 {walletTokenBalances ? <div className="flex flex-row justify-end items-center cursor-pointer" onClick={() => {
@@ -283,13 +283,13 @@ export default function ALPSwapSell({
             ) : null}
 
             {/* Button to execute action */}
-            <Button
+            {connected ? <Button
                 title={!(alpInput === null || ((walletTokenBalances && (walletTokenBalances['ALP'] ?? 0) < alpInput))) ? "Sell ALP" : 'Insufficient ALP'}
                 size="lg"
                 disabled={errorMessage !== null || isMainDataLoading || alpInput === null || collateralInput === null || !!((walletTokenBalances && (walletTokenBalances['ALP'] ?? 0) < alpInput))}
                 className="justify-center w-full mt-2"
                 onClick={executeSellAlp}
-            />
+            /> : null}
         </div>
     );
 }

@@ -405,7 +405,7 @@ export default function ALPSwapBuy({
     };
 
     return (
-        <div className={twMerge('relative flex flex-col gap-1', className)}>
+        <div className={twMerge('relative flex flex-col gap-1 transition-opacity duration-300', className, !connected && 'opacity-20 cursor-not-allowed')}>
             <div className="flex items-center justify-between mt-4 mb-1">
                 <h5 className="text-white">Collateral</h5>
 
@@ -651,7 +651,7 @@ export default function ALPSwapBuy({
             ) : null}
 
             {/* Button to execute action */}
-            <Button
+            {connected ? <Button
                 title="Buy ALP"
                 size="lg"
                 disabled={
@@ -662,7 +662,7 @@ export default function ALPSwapBuy({
                 }
                 className="justify-center w-full mt-2"
                 onClick={executeBuyAlp}
-            />
+            /> : null}
 
             <div className="p-3 border text-sm rounded flex relative w-full mt-3 pl-10 opacity-50 font-boldy">
                 <Image
