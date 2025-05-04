@@ -478,11 +478,11 @@ export default function ALPSwapBuy({
 
                     <div
                         className={twMerge(
-                            'flex flex-col border rounded-lg gap-0',
+                            'flex flex-col border bg-[#040D14] rounded-lg gap-0',
                             className,
                         )}
                     >
-                        <div className="flex justify-between items-center h-14 p-4">
+                        <div className="flex justify-between items-center h-16 p-4">
                             <div className="flex gap-2 items-center">
                                 <Image
                                     src={collateralToken?.image}
