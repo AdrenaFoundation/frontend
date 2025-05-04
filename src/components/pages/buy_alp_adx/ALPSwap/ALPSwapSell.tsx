@@ -169,18 +169,21 @@ export default function ALPSwapSell({
 
     return (
         <div className={twMerge('relative flex flex-col gap-1', className)}>
-            {walletTokenBalances ? <div className="flex flex-row justify-end items-center cursor-pointer" onClick={() => {
-                setAlpInput(walletTokenBalances['ALP']);
-            }}>
-                <FormatNumber
-                    nb={walletTokenBalances['ALP']}
-                    className='text-xs items-center justify-center'
-                    precision={4}
-                />
+            <div className='flex flex-row gap-2 items-center justify-between mt-4 mb-1'>
+                <h5 className="text-white">Collateral</h5>
+                {walletTokenBalances ? <div className="flex flex-row justify-end items-center cursor-pointer" onClick={() => {
+                    setAlpInput(walletTokenBalances['ALP']);
+                }}>
+                    <FormatNumber
+                        nb={walletTokenBalances['ALP']}
+                        className='text-xs items-center justify-center'
+                        precision={4}
+                    />
 
-                <RefreshButton />
-            </div> : null}
+                    <RefreshButton />
+                </div> : null}
 
+            </div>
             <TradingInput
                 className="text-sm rounded-full"
                 inputClassName='bg-third'
@@ -199,8 +202,8 @@ export default function ALPSwapSell({
                 }}
             />
 
-            {getArrowElement('down', 'relative h-6 w-4 pt-2 mb-2 opacity-50')}
 
+            <h5 className="text-white mt-4 mb-2">Receive</h5>
             <TradingInput
                 className="text-sm rounded-full"
                 inputClassName='bg-inputcolor'
@@ -235,7 +238,7 @@ export default function ALPSwapSell({
                 }}
             />
 
-            <h5 className="text-white mt-4 mb-2 ml-6">Sell Info</h5>
+            <h5 className="text-white mt-4 mb-2">Sell Info</h5>
 
             <div
                 className={twMerge(
