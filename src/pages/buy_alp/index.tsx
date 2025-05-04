@@ -1,9 +1,6 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
-
-import { PageProps } from '@/types';
-
 import ALPDetails from '@/components/pages/buy_alp/ALPDetails';
+import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
+import { PageProps } from '@/types';
 
 export default function Buy({ connected, mainPool, custodies }: PageProps) {
 

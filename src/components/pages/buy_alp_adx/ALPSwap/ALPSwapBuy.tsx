@@ -1,6 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
-import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -10,19 +9,17 @@ import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
-import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {
     formatPriceInfo,
-    getArrowElement,
     nativeToUi,
     uiToNative,
 } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
-import warningIcon from '../../../../../public/images/Icons/warning.png';
-import jupIcon from '../../../../../public/images/jup-logo.png';
+// import warningIcon from '../../../../../public/images/Icons/warning.png';
+// import jupIcon from '../../../../../public/images/jup-logo.png';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 import { WalletBalance } from '../../trading/TradingInputs/LongShortTradingInputs/WalletBalance';
 
@@ -64,7 +61,7 @@ export default function ALPSwapBuy({
             bestRoute: boolean | null;
         };
     } | null>(null);
-    const [highFeeWarning, setHighFeeWarning] = useState<boolean>(false);
+    const [, setHighFeeWarning] = useState<boolean>(false);
 
     const executeBuyAlp = useCallback(async () => {
         if (!connected) {

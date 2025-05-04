@@ -1,15 +1,17 @@
-import FormatNumber from '@/components/Number/FormatNumber';
-import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
-import { PageProps } from '@/types';
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import Image from 'next/image';
+
+import FormatNumber from '@/components/Number/FormatNumber';
+import useAPR from '@/hooks/useAPR';
+import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
+import usePoolInfo from '@/hooks/usePoolInfo';
+import { PageProps } from '@/types';
+
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import { AprLpChart } from '../global/Apr/AprLpChart';
-import useAPR from '@/hooks/useAPR';
 import PoolRatios from '../monitoring/Data/PoolRatios';
-import usePoolInfo from '@/hooks/usePoolInfo';
 
 export default function ALPDetails({
   mainPool,

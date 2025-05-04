@@ -1,5 +1,6 @@
-import DataApiClient from '@/DataApiClient';
 import { useEffect, useState } from 'react';
+
+import DataApiClient from '@/DataApiClient';
 
 export default function useAPR(): {
   aprs: {

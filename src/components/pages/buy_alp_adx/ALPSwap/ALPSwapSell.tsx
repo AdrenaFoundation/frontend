@@ -11,7 +11,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatPriceInfo, getArrowElement, nativeToUi, uiToNative } from '@/utils';
+import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
