@@ -86,8 +86,10 @@ export default function Stake({
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
+  console.log('wallet', wallet);
+
   const [claimsOffset, setClaimsOffset] = useState(0);
-  const [claimsLimit, setClaimsLimit] = useState(9);
+  const [claimsLimit, setClaimsLimit] = useState(1000);
 
   const {
     claimsHistory,
@@ -754,33 +756,6 @@ export default function Stake({
     window.adrena.client.lmTokenMint,
   );
 
-  // Function to update pagination and reload claims
-  const loadClaimsWithPagination = useCallback(
-    async (offset: number, limit: number) => {
-      console.log("Parent: loadClaimsWithPagination called with offset =", offset, "limit =", limit);
-
-      if (!wallet?.walletAddress) {
-        console.log("Parent: No wallet address, returning");
-        return;
-      }
-
-      console.log("Parent: Current claimsOffset =", claimsOffset, "claimsLimit =", claimsLimit);
-
-      // Update state variables used by the hook using the state updater functions
-      // This ensures the state is updated before we trigger the reload
-      setClaimsOffset(offset);
-      setClaimsLimit(limit);
-
-      // Need to wait for the state update to be applied
-      // Using requestAnimationFrame to wait for the next render cycle
-      requestAnimationFrame(() => {
-        console.log("Parent: Triggering claims reload with new offset =", offset, "limit =", limit);
-        triggerClaimsReload();
-      });
-    },
-    [wallet?.walletAddress, triggerClaimsReload]
-  );
-
   // Type definition for the enhanced function with the hasDataForPage property
   type EnhancedLoadClaimsFunction = {
     (offset: number, limit: number): Promise<void>;
@@ -1047,6 +1022,7 @@ export default function Stake({
                 optimisticAllTimeAdxClaimedAllSymbols={optimisticAllTimeAdxClaimedAllSymbols}
                 optimisticAllTimeUsdcClaimedAllSymbols={optimisticAllTimeUsdcClaimedAllSymbols}
                 loadClaimsHistory={enhancedLoadClaimsWithPagination}
+                claimsLimit={claimsLimit}
               />
             </div>
 

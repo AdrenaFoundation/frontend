@@ -1082,7 +1082,7 @@ export default class DataApiClient {
 
         console.log("DataApiClient: Fetching claims history with offset =", offset, "limit =", limit);
 
-        const url = `${DataApiClient.DATAPI_URL}/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}`;
+        const url = `${DataApiClient.DATAPI_URL}/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}&sort=DESC`;
         console.log("DataApiClient: Fetching from URL =", url);
 
         const response = await fetch(url);
@@ -1159,7 +1159,6 @@ export default class DataApiClient {
                             } as ClaimHistoryExtended;
                         })
                         .filter((claim) => claim !== null)
-                        .reverse() as ClaimHistoryExtended[]
                     : []; // Empty array if s.claims is undefined or not an array
 
                 return {

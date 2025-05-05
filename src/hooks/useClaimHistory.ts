@@ -44,13 +44,20 @@ export default function useClaimHistory({
   // and ensure interval uses current values
   const currentParamsRef = useRef({ offset, limit });
 
+  // Keep track of the current wallet address for the interval
+  const walletAddressRef = useRef<string | null>(walletAddress);
+
   // Keep track of the refresh interval
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Update ref when props change
+  // Keep track of the last refresh time to prevent too frequent updates
+  const lastRefreshTimeRef = useRef<number>(0);
+
+  // Update refs when props change
   useEffect(() => {
     currentParamsRef.current = { offset, limit };
-  }, [offset, limit]);
+    walletAddressRef.current = walletAddress;
+  }, [offset, limit, walletAddress]);
 
   // Function to set up the refresh interval
   const setupRefreshInterval = useCallback(() => {
@@ -62,9 +69,38 @@ export default function useClaimHistory({
 
     // Set up a new interval
     intervalRef.current = setInterval(() => {
-      console.log('Hook: Auto-refreshing claims data');
-      loadClaimsHistory();
-    }, 30000);
+      // Only auto-refresh if we're on page 1 (offset 0)
+      const { offset: currentOffset } = currentParamsRef.current;
+      const currentWalletAddress = walletAddressRef.current;
+      const now = Date.now();
+      const timeSinceLastRefresh = now - lastRefreshTimeRef.current;
+      const minimumRefreshInterval = 30000; // 30 seconds minimum between refreshes
+
+      // Log the current wallet address for debugging
+      console.log(
+        'Hook: Auto-refresh check, currentWalletAddress =',
+        currentWalletAddress,
+      );
+
+      if (
+        currentWalletAddress &&
+        currentOffset === 0 &&
+        timeSinceLastRefresh >= minimumRefreshInterval
+      ) {
+        console.log('Hook: Auto-refreshing claims data');
+        loadClaimsHistory();
+      } else if (!currentWalletAddress) {
+        console.log('Hook: Skipping auto-refresh, no wallet address available');
+      } else if (currentOffset !== 0) {
+        console.log(
+          'Hook: Skipping auto-refresh because offset =',
+          currentOffset,
+          '(not on page 1)',
+        );
+      } else {
+        console.log('Hook: Skipping auto-refresh, last refresh was too recent');
+      }
+    }, 5000);
 
     return () => {
       if (intervalRef.current) {
@@ -75,6 +111,19 @@ export default function useClaimHistory({
   }, []);
 
   const loadClaimsHistory = useCallback(async () => {
+    // Early return if there's no wallet address
+    const currentWalletAddress = walletAddressRef.current;
+    if (!currentWalletAddress) {
+      console.log(
+        'Hook: No wallet address available, skipping data load. Current value:',
+        currentWalletAddress,
+      );
+      return;
+    }
+
+    // Record the refresh time
+    lastRefreshTimeRef.current = Date.now();
+
     // Always use the latest values from the ref
     const { offset: currentOffset, limit: currentLimit } =
       currentParamsRef.current;
@@ -93,14 +142,6 @@ export default function useClaimHistory({
       intervalRef.current = null;
     }
 
-    if (!walletAddress || !window.adrena.client.readonlyConnection) {
-      console.log(
-        'Hook: No wallet address or readonly connection, returning null',
-      );
-      setClaimsHistory(null);
-      return;
-    }
-
     try {
       console.log(
         'Hook: Fetching claims history with offset =',
@@ -108,9 +149,11 @@ export default function useClaimHistory({
         'limit =',
         currentLimit,
       );
+
+      // We already checked currentWalletAddress is not null above
       const claimsHistory: ClaimHistoryExtendedApi | null =
         await DataApiClient.fetchClaimsHistory({
-          walletAddress,
+          walletAddress: currentWalletAddress,
           offset: currentOffset,
           limit: currentLimit,
         });
@@ -143,11 +186,7 @@ export default function useClaimHistory({
       setupRefreshInterval();
       throw e;
     }
-  }, [
-    walletAddress,
-    window.adrena.client.readonlyConnection,
-    setupRefreshInterval,
-  ]);
+  }, [setupRefreshInterval]);
 
   // Only run the initial load and periodic refresh, not on offset/limit changes
   useEffect(() => {
@@ -160,12 +199,7 @@ export default function useClaimHistory({
     return () => {
       cleanup();
     };
-  }, [
-    walletAddress,
-    window.adrena.client.readonlyConnection,
-    loadClaimsHistory,
-    setupRefreshInterval,
-  ]);
+  }, [walletAddress, loadClaimsHistory, setupRefreshInterval]);
 
   // Function to check if we already have data for a specific page
   const hasDataForPage = useCallback(
