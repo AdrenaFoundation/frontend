@@ -60,6 +60,7 @@ export default function StakeOverview({
   optimisticAllTimeAdxClaimedAllSymbols,
   optimisticAllTimeUsdcClaimedAllSymbols,
   loadClaimsHistory,
+  claimsLimit,
 }: {
   token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
@@ -89,6 +90,7 @@ export default function StakeOverview({
     (offset: number, limit: number): Promise<void>;
     hasDataForPage?: (pageOffset: number, pageLimit: number) => boolean;
   };
+  claimsLimit: number;
 }) {
   const isALP = token === 'ALP';
   const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
@@ -111,7 +113,7 @@ export default function StakeOverview({
   const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [claimHistoryItemsPerPage,] = useState(3);
+  const [claimHistoryItemsPerPage,] = useState(4);
 
   const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
@@ -165,7 +167,7 @@ export default function StakeOverview({
     const globalEndIndex = globalStartIndex + claimHistoryItemsPerPage;
 
     // Calculate which batch should contain the current page (for batch size of 9)
-    const batchSize = 9; // Match the batchSize in Pagination
+    const batchSize = claimsLimit; // Match the batchSize in Pagination
     const currentBatchNumber = Math.floor(globalStartIndex / batchSize);
     const batchStartOffset = currentBatchNumber * batchSize;
 
@@ -856,7 +858,7 @@ export default function StakeOverview({
                 currentPage={currentPage}
                 totalItems={numberTotalCountClaims ? numberTotalCountClaims : 0}
                 itemsPerPage={claimHistoryItemsPerPage}
-                batchSize={9}
+                batchSize={claimsLimit}
                 onPageChange={(page) => {
                   console.log(`StakeOverview: Page changed to ${page}`);
                   setCurrentPage(page);
