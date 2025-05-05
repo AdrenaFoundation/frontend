@@ -68,8 +68,8 @@ export default function ALPDetails({
         </div> */}
 
       <div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex flex-col justify-between p-4 border rounded-xl h-[15em] sm:h-[20em] flex-1">
+        <div className="flex flex-col sm:flex-row gap-3  border rounded-xl h-[15em] sm:h-[20em]">
+          <div className="flex flex-col justify-between p-4 flex-1">
             <div>
               <p className="opacity-50 font-boldy text-sm mb-1">About</p>
               <p className="text-sm opacity-75">
@@ -109,7 +109,7 @@ export default function ALPDetails({
             </Link>
           </div>
 
-          <div className="p-4 border rounded-xl h-[15em] sm:h-[20em] flex-1">
+          <div className="p-4 flex-1">
             <AprLpChart isSmallScreen={false} />
           </div>
         </div>
