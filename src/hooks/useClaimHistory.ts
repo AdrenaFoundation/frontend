@@ -1,121 +1,230 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from 'react';
 
-import { ClaimHistoryApi, ClaimHistoryExtended } from "@/types";
+import DataApiClient from '@/DataApiClient';
+import { ClaimHistoryExtended, ClaimHistoryExtendedApi } from '@/types';
 
-export default function useClaimHistory(walletAddress: string | null): {
-  claimsHistoryAdx: ClaimHistoryExtended[] | null;
-  claimsHistoryAlp: ClaimHistoryExtended[] | null;
+export default function useClaimHistory({
+  walletAddress,
+  offset = 0,
+  limit = 1000,
+  symbol = 'ADX',
+}: {
+  walletAddress: string | null;
+  offset?: number;
+  limit?: number;
+  symbol?: 'ADX' | 'ALP';
+}): {
+  claimsHistory: ClaimHistoryExtendedApi | null;
   optimisticClaimAdx: ClaimHistoryExtended[];
-  optimisticClaimAlp: ClaimHistoryExtended[];
+  optimisticAllTimeAdxClaimedAllSymbols: number;
+  optimisticAllTimeUsdcClaimedAllSymbols: number;
   setOptimisticClaimAdx: (claims: ClaimHistoryExtended[]) => void;
-  setOptimisticClaimAlp: (claims: ClaimHistoryExtended[]) => void;
-  triggerClaimsReload: () => void;
+  setOptimisticAllTimeAdxClaimedAllSymbols: (claims: number) => void;
+  setOptimisticAllTimeUsdcClaimedAllSymbols: (claims: number) => void;
+  triggerClaimsReload: () => Promise<void>;
+  hasDataForPage: (pageOffset: number, pageLimit: number) => boolean;
 } {
-  const [claimsHistoryAdx, setClaimsHistoryAdx] = useState<
-    ClaimHistoryExtended[] | null
-  >(null);
-  const [claimsHistoryAlp, setClaimsHistoryAlp] = useState<
-    ClaimHistoryExtended[] | null
-  >(null);
+  const [claimsHistory, setClaimsHistory] =
+    useState<ClaimHistoryExtendedApi | null>(null);
 
   const [optimisticClaimAdx, setOptimisticClaimAdx] = useState<
     ClaimHistoryExtended[]
   >([]);
-  const [optimisticClaimAlp, setOptimisticClaimAlp] = useState<
-    ClaimHistoryExtended[]
-  >([]);
 
-  async function fetchClaimsHistory(): Promise<ClaimHistoryExtended[] | null> {
-    if (!walletAddress) return null;
+  const [
+    optimisticAllTimeAdxClaimedAllSymbols,
+    setOptimisticAllTimeAdxClaimedAllSymbols,
+  ] = useState<number>(0);
+  const [
+    optimisticAllTimeUsdcClaimedAllSymbols,
+    setOptimisticAllTimeUsdcClaimedAllSymbols,
+  ] = useState<number>(0);
 
-    const response = await fetch(
-      `https://datapi.adrena.xyz/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
-      // `http://localhost:8080/claim?user_wallet=${walletAddress}&start_date=2024-09-01T00:00:00Z`,
-    );
+  // Keep track of the current offset and limit to prevent duplicate API calls
+  // and ensure interval uses current values
+  const currentParamsRef = useRef({ offset, limit });
 
-    if (!response.ok) {
-      console.log("API response was not ok");
+  // Keep track of the refresh interval
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Update ref when props change
+  useEffect(() => {
+    currentParamsRef.current = { offset, limit };
+  }, [offset, limit]);
+
+  // Function to set up the refresh interval
+  const setupRefreshInterval = useCallback(() => {
+    // Clear any existing interval first
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
 
-    const apiBody = await response.json();
+    // Set up a new interval
+    intervalRef.current = setInterval(() => {
+      console.log('Hook: Auto-refreshing claims data');
+      loadClaimsHistory();
+    }, 30000);
 
-    const apiData: ClaimHistoryApi | undefined = apiBody.data;
-
-    if (typeof apiData === "undefined") {
-      console.log("apiData is undefined");
-      return [];
-    }
-
-    const enrichedClaimsWithSymbol: ClaimHistoryExtended[] = apiData.claims
-      .map((claim) => {
-        const symbol =
-          claim.mint === window.adrena.client.lmTokenMint.toBase58()
-            ? "ADX"
-            : "ALP";
-
-        return {
-          claim_id: claim.claim_id,
-          rewards_adx: claim.rewards_adx,
-          rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
-          rewards_usdc: claim.rewards_usdc,
-          signature: claim.signature,
-          transaction_date: new Date(claim.transaction_date),
-          created_at: new Date(claim.created_at),
-          stake_mint: claim.mint,
-          symbol: symbol,
-          source: claim.source,
-          adx_price_at_claim: claim.adx_price_at_claim,
-        } as ClaimHistoryExtended;
-      })
-      .filter((claim) => claim !== null)
-      .reverse() as ClaimHistoryExtended[];
-
-    return enrichedClaimsWithSymbol;
-  }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, []);
 
   const loadClaimsHistory = useCallback(async () => {
+    // Always use the latest values from the ref
+    const { offset: currentOffset, limit: currentLimit } =
+      currentParamsRef.current;
+
+    console.log(
+      'Hook: loadClaimsHistory called with offset =',
+      currentOffset,
+      'limit =',
+      currentLimit,
+    );
+
+    // Reset the interval when manually loading to prevent overlapping requests
+    if (intervalRef.current) {
+      console.log('Hook: Resetting automatic refresh interval');
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     if (!walletAddress || !window.adrena.client.readonlyConnection) {
-      setClaimsHistoryAdx(null);
-      setClaimsHistoryAlp(null);
+      console.log(
+        'Hook: No wallet address or readonly connection, returning null',
+      );
+      setClaimsHistory(null);
       return;
     }
 
     try {
-      const claimsHistory = await fetchClaimsHistory();
+      console.log(
+        'Hook: Fetching claims history with offset =',
+        currentOffset,
+        'limit =',
+        currentLimit,
+      );
+      const claimsHistory: ClaimHistoryExtendedApi | null =
+        await DataApiClient.fetchClaimsHistory({
+          walletAddress,
+          offset: currentOffset,
+          limit: currentLimit,
+        });
 
       if (claimsHistory === null) {
-        setClaimsHistoryAdx(null);
-        setClaimsHistoryAlp(null);
+        console.log('Hook: Claims history is null, returning');
+        setClaimsHistory(null);
         return;
       }
 
-      setClaimsHistoryAdx(claimsHistory.filter((c) => c.symbol === "ADX"));
-      setClaimsHistoryAlp(claimsHistory.filter((c) => c.symbol === "ALP"));
+      console.log(
+        'Hook: Claims history fetched successfully, total claims =',
+        claimsHistory.symbols.reduce(
+          (acc, symbol) => acc + symbol.claims.length,
+          0,
+        ),
+      );
+      setClaimsHistory(claimsHistory);
 
       setOptimisticClaimAdx([]);
-      setOptimisticClaimAlp([]);
+      setOptimisticAllTimeAdxClaimedAllSymbols(0);
+      setOptimisticAllTimeUsdcClaimedAllSymbols(0);
+
+      // Restart the interval after loading completes
+      setupRefreshInterval();
     } catch (e) {
-      console.log("Error loading claims history", e, String(e));
+      console.log('Error loading claims history', e, String(e));
+
+      // Restart the interval even if there was an error
+      setupRefreshInterval();
       throw e;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress, window.adrena.client.readonlyConnection]);
+  }, [
+    walletAddress,
+    window.adrena.client.readonlyConnection,
+    setupRefreshInterval,
+  ]);
 
+  // Only run the initial load and periodic refresh, not on offset/limit changes
   useEffect(() => {
+    // Initial load
     loadClaimsHistory();
 
-    const interval = setInterval(loadClaimsHistory, 30000);
+    // Set up periodic refresh with latest offset/limit values
+    const cleanup = setupRefreshInterval();
 
-    return () => clearInterval(interval);
-  }, [loadClaimsHistory]);
+    return () => {
+      cleanup();
+    };
+  }, [
+    walletAddress,
+    window.adrena.client.readonlyConnection,
+    loadClaimsHistory,
+    setupRefreshInterval,
+  ]);
+
+  // Function to check if we already have data for a specific page
+  const hasDataForPage = useCallback(
+    (pageOffset: number, pageLimit: number): boolean => {
+      if (!claimsHistory) return false;
+
+      // Calculate total claims available
+      const totalClaims = claimsHistory.symbols.reduce(
+        (acc, symbol) => acc + symbol.claims.length,
+        0,
+      );
+
+      // Check both the offset and that we have enough items for the requested page
+      const hasOffset = claimsHistory.offset <= pageOffset;
+
+      // Most importantly, check if there's ANY data available at the requested offset
+      // If pageOffset is beyond the total claims, there's no data for that page
+      const hasDataAtOffset = pageOffset < totalClaims;
+
+      // Also check if we have enough items to satisfy the requested page
+      const hasEnoughItems = totalClaims >= pageOffset + pageLimit;
+
+      console.log(
+        `Hook: hasDataForPage - pageOffset=${pageOffset}, pageLimit=${pageLimit}, totalClaims=${totalClaims}, hasOffset=${hasOffset}, hasDataAtOffset=${hasDataAtOffset}, hasEnoughItems=${hasEnoughItems}`,
+      );
+
+      // We have the data if we have the right offset AND there's data available at that offset
+      // We don't necessarily need to have enough items - that just means the last page will be partially filled
+      return hasOffset && hasDataAtOffset;
+    },
+    [claimsHistory],
+  );
 
   return {
-    claimsHistoryAdx,
-    claimsHistoryAlp,
+    claimsHistory,
     optimisticClaimAdx,
-    optimisticClaimAlp,
-    setOptimisticClaimAlp,
+    optimisticAllTimeAdxClaimedAllSymbols,
+    optimisticAllTimeUsdcClaimedAllSymbols,
     setOptimisticClaimAdx,
-    triggerClaimsReload: loadClaimsHistory,
+    setOptimisticAllTimeAdxClaimedAllSymbols,
+    setOptimisticAllTimeUsdcClaimedAllSymbols,
+    triggerClaimsReload: async () => {
+      console.log(
+        'Hook triggerClaimsReload: Starting data load with offset =',
+        currentParamsRef.current.offset,
+        'limit =',
+        currentParamsRef.current.limit,
+      );
+      try {
+        await loadClaimsHistory();
+        console.log(
+          'Hook triggerClaimsReload: Data loaded successfully for offset =',
+          currentParamsRef.current.offset,
+        );
+      } catch (error) {
+        console.error('Hook triggerClaimsReload: Error loading data:', error);
+        throw error;
+      }
+    },
+    hasDataForPage,
   };
 }

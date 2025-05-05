@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -39,6 +40,7 @@ import {
   nativeToUi,
   uiToNative,
 } from '@/utils';
+import DataApiClient from '@/DataApiClient';
 
 export type ADXTokenDetails = {
   balance: number | null;
@@ -83,14 +85,24 @@ export default function Stake({
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+
+  const [claimsOffset, setClaimsOffset] = useState(0);
+  const [claimsLimit, setClaimsLimit] = useState(9);
+
   const {
-    claimsHistoryAdx,
-    claimsHistoryAlp,
+    claimsHistory,
     optimisticClaimAdx,
-    optimisticClaimAlp,
-    setOptimisticClaimAlp,
+    optimisticAllTimeAdxClaimedAllSymbols,
+    optimisticAllTimeUsdcClaimedAllSymbols,
     setOptimisticClaimAdx,
-  } = useClaimHistory(wallet?.walletAddress ?? null);
+    setOptimisticAllTimeAdxClaimedAllSymbols,
+    setOptimisticAllTimeUsdcClaimedAllSymbols,
+    triggerClaimsReload
+  } = useClaimHistory({
+    walletAddress: wallet?.walletAddress ?? null,
+    offset: claimsOffset,
+    limit: claimsLimit,
+  });
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -388,7 +400,7 @@ export default function Stake({
           id: lockedStake.id,
           stakedTokenMint: window.adrena.client.alpToken.mint,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
+          // @ts-expect-errorÒ
           lockedStakeIndex: new BN(lockedStake.index),
           earlyExit: true,
           notification,
@@ -438,45 +450,29 @@ export default function Stake({
           new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
       });
 
-      const optimisticClaim = {
-        claim_id: new BN(Date.now()).toString(),
-        rewards_adx:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingAdxRewards
-            : alpRewards.pendingAdxRewards,
-        rewards_adx_genesis:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingGenesisAdxRewards
-            : alpRewards.pendingGenesisAdxRewards,
-        rewards_usdc:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingUsdcRewards
-            : alpRewards.pendingUsdcRewards,
-        signature: 'optimistic',
-        transaction_date: new Date(),
-        created_at: new Date(),
-        stake_mint: stakedTokenMint,
-        symbol: tokenSymbol,
-        source: 'optimistic',
-      } as unknown as ClaimHistoryExtended;
-
-      // Reset rewards in the ui until next fetch
+      // No alp claim anymore since it became liquid
       if (tokenSymbol === 'ADX') {
+        const optimisticClaim = {
+          claim_id: new BN(Date.now()).toString(),
+          rewards_adx: adxRewards.pendingAdxRewards,
+          rewards_adx_genesis: adxRewards.pendingGenesisAdxRewards,
+          rewards_usdc: adxRewards.pendingUsdcRewards,
+          signature: 'optimistic',
+          transaction_date: new Date(),
+          created_at: new Date(),
+          stake_mint: stakedTokenMint,
+          symbol: tokenSymbol,
+          source: 'optimistic',
+        } as unknown as ClaimHistoryExtended;
+
+        // Reset rewards in the ui until next fetch
         adxRewards.pendingUsdcRewards = 0;
         adxRewards.pendingAdxRewards = 0;
         adxRewards.pendingGenesisAdxRewards = 0;
         fetchAdxRewards();
-      } else {
-        alpRewards.pendingUsdcRewards = 0;
-        alpRewards.pendingAdxRewards = 0;
-        alpRewards.pendingGenesisAdxRewards = 0;
-        fetchAlpRewards();
-      }
-
-      if (tokenSymbol === 'ADX') {
         setOptimisticClaimAdx([optimisticClaim]);
-      } else {
-        setOptimisticClaimAlp([optimisticClaim]);
+        setOptimisticAllTimeAdxClaimedAllSymbols(optimisticClaim.rewards_adx);
+        setOptimisticAllTimeUsdcClaimedAllSymbols(optimisticClaim.rewards_usdc);
       }
     } catch (error) {
       console.error('error', error);
@@ -746,6 +742,7 @@ export default function Stake({
   // The rewards pending for the user
   const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
     useStakingClaimableRewards('ADX');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { rewards: alpRewards, fetchRewards: fetchAlpRewards } =
     useStakingClaimableRewards('ALP');
 
@@ -755,6 +752,111 @@ export default function Stake({
   );
   const adxStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
     window.adrena.client.lmTokenMint,
+  );
+
+  // Function to update pagination and reload claims
+  const loadClaimsWithPagination = useCallback(
+    async (offset: number, limit: number) => {
+      console.log("Parent: loadClaimsWithPagination called with offset =", offset, "limit =", limit);
+
+      if (!wallet?.walletAddress) {
+        console.log("Parent: No wallet address, returning");
+        return;
+      }
+
+      console.log("Parent: Current claimsOffset =", claimsOffset, "claimsLimit =", claimsLimit);
+
+      // Update state variables used by the hook using the state updater functions
+      // This ensures the state is updated before we trigger the reload
+      setClaimsOffset(offset);
+      setClaimsLimit(limit);
+
+      // Need to wait for the state update to be applied
+      // Using requestAnimationFrame to wait for the next render cycle
+      requestAnimationFrame(() => {
+        console.log("Parent: Triggering claims reload with new offset =", offset, "limit =", limit);
+        triggerClaimsReload();
+      });
+    },
+    [wallet?.walletAddress, triggerClaimsReload]
+  );
+
+  // Type definition for the enhanced function with the hasDataForPage property
+  type EnhancedLoadClaimsFunction = {
+    (offset: number, limit: number): Promise<void>;
+    hasDataForPage: (pageOffset: number, pageLimit: number) => boolean;
+  };
+
+  // Add the hasDataForPage function as a property of loadClaimsWithPagination
+  // This will allow the StakeOverview component to check if an API call is needed
+  const enhancedLoadClaimsWithPagination = useCallback(
+    async (offset: number, limit: number) => {
+      console.log("Parent enhancedLoadClaimsWithPagination: Called with offset =", offset, "limit =", limit);
+
+      if (!wallet?.walletAddress) {
+        console.log("Parent enhancedLoadClaimsWithPagination: No wallet address, returning");
+        return;
+      }
+
+      console.log("Parent enhancedLoadClaimsWithPagination: Current claimsOffset =", claimsOffset, "claimsLimit =", claimsLimit, "Requested offset =", offset);
+
+      // Only update if the parameters have changed to avoid unnecessary API calls
+      if (claimsOffset === offset && claimsLimit === limit && claimsHistory) {
+        console.log("Parent enhancedLoadClaimsWithPagination: Using cached data with same offset/limit");
+        return;
+      }
+
+      // Update state variables used by the hook
+      setClaimsOffset(offset);
+      setClaimsLimit(limit);
+
+      // Create a promise that will be resolved when the data is loaded
+      return new Promise<void>((resolve, reject) => {
+        console.log("Parent enhancedLoadClaimsWithPagination: Created promise for data loading with offset =", offset);
+
+        // Need to wait for the state update to be applied before triggering reload
+        requestAnimationFrame(async () => {
+          console.log("Parent enhancedLoadClaimsWithPagination: Triggering claims reload for offset =", offset);
+
+          try {
+            // triggerClaimsReload now returns a Promise that resolves when the data is loaded
+            await triggerClaimsReload();
+            console.log("Parent enhancedLoadClaimsWithPagination: Claims reload completed for offset =", offset);
+            resolve();
+          } catch (error) {
+            console.error("Parent enhancedLoadClaimsWithPagination: Error during claims reload:", error);
+            reject(error);
+          }
+        });
+      });
+    },
+    [wallet?.walletAddress, triggerClaimsReload, claimsOffset, claimsLimit, claimsHistory]
+  ) as EnhancedLoadClaimsFunction;
+
+  // Add the hasDataForPage function to check if we already have the data for a specific page
+  enhancedLoadClaimsWithPagination.hasDataForPage = useCallback(
+    (pageOffset: number, pageLimit: number) => {
+      if (!claimsHistory) return false;
+
+      // Check if we already have the data by looking at the total claims count
+      // and comparing it with the requested offset and limit
+      const totalClaimsCount = claimsHistory.symbols.reduce(
+        (acc, s) => acc + s.claims.length, 0
+      );
+
+      console.log(
+        "Parent: hasDataForPage - checking if we have data for pageOffset =",
+        pageOffset,
+        "pageLimit =",
+        pageLimit,
+        "totalClaimsCount =",
+        totalClaimsCount
+      );
+
+      // We have the data if we loaded enough claims to cover this page
+      return totalClaimsCount >= (pageOffset + pageLimit);
+    },
+    [claimsHistory]
   );
 
   useEffect(() => {
@@ -878,26 +980,14 @@ export default function Stake({
                 userPendingAdxRewards={alpRewards.pendingAdxRewards}
                 roundPendingUsdcRewards={
                   alpStakingCurrentRoundRewards.usdcRewards ??
-                  0 +
-                  optimisticClaimAlp?.reduce(
-                    (acc, claim) => acc + claim.rewards_usdc,
-                    0,
-                  )
+                  0
                 }
                 roundPendingAdxRewards={
                   alpStakingCurrentRoundRewards.adxRewards ??
-                  0 +
-                  optimisticClaimAlp?.reduce(
-                    (acc, claim) => acc + claim.rewards_adx,
-                    0,
-                  )
+                  0
                 }
                 pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
-                claimsHistory={
-                  claimsHistoryAlp
-                    ? optimisticClaimAlp?.length > 0 ? [...optimisticClaimAlp, ...claimsHistoryAlp] : claimsHistoryAlp
-                    : null
-                }
+                claimsHistory={claimsHistory}
               />
             </div> : null}
 
@@ -952,11 +1042,11 @@ export default function Stake({
                   setUpgradeLockedStake(true);
                   setFinalizeLockedStakeRedeem(false);
                 }}
-                claimsHistory={
-                  claimsHistoryAdx
-                    ? optimisticClaimAdx?.length > 0 ? [...optimisticClaimAdx, ...claimsHistoryAdx] : claimsHistoryAdx
-                    : null
-                }
+                claimsHistory={claimsHistory}
+                optimisticClaimAdx={optimisticClaimAdx}
+                optimisticAllTimeAdxClaimedAllSymbols={optimisticAllTimeAdxClaimedAllSymbols}
+                optimisticAllTimeUsdcClaimedAllSymbols={optimisticAllTimeUsdcClaimedAllSymbols}
+                loadClaimsHistory={enhancedLoadClaimsWithPagination}
               />
             </div>
 
@@ -1023,10 +1113,10 @@ export default function Stake({
           </>
         </div>
 
-        {(alpLockedStakes === null || alpLockedStakes?.length == 0) && claimsHistoryAlp && claimsHistoryAlp?.length ?
+        {(alpLockedStakes === null || alpLockedStakes?.length == 0) && claimsHistory && claimsHistory?.symbols.find(symbol => symbol.symbol === 'ALP')?.claims?.length ?
           <div className='p-4 z-10'>
             <div className="flex flex-col bg-main rounded-2xl border mb-4 w-full">
-              <ALPStakingRecap claimsHistory={claimsHistoryAlp} />
+              <ALPStakingRecap claimsHistory={claimsHistory} />
             </div>
           </div> : null}
       </div>

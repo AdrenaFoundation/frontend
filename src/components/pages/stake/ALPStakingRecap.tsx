@@ -10,6 +10,7 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
 import {
     ClaimHistoryExtended,
+    ClaimHistoryExtendedApi,
 } from '@/types';
 
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
@@ -20,38 +21,35 @@ import ClaimBlock from './ClaimBlock';
 export default function ALPStakingRecap({
     claimsHistory,
 }: {
-    claimsHistory: ClaimHistoryExtended[] | null;
+    claimsHistory: ClaimHistoryExtendedApi | null;
 }) {
     const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [claimHistoryItemsPerPage,] = useState(3);
-
+    const alpClaimHistory = claimsHistory?.symbols.filter(c => c.symbol === 'ALP')[0] ?? null;
     const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
     useEffect(() => {
-        if (!claimsHistory) {
+        if (!alpClaimHistory) {
             return;
         }
         const startIndex = (currentPage - 1) * claimHistoryItemsPerPage;
         const endIndex = startIndex + claimHistoryItemsPerPage;
-        setPaginatedClaimsHistory(claimsHistory.slice(startIndex, endIndex));
-    }, [claimsHistory, currentPage, claimHistoryItemsPerPage]);
+        setPaginatedClaimsHistory(alpClaimHistory?.claims.slice(startIndex, endIndex) ?? []);
+    }, [alpClaimHistory, currentPage, claimHistoryItemsPerPage]);
 
     const allTimeClaimedUsdc =
-        claimsHistory?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0;
+        claimsHistory?.allTimeUsdcClaimed ?? 0;
     const allTimeClaimedAdx =
-        claimsHistory?.reduce(
-            (sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis,
-            0,
-        ) ?? 0;
+        claimsHistory?.allTimeAdxClaimed ?? 0;
 
-    const adxValueAtClaim = claimsHistory?.reduce(
+    const adxValueAtClaim = alpClaimHistory?.claims.reduce(
         (sum, claim) => sum + (claim.rewards_adx + claim.rewards_adx_genesis) * claim.adx_price_at_claim,
         0,
     ) ?? 0;
 
     const downloadClaimHistory = useCallback(() => {
-        if (!claimsHistory) {
+        if (!alpClaimHistory) {
             return;
         }
 
@@ -64,8 +62,8 @@ export default function ALPStakingRecap({
             'signature',
         ];
 
-        const csvRows = claimsHistory
-            .filter(
+        const csvRows = alpClaimHistory
+            .claims.filter(
                 (claim) =>
                     claim.rewards_adx !== 0 ||
                     claim.rewards_adx_genesis !== 0 ||
@@ -74,7 +72,7 @@ export default function ALPStakingRecap({
             .map((claim) =>
                 keys
                     .map((key) => {
-                        let value = claim[key as keyof typeof claimsHistory[0]];
+                        let value = claim[key as keyof typeof claim];
                         // Format the date field if it's `transaction_date`
                         if (key === 'transaction_date' && value instanceof Date) {
                             value = (value as Date).toISOString(); // Format to ISO 8601
@@ -97,7 +95,7 @@ export default function ALPStakingRecap({
 
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-    }, [claimsHistory]);
+    }, [alpClaimHistory]);
 
     return (
         <div className="flex flex-col bg-main rounded-2xl border">
@@ -183,7 +181,7 @@ export default function ALPStakingRecap({
                                 </div>
 
                                 <h3 className="text-lg font-semibold text-txtfade">
-                                    {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
+                                    {alpClaimHistory?.allTimeCountClaims ? ` (${alpClaimHistory.allTimeCountClaims})` : ''}
                                 </h3>
 
                                 {claimsHistory ? <div className='w-auto flex right-4 opacity-50 hover:opacity-100 cursor-pointer gap-1 absolute' onClick={() => {
@@ -222,7 +220,7 @@ export default function ALPStakingRecap({
                         </div>
                         <Pagination
                             currentPage={currentPage}
-                            totalItems={claimsHistory ? claimsHistory.length : 0}
+                            totalItems={alpClaimHistory?.allTimeCountClaims ?? 0}
                             itemsPerPage={claimHistoryItemsPerPage}
                             onPageChange={setCurrentPage}
                         />

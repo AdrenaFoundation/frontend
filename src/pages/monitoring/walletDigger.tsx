@@ -78,12 +78,18 @@ export default function WalletDigger({
         getAlpLockedStakes(stakingAccounts);
 
     const {
-        claimsHistoryAdx,
-        claimsHistoryAlp,
-    } = useClaimHistory(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
+        allTimeUsdcClaimedAllSymbols,
+        allTimeAdxClaimedAllSymbols,
+        allTimeAdxGenesisClaimedAllSymbols,
+        claimsHistory,
+    } = useClaimHistory({
+        walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
+        offset: 0,
+        limit: 3,
+    });
 
     const allTimeClaimedUsdc =
-        useMemo(() => (claimsHistoryAdx?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0) + (claimsHistoryAlp?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0), [claimsHistoryAdx, claimsHistoryAlp]);
+        useMemo(() => allTimeUsdcClaimedAllSymbols, [allTimeUsdcClaimedAllSymbols]);
 
     const allTimeClaimedAdx = useMemo(() =>
         (claimsHistoryAdx?.reduce(

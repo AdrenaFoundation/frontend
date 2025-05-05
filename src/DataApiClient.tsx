@@ -2,6 +2,10 @@ import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 
 import {
+    ClaimHistoryApi,
+    ClaimHistoryBySymbolExtended,
+    ClaimHistoryExtended,
+    ClaimHistoryExtendedApi,
     ChaosLabsPricesExtended,
     ChaosLabsPricesResponse,
     CustodyInfoResponse,
@@ -36,8 +40,8 @@ import { hexStringToByteArray } from './utils';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
-    // public static DATAPI_URL = "http://localhost:8080";
-    public static DATAPI_URL = 'https://datapi.adrena.xyz';
+    public static DATAPI_URL = "http://localhost:8080";
+    // public static DATAPI_URL = 'https://datapi.adrena.xyz';
 
     public static async getPriceAtDate(date: Date): Promise<{
         adxPrice: number | null;
@@ -1062,6 +1066,142 @@ export default class DataApiClient {
             return null;
         }
     }
+
+    public static async fetchClaimsHistory({
+        walletAddress,
+        offset,
+        limit,
+        symbol,
+    }: {
+        walletAddress: string;
+        offset: number;
+        limit: number;
+        symbol?: 'ADX' | 'ALP';
+    }): Promise<ClaimHistoryExtendedApi | null> {
+        if (!walletAddress) return null;
+
+        console.log("DataApiClient: Fetching claims history with offset =", offset, "limit =", limit);
+
+        const url = `${DataApiClient.DATAPI_URL}/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}`;
+        console.log("DataApiClient: Fetching from URL =", url);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.log('API response was not ok');
+            return null;
+        }
+
+        const apiBody = await response.json();
+        console.log("DataApiClient: Received API response:", apiBody.success ? "success" : "failure");
+
+        const apiData: ClaimHistoryApi | undefined = apiBody.data;
+
+        if (typeof apiData === 'undefined') {
+            console.log('apiData is undefined');
+            return null;
+        }
+
+        console.log("DataApiClient: API data offset =", apiData.offset, "limit =", apiData.limit);
+
+        // Check if symbols is defined and is an array
+        if (!apiData.symbols || !Array.isArray(apiData.symbols)) {
+            console.log('DataApiClient: apiData.symbols is undefined or not an array');
+            return {
+                startDate: new Date(apiData.start_date || new Date()),
+                endDate: new Date(apiData.end_date || new Date()),
+                limit: apiData.limit || limit,
+                offset: apiData.offset || offset,
+                symbols: [],
+                allTimeUsdcClaimed: 0,
+                allTimeAdxClaimed: 0,
+                allTimeAdxGenesisClaimed: 0,
+            };
+        }
+
+        // Total claims count for logging
+        const totalClaimsCount = apiData.symbols.reduce(
+            (acc, s) => acc + (s.claims?.length || 0), 0
+        );
+        console.log(`DataApiClient: Total claims in response: ${totalClaimsCount}`);
+
+        // If we requested data past the end, log it
+        if (offset > 0 && totalClaimsCount === 0) {
+            console.log(`DataApiClient: No claims found at offset ${offset}. You may have reached the end of available data.`);
+        }
+
+        const enrichedClaimsWithSymbol: ClaimHistoryBySymbolExtended[] =
+            apiData.symbols.map((s) => {
+                // Check if claims is defined and is an array
+                const claims = (s.claims && Array.isArray(s.claims))
+                    ? s.claims
+                        .map((claim) => {
+                            // Additional null checking
+                            if (!claim) return null;
+
+                            const symbol =
+                                claim.mint === window.adrena.client.lmTokenMint.toBase58()
+                                    ? 'ADX'
+                                    : 'ALP';
+
+                            return {
+                                claim_id: claim.claim_id,
+                                rewards_adx: claim.rewards_adx,
+                                rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
+                                rewards_usdc: claim.rewards_usdc,
+                                signature: claim.signature,
+                                transaction_date: new Date(claim.transaction_date),
+                                created_at: new Date(claim.created_at),
+                                stake_mint: claim.mint,
+                                symbol: symbol,
+                                source: claim.source,
+                                adx_price_at_claim: claim.adx_price_at_claim,
+                            } as ClaimHistoryExtended;
+                        })
+                        .filter((claim) => claim !== null)
+                        .reverse() as ClaimHistoryExtended[]
+                    : []; // Empty array if s.claims is undefined or not an array
+
+                return {
+                    symbol: s.symbol,
+                    allTimeRewardsAdx: s.all_time_rewards_adx || 0,
+                    allTimeRewardsUsdc: s.all_time_rewards_usdc || 0,
+                    allTimeRewardsAdxGenesis: s.all_time_rewards_adx_genesis || 0,
+                    allTimeCountClaims: s.all_time_count_claims || 0,
+                    claims: claims,
+                } as ClaimHistoryBySymbolExtended;
+            });
+
+        return {
+            startDate: new Date(apiData.start_date),
+            endDate: new Date(apiData.end_date),
+            limit: apiData.limit,
+            offset: apiData.offset,
+            symbols: enrichedClaimsWithSymbol,
+            allTimeUsdcClaimed: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeRewardsUsdc ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeRewardsUsdc,
+                    0,
+                ),
+            allTimeAdxClaimed: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeRewardsAdx ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeRewardsAdx,
+                    0,
+                ),
+            allTimeAdxGenesisClaimed: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeRewardsAdxGenesis ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeRewardsAdxGenesis,
+                    0,
+                ),
+        };
+    }
+
 
     public static async getChaosLabsPrices(): Promise<ChaosLabsPricesExtended | null> {
         try {

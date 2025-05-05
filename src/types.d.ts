@@ -543,7 +543,17 @@ export type ClaimHistoryApi = {
   start_date: string; // ISO date-time string
   end_date: string; // ISO date-time string
   limit: number;
-  claims: ClaimApi[];
+  offset: number;
+  symbols: [
+    {
+      symbol: string;
+      all_time_rewards_adx: number;
+      all_time_rewards_usdc: number;
+      all_time_rewards_adx_genesis: number;
+      all_time_count_claims: number;
+      claims: ClaimApi[];
+    },
+  ];
 };
 
 export type ClaimHistoryExtended = {
@@ -558,6 +568,26 @@ export type ClaimHistoryExtended = {
   symbol: string;
   transaction_date: Date;
   adx_price_at_claim: number;
+};
+
+export type ClaimHistoryBySymbolExtended = {
+  symbol: string;
+  allTimeRewardsAdx: number;
+  allTimeRewardsUsdc: number;
+  allTimeRewardsAdxGenesis: number;
+  allTimeCountClaims: number;
+  claims: ClaimHistoryExtended[];
+};
+
+export type ClaimHistoryExtendedApi = {
+  startDate: Date;
+  endDate: Date;
+  limit: number;
+  offset: number;
+  symbols: ClaimHistoryBySymbolExtended[];
+  allTimeUsdcClaimed: number;
+  allTimeAdxClaimed: number;
+  allTimeAdxGenesisClaimed: number;
 };
 
 type AchievementsBase = {

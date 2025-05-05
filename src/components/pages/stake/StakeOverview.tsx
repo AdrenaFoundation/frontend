@@ -3,7 +3,7 @@ import '../../../styles/Animation.css';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
 
@@ -22,6 +22,7 @@ import {
   AdxLockPeriod,
   AlpLockPeriod,
   ClaimHistoryExtended,
+  ClaimHistoryExtendedApi,
   LockedStakeExtended,
 } from '@/types';
 import { formatNumber, getNextStakingRoundStartTime } from '@/utils';
@@ -57,6 +58,10 @@ export default function StakeOverview({
   pendingGenesisAdxRewards,
   handleClickOnUpdateLockedStake,
   claimsHistory,
+  optimisticClaimAdx,
+  optimisticAllTimeAdxClaimedAllSymbols,
+  optimisticAllTimeUsdcClaimedAllSymbols,
+  loadClaimsHistory,
 }: {
   token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
@@ -79,7 +84,14 @@ export default function StakeOverview({
   pendingGenesisAdxRewards: number;
   nextRoundTime: number;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
-  claimsHistory: ClaimHistoryExtended[] | null;
+  claimsHistory: ClaimHistoryExtendedApi | null;
+  optimisticClaimAdx: ClaimHistoryExtended[] | null;
+  optimisticAllTimeAdxClaimedAllSymbols: number;
+  optimisticAllTimeUsdcClaimedAllSymbols: number;
+  loadClaimsHistory?: {
+    (offset: number, limit: number): Promise<void>;
+    hasDataForPage?: (pageOffset: number, pageLimit: number) => boolean;
+  };
 }) {
   const isMobile = useBetterMediaQuery('(max-width: 570px)');
   const isALP = token === 'ALP';
@@ -109,14 +121,134 @@ export default function StakeOverview({
 
   const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
+  const combinedAdxClaims = useMemo(() => {
+    if (!optimisticClaimAdx) return [];
+
+    const existingAdxClaims = claimsHistory?.symbols.find(symbol => symbol.symbol === 'ADX')?.claims ?? [];
+    return [...optimisticClaimAdx, ...existingAdxClaims];
+  }, [optimisticClaimAdx, claimsHistory]);
+
   useEffect(() => {
     if (!claimsHistory) {
+      console.log("StakeOverview: No claims history available, not updating paginated claims");
+      setPaginatedClaimsHistory([]);
       return;
     }
-    const startIndex = (currentPage - 1) * claimHistoryItemsPerPage;
-    const endIndex = startIndex + claimHistoryItemsPerPage;
-    setPaginatedClaimsHistory(claimsHistory.slice(startIndex, endIndex));
-  }, [claimsHistory, currentPage, claimHistoryItemsPerPage]);
+
+    // Use all claims from all symbols, but replace ADX claims with the combined ones
+    const allClaims = claimsHistory.symbols.flatMap(symbol => {
+      if (symbol.symbol === 'ADX' && token === 'ADX') {
+        return combinedAdxClaims;
+      }
+      return symbol.claims;
+    });
+
+    // Store the API offset for debugging
+    const apiOffset = claimsHistory.offset;
+    console.log(`StakeOverview: Processing claims history - ${allClaims.length} claims, apiOffset=${apiOffset}, page=${currentPage}`);
+
+    // Use the total count from the API metadata, not just the currently loaded claims
+    // claimsHistory.symbols contains the allTimeCountClaims which represents the total count
+    const totalClaimsCount = claimsHistory.symbols.reduce(
+      (acc, symbol) => acc + symbol.allTimeCountClaims, 0
+    ) || allClaims.length;
+
+    const totalPages = Math.ceil(totalClaimsCount / claimHistoryItemsPerPage);
+
+    console.log(`StakeOverview: Total claims in API: ${totalClaimsCount}, totalPages=${totalPages}, currentPage=${currentPage}`);
+
+    // If current page is beyond available data, adjust it
+    if (currentPage > totalPages && totalPages > 0) {
+      console.log(`StakeOverview: Current page ${currentPage} is beyond available data (totalPages=${totalPages}), adjusting to page ${totalPages}`);
+      setCurrentPage(totalPages);
+      return;
+    }
+
+    let displayItems: ClaimHistoryExtended[] = [];
+
+    // Calculate the global index range for the current page
+    const globalStartIndex = (currentPage - 1) * claimHistoryItemsPerPage;
+    const globalEndIndex = globalStartIndex + claimHistoryItemsPerPage;
+
+    // Calculate which batch should contain the current page (for batch size of 9)
+    const batchSize = 9; // Match the batchSize in Pagination
+    const currentBatchNumber = Math.floor(globalStartIndex / batchSize);
+    const batchStartOffset = currentBatchNumber * batchSize;
+
+    console.log(`StakeOverview: Page ${currentPage} - global indices: ${globalStartIndex}-${globalEndIndex}, apiOffset=${apiOffset}, batch=${currentBatchNumber}, batchStartOffset=${batchStartOffset}`);
+
+    // First page always displays the first N items, regardless of API offset
+    // This ensures we correctly display page 1 when returning to it
+    if (currentPage === 1) {
+      // For page 1, always take the first N items if we have fresh data with offset 0
+      // or if we have offset 0 available in our data range
+      if (apiOffset === 0 || (apiOffset <= 0 && allClaims.length > 0)) {
+        const endIndex = Math.min(claimHistoryItemsPerPage, allClaims.length);
+        displayItems = allClaims.slice(0, endIndex);
+        console.log(`StakeOverview: First page - displaying items 0-${endIndex} from ${allClaims.length} available claims`);
+      } else {
+        console.log(`StakeOverview: First page with API offset ${apiOffset} - cannot display page 1 from current data`);
+        // If we can't display page 1 from current data, we'll rely on the pagination component to load it
+        displayItems = [];
+      }
+    }
+    // When we're viewing a page within the batch that was loaded from the API
+    // This handles cases like moving from page 4 to page 3 within the same batch
+    else if (apiOffset > 0 && apiOffset === batchStartOffset) {
+      // We're in the correct batch - calculate the relative index within the loaded batch
+      const relativeStartIndex = globalStartIndex - apiOffset;
+      const relativeEndIndex = Math.min(globalEndIndex - apiOffset, allClaims.length);
+
+      console.log(`StakeOverview: Page ${currentPage} within loaded batch - relative indices: ${relativeStartIndex}-${relativeEndIndex}`);
+
+      // Only include items that are in our loaded data range
+      if (relativeStartIndex >= 0 && relativeStartIndex < allClaims.length) {
+        displayItems = allClaims.slice(relativeStartIndex, relativeEndIndex);
+        console.log(`StakeOverview: Sliced ${displayItems.length} items from batch data for page ${currentPage}`);
+      } else {
+        console.log(`StakeOverview: No data available for page ${currentPage} in current batch`);
+        displayItems = [];
+      }
+    }
+    // When we have API data with non-zero offset, but not the right batch
+    else if (apiOffset > 0) {
+      // Calculate the relative index within our loaded data
+      const relativeStartIndex = globalStartIndex - apiOffset;
+      const relativeEndIndex = globalEndIndex - apiOffset;
+
+      console.log(`StakeOverview: Page ${currentPage} with API offset ${apiOffset} - relative indices: ${relativeStartIndex}-${relativeEndIndex}`);
+
+      // Only include items that are in our loaded data
+      if (relativeStartIndex >= 0 && relativeStartIndex < allClaims.length) {
+        // We have at least some of the data for this page
+        const sliceEnd = Math.min(relativeEndIndex, allClaims.length);
+        displayItems = allClaims.slice(relativeStartIndex, sliceEnd);
+        console.log(`StakeOverview: Sliced ${displayItems.length} items from offset data using indices ${relativeStartIndex}-${sliceEnd}`);
+      } else {
+        console.log(`StakeOverview: No data available for current page ${currentPage} in loaded data with offset=${apiOffset}`);
+        displayItems = [];
+      }
+    }
+    // For pages when offset is 0 and not the first page
+    else {
+      // Standard client-side pagination
+      const startIndex = (currentPage - 1) * claimHistoryItemsPerPage;
+      const endIndex = Math.min(startIndex + claimHistoryItemsPerPage, allClaims.length);
+
+      console.log(`StakeOverview: Using client-side pagination for page ${currentPage} - indices: ${startIndex}-${endIndex}, total claims: ${allClaims.length}`);
+
+      // Make sure we don't go out of bounds
+      if (startIndex >= allClaims.length) {
+        console.warn(`StakeOverview: Start index ${startIndex} is beyond available claims length ${allClaims.length}`);
+        displayItems = [];
+      } else {
+        displayItems = allClaims.slice(startIndex, endIndex);
+      }
+    }
+
+    console.log(`StakeOverview: Setting ${displayItems.length} paginated claims for current page ${currentPage}`);
+    setPaginatedClaimsHistory(displayItems);
+  }, [claimsHistory, currentPage, claimHistoryItemsPerPage, combinedAdxClaims, token]);
 
   const sortedLockedStakes = lockedStakes
     ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
@@ -221,12 +353,11 @@ export default function StakeOverview({
   const isBigStakeAmount = totalStakeAmount > 1000000;
 
   const allTimeClaimedUsdc =
-    claimsHistory?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0;
+    (claimsHistory?.allTimeUsdcClaimed ?? 0) + optimisticAllTimeUsdcClaimedAllSymbols;
   const allTimeClaimedAdx =
-    claimsHistory?.reduce(
-      (sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis,
-      0,
-    ) ?? 0;
+    (claimsHistory?.allTimeAdxClaimed ?? 0) + optimisticAllTimeAdxClaimedAllSymbols;
+
+  const numberTotalCountClaims = claimsHistory?.symbols.reduce((acc, symbol) => acc + symbol.allTimeCountClaims, 0) ?? 0;
   const isMediumUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 1000;
   const isMediumAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1000;
   const isBigUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 100_000;
@@ -246,7 +377,7 @@ export default function StakeOverview({
       'signature',
     ];
 
-    const csvRows = claimsHistory
+    const csvRows = claimsHistory.symbols.flatMap(symbol => symbol.claims)
       .filter(
         (claim) =>
           claim.rewards_adx !== 0 ||
@@ -256,7 +387,7 @@ export default function StakeOverview({
       .map((claim) =>
         keys
           .map((key) => {
-            let value = claim[key as keyof typeof claimsHistory[0]];
+            let value = claim[key as keyof typeof claim];
             // Format the date field if it's `transaction_date`
             if (key === 'transaction_date' && value instanceof Date) {
               value = (value as Date).toISOString(); // Format to ISO 8601
@@ -280,6 +411,8 @@ export default function StakeOverview({
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
   }, [claimsHistory, token]);
+
+  const [isLoadingMoreClaims, setIsLoadingMoreClaims] = useState(false);
 
   return (
     <div className="flex flex-col bg-main rounded-2xl border">
@@ -590,7 +723,7 @@ export default function StakeOverview({
                   </div>
 
                   <h3 className="text-lg font-semibold text-txtfade">
-                    {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
+                    {numberTotalCountClaims ? ` (${numberTotalCountClaims})` : ''}
                   </h3>
 
                   {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 ml-2' onClick={() => {
@@ -614,7 +747,68 @@ export default function StakeOverview({
             {claimsHistory && (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
                 <div className="flex flex-row items-center">
-                  <p className="text-txtfade">All time claimed amounts:</p>
+                  <p className="text-txtfade">
+                    All time claimed amounts:
+                    <Tippy
+                      content={
+                        <div className="p-2">
+                          <div className="text-sm mb-1">
+                            This total includes all rewards claimed from both ADX and ALP staking combined.
+                          </div>
+                          <div className="text-sm">
+                            The amounts represent your accumulated rewards across all staking activities for both tokens.
+                          </div>
+                          {claimsHistory && (
+                            <div className="text-sm mt-2">
+                              <strong>Breakdown by token:</strong>
+                              <table className="w-full mt-1 border-collapse">
+                                <thead className="border-b border-gray-700">
+                                  <tr>
+                                    <th className="text-left py-1">Token</th>
+                                    <th className="text-right py-1">USDC rewards</th>
+                                    <th className="text-right py-1">ADX rewards</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td className="py-1">ADX</td>
+                                    <td className="text-right py-1">
+                                      {formatNumber(claimsHistory.symbols.find(s => s.symbol === 'ADX')?.allTimeRewardsUsdc || 0, 2, 2)}
+                                    </td>
+                                    <td className="text-right py-1">
+                                      {formatNumber(claimsHistory.symbols.find(s => s.symbol === 'ADX')?.allTimeRewardsAdx || 0, 2, 2)}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td className="py-1">ALP</td>
+                                    <td className="text-right py-1">
+                                      {formatNumber(claimsHistory.symbols.find(s => s.symbol === 'ALP')?.allTimeRewardsUsdc || 0, 2, 2)}
+                                    </td>
+                                    <td className="text-right py-1">
+                                      {formatNumber(
+                                        (claimsHistory.symbols.find(s => s.symbol === 'ALP')?.allTimeRewardsAdx || 0) +
+                                        (claimsHistory.symbols.find(s => s.symbol === 'ALP')?.allTimeRewardsAdxGenesis || 0),
+                                        2, 2
+                                      )}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      }
+                      placement="auto"
+                    >
+                      <Image
+                        src={infoIcon}
+                        width={14}
+                        height={14}
+                        alt="info icon"
+                        className="inline-block ml-1 cursor-pointer"
+                      />
+                    </Tippy>
+                  </p>
                 </div>
                 <div className="flex flex-row space-x-4 text-xs">
                   <div className="flex items-center">
@@ -694,9 +888,41 @@ export default function StakeOverview({
               </div>
               <Pagination
                 currentPage={currentPage}
-                totalItems={claimsHistory ? claimsHistory.length : 0}
+                totalItems={numberTotalCountClaims ? numberTotalCountClaims : 0}
                 itemsPerPage={claimHistoryItemsPerPage}
-                onPageChange={setCurrentPage}
+                batchSize={9}
+                onPageChange={(page) => {
+                  console.log(`StakeOverview: Page changed to ${page}`);
+                  setCurrentPage(page);
+                }}
+                isLoading={isLoadingMoreClaims}
+                totalLoaded={claimsHistory ? claimsHistory.symbols.reduce(
+                  (acc, symbol) => acc + symbol.claims.length, 0
+                ) : 0}
+                onLoadMore={async (offset, limit) => {
+                  if (!loadClaimsHistory) {
+                    console.log("StakeOverview: No loadClaimsHistory function available");
+                    return;
+                  }
+
+                  console.log(`StakeOverview: Starting to load more claims data - requested offset=${offset}, limit=${limit}`);
+                  setIsLoadingMoreClaims(true);
+
+                  try {
+                    console.log("StakeOverview: Calling loadClaimsHistory");
+                    await loadClaimsHistory(offset, limit);
+                    console.log(`StakeOverview: Claims data loaded successfully for offset=${offset}, limit=${limit}`);
+
+                    // Give the system time to process the new data
+                    // This ensures the UI updates correctly
+                    setTimeout(() => {
+                      setIsLoadingMoreClaims(false);
+                    }, 100);
+                  } catch (error) {
+                    console.error('StakeOverview: Failed to load claim history:', error);
+                    setIsLoadingMoreClaims(false);
+                  }
+                }}
               />
             </div>
           </CSSTransition>
