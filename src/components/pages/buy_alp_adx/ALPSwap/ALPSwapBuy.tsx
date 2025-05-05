@@ -664,7 +664,7 @@ export default function ALPSwapBuy({
                 onClick={executeBuyAlp}
             /> : null}
 
-            <div className="p-3 border text-sm rounded flex relative w-full mt-3 pl-10 opacity-50 font-boldy">
+            <div className="p-3 border text-sm flex relative w-full mt-3 pl-10 opacity-50 font-boldy rounded-lg">
                 <Image
                     className="opacity-50 absolute left-3 top-auto bottom-auto"
                     src={infoIcon}
