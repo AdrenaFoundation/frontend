@@ -13,6 +13,7 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
 import {
     ClaimHistoryExtended,
+    ClaimHistoryExtendedApi,
     LockedStakeExtended,
 } from '@/types';
 import { formatMilliseconds, formatNumber, nativeToUi } from '@/utils';
@@ -56,7 +57,7 @@ export default function FullyLiquidALPStaking({
     roundPendingUsdcRewards: number;
     roundPendingAdxRewards: number;
     pendingGenesisAdxRewards: number;
-    claimsHistory: ClaimHistoryExtended[] | null;
+    claimsHistory: ClaimHistoryExtendedApi | null;
 }) {
     const [showMoreStakingInfo, setShowMoreStakingInfo] = useState(false);
     const storageKey = 'alpStakeSortConfig';
@@ -73,20 +74,20 @@ export default function FullyLiquidALPStaking({
     });
 
     const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
-
+    const alpClaimHistory = claimsHistory?.symbols.filter(c => c.symbol === 'ALP')[0] ?? null;
     const [currentPage, setCurrentPage] = useState(1);
     const [claimHistoryItemsPerPage,] = useState(3);
 
     const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
     useEffect(() => {
-        if (!claimsHistory) {
+        if (!alpClaimHistory) {
             return;
         }
         const startIndex = (currentPage - 1) * claimHistoryItemsPerPage;
         const endIndex = startIndex + claimHistoryItemsPerPage;
-        setPaginatedClaimsHistory(claimsHistory.slice(startIndex, endIndex));
-    }, [claimsHistory, currentPage, claimHistoryItemsPerPage]);
+        setPaginatedClaimsHistory(alpClaimHistory.claims.slice(startIndex, endIndex));
+    }, [alpClaimHistory, currentPage, claimHistoryItemsPerPage]);
 
     const sortedLockedStakes = lockedStakes
         ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
@@ -135,14 +136,11 @@ export default function FullyLiquidALPStaking({
     const isBigStakeAmount = totalStakeAmount > 1000000;
 
     const allTimeClaimedUsdc =
-        claimsHistory?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0;
+        alpClaimHistory?.allTimeRewardsUsdc ?? 0;
     const allTimeClaimedAdx =
-        claimsHistory?.reduce(
-            (sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis,
-            0,
-        ) ?? 0;
+        alpClaimHistory?.allTimeRewardsAdx ?? 0;
 
-    const adxValueAtClaim = claimsHistory?.reduce(
+    const adxValueAtClaim = alpClaimHistory?.claims.reduce(
         (sum, claim) => sum + (claim.rewards_adx + claim.rewards_adx_genesis) * claim.adx_price_at_claim,
         0,
     ) ?? 0;
@@ -161,7 +159,7 @@ export default function FullyLiquidALPStaking({
     const medianStakedTime = calculateMedianStakedTime.total ? calculateMedianStakedTime.acc / calculateMedianStakedTime.total : 0;
     console.log(calculateMedianStakedTime.total)
     const downloadClaimHistory = useCallback(() => {
-        if (!claimsHistory) {
+        if (!alpClaimHistory) {
             return;
         }
 
@@ -174,8 +172,8 @@ export default function FullyLiquidALPStaking({
             'signature',
         ];
 
-        const csvRows = claimsHistory
-            .filter(
+        const csvRows = alpClaimHistory
+            .claims.filter(
                 (claim) =>
                     claim.rewards_adx !== 0 ||
                     claim.rewards_adx_genesis !== 0 ||
@@ -184,7 +182,7 @@ export default function FullyLiquidALPStaking({
             .map((claim) =>
                 keys
                     .map((key) => {
-                        let value = claim[key as keyof typeof claimsHistory[0]];
+                        let value = claim[key as keyof typeof alpClaimHistory.claims[0]];
                         // Format the date field if it's `transaction_date`
                         if (key === 'transaction_date' && value instanceof Date) {
                             value = (value as Date).toISOString(); // Format to ISO 8601
@@ -207,7 +205,7 @@ export default function FullyLiquidALPStaking({
 
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-    }, [claimsHistory]);
+    }, [alpClaimHistory]);
 
     return (
         <div className="flex flex-col bg-main rounded-2xl border">
@@ -466,7 +464,7 @@ export default function FullyLiquidALPStaking({
                                         </div>
 
                                         <h3 className="text-lg font-semibold text-txtfade">
-                                            {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
+                                            {alpClaimHistory?.allTimeCountClaims ? ` (${alpClaimHistory.allTimeCountClaims})` : ''}
                                         </h3>
 
                                         {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 ml-2' onClick={() => {
@@ -507,7 +505,7 @@ export default function FullyLiquidALPStaking({
                                 </div>
                                 <Pagination
                                     currentPage={currentPage}
-                                    totalItems={claimsHistory ? claimsHistory.length : 0}
+                                    totalItems={alpClaimHistory?.allTimeCountClaims ?? 0}
                                     itemsPerPage={claimHistoryItemsPerPage}
                                     onPageChange={setCurrentPage}
                                 />
