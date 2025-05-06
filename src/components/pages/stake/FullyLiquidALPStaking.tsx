@@ -3,30 +3,26 @@ import '../../../styles/Animation.css';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react';
-import { CSSTransition } from 'react-transition-group';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useClaimHistory from '@/hooks/useClaimHistory';
 import {
-    ClaimHistoryExtended,
-    ClaimHistoryExtendedApi,
     LockedStakeExtended,
 } from '@/types';
 import { formatMilliseconds, formatNumber, nativeToUi } from '@/utils';
 
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxTokenLogo from '../../../../public/images/adx.svg';
-import chevronDown from '../../../../public/images/chevron-down.svg';
-import downloadIcon from '../../../../public/images/download.png';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import { fullyLiquidALPStaking } from '../global/Emissions/EmissionsChart';
-import ClaimBlock from './ClaimBlock';
+import ClaimHistorySection from './ClaimHistorySection';
 import LockedStakes from './LockedStakes';
+
 interface SortConfig {
     size: 'asc' | 'desc';
     duration: 'asc' | 'desc';
@@ -42,7 +38,7 @@ export default function FullyLiquidALPStaking({
     userPendingUsdcRewards,
     userPendingAdxRewards,
     pendingGenesisAdxRewards,
-    claimsHistory,
+    walletAddress,
 }: {
     totalLockedStake: number | null;
     lockedStakes: LockedStakeExtended[] | null;
@@ -57,11 +53,11 @@ export default function FullyLiquidALPStaking({
     roundPendingUsdcRewards: number;
     roundPendingAdxRewards: number;
     pendingGenesisAdxRewards: number;
-    claimsHistory: ClaimHistoryExtendedApi | null;
+    walletAddress: string | null;
 }) {
-    const [showMoreStakingInfo, setShowMoreStakingInfo] = useState(false);
+    const [showMoreStakingInfo, setShowMoreStakingInfo] = useState(true);
     const storageKey = 'alpStakeSortConfig';
-    const [isClaimingRewardsAndRedeeming, setIsClaimingRewardsAndRedeeming] = useState(false);
+    const [isClaimingRewardsAndRedeeming, setIsClaimingRewardsAndRedeeming] = useState(true);
     const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
         const savedConfig = localStorage.getItem(storageKey);
         return savedConfig
@@ -73,21 +69,12 @@ export default function FullyLiquidALPStaking({
             };
     });
 
-    const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
-    const alpClaimHistory = claimsHistory?.symbols.filter(c => c.symbol === 'ALP')[0] ?? null;
-    const [currentPage, setCurrentPage] = useState(1);
-    const [claimHistoryItemsPerPage,] = useState(3);
+    const { claimsHistory } = useClaimHistory({
+        walletAddress,
+        symbol: 'ALP'
+    });
 
-    const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
-
-    useEffect(() => {
-        if (!alpClaimHistory) {
-            return;
-        }
-        const startIndex = (currentPage - 1) * claimHistoryItemsPerPage;
-        const endIndex = startIndex + claimHistoryItemsPerPage;
-        setPaginatedClaimsHistory(alpClaimHistory.claims.slice(startIndex, endIndex));
-    }, [alpClaimHistory, currentPage, claimHistoryItemsPerPage]);
+    const alpClaimHistory = claimsHistory?.symbols.find(s => s.symbol === 'ALP');
 
     const sortedLockedStakes = lockedStakes
         ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
@@ -138,7 +125,7 @@ export default function FullyLiquidALPStaking({
     const allTimeClaimedUsdc =
         alpClaimHistory?.allTimeRewardsUsdc ?? 0;
     const allTimeClaimedAdx =
-        alpClaimHistory?.allTimeRewardsAdx ?? 0;
+        (alpClaimHistory?.allTimeRewardsAdx ?? 0) + (alpClaimHistory?.allTimeRewardsAdxGenesis ?? 0);
 
     const adxValueAtClaim = alpClaimHistory?.claims.reduce(
         (sum, claim) => sum + (claim.rewards_adx + claim.rewards_adx_genesis) * claim.adx_price_at_claim,
@@ -157,55 +144,6 @@ export default function FullyLiquidALPStaking({
     });
 
     const medianStakedTime = calculateMedianStakedTime.total ? calculateMedianStakedTime.acc / calculateMedianStakedTime.total : 0;
-    console.log(calculateMedianStakedTime.total)
-    const downloadClaimHistory = useCallback(() => {
-        if (!alpClaimHistory) {
-            return;
-        }
-
-        const keys = [
-            'claim_id',
-            'transaction_date',
-            'rewards_adx',
-            'rewards_adx_genesis',
-            'rewards_usdc',
-            'signature',
-        ];
-
-        const csvRows = alpClaimHistory
-            .claims.filter(
-                (claim) =>
-                    claim.rewards_adx !== 0 ||
-                    claim.rewards_adx_genesis !== 0 ||
-                    claim.rewards_usdc !== 0
-            )
-            .map((claim) =>
-                keys
-                    .map((key) => {
-                        let value = claim[key as keyof typeof alpClaimHistory.claims[0]];
-                        // Format the date field if it's `transaction_date`
-                        if (key === 'transaction_date' && value instanceof Date) {
-                            value = (value as Date).toISOString(); // Format to ISO 8601
-                        }
-                        return `"${String(value).replace(/"/g, '""')}"`;
-                    })
-                    .join(',')
-            );
-
-        const csvFileContent = [keys.join(','), ...csvRows].join('\n');
-
-        const blob = new Blob([csvFileContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `alp-staking-claim-history-${new Date().toISOString()}.csv`;
-        document.body.appendChild(a);
-        a.click();
-
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-    }, [alpClaimHistory]);
 
     return (
         <div className="flex flex-col bg-main rounded-2xl border">
@@ -454,79 +392,12 @@ export default function FullyLiquidALPStaking({
 
             {
                 showMoreStakingInfo ? <div className="flex flex-col h-full mt-4">
-                    <div className="flex flex-col text-sm py-0 px-5 w-full">
-                        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200">
-                            <div className='flex flex-col'>
-                                <div className='flex flex-row gap-2 items-center select-none'>
-                                    <div className="flex items-center justify-between">
-                                        <div className='mr-2'>
-                                            <h3 className="md:text-lg font-semibold">Claim History</h3>
-                                        </div>
-
-                                        <h3 className="text-lg font-semibold text-txtfade">
-                                            {alpClaimHistory?.allTimeCountClaims ? ` (${alpClaimHistory.allTimeCountClaims})` : ''}
-                                        </h3>
-
-                                        {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 ml-2' onClick={() => {
-                                            downloadClaimHistory();
-                                        }}>
-                                            <Image
-                                                src={downloadIcon}
-                                                width={18}
-                                                height={16}
-                                                alt="Download icon"
-                                                className="relative bottom-1"
-                                            />
-                                        </div> : null}
-                                    </div>
-                                </div>
-
-                                <p className='text-xs text-txtfade'>Subject to 30s delay</p>
-                            </div>
-                        </div>
-
-                        {/* Claim History Section */}
-
-                        <CSSTransition
-                            in={isClaimHistoryVisible}
-                            timeout={300}
-                            classNames="claim-history"
-                            unmountOnExit
-                        >
-                            <div className="mt-4">
-                                <div mt-2>
-                                    {paginatedClaimsHistory.length > 0 ? (
-                                        paginatedClaimsHistory.map((claim) => (
-                                            <ClaimBlock key={claim.claim_id} claim={claim} />
-                                        ))
-                                    ) : (
-                                        <p>No claim history available.</p>
-                                    )}
-                                </div>
-                                <Pagination
-                                    currentPage={currentPage}
-                                    totalItems={alpClaimHistory?.allTimeCountClaims ?? 0}
-                                    itemsPerPage={claimHistoryItemsPerPage}
-                                    onPageChange={setCurrentPage}
-                                />
-                            </div>
-                        </CSSTransition>
-
-                        <div className='w-full flex items-center justify-center h-6 border-t border-b border-bcolor hover:opacity-100 opacity-80 cursor-pointer mt-2' onClick={() => {
-                            setIsClaimHistoryVisible(!isClaimHistoryVisible)
-                        }}>
-                            <Image
-                                className={twMerge(
-                                    `h-6 w-6`,
-                                    isClaimHistoryVisible ? 'transform rotate-180 transition-all duration-1000 ease-in-out' : '',
-                                )}
-                                src={chevronDown}
-                                height={60}
-                                width={60}
-                                alt="Chevron down"
-                            />
-                        </div>
-                    </div>
+                    {/* Claims history section */}
+                    {/* ok to do double call to the data here since it should not be used anymore */}
+                    <ClaimHistorySection
+                        token="ALP"
+                        walletAddress={walletAddress}
+                    />
 
                     <div className="h-[1px] bg-bcolor w-full my-4" />
 

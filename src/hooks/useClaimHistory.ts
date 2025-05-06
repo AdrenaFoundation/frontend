@@ -1,111 +1,146 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import DataApiClient from '@/DataApiClient';
 import { ClaimHistoryExtended, ClaimHistoryExtendedApi } from '@/types';
 
+// Cache the API responses by token and offset
+const apiResponseCache: Record<
+  string,
+  Record<number, ClaimHistoryExtendedApi>
+> = {
+  ADX: {},
+  ALP: {},
+};
+
 export default function useClaimHistory({
   walletAddress,
-  offset = 0,
-  limit = 1000,
+  batchSize = 1000, // Default batch size for loading data
+  itemsPerPage = 2, // Default items per page for display
   symbol = 'ADX',
+  interval = 30000,
 }: {
   walletAddress: string | null;
-  offset?: number;
-  limit?: number;
+  batchSize?: number;
+  itemsPerPage?: number;
   symbol?: 'ADX' | 'ALP';
+  interval?: number;
 }): {
   isLoadingClaimHistory: boolean;
   claimsHistory: ClaimHistoryExtendedApi | null;
-  optimisticClaimAdx: ClaimHistoryExtended[];
-  optimisticAllTimeAdxClaimedAllSymbols: number;
-  optimisticAllTimeUsdcClaimedAllSymbols: number;
-  setOptimisticClaimAdx: (claims: ClaimHistoryExtended[]) => void;
-  setOptimisticAllTimeAdxClaimedAllSymbols: (claims: number) => void;
-  setOptimisticAllTimeUsdcClaimedAllSymbols: (claims: number) => void;
-  triggerClaimsReload: () => Promise<void>;
-  hasDataForPage: (pageOffset: number, pageLimit: number) => boolean;
+  // Pagination-related return values
+  currentPage: number;
+  totalItems: number;
+  totalPages: number;
+  setCurrentPage: (page: number) => void;
+  loadPageData: (page: number) => Promise<void>;
+  getPaginatedData: (page: number) => ClaimHistoryExtended[];
 } {
   const [claimsHistory, setClaimsHistory] =
     useState<ClaimHistoryExtendedApi | null>(null);
 
-  const [optimisticClaimAdx, setOptimisticClaimAdx] = useState<
-    ClaimHistoryExtended[]
-  >([]);
-
-  const [
-    optimisticAllTimeAdxClaimedAllSymbols,
-    setOptimisticAllTimeAdxClaimedAllSymbols,
-  ] = useState<number>(0);
-  const [
-    optimisticAllTimeUsdcClaimedAllSymbols,
-    setOptimisticAllTimeUsdcClaimedAllSymbols,
-  ] = useState<number>(0);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
   // Track loading state
   const [isLoadingClaimHistory, setIsLoadingClaimHistory] =
     useState<boolean>(false);
 
-  // Keep track of the current offset and limit to prevent duplicate API calls
-  // and ensure interval uses current values
-  const currentParamsRef = useRef({ offset, limit });
-
   // Keep track of the current wallet address for the interval
   const walletAddressRef = useRef<string | null>(walletAddress);
+
+  // Keep track of the current token symbol
+  const symbolRef = useRef<'ADX' | 'ALP'>(symbol);
 
   // Keep track of the refresh interval
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Keep track of the last refresh time to prevent too frequent updates
-  const lastRefreshTimeRef = useRef<number>(0);
-
   // Update refs when props change
   useEffect(() => {
-    currentParamsRef.current = { offset, limit };
     walletAddressRef.current = walletAddress;
-  }, [offset, limit, walletAddress]);
+    symbolRef.current = symbol;
+  }, [walletAddress, symbol]);
 
-  // Function to set up the refresh interval
-  const setupRefreshInterval = useCallback(() => {
-    // Clear any existing interval first
+  // Calculate total pages
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+
+  // Load claims data for a specific offset
+  const loadClaimsData = useCallback(
+    async (offset: number) => {
+      // Early return if no wallet address
+      const currentWalletAddress = walletAddressRef.current;
+      const currentToken = symbolRef.current;
+      if (!currentWalletAddress) {
+        return;
+      }
+
+      // Skip if already loading
+      if (isLoadingClaimHistory) {
+        return;
+      }
+
+      // Check cache first
+      if (apiResponseCache[currentToken][offset]) {
+        setClaimsHistory(apiResponseCache[currentToken][offset]);
+        return;
+      }
+
+      // Set loading state
+      setIsLoadingClaimHistory(true);
+
+      try {
+        const claimsHistoryData = await DataApiClient.fetchClaimsHistory({
+          walletAddress: currentWalletAddress,
+          offset,
+          limit: batchSize,
+          symbol: currentToken,
+        });
+
+        if (claimsHistoryData === null) {
+          setClaimsHistory(null);
+          return;
+        }
+
+        // Store in cache
+        apiResponseCache[currentToken][offset] = claimsHistoryData;
+
+        if (claimsHistoryData.symbols.length > 0) {
+          const newTotalItems = claimsHistoryData.symbols.reduce(
+            (acc, s) => acc + s.allTimeCountClaims,
+            0,
+          );
+          setTotalItems(newTotalItems);
+        }
+
+        // Set the claims history data
+        setClaimsHistory(claimsHistoryData);
+      } catch (e) {
+        console.error(
+          `Hook [${currentToken}]: Error loading claims history`,
+          e,
+          String(e),
+        );
+      } finally {
+        setIsLoadingClaimHistory(false);
+      }
+    },
+    [batchSize, isLoadingClaimHistory],
+  );
+
+  // Initial data load
+  useEffect(() => {
+    loadClaimsData(0);
+
+    // Set up refresh interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
-      intervalRef.current = null;
     }
 
-    // Set up a new interval
     intervalRef.current = setInterval(() => {
-      // Only auto-refresh if we're on page 1 (offset 0)
-      const { offset: currentOffset } = currentParamsRef.current;
-      const currentWalletAddress = walletAddressRef.current;
-      const now = Date.now();
-      const timeSinceLastRefresh = now - lastRefreshTimeRef.current;
-      const minimumRefreshInterval = 30000; // 30 seconds minimum between refreshes
-
-      // Log the current wallet address for debugging
-      console.log(
-        'Hook: Auto-refresh check, currentWalletAddress =',
-        currentWalletAddress,
-      );
-
-      if (
-        currentWalletAddress &&
-        currentOffset === 0 &&
-        timeSinceLastRefresh >= minimumRefreshInterval
-      ) {
-        console.log('Hook: Auto-refreshing claims data');
-        loadClaimsHistory();
-      } else if (!currentWalletAddress) {
-        console.log('Hook: Skipping auto-refresh, no wallet address available');
-      } else if (currentOffset !== 0) {
-        console.log(
-          'Hook: Skipping auto-refresh because offset =',
-          currentOffset,
-          '(not on page 1)',
-        );
-      } else {
-        console.log('Hook: Skipping auto-refresh, last refresh was too recent');
+      if (walletAddressRef.current && !isLoadingClaimHistory) {
+        loadClaimsData(0);
       }
-    }, 5000);
+    }, interval);
 
     return () => {
       if (intervalRef.current) {
@@ -113,171 +148,77 @@ export default function useClaimHistory({
         intervalRef.current = null;
       }
     };
-  }, []);
+  }, [walletAddress, symbol, loadClaimsData, interval, isLoadingClaimHistory]);
 
-  const loadClaimsHistory = useCallback(async () => {
-    // Early return if there's no wallet address
-    const currentWalletAddress = walletAddressRef.current;
-    if (!currentWalletAddress) {
-      console.log(
-        'Hook: No wallet address available, skipping data load. Current value:',
-        currentWalletAddress,
-      );
-      return;
-    }
+  // Load data for a specific page
+  const loadPageData = useCallback(
+    async (page: number) => {
+      const currentToken = symbolRef.current;
 
-    // Set loading state to true
-    setIsLoadingClaimHistory(true);
-
-    // Record the refresh time
-    lastRefreshTimeRef.current = Date.now();
-
-    // Always use the latest values from the ref
-    const { offset: currentOffset, limit: currentLimit } =
-      currentParamsRef.current;
-
-    console.log(
-      'Hook: loadClaimsHistory called with offset =',
-      currentOffset,
-      'limit =',
-      currentLimit,
-    );
-
-    // Reset the interval when manually loading to prevent overlapping requests
-    if (intervalRef.current) {
-      console.log('Hook: Resetting automatic refresh interval');
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-
-    try {
-      console.log(
-        'Hook: Fetching claims history with offset =',
-        currentOffset,
-        'limit =',
-        currentLimit,
-      );
-
-      // We already checked currentWalletAddress is not null above
-      const claimsHistory: ClaimHistoryExtendedApi | null =
-        await DataApiClient.fetchClaimsHistory({
-          walletAddress: currentWalletAddress,
-          offset: currentOffset,
-          limit: currentLimit,
-        });
-
-      if (claimsHistory === null) {
-        console.log('Hook: Claims history is null, returning');
-        setClaimsHistory(null);
+      if (page < 1 || (totalPages > 0 && page > totalPages)) {
         return;
       }
 
-      console.log(
-        'Hook: Claims history fetched successfully, total claims =',
-        claimsHistory.symbols.reduce(
-          (acc, symbol) => acc + symbol.claims.length,
-          0,
-        ),
-      );
-      setClaimsHistory(claimsHistory);
+      // Update current page
+      setCurrentPage(page);
 
-      setOptimisticClaimAdx([]);
-      setOptimisticAllTimeAdxClaimedAllSymbols(0);
-      setOptimisticAllTimeUsdcClaimedAllSymbols(0);
+      // Calculate offset from page
+      const pageOffset = (page - 1) * itemsPerPage;
 
-      // Set loading state to false
-      setIsLoadingClaimHistory(false);
+      // Calculate which batch to load
+      const batchNumber = Math.floor(pageOffset / batchSize);
+      const batchOffset = batchNumber * batchSize;
 
-      // Restart the interval after loading completes
-      setupRefreshInterval();
-    } catch (e) {
-      console.log('Error loading claims history', e, String(e));
+      // Check if we have this batch in the cache
+      if (apiResponseCache[currentToken][batchOffset]) {
+        setClaimsHistory(apiResponseCache[currentToken][batchOffset]);
+      } else {
+        // Load the data if not in cache
 
-      // Set loading state to false even on error
-      setIsLoadingClaimHistory(false);
-
-      // Restart the interval even if there was an error
-      setupRefreshInterval();
-      throw e;
-    }
-  }, [setupRefreshInterval]);
-
-  // Only run the initial load and periodic refresh, not on offset/limit changes
-  useEffect(() => {
-    // Initial load
-    loadClaimsHistory();
-
-    // Set up periodic refresh with latest offset/limit values
-    const cleanup = setupRefreshInterval();
-
-    return () => {
-      cleanup();
-    };
-  }, [walletAddress, loadClaimsHistory, setupRefreshInterval]);
-
-  // Function to check if we already have data for a specific page
-  const hasDataForPage = useCallback(
-    (pageOffset: number, pageLimit: number): boolean => {
-      if (!claimsHistory) return false;
-
-      // Calculate total claims available
-      const totalClaims = claimsHistory.symbols.reduce(
-        (acc, symbol) => acc + symbol.claims.length,
-        0,
-      );
-
-      // Check both the offset and that we have enough items for the requested page
-      const hasOffset = claimsHistory.offset <= pageOffset;
-
-      // Most importantly, check if there's ANY data available at the requested offset
-      // If pageOffset is beyond the total claims, there's no data for that page
-      const hasDataAtOffset = pageOffset < totalClaims;
-
-      // Also check if we have enough items to satisfy the requested page
-      const hasEnoughItems = totalClaims >= pageOffset + pageLimit;
-
-      console.log(
-        `Hook: hasDataForPage - pageOffset=${pageOffset}, pageLimit=${pageLimit}, totalClaims=${totalClaims}, hasOffset=${hasOffset}, hasDataAtOffset=${hasDataAtOffset}, hasEnoughItems=${hasEnoughItems}`,
-      );
-
-      // We have the data if we have the right offset AND there's data available at that offset
-      // We don't necessarily need to have enough items - that just means the last page will be partially filled
-      return hasOffset && hasDataAtOffset;
+        await loadClaimsData(batchOffset);
+      }
     },
-    [claimsHistory],
+    [totalPages, itemsPerPage, batchSize, loadClaimsData],
+  );
+
+  // Get paginated data for a specific page
+  const getPaginatedData = useCallback(
+    (page: number): ClaimHistoryExtended[] => {
+      if (!claimsHistory) return [];
+
+      // Calculate which items to display from the current batch
+      const pageOffset = (page - 1) * itemsPerPage;
+      const apiOffset = claimsHistory.offset || 0;
+      const relativeStartIndex = pageOffset - apiOffset;
+
+      // Get all claims from current data
+      const allClaims = claimsHistory.symbols.flatMap(
+        (symbol) => symbol.claims,
+      );
+
+      // If the requested page is within the current batch, return those items
+      if (relativeStartIndex >= 0 && relativeStartIndex < allClaims.length) {
+        const relativeEndIndex = relativeStartIndex + itemsPerPage;
+        return allClaims.slice(
+          relativeStartIndex,
+          Math.min(relativeEndIndex, allClaims.length),
+        );
+      }
+
+      return [];
+    },
+    [claimsHistory, itemsPerPage],
   );
 
   return {
     isLoadingClaimHistory,
     claimsHistory,
-    optimisticClaimAdx,
-    optimisticAllTimeAdxClaimedAllSymbols,
-    optimisticAllTimeUsdcClaimedAllSymbols,
-    setOptimisticClaimAdx,
-    setOptimisticAllTimeAdxClaimedAllSymbols,
-    setOptimisticAllTimeUsdcClaimedAllSymbols,
-    triggerClaimsReload: async () => {
-      console.log(
-        'Hook triggerClaimsReload: Starting data load with offset =',
-        currentParamsRef.current.offset,
-        'limit =',
-        currentParamsRef.current.limit,
-      );
-
-      setIsLoadingClaimHistory(true);
-
-      try {
-        await loadClaimsHistory();
-        console.log(
-          'Hook triggerClaimsReload: Data loaded successfully for offset =',
-          currentParamsRef.current.offset,
-        );
-      } catch (error) {
-        console.error('Hook triggerClaimsReload: Error loading data:', error);
-        setIsLoadingClaimHistory(false);
-        throw error;
-      }
-    },
-    hasDataForPage,
+    // Pagination-related return values
+    currentPage,
+    totalItems,
+    totalPages,
+    setCurrentPage,
+    loadPageData,
+    getPaginatedData,
   };
 }
