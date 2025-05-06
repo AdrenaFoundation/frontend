@@ -78,27 +78,28 @@ export default function WalletDigger({
         getAlpLockedStakes(stakingAccounts);
 
     const {
-        allTimeUsdcClaimedAllSymbols,
-        allTimeAdxClaimedAllSymbols,
-        allTimeAdxGenesisClaimedAllSymbols,
-        claimsHistory,
+        claimsHistory: claimsHistoryAdxApi, isLoadingClaimHistory: isLoadingClaimHistoryAdx
     } = useClaimHistory({
         walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
-        offset: 0,
-        limit: 3,
+        symbol: 'ADX',
+        interval: 100000000,
+    });
+
+    const {
+        claimsHistory: claimsHistoryAlpApi, isLoadingClaimHistory: isLoadingClaimHistoryAlp
+    } = useClaimHistory({
+        walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
+        symbol: 'ALP',
+        interval: 100000000,
     });
 
     const allTimeClaimedUsdc =
-        useMemo(() => allTimeUsdcClaimedAllSymbols, [allTimeUsdcClaimedAllSymbols]);
+        (claimsHistoryAdxApi?.allTimeUsdcClaimed ?? 0) + (claimsHistoryAlpApi?.allTimeUsdcClaimed ?? 0);
+    const allTimeClaimedAdx =
+        (claimsHistoryAdxApi?.allTimeAdxClaimed ?? 0) + (claimsHistoryAdxApi?.allTimeAdxGenesisClaimed ?? 0) + (claimsHistoryAlpApi?.allTimeAdxClaimed ?? 0) + (claimsHistoryAlpApi?.allTimeAdxGenesisClaimed ?? 0);
 
-    const allTimeClaimedAdx = useMemo(() =>
-        (claimsHistoryAdx?.reduce(
-            (sum, claim) => sum + claim.rewards_adx,
-            0,
-        ) ?? 0) + (claimsHistoryAlp?.reduce(
-            (sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis,
-            0,
-        ) ?? 0), [claimsHistoryAdx, claimsHistoryAlp]);
+    const claimsHistoryAdx = claimsHistoryAdxApi?.symbols.find(c => c.symbol === 'ADX')?.claims;
+    const claimsHistoryAlp = claimsHistoryAlpApi?.symbols.find(c => c.symbol === 'ALP')?.claims;
 
     const totalStakedAdx = useMemo(() => adxLockedStakes?.reduce((sum, stake) => sum + nativeToUi(stake.amount, window.adrena.client.adxToken.decimals), 0) ?? 0, [adxLockedStakes]);
     const totalStakedAlp = useMemo(() => alpLockedStakes?.reduce((sum, stake) => sum + nativeToUi(stake.amount, window.adrena.client.alpToken.decimals), 0) ?? 0, [alpLockedStakes]);
@@ -355,8 +356,7 @@ export default function WalletDigger({
 
                                         <Pagination
                                             currentPage={adxClaimHistoryCurrentPage}
-                                            totalItems={claimsHistoryAdx ? claimsHistoryAdx.length : 0}
-                                            itemsPerPage={claimHistoryItemsPerPage}
+                                            totalPages={claimsHistoryAdx ? Math.ceil(claimsHistoryAdx.length / claimHistoryItemsPerPage) : 0}
                                             onPageChange={setAdxClaimHistoryCurrentPage}
                                         />
                                     </div>
@@ -368,8 +368,7 @@ export default function WalletDigger({
 
                                         <Pagination
                                             currentPage={alpClaimHistoryCurrentPage}
-                                            totalItems={claimsHistoryAlp ? claimsHistoryAlp.length : 0}
-                                            itemsPerPage={claimHistoryItemsPerPage}
+                                            totalPages={claimsHistoryAlp ? Math.ceil(claimsHistoryAlp.length / claimHistoryItemsPerPage) : 0}
                                             onPageChange={setAlpClaimHistoryCurrentPage}
                                         />
                                     </div>

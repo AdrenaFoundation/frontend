@@ -270,8 +270,7 @@ export default function LockedStakesDuration({
 
           <Pagination
             currentPage={lockedStakesPage}
-            totalItems={lockedStakes ? lockedStakes.length : 0}
-            itemsPerPage={lockedStakesPerPage}
+            totalPages={lockedStakes ? Math.ceil(lockedStakes.length / lockedStakesPerPage) : 0}
             onPageChange={setLockedStakesPage}
           />
         </div> : null
