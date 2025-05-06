@@ -189,17 +189,17 @@ const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === 1 || isLoading}
           className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50"
         >
-          {isLoading && currentPage > 1 ? "..." : "&lt;"}
+          {isLoading && currentPage > 1 ? "..." : "<"}
         </button>
         <span className="text-sm text-txtfade">
-          {isLoading ? "Loading..." : `${currentPage} / ${totalPages}`}
+          {`${currentPage} / ${totalPages}`}
         </span>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages || isLoading}
           className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50"
         >
-          {isLoading && currentPage < totalPages ? "..." : "&gt;"}
+          {isLoading && currentPage < totalPages ? "..." : ">"}
         </button>
       </div>
       <span className="text-sm text-txtfade opacity-50">{`(${itemsSeen}/${totalItems})`}</span>

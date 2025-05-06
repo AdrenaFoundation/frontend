@@ -14,6 +14,7 @@ export default function useClaimHistory({
   limit?: number;
   symbol?: 'ADX' | 'ALP';
 }): {
+  isLoadingClaimHistory: boolean;
   claimsHistory: ClaimHistoryExtendedApi | null;
   optimisticClaimAdx: ClaimHistoryExtended[];
   optimisticAllTimeAdxClaimedAllSymbols: number;
@@ -39,6 +40,10 @@ export default function useClaimHistory({
     optimisticAllTimeUsdcClaimedAllSymbols,
     setOptimisticAllTimeUsdcClaimedAllSymbols,
   ] = useState<number>(0);
+
+  // Track loading state
+  const [isLoadingClaimHistory, setIsLoadingClaimHistory] =
+    useState<boolean>(false);
 
   // Keep track of the current offset and limit to prevent duplicate API calls
   // and ensure interval uses current values
@@ -121,6 +126,9 @@ export default function useClaimHistory({
       return;
     }
 
+    // Set loading state to true
+    setIsLoadingClaimHistory(true);
+
     // Record the refresh time
     lastRefreshTimeRef.current = Date.now();
 
@@ -177,10 +185,16 @@ export default function useClaimHistory({
       setOptimisticAllTimeAdxClaimedAllSymbols(0);
       setOptimisticAllTimeUsdcClaimedAllSymbols(0);
 
+      // Set loading state to false
+      setIsLoadingClaimHistory(false);
+
       // Restart the interval after loading completes
       setupRefreshInterval();
     } catch (e) {
       console.log('Error loading claims history', e, String(e));
+
+      // Set loading state to false even on error
+      setIsLoadingClaimHistory(false);
 
       // Restart the interval even if there was an error
       setupRefreshInterval();
@@ -234,6 +248,7 @@ export default function useClaimHistory({
   );
 
   return {
+    isLoadingClaimHistory,
     claimsHistory,
     optimisticClaimAdx,
     optimisticAllTimeAdxClaimedAllSymbols,
@@ -248,6 +263,9 @@ export default function useClaimHistory({
         'limit =',
         currentParamsRef.current.limit,
       );
+
+      setIsLoadingClaimHistory(true);
+
       try {
         await loadClaimsHistory();
         console.log(
@@ -256,6 +274,7 @@ export default function useClaimHistory({
         );
       } catch (error) {
         console.error('Hook triggerClaimsReload: Error loading data:', error);
+        setIsLoadingClaimHistory(false);
         throw error;
       }
     },
