@@ -588,6 +588,7 @@ export type ClaimHistoryExtendedApi = {
   allTimeUsdcClaimed: number;
   allTimeAdxClaimed: number;
   allTimeAdxGenesisClaimed: number;
+  allTimeCountClaims: number;
 };
 
 type AchievementsBase = {

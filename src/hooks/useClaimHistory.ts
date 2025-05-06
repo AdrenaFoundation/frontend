@@ -61,17 +61,6 @@ export default function useClaimHistory({
   // Derived values
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
-  // Update refs when props change
-  useEffect(() => {
-    walletAddressRef.current = walletAddress;
-    symbolRef.current = symbol;
-  }, [walletAddress, symbol]);
-
-  // Update currentPageRef when currentPage changes
-  useEffect(() => {
-    currentPageRef.current = currentPage;
-  }, [currentPage]);
-
   /**
    * Load claims data for a specific offset
    */
@@ -132,6 +121,35 @@ export default function useClaimHistory({
     },
     [batchSize, isLoadingClaimHistory],
   );
+
+  // Update currentPageRef when currentPage changes
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
+
+  // Update refs when props change and force refresh if wallet changes
+  useEffect(() => {
+    // Check if wallet address has changed
+    if (walletAddressRef.current !== walletAddress && walletAddress) {
+      console.log(
+        `Wallet changed from ${walletAddressRef.current} to ${walletAddress} - forcing refresh for ${symbol}`,
+      );
+
+      // Update the ref
+      walletAddressRef.current = walletAddress;
+      symbolRef.current = symbol;
+
+      // Clear cache for current token
+      apiResponseCache[symbol] = {};
+
+      // Force reload data
+      loadClaimsData(0, true);
+    } else {
+      // Just update refs without refresh
+      walletAddressRef.current = walletAddress;
+      symbolRef.current = symbol;
+    }
+  }, [walletAddress, symbol, loadClaimsData]);
 
   /**
    * Initialize data loading and set up refresh interval
