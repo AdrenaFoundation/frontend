@@ -199,7 +199,7 @@ export default function ClaimHistorySection({
                                     height={16}
                                     alt="Download icon"
                                     className="relative bottom-1"
-                                    style={{ width: 'auto', height: 'auto' }}
+                                    style={{ width: 'auto/2', height: 'auto/2' }}
                                 />
                             </div> : null}
                         </div>
@@ -286,7 +286,7 @@ export default function ClaimHistorySection({
                 unmountOnExit
                 nodeRef={nodeRef}
             >
-                <div className="mt-4" ref={nodeRef}>
+                <div className="mt-4">
                     {isLoadingClaimHistory && !paginatedClaims.length ? (
                         <div className="flex flex-col w-full h-full items-center justify-center py-4">
                             <Loader />

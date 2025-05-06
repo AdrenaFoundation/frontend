@@ -12,6 +12,15 @@ const apiResponseCache: Record<
   ALP: {},
 };
 
+// Global flag to prevent multiple components from initializing hooks
+const hooksInitialized = {
+  ADX: false,
+  ALP: false,
+};
+
+/**
+ * Hook for managing claim history data with pagination and automatic refresh
+ */
 export default function useClaimHistory({
   walletAddress,
   batchSize = 1000, // Default batch size for loading data
@@ -37,23 +46,20 @@ export default function useClaimHistory({
 } {
   const [claimsHistory, setClaimsHistory] =
     useState<ClaimHistoryExtendedApi | null>(null);
-
-  // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-
-  // Track loading state
   const [isLoadingClaimHistory, setIsLoadingClaimHistory] =
     useState<boolean>(false);
 
-  // Keep track of the current wallet address for the interval
+  // Refs - to maintain values across renders without causing re-renders
   const walletAddressRef = useRef<string | null>(walletAddress);
-
-  // Keep track of the current token symbol
   const symbolRef = useRef<'ADX' | 'ALP'>(symbol);
-
-  // Keep track of the refresh interval
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitializedRef = useRef<boolean>(false);
+  const currentPageRef = useRef<number>(1);
+
+  // Derived values
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
   // Update refs when props change
   useEffect(() => {
@@ -61,49 +67,51 @@ export default function useClaimHistory({
     symbolRef.current = symbol;
   }, [walletAddress, symbol]);
 
-  // Calculate total pages
-  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  // Update currentPageRef when currentPage changes
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
 
-  // Load claims data for a specific offset
+  /**
+   * Load claims data for a specific offset
+   */
   const loadClaimsData = useCallback(
-    async (offset: number) => {
-      // Early return if no wallet address
-      const currentWalletAddress = walletAddressRef.current;
+    async (offset: number, forceRefresh = false) => {
+      // Guard clauses for early returns
+      if (!walletAddressRef.current) return;
+      if (isLoadingClaimHistory) return;
+
+      // Cache handling
       const currentToken = symbolRef.current;
-      if (!currentWalletAddress) {
-        return;
-      }
-
-      // Skip if already loading
-      if (isLoadingClaimHistory) {
-        return;
-      }
-
-      // Check cache first
-      if (apiResponseCache[currentToken][offset]) {
+      if (
+        offset !== 0 &&
+        !forceRefresh &&
+        apiResponseCache[currentToken][offset]
+      ) {
         setClaimsHistory(apiResponseCache[currentToken][offset]);
         return;
       }
 
-      // Set loading state
+      // Fetch data
       setIsLoadingClaimHistory(true);
-
       try {
         const claimsHistoryData = await DataApiClient.fetchClaimsHistory({
-          walletAddress: currentWalletAddress,
+          walletAddress: walletAddressRef.current,
           offset,
           limit: batchSize,
           symbol: currentToken,
         });
 
+        // Handle empty response
         if (claimsHistoryData === null) {
           setClaimsHistory(null);
           return;
         }
 
-        // Store in cache
+        // Update cache and state
         apiResponseCache[currentToken][offset] = claimsHistoryData;
 
+        // Update total items count
         if (claimsHistoryData.symbols.length > 0) {
           const newTotalItems = claimsHistoryData.symbols.reduce(
             (acc, s) => acc + s.allTimeCountClaims,
@@ -112,13 +120,11 @@ export default function useClaimHistory({
           setTotalItems(newTotalItems);
         }
 
-        // Set the claims history data
         setClaimsHistory(claimsHistoryData);
-      } catch (e) {
+      } catch (error) {
         console.error(
-          `Hook [${currentToken}]: Error loading claims history`,
-          e,
-          String(e),
+          `Error loading claims history for ${currentToken}:`,
+          error,
         );
       } finally {
         setIsLoadingClaimHistory(false);
@@ -127,66 +133,78 @@ export default function useClaimHistory({
     [batchSize, isLoadingClaimHistory],
   );
 
-  // Initial data load
+  /**
+   * Initialize data loading and set up refresh interval
+   * Only runs once when component mounts
+   */
   useEffect(() => {
-    loadClaimsData(0);
+    if (!walletAddress || isInitializedRef.current) return;
+
+    // Mark as initialized
+    isInitializedRef.current = true;
+
+    // Initial data load
+    loadClaimsData(0, true);
 
     // Set up refresh interval
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+    if (!hooksInitialized[symbol]) {
+      hooksInitialized[symbol] = true;
+
+      intervalRef.current = setInterval(() => {
+        // Only refresh if wallet is connected and on first page
+        if (walletAddressRef.current && currentPageRef.current === 1) {
+          loadClaimsData(0, true);
+        }
+      }, interval);
     }
 
-    intervalRef.current = setInterval(() => {
-      if (walletAddressRef.current && !isLoadingClaimHistory) {
-        loadClaimsData(0);
-      }
-    }, interval);
-
+    // Cleanup on unmount
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
+        hooksInitialized[symbol] = false;
       }
+      isInitializedRef.current = false;
     };
-  }, [walletAddress, symbol, loadClaimsData, interval, isLoadingClaimHistory]);
+  }, []); // Empty dependency array ensures it only runs once
 
-  // Load data for a specific page
+  /**
+   * Load data for a specific page
+   */
   const loadPageData = useCallback(
     async (page: number) => {
-      const currentToken = symbolRef.current;
-
-      if (page < 1 || (totalPages > 0 && page > totalPages)) {
-        return;
-      }
+      // Guard clause
+      if (page < 1 || (totalPages > 0 && page > totalPages)) return;
 
       // Update current page
       setCurrentPage(page);
+      currentPageRef.current = page;
 
       // Calculate offset from page
       const pageOffset = (page - 1) * itemsPerPage;
-
-      // Calculate which batch to load
       const batchNumber = Math.floor(pageOffset / batchSize);
       const batchOffset = batchNumber * batchSize;
 
-      // Check if we have this batch in the cache
+      // Load data (from cache or API)
+      const currentToken = symbolRef.current;
       if (apiResponseCache[currentToken][batchOffset]) {
         setClaimsHistory(apiResponseCache[currentToken][batchOffset]);
       } else {
-        // Load the data if not in cache
-
         await loadClaimsData(batchOffset);
       }
     },
     [totalPages, itemsPerPage, batchSize, loadClaimsData],
   );
 
-  // Get paginated data for a specific page
+  /**
+   * Get paginated data for the current page
+   */
   const getPaginatedData = useCallback(
     (page: number): ClaimHistoryExtended[] => {
       if (!claimsHistory) return [];
 
-      // Calculate which items to display from the current batch
+      // Calculate indices for the requested page
       const pageOffset = (page - 1) * itemsPerPage;
       const apiOffset = claimsHistory.offset || 0;
       const relativeStartIndex = pageOffset - apiOffset;
@@ -196,7 +214,7 @@ export default function useClaimHistory({
         (symbol) => symbol.claims,
       );
 
-      // If the requested page is within the current batch, return those items
+      // Return the slice for the current page
       if (relativeStartIndex >= 0 && relativeStartIndex < allClaims.length) {
         const relativeEndIndex = relativeStartIndex + itemsPerPage;
         return allClaims.slice(
@@ -213,7 +231,6 @@ export default function useClaimHistory({
   return {
     isLoadingClaimHistory,
     claimsHistory,
-    // Pagination-related return values
     currentPage,
     totalItems,
     totalPages,
