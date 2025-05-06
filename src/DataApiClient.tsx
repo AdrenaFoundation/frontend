@@ -1080,10 +1080,7 @@ export default class DataApiClient {
     }): Promise<ClaimHistoryExtendedApi | null> {
         if (!walletAddress) return null;
 
-        console.log("DataApiClient: Fetching claims history with offset =", offset, "limit =", limit);
-
-        const url = `${DataApiClient.DATAPI_URL}/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}&sort=DESC`;
-        console.log("DataApiClient: Fetching from URL =", url);
+        const url = `${DataApiClient.DATAPI_URL}/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}&sort=DESC${symbol ? `&symbol=${symbol}` : ''}`;
 
         const response = await fetch(url);
 
@@ -1093,7 +1090,6 @@ export default class DataApiClient {
         }
 
         const apiBody = await response.json();
-        console.log("DataApiClient: Received API response:", apiBody.success ? "success" : "failure");
 
         const apiData: ClaimHistoryApi | undefined = apiBody.data;
 
@@ -1102,11 +1098,8 @@ export default class DataApiClient {
             return null;
         }
 
-        console.log("DataApiClient: API data offset =", apiData.offset, "limit =", apiData.limit);
-
         // Check if symbols is defined and is an array
         if (!apiData.symbols || !Array.isArray(apiData.symbols)) {
-            console.log('DataApiClient: apiData.symbols is undefined or not an array');
             return {
                 startDate: new Date(apiData.start_date || new Date()),
                 endDate: new Date(apiData.end_date || new Date()),
@@ -1123,7 +1116,6 @@ export default class DataApiClient {
         const totalClaimsCount = apiData.symbols.reduce(
             (acc, s) => acc + (s.claims?.length || 0), 0
         );
-        console.log(`DataApiClient: Total claims in response: ${totalClaimsCount}`);
 
         // If we requested data past the end, log it
         if (offset > 0 && totalClaimsCount === 0) {

@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -19,8 +18,6 @@ import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import { USD_DECIMALS } from '@/constant';
-import useClaimHistory from '@/hooks/useClaimHistory';
-import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -36,11 +33,10 @@ import {
   addNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
-  getNextStakingRoundStartTime,
   nativeToUi,
   uiToNative,
 } from '@/utils';
-import DataApiClient from '@/DataApiClient';
+import Button from '@/components/common/Button/Button';
 
 export type ADXTokenDetails = {
   balance: number | null;
@@ -86,24 +82,10 @@ export default function Stake({
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  const [claimsOffset, setClaimsOffset] = useState(0);
-  const [claimsLimit, setClaimsLimit] = useState(6);
-
   const {
-    isLoadingClaimHistory,
-    claimsHistory,
-    optimisticClaimAdx,
-    optimisticAllTimeAdxClaimedAllSymbols,
-    optimisticAllTimeUsdcClaimedAllSymbols,
-    setOptimisticClaimAdx,
-    setOptimisticAllTimeAdxClaimedAllSymbols,
-    setOptimisticAllTimeUsdcClaimedAllSymbols,
-    triggerClaimsReload
-  } = useClaimHistory({
-    walletAddress: wallet?.walletAddress ?? null,
-    offset: claimsOffset,
-    limit: claimsLimit,
-  });
+    stakingAccounts,
+    triggerWalletStakingAccountsReload
+  } = useWalletStakingAccounts(wallet?.walletAddress ?? null);
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -113,8 +95,7 @@ export default function Stake({
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
 
-  const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts(wallet?.walletAddress ?? null);
+  const [optimisticClaimAdx, setOptimisticClaimAdx] = useState<ClaimHistoryExtended | null>(null);
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
@@ -138,6 +119,7 @@ export default function Stake({
   const [activeStakingToken, setActiveStakingToken] = useState<
     'ADX' | 'ALP' | null
   >(null);
+  const [showLpHistory, setShowLpHistory] = useState(false);
 
   const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
     useState<boolean>(false);
@@ -471,9 +453,7 @@ export default function Stake({
         adxRewards.pendingAdxRewards = 0;
         adxRewards.pendingGenesisAdxRewards = 0;
         fetchAdxRewards();
-        setOptimisticClaimAdx([optimisticClaim]);
-        setOptimisticAllTimeAdxClaimedAllSymbols(optimisticClaim.rewards_adx);
-        setOptimisticAllTimeUsdcClaimedAllSymbols(optimisticClaim.rewards_usdc);
+        setOptimisticClaimAdx(optimisticClaim);
       }
     } catch (error) {
       console.error('error', error);
@@ -724,9 +704,7 @@ export default function Stake({
   // const { stakingAccount: alpStakingAccount } = useStakingAccount(
   //   window.adrena.client.lpTokenMint,
   // );
-  const { stakingAccount: adxStakingAccount } = useStakingAccount(
-    window.adrena.client.lmTokenMint,
-  );
+
 
   // const nextStakingRoundTimeAlp = alpStakingAccount
   //   ? getNextStakingRoundStartTime(
@@ -734,11 +712,7 @@ export default function Stake({
   //   ).getTime()
   //   : null;
 
-  const nextStakingRoundTimeAdx = adxStakingAccount
-    ? getNextStakingRoundStartTime(
-      adxStakingAccount.currentStakingRound.startTime,
-    ).getTime()
-    : null;
+
 
   // The rewards pending for the user
   const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
@@ -753,84 +727,6 @@ export default function Stake({
   );
   const adxStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
     window.adrena.client.lmTokenMint,
-  );
-
-  // Type definition for the enhanced function with the hasDataForPage property
-  type EnhancedLoadClaimsFunction = {
-    (offset: number, limit: number): Promise<void>;
-    hasDataForPage: (pageOffset: number, pageLimit: number) => boolean;
-  };
-
-  // Add the hasDataForPage function as a property of loadClaimsWithPagination
-  // This will allow the StakeOverview component to check if an API call is needed
-  const enhancedLoadClaimsWithPagination = useCallback(
-    async (offset: number, limit: number) => {
-      console.log("Parent enhancedLoadClaimsWithPagination: Called with offset =", offset, "limit =", limit);
-
-      if (!wallet?.walletAddress) {
-        console.log("Parent enhancedLoadClaimsWithPagination: No wallet address, returning");
-        return;
-      }
-
-      console.log("Parent enhancedLoadClaimsWithPagination: Current claimsOffset =", claimsOffset, "claimsLimit =", claimsLimit, "Requested offset =", offset);
-
-      // Only update if the parameters have changed to avoid unnecessary API calls
-      if (claimsOffset === offset && claimsLimit === limit && claimsHistory) {
-        console.log("Parent enhancedLoadClaimsWithPagination: Using cached data with same offset/limit");
-        return;
-      }
-
-      // Update state variables used by the hook
-      setClaimsOffset(offset);
-      setClaimsLimit(limit);
-
-      // Create a promise that will be resolved when the data is loaded
-      return new Promise<void>((resolve, reject) => {
-        console.log("Parent enhancedLoadClaimsWithPagination: Created promise for data loading with offset =", offset);
-
-        // Need to wait for the state update to be applied before triggering reload
-        requestAnimationFrame(async () => {
-          console.log("Parent enhancedLoadClaimsWithPagination: Triggering claims reload for offset =", offset);
-
-          try {
-            // triggerClaimsReload now returns a Promise that resolves when the data is loaded
-            await triggerClaimsReload();
-            console.log("Parent enhancedLoadClaimsWithPagination: Claims reload completed for offset =", offset);
-            resolve();
-          } catch (error) {
-            console.error("Parent enhancedLoadClaimsWithPagination: Error during claims reload:", error);
-            reject(error);
-          }
-        });
-      });
-    },
-    [wallet?.walletAddress, triggerClaimsReload, claimsOffset, claimsLimit, claimsHistory]
-  ) as EnhancedLoadClaimsFunction;
-
-  // Add the hasDataForPage function to check if we already have the data for a specific page
-  enhancedLoadClaimsWithPagination.hasDataForPage = useCallback(
-    (pageOffset: number, pageLimit: number) => {
-      if (!claimsHistory) return false;
-
-      // Check if we already have the data by looking at the total claims count
-      // and comparing it with the requested offset and limit
-      const totalClaimsCount = claimsHistory.symbols.reduce(
-        (acc, s) => acc + s.claims.length, 0
-      );
-
-      console.log(
-        "Parent: hasDataForPage - checking if we have data for pageOffset =",
-        pageOffset,
-        "pageLimit =",
-        pageLimit,
-        "totalClaimsCount =",
-        totalClaimsCount
-      );
-
-      // We have the data if we loaded enough claims to cover this page
-      return totalClaimsCount >= (pageOffset + pageLimit);
-    },
-    [claimsHistory]
   );
 
   useEffect(() => {
@@ -931,11 +827,11 @@ export default function Stake({
       />
     </>
   ) : (
-    <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
+    <div className={twMerge("w-full flex flex-col items-center z-10 min-h-full pl-4 pr-4 pb-4 pt-2 m-auto items-center justify-center", alpLockedStakes && alpLockedStakes?.length ? 'max-w-[80em]' : 'max-w-[50em]')}>
+      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className={twMerge('flex flex-col items-center self-center', alpLockedStakes && alpLockedStakes?.length ? 'max-w-[80em]' : 'max-w-[50em]')}>
-        <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full m-auto max-w-full">
+      <div className='flex flex-col items-center justify-center flex-grow w-full my-auto'>
+        <div className="flex flex-col lg:flex-row gap-4 pl-4 pr-4 pb-4 pt-2 justify-center z-10 w-full">
           <>
             {alpLockedStakes && alpLockedStakes?.length ? <div className="flex-1">
               <FullyLiquidALPStaking
@@ -961,7 +857,7 @@ export default function Stake({
                   0
                 }
                 pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
-                claimsHistory={claimsHistory}
+                walletAddress={wallet?.walletAddress ?? null}
               />
             </div> : null}
 
@@ -992,23 +888,12 @@ export default function Stake({
                 userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
                 userPendingAdxRewards={adxRewards.pendingAdxRewards}
                 roundPendingUsdcRewards={
-                  adxStakingCurrentRoundRewards.usdcRewards ??
-                  0 +
-                  optimisticClaimAdx?.reduce(
-                    (acc, claim) => acc + claim.rewards_usdc,
-                    0,
-                  )
+                  adxStakingCurrentRoundRewards.usdcRewards ?? 0
                 }
                 roundPendingAdxRewards={
-                  adxStakingCurrentRoundRewards.adxRewards ??
-                  0 +
-                  optimisticClaimAdx?.reduce(
-                    (acc, claim) => acc + claim.rewards_adx,
-                    0,
-                  )
+                  adxStakingCurrentRoundRewards.adxRewards ?? 0
                 }
                 pendingGenesisAdxRewards={adxRewards.pendingGenesisAdxRewards}
-                nextRoundTime={nextStakingRoundTimeAdx ?? 0}
                 handleClickOnUpdateLockedStake={(
                   lockedStake: LockedStakeExtended,
                 ) => {
@@ -1016,13 +901,8 @@ export default function Stake({
                   setUpgradeLockedStake(true);
                   setFinalizeLockedStakeRedeem(false);
                 }}
-                claimsHistory={claimsHistory}
-                optimisticClaimAdx={optimisticClaimAdx}
-                optimisticAllTimeAdxClaimedAllSymbols={optimisticAllTimeAdxClaimedAllSymbols}
-                optimisticAllTimeUsdcClaimedAllSymbols={optimisticAllTimeUsdcClaimedAllSymbols}
-                loadClaimsHistory={enhancedLoadClaimsWithPagination}
-                claimsLimit={claimsLimit}
-                isLoadingClaimHistory={isLoadingClaimHistory}
+                walletAddress={wallet?.walletAddress ?? null}
+                optimisticClaim={optimisticClaimAdx}
               />
             </div>
 
@@ -1089,13 +969,28 @@ export default function Stake({
           </>
         </div>
 
-        {(alpLockedStakes === null || alpLockedStakes?.length == 0) && claimsHistory && claimsHistory?.symbols.find(symbol => symbol.symbol === 'ALP')?.claims?.length ?
-          <div className='p-4 z-10'>
-            <div className="flex flex-col bg-main rounded-2xl border mb-4 w-full">
-              <ALPStakingRecap claimsHistory={claimsHistory} />
+        {(alpLockedStakes === null || alpLockedStakes?.length == 0) && !showLpHistory ? (
+          <div className="pl-4 pr-4 w-full">
+            <div className="flex flex-col rounded-2xl border bg-main overflow-hidden">
+              <p className="opacity-75 text-base p-4 flex flex-col gap-2 text-center w-full">
+                <span className='text-base'>Starting March 19th, 2025, at 12:00 UTC, ALP is now fully liquid. You were there and want to see your history ? </span>
+              </p>
+
+              <div className="flex justify-center border-t py-4">
+                <Button
+                  variant={showLpHistory ? "secondary" : "primary"}
+                  size="sm"
+                  title={showLpHistory ? "Hide LP rewards History" : "Show LP rewards History"}
+                  onClick={() => setShowLpHistory(!showLpHistory)}
+                  className="px-6"
+                />
+              </div>
             </div>
-          </div> : null}
-      </div>
-    </>
+          </div>
+        ) : (
+          <ALPStakingRecap walletAddress={wallet?.walletAddress ?? null} />
+        )}
+      </div >
+    </div>
   );
 }
