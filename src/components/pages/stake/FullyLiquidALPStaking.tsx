@@ -71,7 +71,8 @@ export default function FullyLiquidALPStaking({
 
     const { claimsHistory } = useClaimHistory({
         walletAddress,
-        symbol: 'ALP'
+        symbol: 'ALP',
+        interval: 100000000,
     });
 
     const alpClaimHistory = claimsHistory?.symbols.find(s => s.symbol === 'ALP');
