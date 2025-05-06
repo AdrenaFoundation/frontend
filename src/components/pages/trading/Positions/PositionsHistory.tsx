@@ -148,8 +148,7 @@ function PositionsHistory({
         <div className="w-6" /> {/* Spacer */}
         <Pagination
           currentPage={currentPage}
-          totalItems={(positionsHistory ?? []).length}
-          itemsPerPage={itemsPerPage}
+          totalPages={positionsHistory ? Math.ceil(positionsHistory.length / itemsPerPage) : 0}
           onPageChange={setCurrentPage}
         />
 

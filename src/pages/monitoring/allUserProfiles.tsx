@@ -231,8 +231,7 @@ export default function AllUserProfiles() {
 
                                 <Pagination
                                     currentPage={currentPage}
-                                    totalItems={filteredProfiles ? filteredProfiles.length : 0}
-                                    itemsPerPage={itemsPerPage}
+                                    totalPages={filteredProfiles ? Math.ceil(filteredProfiles.length / itemsPerPage) : 0}
                                     onPageChange={setCurrentPage}
                                 />
                             </div>
