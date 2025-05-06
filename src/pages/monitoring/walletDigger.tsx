@@ -32,6 +32,7 @@ import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
 import Achievements from '../achievements';
+import Loader from '@/components/Loader/Loader';
 
 const claimHistoryItemsPerPage = 4;
 
@@ -93,10 +94,19 @@ export default function WalletDigger({
         interval: 100000000,
     });
 
+    // get totals for ADX stakes
+    const allTimeClaimedUsdcAdx = claimsHistoryAdxApi?.allTimeUsdcClaimed ?? 0;
+    const allTimeClaimedUsdcAlp = claimsHistoryAlpApi?.allTimeUsdcClaimed ?? 0;
     const allTimeClaimedUsdc =
-        (claimsHistoryAdxApi?.allTimeUsdcClaimed ?? 0) + (claimsHistoryAlpApi?.allTimeUsdcClaimed ?? 0);
+        allTimeClaimedUsdcAdx + allTimeClaimedUsdcAlp;
+
+    // get totals for ALP stakes
+    const allTimeClaimedAdxAdx =
+        (claimsHistoryAdxApi?.allTimeAdxClaimed ?? 0) + (claimsHistoryAdxApi?.allTimeAdxGenesisClaimed ?? 0);
+    const allTimeClaimedAdxAlp =
+        (claimsHistoryAlpApi?.allTimeAdxClaimed ?? 0) + (claimsHistoryAlpApi?.allTimeAdxGenesisClaimed ?? 0);
     const allTimeClaimedAdx =
-        (claimsHistoryAdxApi?.allTimeAdxClaimed ?? 0) + (claimsHistoryAdxApi?.allTimeAdxGenesisClaimed ?? 0) + (claimsHistoryAlpApi?.allTimeAdxClaimed ?? 0) + (claimsHistoryAlpApi?.allTimeAdxGenesisClaimed ?? 0);
+        allTimeClaimedAdxAdx + allTimeClaimedAdxAlp;
 
     const claimsHistoryAdx = claimsHistoryAdxApi?.symbols.find(c => c.symbol === 'ADX')?.claims;
     const claimsHistoryAlp = claimsHistoryAlpApi?.symbols.find(c => c.symbol === 'ALP')?.claims;
@@ -118,8 +128,6 @@ export default function WalletDigger({
         const endIndex = startIndex + claimHistoryItemsPerPage;
         setPaginatedAdxClaimsHistory(claimsHistoryAdx.slice(startIndex, endIndex));
     }, [claimsHistoryAdx, adxClaimHistoryCurrentPage, view]);
-
-    //
 
     const [alpClaimHistoryCurrentPage, setAlpClaimHistoryCurrentPage] = useState(1);
     const [paginatedAlpClaimsHistory, setPaginatedAlpClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
@@ -297,28 +305,40 @@ export default function WalletDigger({
                             titleClassName='text-[0.7em] sm:text-[0.7em]'
                         /> : null}
 
-                        <NumberDisplay
-                            title="TOTAL CLAIMED USDC"
-                            nb={allTimeClaimedUsdc}
-                            format="currency"
-                            precision={0}
-                            className='border-0 min-w-[12em]'
-                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                            headerClassName='pb-2'
-                            titleClassName='text-[0.7em] sm:text-[0.7em]'
-                        />
+                        {isLoadingClaimHistoryAdx && isLoadingClaimHistoryAlp ? <>
+                            <div className='flex-col w-full rounded-lg p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]'><Loader /></div>
+                            <div className='flex-col w-full rounded-lg p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]'><Loader /></div>
+                        </> :
+                            <>
+                                <NumberDisplay
+                                    title="TOTAL CLAIMED USDC"
+                                    nb={allTimeClaimedUsdc}
+                                    format="currency"
+                                    precision={0}
+                                    className='border-0 min-w-[12em]'
+                                    bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                                    headerClassName='pb-2'
+                                    titleClassName='text-[0.7em] sm:text-[0.7em]'
+                                    tippyInfo={`Total amount of USDC that has been claimed by the wallet.
+                                ADX: ${Math.round(allTimeClaimedUsdcAdx)} | ALP: ${Math.round(allTimeClaimedUsdcAlp)}`}
+                                />
+                                <NumberDisplay
+                                    title="TOTAL CLAIMED ADX"
+                                    nb={allTimeClaimedAdx}
+                                    format="number"
+                                    suffix='ADX'
+                                    precision={0}
+                                    className='border-0 min-w-[12em]'
+                                    bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+                                    headerClassName='pb-2'
+                                    titleClassName='text-[0.7em] sm:text-[0.7em]'
+                                    tippyInfo={`Total amount of ADX that has been claimed by the wallet.
+                                ADX: ${Math.round(allTimeClaimedAdxAdx)} | ALP: ${Math.round(allTimeClaimedAdxAlp)}`}
+                                />
+                            </>
+                        }
 
-                        <NumberDisplay
-                            title="TOTAL CLAIMED ADX"
-                            nb={allTimeClaimedAdx}
-                            format="number"
-                            suffix='ADX'
-                            precision={0}
-                            className='border-0 min-w-[12em]'
-                            bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-                            headerClassName='pb-2'
-                            titleClassName='text-[0.7em] sm:text-[0.7em]'
-                        />
+
                     </div>
 
                     {moreStakingInfo ? <>

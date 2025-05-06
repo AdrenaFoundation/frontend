@@ -57,7 +57,7 @@ export default function ClaimHistorySection({
     const totalItems = useMemo(() => {
         if (!claimsHistory) return 0;
         return claimsHistory.symbols.reduce(
-            (acc, symbol) => acc + symbol.allTimeCountClaims,
+            (acc, symbol) => acc + (symbol.claims?.length || 0),
             0,
         );
     }, [claimsHistory]);
@@ -189,7 +189,7 @@ export default function ClaimHistorySection({
                             </div>
 
                             <h3 className="text-lg font-semibold text-txtfade">
-                                {totalItems ? ` (${totalItems})` : ''}
+                                {totalItems && totalItems != claimsHistory?.allTimeCountClaims ? ` (${totalItems}/${claimsHistory?.allTimeCountClaims})` : ` (${totalItems})`}
                             </h3>
 
                             {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 ml-2' onClick={downloadClaimHistory}>

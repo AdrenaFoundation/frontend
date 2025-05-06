@@ -33,7 +33,6 @@ import {
     UserSeasonProgressReturnType
 } from './types';
 
-
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
     public static DATAPI_URL = "http://localhost:8080";
@@ -1075,7 +1074,7 @@ export default class DataApiClient {
     }): Promise<ClaimHistoryExtendedApi | null> {
         if (!walletAddress) return null;
 
-        const url = `${DataApiClient.DATAPI_URL}/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}&sort=DESC${symbol ? `&symbol=${symbol}` : ''}`;
+        const url = `${DataApiClient.DATAPI_URL}/v2/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}&sort=DESC${symbol ? `&symbol=${symbol}` : ''}`;
 
         const response = await fetch(url);
 
@@ -1104,6 +1103,7 @@ export default class DataApiClient {
                 allTimeUsdcClaimed: 0,
                 allTimeAdxClaimed: 0,
                 allTimeAdxGenesisClaimed: 0,
+                allTimeCountClaims: 0,
             };
         }
 
@@ -1185,6 +1185,13 @@ export default class DataApiClient {
                     (acc, curr) => acc + curr.allTimeRewardsAdxGenesis,
                     0,
                 ),
+            allTimeCountClaims: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeCountClaims ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeCountClaims,
+                    0,
+                )
         };
     }
 
