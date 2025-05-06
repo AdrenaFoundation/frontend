@@ -36,6 +36,7 @@ import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import ClaimBlock from './ClaimBlock';
 import LockedStakes from './LockedStakes';
+import Loader from '@/components/Loader/Loader';
 interface SortConfig {
   size: 'asc' | 'desc';
   duration: 'asc' | 'desc';
@@ -63,6 +64,7 @@ export default function StakeOverview({
   optimisticAllTimeUsdcClaimedAllSymbols,
   loadClaimsHistory,
   claimsLimit,
+  isLoadingClaimHistory,
 }: {
   token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
@@ -94,6 +96,7 @@ export default function StakeOverview({
     hasDataForPage?: (pageOffset: number, pageLimit: number) => boolean;
   };
   claimsLimit: number;
+  isLoadingClaimHistory: boolean;
 }) {
   const isMobile = useBetterMediaQuery('(max-width: 570px)');
   const isALP = token === 'ALP';
@@ -119,8 +122,8 @@ export default function StakeOverview({
   const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [claimHistoryItemsPerPage,] = useState(4);
-
+  const [claimHistoryItemsPerPage,] = useState(2);
+  const [isLoadingMoreClaims, setIsLoadingMoreClaims] = useState(true);
   const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
   const combinedAdxClaims = useMemo(() => {
@@ -129,6 +132,12 @@ export default function StakeOverview({
     const existingAdxClaims = claimsHistory?.symbols.find(symbol => symbol.symbol === 'ADX')?.claims ?? [];
     return [...optimisticClaimAdx, ...existingAdxClaims];
   }, [optimisticClaimAdx, claimsHistory]);
+
+  useEffect(() => {
+    if (claimsHistory) {
+      setIsLoadingMoreClaims(false);
+    }
+  }, [claimsHistory]);
 
   useEffect(() => {
     if (!claimsHistory) {
@@ -413,8 +422,6 @@ export default function StakeOverview({
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
   }, [claimsHistory, token]);
-
-  const [isLoadingMoreClaims, setIsLoadingMoreClaims] = useState(false);
 
   return (
     <div className="flex flex-col bg-main rounded-2xl border">
@@ -746,7 +753,7 @@ export default function StakeOverview({
             </div>
 
             {/* TOTALs */}
-            {claimsHistory && (
+            {claimsHistory ? (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
                 <div className="flex flex-row items-center">
                   <p className="text-txtfade">
@@ -867,67 +874,74 @@ export default function StakeOverview({
                   </div>
                 </div>
               </div>
+            ) : (
+              <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
+                <Loader />
+              </div>
             )}
           </div>
 
           {/* Claim History Section */}
-
           <CSSTransition
             in={isClaimHistoryVisible}
             timeout={300}
             classNames="claim-history"
             unmountOnExit
           >
-            <div className="mt-4">
-              <div mt-2>
-                {paginatedClaimsHistory.length > 0 ? (
-                  paginatedClaimsHistory.map((claim) => (
-                    <ClaimBlock key={claim.claim_id} claim={claim} />
-                  ))
-                ) : (
-                  <p>No claim history available.</p>
-                )}
+            {isLoadingClaimHistory ? (
+              <div className="flex flex-col w-full h-full items-center justify-center">
+                <Loader />
               </div>
-              <Pagination
-                currentPage={currentPage}
-                totalItems={numberTotalCountClaims ? numberTotalCountClaims : 0}
-                itemsPerPage={claimHistoryItemsPerPage}
-                batchSize={claimsLimit}
-                onPageChange={(page) => {
-                  console.log(`StakeOverview: Page changed to ${page}`);
-                  setCurrentPage(page);
-                }}
-                isLoading={isLoadingMoreClaims}
-                totalLoaded={claimsHistory ? claimsHistory.symbols.reduce(
-                  (acc, symbol) => acc + symbol.claims.length, 0
-                ) : 0}
-                onLoadMore={async (offset, limit) => {
-                  if (!loadClaimsHistory) {
-                    console.log("StakeOverview: No loadClaimsHistory function available");
-                    return;
-                  }
+            ) : (
+              <div className="mt-4">
+                <div mt-2>
+                  {paginatedClaimsHistory.length > 0 ? (
+                    paginatedClaimsHistory.map((claim) => (
+                      <ClaimBlock key={claim.claim_id} claim={claim} />
+                    ))
+                  ) : (
+                    <p>
+                      {isLoadingMoreClaims
+                        ? "Loading claim history..."
+                        : claimsHistory === null
+                          ? "Connecting to wallet..."
+                          : "No claim history available."}
+                    </p>
+                  )}
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalItems={numberTotalCountClaims ? numberTotalCountClaims : 0}
+                  itemsPerPage={claimHistoryItemsPerPage}
+                  batchSize={claimsLimit}
+                  onPageChange={(page) => {
+                    console.log(`StakeOverview: Page changed to ${page}`);
+                    setCurrentPage(page);
+                  }}
+                  isLoading={isLoadingClaimHistory}
+                  totalLoaded={claimsHistory ? claimsHistory.symbols.reduce(
+                    (acc, symbol) => acc + symbol.claims.length, 0
+                  ) : 0}
+                  onLoadMore={async (offset, limit) => {
+                    if (!loadClaimsHistory) {
+                      console.log("StakeOverview: No loadClaimsHistory function available");
+                      return;
+                    }
 
-                  console.log(`StakeOverview: Starting to load more claims data - requested offset=${offset}, limit=${limit}`);
-                  setIsLoadingMoreClaims(true);
-
-                  try {
-                    console.log("StakeOverview: Calling loadClaimsHistory");
-                    await loadClaimsHistory(offset, limit);
-                    console.log(`StakeOverview: Claims data loaded successfully for offset=${offset}, limit=${limit}`);
-
-                    // Give the system time to process the new data
-                    // This ensures the UI updates correctly
-                    setTimeout(() => {
+                    try {
+                      console.log("StakeOverview: Calling loadClaimsHistory");
+                      await loadClaimsHistory(offset, limit);
+                      console.log(`StakeOverview: Claims data loaded successfully for offset=${offset}, limit=${limit}`);
+                    } catch (error) {
+                      console.error('StakeOverview: Failed to load claim history:', error);
                       setIsLoadingMoreClaims(false);
-                    }, 100);
-                  } catch (error) {
-                    console.error('StakeOverview: Failed to load claim history:', error);
-                    setIsLoadingMoreClaims(false);
-                  }
-                }}
-              />
-            </div>
+                    }
+                  }}
+                />
+              </div>
+            )}
           </CSSTransition>
+
 
           <div className='w-full flex items-center justify-center h-6 border-t border-b border-bcolor hover:opacity-100 opacity-80 cursor-pointer mt-2' onClick={() => {
             setIsClaimHistoryVisible(!isClaimHistoryVisible)

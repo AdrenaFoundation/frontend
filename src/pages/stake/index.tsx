@@ -86,12 +86,11 @@ export default function Stake({
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  console.log('wallet', wallet);
-
   const [claimsOffset, setClaimsOffset] = useState(0);
-  const [claimsLimit, setClaimsLimit] = useState(1000);
+  const [claimsLimit, setClaimsLimit] = useState(6);
 
   const {
+    isLoadingClaimHistory,
     claimsHistory,
     optimisticClaimAdx,
     optimisticAllTimeAdxClaimedAllSymbols,
@@ -1023,6 +1022,7 @@ export default function Stake({
                 optimisticAllTimeUsdcClaimedAllSymbols={optimisticAllTimeUsdcClaimedAllSymbols}
                 loadClaimsHistory={enhancedLoadClaimsWithPagination}
                 claimsLimit={claimsLimit}
+                isLoadingClaimHistory={isLoadingClaimHistory}
               />
             </div>
 
