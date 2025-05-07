@@ -58,7 +58,7 @@ export default function ALPDetails({ className }: { className?: string }) {
         </div> */}
 
       <div>
-        <div className="flex flex-col sm:flex-row gap-3 p-4 items-center border rounded-xl">
+        <div className="flex flex-col gap-3 p-4 border rounded-xl">
           <div className="flex flex-col justify-between flex-1">
             <div>
               <p className="text-sm opacity-75">
@@ -117,20 +117,22 @@ export default function ALPDetails({ className }: { className?: string }) {
               </p>
             </div>
 
-            <Link
-              href="https://docs.adrena.xyz/tokenomics/alp"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-fit opacity-50 hover:opacity-100 transition-opacity duration-300 flex flex-row gap-2 items-center mt-3 cursor-pointer"
-            >
-              <p className="text-sm">Learn more</p>
-              <Image src={arrowIcon} alt="arrow icon" className="w-2 h-2" />
-            </Link>
+
           </div>
 
           <div className="flex-1 w-full h-[15em] sm:h-[20em]">
             <AprLpChart isSmallScreen={false} isAlpPage />
           </div>
+
+          <Link
+            href="https://docs.adrena.xyz/tokenomics/alp"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-fit opacity-50 hover:opacity-100 transition-opacity duration-300 flex flex-row gap-2 items-center mt-3 cursor-pointer"
+          >
+            <p className="text-sm">Learn more</p>
+            <Image src={arrowIcon} alt="arrow icon" className="w-2 h-2" />
+          </Link>
         </div>
       </div>
 
