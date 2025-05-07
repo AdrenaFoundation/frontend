@@ -111,7 +111,7 @@ export default function RootLayout({
       icon: trophyIcon
     },
     {
-      name: 'Mutagen Leaderboard', link: '/mutagen_leaderboard', dropdown: true,
+      name: 'Leaderboard', link: '/mutagen_leaderboard', dropdown: true,
       subtitle: 'All-Time Mutagen Leaderboard',
       icon: mutagenIcon
     },
