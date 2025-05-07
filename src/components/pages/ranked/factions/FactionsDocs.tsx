@@ -224,7 +224,7 @@ export default function FactionsDocs() {
                     Each trade done during the season will score mutagen based on its performance, duration, and close size.
                 </div>
                 <div className="text-[#bbb] leading-relaxed text-md">
-                    <span className="text-white font-medium">Formula:</span> <code className="bg-[#222] px-1 py-0.5 rounded text-sm">Trade Performance + Trade Duration × Size Multiplier</code>
+                    <span className="text-white font-medium">Formula:</span> <code className="bg-[#222] px-1 py-0.5 rounded text-sm">(Trade Performance + Trade Duration) × Size Multiplier</code>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                     <div className="border border-[#333] rounded-md p-6">
