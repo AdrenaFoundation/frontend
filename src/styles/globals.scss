@@ -137,35 +137,30 @@
 
   h1 {
     @apply text-4xl;
-    @apply font-interMedium;
-    letter-spacing: 0.1em;
+    @apply font-special;
     text-transform: uppercase;
   }
 
   h2 {
     @apply text-2xl;
-    @apply font-interMedium;
-    letter-spacing: 0.1em;
+    @apply font-special;
     text-transform: uppercase;
   }
 
   h3 {
     @apply text-xl;
-    @apply font-interMedium;
-    letter-spacing: 0.1em;
+    @apply font-special;
     text-transform: uppercase;
   }
 
   h4 {
     @apply text-lg;
-    @apply font-interMedium;
-    letter-spacing: 0.1em;
+    @apply font-boldy;
   }
 
   h5 {
     @apply text-sm;
-    @apply font-interMedium;
-    letter-spacing: 0.1em;
+    @apply font-boldy;
   }
 
   button:focus,

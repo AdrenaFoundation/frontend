@@ -17,7 +17,6 @@ import {
     uiToNative,
 } from '@/utils';
 
-import infoIcon from '../../../../../public/images/Icons/info.svg';
 // import warningIcon from '../../../../../public/images/Icons/warning.png';
 // import jupIcon from '../../../../../public/images/jup-logo.png';
 import TradingInput from '../../trading/TradingInput/TradingInput';
@@ -664,7 +663,7 @@ export default function ALPSwapBuy({
                 onClick={executeBuyAlp}
             /> : null}
 
-            <div className="p-3 border text-sm flex relative w-full mt-3 pl-10 opacity-50 font-boldy rounded-lg">
+            {/* <div className="p-3 border text-sm flex relative w-full mt-3 pl-10 opacity-50 font-boldy rounded-lg">
                 <Image
                     className="opacity-50 absolute left-3 top-auto bottom-auto"
                     src={infoIcon}
@@ -674,7 +673,7 @@ export default function ALPSwapBuy({
                 />
                 For the protocol health, please consider depositing using the best
                 routes. You get lower fees, protocol pool stays balanced, we all win ❤️
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -1,4 +1,3 @@
-import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -7,44 +6,35 @@ import { twMerge } from 'tailwind-merge';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useAPR from '@/hooks/useAPR';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
-import usePoolInfo from '@/hooks/usePoolInfo';
-import { PageProps } from '@/types';
 
 import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
-import infoIcon from '../../../../public/images/Icons/info.svg';
 import { AprLpChart } from '../global/Apr/AprLpChart';
-import PoolRatios from '../monitoring/Data/PoolRatios';
 
-export default function ALPDetails({
-  mainPool,
-  custodies,
-  className,
-}: {
-  mainPool: PageProps['mainPool'];
-  custodies: PageProps['custodies'];
-  className?: string;
-}) {
-  const poolInfo = usePoolInfo(custodies);
+export default function ALPDetails({ className }: { className?: string }) {
   const { aprs } = useAPR();
   const aumUsd = useAssetsUnderManagement();
 
   const alpApr = aprs?.lp ?? null;
 
-  // const aumLiquidityRatio =
-  //   mainPool && mainPool.aumSoftCapUsd > 0 && aumUsd !== null
-  //     ? Math.round((aumUsd * 100) / mainPool.aumSoftCapUsd)
-  //     : 0;
-
   return (
     <div className={twMerge(className, 'flex flex-col gap-3')}>
       <div className="flex flex-row gap-2 items-center justify-between">
-        <div className="flex flex-row gap-2 items-center">
-          <Image
-            src={window.adrena.client.alpToken.image}
-            alt="alp icon"
-            className="w-5 sm:w-7 h-5 sm:h-7"
+        <div>
+          <div className="flex flex-row gap-2 items-center">
+            <Image
+              src={window.adrena.client.alpToken.image}
+              alt="alp icon"
+              className="w-5 sm:w-7 h-5 sm:h-7"
+            />
+
+            <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ALP</h1>
+          </div>
+          <FormatNumber
+            nb={aumUsd}
+            format="currency"
+            prefix="Current TVL: "
+            className="text-sm font-mono opacity-50"
           />
-          <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ALP</h1>
         </div>
 
         <FormatNumber
@@ -52,8 +42,8 @@ export default function ALPDetails({
           format="percentage"
           suffix="APR"
           precision={0}
-          suffixClassName="font-interBold text-[1rem] sm:text-[1.3rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]"
-          className="font-interBold text-[1rem] sm:text-[1.3rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]"
+          suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
           isDecimalDimmed
         />
       </div>
@@ -68,34 +58,63 @@ export default function ALPDetails({
         </div> */}
 
       <div>
-        <div className="flex flex-col sm:flex-row gap-3  border rounded-xl h-[15em] sm:h-[20em]">
-          <div className="flex flex-col justify-between p-4 flex-1">
+        <div className="flex flex-col sm:flex-row gap-3 p-4 items-center border rounded-xl">
+          <div className="flex flex-col justify-between flex-1">
             <div>
-              <p className="opacity-50 font-boldy text-sm mb-1">About</p>
               <p className="text-sm opacity-75">
-                <span className="font-interSemibold">
-                  The Adrena Liquidity Provider (ALP) Pool
-                </span>{' '}
-                is a liquidity pool where it acts as a counterparty to traders —
-                when traders seek to open leverage positions, they borrow tokens
-                from the pool.
+                The liquidity pool serves as the counterparty for traders,
+                supplying the assets needed when users open leveraged positions.
+                Essentially, traders borrow tokens to execute their trades, and
+                pay fees for the service.
               </p>
-              <p className="text-sm opacity-75 mt-4 mb-2">
-                <span className="font-interSemibold">The ALP token</span> is the
-                liquidity provider token where it&apos;s value is derived from:
+              <p className="text-sm opacity-75 mt-4">
+                <span className="font-interSemibold">The ALP token</span>{' '}
+                represents shares of said pool, and its value is backed by:
               </p>
               <ul>
-                <li className="text-sm opacity-75 list-disc ml-4">
-                  An index fund of SOL, ETH, WBTC, USDC, USDT.
+                <li className="text-sm opacity-75 list-disc ml-4 mt-1">
+                  A diversified index fund comprising{' '}
+                  <span className="font-interSemibold">
+                    JitoSOL, BONK, WBTC and USDC
+                  </span>
+                  .
                 </li>
-                <li className="text-sm opacity-75 list-disc ml-4">
-                  Trader&apos;s profit and loss
+                <li className="text-sm opacity-75 list-disc ml-4 mt-1">
+                  The net{' '}
+                  <span className="font-interSemibold">profit and loss</span> of
+                  traders within the ecosystem.
                 </li>
-                <li className="text-sm opacity-75 list-disc ml-4">
-                  75% of the generated fees from opening and closing fees, price
-                  impact, borrowing fees, and trading fees of the pool
+                <li className="text-sm opacity-75 list-disc ml-4 mt-1">
+                  <span className="font-interSemibold">70% of all fees</span>{' '}
+                  generated by the pool, including:
+                  <ul className="flex flex-col gap-1">
+                    <li className="text-sm list-disc ml-4 mt-1">
+                      Opening & closing fees
+                    </li>
+                    <li className="text-sm list-disc ml-4 mt-1">
+                      Borrowing fees
+                    </li>
+                    <li className="text-sm list-disc ml-4 mt-1">
+                      ALP minting and redeeming fees
+                    </li>
+                    <li className="text-sm list-disc ml-4 mt-1">
+                      Price impact costs (near future)
+                    </li>
+                  </ul>
                 </li>
               </ul>
+
+              <p className="text-sm opacity-75 mt-4">
+                This structure ensures ALP token holders benefit from both the pool&apos;s underlying assets and its trading activity.
+              </p>
+
+              <p className="text-sm font-interMedium mt-2 bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
+                All fees continuously accrue in the pool when each trade closes.
+              </p>
+
+              <p className="text-sm font-interMedium mt-2 bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
+                LPers also benefit from JitoSOL native yield.
+              </p>
             </div>
 
             <Link
@@ -109,15 +128,15 @@ export default function ALPDetails({
             </Link>
           </div>
 
-          <div className="p-4 flex-1">
-            <AprLpChart isSmallScreen={false} />
+          <div className="flex-1 w-full h-[15em] sm:h-[20em]">
+            <AprLpChart isSmallScreen={false} isAlpPage />
           </div>
         </div>
       </div>
 
       {/* <div className='w-full h-[1px] my-3' /> */}
 
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <div className="flex flex-row gap-2 items-center">
           <h2 className="font-boldy text-base opacity-50 capitalize">
             Total Value Locked
@@ -155,9 +174,9 @@ export default function ALPDetails({
             className="text-sm font-mono opacity-50"
           />
         </div>
-      </div>
+      </div> */}
 
-      <PoolRatios poolInfo={poolInfo} />
+      {/* <PoolRatios poolInfo={poolInfo} /> */}
     </div>
   );
 }
