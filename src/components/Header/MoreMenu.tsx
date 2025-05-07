@@ -85,7 +85,7 @@ export default function MoreMenu({
             transition={{ duration: 0.2 }}
             id="more-menu"
             key="more-menu"
-            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-lg p-4 w-[600px]">
+            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-lg p-4 w-[37.5rem]">
             <div className="flex-1">
               <p className="text-sm mb-1 font-boldy opacity-50">Features</p>
               <div className="flex flex-col gap-3 flex-1">
