@@ -97,9 +97,6 @@ export default function ALPDetails({ className }: { className?: string }) {
                     <li className="text-sm list-disc ml-4 mt-1">
                       ALP minting and redeeming fees
                     </li>
-                    <li className="text-sm list-disc ml-4 mt-1">
-                      Price impact costs (near future)
-                    </li>
                   </ul>
                 </li>
               </ul>
