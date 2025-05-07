@@ -5,6 +5,8 @@ export interface PaginationProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   isLoading?: boolean;
+  loadedItems?: number;
+  totalItems?: number;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -12,6 +14,8 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
   isLoading = false,
+  loadedItems,
+  totalItems,
 }) => {
   if (totalPages <= 1) return null;
 
@@ -48,6 +52,9 @@ const Pagination: React.FC<PaginationProps> = ({
           {isLoading && currentPage < totalPages ? "..." : ">"}
         </button>
       </div>
+      {loadedItems && totalItems ? (
+        <span className="text-sm text-txtfade opacity-50">{`(${loadedItems}/${totalItems})`}</span>
+      ) : null}
     </div>
   );
 };

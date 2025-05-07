@@ -1479,6 +1479,13 @@ export type PositionApiRawData = {
   updated_at: string | null; // ISO date string
 };
 
+export type PositionApiRawDataV2 = {
+  offset: number;
+  limit: number;
+  total_count: number;
+  positions: PositionApiRawData[];
+};
+
 export type EnrichedPositionApi = {
   positionId: number;
   userId: number;
@@ -1515,6 +1522,13 @@ export type EnrichedPositionApi = {
   token: Token;
   createdAt: Date;
   updatedAt: Date | null;
+};
+
+export type EnrichedPositionApiV2 = {
+  totalCount: number;
+  offset: number;
+  limit: number;
+  positions: EnrichedPositionApi[];
 };
 
 export type TraderProfilesRawData = {
