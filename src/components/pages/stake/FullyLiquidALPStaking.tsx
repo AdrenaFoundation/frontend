@@ -55,9 +55,9 @@ export default function FullyLiquidALPStaking({
     pendingGenesisAdxRewards: number;
     walletAddress: string | null;
 }) {
-    const [showMoreStakingInfo, setShowMoreStakingInfo] = useState(true);
+    const [showMoreStakingInfo, setShowMoreStakingInfo] = useState(false);
     const storageKey = 'alpStakeSortConfig';
-    const [isClaimingRewardsAndRedeeming, setIsClaimingRewardsAndRedeeming] = useState(true);
+    const [isClaimingRewardsAndRedeeming, setIsClaimingRewardsAndRedeeming] = useState(false);
     const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
         const savedConfig = localStorage.getItem(storageKey);
         return savedConfig

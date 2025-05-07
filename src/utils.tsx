@@ -769,6 +769,70 @@ export function getAlpLockedStakes(
   );
 }
 
+// Generate fake ALP staking data for testing the change from locked to liquid ALP
+export function generateFakeAlpStakingData(totalAmount: number = 88000): LockedStakeExtended[] {
+  const now = Math.floor(Date.now() / 1000); // Current time in seconds
+
+  // Duration in seconds for different lock periods
+  const durations = {
+    '90d': 90 * 24 * 60 * 60,
+    '180d': 180 * 24 * 60 * 60,
+    '360d': 360 * 24 * 60 * 60,
+    '540d': 540 * 24 * 60 * 60
+  };
+
+  // Distribution based on logs - approximately:
+  // 540 days: ~87,500 ALP (major portion)
+  // 360 days: ~16,000 ALP
+  // 180 days: ~150,000 ALP
+  // 90 days: ~2,500 ALP
+
+  const stakes: LockedStakeExtended[] = [];
+
+  // Create example stakes for each duration
+  const createStake = (amount: number, durationKey: keyof typeof durations, indexOffset: number = 0): LockedStakeExtended => {
+    const durationSeconds = durations[durationKey];
+    return {
+      amount: new BN(amount * 1000000), // Convert to native units with 6 decimals
+      stakeTime: new BN(now - 30 * 24 * 60 * 60), // Started 30 days ago
+      claimTime: new BN(0), // Not claimed
+      endTime: new BN(now + durationSeconds), // Ends after the lock duration
+      lockDuration: new BN(durationSeconds),
+      rewardMultiplier: 0,
+      lmRewardMultiplier: 0,
+      voteMultiplier: 0,
+      qualifiedForRewardsInResolvedRoundCount: 0,
+      amountWithRewardMultiplier: new BN(0),
+      amountWithLmRewardMultiplier: new BN(0),
+      resolved: 0,
+      padding2: [0, 0, 0, 0, 0, 0, 0],
+      id: new BN(indexOffset + 1),
+      earlyExit: 0,
+      padding3: [0, 0, 0, 0, 0, 0, 0],
+      earlyExitFee: new BN(0),
+      isGenesis: 0,
+      padding4: [0, 0, 0, 0, 0, 0, 0],
+      genesisClaimTime: new BN(0),
+      index: indexOffset,
+      tokenSymbol: 'ALP'
+    };
+  };
+
+  // Distribution matching what we saw in logs
+  if (totalAmount >= 80000) {
+    // For large amounts, create multiple stakes with different durations
+    stakes.push(createStake(Math.round(totalAmount * 0.34), '540d', 0)); // 34% in 540 days
+    stakes.push(createStake(Math.round(totalAmount * 0.06), '360d', 1)); // 6% in 360 days
+    stakes.push(createStake(Math.round(totalAmount * 0.58), '180d', 2)); // 58% in 180 days
+    stakes.push(createStake(Math.round(totalAmount * 0.02), '90d', 3));  // 2% in 90 days
+  } else {
+    // For smaller amounts, just create one stake with 540 days
+    stakes.push(createStake(totalAmount, '540d', 0));
+  }
+
+  return stakes;
+}
+
 // i.e percentage = -2 (for -2%)
 // i.e percentage = 5 (for 5%)
 export function applySlippage(nb: BN, percentage: number): BN {

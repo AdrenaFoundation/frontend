@@ -155,6 +155,10 @@ export default function Stake({
   const alpLockedStakes: LockedStakeExtended[] | null =
     getAlpLockedStakes(stakingAccounts);
 
+  // Generate fake ALP staking data for testing the change from locked to liquid ALP
+  /*   const alpLockedStakes: LockedStakeExtended[] | null =
+      generateFakeAlpStakingData(); */
+
   const stakeAmount = async () => {
     if (!owner) {
       addNotification({
