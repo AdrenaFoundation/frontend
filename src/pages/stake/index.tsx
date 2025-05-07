@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
+import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
@@ -36,7 +37,6 @@ import {
   nativeToUi,
   uiToNative,
 } from '@/utils';
-import Button from '@/components/common/Button/Button';
 
 export type ADXTokenDetails = {
   balance: number | null;
@@ -903,6 +903,7 @@ export default function Stake({
                 }}
                 walletAddress={wallet?.walletAddress ?? null}
                 optimisticClaim={optimisticClaimAdx}
+                setOptimisticClaim={setOptimisticClaimAdx}
               />
             </div>
 

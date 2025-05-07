@@ -22,6 +22,7 @@ interface ClaimHistorySectionProps {
     batchSize?: number;
     itemsPerPage?: number;
     optimisticClaim?: ClaimHistoryExtended | null;
+    setOptimisticClaim?: (claim: ClaimHistoryExtended | null) => void;
 }
 
 export default function ClaimHistorySection({
@@ -30,6 +31,7 @@ export default function ClaimHistorySection({
     batchSize = 1000,
     itemsPerPage = 2,
     optimisticClaim,
+    setOptimisticClaim,
 }: ClaimHistorySectionProps) {
     const [isClaimHistoryVisible, setIsClaimHistoryVisible] = React.useState(false);
     const nodeRef = useRef(null); // Reference for CSSTransition
@@ -52,6 +54,14 @@ export default function ClaimHistorySection({
         itemsPerPage,
         symbol: token
     });
+
+    // Reset optimistic claim when fresh data is loaded
+    useEffect(() => {
+        if (claimsHistory && optimisticClaim && setOptimisticClaim) {
+            setOptimisticClaim(null);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [claimsHistory, token]);
 
     // Get total items count
     const totalItems = useMemo(() => {
@@ -87,7 +97,7 @@ export default function ClaimHistorySection({
         }
 
         return claims;
-    }, [claimsHistory, currentPage, getPaginatedData, isLoadingClaimHistory, loadPageData, token, totalItems, attemptedLoads]);
+    }, [claimsHistory, currentPage, getPaginatedData, isLoadingClaimHistory, loadPageData, totalItems, attemptedLoads]);
 
     // Reset attempted loads when wallet changes
     useEffect(() => {
