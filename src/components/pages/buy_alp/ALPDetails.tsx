@@ -59,7 +59,7 @@ export default function ALPDetails({ className }: { className?: string }) {
 
       <div>
         <div className="flex flex-col gap-3 p-4 border rounded-xl">
-          <div className="flex flex-col justify-between flex-1">
+          <div className="flex flex-col justify-between">
             <div>
               <p className="text-sm opacity-75">
                 The liquidity pool serves as the counterparty for traders,
@@ -120,7 +120,7 @@ export default function ALPDetails({ className }: { className?: string }) {
 
           </div>
 
-          <div className="flex-1 w-full h-[15em] sm:h-[20em]">
+          <div className="w-full h-[15em]">
             <AprLpChart isSmallScreen={false} isAlpPage />
           </div>
 
