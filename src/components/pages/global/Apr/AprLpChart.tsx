@@ -7,9 +7,10 @@ import { getGMT } from '@/utils';
 
 interface AprChartProps {
   isSmallScreen: boolean;
+  isAlpPage?: boolean;
 }
 
-export function AprLpChart({ isSmallScreen }: AprChartProps) {
+export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -164,6 +165,7 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
       }]}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
+      isAlpPage={isAlpPage}
       tippyContent={
         <div>This represents the 7-day rolling average APR for ALP since March 19, 2025, when ALP became liquid.</div>
       }

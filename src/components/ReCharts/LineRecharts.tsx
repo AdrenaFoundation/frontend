@@ -40,6 +40,7 @@ export default function LineRechart<T extends string>({
   isMaxUtilizationReferenceLine,
   events,
   isNowReferenceLine,
+  isAlpPage
 }: {
   title: string;
   data: RechartsData[];
@@ -66,6 +67,7 @@ export default function LineRechart<T extends string>({
   isMaxUtilizationReferenceLine?: boolean;
   events?: AdrenaEvent[],
   isNowReferenceLine?: boolean;
+  isAlpPage?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -87,9 +89,9 @@ export default function LineRechart<T extends string>({
     <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
         <div className="flex flex-row gap-3 items-center">
-          <h2 className="">{title}</h2>
+          {!isAlpPage ? <h2 className="">{title}</h2> : null}
 
-          {tippyContent && (
+          {(tippyContent && !isAlpPage) && (
             <Tippy content={tippyContent} placement="auto">
               <span className="cursor-help text-txtfade">ⓘ</span>
             </Tippy>

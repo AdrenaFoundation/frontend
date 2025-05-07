@@ -72,6 +72,15 @@ export type WalletAdapterExtended = Adapter & {
   iconOverride?: ImageRef;
 };
 
+export type LinksType = {
+  name: string;
+  link: string;
+  icon?: ImageRef;
+  subtitle?: string;
+  external?: boolean;
+  dropdown?: boolean;
+};
+
 export type PageProps = {
   mainPool: PoolExtended | null;
   userProfile: UserProfileExtended | null | false;

@@ -11,7 +11,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatPriceInfo, getArrowElement, nativeToUi, uiToNative } from '@/utils';
+import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
@@ -168,19 +168,22 @@ export default function ALPSwapSell({
     }, [collateralInput, estimateRemoveLiquidityAndFee]);
 
     return (
-        <div className={twMerge('relative flex flex-col gap-1', className)}>
-            {walletTokenBalances ? <div className="flex flex-row justify-end items-center cursor-pointer" onClick={() => {
-                setAlpInput(walletTokenBalances['ALP']);
-            }}>
-                <FormatNumber
-                    nb={walletTokenBalances['ALP']}
-                    className='text-xs items-center justify-center'
-                    precision={4}
-                />
+        <div className={twMerge('relative flex flex-col gap-1', className, !connected && 'opacity-20 cursor-not-allowed')}>
+            <div className='flex flex-row gap-2 items-center justify-between mt-4 mb-1'>
+                <h5 className="text-white">Collateral</h5>
+                {walletTokenBalances ? <div className="flex flex-row justify-end items-center cursor-pointer" onClick={() => {
+                    setAlpInput(walletTokenBalances['ALP']);
+                }}>
+                    <FormatNumber
+                        nb={walletTokenBalances['ALP']}
+                        className='text-xs items-center justify-center'
+                        precision={4}
+                    />
 
-                <RefreshButton />
-            </div> : null}
+                    <RefreshButton />
+                </div> : null}
 
+            </div>
             <TradingInput
                 className="text-sm rounded-full"
                 inputClassName='bg-third'
@@ -199,8 +202,8 @@ export default function ALPSwapSell({
                 }}
             />
 
-            {getArrowElement('down', 'relative h-6 w-4 pt-2 mb-2 opacity-50')}
 
+            <h5 className="text-white mt-4 mb-2">Receive</h5>
             <TradingInput
                 className="text-sm rounded-full"
                 inputClassName='bg-inputcolor'
@@ -235,7 +238,7 @@ export default function ALPSwapSell({
                 }}
             />
 
-            <h5 className="text-white mt-4 mb-2 ml-6">Sell Info</h5>
+            <h5 className="text-white mt-4 mb-2">Sell Info</h5>
 
             <div
                 className={twMerge(
@@ -280,13 +283,13 @@ export default function ALPSwapSell({
             ) : null}
 
             {/* Button to execute action */}
-            <Button
+            {connected ? <Button
                 title={!(alpInput === null || ((walletTokenBalances && (walletTokenBalances['ALP'] ?? 0) < alpInput))) ? "Sell ALP" : 'Insufficient ALP'}
                 size="lg"
                 disabled={errorMessage !== null || isMainDataLoading || alpInput === null || collateralInput === null || !!((walletTokenBalances && (walletTokenBalances['ALP'] ?? 0) < alpInput))}
                 className="justify-center w-full mt-2"
                 onClick={executeSellAlp}
-            />
+            /> : null}
         </div>
     );
 }
