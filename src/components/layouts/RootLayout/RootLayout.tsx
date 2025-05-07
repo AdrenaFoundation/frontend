@@ -14,6 +14,7 @@ import monitorIcon from '@/../public/images/Icons/monitor-icon.svg';
 import personIcon from '@/../public/images/Icons/person-fill.svg';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import tradeIcon from '@/../public/images/Icons/trade-icon.svg';
+import mutagenIcon from '@/../public/images/mutagen.png';
 import trophyIcon from '@/../public/images/Icons/trophy.svg';
 import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
@@ -85,7 +86,7 @@ export default function RootLayout({
     { name: 'Trade', link: '/trade', icon: tradeIcon },
     {
       name: 'Profile', link: '/profile', dropdown: true,
-      subtitle: 'Manage your profile and settings',
+      subtitle: 'Your Adrena Profile',
       icon: personIcon
     },
     {
@@ -106,8 +107,13 @@ export default function RootLayout({
     },
     {
       name: 'Achievements', link: '/achievements', dropdown: true,
-      subtitle: 'Achievements and rewards',
+      subtitle: 'Progress & Milestones',
       icon: trophyIcon
+    },
+    {
+      name: 'Mutagen Leaderboard', link: '/mutagen_leaderboard', dropdown: true,
+      subtitle: 'All-Time Mutagen Leaderboard',
+      icon: mutagenIcon
     },
     {
       name: 'Vote', link: 'https://dao.adrena.xyz/', external: true, dropdown: true,
