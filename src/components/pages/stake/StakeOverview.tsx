@@ -2,7 +2,6 @@ import '../../../styles/Animation.css';
 
 import React, { useEffect, useState } from 'react';
 
-import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import {
@@ -40,6 +39,7 @@ export default function StakeOverview({
   pendingGenesisAdxRewards,
   walletAddress,
   optimisticClaim,
+  setOptimisticClaim,
 }: {
   token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
@@ -59,6 +59,7 @@ export default function StakeOverview({
   pendingGenesisAdxRewards: number;
   walletAddress: string | null;
   optimisticClaim: ClaimHistoryExtended | null;
+  setOptimisticClaim: (claim: ClaimHistoryExtended | null) => void;
 }) {
   const isALP = token === 'ALP';
   const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
@@ -182,6 +183,7 @@ export default function StakeOverview({
           token={token}
           walletAddress={walletAddress}
           optimisticClaim={optimisticClaim}
+          setOptimisticClaim={setOptimisticClaim}
         />
         <div className="h-[1px] bg-bcolor w-full my-4" />
 

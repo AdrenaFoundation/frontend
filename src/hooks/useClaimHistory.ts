@@ -185,6 +185,7 @@ export default function useClaimHistory({
       }
       isInitializedRef.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array ensures it only runs once
 
   /**

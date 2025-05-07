@@ -1,16 +1,16 @@
 import '../../../styles/Animation.css';
 
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
+import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useClaimHistory from '@/hooks/useClaimHistory';
 
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import ClaimHistorySection from './ClaimHistorySection';
-import Loader from '@/components/Loader/Loader';
 
 export default function ALPStakingRecap({
     walletAddress,
