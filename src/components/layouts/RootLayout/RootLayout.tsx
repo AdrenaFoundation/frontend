@@ -8,11 +8,14 @@ import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
+import bookIcon from '@/../public/images/Icons/book.svg';
 import lockIcon from '@/../public/images/Icons/lock.svg';
 import monitorIcon from '@/../public/images/Icons/monitor-icon.svg';
+import personIcon from '@/../public/images/Icons/person-fill.svg';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import tradeIcon from '@/../public/images/Icons/trade-icon.svg';
 import trophyIcon from '@/../public/images/Icons/trophy.svg';
+import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
@@ -22,7 +25,7 @@ import { TEAMS_MAPPING } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
-  ImageRef,
+  LinksType,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -77,23 +80,40 @@ export default function RootLayout({
   const disableChat = useSelector((state) => state.settings.disableChat);
 
   const [pages, setPages] = useState<
-    { name: string; link: string; icon?: ImageRef; external?: boolean }[]
+    LinksType[]
   >([
     { name: 'Trade', link: '/trade', icon: tradeIcon },
-    { name: 'Profile', link: '/profile' },
-    { name: 'Vest', link: '/vest', icon: window.adrena.client.adxToken.image },
+    {
+      name: 'Profile', link: '/profile', dropdown: true,
+      subtitle: 'Manage your profile and settings',
+      icon: personIcon
+    },
+    {
+      name: 'Vest', link: '/vest', icon: window.adrena.client.adxToken.image, dropdown: true
+      , subtitle: 'Vesting and delegation'
+    },
     { name: 'Stake', link: '/stake', icon: lockIcon },
     { name: 'Ranked', link: '/ranked', icon: trophyIcon },
     {
-      name: 'Pool',
+      name: 'Provide Liquidity',
       link: '/buy_alp',
       icon: window.adrena.client.alpToken.image,
     },
     { name: 'Monitor', link: '/monitoring', icon: monitorIcon },
-    { name: 'Referral', link: '/referral', icon: shareIcon },
-    { name: 'Achievements', link: '/achievements' },
-    // { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
-    // { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true },
+    {
+      name: 'Referral', link: '/referral', icon: shareIcon, dropdown: true,
+      subtitle: 'Refer and earn rewards'
+    },
+    {
+      name: 'Achievements', link: '/achievements', dropdown: true,
+      subtitle: 'Achievements and rewards',
+      icon: trophyIcon
+    },
+    {
+      name: 'Vote', link: 'https://dao.adrena.xyz/', external: true, dropdown: true,
+      icon: voteIcon
+    },
+    { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true, dropdown: true, icon: bookIcon },
   ]);
 
   useEffect(() => {

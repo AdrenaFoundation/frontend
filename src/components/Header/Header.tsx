@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
 import {
+  LinksType,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
@@ -26,6 +27,7 @@ import Mutagen from '../Mutagen/Mutagen';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
+import MoreMenu from './MoreMenu';
 
 export default function Header({
   userProfile,
@@ -44,7 +46,7 @@ export default function Header({
   adapters,
 }: {
   userProfile: UserProfileExtended | null | false;
-  PAGES: { name: string; link: string; external?: boolean }[];
+  PAGES: LinksType[]
   activeRpc: {
     name: string;
     connection: Connection;
@@ -71,9 +73,24 @@ export default function Header({
 
   const clusterSwitchEnabled = false;
 
+  const INTERNAL_PAGES = PAGES.filter(
+    (p) => !p?.external)
+
+  const DROPDOWN_PAGES = INTERNAL_PAGES.filter(
+    (p) => p.dropdown && (p.name !== 'Vest' || (userVest || userDelegatedVest)),
+  )
+
+  const MAIN_PAGES = INTERNAL_PAGES.filter(
+    (p) => !p?.dropdown,
+  )
+
+  const EXTERNAL_LINKS = PAGES.filter(
+    (p) => p.external,
+  )
+
   return (
     <div className="w-full flex flex-row items-center justify-between p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
-      <div className="flex flex-row items-center gap-3 lg:gap-4 ">
+      <div className="flex flex-row items-center gap-4">
         <Link className="font-bold uppercase relative" href="/">
           <Image
             src={logo}
@@ -104,7 +121,7 @@ export default function Header({
           ) : null}
         </Link>
 
-        {PAGES.filter(p => p.name !== 'Vest' || (userVest || userDelegatedVest)).map((page) => {
+        {MAIN_PAGES.map((page) => {
           return (
             <Link
               href={page.link}
@@ -147,6 +164,9 @@ export default function Header({
             </Link>
           );
         })}
+
+        <MoreMenu PAGES={DROPDOWN_PAGES} EXTERNAL_LINKS={EXTERNAL_LINKS} pathname={pathname}
+        />
       </div>
 
       <div className="flex flex-row items-center gap-2 sm:gap-3">
@@ -177,7 +197,7 @@ export default function Header({
         <Link
           href="/buy_adx"
           className={twMerge(
-            'flex flex-col 2xl:flex-row items-center justify-center hover:opacity-100',
+            'flex flex-col 2xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
             pathname !== '/buy_adx' && 'opacity-50',
           )}
         >
