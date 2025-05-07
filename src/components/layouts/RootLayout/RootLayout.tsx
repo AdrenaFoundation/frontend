@@ -14,7 +14,6 @@ import monitorIcon from '@/../public/images/Icons/monitor-icon.svg';
 import personIcon from '@/../public/images/Icons/person-fill.svg';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import tradeIcon from '@/../public/images/Icons/trade-icon.svg';
-import mutagenIcon from '@/../public/images/mutagen.png';
 import trophyIcon from '@/../public/images/Icons/trophy.svg';
 import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import mutagenIcon from '@/../public/images/mutagen.png';
