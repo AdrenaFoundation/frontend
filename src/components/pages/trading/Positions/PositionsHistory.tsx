@@ -1,11 +1,12 @@
 import Image from 'next/image';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Pagination from '@/components/common/Pagination/Pagination';
 import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import usePositionsHistory from '@/hooks/usePositionHistory';
+import { EnrichedPositionApi } from '@/types';
 
 import downloadIcon from '../../../../../public/images/download.png';
 import PositionHistoryBlock from './PositionHistoryBlock';
@@ -23,28 +24,43 @@ function PositionsHistory({
   showShareButton?: boolean;
   exportButtonPosition: 'top' | 'bottom';
 }) {
-  const { positionsHistory } = usePositionsHistory({ walletAddress });
-  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(() => {
     return parseInt(localStorage.getItem('itemsPerPage') || '5', 10);
   });
 
-  useEffect(() => {
+  const {
+    isLoadingPositionsHistory,
+    positionsData,
+    currentPage,
+    totalItems,
+    totalPages,
+    loadPageData,
+    getPaginatedData,
+    getCachedPositionsCount
+  } = usePositionsHistory({
+    walletAddress,
+    batchSize: 20,
+    itemsPerPage,
+  });
+
+  const paginatedPositions = getPaginatedData(currentPage);
+
+  const handlePageChange = (page: number) => {
+    if (page === currentPage) return;
+    loadPageData(page);
+  };
+
+  React.useEffect(() => {
     localStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [itemsPerPage]);
 
-  const paginatedPositions = (positionsHistory ?? []).slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
   const downloadPositionHistory = useCallback(() => {
-    if (!positionsHistory) {
+    if (!positionsData || !positionsData.positions) {
       return;
     }
 
     const keys = [
-      'position_id',
+      'positionId',
       'entryDate',
       'exitDate',
       'symbol',
@@ -58,11 +74,11 @@ function PositionsHistory({
       'exitFees',
     ];
 
-    const csvRows = positionsHistory
-      .map((position) =>
+    const csvRows = positionsData.positions
+      .map((position: EnrichedPositionApi) =>
         keys
           .map((key) => {
-            let value = position[key as keyof typeof positionsHistory[0]];
+            let value = position[key as keyof EnrichedPositionApi];
 
             // Format the date field if it's `transaction_date`
             if ((key === 'entryDate' || key === 'exitDate') && value instanceof Date) {
@@ -87,21 +103,28 @@ function PositionsHistory({
 
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-  }, [positionsHistory]);
+  }, [positionsData]);
 
+  const getNoDataMessage = () => {
+    if (!connected) return "Connect your wallet to view your trade history.";
+    if (!positionsData) return "No trade history available.";
+    if (totalItems === 0) return "No trade history available.";
+    if (currentPage > totalPages) return "This page doesn't exist.";
+    if (isLoadingPositionsHistory) return "Loading...";
+    return "No data available for this page.";
+  };
 
-  const exportButton = <div className='w-fit flex gap-1 items-center mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer' onClick={() => {
-    downloadPositionHistory();
-  }}>
-    <div className='text-xs tracking-wider' >Export</div>
-
-    <Image
-      src={downloadIcon}
-      width={14}
-      height={12}
-      alt="Download icon"
-    />
-  </div>
+  const exportButton = (
+    <div className='flex gap-1 items-center opacity-50 hover:opacity-100 cursor-pointer' onClick={downloadPositionHistory}>
+      <div className='text-xs tracking-wider'>Export</div>
+      <Image
+        src={downloadIcon}
+        width={14}
+        height={12}
+        alt="Download icon"
+      />
+    </div>
+  );
 
   return (
     <div className={twMerge("w-full h-full flex flex-col relative", className)}>
@@ -113,30 +136,33 @@ function PositionsHistory({
       >
         {connected ? (
           <>
-            {positionsHistory ? (
+            {isLoadingPositionsHistory && paginatedPositions.length === 0 ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader className='ml-auto mr-auto' />
+              </div>
+            ) : (
               <>
                 {paginatedPositions.length > 0 ? (
                   <div className="flex flex-col gap-3">
-                    {exportButtonPosition === "top" && exportButton}
-                    {paginatedPositions.map((positionHistory) => (
+                    <div className="flex items-center">
+                      {exportButtonPosition === "top" && exportButton}
+                    </div>
+                    {paginatedPositions.map((positionHistory: EnrichedPositionApi) => (
                       <PositionHistoryBlock
                         key={positionHistory.positionId}
                         positionHistory={positionHistory}
                         showShareButton={showShareButton}
                       />
                     ))}
-                    {exportButtonPosition === "bottom" && exportButton}
                   </div>
                 ) : (
                   <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
                     <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
-                      No trade history available.
+                      {getNoDataMessage()}
                     </div>
                   </div>
                 )}
               </>
-            ) : (
-              <Loader className='ml-auto mr-auto' />
             )}
           </>
         ) : (
@@ -148,17 +174,27 @@ function PositionsHistory({
         <div className="w-6" /> {/* Spacer */}
         <Pagination
           currentPage={currentPage}
-          totalPages={positionsHistory ? Math.ceil(positionsHistory.length / itemsPerPage) : 0}
-          onPageChange={setCurrentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          isLoading={isLoadingPositionsHistory}
+          loadedItems={getCachedPositionsCount()}
+          totalItems={totalItems}
         />
 
-        {(positionsHistory?.length ?? 0) > 5 && (
+        {totalItems > 5 && (
           <select
             value={itemsPerPage}
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            onChange={(e) => {
+              const newItemsPerPage = Number(e.target.value);
+              setItemsPerPage(newItemsPerPage);
+              // Reset to first page when changing items per page
+              if (currentPage > Math.ceil(totalItems / newItemsPerPage)) {
+                handlePageChange(1);
+              }
+            }}
             className="w-6 h-6 bg-gray-800 text-white border border-gray-700 rounded text-[10px] appearance-none cursor-pointer text-center"
           >
-            {[5, 10].map((num) => (
+            {[5, 10, 20].map((num) => (
               <option key={num} value={num}>
                 {num}
               </option>
@@ -166,7 +202,7 @@ function PositionsHistory({
           </select>
         )}
       </div>
-    </div >
+    </div>
   );
 }
 

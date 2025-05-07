@@ -10,6 +10,7 @@ import {
     ChaosLabsPricesResponse,
     CustodyInfoResponse,
     EnrichedPositionApi,
+    EnrichedPositionApiV2,
     EnrichedTraderInfo,
     FactionsLeaderboardsData,
     FactionsLeaderboardsRawAPI,
@@ -18,7 +19,7 @@ import {
     MutagenLeaderboardRawAPI,
     PoolInfoResponse,
     PositionActivityRawAPi,
-    PositionApiRawData,
+    PositionApiRawDataV2,
     PositionStatsRawApi,
     PreSeasonLeaderboardReturnTypeAPI,
     RankedRewards,
@@ -759,29 +760,34 @@ export default class DataApiClient {
     public static async getPositions({
         walletAddress,
         tokens,
+        limit = 1000,
+        offset = 0
     }: {
         walletAddress: string;
         tokens: Token[];
-    }): Promise<EnrichedPositionApi[]> {
+        limit?: number;
+        offset?: number;
+    }): Promise<EnrichedPositionApiV2 | null> {
         try {
             const response = await fetch(
-                `${DataApiClient.DATAPI_URL}/position?user_wallet=${walletAddress
-                }&status=liquidate&status=close`,
+                `${DataApiClient.DATAPI_URL}/v2/position?user_wallet=${walletAddress
+                }&status=liquidate&status=close&limit=${limit}&offset=${offset}`,
             );
 
             if (!response.ok) {
                 console.log('API response was not ok');
-                return [];
+                return null;
             }
 
             const apiBody = await response.json();
 
-            const apiData: PositionApiRawData[] | undefined = apiBody.data;
+            const apiData: PositionApiRawDataV2 | undefined = apiBody.data;
 
-            if (typeof apiData === 'undefined' || (apiData && apiData.length === 0))
-                return [];
+            if (typeof apiData === 'undefined' || (apiData && apiData.positions && apiData.positions.length === 0))
+                return null;
 
-            return apiData
+            const positions = apiData
+                .positions
                 .map((data) => {
                     const token = tokens.find(
                         (t) =>
@@ -833,9 +839,16 @@ export default class DataApiClient {
                     } as EnrichedPositionApi;
                 })
                 .filter((data) => data !== null) as EnrichedPositionApi[];
+
+            return {
+                totalCount: apiData.total_count,
+                offset: apiData.offset,
+                limit: apiData.limit,
+                positions: positions,
+            } as EnrichedPositionApiV2;
         } catch (e) {
             console.error('Error fetching positions:', e);
-            return [];
+            return null;
         }
     }
 
