@@ -14,8 +14,8 @@ export default function ALPSwap({
   className?: string;
   connected: boolean;
 }) {
-  const [selectedAction, setSelectedAction] = useState<'buy' | 'sell' | null>(
-    'buy',
+  const [selectedAction, setSelectedAction] = useState<'mint' | 'redeem' | null>(
+    'mint',
   );
 
   return (
@@ -23,15 +23,15 @@ export default function ALPSwap({
       <TabSelect
         selected={selectedAction as string}
         tabs={[
-          { title: 'buy', activeColor: 'border-white' },
-          { title: 'sell', activeColor: 'border-white' },
+          { title: 'mint', activeColor: 'border-white' },
+          { title: 'redeem', activeColor: 'border-white' },
         ]}
         onClick={(title) => {
-          setSelectedAction(title as 'buy' | 'sell');
+          setSelectedAction(title as 'mint' | 'redeem');
         }}
       />
 
-      {selectedAction === 'buy' ? (
+      {selectedAction === 'mint' ? (
         <ALPSwapBuy connected={connected} />
       ) : (
         <ALPSwapSell connected={connected} />
