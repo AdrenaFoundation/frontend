@@ -378,6 +378,8 @@ export default function WalletDigger({
                                             currentPage={adxClaimHistoryCurrentPage}
                                             totalPages={claimsHistoryAdx ? Math.ceil(claimsHistoryAdx.length / claimHistoryItemsPerPage) : 0}
                                             onPageChange={setAdxClaimHistoryCurrentPage}
+                                            itemsPerPage={claimHistoryItemsPerPage}
+                                            totalItems={claimsHistoryAdx?.length ?? 0}
                                         />
                                     </div>
 
@@ -390,6 +392,8 @@ export default function WalletDigger({
                                             currentPage={alpClaimHistoryCurrentPage}
                                             totalPages={claimsHistoryAlp ? Math.ceil(claimsHistoryAlp.length / claimHistoryItemsPerPage) : 0}
                                             onPageChange={setAlpClaimHistoryCurrentPage}
+                                            itemsPerPage={claimHistoryItemsPerPage}
+                                            totalItems={claimsHistoryAlp?.length ?? 0}
                                         />
                                     </div>
                                 </div>

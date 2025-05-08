@@ -414,6 +414,8 @@ export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: b
                                                 currentPage={currentPage}
                                                 totalPages={sortedPositions ? Math.ceil(sortedPositions.length / itemsPerPage) : 0}
                                                 onPageChange={setCurrentPage}
+                                                itemsPerPage={itemsPerPage}
+                                                totalItems={sortedPositions.length}
                                             />
                                         </>
                                     ) : null}

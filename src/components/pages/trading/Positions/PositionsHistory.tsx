@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Pagination from '@/components/common/Pagination/Pagination';
@@ -28,6 +28,8 @@ function PositionsHistory({
     return parseInt(localStorage.getItem('itemsPerPage') || '5', 10);
   });
 
+  const [initialLoad, setInitialLoad] = useState(true);
+
   const {
     isLoadingPositionsHistory,
     positionsData,
@@ -36,7 +38,6 @@ function PositionsHistory({
     totalPages,
     loadPageData,
     getPaginatedData,
-    getCachedPositionsCount
   } = usePositionsHistory({
     walletAddress,
     batchSize: 20,
@@ -45,10 +46,43 @@ function PositionsHistory({
 
   const paginatedPositions = getPaginatedData(currentPage);
 
+  // Check for duplicate positions
+  React.useEffect(() => {
+    if (paginatedPositions.length) {
+      const positionIds = new Set<string>();
+      const duplicates: string[] = [];
+
+      paginatedPositions.forEach(p => {
+        const id = String(p.positionId);
+        if (positionIds.has(id)) {
+          duplicates.push(id);
+        }
+        positionIds.add(id);
+      });
+
+      if (duplicates.length > 0) {
+        console.error(`Found duplicate position IDs in current page: ${duplicates.join(', ')}`);
+      }
+    }
+  }, [paginatedPositions]);
+
   const handlePageChange = (page: number) => {
     if (page === currentPage) return;
     loadPageData(page);
   };
+
+  // Load initial data when clicking on the history tab, but do not do at first render
+  useEffect(() => {
+    if (initialLoad) {
+      setInitialLoad(false);
+      return;
+    }
+
+    if (connected && walletAddress) {
+      loadPageData(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useEffect(() => {
     localStorage.setItem('itemsPerPage', itemsPerPage.toString());
@@ -177,7 +211,7 @@ function PositionsHistory({
           totalPages={totalPages}
           onPageChange={handlePageChange}
           isLoading={isLoadingPositionsHistory}
-          loadedItems={getCachedPositionsCount()}
+          itemsPerPage={itemsPerPage}
           totalItems={totalItems}
         />
 

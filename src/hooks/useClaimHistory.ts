@@ -23,8 +23,8 @@ const hooksInitialized = {
  */
 export default function useClaimHistory({
   walletAddress,
-  batchSize = 1000, // Default batch size for loading data
-  itemsPerPage = 2, // Default items per page for display
+  batchSize = 1000,
+  itemsPerPage = 2,
   symbol = 'ADX',
   interval = 30000,
 }: {
@@ -67,8 +67,7 @@ export default function useClaimHistory({
   const loadClaimsData = useCallback(
     async (offset: number, forceRefresh = false) => {
       // Guard clauses for early returns
-      if (!walletAddressRef.current) return;
-      if (isLoadingClaimHistory) return;
+      if (!walletAddressRef.current || isLoadingClaimHistory) return;
 
       // Cache handling
       const currentToken = symbolRef.current;
@@ -106,7 +105,26 @@ export default function useClaimHistory({
             (acc, s) => acc + s.allTimeCountClaims,
             0,
           );
+
+          // Check if total items has changed and we're loading offset 0
+          const previousTotalItems = totalItems;
           setTotalItems(newTotalItems);
+
+          // If this is offset 0 and total count has changed, clear other cached offsets
+          if (
+            offset === 0 &&
+            newTotalItems !== previousTotalItems &&
+            previousTotalItems > 0
+          ) {
+            console.log(
+              `Total claims count changed from ${previousTotalItems} to ${newTotalItems}, clearing cache`,
+            );
+
+            // Create a new cache with only the current offset data
+            apiResponseCache[currentToken] = {
+              [offset]: claimsHistoryData,
+            };
+          }
         }
 
         setClaimsHistory(claimsHistoryData);
@@ -119,6 +137,7 @@ export default function useClaimHistory({
         setIsLoadingClaimHistory(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [batchSize, isLoadingClaimHistory],
   );
 

@@ -272,6 +272,8 @@ export default function LockedStakesDuration({
             currentPage={lockedStakesPage}
             totalPages={lockedStakes ? Math.ceil(lockedStakes.length / lockedStakesPerPage) : 0}
             onPageChange={setLockedStakesPage}
+            itemsPerPage={lockedStakesPerPage}
+            totalItems={lockedStakes.length}
           />
         </div> : null
       }
