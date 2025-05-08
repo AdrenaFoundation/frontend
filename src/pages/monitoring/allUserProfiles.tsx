@@ -233,6 +233,8 @@ export default function AllUserProfiles() {
                                     currentPage={currentPage}
                                     totalPages={filteredProfiles ? Math.ceil(filteredProfiles.length / itemsPerPage) : 0}
                                     onPageChange={setCurrentPage}
+                                    itemsPerPage={itemsPerPage}
+                                    totalItems={filteredProfiles?.length ?? 0}
                                 />
                             </div>
                         ) : (

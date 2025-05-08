@@ -98,8 +98,7 @@ export default function usePositionsHistory({
   const loadPositionsData = useCallback(
     async (offset: number, forceRefresh = false) => {
       // Guard clauses for early returns
-      if (!walletAddressRef.current) return;
-      if (isLoadingPositionsHistory) return;
+      if (!walletAddressRef.current || isLoadingPositionsHistory) return;
 
       // Initialize wallet cache if needed
       if (!apiResponseCache[walletAddressRef.current]) {
@@ -119,6 +118,7 @@ export default function usePositionsHistory({
 
       // Fetch data
       setIsLoadingPositionsHistory(true);
+
       try {
         const result = await DataApiClient.getPositions({
           walletAddress: walletAddressRef.current,
@@ -158,235 +158,94 @@ export default function usePositionsHistory({
           // Only handle the case where items were added (countDifference > 0)
           // Items cannot be removed, so we don't need to adjust the cache
           if (countDifference > 0 && offset === 0) {
-            // New data is always added at offset 0, and we're currently loading offset 0
-            const walletCache = apiResponseCache[walletKey];
-            const newCache: Record<number, EnrichedPositionApiV2> = {};
-
-            // Create a position ID tracker to prevent overlaps
-            const seenPositionIds = new Set<string>();
-
-            // Update offset 0 with the new data we just fetched
-            newCache[0] = result;
-
-            console.log(
-              `DEBUG SHIFT: Offset 0 has ${result.positions.length} positions`,
-            );
-
-            // Debug: Log the last few positions from offset 0
-            const lastFewFromOffset0 = result.positions.slice(
-              -Math.min(5, result.positions.length),
-            );
-            console.log(
-              `DEBUG SHIFT: Last ${lastFewFromOffset0.length} positions from offset 0:`,
-              lastFewFromOffset0.map(
-                (p) => `ID:${p.positionId}, Symbol:${p.symbol}`,
-              ),
-            );
-
-            // Track all position IDs from offset 0
-            result.positions.forEach((position) => {
-              seenPositionIds.add(String(position.positionId));
-            });
-
-            // Get all the offset keys and sort them numerically
-            const offsets = Object.keys(walletCache)
+            // Get all existing offset keys and sort them
+            const existingOffsets = Object.keys(apiResponseCache[walletKey])
               .map((k) => parseInt(k, 10))
-              .filter((k) => k !== 0) // Skip offset 0 as we handled it above
               .sort((a, b) => a - b);
 
-            console.log(
-              `DEBUG SHIFT: Processing ${offsets.length} additional offsets: ${offsets.join(', ')}`,
-            );
+            // First, we'll build an array of all positions across all batches
+            // while ensuring no duplicates
+            const allPositions: EnrichedPositionApi[] = [];
+            const seenPositionIds = new Set<string>();
 
-            // Process each offset by shifting items between batches in exact batchSize chunks
-            for (let i = 0; i < offsets.length; i++) {
-              const currentOffset = offsets[i];
-              const currentBatch = walletCache[currentOffset];
-
-              console.log(
-                `DEBUG SHIFT: Processing offset ${currentOffset} with ${currentBatch.positions.length} positions`,
-              );
-
-              // Debug: Log the first few positions from the current batch
-              const firstFewFromCurrent = currentBatch.positions.slice(
-                0,
-                Math.min(5, currentBatch.positions.length),
-              );
-              console.log(
-                `DEBUG SHIFT: First ${firstFewFromCurrent.length} positions from offset ${currentOffset}:`,
-                firstFewFromCurrent.map(
-                  (p) => `ID:${p.positionId}, Symbol:${p.symbol}`,
-                ),
-              );
-
-              // If this is the first offset after 0, it needs items from offset 0
-              if (i === 0 && currentOffset === batchSize) {
-                // For the first batch after 0, check for overlaps directly
-                console.log(
-                  `DEBUG SHIFT: First batch after offset 0, checking for overlaps`,
-                );
-
-                // For the first batch after offset 0:
-                // 1. Take the last countDifference items from offset 0
-                const takenFromOffset0 =
-                  result.positions.slice(-countDifference);
-                console.log(
-                  `DEBUG SHIFT: Taking ${takenFromOffset0.length} items from end of offset 0`,
-                );
-
-                // Debug: Check if any items from offset 0 are already in the current batch
-                const overlap = takenFromOffset0.filter((p1) =>
-                  currentBatch.positions.some(
-                    (p2) => String(p1.positionId) === String(p2.positionId),
-                  ),
-                );
-
-                if (overlap.length > 0) {
-                  console.log(
-                    `DEBUG SHIFT: FOUND OVERLAP! ${overlap.length} positions from offset 0 are already in batch ${currentOffset}:`,
-                    overlap.map(
-                      (p) => `ID:${p.positionId}, Symbol:${p.symbol}`,
-                    ),
-                  );
-                }
-
-                // 2. Filter current batch to remove any positions that are in offset 0
-                const filteredCurrentBatch = currentBatch.positions.filter(
-                  (position) =>
-                    !seenPositionIds.has(String(position.positionId)),
-                );
-
-                console.log(
-                  `DEBUG SHIFT: Filtered current batch from ${currentBatch.positions.length} to ${filteredCurrentBatch.length} positions`,
-                );
-
-                // 3. Take items from the filtered batch
-                const remainingFromCurrent = filteredCurrentBatch.slice(
-                  0,
-                  batchSize - countDifference,
-                );
-
-                // Calculate if we have the correct number of items
-                const newBatchPositions = [
-                  ...takenFromOffset0,
-                  ...remainingFromCurrent,
-                ];
-
-                console.log(
-                  `DEBUG SHIFT: New batch for offset ${currentOffset} has ${newBatchPositions.length} positions (needed ${batchSize})`,
-                );
-
-                // Only create a new batch if we have enough items
-                if (newBatchPositions.length === batchSize) {
-                  newCache[currentOffset] = {
-                    ...currentBatch,
-                    positions: newBatchPositions,
-                    totalCount: result.totalCount,
-                  };
-
-                  // Track these position IDs
-                  remainingFromCurrent.forEach((position) => {
-                    seenPositionIds.add(String(position.positionId));
-                  });
-                } else {
-                  console.log(
-                    `DEBUG SHIFT: Not enough items for offset ${currentOffset}, skipping`,
-                  );
-                }
+            // Add the new positions (which should be at the beginning of result.positions)
+            const newPositions = result.positions.slice(0, countDifference);
+            newPositions.forEach((position) => {
+              const id = String(position.positionId);
+              if (!seenPositionIds.has(id)) {
+                seenPositionIds.add(id);
+                allPositions.push(position);
               }
-              // For other offsets, take from the previous offset
-              else if (i > 0) {
-                const prevOffset = offsets[i - 1];
+            });
 
-                // We need items from the previous offset and the current offset
-                if (newCache[prevOffset]) {
-                  console.log(
-                    `DEBUG SHIFT: Taking items from previous offset ${prevOffset} and current offset ${currentOffset}`,
-                  );
-
-                  const prevBatch = newCache[prevOffset];
-                  // Take the last countDifference items from the previous batch
-                  const takenFromPrevBatch =
-                    prevBatch.positions.slice(-countDifference);
-
-                  console.log(
-                    `DEBUG SHIFT: Taking ${takenFromPrevBatch.length} items from end of offset ${prevOffset}`,
-                  );
-
-                  // Debug: Check if any items from previous batch are already in the current batch
-                  const overlap = takenFromPrevBatch.filter((p1) =>
-                    currentBatch.positions.some(
-                      (p2) => String(p1.positionId) === String(p2.positionId),
-                    ),
-                  );
-
-                  if (overlap.length > 0) {
-                    console.log(
-                      `DEBUG SHIFT: FOUND OVERLAP! ${overlap.length} positions from offset ${prevOffset} are already in batch ${currentOffset}:`,
-                      overlap.map(
-                        (p) => `ID:${p.positionId}, Symbol:${p.symbol}`,
-                      ),
-                    );
+            // Collect all positions in order from all batches
+            existingOffsets.forEach((offsetKey) => {
+              const batch = apiResponseCache[walletKey][offsetKey];
+              if (batch && batch.positions) {
+                batch.positions.forEach((position) => {
+                  const id = String(position.positionId);
+                  if (!seenPositionIds.has(id)) {
+                    seenPositionIds.add(id);
+                    allPositions.push(position);
                   }
+                });
+              }
+            });
 
-                  // Filter current batch to remove any positions that are already seen
-                  const filteredCurrentBatch = currentBatch.positions.filter(
-                    (position) =>
-                      !seenPositionIds.has(String(position.positionId)),
-                  );
+            const newCache: Record<number, EnrichedPositionApiV2> = {};
 
-                  console.log(
-                    `DEBUG SHIFT: Filtered current batch from ${currentBatch.positions.length} to ${filteredCurrentBatch.length} positions`,
-                  );
+            // Now divide all positions into batches of batchSize
+            let positionsInCache = 0;
 
-                  // Take items from the filtered batch
-                  const remainingFromCurrent = filteredCurrentBatch.slice(
-                    0,
-                    batchSize - countDifference,
-                  );
+            for (let i = 0; i * batchSize < allPositions.length; i++) {
+              const offsetKey = i * batchSize;
+              const batchPositions = allPositions.slice(
+                i * batchSize,
+                (i + 1) * batchSize,
+              );
 
-                  // Calculate if we have the correct number of items
-                  const newBatchPositions = [
-                    ...takenFromPrevBatch,
-                    ...remainingFromCurrent,
-                  ];
+              // Only keep full batches (exactly batchSize items)
+              if (batchPositions.length === batchSize) {
+                // Use the result as a template, but replace the positions
+                newCache[offsetKey] = {
+                  ...result,
+                  offset: offsetKey,
+                  positions: batchPositions,
+                  totalCount: result.totalCount,
+                };
 
-                  console.log(
-                    `DEBUG SHIFT: New batch for offset ${currentOffset} has ${newBatchPositions.length} positions (needed ${batchSize})`,
-                  );
-
-                  // Only create a new batch if we have enough items
-                  if (newBatchPositions.length === batchSize) {
-                    newCache[currentOffset] = {
-                      ...currentBatch,
-                      positions: [
-                        ...takenFromPrevBatch,
-                        ...remainingFromCurrent,
-                      ],
-                      totalCount: result.totalCount,
-                    };
-
-                    // Track these position IDs
-                    remainingFromCurrent.forEach((position) => {
-                      seenPositionIds.add(String(position.positionId));
-                    });
-                  } else {
-                    console.log(
-                      `DEBUG SHIFT: Not enough items for offset ${currentOffset}, skipping`,
-                    );
-                  }
-                } else {
-                  console.log(
-                    `DEBUG SHIFT: Previous offset ${prevOffset} not in new cache, skipping offset ${currentOffset}`,
-                  );
-                }
+                positionsInCache += batchPositions.length;
               }
             }
 
-            // Log the final cache state
-            console.log(
-              `DEBUG SHIFT: New cache has ${Object.keys(newCache).length} offsets`,
-            );
+            // Update the total count for all batches to reflect the actual number of positions kept
+            // This ensures pagination works correctly
+            Object.keys(newCache).forEach((key) => {
+              const offsetKey = parseInt(key, 10);
+              newCache[offsetKey].totalCount = positionsInCache;
+            });
+
+            // Check for duplicate positions across batches (debugging)
+            const positionIds = new Set<string>();
+            const duplicates: string[] = [];
+
+            Object.keys(newCache).forEach((offsetKey) => {
+              const batch = newCache[parseInt(offsetKey, 10)];
+              batch.positions.forEach((position) => {
+                const id = String(position.positionId);
+                if (positionIds.has(id)) {
+                  duplicates.push(id);
+                } else {
+                  positionIds.add(id);
+                }
+              });
+            });
+
+            if (duplicates.length > 0) {
+              console.error(
+                `DEBUG SHIFT: Found ${duplicates.length} duplicates across batches: ${duplicates.join(', ')}`,
+              );
+            }
 
             // Replace the old cache with the new one
             apiResponseCache[walletKey] = newCache;
@@ -485,34 +344,44 @@ export default function usePositionsHistory({
       if (
         !walletAddressRef.current ||
         page < 1 ||
-        (totalPages > 0 && page > totalPages)
+        (totalPages > 0 && page > totalPages) ||
+        isLoadingPositionsHistory ||
+        !isInitializedRef.current // Prevent parallel execution
       )
         return;
+
+      // Set loading state
+      setIsLoadingPositionsHistory(true);
 
       // Update current page
       setCurrentPage(page);
       currentPageRef.current = page;
 
-      // Calculate offset from page
-      // This is the key to the pagination optimization:
-      // - We map UI pages to API batch offsets
-      // - We fetch data in batches (batchSize) but display in smaller chunks (itemsPerPage)
-      const pageOffset = (page - 1) * itemsPerPage;
-      const batchNumber = Math.floor(pageOffset / batchSize);
-      const batchOffset = batchNumber * batchSize;
+      try {
+        // Calculate offset from page
+        // This is the key to the pagination optimization:
+        // - We map UI pages to API batch offsets
+        // - We fetch data in batches (batchSize) but display in smaller chunks (itemsPerPage)
+        const pageOffset = (page - 1) * itemsPerPage;
+        const batchNumber = Math.floor(pageOffset / batchSize);
+        const batchOffset = batchNumber * batchSize;
 
-      // Load data (from cache or API)
-      if (
-        apiResponseCache[walletAddressRef.current] &&
-        apiResponseCache[walletAddressRef.current][batchOffset]
-      ) {
-        setPositionsData(
-          apiResponseCache[walletAddressRef.current][batchOffset],
-        );
-      } else {
-        await loadPositionsData(batchOffset);
+        // Load data (from cache or API)
+        if (
+          apiResponseCache[walletAddressRef.current] &&
+          apiResponseCache[walletAddressRef.current][batchOffset]
+        ) {
+          setPositionsData(
+            apiResponseCache[walletAddressRef.current][batchOffset],
+          );
+        } else {
+          await loadPositionsData(batchOffset);
+        }
+      } finally {
+        setIsLoadingPositionsHistory(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [totalPages, itemsPerPage, batchSize, loadPositionsData],
   );
 
@@ -535,10 +404,24 @@ export default function usePositionsHistory({
       // Return the slice for the current page
       if (relativeStartIndex >= 0 && relativeStartIndex < allPositions.length) {
         const relativeEndIndex = relativeStartIndex + itemsPerPage;
-        return allPositions.slice(
+        const pagePositions = allPositions.slice(
           relativeStartIndex,
           Math.min(relativeEndIndex, allPositions.length),
         );
+
+        // Deduplicate positions by ID before returning
+        const uniquePositions: EnrichedPositionApi[] = [];
+        const seenIds = new Set<string>();
+
+        pagePositions.forEach((position) => {
+          const id = String(position.positionId);
+          if (!seenIds.has(id)) {
+            seenIds.add(id);
+            uniquePositions.push(position);
+          }
+        });
+
+        return uniquePositions;
       }
 
       return [];

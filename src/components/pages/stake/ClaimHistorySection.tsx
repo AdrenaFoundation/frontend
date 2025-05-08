@@ -317,6 +317,8 @@ export default function ClaimHistorySection({
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
                         isLoading={isLoadingClaimHistory}
+                        itemsPerPage={itemsPerPage}
+                        totalItems={totalItems}
                     />
                 </div>
             </CSSTransition>

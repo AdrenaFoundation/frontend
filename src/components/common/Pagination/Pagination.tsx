@@ -3,10 +3,10 @@ import React from 'react';
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  itemsPerPage: number;
+  totalItems: number;
   onPageChange: (page: number) => void;
   isLoading?: boolean;
-  loadedItems?: number;
-  totalItems?: number;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -14,10 +14,11 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
   isLoading = false,
-  loadedItems,
+  itemsPerPage,
   totalItems,
 }) => {
   if (totalPages <= 1) return null;
+  const itemsSeen = Math.min(currentPage * itemsPerPage, totalItems);
 
   const handlePrevious = () => {
     if (currentPage > 1 && !isLoading) {
@@ -52,8 +53,8 @@ const Pagination: React.FC<PaginationProps> = ({
           {isLoading && currentPage < totalPages ? "..." : ">"}
         </button>
       </div>
-      {loadedItems && totalItems ? (
-        <span className="text-sm text-txtfade opacity-50">{`(${loadedItems}/${totalItems})`}</span>
+      {itemsSeen && totalItems ? (
+        <span className="text-sm text-txtfade opacity-50">{`(${itemsSeen}/${totalItems})`}</span>
       ) : null}
     </div>
   );
