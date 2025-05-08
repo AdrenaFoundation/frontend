@@ -284,7 +284,7 @@ export default function ALPSwapSell({
 
             {/* Button to execute action */}
             {connected ? <Button
-                title={!(alpInput === null || ((walletTokenBalances && (walletTokenBalances['ALP'] ?? 0) < alpInput))) ? "Sell ALP" : 'Insufficient ALP'}
+                title={!(alpInput === null || ((walletTokenBalances && (walletTokenBalances['ALP'] ?? 0) < alpInput))) ? "Redeem ALP" : 'Insufficient ALP'}
                 size="lg"
                 disabled={errorMessage !== null || isMainDataLoading || alpInput === null || collateralInput === null || !!((walletTokenBalances && (walletTokenBalances['ALP'] ?? 0) < alpInput))}
                 className="justify-center w-full mt-2"

@@ -651,7 +651,7 @@ export default function ALPSwapBuy({
 
             {/* Button to execute action */}
             {connected ? <Button
-                title="Buy ALP"
+                title="Mint ALP"
                 size="lg"
                 disabled={
                     errorMessage !== null ||
