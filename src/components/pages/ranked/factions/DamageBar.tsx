@@ -1,13 +1,11 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { whiteColor } from '@/constant';
-
-import { PICTURES } from './Rank';
-import Image from 'next/image';
 import bonkLeftWing from '@/../../public/images/factions-bonk-left.png';
 import jitoLeftWing from '@/../../public/images/factions-jito-left.png';
+import { whiteColor } from '@/constant';
 
 export default function DamageBar({
     bonkMutagen,
