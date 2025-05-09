@@ -110,7 +110,7 @@ function ChatContainer({
     }
 
     return (
-        <div className="fixed bottom-0 right-4 z-20">
+        <div className="fixed bottom-0 right-4 z-40">
             {isChatOpen && (
                 <div
                     className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize select-none"

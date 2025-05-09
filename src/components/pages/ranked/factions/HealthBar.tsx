@@ -14,7 +14,7 @@ export default function HealthBar({
 }) {
     return (
         <div className="relative flex flex-col items-center gap-2 max-w-full">
-            <div className="flex w-[30em] max-w-[calc(100%-1em)] md:max-w-[30em] h-[1.5em] bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative overflow-hidden">
+            <div className="flex w-[60em] h-[1.5em] bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative overflow-hidden">
                 {/* Life */}
                 {Array.from({ length: S2_NB_HEALTH_BAR }).map((_, i) => (
                     <Tippy content={<div className="flex flex-col gap-2">
@@ -48,6 +48,7 @@ export default function HealthBar({
                     className="absolute left-0 top-0 h-full bg-green transition-all duration-700 ease-in-out shimmer"
                     style={{ width: `${Math.max(0, Math.min(100, leaderboardData.weekly.bossLifePercentage[weekIndex]))}%` }}
                 />
+
             </div>
         </div >
     );
