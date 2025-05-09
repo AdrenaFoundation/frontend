@@ -78,7 +78,7 @@ export default function StakeApr({
 
       <div className={twMerge('flex flex-col w-full gap-4 border-t border-bcolor overflow-hidden transition-all duration-3000 ease-in-out', moreInfo ? 'max-h-[100em]' : 'max-h-0')}>
         <div className='flex flex-col ml-8 mr-8 mt-4'>
-          <p className='opacity-75 text-base bg-third p-4 w-full text-justify border border-bcolor rounded flex flex-col gap-2 min-h-[8em]'>
+          <p className='opacity-75 text-base bg-third p-4 w-full text-justify border border-bcolor rounded flex flex-col gap-2'>
             {token === "ALP" ? <span className='text-sm'>
               The displayed APR are projected values based on the last 7 days rolling. The liquid USDC rewards is given to each ALP, staked or not. Therefore the APR displayed below is the sum of liquid and locked APR.
               To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
