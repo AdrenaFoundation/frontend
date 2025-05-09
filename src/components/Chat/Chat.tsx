@@ -84,14 +84,14 @@ const trackOpenChat = async (roomId: number, walletAddress: PublicKey) => {
     }
 };
 
-const trackCloseChat = async (roomId: number, walletAddress: PublicKey) => {
-    try {
-        await kv.del(`connected:${roomId}:${walletAddress.toBase58()}`);
-    } catch (e) {
-        // ignore error - it's not a big deal if we can't save that info
-        console.log('Error tracking close chat', e);
-    }
-};
+// const trackCloseChat = async (roomId: number, walletAddress: PublicKey) => {
+//     try {
+//         await kv.del(`connected:${roomId}:${walletAddress.toBase58()}`);
+//     } catch (e) {
+//         // ignore error - it's not a big deal if we can't save that info
+//         console.log('Error tracking close chat', e);
+//     }
+// };
 
 const connectedUsersCache = new Map<
     string,
