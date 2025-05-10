@@ -84,14 +84,14 @@ const trackOpenChat = async (roomId: number, walletAddress: PublicKey) => {
     }
 };
 
-const trackCloseChat = async (roomId: number, walletAddress: PublicKey) => {
-    try {
-        await kv.del(`connected:${roomId}:${walletAddress.toBase58()}`);
-    } catch (e) {
-        // ignore error - it's not a big deal if we can't save that info
-        console.log('Error tracking close chat', e);
-    }
-};
+// const trackCloseChat = async (roomId: number, walletAddress: PublicKey) => {
+//     try {
+//         await kv.del(`connected:${roomId}:${walletAddress.toBase58()}`);
+//     } catch (e) {
+//         // ignore error - it's not a big deal if we can't save that info
+//         console.log('Error tracking close chat', e);
+//     }
+// };
 
 const connectedUsersCache = new Map<
     string,
@@ -213,19 +213,14 @@ function Chat({
 
     const handleRoomChange = useCallback((newRoomId: number) => {
         setRoomId(newRoomId);
-        setNbConnectedUsers(null);
+        // setNbConnectedUsers(null);
         setIsLoadingNbConnectedUsers(true);
-
-        fetchConnectedUsers(newRoomId).then((count) => {
-            setNbConnectedUsers(count);
-            setIsLoadingNbConnectedUsers(false);
-        });
     }, []);
 
     useEffect(() => {
         const updateUsers = () => {
             fetchDetailedConnectedUsers(roomId).then((users) => {
-                setNbConnectedUsers(users.length);
+                // setNbConnectedUsers(users.length);
                 setConnectedUsers(users);
             });
         };
@@ -325,7 +320,7 @@ function Chat({
     }, [messages, isOpen]);
 
     useEffect(() => {
-        if (!wallet?.publicKey || !isOpen) return;
+        if (!wallet?.publicKey) return;
 
         let mounted = true;
 
@@ -349,14 +344,12 @@ function Chat({
             mounted = false;
             clearInterval(interval);
 
-            if (isOpen) {
-                trackCloseChat(roomId, wallet.publicKey).then(() => {
-                    connectedUsersCache.delete(`room_${roomId}`);
-                    fetchConnectedUsers(roomId).then((count) => {
-                        setNbConnectedUsers(count);
-                    });
-                });
-            }
+            // trackCloseChat(roomId, wallet.publicKey).then(() => {
+            //     connectedUsersCache.delete(`room_${roomId}`);
+            //     fetchConnectedUsers(roomId).then((count) => {
+            //         setNbConnectedUsers(count);
+            //     });
+            // });
         };
     }, [isOpen, wallet, roomId]);
 
