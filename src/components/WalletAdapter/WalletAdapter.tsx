@@ -10,6 +10,7 @@ import {
 } from '@/actions/walletActions';
 import { PROFILE_PICTURES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useDynamicWallet from '@/hooks/useDynamicWallet';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
@@ -21,6 +22,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import DynamicWalletButton from '../DynamicWallet/DynamicWalletButton';
 import WalletSelectionModal from './WalletSelectionModal';
 
 export default function WalletAdapter({
@@ -46,6 +48,8 @@ export default function WalletAdapter({
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
+  console.log('wallet from WalletAdapter', wallet);
+
   const connectedAdapter = useMemo(
     () => wallet && adapters.find((x) => x.name === wallet.adapterName),
     [wallet, adapters],
@@ -54,6 +58,9 @@ export default function WalletAdapter({
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
   const lastConnectedWalletRef = useRef<null | WalletAdapterName>(null);
+
+  const dynamicWallet = useDynamicWallet();
+  const dynamicWalletAvailable = process.env.NEXT_PUBLIC_USE_DYNAMIC_WALLET === 'true';
 
   if (autoConnectAuthorizedRef.current === null) {
     autoConnectAuthorizedRef.current = !!JSON.parse(
@@ -116,6 +123,18 @@ export default function WalletAdapter({
       adapter.removeAllListeners('connect');
     };
   }, [dispatch, connectedWalletAdapterName, adapters]);
+
+  // Before the return statement, add logic to check if the user is connected with Dynamic
+  const isConnectedWithDynamic = dynamicWalletAvailable && !!dynamicWallet.primaryWallet;
+
+  // If connected with Dynamic, show the Dynamic wallet menu instead
+  if (isConnectedWithDynamic) {
+    return (
+      <div className="relative">
+        <DynamicWalletButton />
+      </div>
+    );
+  }
 
   return (
     <div className="relative">

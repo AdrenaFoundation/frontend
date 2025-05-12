@@ -1,6 +1,7 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -14,6 +15,7 @@ import { Provider } from 'react-redux';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
+import DynamicProvider from '@/components/DynamicProvider';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
@@ -103,20 +105,22 @@ export default function App(props: AppProps) {
   return (
     <Provider store={store}>
       <CookiesProvider>
-        <AppComponent
-          activeRpc={activeRpc}
-          rpcInfos={rpcInfos}
-          autoRpcMode={autoRpcMode}
-          customRpcUrl={customRpcUrl}
-          customRpcLatency={customRpcLatency}
-          favoriteRpc={favoriteRpc}
-          setAutoRpcMode={setAutoRpcMode}
-          setCustomRpcUrl={setCustomRpcUrl}
-          setFavoriteRpc={setFavoriteRpc}
-          {...props}
-        />
-        <Analytics />
-        <SpeedInsights />
+        <DynamicProvider>
+          <AppComponent
+            activeRpc={activeRpc}
+            rpcInfos={rpcInfos}
+            autoRpcMode={autoRpcMode}
+            customRpcUrl={customRpcUrl}
+            customRpcLatency={customRpcLatency}
+            favoriteRpc={favoriteRpc}
+            setAutoRpcMode={setAutoRpcMode}
+            setCustomRpcUrl={setCustomRpcUrl}
+            setFavoriteRpc={setFavoriteRpc}
+            {...props}
+          />
+          <Analytics />
+          <SpeedInsights />
+        </DynamicProvider>
       </CookiesProvider>
     </Provider>
   );
@@ -166,6 +170,8 @@ function AppComponent({
   const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
   const { userProfile, triggerUserProfileReload } = useUserProfile(walletAddress ?? null);
 
+  // Always call the hook at the top level
+  useDynamicContext();
   useSettingsPersistence();
   useWatchTokenPrices();
   useWatchBorrowRates();
@@ -343,7 +349,6 @@ function AppComponent({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          adapters={adapters}
         />
       </RootLayout>
     </>

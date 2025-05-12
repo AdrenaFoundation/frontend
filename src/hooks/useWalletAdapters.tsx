@@ -2,6 +2,7 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { CoinbaseWalletAdapter } from '@solana/wallet-adapter-coinbase';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
+//import { TurnkeyWalletAdapter } from '@solana/wallet-adapter-turnkey';
 import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
 import { useStandardWalletAdapters } from "@solana/wallet-standard-wallet-adapter-react";
 import { useMemo } from "react";
@@ -10,6 +11,7 @@ import { ImageRef, WalletAdapterExtended } from "@/types";
 
 import backpackLogo from '../../public/images/backpack.png';
 import coinbaseLogo from '../../public/images/coinbase.png';
+import dynamicLogo from '../../public/images/dynamic-logo.png';
 import phantomLogo from '../../public/images/phantom.svg';
 import solflareLogo from '../../public/images/solflare.png';
 import squadxLogo from '../../public/images/squadx-logo.png';
@@ -22,6 +24,8 @@ export const WALLET_ICONS = {
     WalletConnect: walletconnectLogo,
     'Coinbase Wallet': coinbaseLogo,
     SquadsX: squadxLogo,
+    Dynamic: dynamicLogo,
+    'Turnkey HD': dynamicLogo,
 } as const satisfies Partial<Record<WalletAdapterName, ImageRef>>;
 
 const SUPPORTED_WALLETS = [
@@ -31,6 +35,8 @@ const SUPPORTED_WALLETS = [
     'WalletConnect',
     'Backpack',
     'SquadsX',
+    'Dynamic',
+    'Turnkey HD', // Dynamic
 ] as const;
 
 // Handpicked list of supported wallets
@@ -43,12 +49,15 @@ export const WALLET_COLORS = {
     WalletConnect: '#0798fe',
     'Coinbase Wallet': '#072b79',
     SquadsX: '#000000',
+    Dynamic: '#000000',
+    'Turnkey HD': '#000000',
 } as const satisfies Record<WalletAdapterName, string>;
 
 export default function useWalletAdapters(): WalletAdapterExtended[] {
     const adapters = useStandardWalletAdapters([
         // Add specialized wallet adapters here
         //
+        // new TurnkeyWalletAdapter(),
         // Wallets compatible with the @solana/wallet-adapter-wallets package will be added automatically
         new PhantomWalletAdapter(),
         new CoinbaseWalletAdapter(),

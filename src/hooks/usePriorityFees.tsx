@@ -16,6 +16,7 @@ export default function usePriorityFee() {
     const updatePriorityFees = useCallback(async () => {
         if (!window.adrena.client.connection) return;
 
+        return;
         try {
             const fees = await Promise.all([
                 getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {

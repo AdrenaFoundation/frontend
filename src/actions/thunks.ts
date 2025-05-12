@@ -210,6 +210,7 @@ export const fetchAndSubscribeToFullUserPositions =
 export const fetchWalletTokenBalances =
   () => async (dispatch: Dispatch, getState: () => RootState) => {
     const connection = window.adrena.mainConnection;
+    console.log('calling fetchWalletTokenBalances');
     const walletPublicKey = selectWalletPublicKey(getState());
 
     if (!walletPublicKey || !connection) {

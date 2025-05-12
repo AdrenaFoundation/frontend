@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "=0.29.0",
+    "@dynamic-labs/sdk-react-core": "^4.18.2",
+    "@dynamic-labs/solana": "^4.18.2",
     "@emotion/react": "=11.14.0",
     "@emotion/styled": "=11.14.0",
     "@mui/material": "=6.2.0",

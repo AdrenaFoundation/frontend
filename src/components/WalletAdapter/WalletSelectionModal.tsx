@@ -1,3 +1,4 @@
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
@@ -11,6 +12,8 @@ import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { ImageRef, WalletAdapterExtended } from '@/types';
 
+// Import dynamic logo or use a local static image instead of external URL
+import dynamicLogo from '../../../public/images/dynamic-logo.png';
 import Modal from '../common/Modal/Modal';
 
 export default function WalletSelectionModal({
@@ -20,6 +23,7 @@ export default function WalletSelectionModal({
 }) {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
+  const { setShowAuthFlow } = useDynamicContext();
 
   return (
     <AnimatePresence>
@@ -30,6 +34,19 @@ export default function WalletSelectionModal({
           title="Pick a wallet"
         >
           <div className={twMerge("flex flex-col min-w-[25em] grow items-center gap-4 pb-4 pt-4")}>
+            {
+              <WalletBlock
+                name="Dynamic"
+                bgColor="#1A1D29"
+                recommended={true}
+                logo={dynamicLogo}
+                imgClassName="w-[6em] left-6 top-8"
+                onClick={() => {
+                  dispatch(openCloseConnectionModalAction(false));
+                  setShowAuthFlow(true);
+                }}
+              />
+            }
             {adapters.map((adapter) => {
               return <WalletBlock
                 key={adapter.name}
@@ -40,12 +57,14 @@ export default function WalletSelectionModal({
                 logo={adapter.iconOverride ?? adapter.icon}
                 imgClassName={({
                   // Add custom classes here for each wallet if needed
+                  'Dynamic': 'w-[10em] left-14',
                   'Phantom': 'w-[10em] left-14',
                   'Coinbase Wallet': 'w-[6em] left-6 top-6',
                   Solflare: 'w-[6em] -left-2 top-12',
                   'Backpack': 'w-[5em] left-2 top-6',
                   'WalletConnect': 'w-[7em] left-8 top-2',
                   SquadsX: 'w-[6em] left-4 top-10',
+                  'Turnkey HD': 'w-[10em] left-14',
                 } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
                 onClick={() => {
                   dispatch(connectWalletAction(adapter));

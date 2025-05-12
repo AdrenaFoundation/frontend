@@ -3576,12 +3576,16 @@ export class AdrenaClient {
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
       .wallet;
 
+    console.log('wallet', wallet);
+
     const builder = await this.buildClaimStakesInstruction({
       owner,
       stakedTokenMint,
       caller,
       overrideRewardTokenAccount,
     });
+
+    console.log('builder', builder);
 
     builder.preInstructions([
       ComputeBudgetProgram.setComputeUnitLimit({
@@ -5746,6 +5750,8 @@ export class AdrenaClient {
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider)
       .wallet as Wallet & WalletAdapterExtended;
+
+    console.log('wallet from signAndExecuteTxAlternative', wallet);
 
     let latestBlockHash: {
       blockhash: Blockhash;

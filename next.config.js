@@ -31,6 +31,13 @@ module.exports = (phase, { defaultConfig }) => {
       return config;
     },
 
+    // Configure allowed image domains TODO: upload on vercel and use directly from there
+    images: {
+      domains: [
+        'assets.dynamic.xyz', // Allow Dynamic's asset domain for wallet logos
+      ],
+    },
+
     env: {
       KV_URL: process.env.KV_URL,
       KV_REST_API_READ_ONLY_TOKEN: process.env.KV_REST_API_READ_ONLY_TOKEN,
