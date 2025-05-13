@@ -488,51 +488,45 @@ export type Adrena = {
       accounts: [
         {
           name: 'owner';
-          isMut: false;
-          isSigner: false;
-          docs: ['#1', 'Wallet related to the user profile'];
-        },
-        {
-          name: 'caller';
-          isMut: false;
+          isMut: true;
           isSigner: true;
-          docs: ['#2'];
+          docs: ['#1', 'Wallet related to the user profile'];
         },
         {
           name: 'payer';
           isMut: true;
           isSigner: true;
-          docs: ['#3'];
+          docs: ['#2', 'Account paying for the reallocation'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
-          docs: ['#4'];
+          docs: ['#3'];
         },
         {
           name: 'userNickname';
           isMut: true;
           isSigner: false;
-          docs: ['#5', 'Use PDA to make nicknames unique'];
+          docs: ['#4', 'Use PDA to make nicknames unique'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#6'];
+          docs: ['#5'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#6'];
         },
         {
           name: 'rent';
           isMut: false;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#7'];
         },
       ];
       args: [
@@ -920,40 +914,34 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#9'];
         },
         {
           name: 'custodyTokenMint';
           isMut: false;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#9'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'rent';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
       ];
       args: [
@@ -1291,8 +1279,8 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'receivingCustodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#9'];
         },
@@ -1309,28 +1297,22 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'dispensingCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
           name: 'dispensingCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -1396,8 +1378,8 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#9'];
         },
@@ -1431,163 +1413,6 @@ export type Adrena = {
           name: 'params';
           type: {
             defined: 'AddLiquidityParams';
-          };
-        },
-      ];
-    },
-    {
-      name: 'addGenesisLiquidity';
-      accounts: [
-        {
-          name: 'owner';
-          isMut: true;
-          isSigner: true;
-          docs: ['#1'];
-        },
-        {
-          name: 'fundingAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#2'];
-        },
-        {
-          name: 'transferAuthority';
-          isMut: false;
-          isSigner: false;
-          docs: ['#3'];
-        },
-        {
-          name: 'lpUserStaking';
-          isMut: true;
-          isSigner: false;
-          docs: ['#4'];
-        },
-        {
-          name: 'lpStaking';
-          isMut: true;
-          isSigner: false;
-          docs: ['#5'];
-        },
-        {
-          name: 'cortex';
-          isMut: true;
-          isSigner: false;
-          docs: ['#6'];
-        },
-        {
-          name: 'pool';
-          isMut: true;
-          isSigner: false;
-          docs: ['#7'];
-        },
-        {
-          name: 'lpStakingStakedTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#8'];
-        },
-        {
-          name: 'custody';
-          isMut: true;
-          isSigner: false;
-          docs: ['#9'];
-        },
-        {
-          name: 'custodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
-          name: 'custodyTokenAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#11'];
-        },
-        {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
-          name: 'lpTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#13'];
-        },
-        {
-          name: 'governanceTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#14'];
-        },
-        {
-          name: 'governanceRealm';
-          isMut: false;
-          isSigner: false;
-          docs: [
-            '#15',
-            'A realm represent one project within the governance program',
-          ];
-        },
-        {
-          name: 'governanceRealmConfig';
-          isMut: false;
-          isSigner: false;
-          docs: ['#16'];
-        },
-        {
-          name: 'governanceGoverningTokenHolding';
-          isMut: true;
-          isSigner: false;
-          docs: [
-            '#17',
-            "Token account owned by governance program holding user's locked tokens",
-          ];
-        },
-        {
-          name: 'governanceGoverningTokenOwnerRecord';
-          isMut: true;
-          isSigner: false;
-          docs: ['#18', 'Account owned by governance storing user information'];
-        },
-        {
-          name: 'governanceProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#19'];
-        },
-        {
-          name: 'systemProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#20'];
-        },
-        {
-          name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#21'];
-        },
-        {
-          name: 'adrenaProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#22'];
-        },
-        {
-          name: 'genesisLock';
-          isMut: true;
-          isSigner: false;
-          docs: ['#23'];
-        },
-      ];
-      args: [
-        {
-          name: 'params';
-          type: {
-            defined: 'AddGenesisLiquidityParams';
           };
         },
       ];
@@ -1815,8 +1640,8 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
@@ -1916,40 +1741,34 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#10'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#11'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -2023,8 +1842,8 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'custodyTradeOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#9'];
         },
@@ -2035,34 +1854,28 @@ export type Adrena = {
           docs: ['#10'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#11'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -2108,8 +1921,8 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'receivingCustodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#6'];
         },
@@ -2126,64 +1939,52 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'principalCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#9'];
-        },
-        {
-          name: 'principalCustodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
           name: 'principalCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#9'];
         },
         {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#10'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#11'];
         },
         {
           name: 'pool';
           isMut: true;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#12'];
         },
         {
           name: 'position';
           isMut: true;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#13'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#14'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#17'];
+          docs: ['#15'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#18'];
+          docs: ['#16'];
         },
       ];
       args: [
@@ -2229,8 +2030,8 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'receivingCustodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#6'];
         },
@@ -2247,76 +2048,64 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#9'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#9'];
         },
         {
           name: 'principalCustody';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
-        },
-        {
-          name: 'principalCustodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#12'];
+          docs: ['#10'];
         },
         {
           name: 'principalCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#11'];
         },
         {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#12'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#13'];
         },
         {
           name: 'pool';
           isMut: true;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#14'];
         },
         {
           name: 'position';
           isMut: true;
           isSigner: false;
-          docs: ['#17'];
+          docs: ['#15'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#18'];
+          docs: ['#16'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#19'];
+          docs: ['#17'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#18'];
         },
       ];
       args: [
@@ -2374,34 +2163,28 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#9'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#9'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
       ];
       args: [
@@ -2459,8 +2242,8 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyTradeOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
@@ -2471,28 +2254,22 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
       ];
       args: [
@@ -2550,34 +2327,28 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#9'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#9'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
       ];
       args: [
@@ -2635,8 +2406,8 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyTradeOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
@@ -2647,28 +2418,22 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
       ];
       args: [
@@ -2732,48 +2497,42 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#9'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#10'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'referrerProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -2837,8 +2596,8 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'custodyTradeOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#9'];
         },
@@ -2849,42 +2608,36 @@ export type Adrena = {
           docs: ['#10'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#11'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'referrerProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#15'];
         },
       ];
       args: [
@@ -2942,48 +2695,42 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#9'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#9'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'referrerProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
       ];
       args: [
@@ -3041,8 +2788,8 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyTradeOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
@@ -3053,42 +2800,36 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'referrerProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -3121,8 +2862,21 @@ export type Adrena = {
           isSigner: false;
           docs: ['#3'];
         },
+        {
+          name: 'oracle';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
       ];
-      args: [];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'UpdatePoolAumParams';
+          };
+        },
+      ];
       returns: 'u128';
     },
     {
@@ -3147,7 +2901,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'custodyOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3193,16 +2947,16 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'custodyOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
-          docs: ['#4'];
+          docs: ['#5'];
         },
         {
           name: 'lpTokenMint';
           isMut: false;
           isSigner: false;
-          docs: ['#5'];
+          docs: ['#6'];
         },
       ];
       args: [
@@ -3239,7 +2993,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'custodyTradeOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3249,12 +3003,6 @@ export type Adrena = {
           isMut: false;
           isSigner: false;
           docs: ['#5'];
-        },
-        {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#6'];
         },
       ];
       args: [
@@ -3453,8 +3201,8 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'receivingCustodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#4'];
         },
@@ -3465,28 +3213,16 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'collateralCustodyOracle';
+          name: 'principalCustody';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
         },
         {
-          name: 'principalCustody';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
-        },
-        {
-          name: 'principalCustodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#8'];
-        },
-        {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#9'];
+          docs: ['#7'];
         },
       ];
       args: [
@@ -3529,7 +3265,7 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyTradeOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
           docs: ['#5'];
@@ -3540,14 +3276,15 @@ export type Adrena = {
           isSigner: false;
           docs: ['#6'];
         },
+      ];
+      args: [
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
+          name: 'params';
+          type: {
+            defined: 'GetExitPriceAndFeeParams';
+          };
         },
       ];
-      args: [];
       returns: {
         defined: 'ExitPriceAndFee';
       };
@@ -3580,7 +3317,7 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyTradeOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
           docs: ['#5'];
@@ -3591,14 +3328,15 @@ export type Adrena = {
           isSigner: false;
           docs: ['#6'];
         },
+      ];
+      args: [
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
+          name: 'params';
+          type: {
+            defined: 'GetPnlParams';
+          };
         },
       ];
-      args: [];
       returns: {
         defined: 'ProfitAndLoss';
       };
@@ -3637,7 +3375,7 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'collateralCustodyOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
@@ -3681,7 +3419,7 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyTradeOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
           docs: ['#5'];
@@ -3692,46 +3430,16 @@ export type Adrena = {
           isSigner: false;
           docs: ['#6'];
         },
+      ];
+      args: [
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
+          name: 'params';
+          type: {
+            defined: 'GetLiquidationStateParams';
+          };
         },
       ];
-      args: [];
       returns: 'u8';
-    },
-    {
-      name: 'getOraclePrice';
-      accounts: [
-        {
-          name: 'cortex';
-          isMut: false;
-          isSigner: false;
-          docs: ['#1'];
-        },
-        {
-          name: 'pool';
-          isMut: false;
-          isSigner: false;
-          docs: ['#2'];
-        },
-        {
-          name: 'custody';
-          isMut: false;
-          isSigner: false;
-          docs: ['#3'];
-        },
-        {
-          name: 'custodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#4'];
-        },
-      ];
-      args: [];
-      returns: 'u64';
     },
     {
       name: 'getSwapAmountAndFees';
@@ -3755,7 +3463,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'receivingCustodyOracle';
+          name: 'oracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3765,12 +3473,6 @@ export type Adrena = {
           isMut: false;
           isSigner: false;
           docs: ['#5'];
-        },
-        {
-          name: 'dispensingCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#6'];
         },
       ];
       args: [
@@ -3800,8 +3502,21 @@ export type Adrena = {
           isSigner: false;
           docs: ['#2'];
         },
+        {
+          name: 'oracle';
+          isMut: true;
+          isSigner: false;
+          docs: ['#3'];
+        },
       ];
-      args: [];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'GetAssetsUnderManagementParams';
+          };
+        },
+      ];
       returns: 'u128';
     },
     {
@@ -3912,32 +3627,26 @@ export type Adrena = {
         {
           name: 'user';
           isMut: false;
-          isSigner: false;
-          docs: ['#1'];
-        },
-        {
-          name: 'caller';
-          isMut: false;
           isSigner: true;
-          docs: ['#2'];
+          docs: ['#1'];
         },
         {
           name: 'payer';
           isMut: true;
           isSigner: true;
-          docs: ['#3'];
+          docs: ['#2'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
-          docs: ['#4'];
+          docs: ['#3'];
         },
         {
           name: 'userNickname';
           isMut: true;
           isSigner: false;
-          docs: ['#5', 'Use PDA to make nicknames unique'];
+          docs: ['#4', 'Use PDA to make nicknames unique'];
         },
         {
           name: 'referrerProfile';
@@ -3945,7 +3654,7 @@ export type Adrena = {
           isSigner: false;
           isOptional: true;
           docs: [
-            '#6',
+            '#5',
             'Apply this referrer to the user profile, If none, referrer_profile is set to default',
           ];
         },
@@ -3953,13 +3662,13 @@ export type Adrena = {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#6'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#7'];
         },
       ];
       args: [
@@ -5662,8 +5371,21 @@ export type Adrena = {
           isSigner: false;
           docs: ['#3'];
         },
+        {
+          name: 'oracle';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
       ];
-      args: [];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'GetLpTokenPriceParams';
+          };
+        },
+      ];
       returns: 'u64';
     },
     {
@@ -5687,8 +5409,21 @@ export type Adrena = {
           isSigner: false;
           docs: ['#3'];
         },
+        {
+          name: 'oracle';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
       ];
-      args: [];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'GetPoolInfoSnapshotParams';
+          };
+        },
+      ];
       returns: {
         defined: 'PoolInfoSnapshot';
       };
@@ -5811,34 +5546,28 @@ export type Adrena = {
           docs: ['#10'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#11'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#12'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -5960,8 +5689,8 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'custodyTradeOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#10'];
         },
@@ -5972,34 +5701,28 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#15'];
         },
       ];
       args: [
@@ -6727,70 +6450,64 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#5'];
-        },
-        {
-          name: 'custodyTradeOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#6'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#6'];
         },
         {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#7'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#9'];
+          docs: ['#8'];
         },
         {
           name: 'pool';
           isMut: true;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#9'];
         },
         {
           name: 'position';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'limitOrderBook';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -6830,8 +6547,8 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyTradeOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#5'];
         },
@@ -6842,64 +6559,58 @@ export type Adrena = {
           docs: ['#6'];
         },
         {
-          name: 'collateralCustodyOracle';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
-        },
-        {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#7'];
         },
         {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#9'];
+          docs: ['#8'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#9'];
         },
         {
           name: 'pool';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#10'];
         },
         {
           name: 'position';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#11'];
         },
         {
           name: 'limitOrderBook';
           isMut: true;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#12'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#13'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#14'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#15'];
         },
       ];
       args: [
@@ -6993,8 +6704,8 @@ export type Adrena = {
           docs: ['#13'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracle';
-          isMut: false;
+          name: 'oracle';
+          isMut: true;
           isSigner: false;
           docs: ['#14'];
         },
@@ -7029,7 +6740,14 @@ export type Adrena = {
           docs: ['#19'];
         },
       ];
-      args: [];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'DistributeFeesParams';
+          };
+        },
+      ];
     },
     {
       name: 'claimReferralFee';
@@ -7187,6 +6905,103 @@ export type Adrena = {
           };
         },
       ];
+    },
+    {
+      name: 'initOracle';
+      accounts: [
+        {
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: true;
+          docs: ['#2'];
+        },
+        {
+          name: 'cortex';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'oracle';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#6'];
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'InitOracleParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'patchCustodiesOracles';
+      accounts: [
+        {
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'cortex';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'usdcCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'bonkCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'wbtcCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'jitoCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#7'];
+        },
+      ];
+      args: [];
     },
   ];
   accounts: [
@@ -7359,11 +7174,15 @@ export type Adrena = {
           },
           {
             name: 'oracle';
-            type: 'publicKey';
+            type: {
+              defined: 'LimitedString';
+            };
           },
           {
             name: 'tradeOracle';
-            type: 'publicKey';
+            type: {
+              defined: 'LimitedString';
+            };
           },
           {
             name: 'pricing';
@@ -7545,6 +7364,79 @@ export type Adrena = {
           {
             name: 'escrowedLamports';
             type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'oracle';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'bump';
+            type: 'u8';
+          },
+          {
+            name: 'padding';
+            type: {
+              array: ['u8', 7];
+            };
+          },
+          {
+            name: 'updatedAt';
+            type: 'i64';
+          },
+          {
+            name: 'prices';
+            type: {
+              array: [
+                {
+                  defined: 'OraclePrice';
+                },
+                20,
+              ];
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'oraclePrice';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'price';
+            type: 'u64';
+          },
+          {
+            name: 'confidence';
+            type: 'u64';
+          },
+          {
+            name: 'timestamp';
+            type: 'i64';
+          },
+          {
+            name: 'exponent';
+            type: 'i32';
+          },
+          {
+            name: 'chaosLabsFeedId';
+            type: 'u8';
+          },
+          {
+            name: 'padding';
+            type: {
+              array: ['u8', 3];
+            };
+          },
+          {
+            name: 'name';
+            type: {
+              defined: 'LimitedString';
+            };
           },
         ];
       };
@@ -8007,16 +7899,10 @@ export type Adrena = {
             type: 'u8';
           },
           {
-            name: 'team';
-            type: 'u8';
-          },
-          {
-            name: 'continent';
-            type: 'u8';
-          },
-          {
             name: 'padding';
-            type: 'u8';
+            type: {
+              array: ['u8', 3];
+            };
           },
           {
             name: 'nickname';
@@ -8338,6 +8224,18 @@ export type Adrena = {
               ];
             };
           },
+          {
+            name: 'oracle';
+            type: {
+              defined: 'LimitedString';
+            };
+          },
+          {
+            name: 'tradeOracle';
+            type: {
+              defined: 'LimitedString';
+            };
+          },
         ];
       };
     },
@@ -8395,11 +8293,15 @@ export type Adrena = {
           },
           {
             name: 'oracle';
-            type: 'publicKey';
+            type: {
+              defined: 'LimitedString';
+            };
           },
           {
             name: 'tradeOracle';
-            type: 'publicKey';
+            type: {
+              defined: 'LimitedString';
+            };
           },
           {
             name: 'pricing';
@@ -8461,6 +8363,40 @@ export type Adrena = {
           {
             name: 'ecosystemBucketAllocation';
             type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'OraclePricesSetup';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'name';
+            type: {
+              defined: 'LimitedString';
+            };
+          },
+          {
+            name: 'chaosLabsFeedId';
+            type: 'u8';
+          },
+        ];
+      };
+    },
+    {
+      name: 'InitOracleParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              vec: {
+                defined: 'OraclePricesSetup';
+              };
+            };
           },
         ];
       };
@@ -8640,22 +8576,6 @@ export type Adrena = {
       };
     },
     {
-      name: 'AddGenesisLiquidityParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'amountIn';
-            type: 'u64';
-          },
-          {
-            name: 'minLpAmountOut';
-            type: 'u64';
-          },
-        ];
-      };
-    },
-    {
       name: 'AddLiquidityParams';
       type: {
         kind: 'struct';
@@ -8667,6 +8587,14 @@ export type Adrena = {
           {
             name: 'minLpAmountOut';
             type: 'u64';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -8684,6 +8612,14 @@ export type Adrena = {
             name: 'minAmountOut';
             type: 'u64';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8700,6 +8636,14 @@ export type Adrena = {
             name: 'minAmountOut';
             type: 'u64';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8712,6 +8656,14 @@ export type Adrena = {
             name: 'collateral';
             type: 'u64';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8723,6 +8675,14 @@ export type Adrena = {
           {
             name: 'collateral';
             type: 'u64';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -8778,6 +8738,14 @@ export type Adrena = {
             name: 'id';
             type: 'u64';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8789,6 +8757,14 @@ export type Adrena = {
           {
             name: 'id';
             type: 'u64';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -8864,6 +8840,14 @@ export type Adrena = {
               option: 'u64';
             };
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8876,6 +8860,30 @@ export type Adrena = {
             name: 'price';
             type: {
               option: 'u64';
+            };
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'DistributeFeesParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
             };
           },
         ];
@@ -8898,6 +8906,14 @@ export type Adrena = {
             name: 'leverage';
             type: 'u32';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8918,6 +8934,14 @@ export type Adrena = {
             name: 'leverage';
             type: 'u32';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8925,14 +8949,32 @@ export type Adrena = {
       name: 'LiquidateLongParams';
       type: {
         kind: 'struct';
-        fields: [];
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
       };
     },
     {
       name: 'LiquidateShortParams';
       type: {
         kind: 'struct';
-        fields: [];
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
       };
     },
     {
@@ -8951,6 +8993,14 @@ export type Adrena = {
           {
             name: 'leverage';
             type: 'u32';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -8972,6 +9022,14 @@ export type Adrena = {
             name: 'leverage';
             type: 'u32';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -8992,6 +9050,14 @@ export type Adrena = {
             name: 'leverage';
             type: 'u32';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -9004,6 +9070,14 @@ export type Adrena = {
             name: 'collateralUsd';
             type: 'u64';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -9015,6 +9089,14 @@ export type Adrena = {
           {
             name: 'collateralUsd';
             type: 'u64';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -9126,6 +9208,22 @@ export type Adrena = {
       };
     },
     {
+      name: 'UpdatePoolAumParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
       name: 'EditUserProfileNicknameParams';
       type: {
         kind: 'struct';
@@ -9153,18 +9251,6 @@ export type Adrena = {
           {
             name: 'title';
             type: 'u8';
-          },
-          {
-            name: 'team';
-            type: {
-              option: 'u8';
-            };
-          },
-          {
-            name: 'continent';
-            type: {
-              option: 'u8';
-            };
           },
         ];
       };
@@ -9206,14 +9292,6 @@ export type Adrena = {
             name: 'title';
             type: 'u8';
           },
-          {
-            name: 'team';
-            type: 'u8';
-          },
-          {
-            name: 'continent';
-            type: 'u8';
-          },
         ];
       };
     },
@@ -9252,6 +9330,30 @@ export type Adrena = {
             name: 'amountIn';
             type: 'u64';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'GetAssetsUnderManagementParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -9272,6 +9374,30 @@ export type Adrena = {
             name: 'side';
             type: 'u8';
           },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'GetExitPriceAndFeeParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
         ];
       };
     },
@@ -9287,6 +9413,46 @@ export type Adrena = {
           {
             name: 'removeCollateral';
             type: 'u64';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'GetLiquidationStateParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'GetLpTokenPriceParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -9307,6 +9473,30 @@ export type Adrena = {
           {
             name: 'side';
             type: 'u8';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'GetPnlParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -9432,6 +9622,22 @@ export type Adrena = {
       };
     },
     {
+      name: 'GetPoolInfoSnapshotParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
       name: 'GetRemoveLiquidityAmountAndFeeParams';
       type: {
         kind: 'struct';
@@ -9439,6 +9645,14 @@ export type Adrena = {
           {
             name: 'lpAmountIn';
             type: 'u64';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
           },
         ];
       };
@@ -9451,6 +9665,61 @@ export type Adrena = {
           {
             name: 'amountIn';
             type: 'u64';
+          },
+          {
+            name: 'oraclePrices';
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'ChaosLabsBatchPrices';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'prices';
+            type: {
+              vec: {
+                defined: 'PriceData';
+              };
+            };
+          },
+          {
+            name: 'signature';
+            type: {
+              array: ['u8', 64];
+            };
+          },
+          {
+            name: 'recoveryId';
+            type: 'u8';
+          },
+        ];
+      };
+    },
+    {
+      name: 'PriceData';
+      docs: ['Individual price data within a batch'];
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'feedId';
+            type: 'u8';
+          },
+          {
+            name: 'price';
+            type: 'u64';
+          },
+          {
+            name: 'timestamp';
+            type: 'i64';
           },
         ];
       };
@@ -9984,26 +10253,6 @@ export type Adrena = {
       };
     },
     {
-      name: 'OraclePrice';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'price';
-            type: 'u64';
-          },
-          {
-            name: 'exponent';
-            type: 'i32';
-          },
-          {
-            name: 'confidence';
-            type: 'u64';
-          },
-        ];
-      };
-    },
-    {
       name: 'TokenRatios';
       type: {
         kind: 'struct';
@@ -10460,51 +10709,6 @@ export type Adrena = {
           {
             name: 'Zero';
           },
-          {
-            name: 'One';
-          },
-          {
-            name: 'Two';
-          },
-          {
-            name: 'Three';
-          },
-          {
-            name: 'Four';
-          },
-          {
-            name: 'VolumeKing';
-          },
-          {
-            name: 'Streak5';
-          },
-          {
-            name: 'SoldierS2';
-          },
-          {
-            name: 'SergeantS2';
-          },
-          {
-            name: 'LieutenantS2';
-          },
-          {
-            name: 'GeneralS2';
-          },
-          {
-            name: 'BonkOperative';
-          },
-          {
-            name: 'JitoJuggernaut';
-          },
-          {
-            name: 'Season2Champion';
-          },
-          {
-            name: 'ThePainmaker';
-          },
-          {
-            name: 'NiceGuy';
-          },
         ];
       };
     },
@@ -10515,78 +10719,6 @@ export type Adrena = {
         variants: [
           {
             name: 'Zero';
-          },
-          {
-            name: 'One';
-          },
-          {
-            name: 'Two';
-          },
-          {
-            name: 'Three';
-          },
-          {
-            name: 'Four';
-          },
-          {
-            name: 'TopTier';
-          },
-          {
-            name: 'WhaleAmongMen';
-          },
-          {
-            name: 'Streak10';
-          },
-          {
-            name: 'StakedHolder';
-          },
-          {
-            name: 'SoldierS2';
-          },
-          {
-            name: 'SergeantS2';
-          },
-          {
-            name: 'LieutenantS2';
-          },
-          {
-            name: 'GeneralS2';
-          },
-          {
-            name: 'BonkOperative';
-          },
-          {
-            name: 'JitoJuggernaut';
-          },
-          {
-            name: 'Season2Champion';
-          },
-          {
-            name: 'Season2Destroyer';
-          },
-          {
-            name: 'Saboteur';
-          },
-          {
-            name: 'Traitor';
-          },
-          {
-            name: 'Relentless';
-          },
-          {
-            name: 'BossMuncher';
-          },
-          {
-            name: 'ThePainmaker';
-          },
-          {
-            name: 'NiceGuy';
-          },
-          {
-            name: 'GoldenHands';
-          },
-          {
-            name: 'DiamondHands';
           },
         ];
       };
@@ -10601,55 +10733,6 @@ export type Adrena = {
           },
           {
             name: 'V2';
-          },
-        ];
-      };
-    },
-    {
-      name: 'Team';
-      type: {
-        kind: 'enum';
-        variants: [
-          {
-            name: 'Default';
-          },
-          {
-            name: 'Bonk';
-          },
-          {
-            name: 'Jito';
-          },
-        ];
-      };
-    },
-    {
-      name: 'Continent';
-      type: {
-        kind: 'enum';
-        variants: [
-          {
-            name: 'Default';
-          },
-          {
-            name: 'Europe';
-          },
-          {
-            name: 'NorthAmerica';
-          },
-          {
-            name: 'SouthAmerica';
-          },
-          {
-            name: 'Asia';
-          },
-          {
-            name: 'Africa';
-          },
-          {
-            name: 'Australia';
-          },
-          {
-            name: 'Antarctica';
           },
         ];
       };
@@ -11586,18 +11669,18 @@ export type Adrena = {
     },
     {
       code: 6080;
-      name: 'UserNicknameInvalidFormat';
-      msg: 'User nickname expected format: Monster followed by digits';
+      name: 'InvalidSigner';
+      msg: 'Invalid signer';
     },
     {
       code: 6081;
-      name: 'InvalidContinentOrTeam';
-      msg: 'Continent or Team is invalid';
+      name: 'MissingOraclePrice';
+      msg: 'Missing at least one oracle price';
     },
     {
       code: 6082;
-      name: 'TeamImmutable';
-      msg: 'The team can not be changed after being already set';
+      name: 'InvalidOracleSignature';
+      msg: 'Invalid oracle signature';
     },
   ];
 };
@@ -12092,51 +12175,45 @@ export const IDL: Adrena = {
       accounts: [
         {
           name: 'owner',
-          isMut: false,
-          isSigner: false,
-          docs: ['#1', 'Wallet related to the user profile'],
-        },
-        {
-          name: 'caller',
-          isMut: false,
+          isMut: true,
           isSigner: true,
-          docs: ['#2'],
+          docs: ['#1', 'Wallet related to the user profile'],
         },
         {
           name: 'payer',
           isMut: true,
           isSigner: true,
-          docs: ['#3'],
+          docs: ['#2', 'Account paying for the reallocation'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
-          docs: ['#4'],
+          docs: ['#3'],
         },
         {
           name: 'userNickname',
           isMut: true,
           isSigner: false,
-          docs: ['#5', 'Use PDA to make nicknames unique'],
+          docs: ['#4', 'Use PDA to make nicknames unique'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#6'],
+          docs: ['#5'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#6'],
         },
         {
           name: 'rent',
           isMut: false,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#7'],
         },
       ],
       args: [
@@ -12524,40 +12601,34 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#9'],
         },
         {
           name: 'custodyTokenMint',
           isMut: false,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#9'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'rent',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
       ],
       args: [
@@ -12895,8 +12966,8 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'receivingCustodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#9'],
         },
@@ -12913,28 +12984,22 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'dispensingCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
           name: 'dispensingCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -13000,8 +13065,8 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#9'],
         },
@@ -13035,163 +13100,6 @@ export const IDL: Adrena = {
           name: 'params',
           type: {
             defined: 'AddLiquidityParams',
-          },
-        },
-      ],
-    },
-    {
-      name: 'addGenesisLiquidity',
-      accounts: [
-        {
-          name: 'owner',
-          isMut: true,
-          isSigner: true,
-          docs: ['#1'],
-        },
-        {
-          name: 'fundingAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#2'],
-        },
-        {
-          name: 'transferAuthority',
-          isMut: false,
-          isSigner: false,
-          docs: ['#3'],
-        },
-        {
-          name: 'lpUserStaking',
-          isMut: true,
-          isSigner: false,
-          docs: ['#4'],
-        },
-        {
-          name: 'lpStaking',
-          isMut: true,
-          isSigner: false,
-          docs: ['#5'],
-        },
-        {
-          name: 'cortex',
-          isMut: true,
-          isSigner: false,
-          docs: ['#6'],
-        },
-        {
-          name: 'pool',
-          isMut: true,
-          isSigner: false,
-          docs: ['#7'],
-        },
-        {
-          name: 'lpStakingStakedTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#8'],
-        },
-        {
-          name: 'custody',
-          isMut: true,
-          isSigner: false,
-          docs: ['#9'],
-        },
-        {
-          name: 'custodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
-          name: 'custodyTokenAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#11'],
-        },
-        {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
-          name: 'lpTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#13'],
-        },
-        {
-          name: 'governanceTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#14'],
-        },
-        {
-          name: 'governanceRealm',
-          isMut: false,
-          isSigner: false,
-          docs: [
-            '#15',
-            'A realm represent one project within the governance program',
-          ],
-        },
-        {
-          name: 'governanceRealmConfig',
-          isMut: false,
-          isSigner: false,
-          docs: ['#16'],
-        },
-        {
-          name: 'governanceGoverningTokenHolding',
-          isMut: true,
-          isSigner: false,
-          docs: [
-            '#17',
-            "Token account owned by governance program holding user's locked tokens",
-          ],
-        },
-        {
-          name: 'governanceGoverningTokenOwnerRecord',
-          isMut: true,
-          isSigner: false,
-          docs: ['#18', 'Account owned by governance storing user information'],
-        },
-        {
-          name: 'governanceProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#19'],
-        },
-        {
-          name: 'systemProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#20'],
-        },
-        {
-          name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#21'],
-        },
-        {
-          name: 'adrenaProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#22'],
-        },
-        {
-          name: 'genesisLock',
-          isMut: true,
-          isSigner: false,
-          docs: ['#23'],
-        },
-      ],
-      args: [
-        {
-          name: 'params',
-          type: {
-            defined: 'AddGenesisLiquidityParams',
           },
         },
       ],
@@ -13419,8 +13327,8 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
@@ -13520,40 +13428,34 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#10'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#11'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -13627,8 +13529,8 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'custodyTradeOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#9'],
         },
@@ -13639,34 +13541,28 @@ export const IDL: Adrena = {
           docs: ['#10'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#11'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -13712,8 +13608,8 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'receivingCustodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#6'],
         },
@@ -13730,64 +13626,52 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'principalCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#9'],
-        },
-        {
-          name: 'principalCustodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
           name: 'principalCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#9'],
         },
         {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#10'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#11'],
         },
         {
           name: 'pool',
           isMut: true,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#12'],
         },
         {
           name: 'position',
           isMut: true,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#13'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#14'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#17'],
+          docs: ['#15'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#18'],
+          docs: ['#16'],
         },
       ],
       args: [
@@ -13833,8 +13717,8 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'receivingCustodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#6'],
         },
@@ -13851,76 +13735,64 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#9'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#9'],
         },
         {
           name: 'principalCustody',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
-        },
-        {
-          name: 'principalCustodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#12'],
+          docs: ['#10'],
         },
         {
           name: 'principalCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#11'],
         },
         {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#12'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#13'],
         },
         {
           name: 'pool',
           isMut: true,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#14'],
         },
         {
           name: 'position',
           isMut: true,
           isSigner: false,
-          docs: ['#17'],
+          docs: ['#15'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#18'],
+          docs: ['#16'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#19'],
+          docs: ['#17'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#18'],
         },
       ],
       args: [
@@ -13978,34 +13850,28 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#9'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#9'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
       ],
       args: [
@@ -14063,8 +13929,8 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyTradeOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
@@ -14075,28 +13941,22 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
       ],
       args: [
@@ -14154,34 +14014,28 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#9'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#9'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
       ],
       args: [
@@ -14239,8 +14093,8 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyTradeOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
@@ -14251,28 +14105,22 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
       ],
       args: [
@@ -14336,48 +14184,42 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#9'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#10'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'referrerProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -14441,8 +14283,8 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'custodyTradeOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#9'],
         },
@@ -14453,42 +14295,36 @@ export const IDL: Adrena = {
           docs: ['#10'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#11'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'referrerProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#15'],
         },
       ],
       args: [
@@ -14546,48 +14382,42 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#9'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#9'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'referrerProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
       ],
       args: [
@@ -14645,8 +14475,8 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyTradeOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
@@ -14657,42 +14487,36 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'referrerProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -14725,8 +14549,21 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#3'],
         },
+        {
+          name: 'oracle',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
       ],
-      args: [],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'UpdatePoolAumParams',
+          },
+        },
+      ],
       returns: 'u128',
     },
     {
@@ -14751,7 +14588,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'custodyOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -14797,16 +14634,16 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'custodyOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
-          docs: ['#4'],
+          docs: ['#5'],
         },
         {
           name: 'lpTokenMint',
           isMut: false,
           isSigner: false,
-          docs: ['#5'],
+          docs: ['#6'],
         },
       ],
       args: [
@@ -14843,7 +14680,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'custodyTradeOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -14853,12 +14690,6 @@ export const IDL: Adrena = {
           isMut: false,
           isSigner: false,
           docs: ['#5'],
-        },
-        {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#6'],
         },
       ],
       args: [
@@ -15057,8 +14888,8 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'receivingCustodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#4'],
         },
@@ -15069,28 +14900,16 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'collateralCustodyOracle',
+          name: 'principalCustody',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
         },
         {
-          name: 'principalCustody',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
-        },
-        {
-          name: 'principalCustodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#8'],
-        },
-        {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#9'],
+          docs: ['#7'],
         },
       ],
       args: [
@@ -15133,7 +14952,7 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyTradeOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
           docs: ['#5'],
@@ -15144,14 +14963,15 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#6'],
         },
+      ],
+      args: [
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
+          name: 'params',
+          type: {
+            defined: 'GetExitPriceAndFeeParams',
+          },
         },
       ],
-      args: [],
       returns: {
         defined: 'ExitPriceAndFee',
       },
@@ -15184,7 +15004,7 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyTradeOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
           docs: ['#5'],
@@ -15195,14 +15015,15 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#6'],
         },
+      ],
+      args: [
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
+          name: 'params',
+          type: {
+            defined: 'GetPnlParams',
+          },
         },
       ],
-      args: [],
       returns: {
         defined: 'ProfitAndLoss',
       },
@@ -15241,7 +15062,7 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'collateralCustodyOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
@@ -15285,7 +15106,7 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyTradeOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
           docs: ['#5'],
@@ -15296,46 +15117,16 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#6'],
         },
+      ],
+      args: [
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
+          name: 'params',
+          type: {
+            defined: 'GetLiquidationStateParams',
+          },
         },
       ],
-      args: [],
       returns: 'u8',
-    },
-    {
-      name: 'getOraclePrice',
-      accounts: [
-        {
-          name: 'cortex',
-          isMut: false,
-          isSigner: false,
-          docs: ['#1'],
-        },
-        {
-          name: 'pool',
-          isMut: false,
-          isSigner: false,
-          docs: ['#2'],
-        },
-        {
-          name: 'custody',
-          isMut: false,
-          isSigner: false,
-          docs: ['#3'],
-        },
-        {
-          name: 'custodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#4'],
-        },
-      ],
-      args: [],
-      returns: 'u64',
     },
     {
       name: 'getSwapAmountAndFees',
@@ -15359,7 +15150,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'receivingCustodyOracle',
+          name: 'oracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -15369,12 +15160,6 @@ export const IDL: Adrena = {
           isMut: false,
           isSigner: false,
           docs: ['#5'],
-        },
-        {
-          name: 'dispensingCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#6'],
         },
       ],
       args: [
@@ -15404,8 +15189,21 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#2'],
         },
+        {
+          name: 'oracle',
+          isMut: true,
+          isSigner: false,
+          docs: ['#3'],
+        },
       ],
-      args: [],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'GetAssetsUnderManagementParams',
+          },
+        },
+      ],
       returns: 'u128',
     },
     {
@@ -15516,32 +15314,26 @@ export const IDL: Adrena = {
         {
           name: 'user',
           isMut: false,
-          isSigner: false,
-          docs: ['#1'],
-        },
-        {
-          name: 'caller',
-          isMut: false,
           isSigner: true,
-          docs: ['#2'],
+          docs: ['#1'],
         },
         {
           name: 'payer',
           isMut: true,
           isSigner: true,
-          docs: ['#3'],
+          docs: ['#2'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
-          docs: ['#4'],
+          docs: ['#3'],
         },
         {
           name: 'userNickname',
           isMut: true,
           isSigner: false,
-          docs: ['#5', 'Use PDA to make nicknames unique'],
+          docs: ['#4', 'Use PDA to make nicknames unique'],
         },
         {
           name: 'referrerProfile',
@@ -15549,7 +15341,7 @@ export const IDL: Adrena = {
           isSigner: false,
           isOptional: true,
           docs: [
-            '#6',
+            '#5',
             'Apply this referrer to the user profile, If none, referrer_profile is set to default',
           ],
         },
@@ -15557,13 +15349,13 @@ export const IDL: Adrena = {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#6'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#7'],
         },
       ],
       args: [
@@ -17266,8 +17058,21 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#3'],
         },
+        {
+          name: 'oracle',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
       ],
-      args: [],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'GetLpTokenPriceParams',
+          },
+        },
+      ],
       returns: 'u64',
     },
     {
@@ -17291,8 +17096,21 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#3'],
         },
+        {
+          name: 'oracle',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
       ],
-      args: [],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'GetPoolInfoSnapshotParams',
+          },
+        },
+      ],
       returns: {
         defined: 'PoolInfoSnapshot',
       },
@@ -17415,34 +17233,28 @@ export const IDL: Adrena = {
           docs: ['#10'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#11'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#12'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -17564,8 +17376,8 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'custodyTradeOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#10'],
         },
@@ -17576,34 +17388,28 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#15'],
         },
       ],
       args: [
@@ -18331,70 +18137,64 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#5'],
-        },
-        {
-          name: 'custodyTradeOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#6'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#6'],
         },
         {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#7'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#9'],
+          docs: ['#8'],
         },
         {
           name: 'pool',
           isMut: true,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#9'],
         },
         {
           name: 'position',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'limitOrderBook',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -18434,8 +18234,8 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyTradeOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#5'],
         },
@@ -18446,64 +18246,58 @@ export const IDL: Adrena = {
           docs: ['#6'],
         },
         {
-          name: 'collateralCustodyOracle',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
-        },
-        {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#7'],
         },
         {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#9'],
+          docs: ['#8'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#9'],
         },
         {
           name: 'pool',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#10'],
         },
         {
           name: 'position',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#11'],
         },
         {
           name: 'limitOrderBook',
           isMut: true,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#12'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#13'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#14'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#15'],
         },
       ],
       args: [
@@ -18597,8 +18391,8 @@ export const IDL: Adrena = {
           docs: ['#13'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracle',
-          isMut: false,
+          name: 'oracle',
+          isMut: true,
           isSigner: false,
           docs: ['#14'],
         },
@@ -18633,7 +18427,14 @@ export const IDL: Adrena = {
           docs: ['#19'],
         },
       ],
-      args: [],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'DistributeFeesParams',
+          },
+        },
+      ],
     },
     {
       name: 'claimReferralFee',
@@ -18791,6 +18592,103 @@ export const IDL: Adrena = {
           },
         },
       ],
+    },
+    {
+      name: 'initOracle',
+      accounts: [
+        {
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: true,
+          docs: ['#2'],
+        },
+        {
+          name: 'cortex',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'oracle',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#6'],
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'InitOracleParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'patchCustodiesOracles',
+      accounts: [
+        {
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'cortex',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'usdcCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'bonkCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'wbtcCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'jitoCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#7'],
+        },
+      ],
+      args: [],
     },
   ],
   accounts: [
@@ -18963,11 +18861,15 @@ export const IDL: Adrena = {
           },
           {
             name: 'oracle',
-            type: 'publicKey',
+            type: {
+              defined: 'LimitedString',
+            },
           },
           {
             name: 'tradeOracle',
-            type: 'publicKey',
+            type: {
+              defined: 'LimitedString',
+            },
           },
           {
             name: 'pricing',
@@ -19149,6 +19051,79 @@ export const IDL: Adrena = {
           {
             name: 'escrowedLamports',
             type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'oracle',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'bump',
+            type: 'u8',
+          },
+          {
+            name: 'padding',
+            type: {
+              array: ['u8', 7],
+            },
+          },
+          {
+            name: 'updatedAt',
+            type: 'i64',
+          },
+          {
+            name: 'prices',
+            type: {
+              array: [
+                {
+                  defined: 'OraclePrice',
+                },
+                20,
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'oraclePrice',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'price',
+            type: 'u64',
+          },
+          {
+            name: 'confidence',
+            type: 'u64',
+          },
+          {
+            name: 'timestamp',
+            type: 'i64',
+          },
+          {
+            name: 'exponent',
+            type: 'i32',
+          },
+          {
+            name: 'chaosLabsFeedId',
+            type: 'u8',
+          },
+          {
+            name: 'padding',
+            type: {
+              array: ['u8', 3],
+            },
+          },
+          {
+            name: 'name',
+            type: {
+              defined: 'LimitedString',
+            },
           },
         ],
       },
@@ -19611,16 +19586,10 @@ export const IDL: Adrena = {
             type: 'u8',
           },
           {
-            name: 'team',
-            type: 'u8',
-          },
-          {
-            name: 'continent',
-            type: 'u8',
-          },
-          {
             name: 'padding',
-            type: 'u8',
+            type: {
+              array: ['u8', 3],
+            },
           },
           {
             name: 'nickname',
@@ -19942,6 +19911,18 @@ export const IDL: Adrena = {
               ],
             },
           },
+          {
+            name: 'oracle',
+            type: {
+              defined: 'LimitedString',
+            },
+          },
+          {
+            name: 'tradeOracle',
+            type: {
+              defined: 'LimitedString',
+            },
+          },
         ],
       },
     },
@@ -19999,11 +19980,15 @@ export const IDL: Adrena = {
           },
           {
             name: 'oracle',
-            type: 'publicKey',
+            type: {
+              defined: 'LimitedString',
+            },
           },
           {
             name: 'tradeOracle',
-            type: 'publicKey',
+            type: {
+              defined: 'LimitedString',
+            },
           },
           {
             name: 'pricing',
@@ -20065,6 +20050,40 @@ export const IDL: Adrena = {
           {
             name: 'ecosystemBucketAllocation',
             type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'OraclePricesSetup',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'name',
+            type: {
+              defined: 'LimitedString',
+            },
+          },
+          {
+            name: 'chaosLabsFeedId',
+            type: 'u8',
+          },
+        ],
+      },
+    },
+    {
+      name: 'InitOracleParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              vec: {
+                defined: 'OraclePricesSetup',
+              },
+            },
           },
         ],
       },
@@ -20244,22 +20263,6 @@ export const IDL: Adrena = {
       },
     },
     {
-      name: 'AddGenesisLiquidityParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'amountIn',
-            type: 'u64',
-          },
-          {
-            name: 'minLpAmountOut',
-            type: 'u64',
-          },
-        ],
-      },
-    },
-    {
       name: 'AddLiquidityParams',
       type: {
         kind: 'struct',
@@ -20271,6 +20274,14 @@ export const IDL: Adrena = {
           {
             name: 'minLpAmountOut',
             type: 'u64',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -20288,6 +20299,14 @@ export const IDL: Adrena = {
             name: 'minAmountOut',
             type: 'u64',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20304,6 +20323,14 @@ export const IDL: Adrena = {
             name: 'minAmountOut',
             type: 'u64',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20316,6 +20343,14 @@ export const IDL: Adrena = {
             name: 'collateral',
             type: 'u64',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20327,6 +20362,14 @@ export const IDL: Adrena = {
           {
             name: 'collateral',
             type: 'u64',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -20382,6 +20425,14 @@ export const IDL: Adrena = {
             name: 'id',
             type: 'u64',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20393,6 +20444,14 @@ export const IDL: Adrena = {
           {
             name: 'id',
             type: 'u64',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -20468,6 +20527,14 @@ export const IDL: Adrena = {
               option: 'u64',
             },
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20480,6 +20547,30 @@ export const IDL: Adrena = {
             name: 'price',
             type: {
               option: 'u64',
+            },
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'DistributeFeesParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
             },
           },
         ],
@@ -20502,6 +20593,14 @@ export const IDL: Adrena = {
             name: 'leverage',
             type: 'u32',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20522,6 +20621,14 @@ export const IDL: Adrena = {
             name: 'leverage',
             type: 'u32',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20529,14 +20636,32 @@ export const IDL: Adrena = {
       name: 'LiquidateLongParams',
       type: {
         kind: 'struct',
-        fields: [],
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
       },
     },
     {
       name: 'LiquidateShortParams',
       type: {
         kind: 'struct',
-        fields: [],
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
       },
     },
     {
@@ -20555,6 +20680,14 @@ export const IDL: Adrena = {
           {
             name: 'leverage',
             type: 'u32',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -20576,6 +20709,14 @@ export const IDL: Adrena = {
             name: 'leverage',
             type: 'u32',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20596,6 +20737,14 @@ export const IDL: Adrena = {
             name: 'leverage',
             type: 'u32',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20608,6 +20757,14 @@ export const IDL: Adrena = {
             name: 'collateralUsd',
             type: 'u64',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20619,6 +20776,14 @@ export const IDL: Adrena = {
           {
             name: 'collateralUsd',
             type: 'u64',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -20730,6 +20895,22 @@ export const IDL: Adrena = {
       },
     },
     {
+      name: 'UpdatePoolAumParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
       name: 'EditUserProfileNicknameParams',
       type: {
         kind: 'struct',
@@ -20757,18 +20938,6 @@ export const IDL: Adrena = {
           {
             name: 'title',
             type: 'u8',
-          },
-          {
-            name: 'team',
-            type: {
-              option: 'u8',
-            },
-          },
-          {
-            name: 'continent',
-            type: {
-              option: 'u8',
-            },
           },
         ],
       },
@@ -20810,14 +20979,6 @@ export const IDL: Adrena = {
             name: 'title',
             type: 'u8',
           },
-          {
-            name: 'team',
-            type: 'u8',
-          },
-          {
-            name: 'continent',
-            type: 'u8',
-          },
         ],
       },
     },
@@ -20856,6 +21017,30 @@ export const IDL: Adrena = {
             name: 'amountIn',
             type: 'u64',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'GetAssetsUnderManagementParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20876,6 +21061,30 @@ export const IDL: Adrena = {
             name: 'side',
             type: 'u8',
           },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'GetExitPriceAndFeeParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
         ],
       },
     },
@@ -20891,6 +21100,46 @@ export const IDL: Adrena = {
           {
             name: 'removeCollateral',
             type: 'u64',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'GetLiquidationStateParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'GetLpTokenPriceParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -20911,6 +21160,30 @@ export const IDL: Adrena = {
           {
             name: 'side',
             type: 'u8',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'GetPnlParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -21036,6 +21309,22 @@ export const IDL: Adrena = {
       },
     },
     {
+      name: 'GetPoolInfoSnapshotParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
       name: 'GetRemoveLiquidityAmountAndFeeParams',
       type: {
         kind: 'struct',
@@ -21043,6 +21332,14 @@ export const IDL: Adrena = {
           {
             name: 'lpAmountIn',
             type: 'u64',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
           },
         ],
       },
@@ -21055,6 +21352,61 @@ export const IDL: Adrena = {
           {
             name: 'amountIn',
             type: 'u64',
+          },
+          {
+            name: 'oraclePrices',
+            type: {
+              option: {
+                defined: 'ChaosLabsBatchPrices',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'ChaosLabsBatchPrices',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'prices',
+            type: {
+              vec: {
+                defined: 'PriceData',
+              },
+            },
+          },
+          {
+            name: 'signature',
+            type: {
+              array: ['u8', 64],
+            },
+          },
+          {
+            name: 'recoveryId',
+            type: 'u8',
+          },
+        ],
+      },
+    },
+    {
+      name: 'PriceData',
+      docs: ['Individual price data within a batch'],
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'feedId',
+            type: 'u8',
+          },
+          {
+            name: 'price',
+            type: 'u64',
+          },
+          {
+            name: 'timestamp',
+            type: 'i64',
           },
         ],
       },
@@ -21588,26 +21940,6 @@ export const IDL: Adrena = {
       },
     },
     {
-      name: 'OraclePrice',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'price',
-            type: 'u64',
-          },
-          {
-            name: 'exponent',
-            type: 'i32',
-          },
-          {
-            name: 'confidence',
-            type: 'u64',
-          },
-        ],
-      },
-    },
-    {
       name: 'TokenRatios',
       type: {
         kind: 'struct',
@@ -22064,51 +22396,6 @@ export const IDL: Adrena = {
           {
             name: 'Zero',
           },
-          {
-            name: 'One',
-          },
-          {
-            name: 'Two',
-          },
-          {
-            name: 'Three',
-          },
-          {
-            name: 'Four',
-          },
-          {
-            name: 'VolumeKing',
-          },
-          {
-            name: 'Streak5',
-          },
-          {
-            name: 'SoldierS2',
-          },
-          {
-            name: 'SergeantS2',
-          },
-          {
-            name: 'LieutenantS2',
-          },
-          {
-            name: 'GeneralS2',
-          },
-          {
-            name: 'BonkOperative',
-          },
-          {
-            name: 'JitoJuggernaut',
-          },
-          {
-            name: 'Season2Champion',
-          },
-          {
-            name: 'ThePainmaker',
-          },
-          {
-            name: 'NiceGuy',
-          },
         ],
       },
     },
@@ -22119,78 +22406,6 @@ export const IDL: Adrena = {
         variants: [
           {
             name: 'Zero',
-          },
-          {
-            name: 'One',
-          },
-          {
-            name: 'Two',
-          },
-          {
-            name: 'Three',
-          },
-          {
-            name: 'Four',
-          },
-          {
-            name: 'TopTier',
-          },
-          {
-            name: 'WhaleAmongMen',
-          },
-          {
-            name: 'Streak10',
-          },
-          {
-            name: 'StakedHolder',
-          },
-          {
-            name: 'SoldierS2',
-          },
-          {
-            name: 'SergeantS2',
-          },
-          {
-            name: 'LieutenantS2',
-          },
-          {
-            name: 'GeneralS2',
-          },
-          {
-            name: 'BonkOperative',
-          },
-          {
-            name: 'JitoJuggernaut',
-          },
-          {
-            name: 'Season2Champion',
-          },
-          {
-            name: 'Season2Destroyer',
-          },
-          {
-            name: 'Saboteur',
-          },
-          {
-            name: 'Traitor',
-          },
-          {
-            name: 'Relentless',
-          },
-          {
-            name: 'BossMuncher',
-          },
-          {
-            name: 'ThePainmaker',
-          },
-          {
-            name: 'NiceGuy',
-          },
-          {
-            name: 'GoldenHands',
-          },
-          {
-            name: 'DiamondHands',
           },
         ],
       },
@@ -22205,55 +22420,6 @@ export const IDL: Adrena = {
           },
           {
             name: 'V2',
-          },
-        ],
-      },
-    },
-    {
-      name: 'Team',
-      type: {
-        kind: 'enum',
-        variants: [
-          {
-            name: 'Default',
-          },
-          {
-            name: 'Bonk',
-          },
-          {
-            name: 'Jito',
-          },
-        ],
-      },
-    },
-    {
-      name: 'Continent',
-      type: {
-        kind: 'enum',
-        variants: [
-          {
-            name: 'Default',
-          },
-          {
-            name: 'Europe',
-          },
-          {
-            name: 'NorthAmerica',
-          },
-          {
-            name: 'SouthAmerica',
-          },
-          {
-            name: 'Asia',
-          },
-          {
-            name: 'Africa',
-          },
-          {
-            name: 'Australia',
-          },
-          {
-            name: 'Antarctica',
           },
         ],
       },
@@ -23190,18 +23356,18 @@ export const IDL: Adrena = {
     },
     {
       code: 6080,
-      name: 'UserNicknameInvalidFormat',
-      msg: 'User nickname expected format: Monster followed by digits',
+      name: 'InvalidSigner',
+      msg: 'Invalid signer',
     },
     {
       code: 6081,
-      name: 'InvalidContinentOrTeam',
-      msg: 'Continent or Team is invalid',
+      name: 'MissingOraclePrice',
+      msg: 'Missing at least one oracle price',
     },
     {
       code: 6082,
-      name: 'TeamImmutable',
-      msg: 'The team can not be changed after being already set',
+      name: 'InvalidOracleSignature',
+      msg: 'Invalid oracle signature',
     },
   ],
 };
