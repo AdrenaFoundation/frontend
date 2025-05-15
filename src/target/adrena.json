@@ -1,5 +1,5 @@
 {
-  "version": "1.2.3",
+  "version": "1.2.4",
   "name": "adrena",
   "instructions": [
     {
@@ -622,11 +622,19 @@
       "accounts": [
         {
           "name": "owner",
-          "isMut": true,
-          "isSigner": true,
+          "isMut": false,
+          "isSigner": false,
           "docs": [
             "#1",
             "Wallet related to the user profile"
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#2"
           ]
         },
         {
@@ -634,8 +642,7 @@
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2",
-            "Account paying for the reallocation"
+            "#3"
           ]
         },
         {
@@ -643,7 +650,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -651,7 +658,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#4",
+            "#5",
             "Use PDA to make nicknames unique"
           ]
         },
@@ -660,7 +667,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -668,7 +675,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -676,7 +683,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         }
       ],
@@ -4603,9 +4610,17 @@
         {
           "name": "user",
           "isMut": false,
-          "isSigner": true,
+          "isSigner": false,
           "docs": [
             "#1"
+          ]
+        },
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#2"
           ]
         },
         {
@@ -4613,7 +4628,7 @@
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -4621,7 +4636,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -4629,7 +4644,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#4",
+            "#5",
             "Use PDA to make nicknames unique"
           ]
         },
@@ -4639,7 +4654,7 @@
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#5",
+            "#6",
             "Apply this referrer to the user profile, If none, referrer_profile is set to default"
           ]
         },
@@ -4648,7 +4663,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -4656,7 +4671,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         }
       ],
@@ -9856,13 +9871,16 @@
             "type": "u8"
           },
           {
+            "name": "team",
+            "type": "u8"
+          },
+          {
+            "name": "continent",
+            "type": "u8"
+          },
+          {
             "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
+            "type": "u8"
           },
           {
             "name": "nickname",
@@ -11229,6 +11247,18 @@
           {
             "name": "title",
             "type": "u8"
+          },
+          {
+            "name": "team",
+            "type": {
+              "option": "u8"
+            }
+          },
+          {
+            "name": "continent",
+            "type": {
+              "option": "u8"
+            }
           }
         ]
       }
@@ -11268,6 +11298,14 @@
           },
           {
             "name": "title",
+            "type": "u8"
+          },
+          {
+            "name": "team",
+            "type": "u8"
+          },
+          {
+            "name": "continent",
             "type": "u8"
           }
         ]
@@ -12754,6 +12792,55 @@
       }
     },
     {
+      "name": "Team",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Default"
+          },
+          {
+            "name": "Bonk"
+          },
+          {
+            "name": "Jito"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Continent",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Default"
+          },
+          {
+            "name": "Europe"
+          },
+          {
+            "name": "NorthAmerica"
+          },
+          {
+            "name": "SouthAmerica"
+          },
+          {
+            "name": "Asia"
+          },
+          {
+            "name": "Africa"
+          },
+          {
+            "name": "Australia"
+          },
+          {
+            "name": "Antarctica"
+          }
+        ]
+      }
+    },
+    {
       "name": "Achievement",
       "type": {
         "kind": "enum",
@@ -13685,16 +13772,31 @@
     },
     {
       "code": 6080,
+      "name": "UserNicknameInvalidFormat",
+      "msg": "User nickname expected format: Monster followed by digits"
+    },
+    {
+      "code": 6081,
+      "name": "InvalidContinentOrTeam",
+      "msg": "Continent or Team is invalid"
+    },
+    {
+      "code": 6082,
+      "name": "TeamImmutable",
+      "msg": "The team can not be changed after being already set"
+    },
+    {
+      "code": 6083,
       "name": "InvalidSigner",
       "msg": "Invalid signer"
     },
     {
-      "code": 6081,
+      "code": 6084,
       "name": "MissingOraclePrice",
       "msg": "Missing at least one oracle price"
     },
     {
-      "code": 6082,
+      "code": 6085,
       "name": "InvalidOracleSignature",
       "msg": "Invalid oracle signature"
     }

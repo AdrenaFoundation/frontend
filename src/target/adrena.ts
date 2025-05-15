@@ -1,5 +1,5 @@
 export type Adrena = {
-  version: '1.2.3';
+  version: '1.2.4';
   name: 'adrena';
   instructions: [
     {
@@ -488,45 +488,51 @@ export type Adrena = {
       accounts: [
         {
           name: 'owner';
-          isMut: true;
-          isSigner: true;
+          isMut: false;
+          isSigner: false;
           docs: ['#1', 'Wallet related to the user profile'];
+        },
+        {
+          name: 'caller';
+          isMut: false;
+          isSigner: true;
+          docs: ['#2'];
         },
         {
           name: 'payer';
           isMut: true;
           isSigner: true;
-          docs: ['#2', 'Account paying for the reallocation'];
+          docs: ['#3'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
-          docs: ['#3'];
+          docs: ['#4'];
         },
         {
           name: 'userNickname';
           isMut: true;
           isSigner: false;
-          docs: ['#4', 'Use PDA to make nicknames unique'];
+          docs: ['#5', 'Use PDA to make nicknames unique'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#5'];
+          docs: ['#6'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#6'];
+          docs: ['#7'];
         },
         {
           name: 'rent';
           isMut: false;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#8'];
         },
       ];
       args: [
@@ -3627,26 +3633,32 @@ export type Adrena = {
         {
           name: 'user';
           isMut: false;
-          isSigner: true;
+          isSigner: false;
           docs: ['#1'];
+        },
+        {
+          name: 'caller';
+          isMut: false;
+          isSigner: true;
+          docs: ['#2'];
         },
         {
           name: 'payer';
           isMut: true;
           isSigner: true;
-          docs: ['#2'];
+          docs: ['#3'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
-          docs: ['#3'];
+          docs: ['#4'];
         },
         {
           name: 'userNickname';
           isMut: true;
           isSigner: false;
-          docs: ['#4', 'Use PDA to make nicknames unique'];
+          docs: ['#5', 'Use PDA to make nicknames unique'];
         },
         {
           name: 'referrerProfile';
@@ -3654,7 +3666,7 @@ export type Adrena = {
           isSigner: false;
           isOptional: true;
           docs: [
-            '#5',
+            '#6',
             'Apply this referrer to the user profile, If none, referrer_profile is set to default',
           ];
         },
@@ -3662,13 +3674,13 @@ export type Adrena = {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#6'];
+          docs: ['#7'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#8'];
         },
       ];
       args: [
@@ -7899,10 +7911,16 @@ export type Adrena = {
             type: 'u8';
           },
           {
+            name: 'team';
+            type: 'u8';
+          },
+          {
+            name: 'continent';
+            type: 'u8';
+          },
+          {
             name: 'padding';
-            type: {
-              array: ['u8', 3];
-            };
+            type: 'u8';
           },
           {
             name: 'nickname';
@@ -9252,6 +9270,18 @@ export type Adrena = {
             name: 'title';
             type: 'u8';
           },
+          {
+            name: 'team';
+            type: {
+              option: 'u8';
+            };
+          },
+          {
+            name: 'continent';
+            type: {
+              option: 'u8';
+            };
+          },
         ];
       };
     },
@@ -9290,6 +9320,14 @@ export type Adrena = {
           },
           {
             name: 'title';
+            type: 'u8';
+          },
+          {
+            name: 'team';
+            type: 'u8';
+          },
+          {
+            name: 'continent';
             type: 'u8';
           },
         ];
@@ -10738,6 +10776,55 @@ export type Adrena = {
       };
     },
     {
+      name: 'Team';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'Default';
+          },
+          {
+            name: 'Bonk';
+          },
+          {
+            name: 'Jito';
+          },
+        ];
+      };
+    },
+    {
+      name: 'Continent';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'Default';
+          },
+          {
+            name: 'Europe';
+          },
+          {
+            name: 'NorthAmerica';
+          },
+          {
+            name: 'SouthAmerica';
+          },
+          {
+            name: 'Asia';
+          },
+          {
+            name: 'Africa';
+          },
+          {
+            name: 'Australia';
+          },
+          {
+            name: 'Antarctica';
+          },
+        ];
+      };
+    },
+    {
       name: 'Achievement';
       type: {
         kind: 'enum';
@@ -11669,16 +11756,31 @@ export type Adrena = {
     },
     {
       code: 6080;
+      name: 'UserNicknameInvalidFormat';
+      msg: 'User nickname expected format: Monster followed by digits';
+    },
+    {
+      code: 6081;
+      name: 'InvalidContinentOrTeam';
+      msg: 'Continent or Team is invalid';
+    },
+    {
+      code: 6082;
+      name: 'TeamImmutable';
+      msg: 'The team can not be changed after being already set';
+    },
+    {
+      code: 6083;
       name: 'InvalidSigner';
       msg: 'Invalid signer';
     },
     {
-      code: 6081;
+      code: 6084;
       name: 'MissingOraclePrice';
       msg: 'Missing at least one oracle price';
     },
     {
-      code: 6082;
+      code: 6085;
       name: 'InvalidOracleSignature';
       msg: 'Invalid oracle signature';
     },
@@ -11686,7 +11788,7 @@ export type Adrena = {
 };
 
 export const IDL: Adrena = {
-  version: '1.2.3',
+  version: '1.2.4',
   name: 'adrena',
   instructions: [
     {
@@ -12175,45 +12277,51 @@ export const IDL: Adrena = {
       accounts: [
         {
           name: 'owner',
-          isMut: true,
-          isSigner: true,
+          isMut: false,
+          isSigner: false,
           docs: ['#1', 'Wallet related to the user profile'],
+        },
+        {
+          name: 'caller',
+          isMut: false,
+          isSigner: true,
+          docs: ['#2'],
         },
         {
           name: 'payer',
           isMut: true,
           isSigner: true,
-          docs: ['#2', 'Account paying for the reallocation'],
+          docs: ['#3'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
-          docs: ['#3'],
+          docs: ['#4'],
         },
         {
           name: 'userNickname',
           isMut: true,
           isSigner: false,
-          docs: ['#4', 'Use PDA to make nicknames unique'],
+          docs: ['#5', 'Use PDA to make nicknames unique'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#5'],
+          docs: ['#6'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#6'],
+          docs: ['#7'],
         },
         {
           name: 'rent',
           isMut: false,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#8'],
         },
       ],
       args: [
@@ -15314,26 +15422,32 @@ export const IDL: Adrena = {
         {
           name: 'user',
           isMut: false,
-          isSigner: true,
+          isSigner: false,
           docs: ['#1'],
+        },
+        {
+          name: 'caller',
+          isMut: false,
+          isSigner: true,
+          docs: ['#2'],
         },
         {
           name: 'payer',
           isMut: true,
           isSigner: true,
-          docs: ['#2'],
+          docs: ['#3'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
-          docs: ['#3'],
+          docs: ['#4'],
         },
         {
           name: 'userNickname',
           isMut: true,
           isSigner: false,
-          docs: ['#4', 'Use PDA to make nicknames unique'],
+          docs: ['#5', 'Use PDA to make nicknames unique'],
         },
         {
           name: 'referrerProfile',
@@ -15341,7 +15455,7 @@ export const IDL: Adrena = {
           isSigner: false,
           isOptional: true,
           docs: [
-            '#5',
+            '#6',
             'Apply this referrer to the user profile, If none, referrer_profile is set to default',
           ],
         },
@@ -15349,13 +15463,13 @@ export const IDL: Adrena = {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#6'],
+          docs: ['#7'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#8'],
         },
       ],
       args: [
@@ -19586,10 +19700,16 @@ export const IDL: Adrena = {
             type: 'u8',
           },
           {
+            name: 'team',
+            type: 'u8',
+          },
+          {
+            name: 'continent',
+            type: 'u8',
+          },
+          {
             name: 'padding',
-            type: {
-              array: ['u8', 3],
-            },
+            type: 'u8',
           },
           {
             name: 'nickname',
@@ -20939,6 +21059,18 @@ export const IDL: Adrena = {
             name: 'title',
             type: 'u8',
           },
+          {
+            name: 'team',
+            type: {
+              option: 'u8',
+            },
+          },
+          {
+            name: 'continent',
+            type: {
+              option: 'u8',
+            },
+          },
         ],
       },
     },
@@ -20977,6 +21109,14 @@ export const IDL: Adrena = {
           },
           {
             name: 'title',
+            type: 'u8',
+          },
+          {
+            name: 'team',
+            type: 'u8',
+          },
+          {
+            name: 'continent',
             type: 'u8',
           },
         ],
@@ -22425,6 +22565,55 @@ export const IDL: Adrena = {
       },
     },
     {
+      name: 'Team',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'Default',
+          },
+          {
+            name: 'Bonk',
+          },
+          {
+            name: 'Jito',
+          },
+        ],
+      },
+    },
+    {
+      name: 'Continent',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'Default',
+          },
+          {
+            name: 'Europe',
+          },
+          {
+            name: 'NorthAmerica',
+          },
+          {
+            name: 'SouthAmerica',
+          },
+          {
+            name: 'Asia',
+          },
+          {
+            name: 'Africa',
+          },
+          {
+            name: 'Australia',
+          },
+          {
+            name: 'Antarctica',
+          },
+        ],
+      },
+    },
+    {
       name: 'Achievement',
       type: {
         kind: 'enum',
@@ -23356,16 +23545,31 @@ export const IDL: Adrena = {
     },
     {
       code: 6080,
+      name: 'UserNicknameInvalidFormat',
+      msg: 'User nickname expected format: Monster followed by digits',
+    },
+    {
+      code: 6081,
+      name: 'InvalidContinentOrTeam',
+      msg: 'Continent or Team is invalid',
+    },
+    {
+      code: 6082,
+      name: 'TeamImmutable',
+      msg: 'The team can not be changed after being already set',
+    },
+    {
+      code: 6083,
       name: 'InvalidSigner',
       msg: 'Invalid signer',
     },
     {
-      code: 6081,
+      code: 6084,
       name: 'MissingOraclePrice',
       msg: 'Missing at least one oracle price',
     },
     {
-      code: 6082,
+      code: 6085,
       name: 'InvalidOracleSignature',
       msg: 'Invalid oracle signature',
     },

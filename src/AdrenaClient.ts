@@ -61,6 +61,7 @@ import {
   FeesStats,
   GenesisLock,
   ImageRef,
+  LimitedString,
   LimitOrderBookExtended,
   LockedStakeExtended,
   NewPositionPricesAndFee,
@@ -747,6 +748,8 @@ export class AdrenaClient {
               displayAmountDecimalsPrecision: number;
               displayPriceDecimalsPrecision: number;
               pythPriceUpdateV2: PublicKey;
+              oracle: LimitedString;
+              tradeOracle: LimitedString;
             }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
@@ -768,6 +771,8 @@ export class AdrenaClient {
           custody: custodiesAddresses[i],
           coingeckoId: infos.coingeckoId,
           pythPriceUpdateV2: infos.pythPriceUpdateV2,
+          oracle: infos.oracle,
+          tradeOracle: infos.tradeOracle,
         };
       })
       .filter((token) => !!token) as Token[];
@@ -5652,8 +5657,7 @@ export class AdrenaClient {
    * UTILS
    */
 
-  // Some instructions requires to provide all custody + custody oracle account
-  // as remaining accounts
+  // Some instructions requires to provide all custody as remaining accounts
   protected prepareCustodiesForRemainingAccounts(): {
     pubkey: PublicKey;
     isSigner: boolean;
@@ -5663,62 +5667,11 @@ export class AdrenaClient {
       (custody) => !custody.equals(PublicKey.default),
     );
 
-    return [
-      // needs to provide all custodies and theirs oracles
-      // in the same order as they appears in the main pool
-      ...custodiesAddresses.map((custody) => ({
-        pubkey: custody,
-        isSigner: false,
-        isWritable: false,
-      })),
-
-      ...custodiesAddresses.map((pubkey) => {
-        const custody = this.custodies.find((custody) =>
-          custody.pubkey.equals(pubkey),
-        );
-
-        // Should never happens
-        if (!custody) throw new Error('Custody not found');
-
-        return {
-          pubkey: custody.nativeObject.oracle,
-          isSigner: false,
-          isWritable: false,
-        };
-      }),
-
-      /* Not needed anymore since the oracle / trade oracle is handled directly in backend with Oracle V2
-      // Only keep the ones that have a trade oracle different from oracle
-      ...custodiesAddresses.reduce(
-        (metadataArr, pubkey) => {
-          const custody = this.custodies.find((custody) =>
-            custody.pubkey.equals(pubkey),
-          );
-
-          // Should never happens
-          if (!custody) throw new Error('Custody not found');
-
-          if (
-            custody.nativeObject.oracle.equals(custody.nativeObject.tradeOracle)
-          )
-            return metadataArr;
-
-          return [
-            ...metadataArr,
-            {
-              pubkey: custody.nativeObject.tradeOracle,
-              isSigner: false,
-              isWritable: false,
-            },
-          ];
-        },
-        [] as {
-          pubkey: PublicKey;
-          isSigner: boolean;
-          isWritable: boolean;
-        }[],
-      ), */
-    ];
+    return custodiesAddresses.map((custody) => ({
+      pubkey: custody,
+      isSigner: false,
+      isWritable: false,
+    }));
   }
 
   public getCustodyByPubkey(custody: PublicKey): CustodyExtended | null {
