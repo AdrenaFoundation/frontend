@@ -14,9 +14,11 @@ export default function ViewsWarning({ message }: { message?: React.ReactNode })
     const walletTokenBalances = useSelector((state) => state.walletTokenBalances);
     const connected = !!wallet;
 
+    if (isClosed) return null;
+
     if (!message) {
         // Ensure walletTokenBalances is loaded and wallet is connected
-        if (!walletTokenBalances || !connected || isClosed) return null;
+        if (!walletTokenBalances || !connected) return null;
 
         const solBalance = walletTokenBalances['SOL'] ?? 0;
 
