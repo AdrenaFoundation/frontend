@@ -1,7 +1,7 @@
 import '@dialectlabs/blinks/index.css';
 
 import { Blink, useBlink } from '@dialectlabs/blinks';
-// @ts-ignore
+// @ts-expect-error
 import { useBlinkSolanaWalletAdapter } from '@dialectlabs/blinks/hooks/solana';
 
 import Loader from '@/components/Loader/Loader';
