@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
 import bookIcon from '@/../public/images/Icons/book.svg';
+import linkIcon from '@/../public/images/Icons/link.svg';
 import lockIcon from '@/../public/images/Icons/lock.svg';
 import monitorIcon from '@/../public/images/Icons/monitor-icon.svg';
 import personIcon from '@/../public/images/Icons/person-fill.svg';
@@ -139,6 +140,13 @@ export default function RootLayout({
       dropdown: true,
       icon: bookIcon,
     },
+    {
+      name: 'Integrations',
+      link: '/integrations',
+      icon: linkIcon,
+      dropdown: true,
+      subtitle: 'Our partners and integrations',
+    },
   ]);
 
   useEffect(() => {
@@ -188,14 +196,17 @@ export default function RootLayout({
     return null;
   }
 
-  const OracleUpdateUTC = new Date('2025-05-18T11:00:00Z')
+  const OracleUpdateUTC = new Date('2025-05-18T11:00:00Z');
 
   const OracleUpdateUTCString = new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
     month: 'short',
     hour: 'numeric',
-    timeZone: 'UTC'
-  }).format(OracleUpdateUTC).toLowerCase().replace(',', ' at');
+    timeZone: 'UTC',
+  })
+    .format(OracleUpdateUTC)
+    .toLowerCase()
+    .replace(',', ' at');
 
   return (
     <>

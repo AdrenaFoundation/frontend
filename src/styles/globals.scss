@@ -872,3 +872,8 @@ blockquote {
   animation: shimmer 6s linear infinite;
   filter: brightness(0.9) saturate(1.5);
 }
+
+// for highlighting code blocks using react-syntax-highlighter
+.token {
+  @apply font-mono;
+}
