@@ -21,7 +21,6 @@ import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
-import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import { TEAMS_MAPPING } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
