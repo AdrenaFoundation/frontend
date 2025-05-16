@@ -9338,49 +9338,6 @@
       }
     },
     {
-      "name": "OraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "confidence",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "exponent",
-            "type": "i32"
-          },
-          {
-            "name": "chaosLabsFeedId",
-            "type": "u8"
-          },
-          {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "defined": "LimitedString"
-            }
-          }
-        ]
-      }
-    },
-    {
       "name": "Pool",
       "type": {
         "kind": "struct",
@@ -12289,6 +12246,49 @@
       }
     },
     {
+      "name": "OraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "chaosLabsFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "TokenRatios",
       "type": {
         "kind": "struct",
@@ -12783,10 +12783,7 @@
         "kind": "enum",
         "variants": [
           {
-            "name": "V1"
-          },
-          {
-            "name": "V2"
+            "name": "Zero"
           }
         ]
       }
@@ -12846,7 +12843,7 @@
         "kind": "enum",
         "variants": [
           {
-            "name": "FirstTrade"
+            "name": "Zero"
           }
         ]
       }
