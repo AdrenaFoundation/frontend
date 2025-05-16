@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 
-import { ImageRef, SupportedCluster } from '@/types';
+import { ImageRef, LimitedString, SupportedCluster } from '@/types';
 
 export type TokenInfo = {
   name: string;
@@ -11,7 +11,9 @@ export type TokenInfo = {
   decimals: number;
   displayAmountDecimalsPrecision: number;
   displayPriceDecimalsPrecision: number;
-  pythPriceUpdateV2: PublicKey;
+  pythPriceUpdateV2: PublicKey; // Oracle V1
+  oracle: LimitedString; // Oracle V2
+  tradeOracle: LimitedString; // Oracle V2
 };
 
 export type RpcOption = {

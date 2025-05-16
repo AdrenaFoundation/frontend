@@ -62,13 +62,15 @@ export default function ALPSwapBuy({
     } | null>(null);
     const [, setHighFeeWarning] = useState<boolean>(false);
 
+    const walletAddress = wallet?.walletAddress;
+
     const executeBuyAlp = useCallback(async () => {
         if (!connected) {
             dispatch(openCloseConnectionModalAction(true));
             return;
         }
 
-        if (!wallet?.walletAddress || !collateralInput || !alpInput) {
+        if (!walletAddress || !collateralInput || !alpInput) {
             console.log('Missing some info');
             return;
         }
@@ -78,7 +80,7 @@ export default function ALPSwapBuy({
 
         try {
             await window.adrena.client.addLiquidity({
-                owner: new PublicKey(wallet.walletAddress),
+                owner: new PublicKey(walletAddress),
                 amountIn: uiToNative(collateralInput, collateralToken.decimals),
                 mint: collateralToken.mint,
 
@@ -99,7 +101,7 @@ export default function ALPSwapBuy({
         collateralToken.decimals,
         collateralToken.mint,
         connected,
-        wallet && wallet.walletAddress,
+        walletAddress,
     ]);
 
     const estimateAddLiquidityAndFeeForAlternativeRoutes =

@@ -1,6 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
 
 import {
+    ChaosLabsPricesExtended,
+    ChaosLabsPricesResponse,
     CustodyInfoResponse,
     EnrichedPositionApi,
     EnrichedTraderInfo,
@@ -28,6 +31,7 @@ import {
     UserMutagensReturnType,
     UserSeasonProgressReturnType
 } from './types';
+import { hexStringToByteArray } from './utils';
 
 
 // Useful to call Data API endpoints easily
@@ -1052,6 +1056,42 @@ export default class DataApiClient {
                 totalPnl: trader.total_pnl,
                 totalVolume: trader.total_volume,
             } as TraderByVolumeInfo));
+        } catch (e) {
+            console.error('Error fetching trader Info:', e);
+            return null;
+        }
+    }
+
+    public static async getChaosLabsPrices(): Promise<ChaosLabsPricesExtended | null> {
+        try {
+            const response = await fetch(
+                `${DataApiClient.DATAPI_URL}/last-trading-prices`,
+            );
+
+            if (!response.ok) {
+                console.log('Api trading prices cannot be fetched');
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            const apiData: ChaosLabsPricesResponse | undefined = apiBody.data;
+
+            if (typeof apiData === 'undefined' || !apiData)
+                return null;
+
+            return {
+                latestDate: apiData.latest_date,
+                latestTimestamp: apiData.latest_timestamp,
+                prices: apiData.prices.map((price) => ({
+                    feedId: price.feed_id,
+                    price: new BN(price.price),
+                    timestamp: new BN(price.timestamp),
+                })),
+                signature: apiData.signature,
+                signatureByteArray: hexStringToByteArray(apiData.signature),
+                recoveryId: apiData.recovery_id,
+            };
         } catch (e) {
             console.error('Error fetching trader Info:', e);
             return null;
