@@ -188,7 +188,7 @@ export default function RootLayout({
     return null;
   }
 
-  const OracleUpdateUTC = new Date('2025-05-17T11:00:00Z')
+  const OracleUpdateUTC = new Date('2025-05-18T11:00:00Z')
 
   const OracleUpdateUTCString = new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
