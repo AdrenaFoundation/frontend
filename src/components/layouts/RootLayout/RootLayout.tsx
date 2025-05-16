@@ -21,6 +21,7 @@ import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
+import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import { TEAMS_MAPPING } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -80,18 +81,21 @@ export default function RootLayout({
   const [isChatOpen, setIsChatOpen] = useState<boolean | null>(null);
   const disableChat = useSelector((state) => state.settings.disableChat);
 
-  const [pages, setPages] = useState<
-    LinksType[]
-  >([
+  const [pages, setPages] = useState<LinksType[]>([
     { name: 'Trade', link: '/trade', icon: tradeIcon },
     {
-      name: 'Profile', link: '/profile', dropdown: true,
+      name: 'Profile',
+      link: '/profile',
+      dropdown: true,
       subtitle: 'Your Adrena Profile',
-      icon: personIcon
+      icon: personIcon,
     },
     {
-      name: 'Vest', link: '/vest', icon: window.adrena.client.adxToken.image, dropdown: true
-      , subtitle: 'Vesting and delegation'
+      name: 'Vest',
+      link: '/vest',
+      icon: window.adrena.client.adxToken.image,
+      dropdown: true,
+      subtitle: 'Vesting and delegation',
     },
     { name: 'Stake', link: '/stake', icon: lockIcon },
     { name: 'Ranked', link: '/ranked', icon: trophyIcon },
@@ -102,24 +106,40 @@ export default function RootLayout({
     },
     { name: 'Monitor', link: '/monitoring', icon: monitorIcon },
     {
-      name: 'Referral', link: '/referral', icon: shareIcon, dropdown: true,
-      subtitle: 'Refer and earn rewards'
+      name: 'Referral',
+      link: '/referral',
+      icon: shareIcon,
+      dropdown: true,
+      subtitle: 'Refer and earn rewards',
     },
     {
-      name: 'Achievements', link: '/achievements', dropdown: true,
+      name: 'Achievements',
+      link: '/achievements',
+      dropdown: true,
       subtitle: 'Progress & Milestones',
-      icon: trophyIcon
+      icon: trophyIcon,
     },
     {
-      name: 'Leaderboard', link: '/mutagen_leaderboard', dropdown: true,
+      name: 'Leaderboard',
+      link: '/mutagen_leaderboard',
+      dropdown: true,
       subtitle: 'All-Time Mutagen Leaderboard',
-      icon: mutagenIcon
+      icon: mutagenIcon,
     },
     {
-      name: 'Vote', link: 'https://dao.adrena.xyz/', external: true, dropdown: true,
-      icon: voteIcon
+      name: 'Vote',
+      link: 'https://dao.adrena.xyz/',
+      external: true,
+      dropdown: true,
+      icon: voteIcon,
     },
-    { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true, dropdown: true, icon: bookIcon },
+    {
+      name: 'Learn',
+      link: 'https://docs.adrena.xyz/',
+      external: true,
+      dropdown: true,
+      icon: bookIcon,
+    },
   ]);
 
   useEffect(() => {
@@ -140,24 +160,43 @@ export default function RootLayout({
       return;
     }
 
-    if ([
-      'Am1B44zvUodKPahohUUjdHjs4HbfhaB7vjroqxzxfy9j',
-      'EgDYVEsGJtk3pzxxP2E3ctPyUbnCgDDfXcE1cf4gHPNj',
-    ].includes(wallet.publicKey.toBase58())) {
+    if (
+      [
+        'Am1B44zvUodKPahohUUjdHjs4HbfhaB7vjroqxzxfy9j',
+        'EgDYVEsGJtk3pzxxP2E3ctPyUbnCgDDfXcE1cf4gHPNj',
+      ].includes(wallet.publicKey.toBase58())
+    ) {
       addNotification({
         title: 'Please pick your team!',
-        message: <div className='font-archivo'>
-          Hello <span className='text-yellow-300 font-boldy'>{userProfile.nickname}</span> please pick your team in Ranked page for S2 before the season starts in few hours to be eligible for officer role. Careful if you pick BONK team you may not be officer, JITO seems to have open spots.
-        </div>,
+        message: (
+          <div className="font-archivo">
+            Hello{' '}
+            <span className="text-yellow-300 font-boldy">
+              {userProfile.nickname}
+            </span>{' '}
+            please pick your team in Ranked page for S2 before the season starts
+            in few hours to be eligible for officer role. Careful if you pick
+            BONK team you may not be officer, JITO seems to have open spots.
+          </div>
+        ),
         type: 'info',
         duration: 'long',
-      })
+      });
     }
   }, [userProfile, wallet]);
 
   if (isBigScreen === null || isMobile === null) {
     return null;
   }
+
+  const OracleUpdateUTC = new Date('2025-05-17T11:00:00Z')
+
+  const OracleUpdateUTCString = new Intl.DateTimeFormat('en-US', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    timeZone: 'UTC'
+  }).format(OracleUpdateUTC).toLowerCase().replace(',', ' at');
 
   return (
     <>
@@ -206,6 +245,17 @@ export default function RootLayout({
       )}
 
       <ViewsWarning />
+
+      <ViewsWarning
+        message={
+          <div className='flex flex-col sm:flex-row gap-0 sm:gap-1 items-center'>
+            <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
+              Oracle update will happen {OracleUpdateUTCString}
+            </p>
+            <span className='flex flex-row gap-1 items-center text-xxs sm:text-xs font-boldy opacity-50'>(<RemainingTimeToDate className='' timestamp={OracleUpdateUTC.getTime() / 1000} stopAtZero />)</span>
+          </div>
+        }
+      />
 
       <div className="w-full grow flex justify-center">
         <div
