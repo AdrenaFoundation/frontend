@@ -14,12 +14,14 @@ export default function ViewsWarning({ message }: { message?: React.ReactNode })
     const walletTokenBalances = useSelector((state) => state.walletTokenBalances);
     const connected = !!wallet;
 
-    // Ensure walletTokenBalances is loaded and wallet is connected
-    if (!walletTokenBalances || !connected || isClosed) return null;
+    if (!message) {
+        // Ensure walletTokenBalances is loaded and wallet is connected
+        if (!walletTokenBalances || !connected || isClosed) return null;
 
-    const solBalance = walletTokenBalances['SOL'] ?? 0;
+        const solBalance = walletTokenBalances['SOL'] ?? 0;
 
-    if (solBalance > 0.001 && !message) return null;
+        if (solBalance > 0.001) return null;
+    }
 
     return (
         <div className="flex flex-row items-center justify-center gap-3 p-1 bg-amber-700 w-full z-20">
