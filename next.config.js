@@ -3,6 +3,7 @@
 module.exports = (phase, { defaultConfig }) => {
   return {
     ...defaultConfig,
+
     async redirects() {
       return [
         {
