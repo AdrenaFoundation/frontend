@@ -1,11 +1,7 @@
-/**
- * Important: This component must be wrapped with <WalletProvider />
- * and <WalletModalProvider /> in your application.
- */
-
 import '@dialectlabs/blinks/index.css';
 
 import { Blink, useBlink } from '@dialectlabs/blinks';
+// @ts-ignore
 import { useBlinkSolanaWalletAdapter } from '@dialectlabs/blinks/hooks/solana';
 
 import Loader from '@/components/Loader/Loader';
