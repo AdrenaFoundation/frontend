@@ -164,7 +164,7 @@ export default function useRpc(config: IConfiguration | null): {
   useEffect(() => {
     loadLatencies();
 
-    const interval = setInterval(loadLatencies, 5000);
+    const interval = setInterval(loadLatencies, 30000);
     return () => clearInterval(interval);
   }, [loadLatencies]);
 
