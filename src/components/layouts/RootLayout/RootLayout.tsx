@@ -248,12 +248,9 @@ export default function RootLayout({
 
       <ViewsWarning
         message={
-          <div className='flex flex-col sm:flex-row gap-0 sm:gap-1 items-center'>
-            <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
-              Oracle update will happen {OracleUpdateUTCString}
-            </p>
-            <span className='flex flex-row gap-1 items-center text-xxs sm:text-xs font-boldy opacity-50'>(<RemainingTimeToDate className='' timestamp={OracleUpdateUTC.getTime() / 1000} stopAtZero />)</span>
-          </div>
+          <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
+            Oracle update will happen {OracleUpdateUTCString}
+          </p>
         }
       />
 
