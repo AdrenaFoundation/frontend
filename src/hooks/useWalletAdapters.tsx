@@ -14,6 +14,7 @@ import phantomLogo from '../../public/images/phantom.svg';
 import solflareLogo from '../../public/images/solflare.png';
 import squadxLogo from '../../public/images/squadx-logo.png';
 import walletconnectLogo from '../../public/images/walletconnect.png';
+import privyLogo from '../../public/images/walletconnect.png'; // Using walletconnect logo as placeholder
 
 export const WALLET_ICONS = {
     Phantom: phantomLogo,
@@ -22,6 +23,7 @@ export const WALLET_ICONS = {
     WalletConnect: walletconnectLogo,
     'Coinbase Wallet': coinbaseLogo,
     SquadsX: squadxLogo,
+    Privy: privyLogo,
 } as const satisfies Partial<Record<WalletAdapterName, ImageRef>>;
 
 const SUPPORTED_WALLETS = [
@@ -31,6 +33,7 @@ const SUPPORTED_WALLETS = [
     'WalletConnect',
     'Backpack',
     'SquadsX',
+    'Privy',
 ] as const;
 
 // Handpicked list of supported wallets
@@ -43,13 +46,11 @@ export const WALLET_COLORS = {
     WalletConnect: '#0798fe',
     'Coinbase Wallet': '#072b79',
     SquadsX: '#000000',
+    Privy: '#6366F1', // Indigo color for Privy
 } as const satisfies Record<WalletAdapterName, string>;
 
 export default function useWalletAdapters(): WalletAdapterExtended[] {
-    const adapters = useStandardWalletAdapters([
-        // Add specialized wallet adapters here
-        //
-        // Wallets compatible with the @solana/wallet-adapter-wallets package will be added automatically
+    const standardAdapters = useStandardWalletAdapters([
         new PhantomWalletAdapter(),
         new CoinbaseWalletAdapter(),
         new SolflareWalletAdapter(),
@@ -61,25 +62,27 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
                 metadata: {
                     name: 'Adrena',
                     description: 'Perpetuals DEX for the Solana community',
-                    url: 'https://app.adrena.xyz',
-                    icons: ['https://avatars.githubusercontent.com/u/179229932'],
+                    /*  url: 'https://app.adrena.xyz',
+                     icons: ['https://avatars.githubusercontent.com/u/179229932'], */
+                    url: typeof window !== 'undefined' ? window.location.origin : 'https://app.adrena.xyz',
+                    icons: ['https://arweave.net/8HohRjBW7P5uMUR0Cz9eHxLfOO2PcnLzciyvhhgNkck'],
                 },
             },
         }),
     ]);
 
     // Remove the adapters that has been added automatically but that we don't want to use
-    return useMemo(() => adapters.filter(adapter => {
+    return useMemo(() => standardAdapters.filter(adapter => {
         return SUPPORTED_WALLETS.includes(adapter.name as WalletAdapterName);
     }).map((adapter) => {
         const name = adapter.name as WalletAdapterName;
 
         (adapter as WalletAdapterExtended).color = WALLET_COLORS[name] ?? '#444444';
         (adapter as WalletAdapterExtended).iconOverride = WALLET_ICONS[name];
-        (adapter as WalletAdapterExtended).recommended = adapter.name === 'Phantom';
+        (adapter as WalletAdapterExtended).recommended = adapter.name === 'Privy';
         (adapter as WalletAdapterExtended).beta = adapter.name === 'WalletConnect' || adapter.name === 'SquadsX';
         (adapter as WalletAdapterExtended).walletName = name;
 
         return adapter as WalletAdapterExtended;
-    }), [adapters]);
+    }), [standardAdapters]);
 }

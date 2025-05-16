@@ -1,6 +1,7 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { PrivyProvider } from '@privy-io/react-auth';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -35,6 +36,13 @@ import { VestExtended } from '@/types';
 
 import logo from '../../public/images/logo.svg';
 import store, { useDispatch, useSelector } from '../store/store';
+
+// Add type declaration at the top of the file
+declare global {
+  interface Window {
+    __privyConnectorInitialized?: boolean;
+  }
+}
 
 function Loader(): JSX.Element {
   return (
@@ -102,22 +110,94 @@ export default function App(props: AppProps) {
 
   return (
     <Provider store={store}>
-      <CookiesProvider>
-        <AppComponent
-          activeRpc={activeRpc}
-          rpcInfos={rpcInfos}
-          autoRpcMode={autoRpcMode}
-          customRpcUrl={customRpcUrl}
-          customRpcLatency={customRpcLatency}
-          favoriteRpc={favoriteRpc}
-          setAutoRpcMode={setAutoRpcMode}
-          setCustomRpcUrl={setCustomRpcUrl}
-          setFavoriteRpc={setFavoriteRpc}
-          {...props}
-        />
-        <Analytics />
-        <SpeedInsights />
-      </CookiesProvider>
+      <PrivyProvider
+        appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID ?? ''}
+        clientId={process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID}
+        config={{
+          appearance: {
+            accentColor: "#c9c9c9",
+            theme: "#060f18",
+            showWalletLoginFirst: false,
+            logo: "https://arweave.net/8HohRjBW7P5uMUR0Cz9eHxLfOO2PcnLzciyvhhgNkck",
+            walletChainType: "ethereum-and-solana",
+            walletList: [
+              "detected_wallets",
+              "phantom",
+              "coinbase_wallet",
+              "wallet_connect",
+              "okx_wallet",
+              "metamask",
+              "uniswap",
+            ]
+          },
+          loginMethods: [
+            "email",
+            "google",
+            "twitter",
+            "discord",
+            "wallet"
+          ],
+          fundingMethodConfig: {
+            moonpay: {
+              useSandbox: true
+            }
+          },
+          // TODO: Check this because not sure how it works
+          externalWallets: {
+            solana: {
+              connectors: {
+                onMount: () => {
+                  // Only initialize once
+                  if (typeof window !== 'undefined' && !window.__privyConnectorInitialized) {
+                    window.__privyConnectorInitialized = true;
+                    return [];
+                  }
+                  return [];
+                },
+                onUnmount: () => {
+                  // Cleanup if needed
+                  if (typeof window !== 'undefined') {
+                    window.__privyConnectorInitialized = false;
+                  }
+                },
+                get: () => {
+                  return [];
+                }
+              }
+            }
+          },
+          embeddedWallets: {
+            requireUserPasswordOnCreate: false,
+            showWalletUIs: true,
+            ethereum: {
+              createOnLogin: "off"
+            },
+            solana: {
+              createOnLogin: "all-users"
+            }
+          },
+          mfa: {
+            noPromptOnMfaRequired: false
+          }
+        }}
+      >
+        <CookiesProvider>
+          <AppComponent
+            activeRpc={activeRpc}
+            rpcInfos={rpcInfos}
+            autoRpcMode={autoRpcMode}
+            customRpcUrl={customRpcUrl}
+            customRpcLatency={customRpcLatency}
+            favoriteRpc={favoriteRpc}
+            setAutoRpcMode={setAutoRpcMode}
+            setCustomRpcUrl={setCustomRpcUrl}
+            setFavoriteRpc={setFavoriteRpc}
+            {...props}
+          />
+          <Analytics />
+          <SpeedInsights />
+        </CookiesProvider>
+      </PrivyProvider>
     </Provider>
   );
 }

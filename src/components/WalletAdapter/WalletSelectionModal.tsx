@@ -1,16 +1,19 @@
+import { usePrivy } from '@privy-io/react-auth';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
   connectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
+import usePrivyWallet from '@/hooks/usePrivyWallet';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { ImageRef, WalletAdapterExtended } from '@/types';
 
+import privyLogo from '../../../public/images/walletconnect.png';
 import Modal from '../common/Modal/Modal';
 
 export default function WalletSelectionModal({
@@ -20,43 +23,111 @@ export default function WalletSelectionModal({
 }) {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
+  const { isReady, isAuthenticated, isConnected } = usePrivyWallet();
+  const { login, logout } = usePrivy();
+  const [showPrivyModal, setShowPrivyModal] = React.useState(false);
+
+  // Cleanup effect for Privy modal
+  const cleanupStyles = useCallback(() => {
+    // Reset body styles
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    document.body.style.paddingRight = '';
+
+    // Reset any Privy modal styles
+    const privyModal = document.querySelector('[data-privy-modal]') as HTMLElement | null;
+    if (privyModal) {
+      privyModal.style.transform = '';
+      privyModal.style.opacity = '';
+      privyModal.style.filter = '';
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showPrivyModal) {
+      if (isAuthenticated && !isConnected) {
+        // If user is authenticated but not connected to a wallet, use linkWallet
+        logout();
+      }
+      login();
+      // Close our modal since Privy will handle the UI
+      setShowPrivyModal(false);
+      dispatch(openCloseConnectionModalAction(false));
+    }
+
+    return () => {
+      cleanupStyles();
+    };
+  }, [showPrivyModal, login, logout, isAuthenticated, isConnected, dispatch, cleanupStyles]);
+
+  const handleWalletSelect = (adapter: WalletAdapterExtended) => {
+    if (adapter.name === 'Privy') {
+      if (!isAuthenticated || !isConnected) {
+        setShowPrivyModal(true);
+      }
+    } else {
+      dispatch(connectWalletAction(adapter));
+      dispatch(openCloseConnectionModalAction(false));
+    }
+  };
 
   return (
-    <AnimatePresence>
-      {modalIsOpen && (
-        <Modal
-          close={() => dispatch(openCloseConnectionModalAction(false))}
-          className="flex flex-col w-full items-center relative overflow-visible"
-          title="Pick a wallet"
-        >
-          <div className={twMerge("flex flex-col min-w-[25em] grow items-center gap-4 pb-4 pt-4")}>
-            {adapters.map((adapter) => {
-              return <WalletBlock
-                key={adapter.name}
-                name={adapter.name}
-                bgColor={adapter.color}
-                beta={adapter.beta}
-                recommended={adapter.recommended}
-                logo={adapter.iconOverride ?? adapter.icon}
-                imgClassName={({
-                  // Add custom classes here for each wallet if needed
-                  'Phantom': 'w-[10em] left-14',
-                  'Coinbase Wallet': 'w-[6em] left-6 top-6',
-                  Solflare: 'w-[6em] -left-2 top-12',
-                  'Backpack': 'w-[5em] left-2 top-6',
-                  'WalletConnect': 'w-[7em] left-8 top-2',
-                  SquadsX: 'w-[6em] left-4 top-10',
-                } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
+    <>
+      <AnimatePresence>
+        {modalIsOpen && (
+          <Modal
+            key="wallet-selection-modal"
+            close={() => {
+              dispatch(openCloseConnectionModalAction(false));
+              cleanupStyles();
+            }}
+            className="flex flex-col w-full items-center relative overflow-visible"
+            title="Pick a wallet"
+          >
+            <div className={twMerge("flex flex-col min-w-[25em] grow items-center gap-4 pb-4 pt-4")}>
+              {/* handle separately from native adapters */}
+              <WalletBlock
+                key="Privy"
+                name="Privy"
+                bgColor="#6366F1"
+                beta={false}
+                recommended={true}
+                logo={privyLogo}
+                disabled={!isReady}
+                imgClassName="w-[7em] left-8 top-2"
                 onClick={() => {
-                  dispatch(connectWalletAction(adapter));
-                  dispatch(openCloseConnectionModalAction(false));
+                  if (!isReady) return;
+                  setShowPrivyModal(true);
                 }}
               />
-            })}
-          </div>
-        </Modal>
-      )}
-    </AnimatePresence>
+              {/* handle separately native adapters */}
+              {adapters.map((adapter) => {
+                return <WalletBlock
+                  key={adapter.name}
+                  name={adapter.name}
+                  bgColor={adapter.color}
+                  beta={adapter.beta}
+                  recommended={adapter.recommended}
+                  logo={adapter.iconOverride ?? adapter.icon}
+                  imgClassName={({
+                    // Add custom classes here for each wallet if needed
+                    'Phantom': 'w-[10em] left-14',
+                    'Coinbase Wallet': 'w-[6em] left-6 top-6',
+                    Solflare: 'w-[6em] -left-2 top-12',
+                    'Backpack': 'w-[5em] left-2 top-6',
+                    'WalletConnect': 'w-[7em] left-8 top-2',
+                    SquadsX: 'w-[6em] left-4 top-10',
+                  } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
+                  onClick={() => handleWalletSelect(adapter)}
+                />
+              })}
+            </div>
+          </Modal>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 

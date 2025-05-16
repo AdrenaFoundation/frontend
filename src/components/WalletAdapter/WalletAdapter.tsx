@@ -1,3 +1,4 @@
+import { usePrivy } from '@privy-io/react-auth';
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -10,6 +11,7 @@ import {
 } from '@/actions/walletActions';
 import { PROFILE_PICTURES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import usePrivyWallet from '@/hooks/usePrivyWallet';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
@@ -42,14 +44,30 @@ export default function WalletAdapter({
 }) {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { logout, ready, authenticated, connected } = usePrivy();
 
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
+  console.log('isReady', ready);
+  console.log('isAuthenticated', authenticated);
+  console.log('isConnected', connected);
+  console.log('wallet', wallet);
+  console.log('adapters', adapters);
+
   const connectedAdapter = useMemo(
-    () => wallet && adapters.find((x) => x.name === wallet.adapterName),
-    [wallet, adapters],
+    () => {
+      // If Privy is connected, we don't need an adapter
+      if (connected) {
+        return null;
+      }
+      // Otherwise return the regular wallet adapter
+      return wallet && adapters.find((x) => x.name === wallet.adapterName);
+    },
+    [wallet, adapters, connected]
   );
+
+  console.log('connectedAdapter', connectedAdapter);
 
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
@@ -71,13 +89,21 @@ export default function WalletAdapter({
     }
   }
 
-  const connectedWalletAdapterName = wallet?.adapterName;
-  const connected = !!connectedWalletAdapterName;
+  const connectedWalletAdapterName = connectedAdapter?.name;
+  // Connected if either Privy is connected or we have a regular wallet adapter
+  const isConnected = connected || !!connectedWalletAdapterName;
+
+  console.log('connectedWalletAdapterName', connectedWalletAdapterName);
+  console.log('connected', connected);
+  console.log('isConnected', isConnected);
 
   const isBreak = useBetterMediaQuery('(min-width: 640px)');
 
   // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
+    // Don't auto-connect if Privy is already connected
+    if (!connectedWalletAdapterName) return;
+
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
       const adapter = adapters.find(
         (x) => x.name === lastConnectedWalletRef.current,
@@ -96,6 +122,7 @@ export default function WalletAdapter({
   // - update the Wallet state on change of connected account for the current provider.
   // - cleanup & reset listeners on change of wallet provider.
   useEffect(() => {
+    // Skip if Privy is connected
     if (!connectedWalletAdapterName) return;
 
     const adapter = adapters.find((x) => x.name === connectedWalletAdapterName);
@@ -115,7 +142,21 @@ export default function WalletAdapter({
     return () => {
       adapter.removeAllListeners('connect');
     };
-  }, [dispatch, connectedWalletAdapterName, adapters]);
+  }, [dispatch, connectedWalletAdapterName, adapters, isConnected]);
+
+  const handleDisconnect = () => {
+    setMenuIsOpen(!menuIsOpen);
+
+    if (!connected || !connectedAdapter) return;
+
+    if (isConnected) {
+      logout();
+      // Clear wallet state when disconnecting Privy
+      dispatch({ type: 'disconnect' });
+    } else {
+      dispatch(disconnectWalletAction(connectedAdapter));
+    }
+  };
 
   return (
     <div className="relative">
@@ -138,11 +179,17 @@ export default function WalletAdapter({
                 !isIconOnly
                   ? userProfile
                     ? getAbbrevNickname(userProfile.nickname)
-                    : getAbbrevWalletAddress(wallet.walletAddress)
+                    : isConnected
+                      ? 'Privy Wallet' // Show Privy wallet when connected via Privy
+                      : wallet?.walletAddress
+                        ? getAbbrevWalletAddress(wallet.walletAddress)
+                        : 'Connect wallet'
                   : null
               }
               leftIcon={
-                connectedAdapter?.iconOverride ?? connectedAdapter?.icon
+                isConnected
+                  ? walletIcon // Use default wallet icon for Privy
+                  : connectedAdapter?.iconOverride ?? connectedAdapter?.icon
               }
               leftIconClassName="hidden sm:block w-4 h-4"
               variant="lightbg"
@@ -221,16 +268,10 @@ export default function WalletAdapter({
               </>
             ) : null}
             <MenuItem
-              onClick={() => {
-                setMenuIsOpen(!menuIsOpen);
-
-                if (!connected || !connectedAdapter) return;
-
-                dispatch(disconnectWalletAction(connectedAdapter));
-              }}
+              onClick={handleDisconnect}
               className="py-2"
             >
-              Disconnect
+              {isConnected ? 'Disconnect Privy' : 'Disconnect'}
             </MenuItem>
           </MenuItems>
         </Menu>
