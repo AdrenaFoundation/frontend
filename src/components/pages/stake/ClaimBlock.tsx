@@ -64,28 +64,28 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     />
                 </div>
 
-                <div className="flex-1 sm:text-end">
-                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade">ADX reward</div>
+                <div className="flex-1 flex flex-col sm:items-end">
+                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade text-left">ADX reward</div>
 
-                    <FormatNumber
-                        nb={claim.rewards_adx + claim.rewards_adx_genesis}
-                        format="number"
-                        wrapperClassName="sm:justify-end"
-                        className={`text-gray-400 text-xs ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''
-                            }`}
-                        minimumFractionDigits={2}
-                        prefix="+ "
-                        suffix=" ADX"
-                        info={
-                            claim.rewards_adx_genesis > 0
-                                ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(
-                                    claim.rewards_adx_genesis,
-                                    2,
-                                    2,
-                                )} (Genesis)`
-                                : undefined
-                        }
-                    />
+                    <div className={`w-full flex sm:justify-end text-gray-400 text-xs ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''}`}>
+                        <FormatNumber
+                            nb={claim.rewards_adx + claim.rewards_adx_genesis}
+                            format="number"
+                            minimumFractionDigits={2}
+                            className="text-right text-gray-400 text-xs"
+                            prefix="+ "
+                            suffix=" ADX"
+                            info={
+                                claim.rewards_adx_genesis > 0
+                                    ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(
+                                        claim.rewards_adx_genesis,
+                                        2,
+                                        2,
+                                    )} (Genesis)`
+                                    : undefined
+                            }
+                        />
+                    </div>
                 </div>
             </div>
         </div>
