@@ -14,6 +14,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createAssociatedTokenAccountInstruction,
+  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
@@ -97,7 +98,6 @@ import {
   findATAAddressSync,
   getTokenSymbol,
   isAccountInitialized,
-  limitedStringToString,
   nativeToUi,
   parseTransactionError,
   PercentilePriorityFeeList,
@@ -965,18 +965,25 @@ export class AdrenaClient {
         );
       }
 
-      const tradeMint = (() => {
-        // compare every char of the limited string
-        const ret = Object.entries(config.tokensInfo).find(
-          ([, t]) =>
-            limitedStringToString(t.tradeOracle) ===
-            limitedStringToString(custody.tradeOracle),
-        );
+      // const tradeMint = (() => {
+      //   // compare every char of the limited string
+      //   const ret = Object.entries(config.tokensInfo).find(
+      //     ([, t]) =>
+      //       limitedStringToString(t.tradeOracle) ===
+      //       limitedStringToString(custody.tradeOracle),
+      //   );
 
-        if (!ret) return custody.mint;
+      //   if (!ret) return custody.mint;
 
-        return new PublicKey(ret[0]);
-      })();
+      //   return new PublicKey(ret[0]);
+      // })();
+
+      // TODO: fix better
+      const tradeMint =
+        {
+          J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn: NATIVE_MINT,
+          '3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh': PublicKey.default,
+        }[custody.mint.toBase58()] || custody.mint;
 
       const tradeTokenInfo = config.tokensInfo[tradeMint.toBase58()];
 

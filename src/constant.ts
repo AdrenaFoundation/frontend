@@ -24,7 +24,7 @@ export const ADRENA_TEAM_PROFILE = new PublicKey(
 );
 
 // In ms
-export const MINIMUM_POSITION_OPEN_TIME = 10_000;
+export const MINIMUM_POSITION_OPEN_TIME = 20_000;
 
 export const BPS = 10_000;
 
