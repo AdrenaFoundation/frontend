@@ -17,7 +17,6 @@ import tradeIcon from '@/../public/images/Icons/trade-icon.svg';
 import trophyIcon from '@/../public/images/Icons/trophy.svg';
 import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import mutagenIcon from '@/../public/images/mutagen.png';
-import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
@@ -188,15 +187,6 @@ export default function RootLayout({
     return null;
   }
 
-  const OracleUpdateUTC = new Date('2025-05-18T11:00:00Z')
-
-  const OracleUpdateUTCString = new Intl.DateTimeFormat('en-US', {
-    day: 'numeric',
-    month: 'short',
-    hour: 'numeric',
-    timeZone: 'UTC'
-  }).format(OracleUpdateUTC).toLowerCase().replace(',', ' at');
-
   return (
     <>
       <Head>
@@ -242,16 +232,6 @@ export default function RootLayout({
           setIsChatOpen={setIsChatOpen}
         />
       )}
-
-      <ViewsWarning />
-
-      <ViewsWarning
-        message={
-          <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
-            Oracle update will happen {OracleUpdateUTCString} UTC
-          </p>
-        }
-      />
 
       <div className="w-full grow flex justify-center">
         <div
