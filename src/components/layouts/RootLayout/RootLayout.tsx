@@ -243,16 +243,6 @@ export default function RootLayout({
         />
       )}
 
-      <ViewsWarning />
-
-      <ViewsWarning
-        message={
-          <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
-            Oracle update will happen {OracleUpdateUTCString} UTC
-          </p>
-        }
-      />
-
       <div className="w-full grow flex justify-center">
         <div
           className={twMerge(
