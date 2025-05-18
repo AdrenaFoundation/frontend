@@ -1,11 +1,12 @@
 import { PublicKey } from '@solana/web3.js';
 
-import { ImageRef } from '@/types';
+import { ImageRef, LimitedString } from '@/types';
 
 import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
 import jitosolLogo from '../../public/images/jitosol.png';
 import usdcLogo from '../../public/images/usdc.svg';
+import { stringToLimitedString } from '../utils';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
 export default class DevnetConfiguration implements IConfiguration {
@@ -25,6 +26,8 @@ export default class DevnetConfiguration implements IConfiguration {
       displayAmountDecimalsPrecision: number;
       displayPriceDecimalsPrecision: number;
       pythPriceUpdateV2: PublicKey;
+      oracle: LimitedString; // Oracle V2
+      tradeOracle: LimitedString; // Oracle V2
     };
   } = {
     '3jdYcGYZaQVvcvMQGqVpt37JegEoDDnX7k4gSGAeGRqG': {
@@ -39,6 +42,8 @@ export default class DevnetConfiguration implements IConfiguration {
       pythPriceUpdateV2: new PublicKey(
         'Dpw1EAVrSB1ibxiDQyTAW6Zip3J4Btk2x4SgApQCeFbX',
       ),
+      oracle: stringToLimitedString('USDCUSD'),
+      tradeOracle: stringToLimitedString('USDCUSD'),
     },
     '2eU7sUxhpQuBaUrjd6oPTzoFZNPEaawrAka4zqowMzbJ': {
       name: 'BONK',
@@ -52,6 +57,8 @@ export default class DevnetConfiguration implements IConfiguration {
       pythPriceUpdateV2: new PublicKey(
         'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
+      oracle: stringToLimitedString('BONKUSD'),
+      tradeOracle: stringToLimitedString('BONKUSD'),
     },
     '7MoYkgWVCEDtNR6i2WUH9LTUSFXkQCsD9tBHriHQvuP5': {
       name: 'Bitcoin',
@@ -65,6 +72,8 @@ export default class DevnetConfiguration implements IConfiguration {
       pythPriceUpdateV2: new PublicKey(
         '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
+      oracle: stringToLimitedString('WBTCUSD'),
+      tradeOracle: stringToLimitedString('BTCUSD'),
     },
     DmfSVHxadyJU4HJXT4pvXMzVfBHDiyS32NRKSAdxkzEy: {
       name: 'Jito Staked SOL',
@@ -78,6 +87,8 @@ export default class DevnetConfiguration implements IConfiguration {
       pythPriceUpdateV2: new PublicKey(
         'AxaxyeDT8JnWERSaTKvFXvPKkEdxnamKSqpWbsSjYg1g',
       ),
+      oracle: stringToLimitedString('JITOSOLUSD'),
+      tradeOracle: stringToLimitedString('SOLUSD'),
     },
   };
 

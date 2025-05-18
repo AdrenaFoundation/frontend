@@ -1134,3 +1134,25 @@ export function getNonUserProfile(pubkey: string): UserProfileExtended {
     continent: 0,
   };
 }
+
+export function hexStringToByteArray(hexString: string): number[] {
+  // Remove '0x' prefix if present
+  const cleanHex = hexString.startsWith('0x') ? hexString.slice(2) : hexString;
+
+  // Ensure the hex string is 128 characters (64 bytes)
+  if (cleanHex.length !== 128) {
+    throw new Error('Hex string must be 128 characters long (64 bytes)');
+  }
+
+  // Convert hex string to byte array
+  const byteArray: number[] = [];
+  for (let i = 0; i < cleanHex.length; i += 2) {
+    const byte = parseInt(cleanHex.slice(i, i + 2), 16);
+    if (isNaN(byte)) {
+      throw new Error('Invalid hex string');
+    }
+    byteArray.push(byte);
+  }
+
+  return byteArray;
+}
