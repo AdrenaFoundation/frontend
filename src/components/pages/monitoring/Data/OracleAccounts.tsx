@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 
+import { AdrenaClient } from '@/AdrenaClient';
 import { CustodyExtended } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
@@ -61,7 +62,7 @@ export default function OracleAccounts({
                   value: (
                     <OnchainAccountInfo
                       className="md:ml-auto"
-                      address={custody.nativeObject.oracle}
+                      address={AdrenaClient.oraclePda}
                     />
                   ),
                 },
@@ -78,7 +79,7 @@ export default function OracleAccounts({
                   value: (
                     <OnchainAccountInfo
                       className="md:ml-auto"
-                      address={custody.nativeObject.tradeOracle}
+                      address={AdrenaClient.oraclePda}
                     />
                   ),
                 });
