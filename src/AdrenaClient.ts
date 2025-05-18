@@ -98,7 +98,6 @@ import {
   findATAAddressSync,
   getTokenSymbol,
   isAccountInitialized,
-  limitedStringToString,
   nativeToUi,
   parseTransactionError,
   PercentilePriorityFeeList,
