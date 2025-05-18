@@ -13,8 +13,8 @@ export default function HealthBar({
     weekIndex: number;
 }) {
     return (
-        <div className="relative flex flex-col items-center gap-2 max-w-full">
-            <div className="flex w-[60em] h-[1.5em] bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative overflow-hidden">
+        <div className="relative flex flex-col items-center gap-2 w-full max-w-full">
+            <div className="flex w-full h-[1.5em] bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative overflow-hidden">
                 {/* Life */}
                 {Array.from({ length: S2_NB_HEALTH_BAR }).map((_, i) => (
                     <Tippy content={<div className="flex flex-col gap-2">

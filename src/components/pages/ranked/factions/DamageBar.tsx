@@ -87,7 +87,7 @@ export default function DamageBar({
     ]);
 
     return (
-        <div className="flex flex-col gap-4 items-center z-20">
+        <div className="flex flex-col gap-4 items-center z-20 w-full">
             <div className="flex flex-col items-center gap-1">
                 <div
                     className={twMerge('text-md font-boldy tracking-[0.1rem] uppercase')}
@@ -160,7 +160,7 @@ export default function DamageBar({
             </div>
 
 
-            <div className="max-w-full w-[60em] h-[2.5em] rounded-xl flex relative">
+            <div className="w-full max-w-[60em] h-[2.5em] rounded-xl flex relative">
                 <div
                     className="relative flex flex-row gap-0 w-full"
                     style={{

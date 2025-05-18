@@ -171,13 +171,13 @@ export default function FactionsLeaderboards({
                 </div>
 
 
-                <div className='relative w-full h-[90vh] my-3 border-y'>
-                    <div className='absolute -top-4 z-30 left-1/2 -translate-x-1/2 flex flex-col gap-2'>
+                <div className='flex flex-col items-center justify-center relative w-full my-3 border-y py-4'>
+                    <div className='absolute -top-4 z-30 left-1/2 -translate-x-1/2 flex flex-col gap-2 w-full max-w-[60em]'>
                         <HealthBar leaderboardData={leaderboardData} weekIndex={weekIndex} />
                     </div>
 
                     <div
-                        className='w-full h-full overflow-hidden relative'
+                        className='w-full h-[20.25rem] sm:h-[31.25rem] md:w-[40rem] m-auto overflow-hidden relative'
                         onMouseEnter={() => setDisplayBossVideo(true)}
                     >
                         {weekInfo.isBossDefeated ?
@@ -197,30 +197,28 @@ export default function FactionsLeaderboards({
                             //
                             // Boss alive
                             //
-                            <div className='z-10 h-full w-full bg-center bg-cover' style={{
+                            <div className='z-10 w-full h-full rounded-sm border border-bcolor bg-center bg-cover m-auto' style={{
                                 backgroundImage: `url(${S2_BOSSES_PICTURES[weekIndex]})`,
                             }} />}
 
-                        <div className='absolute top-0 right-0 h-full w-[20em] bg-gradient-to-l from-secondary to-transparent z-30' />
-                        <div className='absolute top-0 left-0 h-full w-[20em] bg-gradient-to-r from-secondary to-transparent z-30' />
-                        <div className='absolute bottom-0 w-full h-[20em] bg-gradient-to-t from-secondary to-transparent z-30' />
-                        {/* <div className='absolute top-0 w-full h-[20em] bg-gradient-to-b from-secondary to-transparent z-20' /> */}
+                        {/* <div className='absolute top-0 right-0 h-full w-[10em] bg-gradient-to-l from-secondary to-transparent z-30' /> */}
+                        {/* <div className='absolute top-0 left-0 h-full w-[10em] bg-gradient-to-r from-secondary to-transparent z-30' /> */}
+                        <div className='absolute bottom-0 w-full h-[10em] bg-gradient-to-t from-secondary to-transparent z-30' />
+                        {/* <div className='absolute top-0 w-full h-[10em] bg-gradient-to-b from-secondary to-transparent z-20' /> */}
 
                         {displayBossVideo && S2_BOSSES_VIDEOS[weekIndex] ? <video
                             autoPlay
                             muted
                             loop={false}
                             playsInline
-                            className={twMerge('w-full h-full object-cover z-[20] absolute top-0 left-0')}
+                            className={twMerge('h-full w-full object-cover m-auto z-[20] absolute top-0 left-0')}
                             src={S2_BOSSES_VIDEOS[weekIndex]}
                             onEnded={() => setDisplayBossVideo(false)}
                         /> : null}
                     </div>
 
 
-                    <div className='absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col gap-2 w-[60em] items-center justify-center z-40'>
-                        {/* <div className='font-boldy text-sm tracking-[0.2rem] uppercase'>DAMAGE METER</div> */}
-
+                    <div className='flex flex-col gap-2 w-full max-w-[60em] items-center justify-center z-40'>
                         <DamageBar
                             bonkMutagen={weekInfo.damageBonkTeam}
                             jitoMutagen={weekInfo.damageJitoTeam}
@@ -228,143 +226,145 @@ export default function FactionsLeaderboards({
                             pillageJitoPercentage={weekInfo.pillageJitoPercentage}
                         />
 
-                        <div className="flex justify-center items-center flex-col gap-6 w-[57em] bg-secondary rounded-xl border p-5 pt-10 -translate-y-7">
+                        <div className="flex justify-center items-center flex-col gap-6 w-full max-w-[55em] bg-secondary rounded-xl border p-5 pt-10 -translate-y-7">
 
                             <div className="text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase">DAMAGE THE BOSS AND UNLOCK ADX, BONK AND JTO REWARDS</div>
 
-                            <div className='flex h-[2em] items-center justify-center gap-4 opacity-80'>
-                                <div className='flex flex-col'>
-                                    <div className="text-md flex gap-2 justify-center items-center">
-                                        <Image
-                                            src={window.adrena.client.adxToken.image}
-                                            alt="ADX Token"
-                                            width={20}
-                                            height={20}
-                                            loading="eager"
-                                            draggable="false"
-                                            className="w-4 h-4"
-                                        />
 
-                                        <FormatNumber
-                                            nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.ADX : weekInfo.weeklyUnlockedRewardsTokens.ADX}
-                                            format={rewardsAs === 'usd' ? "currency" : 'number'}
-                                            precision={0}
-                                            prefix={rewardsAs === 'usd' ? '$' : ''}
-                                            isAbbreviate={true}
-                                            isAbbreviateIcon={false}
-                                            isDecimalDimmed={false}
-                                            suffix='ADX'
-                                            suffixClassName='text-lg'
-                                            className='border-0 text-lg'
-                                        />
+
+                            <div className='flex flex-col items-center justify-center gap-3'>
+                                <div className='flex h-[2em] items-center justify-center gap-4 opacity-80'>
+                                    <div className='flex flex-col'>
+                                        <div className="text-md flex gap-2 justify-center items-center">
+                                            <Image
+                                                src={window.adrena.client.adxToken.image}
+                                                alt="ADX Token"
+                                                width={20}
+                                                height={20}
+                                                loading="eager"
+                                                draggable="false"
+                                                className="w-4 h-4"
+                                            />
+
+                                            <FormatNumber
+                                                nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.ADX : weekInfo.weeklyUnlockedRewardsTokens.ADX}
+                                                format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                                precision={0}
+                                                prefix={rewardsAs === 'usd' ? '$' : ''}
+                                                isAbbreviate={true}
+                                                isAbbreviateIcon={false}
+                                                isDecimalDimmed={false}
+                                                suffix='ADX'
+                                                suffixClassName='text-lg'
+                                                className='border-0 text-lg'
+                                            />
+                                        </div>
+
+                                        <div className='ml-auto'>
+                                            <FormatNumber
+                                                nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.ADX : weekInfo.maxWeeklyRewardsTokens.ADX}
+                                                format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                                precision={0}
+                                                prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
+                                                isDecimalDimmed={false}
+                                                suffix='ADX'
+                                                suffixClassName='text-xs text-txtfade'
+                                                className='border-0 text-xs text-txtfade'
+                                                isAbbreviate={true}
+                                                isAbbreviateIcon={false}
+                                            />
+                                        </div>
                                     </div>
 
-                                    <div className='ml-auto'>
-                                        <FormatNumber
-                                            nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.ADX : weekInfo.maxWeeklyRewardsTokens.ADX}
-                                            format={rewardsAs === 'usd' ? "currency" : 'number'}
-                                            precision={0}
-                                            prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
-                                            isDecimalDimmed={false}
-                                            suffix='ADX'
-                                            suffixClassName='text-xs text-txtfade'
-                                            className='border-0 text-xs text-txtfade'
-                                            isAbbreviate={true}
-                                            isAbbreviateIcon={false}
-                                        />
+                                    <div className='h-full w-[1px] bg-bcolor' />
+
+                                    <div className='flex flex-col'>
+                                        <div className="text-md flex gap-2 justify-center items-center">
+                                            <Image
+                                                src={bonkLogo}
+                                                alt="BONK Token"
+                                                width={20}
+                                                height={20}
+                                                loading="eager"
+                                                draggable="false"
+                                                className="w-4 h-4"
+                                            />
+
+                                            <FormatNumber
+                                                nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.BONK : weekInfo.weeklyUnlockedRewardsTokens.BONK}
+                                                format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                                precision={0}
+                                                prefix={rewardsAs === 'usd' ? '$' : ''}
+                                                isDecimalDimmed={false}
+                                                suffix='BONK'
+                                                suffixClassName='text-lg'
+                                                className='border-0 text-lg'
+                                                isAbbreviate={true}
+                                                isAbbreviateIcon={false}
+                                            />
+                                        </div>
+
+                                        <div className='ml-auto'>
+                                            <FormatNumber
+                                                nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.BONK : weekInfo.maxWeeklyRewardsTokens.BONK}
+                                                format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                                precision={0}
+                                                prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
+                                                isDecimalDimmed={false}
+                                                suffix='BONK'
+                                                suffixClassName='text-xs text-txtfade'
+                                                className='border-0 text-xs text-txtfade'
+                                                isAbbreviate={true}
+                                                isAbbreviateIcon={false}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className='h-full w-[1px] bg-bcolor' />
+
+                                    <div className='flex flex-col'>
+                                        <div className="text-md flex gap-2 justify-center items-center">
+                                            <Image
+                                                src={jtoLogo}
+                                                alt="JTO Token"
+                                                width={20}
+                                                height={20}
+                                                loading="eager"
+                                                draggable="false"
+                                                className="w-6 h-6"
+                                            />
+
+                                            <FormatNumber
+                                                nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.JTO : weekInfo.weeklyUnlockedRewardsTokens.JTO}
+                                                format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                                precision={0}
+                                                prefix={rewardsAs === 'usd' ? '$' : ''}
+                                                isDecimalDimmed={false}
+                                                suffix='JTO'
+                                                suffixClassName='text-lg'
+                                                className='border-0 text-lg'
+                                                isAbbreviate={true}
+                                                isAbbreviateIcon={false}
+                                            />
+                                        </div>
+
+                                        <div className='ml-auto'>
+                                            <FormatNumber
+                                                nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.JTO : weekInfo.maxWeeklyRewardsTokens.JTO}
+                                                format={rewardsAs === 'usd' ? "currency" : 'number'}
+                                                precision={0}
+                                                prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
+                                                isDecimalDimmed={false}
+                                                suffix='JTO'
+                                                suffixClassName='text-xs text-txtfade'
+                                                className='border-0 text-xs text-txtfade'
+                                                isAbbreviate={true}
+                                                isAbbreviateIcon={false}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className='h-full w-[1px] bg-bcolor' />
-
-                                <div className='flex flex-col'>
-                                    <div className="text-md flex gap-2 justify-center items-center">
-                                        <Image
-                                            src={bonkLogo}
-                                            alt="BONK Token"
-                                            width={20}
-                                            height={20}
-                                            loading="eager"
-                                            draggable="false"
-                                            className="w-4 h-4"
-                                        />
-
-                                        <FormatNumber
-                                            nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.BONK : weekInfo.weeklyUnlockedRewardsTokens.BONK}
-                                            format={rewardsAs === 'usd' ? "currency" : 'number'}
-                                            precision={0}
-                                            prefix={rewardsAs === 'usd' ? '$' : ''}
-                                            isDecimalDimmed={false}
-                                            suffix='BONK'
-                                            suffixClassName='text-lg'
-                                            className='border-0 text-lg'
-                                            isAbbreviate={true}
-                                            isAbbreviateIcon={false}
-                                        />
-                                    </div>
-
-                                    <div className='ml-auto'>
-                                        <FormatNumber
-                                            nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.BONK : weekInfo.maxWeeklyRewardsTokens.BONK}
-                                            format={rewardsAs === 'usd' ? "currency" : 'number'}
-                                            precision={0}
-                                            prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
-                                            isDecimalDimmed={false}
-                                            suffix='BONK'
-                                            suffixClassName='text-xs text-txtfade'
-                                            className='border-0 text-xs text-txtfade'
-                                            isAbbreviate={true}
-                                            isAbbreviateIcon={false}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className='h-full w-[1px] bg-bcolor' />
-
-                                <div className='flex flex-col'>
-                                    <div className="text-md flex gap-2 justify-center items-center">
-                                        <Image
-                                            src={jtoLogo}
-                                            alt="JTO Token"
-                                            width={20}
-                                            height={20}
-                                            loading="eager"
-                                            draggable="false"
-                                            className="w-6 h-6"
-                                        />
-
-                                        <FormatNumber
-                                            nb={rewardsAs === 'usd' ? weekInfo.weeklyUnlockedRewardsUsd.JTO : weekInfo.weeklyUnlockedRewardsTokens.JTO}
-                                            format={rewardsAs === 'usd' ? "currency" : 'number'}
-                                            precision={0}
-                                            prefix={rewardsAs === 'usd' ? '$' : ''}
-                                            isDecimalDimmed={false}
-                                            suffix='JTO'
-                                            suffixClassName='text-lg'
-                                            className='border-0 text-lg'
-                                            isAbbreviate={true}
-                                            isAbbreviateIcon={false}
-                                        />
-                                    </div>
-
-                                    <div className='ml-auto'>
-                                        <FormatNumber
-                                            nb={rewardsAs === 'usd' ? weekInfo.maxWeeklyRewardsUsd.JTO : weekInfo.maxWeeklyRewardsTokens.JTO}
-                                            format={rewardsAs === 'usd' ? "currency" : 'number'}
-                                            precision={0}
-                                            prefix={rewardsAs === 'usd' ? 'MAX $' : 'MAX '}
-                                            isDecimalDimmed={false}
-                                            suffix='JTO'
-                                            suffixClassName='text-xs text-txtfade'
-                                            className='border-0 text-xs text-txtfade'
-                                            isAbbreviate={true}
-                                            isAbbreviateIcon={false}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className='flex flex-col gap-3 items-center'>
                                 <div className='w-[20em] h-[1px] bg-bcolor' />
 
                                 <div className='flex gap-2'>
