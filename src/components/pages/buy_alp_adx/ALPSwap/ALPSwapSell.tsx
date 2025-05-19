@@ -165,7 +165,7 @@ export default function ALPSwapSell({
     // Trigger calculations
     useEffect(() => {
         estimateRemoveLiquidityAndFee();
-    }, [collateralInput, estimateRemoveLiquidityAndFee]);
+    }, [estimateRemoveLiquidityAndFee]);
 
     return (
         <div className={twMerge('relative flex flex-col gap-1', className, !connected && 'opacity-20 cursor-not-allowed')}>
@@ -293,4 +293,3 @@ export default function ALPSwapSell({
         </div>
     );
 }
-
