@@ -311,34 +311,42 @@ export default function Trade({
       return;
     }
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Close All Positions').fire();
+    const nbTransactions = Math.ceil(positions.length / 2);
 
     try {
-      // 1%
-      const slippageInBps = 100;
+      for (let i = 0; i < nbTransactions; i++) {
+        const positionsGroup = positions.slice(i * 2, (i + 1) * 2);
 
-      const ixBuilders = await Promise.all(positions.map(p => p.side === 'long' ? window.adrena.client.buildClosePositionLongIx({
-        position: p,
-        price: uiToNative(tokenPrices[getTokenSymbol(p.token.symbol)]!, PRICE_DECIMALS)
-          .mul(new BN(10_000 - slippageInBps))
-          .div(new BN(10_000)),
-      }) : window.adrena.client.buildClosePositionShortIx({
-        position: p,
-        price: uiToNative(tokenPrices[p.token.symbol]!, PRICE_DECIMALS)
-          .mul(new BN(10_000))
-          .div(new BN(10_000 - slippageInBps)),
-      })));
+        const notification =
+          MultiStepNotification.newForRegularTransaction(
+            `Close All Positions${nbTransactions > 1 ? ` (${i + 1}/${nbTransactions})` : ''}`,
+          ).fire();
 
-      const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+        // 1%
+        const slippageInBps = 100;
 
-      const transaction = new Transaction();
-      transaction.add(...ixs);
+        const ixBuilders = await Promise.all(positionsGroup.map(p => p.side === 'long' ? window.adrena.client.buildClosePositionLongIx({
+          position: p,
+          price: uiToNative(tokenPrices[getTokenSymbol(p.token.symbol)]!, PRICE_DECIMALS)
+            .mul(new BN(10_000 - slippageInBps))
+            .div(new BN(10_000)),
+        }) : window.adrena.client.buildClosePositionShortIx({
+          position: p,
+          price: uiToNative(tokenPrices[p.token.symbol]!, PRICE_DECIMALS)
+            .mul(new BN(10_000))
+            .div(new BN(10_000 - slippageInBps)),
+        })));
 
-      await window.adrena.client.signAndExecuteTxAlternative({
-        transaction,
-        notification,
-      });
+        const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+
+        const transaction = new Transaction();
+        transaction.add(...ixs);
+
+        await window.adrena.client.signAndExecuteTxAlternative({
+          transaction,
+          notification,
+        });
+      }
     } catch (error) {
       console.error('error', error);
     }
