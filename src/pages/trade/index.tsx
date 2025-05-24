@@ -18,11 +18,15 @@ import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
+import { ChartPreferences } from '@/components/pages/trading/TradingChart/types';
+import { useMarks } from '@/components/pages/trading/TradingChart/useMarks';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import { PRICE_DECIMALS } from '@/constant';
+import { useAllPositions } from '@/hooks/useAllPositions';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
+import usePositionsHistory from '@/hooks/usePositionHistory';
 import usePositions from '@/hooks/usePositions';
 import { useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
@@ -78,6 +82,9 @@ export default function Trade({
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
+  const { positionsHistory } = usePositionsHistory({ walletAddress: wallet?.publicKey.toBase58() ?? null, refreshInterval: 60_000 });
+  const { allPositions } = useAllPositions({ connected });
+
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );
@@ -91,6 +98,21 @@ export default function Trade({
     'showBreakEvenLine',
     'toggleSizeUsdInChart',
   ]);
+
+  const [chartPreferences, setChartPreferences] = useState<ChartPreferences>({
+    showAllActivePositionsLiquidationLines: false,
+    showAllActivePositions: false,
+    showPositionHistory: false,
+    updateTPSLByDrag: true,
+  });
+
+  const { getMarksCallback } = useMarks({
+    positionsHistory,
+    allActivePositions: allPositions,
+    activeToken: tokenB,
+    walletAddress: wallet?.publicKey.toBase58() ?? null,
+    chartPreferences,
+  });
 
   const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(
     cookies?.showBreakEvenLine !== false,
@@ -362,6 +384,9 @@ export default function Trade({
               onChange={(t: Token) => {
                 setTokenB(t);
               }}
+              allActivePositions={allPositions.filter((p) => p.token.mint.equals(tokenB.mint))}
+              setChartPreferences={setChartPreferences}
+              chartPreferences={chartPreferences}
             />
           ) : null}
 
@@ -371,16 +396,55 @@ export default function Trade({
                 <TradingChart
                   token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                   positions={positions}
+                  allActivePositions={allPositions}
+                  positionHistory={positionsHistory}
+                  chartPreferences={chartPreferences}
                   limitOrders={limitOrderBook?.limitOrders ?? null}
                   showBreakEvenLine={showBreakEvenLine}
                   toggleSizeUsdInChart={toggleSizeUsdInChart}
+                  getMarksCallback={getMarksCallback}
                 />
               ) : null}
             </div>
           </div>
 
           <div className="flex flex-col border-t border-white/10">
-            <div className="flex flex-row gap-3 items-center justify-end p-2">
+            <div className='flex flex-row gap-3 items-center justify-end p-2'>
+              <div className="flex items-center p-0.5 text-white">
+                <Tippy content="Show all active positions liquidation lines">
+                  <p className="opacity-50 text-xs underline-dashed cursor-help">
+                    Show postion history
+                  </p>
+                </Tippy>
+                <Switch
+                  checked={chartPreferences.showPositionHistory}
+                  onChange={() => {
+                    // setCookie('showBreakEvenLine', !showBreakEvenLine);
+                    setChartPreferences((prev) => ({
+                      ...prev,
+                      showPositionHistory: !prev.showPositionHistory,
+                      showAllActivePositions: false, // Disable this when showing position history
+                    }));
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
+
               <div className="flex items-center p-0.5 text-white">
                 <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
                   <p className="opacity-50 text-xs underline-dashed cursor-help">
@@ -451,6 +515,7 @@ export default function Trade({
                   </p>
                 </div>
               )}
+
             </div>
 
             {isBigScreen && isResizing && (

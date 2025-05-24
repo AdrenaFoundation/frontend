@@ -1,34 +1,40 @@
-import { useEffect, useState } from "react";
+import { debounce } from '@mui/material/utils';
+import { useEffect, useState } from 'react';
 
+import { ChartPreferences } from '@/components/pages/trading/TradingChart/types';
 import {
   blueColor,
   greenColor,
+  normalize,
   orangeColor,
   purpleColor,
   redColor,
-} from "@/constant";
+} from '@/constant';
 import {
+  EnrichedPositionApi,
   LimitOrder,
   PositionExtended,
   TokenSymbol,
   TradingViewChartSavedDrawing,
-} from "@/types";
-import { formatPriceInfo, getTokenSymbol } from "@/utils";
+} from '@/types';
+import { formatPriceInfo, getTokenSymbol } from '@/utils';
 
 import {
   EntityId,
   IChartingLibraryWidget,
   IChartWidgetApi,
-} from "../../public/charting_library/charting_library";
+  ILineDataSourceApi,
+} from '../../public/charting_library/charting_library';
+import useTPSL from './useTPSL';
 
 export type LineType =
-  | "liquidation"
-  | "takeProfit"
-  | "stopLoss"
-  | "entry"
-  | "breakEven"
-  | "limitOrderTrigger"
-  | "limitOrderLimit";
+  | 'liquidation'
+  | 'takeProfit'
+  | 'stopLoss'
+  | 'entry'
+  | 'breakEven'
+  | 'limitOrderTrigger'
+  | 'limitOrderLimit';
 
 export type PositionChartLine = {
   id: EntityId;
@@ -36,6 +42,7 @@ export type PositionChartLine = {
   symbol: TokenSymbol;
   position: string;
   orderId?: number;
+  color?: string;
   value: number;
 };
 
@@ -45,21 +52,25 @@ function drawHorizontalLine({
   text,
   color,
   time,
+  title,
+  showPrice = true,
   linestyle = 0,
   linewidth = 1,
-  horzLabelsAlign = "right",
+  horzLabelsAlign = 'right',
 }: {
   chart: IChartWidgetApi | null;
   price: number;
   text: string;
+  showPrice?: boolean;
   color: string;
   time: Date;
+  title?: string;
   linestyle?: number;
   linewidth?: number;
-  horzLabelsAlign?: "left" | "middle " | "right";
+  horzLabelsAlign?: 'left' | 'middle ' | 'right';
 }): EntityId | null {
   if (chart === null) {
-    throw new Error("Chart is not ready");
+    throw new Error('Chart is not ready');
   }
 
   try {
@@ -69,17 +80,19 @@ function drawHorizontalLine({
         price,
       },
       {
-        zOrder: "top",
-        shape: "horizontal_line",
-        lock: true,
+        zOrder: 'top',
+        shape: 'horizontal_line',
+        lock: !(text?.includes('SL') || text?.includes('TP')),
         disableSelection: true,
         overrides: {
           linestyle,
           linewidth,
+          title,
+          showPrice: showPrice === false ? false : true,
           bold: true,
           linecolor: color,
           horzLabelsAlign,
-          vertLabelsAlign: "bottom",
+          vertLabelsAlign: 'bottom',
           showLabel: true,
           fontsize: 10,
           textcolor: color,
@@ -89,13 +102,13 @@ function drawHorizontalLine({
       },
     );
   } catch (e) {
-    console.error("[CHART] ERROR CREATING LINE", e);
+    console.error('[CHART] ERROR CREATING LINE', e);
     throw new Error(`Error drawing line: ${e}`);
   }
 }
 
 function getChartSymbol(chart: IChartWidgetApi): TokenSymbol {
-  return chart.symbol().split(".")[1].split("/")[0];
+  return chart.symbol().split('.')[1].split('/')[0];
 }
 
 function deleteDetachedLines(
@@ -105,13 +118,13 @@ function deleteDetachedLines(
   limitOrders: LimitOrder[],
 ): PositionChartLine[] {
   const newPositionChartLines = positionChartLines.filter((line) => {
-    if (line.type === "limitOrderTrigger" || line.type === "limitOrderLimit") {
+    if (line.type === 'limitOrderTrigger' || line.type === 'limitOrderLimit') {
       if (!limitOrders.some((order) => order.id === line.orderId)) {
         console.log(
-          "limitOrder from line not found in the limitOrders array",
+          'limitOrder from line not found in the limitOrders array',
           line.orderId,
         );
-        console.log("removing limitOrder line", line.id);
+        console.log('removing limitOrder line', line.id);
 
         try {
           chart.removeEntity(line.id);
@@ -124,7 +137,7 @@ function deleteDetachedLines(
     }
 
     if (!positions.some((p) => p.pubkey.toBase58() === line.position)) {
-      console.log("removing position line", line.id);
+      console.log('removing position line', line.id);
       try {
         chart.removeEntity(line.id);
       } catch (error) {
@@ -142,10 +155,12 @@ function handlePositionLine({
   chart,
   position,
   text,
+  title,
   positionChartLines,
   symbol,
   type,
   price,
+  showPrice,
   color,
   linestyle,
   linewidth,
@@ -154,14 +169,16 @@ function handlePositionLine({
   chart: IChartWidgetApi;
   position: PositionExtended;
   text: string;
+  title?: string;
   positionChartLines: PositionChartLine[];
   symbol: string;
   type: LineType;
   price?: number | null;
+  showPrice?: boolean;
   color: string;
   linestyle: number;
   linewidth: number;
-  horzLabelsAlign?: "left" | "middle " | "right";
+  horzLabelsAlign?: 'left' | 'middle ' | 'right';
 }): PositionChartLine[] {
   const existingLineIndex = positionChartLines.findIndex(
     (line) =>
@@ -169,7 +186,7 @@ function handlePositionLine({
   );
 
   // If price is not good, delete existing line
-  if (typeof price === "undefined" || price === null) {
+  if (typeof price === 'undefined' || price === null) {
     if (existingLineIndex !== -1) {
       chart.removeEntity(positionChartLines[existingLineIndex].id);
 
@@ -195,7 +212,9 @@ function handlePositionLine({
   const id = drawHorizontalLine({
     chart,
     text,
+    title,
     price,
+    showPrice,
     time: new Date(Number(position.nativeObject.openTime) * 1000),
     color,
     linestyle,
@@ -232,13 +251,13 @@ function handlePositionEntryPriceLine(params: {
 }): PositionChartLine[] {
   return handlePositionLine({
     ...params,
-    type: "entry",
+    type: 'entry',
     price: params.position.price,
-    color: params.position.side === "long" ? greenColor : redColor,
+    color: params.position.side === 'long' ? greenColor : redColor,
     text: `${params.position.side}${
       params.toggleSizeUsdInChart
         ? `: ${formatPriceInfo(params.position.sizeUsd, 0)}`
-        : ""
+        : ''
     }`,
     linestyle: 0,
     linewidth: 2,
@@ -249,19 +268,30 @@ function handlePositionLiquidationLine(params: {
   chart: IChartWidgetApi;
   symbol: string;
   position: PositionExtended;
+  color?: string;
+  showPrice?: boolean;
+  text?: string | null;
+  title?: string;
+  horzLabelsAlign?: 'left' | 'middle ' | 'right';
   toggleSizeUsdInChart: boolean;
   positionChartLines: PositionChartLine[];
 }): PositionChartLine[] {
   return handlePositionLine({
     ...params,
-    type: "liquidation",
+    type: 'liquidation',
     price: params.position.liquidationPrice,
-    color: orangeColor,
-    text: `${params.position.side} - liq${
-      params.toggleSizeUsdInChart
-        ? `: ${formatPriceInfo(params.position.sizeUsd, 0)}`
-        : ""
-    }`,
+    color: params.color ?? orangeColor,
+    showPrice: params.showPrice === false ? false : true,
+    title: params.title,
+    text:
+      params.text === null
+        ? ''
+        : `${params.position.side} - liq${
+            params.toggleSizeUsdInChart
+              ? `: ${formatPriceInfo(params.position.sizeUsd, 0)}`
+              : ''
+          }`,
+    horzLabelsAlign: params.horzLabelsAlign ?? 'right',
     linestyle: 1,
     linewidth: 1,
   });
@@ -276,7 +306,7 @@ function handlePositionTakeProfitLine(params: {
 }): PositionChartLine[] {
   return handlePositionLine({
     ...params,
-    type: "takeProfit",
+    type: 'takeProfit',
     price: params.position.takeProfitLimitPrice,
     color: blueColor,
     linestyle: 1,
@@ -284,7 +314,7 @@ function handlePositionTakeProfitLine(params: {
     text: `${params.position.side} - TP${
       params.toggleSizeUsdInChart
         ? `: ${formatPriceInfo(params.position.sizeUsd, 0)}`
-        : ""
+        : ''
     }`,
   });
 }
@@ -298,7 +328,7 @@ function handlePositionStopLossLine(params: {
 }): PositionChartLine[] {
   return handlePositionLine({
     ...params,
-    type: "stopLoss",
+    type: 'stopLoss',
     price: params.position.stopLossLimitPrice,
     color: blueColor,
     linestyle: 1,
@@ -306,7 +336,7 @@ function handlePositionStopLossLine(params: {
     text: `${params.position.side} - SL${
       params.toggleSizeUsdInChart
         ? `: ${formatPriceInfo(params.position.sizeUsd, 0)}`
-        : ""
+        : ''
     }`,
   });
 }
@@ -319,13 +349,13 @@ function handlePositionBreakEvenLine(params: {
 }): PositionChartLine[] {
   return handlePositionLine({
     ...params,
-    type: "breakEven",
+    type: 'breakEven',
     price: params.position.breakEvenPrice,
     color: `${purpleColor}80`,
     linestyle: 2,
     linewidth: 1,
     text: `${params.position.side} - break even`,
-    horzLabelsAlign: "left",
+    horzLabelsAlign: 'left',
   });
 }
 
@@ -342,14 +372,14 @@ function handleLimitOrderLine({
   positionChartLines: PositionChartLine[];
   price: number;
   symbol: string;
-  type: "limitOrderTrigger" | "limitOrderLimit";
+  type: 'limitOrderTrigger' | 'limitOrderLimit';
 }): PositionChartLine[] {
   const existingLineIndex = positionChartLines.findIndex(
     (line) => line.orderId === order.id && line.type === type,
   );
 
   // If price is not good, delete existing line
-  if (typeof price === "undefined" || price === null) {
+  if (typeof price === 'undefined' || price === null) {
     if (existingLineIndex !== -1) {
       chart.removeEntity(positionChartLines[existingLineIndex].id);
 
@@ -380,10 +410,10 @@ function handleLimitOrderLine({
     price,
     text,
     time,
-    color: order.side === "long" ? greenColor : redColor,
+    color: order.side === 'long' ? greenColor : redColor,
     linestyle: 2,
     linewidth: 1,
-    horzLabelsAlign: "right",
+    horzLabelsAlign: 'right',
   });
 
   if (id === null) return positionChartLines;
@@ -413,6 +443,9 @@ export function useChartDrawing({
   widget,
   widgetReady,
   positions,
+  positionHistory,
+  allActivePositions,
+  chartPreferences,
   showBreakEvenLine,
   toggleSizeUsdInChart,
   limitOrders,
@@ -423,6 +456,9 @@ export function useChartDrawing({
   widget: IChartingLibraryWidget | null;
   widgetReady: boolean | null;
   positions: PositionExtended[] | null;
+  positionHistory: EnrichedPositionApi[] | null;
+  allActivePositions: PositionExtended[] | null;
+  chartPreferences: ChartPreferences;
   showBreakEvenLine: boolean;
   toggleSizeUsdInChart: boolean;
   limitOrders: LimitOrder[] | null;
@@ -432,15 +468,21 @@ export function useChartDrawing({
     PositionChartLine[]
   >([]);
 
+  const [allActivePositionChartLines, setAllActivePositionChartLines] =
+    useState<PositionChartLine[]>([]);
+
   const [trickReload, setTrickReload] = useState<number>(0);
 
   const chart = widget && widgetReady ? widget.activeChart() : null;
+
+  const { updateTPSL } = useTPSL();
 
   useEffect(
     () => {
       // Means chart got reset
       if (!widgetReady) {
         setPositionChartLines([]);
+        setAllActivePositionChartLines([]);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -453,20 +495,20 @@ export function useChartDrawing({
 
     const symbol = getChartSymbol(chart);
     const parsedChartShapes = JSON.parse(
-      localStorage.getItem("chart_drawings") ?? "{}",
+      localStorage.getItem('chart_drawings') ?? '{}',
     ) as TradingViewChartSavedDrawing;
 
     try {
       if (parsedChartShapes[symbol]) {
         parsedChartShapes[symbol].forEach((shape) => {
           if (
-            shape.options.text.includes("long") ||
-            shape.options.text.includes("short")
+            shape.options.text.includes('long') ||
+            shape.options.text.includes('short')
           )
             return;
 
           chart.createMultipointShape(shape.points, {
-            zOrder: "top",
+            zOrder: 'top',
             shape: shape.name,
             showInObjectsTree: true,
             overrides: {
@@ -477,10 +519,10 @@ export function useChartDrawing({
         });
       }
     } catch (error) {
-      console.error("error", error);
+      console.error('error', error);
 
       localStorage.setItem(
-        "chart_drawings",
+        'chart_drawings',
         JSON.stringify({ ...parsedChartShapes, [symbol]: [] }),
       );
     }
@@ -508,7 +550,7 @@ export function useChartDrawing({
       // Remove all break even lines
       if (!showBreakEvenLine) {
         updatedPositionChartLines = updatedPositionChartLines.filter((line) => {
-          if (line.type === "breakEven") {
+          if (line.type === 'breakEven') {
             chart.removeEntity(line.id);
             return false;
           }
@@ -579,7 +621,7 @@ export function useChartDrawing({
               order,
               positionChartLines: updatedPositionChartLines,
               symbol,
-              type: "limitOrderTrigger",
+              type: 'limitOrderTrigger',
               price: order.triggerPrice,
             });
 
@@ -599,24 +641,266 @@ export function useChartDrawing({
 
       setPositionChartLines(updatedPositionChartLines);
     } catch (e) {
-      console.log("CATCH ERROR", e);
+      console.log('CATCH ERROR', e);
       drawingErrorCallback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chart, positions, limitOrders, trickReload, showBreakEvenLine]);
 
   useEffect(() => {
+    if (!chart || !widget || !widgetReady || !chartPreferences.updateTPSLByDrag)
+      return;
+
+    const symbol = getChartSymbol(chart);
+
+    const debouncedUpdateTPSL = debounce(
+      (
+        line: ILineDataSourceApi,
+        text: string,
+        price: number,
+        position: PositionExtended | null,
+      ) => {
+        const type = text.includes('SL') ? 'stopLoss' : 'takeProfit';
+        updateTPSL(type, price, position).then((isSuccess) => {
+          if (!isSuccess && position) {
+            // If update failed, revert the line to the original position
+            line.setPoints([
+              {
+                time: Number(position.nativeObject.openTime) * 1000,
+                price:
+                  type === 'stopLoss'
+                    ? position.stopLossLimitPrice!
+                    : position.takeProfitLimitPrice!,
+              },
+            ]);
+          }
+        });
+      },
+      500,
+    );
+
+    widget.subscribe('drawing_event', (id) => {
+      setTimeout(() => {
+        const line = chart.getShapeById(id);
+        if (!line) return;
+
+        const [points] = line.getPoints();
+        const { price } = points;
+        const shape = line.getProperties();
+
+        const text = shape.text;
+
+        if (!(text?.includes('SL') || text?.includes('TP'))) return;
+
+        const position = positions?.find(
+          (p) =>
+            getTokenSymbol(p.token.symbol).toLowerCase() ===
+            symbol.toLowerCase(),
+        );
+
+        const currentPrice = !text.includes('SL')
+          ? position?.takeProfitLimitPrice
+          : position?.stopLossLimitPrice;
+
+        if (!position || currentPrice === price) return;
+
+        debouncedUpdateTPSL(line, text, price, position);
+      }, 500);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [widgetReady, chartPreferences.updateTPSLByDrag]);
+
+  useEffect(() => {
+    if (!chart || !widget || !widgetReady) return;
+    chart.clearMarks(1);
+
+    if (
+      chartPreferences.showPositionHistory ||
+      chartPreferences.showAllActivePositions
+    ) {
+      widget.activeChart().refreshMarks();
+
+      // widget.subscribe('onMarkClick', (id) => {
+
+      if (!positionHistory) return;
+
+      //   const position = positionHistory.find((p) => p.positionId === id);
+      //   if (!position) return;
+      //   const { exitDate, entryDate } = position;
+
+      //   const roundTimeToInterval = (time: Date) => {};
+
+      //   // draw a position line
+      //   console.log('drawing position line', {
+      //     id: id,
+      //     time: roundTimeToInterval(exitDate),
+      //     entryDate,
+      //   });
+
+      //   widget.activeChart().createMultipointShape(
+      //     [
+      //       {
+      //         time: roundTimeToInterval(entryDate),
+      //         price: position.entryPrice,
+      //       },
+      //       {
+      //         time: roundTimeToInterval(exitDate),
+      //         price: position.exitPrice,
+      //       },
+      //     ],
+      //     {
+      //       shape: 'long_position',
+      //       overrides: {
+      //         text: `${position.symbol} | PnL: ${position.pnl.toFixed(2)}`,
+      //       },
+      //     },
+      //   );
+      // });
+    } else {
+      widget.activeChart().clearMarks(1);
+    }
+
+    // widget.subscribe('mouse_down', (id) => {
+    //   //get all shapes
+    //   const shapes = chart.getAllShapes();
+    //   console.log('shapes', shapes);
+
+    //   const shaps = shapes.find((shape) => shape.name === 'horizontal_line');
+    //   if (shaps) {
+    //     const points = chart.getShapeById(shaps.id).getPoints();
+    //     const shape = chart.getShapeById(shaps.id).getProperties();
+    //     console.log('shape', shape);
+    //     console.log('points', points);
+    //   }
+    // });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    widgetReady,
+    chartPreferences.showPositionHistory,
+    chartPreferences.showAllActivePositions,
+  ]);
+
+  useEffect(() => {
+    if (!chart || !widget || !widgetReady) return;
+
+    try {
+      const symbol = getChartSymbol(chart);
+
+      let drawnActivePositionLines: PositionChartLine[] = deleteDetachedLines(
+        chart,
+        allActivePositionChartLines,
+        allActivePositions ?? [],
+        [],
+      );
+
+      if (!allActivePositions) {
+        setAllActivePositionChartLines(drawnActivePositionLines);
+        return;
+      }
+
+      // Remove all liquidation lines
+      if (!chartPreferences.showAllActivePositionsLiquidationLines) {
+        widget
+          .activeChart()
+          .getAllShapes()
+          .forEach((line) => {
+            const shape = chart.getShapeById(line.id).getProperties();
+            if (shape.title === 'all-active-positions-liquidation-line') {
+              chart.removeEntity(line.id);
+            }
+          });
+        setAllActivePositionChartLines([]);
+        return;
+      }
+
+      for (const position of allActivePositions) {
+        if (
+          getTokenSymbol(position.token.symbol).toLowerCase() !==
+            symbol.toLowerCase() ||
+          position.side === 'short'
+        ) {
+          continue;
+        }
+        // add all liquidation lines
+        const maxLiquidationPrice = Math.max(
+          ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
+        );
+        const minLiquidationPrice = Math.min(
+          ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
+        );
+
+        const opacity = normalize(
+          position.liquidationPrice ?? 0,
+          0.4,
+          1,
+          minLiquidationPrice,
+          maxLiquidationPrice,
+        );
+
+        const orangeFade = `rgba(247, 127, 0, ${opacity})`;
+
+        if (
+          chartPreferences.showAllActivePositionsLiquidationLines &&
+          position.liquidationPrice
+        ) {
+          setTimeout(() => {
+            drawnActivePositionLines = handlePositionLiquidationLine({
+              chart,
+              position,
+              toggleSizeUsdInChart,
+              showPrice: false,
+              text: null,
+              title: 'all-active-positions-liquidation-line',
+              color: orangeFade,
+              horzLabelsAlign: 'left',
+              positionChartLines: drawnActivePositionLines,
+              symbol,
+            });
+          }, 500);
+        }
+      }
+
+      setAllActivePositionChartLines(drawnActivePositionLines);
+    } catch (e) {
+      console.log('CATCH ERROR', e);
+      drawingErrorCallback();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    trickReload,
+    widgetReady,
+    // allActivePositions,
+    chartPreferences.showAllActivePositionsLiquidationLines,
+  ]);
+
+  useEffect(() => {
     if (!chart) return;
 
     // Delete all lines to be redrawn
     deleteDetachedLines(chart, positionChartLines, [], []);
+    deleteDetachedLines(chart, allActivePositionChartLines, [], []);
+
+    // clear all marks
+    chart.clearMarks(1);
 
     setPositionChartLines([]);
+    setAllActivePositionChartLines([]);
 
     setTrickReload((prev) => prev + 1);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toggleSizeUsdInChart, tokenSymbol]);
+  }, [tokenSymbol]);
+
+  useEffect(() => {
+    if (!chart) return;
+    // Delete all lines to be redrawn
+    deleteDetachedLines(chart, positionChartLines, [], []);
+    setPositionChartLines([]);
+    setTrickReload((prev) => prev + 1);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toggleSizeUsdInChart]);
 
   return positionChartLines;
 }

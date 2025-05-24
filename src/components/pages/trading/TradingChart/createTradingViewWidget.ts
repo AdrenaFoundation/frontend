@@ -3,6 +3,7 @@ import { formatNumber, getTokenSymbol } from '@/utils';
 
 import {
   ChartingLibraryFeatureset,
+  IDatafeedChartApi,
   ResolutionString,
   Timezone,
 } from '../../../../../public/charting_library/charting_library';
@@ -17,6 +18,7 @@ import {
   FAVORITE_INTERVALS,
 } from './constants';
 import datafeed from './datafeed';
+// import datafeed from './datafeed';
 import { isSupportedResolution } from './subscriptions/resolutionSubscription';
 
 /**
@@ -24,16 +26,20 @@ import { isSupportedResolution } from './subscriptions/resolutionSubscription';
  */
 export function createTradingViewWidget({
   token,
+  getMarksCallback,
   savedResolution,
   savedTimezone,
+  isReadeyRef,
   setWidgetReady,
   setIsLoading,
 }: {
   token: Token;
   savedResolution: string;
   savedTimezone: string;
+  isReadeyRef: React.MutableRefObject<boolean | null>;
   setWidgetReady: (ready: boolean) => void;
   setIsLoading: (loading: boolean) => void;
+  getMarksCallback: IDatafeedChartApi['getMarks'];
 }) {
   if (document.getElementById('chart-area') && 'TradingView' in window) {
     const widget = new window.TradingView.widget({
@@ -46,7 +52,9 @@ export function createTradingViewWidget({
       timezone: 'Etc/UTC',
       locale: 'en',
       toolbar_bg: CHART_BACKGROUND,
-      datafeed,
+      datafeed: datafeed({
+        getMarksCallback,
+      }),
       loading_screen: {
         backgroundColor: CHART_BACKGROUND,
         foregroundColor: CHART_BACKGROUND,
@@ -76,8 +84,11 @@ export function createTradingViewWidget({
           if (key === 'chartproperties') {
             const chartprops = JSON.parse(value);
             const currentTimezone = chartprops.timezone;
-
-            if (!currentTimezone || currentTimezone === savedTimezone) {
+            if (
+              !currentTimezone ||
+              currentTimezone === savedTimezone ||
+              isReadeyRef.current === null
+            ) {
               return;
             }
 

@@ -1,11 +1,16 @@
+import Switch from '@mui/material/Switch';
 import Head from 'next/head';
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
+import liveIcon from '@/../public/images/Icons/live-icon.svg';
 import Select from '@/components/common/Select/Select';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
-import { Token } from '@/types';
+import { PositionExtended, Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
+import { ChartPreferences } from '../TradingChart/types';
 import TradingChartHeaderStats from './TradingChartHeaderStats';
 
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
@@ -13,15 +18,21 @@ export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
 }
 
 export default function TradingChartHeader({
+  allActivePositions,
   className,
   tokenList,
   selected,
   onChange,
+  chartPreferences,
+  setChartPreferences,
 }: {
+  allActivePositions: PositionExtended[] | null;
   className?: string;
   tokenList: Token[];
   selected: Token;
   onChange: (t: Token) => void;
+  chartPreferences: ChartPreferences;
+  setChartPreferences: (prefs: ChartPreferences) => void;
 }) {
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
@@ -68,6 +79,107 @@ export default function TradingChartHeader({
             align="left"
           />
         </div>
+
+        {allActivePositions ? (
+          <div className="flex flex-row gap-3 items-center border rounded-lg flex-none px-3 py-1">
+            <div className="flex flex-row gap-1 items-center">
+              <Image
+                src={liveIcon}
+                alt="live icon"
+                width={10}
+                height={10}
+                className=""
+              />
+              <FormatNumber
+                nb={allActivePositions.filter((p) => p.side === 'long').length}
+                prefix="long: "
+                prefixClassName="opacity-50"
+                className="text-xs whitespace-nowrap"
+              />
+            </div>
+
+            <div className="flex flex-row gap-1 items-center">
+              <Image
+                src={liveIcon}
+                alt="live icon"
+                width={10}
+                height={10}
+                className=""
+              />
+              <FormatNumber
+                nb={allActivePositions.filter((p) => p.side === 'short').length}
+                prefix="short: "
+                prefixClassName="opacity-50"
+                className="text-xs whitespace-nowrap"
+              />
+            </div>
+
+
+            <div className="flex items-center text-white">
+              <p className="opacity-50 text-xs underline-dashed cursor-help">
+                Show pos.
+              </p>
+              <Switch
+                checked={chartPreferences.showAllActivePositions}
+                onChange={() => {
+                  setChartPreferences({
+                    ...chartPreferences,
+                    showAllActivePositions: !chartPreferences.showAllActivePositions,
+                    showPositionHistory: false, // Disable position history when toggling active positions
+                  });
+                }}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
+
+            <div className="flex items-center text-white">
+              <p className="opacity-50 text-xs underline-dashed cursor-help">
+                Show Liqs.
+              </p>
+              <Switch
+                checked={chartPreferences.showAllActivePositionsLiquidationLines}
+                onChange={() => {
+                  setChartPreferences({
+                    ...chartPreferences,
+                    showAllActivePositionsLiquidationLines: !chartPreferences.showAllActivePositionsLiquidationLines,
+                  });
+                }}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
+            </div>
+          </div>
+        ) : null}
+
         <TradingChartHeaderStats selected={selected} />
         {/* <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
           <FormatNumber
