@@ -18,13 +18,18 @@ export default function TradingChart({
   limitOrders,
   showBreakEvenLine,
   toggleSizeUsdInChart,
+  positionHistory,
+  allActivePositions,
+  chartPreferences,
+  getMarksCallback,
 }: ChartOptions) {
+
   const {
     widget,
     widgetReady,
     isLoading,
     reloadWidget,
-  } = useChartState(token);
+  } = useChartState(token, getMarksCallback);
 
   // Use chart drawing hook to draw positions and orders
   useChartDrawing({
@@ -32,6 +37,9 @@ export default function TradingChart({
     widget,
     widgetReady,
     positions,
+    positionHistory,
+    allActivePositions,
+    chartPreferences,
     limitOrders,
     showBreakEvenLine,
     toggleSizeUsdInChart,
@@ -42,8 +50,8 @@ export default function TradingChart({
   useEffect(() => {
     if (!widget) return;
 
-    // Retrieve saved resolution or default to 'H'
-    const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || 'H';
+    // Retrieve saved resolution or default to '60'
+    const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || '60';
 
     widget.setSymbol(
       `Crypto.${getTokenSymbol(token.symbol)}/USD`,

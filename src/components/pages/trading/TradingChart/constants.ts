@@ -36,6 +36,7 @@ export const DISABLED_FEATURES = [
 ] as const;
 
 export const ENABLED_FEATURES = [
+  'two_character_bar_marks_labels',
   'hide_left_toolbar_by_default',
   'header_indicators',
   'header_fullscreen_button',

@@ -1,3 +1,5 @@
+import { SUPPORTED_RESOLUTIONS } from '@/constant';
+
 import {
   IChartingLibraryWidget,
   ResolutionString,
@@ -22,20 +24,6 @@ export function setupResolutionChangeSubscription(
 
 export function isSupportedResolution(resolution: string): boolean {
   // List of supported resolutions
-  const SUPPORTED_RESOLUTIONS = [
-    '1',
-    '3',
-    '5',
-    '15',
-    '30',
-    '1h',
-    '2h',
-    '4h',
-    'D',
-    '1D',
-    '1W',
-    '1M',
-  ];
 
-  return SUPPORTED_RESOLUTIONS.includes(resolution);
+  return SUPPORTED_RESOLUTIONS.includes(resolution as ResolutionString);
 }
