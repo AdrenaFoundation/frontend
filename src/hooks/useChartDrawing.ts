@@ -57,6 +57,7 @@ function drawHorizontalLine({
   linestyle = 0,
   linewidth = 1,
   horzLabelsAlign = 'right',
+  lock = true,
 }: {
   chart: IChartWidgetApi | null;
   price: number;
@@ -68,6 +69,7 @@ function drawHorizontalLine({
   linestyle?: number;
   linewidth?: number;
   horzLabelsAlign?: 'left' | 'middle ' | 'right';
+  lock?: boolean;
 }): EntityId | null {
   if (chart === null) {
     throw new Error('Chart is not ready');
@@ -82,7 +84,7 @@ function drawHorizontalLine({
       {
         zOrder: 'top',
         shape: 'horizontal_line',
-        lock: !(text?.includes('SL') || text?.includes('TP')),
+        lock,
         disableSelection: true,
         overrides: {
           linestyle,
@@ -160,6 +162,7 @@ function handlePositionLine({
   symbol,
   type,
   price,
+  lock = true,
   showPrice,
   color,
   linestyle,
@@ -179,6 +182,7 @@ function handlePositionLine({
   linestyle: number;
   linewidth: number;
   horzLabelsAlign?: 'left' | 'middle ' | 'right';
+  lock?: boolean;
 }): PositionChartLine[] {
   const existingLineIndex = positionChartLines.findIndex(
     (line) =>
@@ -220,6 +224,7 @@ function handlePositionLine({
     linestyle,
     linewidth,
     horzLabelsAlign,
+    lock,
   });
 
   if (id === null) return positionChartLines;
@@ -305,10 +310,12 @@ function handlePositionTakeProfitLine(params: {
   position: PositionExtended;
   toggleSizeUsdInChart: boolean;
   positionChartLines: PositionChartLine[];
+  lock: boolean;
 }): PositionChartLine[] {
   return handlePositionLine({
     ...params,
     type: 'takeProfit',
+    lock: params.lock,
     price: params.position.takeProfitLimitPrice,
     color: blueColor,
     linestyle: 1,
@@ -327,10 +334,12 @@ function handlePositionStopLossLine(params: {
   position: PositionExtended;
   toggleSizeUsdInChart: boolean;
   positionChartLines: PositionChartLine[];
+  lock: boolean;
 }): PositionChartLine[] {
   return handlePositionLine({
     ...params,
     type: 'stopLoss',
+    lock: params.lock,
     price: params.position.stopLossLimitPrice,
     color: blueColor,
     linestyle: 1,
@@ -588,6 +597,7 @@ export function useChartDrawing({
           });
 
           updatedPositionChartLines = handlePositionTakeProfitLine({
+            lock: chartPreferences.updateTPSLByDrag,
             chart,
             position,
             toggleSizeUsdInChart,
@@ -596,6 +606,7 @@ export function useChartDrawing({
           });
 
           updatedPositionChartLines = handlePositionStopLossLine({
+            lock: chartPreferences.updateTPSLByDrag,
             chart,
             position,
             toggleSizeUsdInChart,
@@ -646,7 +657,14 @@ export function useChartDrawing({
       drawingErrorCallback();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chart, positions, limitOrders, trickReload, showBreakEvenLine]);
+  }, [
+    chart,
+    positions,
+    limitOrders,
+    trickReload,
+    chartPreferences.updateTPSLByDrag,
+    showBreakEvenLine,
+  ]);
 
   useEffect(() => {
     if (!chart || !widget || !widgetReady || !chartPreferences.updateTPSLByDrag)
@@ -915,7 +933,7 @@ export function useChartDrawing({
     setTrickReload((prev) => prev + 1);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toggleSizeUsdInChart]);
+  }, [toggleSizeUsdInChart, chartPreferences.updateTPSLByDrag]);
 
   return positionChartLines;
 }

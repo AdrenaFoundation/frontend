@@ -415,6 +415,53 @@ export default function Trade({
                 <Tippy content={
                   <div>
                     <p className='text-sm mb-1 font-boldy opacity-50'>
+                      Edit TPSL by drag the line on the chart
+                    </p>
+                    <ul>
+                      <li className='text-xs font-mono'>L / S = Long / Short</li>
+                      <li className='flex flex-row gap-1 text-xs items-center font-mono'>
+                        <div className='w-2 h-2 rounded-full bg-green flex-none' /> / <div className='w-2 h-2 rounded-full bg-red flex-none' /> = PnL
+                      </li>
+                      <li className='text-xs font-mono'>size of mark = size of position</li>
+                    </ul>
+                  </div>
+                }>
+                  <p className="opacity-50 text-xs underline-dashed cursor-help">
+                    TPSL by drag
+                  </p>
+                </Tippy>
+                <Switch
+                  checked={chartPreferences.updateTPSLByDrag}
+                  onChange={() => {
+                    // setCookie('showBreakEvenLine', !showBreakEvenLine);
+                    setChartPreferences((prev) => ({
+                      ...prev,
+                      updateTPSLByDrag: !prev.updateTPSLByDrag,
+                    }));
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center p-0.5 text-white">
+                <Tippy content={
+                  <div>
+                    <p className='text-sm mb-1 font-boldy opacity-50'>
                       Shows position history on the chart
                     </p>
                     <ul>
