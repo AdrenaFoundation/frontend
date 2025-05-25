@@ -597,7 +597,7 @@ export function useChartDrawing({
           });
 
           updatedPositionChartLines = handlePositionTakeProfitLine({
-            lock: chartPreferences.updateTPSLByDrag,
+            lock: !chartPreferences.updateTPSLByDrag,
             chart,
             position,
             toggleSizeUsdInChart,
@@ -606,7 +606,7 @@ export function useChartDrawing({
           });
 
           updatedPositionChartLines = handlePositionStopLossLine({
-            lock: chartPreferences.updateTPSLByDrag,
+            lock: !chartPreferences.updateTPSLByDrag,
             chart,
             position,
             toggleSizeUsdInChart,
