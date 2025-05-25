@@ -76,7 +76,7 @@ function drawHorizontalLine({
   try {
     return chart.createShape(
       {
-        time: new Date(time).getTime(),
+        time: new Date(time).getTime() / 1000,
         price,
       },
       {
@@ -274,6 +274,7 @@ function handlePositionLiquidationLine(params: {
   title?: string;
   horzLabelsAlign?: 'left' | 'middle ' | 'right';
   toggleSizeUsdInChart: boolean;
+  linestyle?: number;
   positionChartLines: PositionChartLine[];
 }): PositionChartLine[] {
   return handlePositionLine({
@@ -292,7 +293,7 @@ function handlePositionLiquidationLine(params: {
               : ''
           }`,
     horzLabelsAlign: params.horzLabelsAlign ?? 'right',
-    linestyle: 1,
+    linestyle: params.linestyle ?? 1,
     linewidth: 1,
   });
 }
@@ -681,30 +682,34 @@ export function useChartDrawing({
 
     widget.subscribe('drawing_event', (id) => {
       setTimeout(() => {
-        const line = chart.getShapeById(id);
-        if (!line) return;
+        try {
+          const line = chart.getShapeById(id);
+          if (!line) return;
 
-        const [points] = line.getPoints();
-        const { price } = points;
-        const shape = line.getProperties();
+          const [points] = line.getPoints();
+          const { price } = points;
+          const shape = line.getProperties();
 
-        const text = shape.text;
+          const text = shape?.text;
 
-        if (!(text?.includes('SL') || text?.includes('TP'))) return;
+          if (!(text?.includes('SL') || text?.includes('TP'))) return;
 
-        const position = positions?.find(
-          (p) =>
-            getTokenSymbol(p.token.symbol).toLowerCase() ===
-            symbol.toLowerCase(),
-        );
+          const position = positions?.find(
+            (p) =>
+              getTokenSymbol(p.token.symbol).toLowerCase() ===
+              symbol.toLowerCase(),
+          );
 
-        const currentPrice = !text.includes('SL')
-          ? position?.takeProfitLimitPrice
-          : position?.stopLossLimitPrice;
+          const currentPrice = !text.includes('SL')
+            ? position?.takeProfitLimitPrice
+            : position?.stopLossLimitPrice;
 
-        if (!position || currentPrice === price) return;
+          if (!position || currentPrice === price) return;
 
-        debouncedUpdateTPSL(line, text, price, position);
+          debouncedUpdateTPSL(line, text, price, position);
+        } catch (error) {
+          console.error('Error handling drawing event:', error);
+        }
       }, 500);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -721,7 +726,6 @@ export function useChartDrawing({
       widget.activeChart().refreshMarks();
 
       // widget.subscribe('onMarkClick', (id) => {
-
       if (!positionHistory) return;
 
       //   const position = positionHistory.find((p) => p.positionId === id);
@@ -733,25 +737,29 @@ export function useChartDrawing({
       //   // draw a position line
       //   console.log('drawing position line', {
       //     id: id,
-      //     time: roundTimeToInterval(exitDate),
+      //     time: new Date(exitDate!).getTime() / 1000,
       //     entryDate,
       //   });
+
+      //   console.log('position', position);
 
       //   widget.activeChart().createMultipointShape(
       //     [
       //       {
-      //         time: roundTimeToInterval(entryDate),
+      //         time: new Date(entryDate).getTime() / 1000,
       //         price: position.entryPrice,
       //       },
       //       {
-      //         time: roundTimeToInterval(exitDate),
+      //         time:
+      //           Math.floor(new Date('2025-05-20T15:09:39.00').getTime()) / 1000,
       //         price: position.exitPrice,
       //       },
       //     ],
       //     {
       //       shape: 'long_position',
       //       overrides: {
-      //         text: `${position.symbol} | PnL: ${position.pnl.toFixed(2)}`,
+      //         text: `hh`,
+      //         // profitLevel: 190,
       //       },
       //     },
       //   );
@@ -760,15 +768,17 @@ export function useChartDrawing({
       widget.activeChart().clearMarks(1);
     }
 
-    // widget.subscribe('mouse_down', (id) => {
+    // widget.subscribe('mouse_down', () => {
     //   //get all shapes
     //   const shapes = chart.getAllShapes();
     //   console.log('shapes', shapes);
 
-    //   const shaps = shapes.find((shape) => shape.name === 'horizontal_line');
-    //   if (shaps) {
-    //     const points = chart.getShapeById(shaps.id).getPoints();
-    //     const shape = chart.getShapeById(shaps.id).getProperties();
+    //   const matchedShape = shapes.find(
+    //     (shape) => shape.name === 'long_position',
+    //   );
+    //   if (matchedShape) {
+    //     const points = chart.getShapeById(matchedShape.id).getPoints();
+    //     const shape = chart.getShapeById(matchedShape.id).getProperties();
     //     console.log('shape', shape);
     //     console.log('points', points);
     //   }
@@ -776,7 +786,7 @@ export function useChartDrawing({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    widgetReady,
+    chart,
     chartPreferences.showPositionHistory,
     chartPreferences.showAllActivePositions,
   ]);
@@ -814,50 +824,42 @@ export function useChartDrawing({
         return;
       }
 
+      // Draw liquidation lines for all active positions
       for (const position of allActivePositions) {
-        if (
-          getTokenSymbol(position.token.symbol).toLowerCase() !==
-            symbol.toLowerCase() ||
-          position.side === 'short'
-        ) {
-          continue;
-        }
-        // add all liquidation lines
-        const maxLiquidationPrice = Math.max(
-          ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
-        );
-        const minLiquidationPrice = Math.min(
-          ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
-        );
-
-        const opacity = normalize(
-          position.liquidationPrice ?? 0,
-          0.4,
-          1,
-          minLiquidationPrice,
-          maxLiquidationPrice,
-        );
-
-        const orangeFade = `rgba(247, 127, 0, ${opacity})`;
-
         if (
           chartPreferences.showAllActivePositionsLiquidationLines &&
           position.liquidationPrice
         ) {
-          setTimeout(() => {
-            drawnActivePositionLines = handlePositionLiquidationLine({
-              chart,
-              position,
-              toggleSizeUsdInChart,
-              showPrice: false,
-              text: null,
-              title: 'all-active-positions-liquidation-line',
-              color: orangeFade,
-              horzLabelsAlign: 'left',
-              positionChartLines: drawnActivePositionLines,
-              symbol,
-            });
-          }, 500);
+          // add all liquidation lines
+          const maxLiquidationPrice = Math.max(
+            ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
+          );
+          const minLiquidationPrice = Math.min(
+            ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
+          );
+
+          const opacity = normalize(
+            position.liquidationPrice,
+            0.3,
+            1,
+            minLiquidationPrice,
+            maxLiquidationPrice,
+          );
+
+          const orangeFade = `rgba(247, 127, 0, ${opacity})`;
+          drawnActivePositionLines = handlePositionLiquidationLine({
+            chart,
+            position,
+            toggleSizeUsdInChart,
+            showPrice: false,
+            text: null,
+            title: 'all-active-positions-liquidation-line',
+            color: orangeFade,
+            horzLabelsAlign: 'left',
+            linestyle: 0,
+            positionChartLines: drawnActivePositionLines,
+            symbol,
+          });
         }
       }
 
@@ -868,9 +870,9 @@ export function useChartDrawing({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    chart,
+    allActivePositions,
     trickReload,
-    widgetReady,
-    // allActivePositions,
     chartPreferences.showAllActivePositionsLiquidationLines,
   ]);
 
@@ -885,6 +887,12 @@ export function useChartDrawing({
     chart.clearMarks(1);
 
     setPositionChartLines([]);
+    chart.getAllShapes().forEach((line) => {
+      const shape = chart.getShapeById(line.id).getProperties();
+      if (shape.title === 'all-active-positions-liquidation-line') {
+        chart.removeEntity(line.id);
+      }
+    });
     setAllActivePositionChartLines([]);
 
     setTrickReload((prev) => prev + 1);

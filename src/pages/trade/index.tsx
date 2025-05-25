@@ -396,7 +396,7 @@ export default function Trade({
                 <TradingChart
                   token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                   positions={positions}
-                  allActivePositions={allPositions}
+                  allActivePositions={allPositions.filter((p) => p.token.mint.equals(tokenB?.mint ?? tokenA.mint))}
                   positionHistory={positionsHistory}
                   chartPreferences={chartPreferences}
                   limitOrders={limitOrderBook?.limitOrders ?? null}
