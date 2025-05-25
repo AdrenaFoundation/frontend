@@ -169,28 +169,12 @@ export function useMarks({
         getTokenSymbol(position.token.symbol) === getTokenSymbol(tokenSymbol),
     );
 
-    console.log(
-      '[getMarks]: All active positions retrieved',
-      allActivePositionsRef.current,
-      positions,
-    );
-
-    const maxLiquidationPrice = Math.max(
-      ...positions.map((p) => Math.abs(p.pnl ?? 0)),
-    );
-    const minLiquidationPrice = Math.min(
-      ...positions.map((p) => Math.abs(p.pnl ?? 0)),
-    );
+    const maxPnl = Math.max(...positions.map((p) => Math.abs(p.pnl!)));
+    const minPnl = Math.min(...positions.map((p) => Math.abs(p.pnl!)));
 
     const data = positions
       .map((position, i) => {
-        const size = normalize(
-          Math.abs(position.pnl ?? 0),
-          12,
-          25,
-          minLiquidationPrice,
-          maxLiquidationPrice,
-        );
+        const size = normalize(Math.abs(position.pnl!), 12, 25, minPnl, maxPnl);
 
         return {
           id: i,

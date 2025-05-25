@@ -683,7 +683,7 @@ export function useChartDrawing({
     widget.subscribe('drawing_event', (id) => {
       setTimeout(() => {
         try {
-          const line = chart.getShapeById(id);
+          const line = chart?.getShapeById(id);
           if (!line) return;
 
           const [points] = line.getPoints();
@@ -708,7 +708,7 @@ export function useChartDrawing({
 
           debouncedUpdateTPSL(line, text, price, position);
         } catch (error) {
-          console.error('Error handling drawing event:', error);
+          console.log('Error handling drawing event:', error);
         }
       }, 500);
     });

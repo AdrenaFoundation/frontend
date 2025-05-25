@@ -1,4 +1,5 @@
 import Switch from '@mui/material/Switch';
+import Tippy from '@tippyjs/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
@@ -116,9 +117,25 @@ export default function TradingChartHeader({
 
 
             <div className="flex items-center text-white">
-              <p className="opacity-50 text-xs underline-dashed cursor-help">
-                Show pos.
-              </p>
+              <Tippy
+                content={
+                  <div>
+                    <p className='text-sm mb-1 font-boldy opacity-50'>
+                      Show position history for all active positions.
+                    </p>
+                    <ul>
+                      <li className='text-xs font-mono'>L / S = Long / Short</li>
+                      <li className='flex flex-row gap-1 text-xs items-center font-mono'>
+                        <div className='w-2 h-2 rounded-full bg-green flex-none' /> / <div className='w-2 h-2 rounded-full bg-red flex-none' /> = PnL
+                      </li>
+                      <li className='text-xs font-mono'>size of mark = size of position</li>
+                    </ul>
+                  </div>
+                }>
+                <p className="opacity-50 text-xs underline-dashed cursor-help">
+                  Show pos.
+                </p>
+              </Tippy>
               <Switch
                 checked={chartPreferences.showAllActivePositions}
                 onChange={() => {
@@ -148,9 +165,16 @@ export default function TradingChartHeader({
             </div>
 
             <div className="flex items-center text-white">
-              <p className="opacity-50 text-xs underline-dashed cursor-help">
-                Show Liqs.
-              </p>
+              <Tippy
+                content={
+                  <p className='text-sm font-boldy'>
+                    Show liquidation lines for all active positions.
+                  </p>
+                }>
+                <p className="opacity-50 text-xs underline-dashed cursor-help">
+                  Show Liqs.
+                </p>
+              </Tippy>
               <Switch
                 checked={chartPreferences.showAllActivePositionsLiquidationLines}
                 onChange={() => {

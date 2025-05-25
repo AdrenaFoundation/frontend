@@ -366,6 +366,7 @@ export default function Trade({
     }
   }, [positions, tokenPrices]);
 
+  const allActivePositions = tokenB ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint)) : null
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
       <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
@@ -384,7 +385,7 @@ export default function Trade({
               onChange={(t: Token) => {
                 setTokenB(t);
               }}
-              allActivePositions={allPositions.filter((p) => p.token.mint.equals(tokenB.mint))}
+              allActivePositions={allActivePositions}
               setChartPreferences={setChartPreferences}
               chartPreferences={chartPreferences}
             />
@@ -396,7 +397,7 @@ export default function Trade({
                 <TradingChart
                   token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                   positions={positions}
-                  allActivePositions={allPositions.filter((p) => p.token.mint.equals(tokenB?.mint ?? tokenA.mint))}
+                  allActivePositions={allActivePositions}
                   positionHistory={positionsHistory}
                   chartPreferences={chartPreferences}
                   limitOrders={limitOrderBook?.limitOrders ?? null}
