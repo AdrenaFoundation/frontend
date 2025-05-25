@@ -21,7 +21,7 @@ export default function datafeed({
 }: {
   getMarksCallback: IDatafeedChartApi['getMarks'];
 }): IBasicDataFeed {
-  const API_ENDPOINT = 'https://benchmarks.pyth.network/v1/shims/tradingview';
+  const API_ENDPOINT = 'https://history.oraclesecurity.org';
 
   // Use it to keep a record of the most recent bar on the chart
   const lastBarsCache = new Map();
@@ -30,13 +30,16 @@ export default function datafeed({
     onReady: (callback: OnReadyCallback) => {
       console.log('[onReady]: Method call');
 
-      fetch(`${API_ENDPOINT}/config`).then((response) => {
-        response.json().then((configurationData) => {
-          configurationData.supported_resolutions = SUPPORTED_RESOLUTIONS;
-          configurationData.supports_marks = true;
-          setTimeout(() => callback(configurationData));
-        });
-      });
+      // Hardcode the configuration data since we're not using the API anymore for this
+      const configurationData = {
+        supported_resolutions: SUPPORTED_RESOLUTIONS,
+        supports_group_request: false,
+        supports_marks: true,
+        supports_search: true,
+        supports_timescale_marks: false,
+      };
+
+      setTimeout(() => callback(configurationData));
     },
     getMarks: (
       symbolInfo: LibrarySymbolInfo,
@@ -60,13 +63,10 @@ export default function datafeed({
       symbolType: string,
       onResultReadyCallback: SearchSymbolsCallback,
     ) => {
-      console.log('[searchSymbols]: Method call');
+      console.log('[searchSymbols]: Method call', userInput);
 
-      fetch(`${API_ENDPOINT}/search?query=${userInput}`).then((response) => {
-        response.json().then((data) => {
-          onResultReadyCallback(data);
-        });
-      });
+      // Return empty array or predefined symbols if needed
+      setTimeout(() => onResultReadyCallback([]));
     },
     resolveSymbol: (
       symbolName: string,
@@ -75,21 +75,211 @@ export default function datafeed({
     ) => {
       console.log('[resolveSymbol]: Method call', symbolName);
 
-      fetch(`${API_ENDPOINT}/symbols?symbol=${symbolName}`).then((response) => {
-        response
-          .json()
-          .then((symbolInfo) => {
-            console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
-            symbolInfo.supported_resolutions = SUPPORTED_RESOLUTIONS;
-            symbolInfo.supports_marks = true;
-            onSymbolResolvedCallback(symbolInfo);
-          })
-          .catch(() => {
-            console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
+      // Define symbol information directly with the same structure as the previous API
+      const symbolMap = {
+        SOLUSD: {
+          name: 'SOLUSD',
+          description: 'SOLANA / US DOLLAR',
+          full_name: 'Crypto.SOL/USD',
+          ticker: 'Crypto.SOL/USD',
+          exchange: 'ORACLE',
+          session: '24x7',
+          timezone: 'Etc/UTC',
+          minmov: 1,
+          pricescale: 100000000,
+          has_intraday: true,
+          has_daily: true,
+          has_weekly_and_monthly: true,
+          intraday_multipliers: [
+            '1',
+            '2',
+            '5',
+            '15',
+            '30',
+            '60',
+            '120',
+            '240',
+            '360',
+            '720',
+          ],
+          supported_resolutions: SUPPORTED_RESOLUTIONS,
+          data_status: 'streaming',
+          supports_marks: true,
+          type: 'crypto',
+          listed_exchange: 'ORACLE',
+          format: 'price',
+        },
+        'Crypto.SOL/USD': {
+          name: 'SOLUSD',
+          description: 'SOLANA / US DOLLAR',
+          full_name: 'Crypto.SOL/USD',
+          ticker: 'Crypto.SOL/USD',
+          exchange: 'ORACLE',
+          session: '24x7',
+          timezone: 'Etc/UTC',
+          minmov: 1,
+          pricescale: 100000000,
+          has_intraday: true,
+          has_daily: true,
+          has_weekly_and_monthly: true,
+          intraday_multipliers: [
+            '1',
+            '2',
+            '5',
+            '15',
+            '30',
+            '60',
+            '120',
+            '240',
+            '360',
+            '720',
+          ],
+          supported_resolutions: SUPPORTED_RESOLUTIONS,
+          data_status: 'streaming',
+          supports_marks: true,
+          type: 'crypto',
+          listed_exchange: 'ORACLE',
+          format: 'price',
+        },
+        BTCUSD: {
+          name: 'BTCUSD',
+          description: 'BITCOIN / US DOLLAR',
+          full_name: 'Crypto.BTC/USD',
+          ticker: 'Crypto.BTC/USD',
+          exchange: 'ORACLE',
+          session: '24x7',
+          timezone: 'Etc/UTC',
+          minmov: 1,
+          pricescale: 100000000,
+          has_intraday: true,
+          has_daily: true,
+          has_weekly_and_monthly: true,
+          intraday_multipliers: [
+            '1',
+            '2',
+            '5',
+            '15',
+            '30',
+            '60',
+            '120',
+            '240',
+            '360',
+            '720',
+          ],
+          supported_resolutions: SUPPORTED_RESOLUTIONS,
+          data_status: 'streaming',
+          supports_marks: true,
+          type: 'crypto',
+          listed_exchange: 'ORACLE',
+          format: 'price',
+        },
+        'Crypto.BTC/USD': {
+          name: 'BTCUSD',
+          description: 'BITCOIN / US DOLLAR',
+          full_name: 'Crypto.BTC/USD',
+          ticker: 'Crypto.BTC/USD',
+          exchange: 'ORACLE',
+          session: '24x7',
+          timezone: 'Etc/UTC',
+          minmov: 1,
+          pricescale: 100000000,
+          has_intraday: true,
+          has_daily: true,
+          has_weekly_and_monthly: true,
+          intraday_multipliers: [
+            '1',
+            '2',
+            '5',
+            '15',
+            '30',
+            '60',
+            '120',
+            '240',
+            '360',
+            '720',
+          ],
+          supported_resolutions: SUPPORTED_RESOLUTIONS,
+          data_status: 'streaming',
+          supports_marks: true,
+          type: 'crypto',
+          listed_exchange: 'ORACLE',
+          format: 'price',
+        },
+        BONKUSD: {
+          name: 'BONKUSD',
+          description: 'BONK / US DOLLAR',
+          full_name: 'Crypto.BONK/USD',
+          ticker: 'Crypto.BONK/USD',
+          exchange: 'ORACLE',
+          session: '24x7',
+          timezone: 'Etc/UTC',
+          minmov: 1,
+          pricescale: 1000000000000, // Higher pricescale for BONK as it's a low-value token
+          has_intraday: true,
+          has_daily: true,
+          has_weekly_and_monthly: true,
+          intraday_multipliers: [
+            '1',
+            '2',
+            '5',
+            '15',
+            '30',
+            '60',
+            '120',
+            '240',
+            '360',
+            '720',
+          ],
+          supported_resolutions: SUPPORTED_RESOLUTIONS,
+          data_status: 'streaming',
+          supports_marks: true,
+          type: 'crypto',
+          listed_exchange: 'ORACLE',
+          format: 'price',
+        },
+        'Crypto.BONK/USD': {
+          name: 'BONKUSD',
+          description: 'BONK / US DOLLAR',
+          full_name: 'Crypto.BONK/USD',
+          ticker: 'Crypto.BONK/USD',
+          exchange: 'ORACLE',
+          session: '24x7',
+          timezone: 'Etc/UTC',
+          minmov: 1,
+          pricescale: 1000000000000, // Higher pricescale for BONK as it's a low-value token
+          has_intraday: true,
+          has_daily: true,
+          has_weekly_and_monthly: true,
+          intraday_multipliers: [
+            '1',
+            '2',
+            '5',
+            '15',
+            '30',
+            '60',
+            '120',
+            '240',
+            '360',
+            '720',
+          ],
+          supported_resolutions: SUPPORTED_RESOLUTIONS,
+          data_status: 'streaming',
+          supports_marks: true,
+          type: 'crypto',
+          listed_exchange: 'ORACLE',
+          format: 'price',
+        },
+      };
 
-            onResolveErrorCallback('Cannot resolve symbol');
-          });
-      });
+      const symbolInfo = symbolMap[symbolName as keyof typeof symbolMap];
+
+      if (symbolInfo) {
+        setTimeout(() =>
+          onSymbolResolvedCallback(symbolInfo as LibrarySymbolInfo),
+        );
+      } else {
+        setTimeout(() => onResolveErrorCallback('Cannot resolve symbol'));
+      }
     },
     getBars: (
       symbolInfo: LibrarySymbolInfo,
@@ -100,39 +290,61 @@ export default function datafeed({
     ) => {
       const { from, to, firstDataRequest } = periodParams;
 
-      // Limit the range to 1 year for initial request
-      const maxRange = 365 * 24 * 60 * 60; // 1 year in seconds
-      const requestTo = to;
-      const requestFrom = firstDataRequest
-        ? Math.max(from, to - maxRange)
-        : from;
+      // Map TradingView resolution to Oracle Security API type
+      let type;
+      switch (resolution) {
+        case '1':
+        case '5':
+        case '15':
+        case '30':
+          type = resolution;
+          break;
+        case '60':
+          type = '1H';
+          break;
+        case '120':
+          type = '2H';
+          break;
+        case '240':
+          type = '4H';
+          break;
+        case 'D':
+        case '1D':
+          type = '1D';
+          break;
+        case 'W':
+        case '1W':
+          type = '1W';
+          break;
+        case 'M':
+        case '1M':
+          type = '1M';
+          break;
+        default:
+          type = '1';
+      }
 
       console.log('[getBars]: Method call', {
         symbol: symbolInfo.ticker,
         resolution,
         from: new Date(from * 1000).toISOString(),
         to: new Date(to * 1000).toISOString(),
-        requestFrom: new Date(requestFrom * 1000).toISOString(),
-        requestTo: new Date(requestTo * 1000).toISOString(),
         firstDataRequest,
       });
 
+      // Extract feed name from ticker (e.g., "Crypto.SOL/USD" -> "SOLUSD")
+      const feed = symbolInfo.name;
+
       fetch(
-        `${API_ENDPOINT}/history?symbol=${symbolInfo.ticker}&from=${requestFrom}&to=${requestTo}&resolution=${resolution}`,
+        `${API_ENDPOINT}/trading-view/data?feed=${feed}&type=${type}&from=${from * 1000}&till=${to * 1000}`,
       )
         .then((response) => {
           response
             .json()
             .then((data) => {
-              // Check for error response
-              if (data.s === 'error') {
-                console.log('[getBars]: Error:', data.errmsg);
-                onHistoryCallback([], { noData: true });
-                return;
-              }
+              console.log('data', data);
 
-              // Validate data structure
-              if (!data || !data.t || !Array.isArray(data.t)) {
+              if (!data || !data.result || !Array.isArray(data.result)) {
                 console.log(
                   '[getBars]: Invalid data structure received:',
                   data,
@@ -141,29 +353,43 @@ export default function datafeed({
                 return;
               }
 
-              if (data.t.length === 0) {
+              if (data.result.length === 0) {
                 onHistoryCallback([], { noData: true });
                 return;
               }
 
-              const bars = [];
+              interface BarData {
+                time: number;
+                open: number;
+                high: number;
+                low: number;
+                close: number;
+                avg: number;
+              }
 
-              for (let i = 0; i < data.t.length; ++i) {
-                if (
-                  data.t[i] &&
-                  data.o[i] !== undefined &&
-                  data.h[i] !== undefined &&
-                  data.l[i] !== undefined &&
-                  data.c[i] !== undefined
-                ) {
-                  bars.push({
-                    time: data.t[i] * 1000,
-                    low: data.l[i],
-                    high: data.h[i],
-                    open: data.o[i],
-                    close: data.c[i],
-                  });
-                }
+              // Filter bars to only include those within the requested time range
+              const filteredBars = data.result.filter((bar: BarData) => {
+                const barTime = bar.time / 1000; // Convert to seconds
+                return barTime >= from && barTime <= to;
+              });
+
+              const bars = filteredBars.map((bar: BarData) => ({
+                time: bar.time,
+                low: bar.low,
+                high: bar.high,
+                open: bar.open,
+                close: bar.close,
+              }));
+
+              console.log(
+                `[getBars]: Requested ${from}-${to}, got ${data.result.length} total bars, ${bars.length} in range`,
+              );
+
+              // If no bars in the requested range, tell TradingView there's no data
+              if (bars.length === 0) {
+                console.log('[getBars]: No data in requested time range');
+                onHistoryCallback([], { noData: true });
+                return;
               }
 
               if (firstDataRequest) {
@@ -172,7 +398,7 @@ export default function datafeed({
                 });
               }
 
-              onHistoryCallback(bars, { noData: bars.length === 0 });
+              onHistoryCallback(bars, { noData: false });
             })
             .catch((error) => {
               console.log('[getBars]: Get error', error);
