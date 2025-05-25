@@ -275,6 +275,7 @@ function handlePositionLiquidationLine(params: {
   horzLabelsAlign?: 'left' | 'middle ' | 'right';
   toggleSizeUsdInChart: boolean;
   linestyle?: number;
+  linewidth?: number;
   positionChartLines: PositionChartLine[];
 }): PositionChartLine[] {
   return handlePositionLine({
@@ -293,8 +294,8 @@ function handlePositionLiquidationLine(params: {
               : ''
           }`,
     horzLabelsAlign: params.horzLabelsAlign ?? 'right',
-    linestyle: params.linestyle ?? 1,
-    linewidth: 1,
+    linestyle: params?.linestyle ?? 1,
+    linewidth: params?.linewidth ?? 1,
   });
 }
 
@@ -473,10 +474,9 @@ export function useChartDrawing({
     useState<PositionChartLine[]>([]);
 
   const [trickReload, setTrickReload] = useState<number>(0);
-
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
-  const { updateTPSL } = useTPSL();
+  const { getTokenPrice, updateTPSL } = useTPSL();
 
   useEffect(
     () => {
@@ -746,26 +746,23 @@ export function useChartDrawing({
       //   widget.activeChart().createMultipointShape(
       //     [
       //       {
-      //         time: new Date(entryDate).getTime() / 1000,
+      //         time: Math.floor(new Date(entryDate).getTime()) / 1000,
       //         price: position.entryPrice,
       //       },
       //       {
-      //         time:
-      //           Math.floor(new Date('2025-05-20T15:09:39.00').getTime()) / 1000,
+      //         time: Math.floor(new Date(exitDate!).getTime()) / 1000,
       //         price: position.exitPrice,
       //       },
       //     ],
       //     {
       //       shape: 'long_position',
       //       overrides: {
-      //         text: `hh`,
-      //         // profitLevel: 190,
+      //         text: ``,
+      //         // profitLevel:
       //       },
       //     },
       //   );
       // });
-    } else {
-      widget.activeChart().clearMarks(1);
     }
 
     // widget.subscribe('mouse_down', () => {
@@ -824,6 +821,8 @@ export function useChartDrawing({
         return;
       }
 
+      const tokenPrice = getTokenPrice(symbol);
+
       // Draw liquidation lines for all active positions
       for (const position of allActivePositions) {
         if (
@@ -831,22 +830,29 @@ export function useChartDrawing({
           position.liquidationPrice
         ) {
           // add all liquidation lines
-          const maxLiquidationPrice = Math.max(
-            ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
-          );
-          const minLiquidationPrice = Math.min(
-            ...allActivePositions.map((p) => p.liquidationPrice ?? 0),
+          const maxSize = Math.max(
+            ...allActivePositions.map((p) => p.size ?? 0),
           );
 
-          const opacity = normalize(
-            position.liquidationPrice,
-            0.3,
-            1,
-            minLiquidationPrice,
-            maxLiquidationPrice,
+          const minSize = Math.min(
+            ...allActivePositions.map((p) => p.size ?? 0),
           );
 
-          const orangeFade = `rgba(247, 127, 0, ${opacity})`;
+          const linewidth = normalize(position.size, 1, 5, minSize, maxSize);
+
+          const orangeFaded = 'rgba(248, 128, 1, 0.3)'; // orange with opacity
+          const orange = 'rgba(248, 128, 1, 0.7)'; // orange with opacity
+          const red = 'rgba(255, 0, 0, 0.7)'; // red with opacity
+
+          const color = (() => {
+            if (!tokenPrice) return orangeFaded;
+            // based on how close liquidation price is to current price
+            const priceDiff = Math.abs(position.liquidationPrice - tokenPrice);
+            if (priceDiff < tokenPrice * 0.02) return red; // very close to liquidation
+            if (priceDiff < tokenPrice * 0.05) return orange; // close to liquidation
+            return orangeFaded; // far from liquidation
+          })();
+
           drawnActivePositionLines = handlePositionLiquidationLine({
             chart,
             position,
@@ -854,9 +860,10 @@ export function useChartDrawing({
             showPrice: false,
             text: null,
             title: 'all-active-positions-liquidation-line',
-            color: orangeFade,
+            color: color,
             horzLabelsAlign: 'left',
             linestyle: 0,
+            linewidth,
             positionChartLines: drawnActivePositionLines,
             symbol,
           });

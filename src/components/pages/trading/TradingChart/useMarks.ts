@@ -146,7 +146,7 @@ export function useMarks({
           id: position.positionId,
           time: endDate,
           color: position.pnl > 0 ? 'green' : 'red',
-          text: `id: ${position.positionId}, pnl: ${position.pnl}`,
+          text: `pnl: ${position.pnl}`,
           label: position.side === 'long' ? 'L' : 'S',
           labelFontColor: 'white',
           minSize: size,
@@ -182,7 +182,7 @@ export function useMarks({
             ? Math.floor(new Date(position.openDate).getTime() / 1000)
             : Math.floor(Date.now() / 1000),
           color: position.pnl && position.pnl > 0 ? 'green' : 'red',
-          text: `idx: ${i}, pnl: ${position.pnl}`,
+          text: `pnl: ${position.pnl}`,
           label: position.side === 'long' ? 'L' : 'S',
           labelFontColor: 'white',
           minSize: size,

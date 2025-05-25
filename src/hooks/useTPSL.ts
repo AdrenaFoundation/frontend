@@ -13,6 +13,7 @@ import {
 } from '@/utils';
 
 export default function useTPSL(): {
+  getTokenPrice: (symbol: string) => number | null;
   updateTPSL: (
     type: 'stopLoss' | 'takeProfit',
     value: number,
@@ -20,6 +21,14 @@ export default function useTPSL(): {
   ) => Promise<boolean>;
 } {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+
+  const getTokenPrice = (symbol: string): number | null => {
+    const price = tokenPrices[getTokenSymbol(symbol)];
+    if (price === undefined || price === null) {
+      return null;
+    }
+    return price;
+  };
 
   const updateTPSL = async (
     type: 'stopLoss' | 'takeProfit',
@@ -156,6 +165,7 @@ export default function useTPSL(): {
   };
 
   return {
+    getTokenPrice,
     updateTPSL,
   };
 }

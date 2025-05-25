@@ -412,7 +412,20 @@ export default function Trade({
           <div className="flex flex-col border-t border-white/10">
             <div className='flex flex-row gap-3 items-center justify-end p-2'>
               <div className="flex items-center p-0.5 text-white">
-                <Tippy content="Show all active positions liquidation lines">
+                <Tippy content={
+                  <div>
+                    <p className='text-sm mb-1 font-boldy opacity-50'>
+                      Shows position history on the chart
+                    </p>
+                    <ul>
+                      <li className='text-xs font-mono'>L / S = Long / Short</li>
+                      <li className='flex flex-row gap-1 text-xs items-center font-mono'>
+                        <div className='w-2 h-2 rounded-full bg-green flex-none' /> / <div className='w-2 h-2 rounded-full bg-red flex-none' /> = PnL
+                      </li>
+                      <li className='text-xs font-mono'>size of mark = size of position</li>
+                    </ul>
+                  </div>
+                }>
                   <p className="opacity-50 text-xs underline-dashed cursor-help">
                     Show postion history
                   </p>
