@@ -181,7 +181,12 @@ export function useMarks({
           time: position.openDate
             ? Math.floor(new Date(position.openDate).getTime() / 1000)
             : Math.floor(Date.now() / 1000),
-          color: position.pnl && position.pnl > 0 ? 'green' : 'red',
+          color:
+            position.owner.toBase58() === walletAddressRef.current
+              ? 'blue'
+              : position.pnl && position.pnl > 0
+                ? 'green'
+                : 'red',
           text: `pnl: ${position.pnl}`,
           label: position.side === 'long' ? 'L' : 'S',
           labelFontColor: 'white',

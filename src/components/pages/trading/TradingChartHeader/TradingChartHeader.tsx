@@ -131,6 +131,9 @@ export default function TradingChartHeader({
                         <li className='flex flex-row gap-1 text-xxs md:text-xs items-center font-mono'>
                           <div className='w-2 h-2 rounded-full bg-green flex-none' /> / <div className='w-2 h-2 rounded-full bg-red flex-none' /> = PnL
                         </li>
+                        <li className='flex flex-row gap-1 text-xxs md:text-xs items-center font-mono'>
+                          <div className='w-2 h-2 rounded-full bg-blue flex-none' /> = your position
+                        </li>
                         <li className='text-xxs md:text-xs font-mono'>size of mark = size of position</li>
                       </ul>
                     </div>
