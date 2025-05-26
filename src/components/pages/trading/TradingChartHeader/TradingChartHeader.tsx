@@ -82,124 +82,134 @@ export default function TradingChartHeader({
         </div>
 
         {allActivePositions ? (
-          <div className="flex flex-row gap-3 items-center border rounded-lg flex-none px-3 py-1">
-            <div className="flex flex-row gap-1 items-center">
-              <Image
-                src={liveIcon}
-                alt="live icon"
-                width={10}
-                height={10}
-                className=""
-              />
-              <FormatNumber
-                nb={allActivePositions.filter((p) => p.side === 'long').length}
-                prefix="long: "
-                prefixClassName="opacity-50"
-                className="text-xs whitespace-nowrap"
-              />
+          <div className="flex flex-row gap-3 items-center border rounded-lg flex-none px-2 xl:px-3 py-1 mb-3 sm:mb-0">
+            <div className='flex flex-row sm:flex-col xl:flex-row gap-2 items-center'>
+              <div className="flex flex-row gap-1 items-center">
+                <Image
+                  src={liveIcon}
+                  alt="live icon"
+                  width={10}
+                  height={10}
+                  className=""
+                />
+                <FormatNumber
+                  nb={allActivePositions.filter((p) => p.side === 'long').length}
+                  prefix="long: "
+                  prefixClassName="opacity-50"
+                  className="text-xxs md:text-xs whitespace-nowrap"
+                />
+              </div>
+
+              <div className="flex flex-row gap-1 items-center">
+                <Image
+                  src={liveIcon}
+                  alt="live icon"
+                  width={10}
+                  height={10}
+                  className=""
+                />
+                <FormatNumber
+                  nb={allActivePositions.filter((p) => p.side === 'short').length}
+                  prefix="short: "
+                  prefixClassName="opacity-50"
+                  className="text-xxs md:text-xs whitespace-nowrap"
+                />
+              </div>
             </div>
 
-            <div className="flex flex-row gap-1 items-center">
-              <Image
-                src={liveIcon}
-                alt="live icon"
-                width={10}
-                height={10}
-                className=""
-              />
-              <FormatNumber
-                nb={allActivePositions.filter((p) => p.side === 'short').length}
-                prefix="short: "
-                prefixClassName="opacity-50"
-                className="text-xs whitespace-nowrap"
-              />
-            </div>
 
-
-            <div className="flex items-center text-white">
-              <Tippy
-                content={
-                  <div>
-                    <p className='text-sm mb-1 font-boldy opacity-50'>
-                      Show position history for all active positions.
-                    </p>
-                    <ul>
-                      <li className='text-xs font-mono'>L / S = Long / Short</li>
-                      <li className='flex flex-row gap-1 text-xs items-center font-mono'>
-                        <div className='w-2 h-2 rounded-full bg-green flex-none' /> / <div className='w-2 h-2 rounded-full bg-red flex-none' /> = PnL
-                      </li>
-                      <li className='text-xs font-mono'>size of mark = size of position</li>
-                    </ul>
-                  </div>
-                }>
-                <p className="opacity-50 text-xs underline-dashed cursor-help">
-                  Show pos.
-                </p>
-              </Tippy>
-              <Switch
-                checked={chartPreferences.showAllActivePositions}
-                onChange={() => {
-                  setChartPreferences({
-                    ...chartPreferences,
-                    showAllActivePositions: !chartPreferences.showAllActivePositions,
-                    showPositionHistory: false, // Disable position history when toggling active positions
-                  });
-                }}
-                size="small"
-                sx={{
-                  transform: 'scale(0.7)',
-                  '& .MuiSwitch-switchBase': {
-                    color: '#ccc',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#1a1a1a',
-                  },
-                  '& .MuiSwitch-track': {
-                    backgroundColor: '#555',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#10e1a3',
-                  },
-                }}
-              />
-            </div>
-
-            <div className="flex items-center text-white">
-              <Tippy
-                content={
-                  <p className='text-sm font-boldy'>
-                    Show liquidation lines for all active positions.
+            <div className='flex flex-row sm:flex-col xl:flex-row xl:gap-2 items-center'>
+              <div className="flex items-center text-white">
+                <Tippy
+                  content={
+                    <div>
+                      <p className='text-sm mb-1 font-boldy opacity-50'>
+                        Show position history for all active positions.
+                      </p>
+                      <ul>
+                        <li className='text-xxs md:text-xs font-mono'>L / S = Long / Short</li>
+                        <li className='flex flex-row gap-1 text-xxs md:text-xs items-center font-mono'>
+                          <div className='w-2 h-2 rounded-full bg-green flex-none' /> / <div className='w-2 h-2 rounded-full bg-red flex-none' /> = PnL
+                        </li>
+                        <li className='text-xxs md:text-xs font-mono'>size of mark = size of position</li>
+                      </ul>
+                    </div>
+                  }>
+                  <p className="opacity-50 text-xxs underline-dashed cursor-help">
+                    Show pos.
                   </p>
-                }>
-                <p className="opacity-50 text-xs underline-dashed cursor-help">
-                  Show Liqs.
-                </p>
-              </Tippy>
-              <Switch
-                checked={chartPreferences.showAllActivePositionsLiquidationLines}
-                onChange={() => {
-                  setChartPreferences({
-                    ...chartPreferences,
-                    showAllActivePositionsLiquidationLines: !chartPreferences.showAllActivePositionsLiquidationLines,
-                  });
-                }}
-                size="small"
-                sx={{
-                  transform: 'scale(0.7)',
-                  '& .MuiSwitch-switchBase': {
-                    color: '#ccc',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#1a1a1a',
-                  },
-                  '& .MuiSwitch-track': {
-                    backgroundColor: '#555',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#10e1a3',
-                  },
-                }}
-              />
+                </Tippy>
+                <Switch
+                  checked={chartPreferences.showAllActivePositions}
+                  onChange={() => {
+                    setChartPreferences({
+                      ...chartPreferences,
+                      showAllActivePositions: !chartPreferences.showAllActivePositions,
+                      showPositionHistory: false, // Disable position history when toggling active positions
+                    });
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center text-white">
+                <Tippy
+                  content={
+                    <div>
+                      <p className='text-sm mb-1 font-boldy opacity-50'>
+                        Show liquidation lines for all active positions.
+                      </p>
+                      <ul>
+                        <li className='text-xxs md:text-xs font-mono'>line thickness = size of position</li>
+
+                      </ul>
+                    </div>
+                  }>
+                  <p className="opacity-50 text-xxs underline-dashed cursor-help">
+                    Show Liqs.
+                  </p>
+                </Tippy>
+                <Switch
+                  checked={chartPreferences.showAllActivePositionsLiquidationLines}
+                  onChange={() => {
+                    setChartPreferences({
+                      ...chartPreferences,
+                      showAllActivePositionsLiquidationLines: !chartPreferences.showAllActivePositionsLiquidationLines,
+                    });
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+              </div>
             </div>
           </div>
         ) : null}

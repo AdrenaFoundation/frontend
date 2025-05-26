@@ -410,7 +410,7 @@ export default function Trade({
           </div>
 
           <div className="flex flex-col border-t border-white/10">
-            <div className='flex flex-row gap-3 items-center justify-end p-2'>
+            <div className='flex flex-row gap-3 items-center justify-center sm:justify-end p-2 flex-wrap'>
               <div className="flex items-center p-0.5 text-white">
                 <Tippy content={
                   <div>

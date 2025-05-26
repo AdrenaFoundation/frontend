@@ -485,7 +485,7 @@ export function useChartDrawing({
   const [trickReload, setTrickReload] = useState<number>(0);
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
-  const { getTokenPrice, updateTPSL } = useTPSL();
+  const { updateTPSL } = useTPSL();
 
   useEffect(
     () => {
@@ -839,8 +839,6 @@ export function useChartDrawing({
         return;
       }
 
-      const tokenPrice = getTokenPrice(symbol);
-
       // Draw liquidation lines for all active positions
       for (const position of allActivePositions) {
         if (
@@ -858,18 +856,17 @@ export function useChartDrawing({
 
           const linewidth = normalize(position.size, 1, 5, minSize, maxSize);
 
-          const orangeFaded = 'rgba(248, 128, 1, 0.3)'; // orange with opacity
-          const orange = 'rgba(248, 128, 1, 0.7)'; // orange with opacity
-          const red = 'rgba(255, 0, 0, 0.7)'; // red with opacity
+          // const orangeFaded = 'rgba(248, 128, 1, 0.3)';
+          const orange = 'rgba(248, 128, 1, 0.7)';
+          // const yellow = 'rgba(248, 128, 1, 1)';
 
-          const color = (() => {
-            if (!tokenPrice) return orangeFaded;
-            // based on how close liquidation price is to current price
-            const priceDiff = Math.abs(position.liquidationPrice - tokenPrice);
-            if (priceDiff < tokenPrice * 0.02) return red; // very close to liquidation
-            if (priceDiff < tokenPrice * 0.05) return orange; // close to liquidation
-            return orangeFaded; // far from liquidation
-          })();
+          // const leverage = position.sizeUsd / position.collateralUsd;
+
+          // const color = (() => {
+          //   if (leverage < 25) return orangeFaded;
+          //   if (leverage < 50) return orange;
+          //   return yellow;
+          // })();
 
           drawnActivePositionLines = handlePositionLiquidationLine({
             chart,
@@ -878,7 +875,7 @@ export function useChartDrawing({
             showPrice: false,
             text: null,
             title: 'all-active-positions-liquidation-line',
-            color: color,
+            color: orange,
             horzLabelsAlign: 'left',
             linestyle: 0,
             linewidth,
