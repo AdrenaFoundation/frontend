@@ -117,9 +117,9 @@ export default function TradingChartHeader({
               </div>
             </div>
 
-
+            {/*
             <div className='flex flex-row sm:flex-col xl:flex-row xl:gap-2 items-center'>
-              <div className="flex items-center text-white">
+               <div className="flex items-center text-white">
                 <Tippy
                   content={
                     <div>
@@ -168,51 +168,51 @@ export default function TradingChartHeader({
                     },
                   }}
                 />
-              </div>
+               </div>
+             </div> */}
 
-              <div className="flex items-center text-white">
-                <Tippy
-                  content={
-                    <div>
-                      <p className='text-sm mb-1 font-boldy opacity-50'>
-                        Show liquidation lines for all active positions.
-                      </p>
-                      <ul>
-                        <li className='text-xxs md:text-xs font-mono'>line thickness = size of position</li>
+            <div className="flex items-center text-white">
+              <Tippy
+                content={
+                  <div>
+                    <p className='text-sm mb-1 font-boldy opacity-50'>
+                      Show liquidation lines for all active positions.
+                    </p>
+                    <ul>
+                      <li className='text-xxs md:text-xs font-mono'>line thickness = size of position</li>
 
-                      </ul>
-                    </div>
-                  }>
-                  <p className="opacity-50 text-xxs underline-dashed cursor-help">
-                    Show Liqs.
-                  </p>
-                </Tippy>
-                <Switch
-                  checked={chartPreferences.showAllActivePositionsLiquidationLines}
-                  onChange={() => {
-                    setChartPreferences({
-                      ...chartPreferences,
-                      showAllActivePositionsLiquidationLines: !chartPreferences.showAllActivePositionsLiquidationLines,
-                    });
-                  }}
-                  size="small"
-                  sx={{
-                    transform: 'scale(0.7)',
-                    '& .MuiSwitch-switchBase': {
-                      color: '#ccc',
-                    },
-                    '& .MuiSwitch-switchBase.Mui-checked': {
-                      color: '#1a1a1a',
-                    },
-                    '& .MuiSwitch-track': {
-                      backgroundColor: '#555',
-                    },
-                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                      backgroundColor: '#10e1a3',
-                    },
-                  }}
-                />
-              </div>
+                    </ul>
+                  </div>
+                }>
+                <p className="opacity-50 text-xxs underline-dashed cursor-help">
+                  Show Liqs.
+                </p>
+              </Tippy>
+              <Switch
+                checked={chartPreferences.showAllActivePositionsLiquidationLines}
+                onChange={() => {
+                  setChartPreferences({
+                    ...chartPreferences,
+                    showAllActivePositionsLiquidationLines: !chartPreferences.showAllActivePositionsLiquidationLines,
+                  });
+                }}
+                size="small"
+                sx={{
+                  transform: 'scale(0.7)',
+                  '& .MuiSwitch-switchBase': {
+                    color: '#ccc',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#1a1a1a',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: '#555',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#10e1a3',
+                  },
+                }}
+              />
             </div>
           </div>
         ) : null}
@@ -294,7 +294,7 @@ export default function TradingChartHeader({
             </div>
           </div>
         </div> */}
-      </div>
+      </div >
     </>
   );
 }

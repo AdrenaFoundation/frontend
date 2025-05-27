@@ -27,6 +27,145 @@ import {
 } from '../../public/charting_library/charting_library';
 import useTPSL from './useTPSL';
 
+// Global variable to track temporary lines and cleanup
+/*
+const temporaryLinesCleanup: (() => void) | null = null;
+
+ function showTemporaryPositionLines(
+  chart: IChartWidgetApi,
+  position: PositionExtended,
+): void {
+  // Clear any existing temporary lines first
+  if (temporaryLinesCleanup) {
+    temporaryLinesCleanup();
+    temporaryLinesCleanup = null;
+  }
+
+  const lineIds: EntityId[] = [];
+  const time = new Date(Number(position.nativeObject.openTime) * 1000);
+
+  try {
+    // Create entry line
+    const entryId = drawHorizontalLine({
+      chart,
+      price: position.price,
+      text: `🟢 WATCHED ${position.side.toUpperCase()} - Entry`,
+      color: position.side === 'long' ? greenColor : redColor,
+      time,
+      linestyle: 0,
+      linewidth: 2,
+      showPrice: true,
+    });
+    if (entryId) lineIds.push(entryId);
+
+    // Create liquidation line
+    if (position.liquidationPrice) {
+      const liquidationId = drawHorizontalLine({
+        chart,
+        price: position.liquidationPrice,
+        text: `🔴 WATCHED ${position.side.toUpperCase()} - Liquidation`,
+        color: orangeColor,
+        time,
+        linestyle: 1,
+        linewidth: 2,
+        showPrice: true,
+      });
+      if (liquidationId) lineIds.push(liquidationId);
+    }
+
+    // Create stop loss line
+    if (position.stopLossLimitPrice) {
+      const stopLossId = drawHorizontalLine({
+        chart,
+        price: position.stopLossLimitPrice,
+        text: `🔵 WATCHED ${position.side.toUpperCase()} - Stop Loss`,
+        color: blueColor,
+        time,
+        linestyle: 1,
+        linewidth: 1,
+        showPrice: true,
+      });
+      if (stopLossId) lineIds.push(stopLossId);
+    }
+
+    // Create take profit line
+    if (position.takeProfitLimitPrice) {
+      const takeProfitId = drawHorizontalLine({
+        chart,
+        price: position.takeProfitLimitPrice,
+        text: `🔵 WATCHED ${position.side.toUpperCase()} - Take Profit`,
+        color: blueColor,
+        time,
+        linestyle: 1,
+        linewidth: 1,
+        showPrice: true,
+      });
+      if (takeProfitId) lineIds.push(takeProfitId);
+    }
+
+    // Create break even line
+    if (position.breakEvenPrice) {
+      console.log(
+        '[Chart]: Creating break even line at price:',
+        position.breakEvenPrice,
+      );
+      const breakEvenId = drawHorizontalLine({
+        chart,
+        price: position.breakEvenPrice,
+        text: `🟣 WATCHED ${position.side.toUpperCase()} - Break Even`,
+        color: `${purpleColor}80`,
+        time,
+        linestyle: 2,
+        linewidth: 1,
+        showPrice: true,
+        horzLabelsAlign: 'left',
+      });
+      if (breakEvenId) {
+        console.log('[Chart]: Break even line created with ID:', breakEvenId);
+        lineIds.push(breakEvenId);
+      } else {
+        console.warn('[Chart]: Failed to create break even line');
+      }
+    } else {
+      console.log('[Chart]: No break even price available for position');
+    }
+
+    console.log('[Chart]: Created temporary lines:', lineIds);
+
+    // Create cleanup function
+    const cleanup = () => {
+      console.log('[Chart]: Cleaning up temporary lines:', lineIds);
+      lineIds.forEach((id, index) => {
+        try {
+          console.log(
+            `[Chart]: Removing line ${index + 1}/${lineIds.length} with ID:`,
+            id,
+          );
+          chart.removeEntity(id);
+          console.log(`[Chart]: Successfully removed line with ID:`, id);
+        } catch (error) {
+          console.warn(`[Chart]: Error removing temporary line ${id}:`, error);
+        }
+      });
+      console.log('[Chart]: Finished cleaning up all temporary lines');
+    };
+
+    // Set global cleanup reference
+    temporaryLinesCleanup = cleanup;
+
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+      if (temporaryLinesCleanup === cleanup) {
+        cleanup();
+        temporaryLinesCleanup = null;
+        console.log('[Chart]: Auto-removed temporary lines after 10 seconds');
+      }
+    }, 10000);
+  } catch (error) {
+    console.error('[Chart]: Error creating temporary position lines:', error);
+  }
+} */
+
 export type LineType =
   | 'liquidation'
   | 'takeProfit'
@@ -513,7 +652,8 @@ export function useChartDrawing({
         parsedChartShapes[symbol].forEach((shape) => {
           if (
             shape.options.text.includes('long') ||
-            shape.options.text.includes('short')
+            shape.options.text.includes('short') ||
+            shape.options.text.includes('WATCHED')
           )
             return;
 
@@ -527,6 +667,21 @@ export function useChartDrawing({
             text: shape.options.text,
           });
         });
+      }
+      // Clean up any WATCHED lines from localStorage
+      if (parsedChartShapes[symbol]) {
+        const cleanedShapes = parsedChartShapes[symbol].filter(
+          (shape) => !shape.options.text.includes('WATCHED'),
+        );
+
+        if (cleanedShapes.length !== parsedChartShapes[symbol].length) {
+          console.log('[Chart]: Cleaned up WATCHED lines from localStorage');
+          parsedChartShapes[symbol] = cleanedShapes;
+          localStorage.setItem(
+            'chart_drawings',
+            JSON.stringify(parsedChartShapes),
+          );
+        }
       }
     } catch (error) {
       console.error('error', error);
@@ -743,67 +898,269 @@ export function useChartDrawing({
     ) {
       widget.activeChart().refreshMarks();
 
-      // widget.subscribe('onMarkClick', (id) => {
-      if (!positionHistory) return;
+      /* // Subscribe to mark click events
+      widget.subscribe('onMarkClick', (markId) => {
+        console.log('[Chart]: Mark clicked with ID:', markId, typeof markId);
 
-      //   const position = positionHistory.find((p) => p.positionId === id);
-      //   if (!position) return;
-      //   const { exitDate, entryDate } = position;
+        // Clear any existing temporary lines when clicking any mark
+        if (temporaryLinesCleanup) {
+          temporaryLinesCleanup();
+          temporaryLinesCleanup = null;
+          console.log('[Chart]: Cleared temporary lines due to mark click');
+        }
 
-      //   const roundTimeToInterval = (time: Date) => {};
+        let position: EnrichedPositionApi | null = null;
 
-      //   // draw a position line
-      //   console.log('drawing position line', {
-      //     id: id,
-      //     time: new Date(exitDate!).getTime() / 1000,
-      //     entryDate,
-      //   });
+        // Check if we're showing active positions and try to find in allActivePositions first
+        if (chartPreferences.showAllActivePositions && allActivePositions) {
+          console.log(
+            '[Chart]: Searching in active positions (markId is array index)',
+          );
+          const activePosition = allActivePositions[markId as number];
+          if (activePosition) {
+            console.log('[Chart]: Found active position:', activePosition);
+            console.log('[Chart]: Showing temporary lines for active position');
 
-      //   console.log('position', position);
+            // Show liquidation, stop loss, take profit, and break even lines for 10 seconds
+            showTemporaryPositionLines(chart, activePosition);
+            return;
+          }
+        }
 
-      //   widget.activeChart().createMultipointShape(
-      //     [
-      //       {
-      //         time: Math.floor(new Date(entryDate).getTime()) / 1000,
-      //         price: position.entryPrice,
-      //       },
-      //       {
-      //         time: Math.floor(new Date(exitDate!).getTime()) / 1000,
-      //         price: position.exitPrice,
-      //       },
-      //     ],
-      //     {
-      //       shape: 'long_position',
-      //       overrides: {
-      //         text: ``,
-      //         // profitLevel:
-      //       },
-      //     },
-      //   );
-      // });
+        // If not found in active positions, try position history
+        if (!position && positionHistory) {
+          console.log('[Chart]: Searching in position history');
+          console.log(
+            '[Chart]: Available history positions:',
+            positionHistory.map((p) => ({
+              positionId: p.positionId,
+              pubkey: p.pubkey.toBase58(),
+              type: typeof p.positionId,
+            })),
+          );
+
+          // Try different ways to find the position in history
+          const foundPosition = positionHistory.find(
+            (p) => p.positionId === markId,
+          );
+          if (foundPosition) {
+            position = foundPosition;
+          } else {
+            // Try with number conversion if markId is a string
+            if (typeof markId === 'string') {
+              const numericMarkId = Number(markId);
+              if (!isNaN(numericMarkId)) {
+                const foundByNumber = positionHistory.find(
+                  (p) => p.positionId === numericMarkId,
+                );
+                if (foundByNumber) {
+                  position = foundByNumber;
+                }
+              }
+            }
+          }
+
+          if (!position) {
+            // Try using pubkey field (convert PublicKey to string for comparison)
+            const markIdStr = String(markId);
+            const foundByPubkey = positionHistory.find(
+              (p) => p.pubkey.toBase58() === markIdStr,
+            );
+            if (foundByPubkey) {
+              position = foundByPubkey;
+            }
+          }
+        }
+
+        if (!position) {
+          console.log('[Chart]: Position not found for mark ID:', markId);
+          console.log(
+            '[Chart]: Tried both active positions and position history',
+          );
+          return;
+        }
+
+        console.log('[Chart]: Found position:', position);
+
+        const { exitDate, entryDate, entryPrice, exitPrice, side } = position;
+
+        if (!exitDate || !entryDate) {
+          console.log(
+            '[Chart]: Missing entry or exit date for position:',
+            position,
+          );
+          return;
+        }
+
+        console.log('[Chart]: Drawing position line for:', {
+          id: markId,
+          side,
+          entryDate,
+          exitDate,
+          entryPrice,
+          exitPrice,
+        });
+
+        try {
+          // Validate required values
+          if (!entryPrice || !exitPrice || !entryDate || !exitDate) {
+            console.error('[Chart]: Missing required values for drawing:', {
+              entryPrice,
+              exitPrice,
+              entryDate,
+              exitDate,
+            });
+            return;
+          }
+
+          // Remove any existing position drawings for this position
+          const existingShapes = chart.getAllShapes();
+          existingShapes.forEach((shape) => {
+            const shapeProps = chart.getShapeById(shape.id).getProperties();
+            if (shapeProps.text && shapeProps.text.includes(`#${markId}`)) {
+              chart.removeEntity(shape.id);
+            }
+          });
+
+          // Calculate profit/loss
+          const pnl =
+            side === 'long' ? exitPrice - entryPrice : entryPrice - exitPrice;
+          const pnlPercentage = ((pnl / entryPrice) * 100).toFixed(2);
+
+          // Use exact times from the position data to align with marks
+          // The marks are placed at these exact times, so our drawing should match
+          const alignedEntryTime = Math.floor(
+            new Date(entryDate).getTime() / 1000,
+          );
+          const alignedExitTime = Math.floor(
+            new Date(exitDate).getTime() / 1000,
+          );
+
+          console.log('[Chart]: Shape data:', {
+            originalEntryTime: Math.floor(new Date(entryDate).getTime() / 1000),
+            originalExitTime: Math.floor(new Date(exitDate).getTime() / 1000),
+            alignedEntryTime,
+            alignedExitTime,
+            entryPrice,
+            exitPrice,
+            side,
+            pnl,
+            pnlPercentage,
+            resolution: chart.resolution(),
+          });
+
+          // First try a simple trend line to test if the basic functionality works
+          console.log('[Chart]: Testing with trend line first...');
+          let shapeId;
+
+          try {
+            // First create trend line (we know this works)
+            shapeId = chart.createMultipointShape(
+              [
+                {
+                  time: alignedEntryTime,
+                  price: entryPrice,
+                },
+                {
+                  time: alignedExitTime,
+                  price: exitPrice,
+                },
+              ],
+              {
+                shape: 'trend_line',
+                zOrder: 'top',
+                showInObjectsTree: true,
+                overrides: {
+                  linecolor: side === 'long' ? greenColor : redColor,
+                  linewidth: 3,
+                  linestyle: 0,
+                },
+                text: `${side.toUpperCase()} #${markId} P&L: ${pnlPercentage}%`,
+              },
+            );
+            console.log('[Chart]: Trend line created successfully:', shapeId);
+
+            // Now try to replace it with a position shape
+            console.log(
+              '[Chart]: Now trying position shape with minimal config...',
+            );
+            try {
+              const positionShapeId = chart.createMultipointShape(
+                [
+                  {
+                    time: alignedEntryTime,
+                    price: entryPrice,
+                  },
+                  {
+                    time: alignedExitTime,
+                    price: exitPrice,
+                  },
+                ],
+                {
+                  shape: side === 'long' ? 'long_position' : 'short_position',
+                  zOrder: 'top',
+                  showInObjectsTree: true,
+                  // No overrides at all - let it use defaults
+                },
+              );
+
+              if (positionShapeId) {
+                console.log(
+                  '[Chart]: Position shape created successfully:',
+                  positionShapeId,
+                );
+                // Remove the trend line since position shape worked
+                if (shapeId) {
+                  chart.removeEntity(shapeId);
+                }
+                shapeId = positionShapeId;
+              }
+            } catch (positionError) {
+              console.error(
+                '[Chart]: Position shape failed, keeping trend line:',
+                positionError,
+              );
+              // Keep the trend line since position shape failed
+            }
+          } catch (trendError) {
+            console.error('[Chart]: Even basic trend line failed:', trendError);
+            throw trendError;
+          }
+
+          console.log('[Chart]: Position drawing created with ID:', shapeId);
+
+          // Optional: Auto-remove the drawing after some time
+          if (shapeId) {
+            setTimeout(() => {
+              try {
+                if (chart.getShapeById(shapeId)) {
+                  chart.removeEntity(shapeId);
+                  console.log(
+                    '[Chart]: Auto-removed position drawing:',
+                    shapeId,
+                  );
+                }
+              } catch (error) {
+                console.log(
+                  '[Chart]: Error auto-removing position drawing:',
+                  error,
+                );
+              }
+            }, 10000); // Remove after 10 seconds
+          }
+        } catch (error) {
+          console.error('[Chart]: Error creating position drawing:', error);
+          drawingErrorCallback();
+        }
+      });*/
     }
-
-    // widget.subscribe('mouse_down', () => {
-    //   //get all shapes
-    //   const shapes = chart.getAllShapes();
-    //   console.log('shapes', shapes);
-
-    //   const matchedShape = shapes.find(
-    //     (shape) => shape.name === 'long_position',
-    //   );
-    //   if (matchedShape) {
-    //     const points = chart.getShapeById(matchedShape.id).getPoints();
-    //     const shape = chart.getShapeById(matchedShape.id).getProperties();
-    //     console.log('shape', shape);
-    //     console.log('points', points);
-    //   }
-    // });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     chart,
     chartPreferences.showPositionHistory,
     chartPreferences.showAllActivePositions,
+    positionHistory,
   ]);
 
   useEffect(() => {

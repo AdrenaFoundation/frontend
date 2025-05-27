@@ -1,4 +1,7 @@
-import { setStreamingTokenPrice } from '@/actions/streamingTokenPrices';
+import {
+  setStreamingTokenPrice,
+  stopStreamingTokenPrices,
+} from '@/actions/streamingTokenPrices';
 import store from '@/store/store';
 
 import {
@@ -36,9 +39,20 @@ const channelToSubscription = new Map<
   }
 >();
 
+// Essential tokens that should always be available for streaming
+// This ensures JITOSOL (uses SOL price) and WBTC (uses BTC price) positions work
+const FEEDS_TO_SUBSCRIBE_TO = [
+  'SOLUSD',
+  'BTCUSD',
+  'USDCUSD',
+  'BONKUSD',
+  'JITOSOLUSD',
+  'WBTCUSD',
+];
+
 let websocket: WebSocket | null = null;
-let isConnecting = false;
-const subscribedChannels = new Set<string>();
+let streamingStarted = false;
+let id: number = 0;
 
 function getNextBarTime(barTime: number, resolution: ResolutionString): number {
   const date = new Date(barTime);
@@ -73,93 +87,14 @@ function getNextBarTime(barTime: number, resolution: ResolutionString): number {
   return date.getTime();
 }
 
-function connectWebSocket(): Promise<WebSocket> {
-  return new Promise((resolve, reject) => {
-    if (websocket && websocket.readyState === WebSocket.OPEN) {
-      resolve(websocket);
-      return;
-    }
-
-    if (isConnecting) {
-      // Wait for existing connection attempt
-      const checkConnection = () => {
-        if (websocket && websocket.readyState === WebSocket.OPEN) {
-          resolve(websocket);
-        } else if (!isConnecting) {
-          reject(new Error('Connection failed'));
-        } else {
-          setTimeout(checkConnection, 100);
-        }
-      };
-      checkConnection();
-      return;
-    }
-
-    isConnecting = true;
-    websocket = new WebSocket(
-      'wss://history.oraclesecurity.org/trading-view/stream',
-    );
-
-    websocket.onopen = () => {
-      isConnecting = false;
-
-      // Resubscribe to existing channels
-      if (subscribedChannels.size > 0) {
-        const subscribeMessage: SubscriptionMessage = {
-          a: 'subscribe',
-          ch: Array.from(subscribedChannels),
-        };
-        websocket?.send(JSON.stringify(subscribeMessage));
-      }
-
-      resolve(websocket!);
-    };
-
-    websocket.onmessage = (event) => {
-      try {
-        const message: OracleSecurityPriceMessage = JSON.parse(event.data);
-
-        if (message.a === 'price') {
-          handlePriceUpdate(message);
-        }
-      } catch (error) {
-        console.error('[WebSocket]: Error parsing message:', error);
-      }
-    };
-
-    websocket.onclose = () => {
-      websocket = null;
-      isConnecting = false;
-
-      // Attempt to reconnect after 3 seconds
-      setTimeout(() => {
-        if (subscribedChannels.size > 0) {
-          connectWebSocket().catch(console.error);
-        }
-      }, 3000);
-    };
-
-    websocket.onerror = (error) => {
-      console.error('[WebSocket]: Connection error:', error);
-      isConnecting = false;
-      reject(error);
-    };
-  });
-}
-
 function handlePriceUpdate(message: OracleSecurityPriceMessage) {
   const price = parseFloat(message.p) * Math.pow(10, message.e);
   const timestamp = message.t;
 
-  // Dispatch price update to store
-  store.dispatch(
-    setStreamingTokenPrice(
-      message.b, // Base currency (e.g., "SOL")
-      price,
-    ),
-  );
+  // Dispatch price update to store - this makes it available for all position calculations
+  store.dispatch(setStreamingTokenPrice(message.b, price));
 
-  // Find subscription for this symbol
+  // Find subscription for this symbol (for chart updates)
   const subscriptionItem = channelToSubscription.get(
     `Crypto.${message.b}/${message.q}`,
   );
@@ -201,6 +136,74 @@ function handlePriceUpdate(message: OracleSecurityPriceMessage) {
   });
 }
 
+async function startStreaming() {
+  if (streamingStarted) return;
+
+  streamingStarted = true;
+  const localId = ++id;
+
+  // Close existing connection if any
+  if (websocket) {
+    websocket.close();
+    websocket = null;
+  }
+
+  return new Promise<void>((resolve, reject) => {
+    websocket = new WebSocket(
+      'wss://history.oraclesecurity.org/trading-view/stream',
+    );
+
+    websocket.onopen = () => {
+      console.log('[Streaming]: WebSocket connected, subscribing');
+
+      const subscribeMessage: SubscriptionMessage = {
+        a: 'subscribe',
+        ch: FEEDS_TO_SUBSCRIBE_TO,
+      };
+
+      websocket?.send(JSON.stringify(subscribeMessage));
+
+      resolve();
+    };
+
+    websocket.onmessage = (event) => {
+      try {
+        const message: OracleSecurityPriceMessage = JSON.parse(event.data);
+
+        if (localId !== id) {
+          console.log("Triggered price changes that shouldn't have happened");
+          return;
+        }
+
+        if (message.a === 'price') {
+          handlePriceUpdate(message);
+        }
+      } catch (error) {
+        console.error('[WebSocket]: Error parsing message:', error);
+      }
+    };
+
+    websocket.onclose = () => {
+      console.log('[Streaming]: WebSocket disconnected');
+      websocket = null;
+      streamingStarted = false;
+
+      // Attempt to reconnect after 3 seconds if there are still subscriptions
+      if (channelToSubscription.size > 0) {
+        setTimeout(() => {
+          startStreaming().catch(console.error);
+        }, 3000);
+      }
+    };
+
+    websocket.onerror = (error) => {
+      console.error('[WebSocket]: Connection error:', error);
+      streamingStarted = false;
+      reject(error);
+    };
+  });
+}
+
 export function subscribeOnStream(
   symbolInfo: LibrarySymbolInfo,
   resolution: ResolutionString,
@@ -212,13 +215,12 @@ export function subscribeOnStream(
   const channelString = symbolInfo.ticker;
   if (!channelString) return;
 
-  const feedSymbol = symbolInfo.name;
-
   const handler = {
     id: subscriberUID,
     callback: onRealtimeCallback,
     lastBar,
   };
+
   let subscriptionItem = channelToSubscription.get(channelString);
 
   if (subscriptionItem) {
@@ -229,71 +231,68 @@ export function subscribeOnStream(
       resolution,
       handlers: [handler],
     };
-    channelToSubscription.set(channelString, subscriptionItem);
   }
 
-  // Add to subscribed channels and connect
-  subscribedChannels.add(feedSymbol);
+  channelToSubscription.set(channelString, subscriptionItem);
 
-  connectWebSocket()
-    .then((ws) => {
-      const subscribeMessage: SubscriptionMessage = {
-        a: 'subscribe',
-        ch: [feedSymbol],
-      };
-      ws.send(JSON.stringify(subscribeMessage));
-    })
-    .catch((error) => {
-      console.error('[WebSocket]: Failed to subscribe:', error);
+  // Start streaming if not already started (this will subscribe to all essential tokens)
+  if (!streamingStarted) {
+    startStreaming().catch((error) => {
+      console.error('[Streaming]: Failed to start streaming:', error);
     });
+  }
+
+  console.log(
+    '[subscribeBars]: Subscribe to streaming. Channel:',
+    channelString,
+    subscriberUID,
+  );
 }
 
 export function unsubscribeFromStream(subscriberUID: string) {
-  console.log(
-    '[unsubscribeBars]: Unsubscribe from streaming. UID:',
-    subscriberUID,
-  );
+  // Find a subscription with id === subscriberUID
+  for (const channelString of channelToSubscription.keys()) {
+    const subscriptionItem = channelToSubscription.get(channelString);
 
-  // Find and remove the handler
-  for (const [
-    channelString,
-    subscriptionItem,
-  ] of channelToSubscription.entries()) {
     if (!subscriptionItem) continue;
 
-    const handlerIndex = subscriptionItem.handlers.findIndex(
-      (handler) => handler.id === subscriberUID,
+    const before = subscriptionItem.handlers.length;
+
+    // Remove handler with id === subscriberUID
+    subscriptionItem.handlers = subscriptionItem.handlers.filter(
+      (handler) => handler.id !== subscriberUID,
     );
 
-    if (handlerIndex !== -1) {
-      subscriptionItem.handlers.splice(handlerIndex, 1);
+    if (subscriptionItem.handlers.length < before) {
+      console.log(
+        '[unsubscribeBars]: Unsubscribe from streaming. Channel:',
+        channelString,
+        subscriberUID,
+      );
 
       if (subscriptionItem.handlers.length === 0) {
-        // No more handlers for this channel, unsubscribe
+        console.log(
+          '[unsubscribeBars]: Delete the channel string:',
+          channelString,
+        );
         channelToSubscription.delete(channelString);
-
-        // Extract feed symbol from channel (e.g., "Crypto.SOL/USD" -> "SOLUSD")
-        const feedSymbolPart = channelString.split('.')[1];
-        if (feedSymbolPart) {
-          const feedSymbol = feedSymbolPart.replace('/', '');
-          subscribedChannels.delete(feedSymbol);
-
-          if (websocket && websocket.readyState === WebSocket.OPEN) {
-            const unsubscribeMessage: SubscriptionMessage = {
-              a: 'unsubscribe',
-              ch: [feedSymbol],
-            };
-            websocket.send(JSON.stringify(unsubscribeMessage));
-          }
-        }
+      } else {
+        console.log(
+          '[unsubscribeBars]: Update the channel string:',
+          channelString,
+          subscriptionItem,
+        );
+        channelToSubscription.set(channelString, subscriptionItem);
       }
-      break;
     }
   }
 
-  // Close WebSocket if no more subscriptions
-  if (subscribedChannels.size === 0 && websocket) {
+  // Stop streaming if no one is subscribed anymore
+  if (channelToSubscription.size === 0 && websocket) {
+    console.log('[Chart] No one subscribed to the streaming. Stopping...');
     websocket.close();
     websocket = null;
+    streamingStarted = false;
+    store.dispatch(stopStreamingTokenPrices());
   }
 }

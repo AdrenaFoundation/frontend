@@ -48,13 +48,6 @@ export default function datafeed({
       onDataCallback: (data: Mark[]) => void,
       resolution: ResolutionString,
     ) => {
-      console.log('[getMarks]: Method call', {
-        symbol: symbolInfo.ticker,
-        from: new Date(from * 1000).toISOString(),
-        to: new Date(endDate * 1000).toISOString(),
-        resolution,
-      });
-
       getMarksCallback?.(symbolInfo, from, endDate, onDataCallback, resolution);
     },
     searchSymbols: (
@@ -342,8 +335,6 @@ export default function datafeed({
           response
             .json()
             .then((data) => {
-              console.log('data', data);
-
               if (!data || !data.result || !Array.isArray(data.result)) {
                 console.log(
                   '[getBars]: Invalid data structure received:',

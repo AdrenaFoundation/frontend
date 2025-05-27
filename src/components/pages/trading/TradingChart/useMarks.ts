@@ -2,13 +2,12 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { normalize } from '@/constant';
 import { EnrichedPositionApi, PositionExtended, Token } from '@/types';
-import { getTokenSymbol } from '@/utils';
+import { formatPriceInfo, getTokenSymbol } from '@/utils';
 
 import {
   IDatafeedChartApi,
   LibrarySymbolInfo,
   Mark,
-  ResolutionString,
 } from '../../../../../public/charting_library/charting_library';
 import { ChartPreferences } from './types';
 
@@ -64,20 +63,13 @@ export function useMarks({
   }, [chartPreferences]);
 
   const getMarksCallback = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (
-      symbolInfo: LibrarySymbolInfo,
-      from: number,
-      endDate: number,
+      _symbolInfo: LibrarySymbolInfo,
+      _from: number,
+      _to: number,
       onDataCallback: (data: Mark[]) => void,
-      resolution: ResolutionString,
     ) => {
-      console.log('[getMarks]: Method call', {
-        symbol: symbolInfo.ticker,
-        from: new Date(from * 1000).toISOString(),
-        to: new Date(endDate * 1000).toISOString(),
-        resolution,
-      });
-
       if (
         chartPreferencesRef.current.showPositionHistory === false &&
         chartPreferencesRef.current.showAllActivePositions === false
@@ -176,6 +168,29 @@ export function useMarks({
       .map((position, i) => {
         const size = normalize(Math.abs(position.pnl!), 12, 25, minPnl, maxPnl);
 
+        // Create detailed hover text with position information
+        const leverage =
+          position.currentLeverage || position.initialLeverage || 'N/A';
+        const positionSize = position.size
+          ? `${position.size.toFixed(4)} ${getTokenSymbol(position.token.symbol)}`
+          : 'N/A';
+        const collateral = position.collateralUsd
+          ? `${formatPriceInfo(position.collateralUsd, 2, 0, 0)}`
+          : 'N/A';
+        const pnl = position.pnl
+          ? `${formatPriceInfo(position.pnl, 2, 0, 0)}`
+          : '$0.00';
+        const entryPrice = `${formatPriceInfo(position.price, 2, 0, 0)}`;
+
+        // Try different line break approaches
+        const detailedText = `${position.side.toUpperCase()} Position -
+Entry: ${entryPrice} -
+Collateral: ${collateral} -
+Leverage: ${Math.round(Number(leverage))}x -
+Size: ${positionSize} -
+Liq: ${formatPriceInfo(Number(position.liquidationPrice), 2, 0, 0)} -
+P&L: ${pnl}`;
+
         return {
           id: i,
           time: position.openDate
@@ -187,7 +202,7 @@ export function useMarks({
               : position.pnl && position.pnl > 0
                 ? 'green'
                 : 'red',
-          text: `pnl: ${position.pnl}`,
+          text: detailedText,
           label: position.side === 'long' ? 'L' : 'S',
           labelFontColor: 'white',
           minSize: size,
