@@ -1,5 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, TransactionInstruction } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -17,6 +17,7 @@ import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
+import { USD_DECIMALS } from '@/constant';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
@@ -36,6 +37,7 @@ import {
   getAlpLockedStakes,
   getNextStakingRoundStartTime,
   nativeToUi,
+  uiToNative,
 } from '@/utils';
 
 export type ADXTokenDetails = {
@@ -59,6 +61,21 @@ export type ALPTokenDetails = {
 
 export const DEFAULT_LOCKED_STAKE_LOCK_DURATION = 180;
 export const LIQUID_STAKE_LOCK_DURATION = 0;
+
+// Small structure used to ease usage of top accounts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toInstruction(ix: any): TransactionInstruction {
+  return new TransactionInstruction({
+    programId: new PublicKey(ix.programId),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    keys: ix.accounts.map((acc: any) => ({
+      pubkey: new PublicKey(acc.pubkey),
+      isSigner: acc.isSigner,
+      isWritable: acc.isWritable,
+    })),
+    data: Buffer.from(ix.data, 'base64'),
+  });
+}
 
 export default function Stake({
   connected,
@@ -469,6 +486,137 @@ export default function Stake({
     }
   };
 
+  const handleClickOnClaimRewardsAndBuyAdx = async () => {
+    if (!owner) {
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
+      return;
+    }
+
+    const stakedTokenMint = window.adrena.client.adxToken.mint;
+
+    const notification = MultiStepNotification.new({
+      title: 'Claim and Buy ADX',
+      steps: [
+        {
+          title: 'Prepare ADX swap',
+        },
+        {
+          title: 'Prepare transaction',
+        },
+        {
+          title: 'Sign transaction',
+        },
+        {
+          title: 'Execute transaction',
+        },
+        {
+          title: 'Confirm transaction',
+        },
+      ],
+    }).fire();
+
+    try {
+      const quoteResult = await fetch(
+        `https://lite-api.jup.ag/swap/v1/quote?inputMint=${window.adrena.client.getUsdcToken().mint.toBase58()}&outputMint=${stakedTokenMint.toBase58()}&amount=${uiToNative(adxRewards.pendingUsdcRewards, USD_DECIMALS)}`,
+      )
+        .then((res) => res.json())
+        .catch((e) => {
+          notification.currentStepErrored(String(e));
+
+          throw e;
+        });
+
+      notification.currentStepSucceeded();
+
+      const swapInstructions: {
+        setupInstructions?: unknown[];
+        swapInstruction: unknown;
+        cleanupInstruction?: unknown;
+        addressLookupTableAddresses: string[];
+      } = await fetch('https://lite-api.jup.ag/swap/v1/swap-instructions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          userPublicKey: owner.toBase58(),
+          quoteResponse: quoteResult,
+          prioritizationFeeLamports: {
+            priorityLevelWithMaxLamports: {
+              maxLamports: 10_000_000,
+              priorityLevel: 'veryHigh',
+            },
+          },
+          dynamicComputeUnitLimit: true,
+        }),
+      })
+        .then((res) => res.json())
+        .catch((e) => {
+          notification.currentStepErrored(String(e));
+
+          throw e;
+        });
+
+      const builder = await window.adrena.client.buildClaimStakesInstruction({
+        owner,
+        stakedTokenMint,
+        caller: owner,
+        // TODO: replace this with a proper system allowing the user to claim on a TA instead of the ATA, but pretty niche usecase tbh
+        // Special override for a user that has a different reward token account following a hack
+        overrideRewardTokenAccount: owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs' ?
+          new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
+      });
+
+      const jupiterInstructions = [
+        ...(swapInstructions.setupInstructions || []).map(toInstruction),
+        toInstruction(swapInstructions.swapInstruction),
+        ...(swapInstructions.cleanupInstruction ? [toInstruction(swapInstructions.cleanupInstruction)] : []),
+      ];
+
+      builder.postInstructions(jupiterInstructions);
+
+      const transaction = await builder.transaction();
+
+      console.log('transaction', transaction);
+
+      await window.adrena.client.signAndExecuteTxAlternative({
+        transaction,
+        notification,
+        additionalAddressLookupTables: swapInstructions.addressLookupTableAddresses.map(x => new PublicKey(x)),
+      });
+
+      const optimisticClaim = {
+        claim_id: new BN(Date.now()).toString(),
+        rewards_adx: adxRewards.pendingAdxRewards,
+        rewards_adx_genesis: adxRewards.pendingGenesisAdxRewards,
+        rewards_usdc: adxRewards.pendingUsdcRewards,
+        signature: 'optimistic',
+        transaction_date: new Date(),
+        created_at: new Date(),
+        stake_mint: stakedTokenMint,
+        symbol: 'ADX',
+        source: 'optimistic',
+      } as unknown as ClaimHistoryExtended;
+
+      // Reset rewards in the ui until next fetch
+      adxRewards.pendingUsdcRewards = 0;
+      adxRewards.pendingAdxRewards = 0;
+      adxRewards.pendingGenesisAdxRewards = 0;
+      fetchAdxRewards();
+
+      setOptimisticClaimAdx([optimisticClaim]);
+    } catch (error) {
+      console.error('error', error);
+    } finally {
+      dispatch(fetchWalletTokenBalances());
+      triggerWalletStakingAccountsReload();
+    }
+  };
+
   const getTotalADXLiquidStaked = useCallback(() => {
     if (!stakingAccounts || !stakingAccounts.ADX) return 0;
 
@@ -764,6 +912,7 @@ export default function Stake({
                 lockedStakes={adxLockedStakes}
                 handleLockedStakeRedeem={handleLockedStakeRedeem}
                 handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
+                handleClickOnClaimRewardsAndBuyAdx={() => handleClickOnClaimRewardsAndBuyAdx()}
                 handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
                   setLockPeriod(initialLockPeriod);
                   setActiveStakingToken('ADX');
