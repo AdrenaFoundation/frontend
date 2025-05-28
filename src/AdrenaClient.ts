@@ -5825,6 +5825,25 @@ export class AdrenaClient {
     }
   }
 
+  async simulateVersionedTransaction({
+    versionedTransaction,
+  }: {
+    versionedTransaction: VersionedTransaction;
+  }): Promise<SimulatedTransactionResponse> {
+    if (!this.connection) throw new Error('Connection missing');
+
+    try {
+      // Simulate the transaction
+      const result = await this.simulateTransactionStrong(versionedTransaction);
+
+      return result;
+    } catch (err) {
+      console.log('Error', err);
+
+      throw err;
+    }
+  }
+
   async simulateTransaction({
     payer,
     transaction,
@@ -5860,6 +5879,7 @@ export class AdrenaClient {
     transaction,
     notification,
     getTransactionLogs = undefined,
+    additionalAddressLookupTables,
   }: {
     transaction: Transaction;
     notification?: MultiStepNotification;
@@ -5869,6 +5889,7 @@ export class AdrenaClient {
         events?: EventData<IdlEventField, Record<string, never>>;
       } | null,
     ) => void;
+    additionalAddressLookupTables?: PublicKey[];
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -5894,8 +5915,37 @@ export class AdrenaClient {
       throw adrenaError;
     }
 
-    transaction.recentBlockhash = latestBlockHash.blockhash;
-    transaction.feePayer = wallet.publicKey;
+    const lookupTableAccounts = (
+      await Promise.all([
+        this.connection.getAddressLookupTable(
+          new PublicKey('4PZaPEXPzMLuBSKgZUvpzLi3zGXJ1pSz6NTKrtoXUd4q'),
+        ),
+        ...(additionalAddressLookupTables || []).map((x) =>
+          this.connection!.getAddressLookupTable(x),
+        ),
+      ])
+    )?.map((x) => x.value);
+
+    if (!lookupTableAccounts) {
+      console.log('lookup table is null');
+
+      const adrenaError = new AdrenaTransactionError(
+        null,
+        "Couldn't load Address Lookup Table",
+      );
+
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+
+    let transactionMessage = new TransactionMessage({
+      payerKey: wallet.publicKey,
+      recentBlockhash: latestBlockHash.blockhash,
+      instructions: transaction.instructions,
+    }).compileToV0Message(lookupTableAccounts.filter((x) => x !== null));
+
+    let versionedTransaction = new VersionedTransaction(transactionMessage);
+    let serializedTransaction = versionedTransaction.serialize();
 
     try {
       // Refresh priority fees before proceeding
@@ -5904,12 +5954,7 @@ export class AdrenaClient {
         {
           percentile: PercentilePriorityFeeList[this.priorityFeeOption],
         },
-        bs58.encode(
-          transaction.serialize({
-            requireAllSignatures: false,
-            verifySignatures: false,
-          }),
-        ),
+        bs58.encode(serializedTransaction),
       );
     } catch (err) {
       console.log('Error fetching priority fee', err);
@@ -5930,14 +5975,21 @@ export class AdrenaClient {
       }),
     );
 
+    transactionMessage = new TransactionMessage({
+      payerKey: wallet.publicKey,
+      recentBlockhash: latestBlockHash.blockhash,
+      instructions: transaction.instructions,
+    }).compileToV0Message(lookupTableAccounts.filter((x) => x !== null));
+
+    versionedTransaction = new VersionedTransaction(transactionMessage);
+    serializedTransaction = versionedTransaction.serialize();
+
     // Simulate the transaction
     let computeUnitUsed: number | null | undefined = null;
 
     try {
-      const simulationResult = await this.simulateTransaction({
-        payer: wallet.publicKey,
-        transaction: transaction,
-        recentBlockhash: latestBlockHash.blockhash,
+      const simulationResult = await this.simulateVersionedTransaction({
+        versionedTransaction,
       });
 
       // check for simulation error
@@ -5997,34 +6049,17 @@ export class AdrenaClient {
       });
     }
 
-    const lookupTableAccount = (
-      await this.connection.getAddressLookupTable(
-        new PublicKey('4PZaPEXPzMLuBSKgZUvpzLi3zGXJ1pSz6NTKrtoXUd4q'),
-      )
-    ).value;
-
-    if (!lookupTableAccount) {
-      console.log('lookup table is null');
-
-      const adrenaError = new AdrenaTransactionError(
-        null,
-        "Couldn't load Address Lookup Table",
-      );
-
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
     // Prepare the transaction succeeded
     notification?.currentStepSucceeded();
 
+    // Rebuild a new transaction message containing fees and compute unit limit
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       recentBlockhash: latestBlockHash.blockhash,
       instructions: transaction.instructions,
     })
       // .compileToV0Message([]); // Deactivated lookup table
-      .compileToV0Message([lookupTableAccount]);
+      .compileToV0Message(lookupTableAccounts.filter((x) => x !== null));
 
     const versionedTx = new VersionedTransaction(messageV0);
 
