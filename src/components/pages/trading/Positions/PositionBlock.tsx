@@ -282,6 +282,7 @@ export function PositionBlock({
                   nb={position.price}
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
+                  minimumFractionDigits={2}
                   className={POSITION_BLOCK_STYLES.text.white}
                   isDecimalDimmed={false}
                 />
@@ -297,6 +298,7 @@ export function PositionBlock({
                   nb={tradeTokenPrice}
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
+                  minimumFractionDigits={2}
                   className={POSITION_BLOCK_STYLES.text.white}
                   isDecimalDimmed={false}
                 />
@@ -318,6 +320,7 @@ export function PositionBlock({
                     nb={position.liquidationPrice}
                     format="currency"
                     precision={position.token.displayPriceDecimalsPrecision}
+                    minimumFractionDigits={2}
                     className={POSITION_BLOCK_STYLES.text.orange}
                     isDecimalDimmed={false}
                   />
@@ -335,7 +338,7 @@ export function PositionBlock({
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
                   minimumFractionDigits={
-                    position.token.displayPriceDecimalsPrecision
+                    2
                   }
                   className={POSITION_BLOCK_STYLES.text.purple}
                   isDecimalDimmed={false}
@@ -365,7 +368,7 @@ export function PositionBlock({
                         className={POSITION_BLOCK_STYLES.text.blue}
                         precision={position.token.displayPriceDecimalsPrecision}
                         minimumFractionDigits={
-                          position.token.displayPriceDecimalsPrecision
+                          2
                         }
                         isDecimalDimmed={false}
                       />
@@ -406,7 +409,7 @@ export function PositionBlock({
                         format="currency"
                         className={POSITION_BLOCK_STYLES.text.blue}
                         precision={position.token.displayPriceDecimalsPrecision}
-                        minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                        minimumFractionDigits={2}
                         isDecimalDimmed={false}
                       />
                       {editIcon}
