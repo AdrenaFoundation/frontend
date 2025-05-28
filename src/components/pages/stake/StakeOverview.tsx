@@ -12,6 +12,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import {
   DEFAULT_LOCKED_STAKE_LOCK_DURATION,
@@ -34,7 +35,6 @@ import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import ClaimBlock from './ClaimBlock';
 import LockedStakes from './LockedStakes';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 interface SortConfig {
   size: 'asc' | 'desc';
   duration: 'asc' | 'desc';
