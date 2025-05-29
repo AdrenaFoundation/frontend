@@ -395,6 +395,8 @@ export default function Trade({
     }
   }, [positions, tokenPrices]);
 
+  const allActivePositions = tokenB ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint)) : null
+
   const totalStats = positions && positions.length > 0
     ? positions.reduce(
       (acc, position) => {
@@ -409,7 +411,6 @@ export default function Trade({
       { totalPnL: 0, totalCollateral: 0 }
     )
     : null;
-  const allActivePositions = tokenB ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint)) : null
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full sm:p-4 pb-[200px] sm:pb-4">
