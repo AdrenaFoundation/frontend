@@ -93,10 +93,7 @@ export default function Trade({
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
-  const [cookies, setCookie] = useCookies([
-    'showBreakEvenLine',
-    'toggleSizeUsdInChart',
-  ]);
+  const [cookies] = useCookies(['showBreakEvenLine', 'toggleSizeUsdInChart']);
 
   const [chartPreferences, setChartPreferences] = useState<ChartPreferences>(
     {
@@ -122,16 +119,6 @@ export default function Trade({
   const [toggleSizeUsdInChart, setToggleSizeUsdInChart] = useState<boolean>(
     cookies?.toggleSizeUsdInChart === true,
   );
-
-  // Save showBreakEvenLine to cookies when it changes
-  useEffect(() => {
-    setCookie('showBreakEvenLine', showBreakEvenLine);
-  }, [showBreakEvenLine, setCookie]);
-
-  // Save toggleSizeUsdInChart to cookies when it changes
-  useEffect(() => {
-    setCookie('toggleSizeUsdInChart', toggleSizeUsdInChart);
-  }, [toggleSizeUsdInChart, setCookie]);
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
 
