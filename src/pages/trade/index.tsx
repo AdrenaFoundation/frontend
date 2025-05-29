@@ -93,16 +93,18 @@ export default function Trade({
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
-  const [cookies] = useCookies(['showBreakEvenLine', 'toggleSizeUsdInChart']);
+  const [cookies] = useCookies(['showBreakEvenLine', 'toggleSizeUsdInChart',
+    'showAllActivePositionsLiquidationLines', 'showAllActivePositions', 'showPositionHistory', 'updateTPSLByDrag', 'showHighLow'
+  ]);
 
   const [chartPreferences, setChartPreferences] = useState<ChartPreferences>(
     {
-      showAllActivePositionsLiquidationLines: false,
-      showAllActivePositions: false,
-      showPositionHistory: false,
-      updateTPSLByDrag: true,
-      showHighLow: true,
-    },
+      showAllActivePositionsLiquidationLines: cookies?.showAllActivePositionsLiquidationLines === true,
+      showAllActivePositions: cookies?.showAllActivePositions === true,
+      showPositionHistory: cookies?.showPositionHistory === true,
+      updateTPSLByDrag: cookies?.updateTPSLByDrag === true,
+      showHighLow: cookies?.showHighLow === true,
+    }
   );
 
   const { getMarksCallback } = useMarks({

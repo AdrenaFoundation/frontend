@@ -26,7 +26,7 @@ export default function ChartControlsDesktop({
     setIsResizing,
     isBigScreen,
 }: ChartControlsDesktopProps) {
-    const [, setCookie] = useCookies(['showBreakEvenLine', 'toggleSizeUsdInChart']);
+    const [, setCookie] = useCookies(['showBreakEvenLine', 'toggleSizeUsdInChart', 'updateTPSLByDrag', 'showPositionHistory', 'showAllActivePositionsLiquidationLines']);
 
     const handleBreakEvenToggle = () => {
         setCookie('showBreakEvenLine', !showBreakEvenLine);
@@ -38,42 +38,49 @@ export default function ChartControlsDesktop({
         setToggleSizeUsdInChart(!toggleSizeUsdInChart);
     };
 
+    const handleUpdateTPSLByDragToggle = () => {
+        setCookie('updateTPSLByDrag', !chartPreferences.updateTPSLByDrag);
+        setChartPreferences((prev) => ({
+            ...prev,
+            updateTPSLByDrag: !prev.updateTPSLByDrag,
+        }));
+    };
+    const handlePositionHistoryToggle = () => {
+        setCookie('showPositionHistory', !chartPreferences.showPositionHistory);
+        setChartPreferences((prev) => ({
+            ...prev,
+            showPositionHistory: !prev.showPositionHistory,
+            showAllActivePositions: false,
+        }));
+    };
+    const handleLiquidationLinesToggle = () => {
+        setCookie('showAllActivePositionsLiquidationLines', !chartPreferences.showAllActivePositionsLiquidationLines);
+        setChartPreferences((prev) => ({
+            ...prev,
+            showAllActivePositionsLiquidationLines: !prev.showAllActivePositionsLiquidationLines,
+        }));
+    };
+
     return (
         <div className="hidden sm:flex w-full rounded-lg justify-end items-center p-3">
             <div className="rounded-lg flex justify-center items-center gap-3">
                 <ChartToggleButton
                     isActive={chartPreferences.updateTPSLByDrag}
-                    onClick={() => {
-                        setChartPreferences((prev) => ({
-                            ...prev,
-                            updateTPSLByDrag: !prev.updateTPSLByDrag,
-                        }));
-                    }}
+                    onClick={handleUpdateTPSLByDragToggle}
                 >
                     Draggable SL/TP
                 </ChartToggleButton>
 
                 <ChartToggleButton
                     isActive={chartPreferences.showPositionHistory}
-                    onClick={() => {
-                        setChartPreferences((prev) => ({
-                            ...prev,
-                            showPositionHistory: !prev.showPositionHistory,
-                            showAllActivePositions: false,
-                        }));
-                    }}
+                    onClick={handlePositionHistoryToggle}
                 >
                     Position history
                 </ChartToggleButton>
 
                 <ChartToggleButton
                     isActive={chartPreferences.showAllActivePositionsLiquidationLines}
-                    onClick={() => {
-                        setChartPreferences({
-                            ...chartPreferences,
-                            showAllActivePositionsLiquidationLines: !chartPreferences.showAllActivePositionsLiquidationLines,
-                        });
-                    }}
+                    onClick={handleLiquidationLinesToggle}
                 >
                     Liquidations
                 </ChartToggleButton>
