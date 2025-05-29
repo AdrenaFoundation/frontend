@@ -138,7 +138,7 @@ export function useMarks({
           id: position.positionId,
           time: endDate,
           color: position.pnl > 0 ? 'green' : 'red',
-          text: `pnl: ${position.pnl}`,
+          text: `pnl: ${formatPriceInfo(position.pnl, 2, 0, 0)}`,
           label: position.side === 'long' ? 'L' : 'S',
           labelFontColor: 'white',
           minSize: size,

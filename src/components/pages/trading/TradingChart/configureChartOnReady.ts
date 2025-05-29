@@ -31,8 +31,6 @@ export function configureChartOnReady(
     'paneProperties.legendProperties.showSeriesOHLC': true,
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesVisible':
       showHighLow || true,
-    'mainSeriesProperties.highLowAvgPrice.highLowPriceLabelsVisible':
-      showHighLow || true,
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesColor': '#132e61',
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesWidth': 1,
     'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,

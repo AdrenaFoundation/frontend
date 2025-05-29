@@ -31,7 +31,7 @@ export function useChartState(
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadingCounter, setLoadingCounter] = useState<number>(0);
-  const isReadeyRef = useRef<boolean | null>(widgetReady);
+  const isReadyRef = useRef<boolean | null>(widgetReady);
 
   // Retrieve saved settings or use defaults
   const savedResolution =
@@ -48,7 +48,7 @@ export function useChartState(
   };
 
   useEffect(() => {
-    isReadeyRef.current = widgetReady;
+    isReadyRef.current = widgetReady;
   }, [widgetReady]);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export function useChartState(
         token,
         savedResolution,
         savedTimezone,
-        isReadeyRef,
+        isReadyRef,
         setWidgetReady,
         setIsLoading,
         getMarksCallback,

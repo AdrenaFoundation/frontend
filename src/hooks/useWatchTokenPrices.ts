@@ -26,7 +26,6 @@ export default function useWatchTokenPrices() {
         return;
       }
 
-      // Extract prices from oracle account
       latestPrices.prices.forEach(
         (oraclePrice: ChaosLabsPricesExtended['prices'][number]) => {
           if (!oraclePrice.symbol || oraclePrice.price.isZero()) return;

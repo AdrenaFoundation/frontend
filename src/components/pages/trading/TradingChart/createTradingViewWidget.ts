@@ -29,14 +29,14 @@ export function createTradingViewWidget({
   getMarksCallback,
   savedResolution,
   savedTimezone,
-  isReadeyRef,
+  isReadyRef,
   setWidgetReady,
   setIsLoading,
 }: {
   token: Token;
   savedResolution: string;
   savedTimezone: string;
-  isReadeyRef: React.MutableRefObject<boolean | null>;
+  isReadyRef: React.MutableRefObject<boolean | null>;
   setWidgetReady: (ready: boolean) => void;
   setIsLoading: (loading: boolean) => void;
   getMarksCallback: IDatafeedChartApi['getMarks'];
@@ -87,7 +87,7 @@ export function createTradingViewWidget({
             if (
               !currentTimezone ||
               currentTimezone === savedTimezone ||
-              isReadeyRef.current === null
+              isReadyRef.current === null
             ) {
               return;
             }
