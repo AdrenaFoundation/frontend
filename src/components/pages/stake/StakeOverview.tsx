@@ -35,6 +35,7 @@ import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import ClaimBlock from './ClaimBlock';
 import LockedStakes from './LockedStakes';
+
 interface SortConfig {
   size: 'asc' | 'desc';
   duration: 'asc' | 'desc';

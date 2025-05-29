@@ -257,20 +257,16 @@ export class AdrenaClient {
     return pda;
   };
 
-  public getGenesisLockPda = () => {
+  public getGenesisLockPda = (poolKey: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('genesis_lock'), this.mainPool.pubkey.toBuffer()],
+      [Buffer.from('genesis_lock'), poolKey.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
-  public getLimitOrderBookPda = (wallet: PublicKey) => {
+  public getLimitOrderBookPda = (wallet: PublicKey, poolKey: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('limit_order_book'),
-        wallet.toBuffer(),
-        this.mainPool.pubkey.toBuffer(),
-      ],
+      [Buffer.from('limit_order_book'), wallet.toBuffer(), poolKey.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
@@ -278,12 +274,13 @@ export class AdrenaClient {
   public getCollateralEscrowPda = (
     wallet: PublicKey,
     collateralMint: PublicKey,
+    poolKey: PublicKey,
   ) => {
     return PublicKey.findProgramAddressSync(
       [
         Buffer.from('escrow_account'),
         wallet.toBuffer(),
-        this.mainPool.pubkey.toBuffer(),
+        poolKey.toBuffer(),
         collateralMint.toBuffer(),
       ],
       AdrenaClient.programId,
@@ -445,14 +442,18 @@ export class AdrenaClient {
 
   public async loadLimitOrderBook({
     wallet,
+    poolKey,
   }: {
     wallet: PublicKey;
+    poolKey: PublicKey;
   }): Promise<LimitOrderBookExtended | null> {
     if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
 
     const limitOrderBook = await (
       this.readonlyAdrenaProgram || this.adrenaProgram
-    ).account.limitOrderBook.fetchNullable(this.getLimitOrderBookPda(wallet));
+    ).account.limitOrderBook.fetchNullable(
+      this.getLimitOrderBookPda(wallet, poolKey),
+    );
 
     if (!limitOrderBook) return null;
 
@@ -502,7 +503,7 @@ export class AdrenaClient {
               .filter((order) => !!order)
           : [],
       escrowedLamports: nativeToUi(limitOrderBook.escrowedLamports, 9), // SOL has 9 decimals
-      pubkey: this.getLimitOrderBookPda(wallet),
+      pubkey: this.getLimitOrderBookPda(wallet, poolKey),
     };
 
     return limitOrderBookExtended;
@@ -1033,16 +1034,26 @@ export class AdrenaClient {
    * INSTRUCTIONS
    */
 
+  public getPoolFromKey(poolKey: PublicKey): PoolExtended {
+    if (!this.mainPool.pubkey.equals(poolKey)) {
+      return this.mainPool;
+    }
+
+    return this.mainPool;
+  }
+
   async buildAddLiquidityTx({
     owner,
     mint,
     amountIn,
     minLpAmountOut,
+    poolKey,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     amountIn: BN;
     minLpAmountOut: BN;
+    poolKey: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1050,8 +1061,9 @@ export class AdrenaClient {
 
     const custodyAddress = this.findCustodyAddress(mint);
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
+    const pool = this.getPoolFromKey(poolKey);
 
-    const custodiesAddresses = this.mainPool.custodies.filter(
+    const custodiesAddresses = pool.custodies.filter(
       (custody) => !custody.equals(PublicKey.default),
     );
 
@@ -1098,7 +1110,7 @@ export class AdrenaClient {
         fundingAccount,
         lpTokenAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: this.mainPool.pubkey,
+        pool: poolKey,
         custody: custodyAddress,
         oracle: AdrenaClient.oraclePda,
         custodyTokenAccount,
@@ -1108,7 +1120,7 @@ export class AdrenaClient {
         cortex: AdrenaClient.cortexPda,
         adrenaProgram: this.adrenaProgram.programId,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey))
       .preInstructions(preInstructions);
   }
 
@@ -1247,7 +1259,7 @@ export class AdrenaClient {
       preInstructions,
     });
 
-    const ix = await this.adrenaProgram.methods
+    return this.adrenaProgram.methods
       .addLiquidStake({
         amount: uiToNative(amount, this.adxToken.decimals),
       })
@@ -1275,12 +1287,11 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
+        // TODO: Should be changed in backend - we shouldn't have to pass the pool here
         pool: this.mainPool.pubkey,
         genesisLock: this.genesisLockPda,
       })
       .preInstructions(preInstructions);
-
-    return ix;
   }
 
   public async addLiquidity({
@@ -1289,12 +1300,14 @@ export class AdrenaClient {
     amountIn,
     minLpAmountOut,
     notification,
+    poolKey,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     amountIn: BN;
     minLpAmountOut: BN;
     notification: MultiStepNotification;
+    poolKey: PublicKey;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1309,6 +1322,7 @@ export class AdrenaClient {
         mint,
         amountIn,
         minLpAmountOut,
+        poolKey,
       })
     )
       .preInstructions(preInstructions)
@@ -1327,12 +1341,14 @@ export class AdrenaClient {
     lpAmountIn,
     minAmountOut,
     receivingAccount,
+    poolKey,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     lpAmountIn: BN;
     minAmountOut: BN;
     receivingAccount: PublicKey;
+    poolKey: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1362,7 +1378,7 @@ export class AdrenaClient {
         receivingAccount,
         lpTokenAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: this.mainPool.pubkey,
+        pool: poolKey,
         custody: custodyAddress,
         oracle: AdrenaClient.oraclePda,
         custodyTokenAccount,
@@ -1371,7 +1387,7 @@ export class AdrenaClient {
         cortex: AdrenaClient.cortexPda,
         adrenaProgram: this.adrenaProgram.programId,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts());
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey));
   }
 
   public async removeLiquidity({
@@ -1380,12 +1396,14 @@ export class AdrenaClient {
     lpAmountIn,
     minAmountOut,
     notification,
+    poolKey,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     lpAmountIn: BN;
     minAmountOut: BN;
     notification: MultiStepNotification;
+    poolKey: PublicKey;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1408,6 +1426,7 @@ export class AdrenaClient {
         lpAmountIn,
         minAmountOut,
         receivingAccount,
+        poolKey,
       })
     )
       .preInstructions(preInstructions)
@@ -1427,6 +1446,7 @@ export class AdrenaClient {
     collateralMint,
     collateralAmount,
     leverage,
+    poolKey,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1434,6 +1454,7 @@ export class AdrenaClient {
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
+    poolKey: PublicKey;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1493,7 +1514,7 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
-        pool: this.mainPool.pubkey,
+        pool: poolKey,
       });
   }
 
@@ -1504,6 +1525,7 @@ export class AdrenaClient {
     collateralMint,
     collateralAmount,
     leverage,
+    poolKey,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -1511,6 +1533,7 @@ export class AdrenaClient {
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
+    poolKey: PublicKey;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1583,7 +1606,7 @@ export class AdrenaClient {
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         oracle: AdrenaClient.oraclePda,
         cortex: AdrenaClient.cortexPda,
-        pool: this.mainPool.pubkey,
+        pool: poolKey,
         position,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -1599,6 +1622,7 @@ export class AdrenaClient {
     mintA,
     mintB,
     receivingAccount,
+    poolKey,
   }: {
     owner: PublicKey;
     amountIn: BN;
@@ -1606,6 +1630,7 @@ export class AdrenaClient {
     mintA: PublicKey;
     mintB: PublicKey;
     receivingAccount: PublicKey;
+    poolKey: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1642,7 +1667,7 @@ export class AdrenaClient {
         fundingAccount,
         receivingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: this.mainPool.pubkey,
+        pool: poolKey,
         receivingCustody,
         receivingCustodyTokenAccount,
         dispensingCustody,
@@ -1719,7 +1744,7 @@ export class AdrenaClient {
         owner: position.owner,
         receivingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: this.mainPool.pubkey,
+        pool: position.nativeObject.pool,
         position: position.pubkey,
         custody: position.custody,
         custodyTokenAccount,
@@ -1805,7 +1830,7 @@ export class AdrenaClient {
         owner: position.owner,
         receivingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: this.mainPool.pubkey,
+        pool: position.nativeObject.pool,
         position: position.pubkey,
         custody: position.custody,
         collateralCustody: collateralCustody.pubkey,
@@ -1834,6 +1859,7 @@ export class AdrenaClient {
     mintA,
     mintB,
     notification,
+    poolKey,
   }: {
     owner: PublicKey;
     amountIn: BN;
@@ -1841,6 +1867,7 @@ export class AdrenaClient {
     mintA: PublicKey;
     mintB: PublicKey;
     notification: MultiStepNotification;
+    poolKey: PublicKey;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1864,6 +1891,7 @@ export class AdrenaClient {
         mintA,
         mintB,
         receivingAccount,
+        poolKey,
       })
     )
       .preInstructions(preInstructions)
@@ -1897,7 +1925,10 @@ export class AdrenaClient {
     }
 
     // preInstructions.push(await this.buildDistributeFeesIx());
-    const ix = await this.buildClosePositionLongIx({ position, price });
+    const ix = await this.buildClosePositionLongIx({
+      position,
+      price,
+    });
 
     return this.signAndExecuteTxAlternative({
       transaction: await ix.transaction(),
@@ -2031,6 +2062,7 @@ export class AdrenaClient {
     stopLossLimitPrice,
     takeProfitLimitPrice,
     isIncrease,
+    poolKey,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -2043,6 +2075,7 @@ export class AdrenaClient {
     stopLossLimitPrice?: BN | null;
     takeProfitLimitPrice?: BN | null;
     isIncrease?: boolean;
+    poolKey: PublicKey;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -2160,6 +2193,7 @@ export class AdrenaClient {
         collateralMint,
         collateralAmount,
         leverage,
+        poolKey,
       })
     ).instruction();
 
@@ -2184,6 +2218,7 @@ export class AdrenaClient {
     leverage,
     side,
     tokenPrices,
+    poolKey,
   }: {
     tokenA: Token;
     tokenB: Token;
@@ -2191,6 +2226,7 @@ export class AdrenaClient {
     leverage: number;
     side: 'long' | 'short';
     tokenPrices: TokenPricesState;
+    poolKey: PublicKey;
   }): Promise<{
     collateralUsd: number;
     sizeUsd: number;
@@ -2220,6 +2256,7 @@ export class AdrenaClient {
       collateralAmount,
       leverage,
       side,
+      poolKey,
     });
 
     if (info === null) throw new Error('cannot calculate fees');
@@ -2303,6 +2340,7 @@ export class AdrenaClient {
     stopLossLimitPrice,
     takeProfitLimitPrice,
     isIncrease,
+    poolKey,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -2315,6 +2353,7 @@ export class AdrenaClient {
     stopLossLimitPrice?: BN | null;
     takeProfitLimitPrice?: BN | null;
     isIncrease?: boolean;
+    poolKey: PublicKey;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -2423,6 +2462,7 @@ export class AdrenaClient {
         collateralMint,
         collateralAmount,
         leverage,
+        poolKey,
       })
     ).instruction();
 
@@ -2792,7 +2832,7 @@ export class AdrenaClient {
         owner: position.owner,
         fundingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: this.mainPool.pubkey,
+        pool: position.nativeObject.pool,
         position: position.pubkey,
         custody: position.custody,
         oracle: AdrenaClient.oraclePda,
@@ -2857,7 +2897,7 @@ export class AdrenaClient {
         owner: position.owner,
         fundingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: this.mainPool.pubkey,
+        pool: position.nativeObject.pool,
         position: position.pubkey,
         custody: position.custody,
         collateralCustody: position.collateralCustody,
@@ -2923,7 +2963,7 @@ export class AdrenaClient {
           owner: position.owner,
           receivingAccount,
           transferAuthority: AdrenaClient.transferAuthorityAddress,
-          pool: this.mainPool.pubkey,
+          pool: position.nativeObject.pool,
           position: position.pubkey,
           custody: position.custody,
           custodyTokenAccount,
@@ -3001,7 +3041,7 @@ export class AdrenaClient {
           owner: position.owner,
           receivingAccount,
           transferAuthority: AdrenaClient.transferAuthorityAddress,
-          pool: this.mainPool.pubkey,
+          pool: position.nativeObject.pool,
           position: position.pubkey,
           custody: position.custody,
           collateralCustody: position.collateralCustody,
@@ -3134,7 +3174,10 @@ export class AdrenaClient {
         preInstructions,
       });
 
-    const distributeFeesIx = await this.buildDistributeFeesIx();
+    // TODO: Loop on all pools
+    const distributeFeesIx = await this.buildDistributeFeesIx({
+      poolKey: this.mainPool.pubkey,
+    });
 
     preInstructions.push(distributeFeesIx);
 
@@ -3441,6 +3484,7 @@ export class AdrenaClient {
         stakingStakedTokenVault,
         lmTokenMint: this.lmTokenMint,
         adrenaProgram: this.adrenaProgram.programId,
+        // TODO: Should be changed in backend - we shouldn't have to pass the pool here
         pool: this.mainPool.pubkey,
         genesisLock: this.genesisLockPda,
         rewardTokenAccount,
@@ -3546,6 +3590,7 @@ export class AdrenaClient {
         stakedTokenAccount,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
         genesisLock: this.genesisLockPda,
+        // TODO: Should be changed in backend - we shouldn't have to pass the pool here
         pool: this.mainPool.pubkey,
       })
       .preInstructions(preInstructions)
@@ -3846,6 +3891,7 @@ export class AdrenaClient {
         feeRedistributionMint: this.cortex.feeRedistributionMint,
         stakedTokenAccount,
         stakedTokenMint,
+        // TODO: Should be changed in backend - we shouldn't have to pass the pool here
         pool: this.mainPool.pubkey,
         genesisLock: this.genesisLockPda,
       })
@@ -3919,6 +3965,7 @@ export class AdrenaClient {
         adrenaProgram: this.adrenaProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
+        // TODO: Should be changed in backend - we shouldn't have to pass the pool here
         pool: this.mainPool.pubkey,
         genesisLock: this.genesisLockPda,
         systemProgram: SystemProgram.programId,
@@ -3932,12 +3979,12 @@ export class AdrenaClient {
     });
   }
 
-  public async getGenesisLock(): Promise<GenesisLock | null> {
+  public async getGenesisLock(poolKey: PublicKey): Promise<GenesisLock | null> {
     if (this.adrenaProgram === null) {
       return null;
     }
 
-    const genesisLockPda = this.getGenesisLockPda();
+    const genesisLockPda = this.getGenesisLockPda(poolKey);
 
     return this.readonlyAdrenaProgram.account.genesisLock.fetch(genesisLockPda);
   }
@@ -3945,9 +3992,11 @@ export class AdrenaClient {
   public async buildCancelLimitOrderIx({
     id,
     collateralCustody,
+    poolKey,
   }: {
     id: number;
     collateralCustody: PublicKey;
+    poolKey: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3972,13 +4021,13 @@ export class AdrenaClient {
 
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const cortex = AdrenaClient.cortexPda;
-    const pool = this.mainPool.pubkey;
 
-    const limitOrderBook = this.getLimitOrderBookPda(owner);
+    const limitOrderBook = this.getLimitOrderBookPda(owner, poolKey);
 
     const collateralEscrow = this.getCollateralEscrowPda(
       owner,
       collateralCustodyInfos.mint,
+      poolKey,
     );
 
     return this.adrenaProgram.methods
@@ -3990,7 +4039,7 @@ export class AdrenaClient {
         receivingAccount,
         transferAuthority,
         cortex,
-        pool,
+        pool: poolKey,
         limitOrderBook,
         collateralEscrow,
         collateralCustodyMint: collateralCustodyInfos.mint,
@@ -4006,15 +4055,18 @@ export class AdrenaClient {
     id,
     notification,
     collateralCustody,
+    poolKey,
   }: {
     id: number;
     notification?: MultiStepNotification;
     collateralCustody: PublicKey;
+    poolKey: PublicKey;
   }) {
     const transaction = await (
       await this.buildCancelLimitOrderIx({
         id,
         collateralCustody,
+        poolKey,
       })
     ).transaction();
 
@@ -4033,6 +4085,7 @@ export class AdrenaClient {
     notification,
     mint,
     collateralMint,
+    poolKey,
   }: {
     triggerPrice: number;
     limitPrice: number | null;
@@ -4042,6 +4095,7 @@ export class AdrenaClient {
     notification?: MultiStepNotification;
     mint: PublicKey;
     collateralMint: PublicKey;
+    poolKey: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -4058,11 +4112,14 @@ export class AdrenaClient {
 
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const cortex = AdrenaClient.cortexPda;
-    const pool = this.mainPool.pubkey;
-    const custody = this.getCustodyByMint(mint);
-    const collateralCustody = this.getCustodyByMint(collateralMint);
-    const limitOrderBook = this.getLimitOrderBookPda(owner);
-    const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
+    const custody = this.getCustodyByMint(mint, poolKey);
+    const collateralCustody = this.getCustodyByMint(collateralMint, poolKey);
+    const limitOrderBook = this.getLimitOrderBookPda(owner, poolKey);
+    const collateralEscrow = this.getCollateralEscrowPda(
+      owner,
+      collateralMint,
+      poolKey,
+    );
 
     const limitOrderBookAccount =
       await this.adrenaProgram.account.limitOrderBook.fetchNullable(
@@ -4075,7 +4132,7 @@ export class AdrenaClient {
         .initLimitOrderBook()
         .accountsStrict({
           owner,
-          pool,
+          pool: poolKey,
           limitOrderBook,
           systemProgram: SystemProgram.programId,
         })
@@ -4097,7 +4154,7 @@ export class AdrenaClient {
         fundingAccount,
         transferAuthority,
         cortex,
-        pool,
+        pool: poolKey,
         limitOrderBook,
         collateralEscrow,
         collateralCustodyMint: collateralCustody.mint,
@@ -4118,10 +4175,12 @@ export class AdrenaClient {
 
   public async distributeFees({
     notification,
+    poolKey,
   }: {
     notification: MultiStepNotification;
+    poolKey: PublicKey;
   }) {
-    const instruction = await this.buildDistributeFeesIx();
+    const instruction = await this.buildDistributeFeesIx({ poolKey });
 
     const transaction = new Transaction();
 
@@ -4133,7 +4192,7 @@ export class AdrenaClient {
     });
   }
 
-  public async buildDistributeFeesIx() {
+  public async buildDistributeFeesIx({ poolKey }: { poolKey: PublicKey }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
@@ -4154,6 +4213,7 @@ export class AdrenaClient {
 
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
+      poolKey,
     );
 
     const oraclePrices: ChaosLabsPricesExtended | null =
@@ -4190,7 +4250,7 @@ export class AdrenaClient {
         stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
         stakingRewardTokenCustodyTokenAccount,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey))
       .instruction();
   }
 
@@ -4507,19 +4567,21 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     side,
+    poolKey,
   }: {
     mint: PublicKey;
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
     side: 'long' | 'short';
+    poolKey: PublicKey;
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
     if (this.adrenaProgram === null) {
       return null;
     }
 
-    const principalCustody = this.getCustodyByMint(mint);
-    const receivingCustody = this.getCustodyByMint(collateralMint);
+    const principalCustody = this.getCustodyByMint(mint, poolKey);
+    const receivingCustody = this.getCustodyByMint(collateralMint, poolKey);
     const instructionCollateralMint = (() => {
       if (side === 'long') {
         return principalCustody.mint;
@@ -4528,7 +4590,10 @@ export class AdrenaClient {
       return this.getUsdcToken().mint;
     })();
 
-    const collateralCustody = this.getCustodyByMint(instructionCollateralMint);
+    const collateralCustody = this.getCustodyByMint(
+      instructionCollateralMint,
+      poolKey,
+    );
 
     const oraclePrices: ChaosLabsPricesExtended | null =
       await DataApiClient.getChaosLabsPrices();
@@ -5454,7 +5519,11 @@ export class AdrenaClient {
     return [...parsedUserProfilesV1, ...parsedUserProfilesV2];
   }
 
-  public async getAssetsUnderManagement(): Promise<BN | null> {
+  public async getAssetsUnderManagement({
+    poolKey,
+  }: {
+    poolKey: PublicKey;
+  }): Promise<BN | null> {
     if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
@@ -5477,7 +5546,7 @@ export class AdrenaClient {
         cortex: AdrenaClient.cortexPda,
         pool: this.mainPool.pubkey,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey))
       .instruction();
 
     return this.simulateInstructions<BN>([instruction], 'BN');
@@ -5488,9 +5557,11 @@ export class AdrenaClient {
   public async getAddLiquidityAmountAndFee({
     amountIn,
     token,
+    poolKey,
   }: {
     amountIn: BN;
     token: Token;
+    poolKey: PublicKey;
   }): Promise<AmountAndFee | null> {
     if (!token.custody) {
       throw new Error(
@@ -5527,7 +5598,7 @@ export class AdrenaClient {
         custody: token.custody,
         lpTokenMint: this.lpTokenMint,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey))
       .instruction();
 
     return this.simulateInstructions<AmountAndFee>(
@@ -5541,9 +5612,11 @@ export class AdrenaClient {
   public async getRemoveLiquidityAmountAndFee({
     lpAmountIn,
     token,
+    poolKey,
   }: {
     lpAmountIn: BN;
     token: Token;
+    poolKey: PublicKey;
   }): Promise<AmountAndFee | null> {
     if (!token.custody) {
       throw new Error(
@@ -5576,7 +5649,7 @@ export class AdrenaClient {
         custody: token.custody,
         lpTokenMint: this.lpTokenMint,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey))
       .instruction();
 
     return this.simulateInstructions<AmountAndFee>(
@@ -5585,7 +5658,11 @@ export class AdrenaClient {
     );
   }
 
-  public async getLpTokenPrice(): Promise<BN | null> {
+  public async getLpTokenPrice({
+    poolKey,
+  }: {
+    poolKey: PublicKey;
+  }): Promise<BN | null> {
     if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
@@ -5609,7 +5686,7 @@ export class AdrenaClient {
         pool: this.mainPool.pubkey,
         lpTokenMint: this.lpTokenMint,
       })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey))
       .instruction();
 
     return this.simulateInstructions<BN>([instruction], 'BN');
@@ -5665,12 +5742,14 @@ export class AdrenaClient {
    */
 
   // Some instructions requires to provide all custody as remaining accounts
-  protected prepareCustodiesForRemainingAccounts(): {
+  protected prepareCustodiesForRemainingAccounts(poolKey: PublicKey): {
     pubkey: PublicKey;
     isSigner: boolean;
     isWritable: boolean;
   }[] {
-    const custodiesAddresses = this.mainPool.custodies.filter(
+    const pool = this.getPoolFromKey(poolKey);
+
+    const custodiesAddresses = pool.custodies.filter(
       (custody) => !custody.equals(PublicKey.default),
     );
 
@@ -5685,8 +5764,15 @@ export class AdrenaClient {
     return this.custodies.find((c) => c.pubkey.equals(custody)) ?? null;
   }
 
-  public getCustodyByMint(mint: PublicKey): CustodyExtended {
-    const custody = this.custodies.find((custody) => custody.mint.equals(mint));
+  public getCustodyByMint(
+    mint: PublicKey,
+    poolKey: PublicKey,
+  ): CustodyExtended {
+    const pool = this.getPoolFromKey(poolKey);
+
+    const custody = this.custodies
+      .filter((custody) => pool.custodies.some((c) => c.equals(custody.pubkey)))
+      .find((custody) => custody.mint.equals(mint));
 
     if (!custody)
       throw new Error(`Cannot find custody for mint ${mint.toBase58()}`);
