@@ -157,6 +157,13 @@ export default function usePositionStats(isByWalletAddress = false) {
                 const stats = {
                     color: getColor(formattedActivity[dateKey].totalPnl, averagePnl),
                     totalPositions: formattedActivity[dateKey].totalPositions,
+                    // winratePercentage: formattedActivity[dateKey].totalPositions
+                    //     ? Math.round(
+                    //         (formattedActivity[dateKey].winningPositionsCount /
+                    //             formattedActivity[dateKey].totalPositions) *
+                    //         100
+                    //     )
+                    //     : 0,
                     pnl: formattedActivity[dateKey].totalPnl,
                     increaseSize: formattedActivity[dateKey].totalIncreaseSize,
                     totalFees: formattedActivity[dateKey].totalFees,

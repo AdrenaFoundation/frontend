@@ -1,0 +1,109 @@
+import { createClient } from '@supabase/supabase-js';
+import { randomUUID } from 'crypto';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+import { LogEntry } from '@/types';
+
+type ErrorReport = {
+  id?: number;
+  created_at?: string;
+  wallet_address: string;
+  error_message: string;
+  console_log?: LogEntry[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  recent_post_data?: any;
+  url?: string;
+  action?: string;
+  step?: string;
+  timestamp?: string;
+  ref?: string;
+  txHash?: string;
+};
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+  );
+
+  if (req.method === 'GET') {
+    const { data, error } = await supabase
+      .from('error_reports')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({
+        error: 'Failed to fetch error reports',
+        details: error.message,
+      });
+    }
+
+    return res.status(200).json({
+      reports: data,
+      count: data?.length || 0,
+    });
+  }
+
+  if (req.method === 'POST') {
+    const {
+      wallet_address,
+      error_message,
+      console_log,
+      recent_post_data,
+      url,
+      action,
+      step,
+      txHash,
+    } = req.body as ErrorReport;
+
+    // Validate required fields
+    if (!error_message) {
+      return res.status(400).json({
+        error: 'Missing required field: error_message',
+      });
+    }
+
+    const random = randomUUID().split('-')[0];
+
+    const ref = `ERR-${Date.now()}-${random}`;
+
+    const report = {
+      wallet_address: wallet_address ?? 'anonymous',
+      error_message,
+      console_log: console_log ?? '',
+      recent_post_data: recent_post_data ?? null,
+      url: url ?? '',
+      action: action ?? '',
+      step: step ?? '',
+      timestamp: new Date().toISOString(),
+      txHash: txHash ?? null,
+      ref: ref ?? '',
+    };
+
+    const { error } = await supabase
+      .from('error_reports')
+      .insert([report])
+      .select();
+
+    if (error) {
+      return res.status(500).json({
+        error: 'Failed to create error report',
+        details: error.message,
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      report,
+      message: 'Error report created successfully',
+      report_code: ref,
+    });
+  }
+
+  // Handle unsupported methods
+  return res.status(405).json({ error: 'Method not allowed' });
+}

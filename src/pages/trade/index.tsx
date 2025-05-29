@@ -12,6 +12,7 @@ import crossIcon from '@/../public/images/Icons/cross.svg';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import FormatNumber from '@/components/Number/FormatNumber';
 import LimitOrder from '@/components/pages/trading/LimitOrder/LimitOrder';
 import { POSITION_BLOCK_STYLES } from '@/components/pages/trading/Positions/PositionBlockComponents/PositionBlockStyles';
 import Positions from '@/components/pages/trading/Positions/Positions';
@@ -107,9 +108,11 @@ export default function Trade({
     null,
   );
 
-  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 1152px)');
   const isExtraWideScreen = useBetterMediaQuery('(min-width: 1600px)');
-  const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>('positions');
+  const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>(
+    'positions',
+  );
 
   const { limitOrderBook, reload } = useLimitOrderBook({
     walletAddress: wallet?.publicKey.toBase58() ?? null,
@@ -278,16 +281,23 @@ export default function Trade({
   const triggerCancelAllLimitOrder = useCallback(async () => {
     if (!limitOrderBook || limitOrderBook.limitOrders.length === 0) return;
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Cancel All Limit Order').fire();
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Cancel All Limit Order',
+    ).fire();
 
     try {
-      const ixBuilders = await Promise.all(limitOrderBook.limitOrders.map(lo => window.adrena.client.buildCancelLimitOrderIx({
-        id: lo.id,
-        collateralCustody: lo.collateralCustody,
-      })));
+      const ixBuilders = await Promise.all(
+        limitOrderBook.limitOrders.map((lo) =>
+          window.adrena.client.buildCancelLimitOrderIx({
+            id: lo.id,
+            collateralCustody: lo.collateralCustody,
+          }),
+        ),
+      );
 
-      const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+      const ixs = await Promise.all(
+        ixBuilders.map((ixBuilder) => ixBuilder.instruction()),
+      );
 
       const transaction = new Transaction();
       transaction.add(...ixs);
@@ -307,7 +317,7 @@ export default function Trade({
     if (!positions || positions.length === 0) return;
 
     // Missing price
-    if (positions.some(p => !tokenPrices[getTokenSymbol(p.token.symbol)])) {
+    if (positions.some((p) => !tokenPrices[getTokenSymbol(p.token.symbol)])) {
       return;
     }
 
@@ -317,27 +327,40 @@ export default function Trade({
       for (let i = 0; i < nbTransactions; i++) {
         const positionsGroup = positions.slice(i * 2, (i + 1) * 2);
 
-        const notification =
-          MultiStepNotification.newForRegularTransaction(
-            `Close All Positions${nbTransactions > 1 ? ` (${i + 1}/${nbTransactions})` : ''}`,
-          ).fire();
+        const notification = MultiStepNotification.newForRegularTransaction(
+          `Close All Positions${nbTransactions > 1 ? ` (${i + 1}/${nbTransactions})` : ''}`,
+        ).fire();
 
         // 1%
         const slippageInBps = 100;
 
-        const ixBuilders = await Promise.all(positionsGroup.map(p => p.side === 'long' ? window.adrena.client.buildClosePositionLongIx({
-          position: p,
-          price: uiToNative(tokenPrices[getTokenSymbol(p.token.symbol)]!, PRICE_DECIMALS)
-            .mul(new BN(10_000 - slippageInBps))
-            .div(new BN(10_000)),
-        }) : window.adrena.client.buildClosePositionShortIx({
-          position: p,
-          price: uiToNative(tokenPrices[p.token.symbol]!, PRICE_DECIMALS)
-            .mul(new BN(10_000))
-            .div(new BN(10_000 - slippageInBps)),
-        })));
+        const ixBuilders = await Promise.all(
+          positionsGroup.map((p) =>
+            p.side === 'long'
+              ? window.adrena.client.buildClosePositionLongIx({
+                position: p,
+                price: uiToNative(
+                  tokenPrices[getTokenSymbol(p.token.symbol)]!,
+                  PRICE_DECIMALS,
+                )
+                  .mul(new BN(10_000 - slippageInBps))
+                  .div(new BN(10_000)),
+              })
+              : window.adrena.client.buildClosePositionShortIx({
+                position: p,
+                price: uiToNative(
+                  tokenPrices[p.token.symbol]!,
+                  PRICE_DECIMALS,
+                )
+                  .mul(new BN(10_000))
+                  .div(new BN(10_000 - slippageInBps)),
+              }),
+          ),
+        );
 
-        const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+        const ixs = await Promise.all(
+          ixBuilders.map((ixBuilder) => ixBuilder.instruction()),
+        );
 
         const transaction = new Transaction();
         transaction.add(...ixs);
@@ -351,6 +374,21 @@ export default function Trade({
       console.error('error', error);
     }
   }, [positions, tokenPrices]);
+
+  const totalStats = positions && positions.length > 0
+    ? positions.reduce(
+      (acc, position) => {
+        const price = tokenPrices[getTokenSymbol(position.token.symbol)];
+        if (!price || position.pnl == null) {
+          return acc;
+        }
+        acc.totalPnL += position.pnl;
+        acc.totalCollateral += position.collateralUsd;
+        return acc;
+      },
+      { totalPnL: 0, totalCollateral: 0 }
+    )
+    : null;
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
@@ -454,7 +492,12 @@ export default function Trade({
                   className="flex items-center p-0.5 text-white cursor-pointer"
                   onClick={() => setIsResizing(!isResizing)}
                 >
-                  <p className={twMerge("opacity-50 text-xs hover:opacity-100 transition-opacity", isResizing && "opacity-100")}>
+                  <p
+                    className={twMerge(
+                      'opacity-50 text-xs hover:opacity-100 transition-opacity',
+                      isResizing && 'opacity-100',
+                    )}
+                  >
                     Resize
                   </p>
                 </div>
@@ -472,7 +515,10 @@ export default function Trade({
                   const handleMouseMove = (moveEvent: MouseEvent) => {
                     moveEvent.preventDefault();
                     const deltaY = moveEvent.clientY - startY;
-                    const newHeight = Math.max(minChartHeight, Math.min(maxChartHeight, initialHeight + deltaY));
+                    const newHeight = Math.max(
+                      minChartHeight,
+                      Math.min(maxChartHeight, initialHeight + deltaY),
+                    );
                     setChartHeight(newHeight);
                   };
 
@@ -504,8 +550,9 @@ export default function Trade({
                   onClick={() => setView('positions')}
                 >
                   Open positions
-
-                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{positions?.length ?? 0}</div>
+                  <div className="h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor">
+                    {positions?.length ?? 0}
+                  </div>
                 </div>
 
                 <span className="opacity-20">|</span>
@@ -518,10 +565,10 @@ export default function Trade({
                   onClick={() => setView('limitOrder')}
                 >
                   Limit orders
-
-                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{limitOrderBook?.limitOrders.length ?? 0}</div>
+                  <div className="h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor">
+                    {limitOrderBook?.limitOrders.length ?? 0}
+                  </div>
                 </div>
-
 
                 <span className="opacity-20">|</span>
 
@@ -535,35 +582,74 @@ export default function Trade({
                   Trade history
                 </span>
 
-                {view === 'positions' && positions?.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[13em] ml-auto')}
-                  title="Close All Positions"
-                  rounded={false}
-                  onClick={() => triggerCloseAllPosition()}
-                /> : null}
+                <div className="ml-auto flex items-center gap-2">
+                  {totalStats ? (
+                    <>
+                      <div className="flex flex-row gap-1 border p-1 px-4 rounded-lg">
+                        <p className="opacity-50">Total pnl: </p>
+                        <FormatNumber
+                          nb={totalStats.totalPnL}
+                          format="currency"
+                          minimumFractionDigits={2}
+                          prefixClassName={twMerge(
+                            totalStats.totalPnL < 0 ? 'text-redbright' : 'text-green',
+                          )}
+                          className={
+                            twMerge(totalStats.totalPnL < 0 ? 'text-redbright' : 'text-green')
+                          }
+                          isDecimalDimmed={false}
+                        />
+                      </div>
 
-                {view === 'limitOrder' && limitOrderBook?.limitOrders.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[15em] ml-auto')}
-                  title="Cancel All Limit Order"
-                  rounded={false}
-                  onClick={() => triggerCancelAllLimitOrder()}
-                /> : null}
+                      <div className="flex flex-row gap-1 border p-1 px-4 rounded-lg">
+                        <p className="opacity-50">Total collateral: </p>
+                        <FormatNumber nb={
+                          totalStats.totalCollateral
+                        } format="currency" className="" />
+                      </div>
+                    </>
+                  ) : null}
+                  {view === 'positions' && positions?.length ? (
+                    <Button
+                      size="xs"
+                      className={twMerge(
+                        POSITION_BLOCK_STYLES.button.filled,
+                        'w-[13em] ml-auto',
+                      )}
+                      title="Close All Positions"
+                      rounded={false}
+                      onClick={() => triggerCloseAllPosition()}
+                    />
+                  ) : null}
+
+                  {view === 'limitOrder' &&
+                    limitOrderBook?.limitOrders.length ? (
+                    <Button
+                      size="xs"
+                      className={twMerge(
+                        POSITION_BLOCK_STYLES.button.filled,
+                        'w-[15em] ml-auto',
+                      )}
+                      title="Cancel All Limit Order"
+                      rounded={false}
+                      onClick={() => triggerCancelAllLimitOrder()}
+                    />
+                  ) : null}
+                </div>
               </div>
 
               {view === 'history' ? (
-                <div className="flex flex-col w-full p-4">
+                <div className="flex flex-col w-full p-4 pt-2">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top'
+                    exportButtonPosition="top"
                   />
                 </div>
               ) : null}
 
               {view === 'positions' ? (
-                <div className="flex flex-col w-full p-4">
+                <div className="flex flex-col w-full p-4 pt-2">
                   <Positions
                     connected={connected}
                     positions={positions}
@@ -575,7 +661,7 @@ export default function Trade({
               ) : null}
 
               {view === 'limitOrder' ? (
-                <div className="flex flex-col w-full p-4">
+                <div className="flex flex-col w-full p-4 pt-2">
                   <LimitOrder
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     limitOrderBook={limitOrderBook}
@@ -597,12 +683,15 @@ export default function Trade({
                   onClick={() => setView('positions')}
                 >
                   Open positions
-
                 </span>
-                <div className={twMerge(
-                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
-                  view === 'positions' ? 'opacity-100' : 'opacity-40'
-                )}>{positions?.length ?? 0}</div>
+                <div
+                  className={twMerge(
+                    'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
+                    view === 'positions' ? 'opacity-100' : 'opacity-40',
+                  )}
+                >
+                  {positions?.length ?? 0}
+                </div>
 
                 <span className="opacity-20">|</span>
 
@@ -616,10 +705,14 @@ export default function Trade({
                   Limit orders
                 </span>
 
-                <div className={twMerge(
-                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
-                  view === 'limitOrder' ? 'opacity-100' : 'opacity-40'
-                )}>{limitOrderBook?.limitOrders.length ?? 0}</div>
+                <div
+                  className={twMerge(
+                    'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
+                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
+                  )}
+                >
+                  {limitOrderBook?.limitOrders.length ?? 0}
+                </div>
 
                 <span className="opacity-20">|</span>
 
@@ -632,38 +725,67 @@ export default function Trade({
                 >
                   Trade history
                 </span>
+              </div>
 
-                {view === 'positions' && positions?.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[3em] max-w-[3em] ml-auto')}
-                  title=""
-                  icon={crossIcon}
-                  rounded={false}
-                  onClick={() => triggerCloseAllPosition()}
-                /> : null}
+              <div className="flex items-center gap-2 text-sm px-3 mt-3">
+                {totalStats ? (
+                  <>
+                    <div className="flex flex-row gap-1 border p-1 px-2 md:px-4 rounded-lg sm:flex-1">
+                      <p className="opacity-50">Total pnl: </p>
+                      <FormatNumber
+                        nb={totalStats.totalPnL}
+                        format="currency"
+                        minimumFractionDigits={2}
+                        prefixClassName={twMerge(
+                          totalStats.totalPnL < 0 ? 'text-redbright' : 'text-green',
+                        )}
+                        className={
+                          twMerge(totalStats.totalPnL < 0 ? 'text-redbright' : 'text-green')
+                        }
+                        isDecimalDimmed={false}
+                      />
+                    </div>
 
-                {view === 'limitOrder' && limitOrderBook?.limitOrders.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[3em] max-w-[3em] ml-auto')}
-                  title=""
-                  icon={crossIcon}
-                  rounded={false}
-                  onClick={() => triggerCancelAllLimitOrder()}
-                /> : null}
+
+                    <div className="flex flex-row gap-1 border p-1 px-2 md:px-4 rounded-lg flex-1">
+                      <p className="opacity-50">Total collateral: </p>
+                      <FormatNumber nb={
+                        totalStats.totalCollateral
+                      } format="currency" className="" />
+                    </div>
+
+
+                  </>
+                ) : null}
+
+                {view === 'positions' && positions?.length ? (
+                  <Button
+                    size="xs"
+                    className={twMerge(
+                      POSITION_BLOCK_STYLES.button.filled,
+                      'w-[3em] max-w-[3em] ml-auto',
+                    )}
+                    title=""
+                    icon={crossIcon}
+                    rounded={false}
+                    onClick={() => triggerCloseAllPosition()}
+                  />
+                ) : null}
+
               </div>
 
               {view === 'history' ? (
-                <div className="mt-1 w-full p-4 flex grow">
+                <div className="mt-1 w-full p-4 pt-2 flex grow">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top'
+                    exportButtonPosition="top"
                   />
                 </div>
               ) : null}
 
               {view === 'limitOrder' ? (
-                <div className="mt-1 w-full p-4">
+                <div className="mt-1 w-full p-4 pt-2">
                   <LimitOrder
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     limitOrderBook={limitOrderBook}
@@ -673,7 +795,7 @@ export default function Trade({
               ) : null}
 
               {view === 'positions' ? (
-                <div className="mt-1 w-full p-4">
+                <div className="mt-1 w-full p-4 pt-2">
                   <Positions
                     connected={connected}
                     positions={positions}
@@ -708,10 +830,14 @@ export default function Trade({
       </div>
 
       {isBigScreen && (
-        <div className={twMerge(
-          "hidden sm:flex ml-4",
-          isExtraWideScreen ? "w-[20%] min-w-[350px]" : "w-[25%] min-w-[320px]"
-        )}>
+        <div
+          className={twMerge(
+            'hidden sm:flex ml-4',
+            isExtraWideScreen
+              ? 'w-[20%] min-w-[350px]'
+              : 'w-[25%] min-w-[320px]',
+          )}
+        >
           <TradeComp
             className="w-full"
             selectedAction={selectedAction}
@@ -732,7 +858,7 @@ export default function Trade({
         </div>
       )}
 
-      <div className='relative w-full sm:hidden'>
+      <div className="relative w-full sm:hidden">
         <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>

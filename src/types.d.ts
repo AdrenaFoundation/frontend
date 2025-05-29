@@ -21,6 +21,13 @@ import {
 } from './constant';
 import type { WalletAdapterName } from './hooks/useWalletAdapters';
 
+export type LogEntry = {
+  type: 'log' | 'warn' | 'error';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  message: any[];
+  timestamp: string;
+};
+
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
 

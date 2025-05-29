@@ -37,6 +37,7 @@ import {
   ImageRef,
   LimitedString,
   LockedStakeExtended,
+  LogEntry,
   PositionExtended,
   Token,
   U128Split,
@@ -355,11 +356,13 @@ export function addNotification({
   message,
   type = 'info',
   duration = 'regular',
+  position = 'bottom-left',
 }: {
   title: string;
   type?: 'success' | 'error' | 'info';
   message?: ReactNode;
   duration?: 'fast' | 'regular' | 'long';
+  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 }) {
   const content = message ? (
     <div className="flex flex-col">
@@ -373,7 +376,7 @@ export function addNotification({
   );
 
   toast[type](content, {
-    position: 'bottom-left',
+    position: position,
     autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
     hideProgressBar: true,
     closeOnClick: true,
@@ -1155,4 +1158,22 @@ export function hexStringToByteArray(hexString: string): number[] {
   }
 
   return byteArray;
+}
+
+const logs: LogEntry[] = [];
+
+['log', 'error'].forEach((type) => {
+  const original = console[type as 'log'];
+  console[type as 'log'] = (...args) => {
+    logs.push({
+      type: type as LogEntry['type'],
+      message: args,
+      timestamp: new Date().toISOString(),
+    });
+    original(...args); // keep original behavior
+  };
+});
+
+export function getLogs() {
+  return logs;
 }
