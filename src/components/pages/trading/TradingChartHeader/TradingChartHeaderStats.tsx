@@ -73,9 +73,9 @@ export default function TradingChartHeaderStats({
             </div>
 
             {/* Mobile: Compact stats on right - labels above values */}
-            <div className="flex sm:hidden items-end gap-2 text-xxs font-mono">
+            <div className="flex sm:hidden items-center justify-center gap-2 text-xxs font-mono mt-1">
                 {/* 24h Change */}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center justify-center">
                     <span className="text-txtfade text-xxs leading-none mb-0.5">24h Change</span>
                     <span
                         className={`font-mono leading-none text-xxs ${dailyChange
@@ -90,7 +90,7 @@ export default function TradingChartHeaderStats({
                 </div>
 
                 {/* Volume */}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center justify-center">
                     <span className="text-txtfade text-xxs leading-none mb-0.5">24h Vol</span>
                     <span className="text-white text-xxs font-mono leading-none">
                         {dailyVolume ? (
@@ -106,7 +106,7 @@ export default function TradingChartHeaderStats({
                 </div>
 
                 {/* 24h High */}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center justify-center">
                     <span className="text-txtfade text-xxs leading-none mb-0.5">24h Hi</span>
                     <span className="text-white text-xxs font-mono leading-none">
                         {lastDayHigh ? (
@@ -120,7 +120,7 @@ export default function TradingChartHeaderStats({
                 </div>
 
                 {/* 24h Low */}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center justify-center">
                     <span className="text-txtfade text-xxs leading-none mb-0.5">24h Lo</span>
                     <span className="text-white text-xxs font-mono leading-none">
                         {lastDayLow ? (
