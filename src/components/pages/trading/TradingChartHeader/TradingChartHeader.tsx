@@ -1,22 +1,13 @@
-import Switch from '@mui/material/Switch';
 import Tippy from '@tippyjs/react';
 import Head from 'next/head';
-import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import liveIcon from '@/../public/images/Icons/live-icon.svg';
 import Select from '@/components/common/Select/Select';
-import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { getTokenImage, getTokenSymbol, getTokenSymbolFromChartFormat } from '@/utils';
 
-import { ChartPreferences } from '../TradingChart/types';
 import TradingChartHeaderStats from './TradingChartHeaderStats';
-
-export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
-  return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
-}
 
 export default function TradingChartHeader({
   allActivePositions,
@@ -24,20 +15,19 @@ export default function TradingChartHeader({
   tokenList,
   selected,
   onChange,
-  chartPreferences,
-  setChartPreferences,
 }: {
   allActivePositions: PositionExtended[] | null;
   className?: string;
   tokenList: Token[];
   selected: Token;
   onChange: (t: Token) => void;
-  chartPreferences: ChartPreferences;
-  setChartPreferences: (prefs: ChartPreferences) => void;
 }) {
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
+
+  const numberLong = allActivePositions?.filter((p) => p.side === 'long').length;
+  const numberShort = allActivePositions?.filter((p) => p.side === 'short').length;
 
   return (
     <>
@@ -79,45 +69,20 @@ export default function TradingChartHeader({
             }}
             align="left"
           />
+          {/* Long/Short positions */}
+          {numberLong && numberShort ? (
+            <div className="flex sm:hidden gap-0.5">
+              <Tippy content="Long positions" className="flex flex-col items-center">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">{numberLong}</span>
+              </Tippy>
+              <Tippy content="Short positions" className="flex flex-col items-center">
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">{numberShort}</span>
+              </Tippy>
+            </div>
+          ) : null}
         </div>
 
-        {allActivePositions ? (
-          <div className="flex flex-row gap-3 items-center border rounded-lg flex-none px-2 xl:px-3 py-1 mb-3 sm:mb-0">
-            <div className='flex flex-row sm:flex-col xl:flex-row gap-2 items-center'>
-              <div className="flex flex-row gap-1 items-center">
-                <Image
-                  src={liveIcon}
-                  alt="live icon"
-                  width={10}
-                  height={10}
-                  className=""
-                />
-                <FormatNumber
-                  nb={allActivePositions.filter((p) => p.side === 'long').length}
-                  prefix="long: "
-                  prefixClassName="opacity-50"
-                  className="text-xxs md:text-xs whitespace-nowrap"
-                />
-              </div>
-
-              <div className="flex flex-row gap-1 items-center">
-                <Image
-                  src={liveIcon}
-                  alt="live icon"
-                  width={10}
-                  height={10}
-                  className=""
-                />
-                <FormatNumber
-                  nb={allActivePositions.filter((p) => p.side === 'short').length}
-                  prefix="short: "
-                  prefixClassName="opacity-50"
-                  className="text-xxs md:text-xs whitespace-nowrap"
-                />
-              </div>
-            </div>
-
-            {/*
+        {/*
             <div className='flex flex-row sm:flex-col xl:flex-row xl:gap-2 items-center'>
                <div className="flex items-center text-white">
                 <Tippy
@@ -171,53 +136,7 @@ export default function TradingChartHeader({
                </div>
              </div> */}
 
-            <div className="flex items-center text-white">
-              <Tippy
-                content={
-                  <div>
-                    <p className='text-sm mb-1 font-boldy opacity-50'>
-                      Show liquidation lines for all active positions.
-                    </p>
-                    <ul>
-                      <li className='text-xxs md:text-xs font-mono'>line thickness = size of position</li>
-
-                    </ul>
-                  </div>
-                }>
-                <p className="opacity-50 text-xxs underline-dashed cursor-help">
-                  Show Liqs.
-                </p>
-              </Tippy>
-              <Switch
-                checked={chartPreferences.showAllActivePositionsLiquidationLines}
-                onChange={() => {
-                  setChartPreferences({
-                    ...chartPreferences,
-                    showAllActivePositionsLiquidationLines: !chartPreferences.showAllActivePositionsLiquidationLines,
-                  });
-                }}
-                size="small"
-                sx={{
-                  transform: 'scale(0.7)',
-                  '& .MuiSwitch-switchBase': {
-                    color: '#ccc',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked': {
-                    color: '#1a1a1a',
-                  },
-                  '& .MuiSwitch-track': {
-                    backgroundColor: '#555',
-                  },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: '#10e1a3',
-                  },
-                }}
-              />
-            </div>
-          </div>
-        ) : null}
-
-        <TradingChartHeaderStats selected={selected} />
+        <TradingChartHeaderStats selected={selected} numberLong={numberLong} numberShort={numberShort} />
         {/* <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
           <FormatNumber
             nb={selectedTokenPrice}

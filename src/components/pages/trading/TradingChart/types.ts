@@ -41,6 +41,7 @@ export interface ChartPreferences {
   updateTPSLByDrag: boolean;
   showAllActivePositionsLiquidationLines: boolean;
   showPositionHistory: boolean;
+  showHighLow: boolean;
 }
 
 export type ChartLoadCallback = (() => void) | null;

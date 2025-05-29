@@ -1156,3 +1156,7 @@ export function hexStringToByteArray(hexString: string): number[] {
 
   return byteArray;
 }
+
+export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
+  return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
+}
