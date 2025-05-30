@@ -1,4 +1,3 @@
-import { debounce } from '@mui/material/utils';
 import { useEffect, useRef, useState } from 'react';
 
 import { ChartPreferences } from '@/components/pages/trading/TradingChart/types';
@@ -23,7 +22,6 @@ import {
   EntityId,
   IChartingLibraryWidget,
   IChartWidgetApi,
-  ILineDataSourceApi,
 } from '../../public/charting_library/charting_library';
 import useTPSL from './useTPSL';
 
@@ -626,10 +624,11 @@ export function useChartDrawing({
 
   const { updateTPSL } = useTPSL();
 
-  // Use refs to access current data in event handlers without recreating subscriptionsAdd commentMore actions
+  // Use refs to access current data in event handlers without recreating subscriptions
   const positionsRef = useRef(positions);
   const chartPreferencesRef = useRef(chartPreferences);
   const dragEventCleanupRef = useRef<(() => void) | null>(null);
+  const ongoingUpdatesRef = useRef<Set<string>>(new Set()); // Track ongoing updates
 
   // Keep refs updated
   positionsRef.current = positions;
@@ -1238,32 +1237,6 @@ export function useChartDrawing({
 
     // Setup drag handling once
     const setupDragHandling = () => {
-      const debouncedUpdateTPSL = debounce(
-        (
-          line: ILineDataSourceApi,
-          text: string,
-          price: number,
-          position: PositionExtended | null,
-        ) => {
-          const type = text.includes('SL') ? 'stopLoss' : 'takeProfit';
-          updateTPSL(type, price, position).then((isSuccess) => {
-            if (!isSuccess && position) {
-              // If update failed, revert the line to the original position
-              line.setPoints([
-                {
-                  time: Number(position.nativeObject.openTime) * 1000,
-                  price:
-                    type === 'stopLoss'
-                      ? position.stopLossLimitPrice!
-                      : position.takeProfitLimitPrice!,
-                },
-              ]);
-            }
-          });
-        },
-        500,
-      );
-
       const handleDrawingEvent = (id: EntityId) => {
         setTimeout(() => {
           try {
@@ -1293,11 +1266,37 @@ export function useChartDrawing({
 
             if (!position || currentPrice === price) return;
 
-            debouncedUpdateTPSL(line, text, price, position);
+            const type = text.includes('SL') ? 'stopLoss' : 'takeProfit';
+            const updateKey = `${position.pubkey.toBase58()}-${type}`;
+
+            if (ongoingUpdatesRef.current.has(updateKey)) {
+              return;
+            }
+
+            ongoingUpdatesRef.current.add(updateKey);
+
+            updateTPSL(type, price, position)
+              .then((isSuccess) => {
+                if (!isSuccess && position) {
+                  // If update failed, revert the line to the original position
+                  line.setPoints([
+                    {
+                      time: Number(position.nativeObject.openTime) * 1000,
+                      price:
+                        type === 'stopLoss'
+                          ? position.stopLossLimitPrice!
+                          : position.takeProfitLimitPrice!,
+                    },
+                  ]);
+                }
+              })
+              .finally(() => {
+                ongoingUpdatesRef.current.delete(updateKey);
+              });
           } catch (error) {
             console.log('Error handling drawing event:', error);
           }
-        }, 500);
+        }, 200);
       };
 
       // Subscribe to drawing events
@@ -1306,7 +1305,6 @@ export function useChartDrawing({
       // Return cleanup function
       return () => {
         widget.unsubscribe('drawing_event', handleDrawingEvent);
-        debouncedUpdateTPSL.clear();
       };
     };
 
