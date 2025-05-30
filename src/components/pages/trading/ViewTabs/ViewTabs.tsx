@@ -82,9 +82,8 @@ export default function ViewTabs({
             <span className={tabClass(view === 'history')} onClick={() => setView('history')}>
                 Trade history
             </span>
-
             {/* Action buttons */}
-            {view === 'positions' && positions?.length && onCloseAllPositions && (
+            {view === 'positions' && positions?.length && onCloseAllPositions ? (
                 <Button
                     size="xs"
                     className={twMerge(
@@ -96,9 +95,8 @@ export default function ViewTabs({
                     rounded={false}
                     onClick={onCloseAllPositions}
                 />
-            )}
-
-            {view === 'limitOrder' && limitOrdersExist && onCancelAllLimitOrders && (
+            ) : null}
+            {view === 'limitOrder' && limitOrdersExist && onCancelAllLimitOrders ? (
                 <Button
                     size="xs"
                     className={twMerge(
@@ -110,7 +108,7 @@ export default function ViewTabs({
                     rounded={false}
                     onClick={onCancelAllLimitOrders}
                 />
-            )}
+            ) : null}
         </div>
     );
 }
