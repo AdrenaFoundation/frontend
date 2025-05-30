@@ -23,6 +23,7 @@ export default function ActivityCalendar({
         date: Date;
         stats: {
             totalPositions: number;
+            winrate: number;
             color: string;
             size: number;
             pnl: number;
@@ -361,6 +362,13 @@ export default function ActivityCalendar({
                                                             ? 'text-[#F1C40F] opacity-100'
                                                             : '',
                                                     )}
+                                                />
+
+                                                <FormatNumber
+                                                    nb={stats.winrate}
+                                                    prefix="winrate: "
+                                                    format="percentage"
+                                                    prefixClassName="font-mono opacity-50"
                                                 />
                                             </div>
                                         }

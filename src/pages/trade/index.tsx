@@ -130,7 +130,7 @@ export default function Trade({
     null,
   );
 
-  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 1152px)');
   const isExtraWideScreen = useBetterMediaQuery('(min-width: 1600px)');
   const [view, setView] = useState<ViewType>('positions');
 
@@ -301,16 +301,23 @@ export default function Trade({
   const triggerCancelAllLimitOrder = useCallback(async () => {
     if (!limitOrderBook || limitOrderBook.limitOrders.length === 0) return;
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Cancel All Limit Order').fire();
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Cancel All Limit Order',
+    ).fire();
 
     try {
-      const ixBuilders = await Promise.all(limitOrderBook.limitOrders.map(lo => window.adrena.client.buildCancelLimitOrderIx({
-        id: lo.id,
-        collateralCustody: lo.collateralCustody,
-      })));
+      const ixBuilders = await Promise.all(
+        limitOrderBook.limitOrders.map((lo) =>
+          window.adrena.client.buildCancelLimitOrderIx({
+            id: lo.id,
+            collateralCustody: lo.collateralCustody,
+          }),
+        ),
+      );
 
-      const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+      const ixs = await Promise.all(
+        ixBuilders.map((ixBuilder) => ixBuilder.instruction()),
+      );
 
       const transaction = new Transaction();
       transaction.add(...ixs);
@@ -330,7 +337,7 @@ export default function Trade({
     if (!positions || positions.length === 0) return;
 
     // Missing price
-    if (positions.some(p => !tokenPrices[getTokenSymbol(p.token.symbol)])) {
+    if (positions.some((p) => !tokenPrices[getTokenSymbol(p.token.symbol)])) {
       return;
     }
 
@@ -340,27 +347,40 @@ export default function Trade({
       for (let i = 0; i < nbTransactions; i++) {
         const positionsGroup = positions.slice(i * 2, (i + 1) * 2);
 
-        const notification =
-          MultiStepNotification.newForRegularTransaction(
-            `Close All Positions${nbTransactions > 1 ? ` (${i + 1}/${nbTransactions})` : ''}`,
-          ).fire();
+        const notification = MultiStepNotification.newForRegularTransaction(
+          `Close All Positions${nbTransactions > 1 ? ` (${i + 1}/${nbTransactions})` : ''}`,
+        ).fire();
 
         // 1%
         const slippageInBps = 100;
 
-        const ixBuilders = await Promise.all(positionsGroup.map(p => p.side === 'long' ? window.adrena.client.buildClosePositionLongIx({
-          position: p,
-          price: uiToNative(tokenPrices[getTokenSymbol(p.token.symbol)]!, PRICE_DECIMALS)
-            .mul(new BN(10_000 - slippageInBps))
-            .div(new BN(10_000)),
-        }) : window.adrena.client.buildClosePositionShortIx({
-          position: p,
-          price: uiToNative(tokenPrices[p.token.symbol]!, PRICE_DECIMALS)
-            .mul(new BN(10_000))
-            .div(new BN(10_000 - slippageInBps)),
-        })));
+        const ixBuilders = await Promise.all(
+          positionsGroup.map((p) =>
+            p.side === 'long'
+              ? window.adrena.client.buildClosePositionLongIx({
+                position: p,
+                price: uiToNative(
+                  tokenPrices[getTokenSymbol(p.token.symbol)]!,
+                  PRICE_DECIMALS,
+                )
+                  .mul(new BN(10_000 - slippageInBps))
+                  .div(new BN(10_000)),
+              })
+              : window.adrena.client.buildClosePositionShortIx({
+                position: p,
+                price: uiToNative(
+                  tokenPrices[p.token.symbol]!,
+                  PRICE_DECIMALS,
+                )
+                  .mul(new BN(10_000))
+                  .div(new BN(10_000 - slippageInBps)),
+              }),
+          ),
+        );
 
-        const ixs = await Promise.all(ixBuilders.map(ixBuilder => ixBuilder.instruction()));
+        const ixs = await Promise.all(
+          ixBuilders.map((ixBuilder) => ixBuilder.instruction()),
+        );
 
         const transaction = new Transaction();
         transaction.add(...ixs);
@@ -376,6 +396,21 @@ export default function Trade({
   }, [positions, tokenPrices]);
 
   const allActivePositions = tokenB ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint)) : null
+
+  const totalStats = positions && positions.length > 0
+    ? positions.reduce(
+      (acc, position) => {
+        const price = tokenPrices[getTokenSymbol(position.token.symbol)];
+        if (!price || position.pnl == null) {
+          return acc;
+        }
+        acc.totalPnL += position.pnl;
+        acc.totalCollateral += position.collateralUsd;
+        return acc;
+      },
+      { totalPnL: 0, totalCollateral: 0 }
+    )
+    : null;
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full sm:p-4 pb-[200px] sm:pb-4">
@@ -487,21 +522,22 @@ export default function Trade({
                 onCloseAllPositions={triggerCloseAllPosition}
                 onCancelAllLimitOrders={triggerCancelAllLimitOrder}
                 positions={positions}
+                totalStats={totalStats}
                 limitOrdersExist={!!limitOrderBook?.limitOrders.length}
               />
 
               {view === 'history' ? (
-                <div className="flex flex-col w-full p-4">
+                <div className="flex flex-col w-full p-4 pt-2">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top'
+                    exportButtonPosition="top"
                   />
                 </div>
               ) : null}
 
               {view === 'positions' ? (
-                <div className="flex flex-col w-full p-4">
+                <div className="flex flex-col w-full p-4 pt-2">
                   <Positions
                     connected={connected}
                     positions={positions}
@@ -513,7 +549,7 @@ export default function Trade({
               ) : null}
 
               {view === 'limitOrder' ? (
-                <div className="flex flex-col w-full p-4">
+                <div className="flex flex-col w-full p-4 pt-2">
                   <LimitOrder
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     limitOrderBook={limitOrderBook}
@@ -535,21 +571,22 @@ export default function Trade({
                 onCloseAllPositions={triggerCloseAllPosition}
                 onCancelAllLimitOrders={triggerCancelAllLimitOrder}
                 positions={positions}
+                totalStats={totalStats}
                 limitOrdersExist={!!limitOrderBook?.limitOrders.length}
               />
 
               {view === 'history' ? (
-                <div className="mt-1 w-full p-4 flex grow">
+                <div className="mt-1 w-full p-4 pt-2 flex grow">
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top'
+                    exportButtonPosition="top"
                   />
                 </div>
               ) : null}
 
               {view === 'limitOrder' ? (
-                <div className="mt-1 w-full p-4">
+                <div className="mt-1 w-full p-4 pt-2">
                   <LimitOrder
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     limitOrderBook={limitOrderBook}
@@ -559,7 +596,7 @@ export default function Trade({
               ) : null}
 
               {view === 'positions' ? (
-                <div className="mt-1 w-full p-4">
+                <div className="mt-1 w-full p-4 pt-2">
                   <Positions
                     connected={connected}
                     positions={positions}
@@ -618,7 +655,7 @@ export default function Trade({
         </div>
       )}
 
-      <div className='relative w-full sm:hidden'>
+      <div className="relative w-full sm:hidden">
         <div className="fixed left-0 bottom-[2.8125rem] w-full bg-bcolor backdrop-blur-sm p-3 z-30">
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>

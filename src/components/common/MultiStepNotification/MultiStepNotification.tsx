@@ -1,15 +1,25 @@
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Id, toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaTransactionError, getTxExplorer } from '@/utils';
+import { getLogs } from '@/logs';
+import {
+  addNotification,
+  AdrenaTransactionError,
+  getTxExplorer,
+} from '@/utils';
 
+import copyIcon from '../../../../public/images/copy.svg';
+import discordLogo from '../../../../public/images/discord.png';
+import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
 import clockIcon from '../../../../public/images/Icons/clock.png';
 import closeIcon from '../../../../public/images/Icons/cross.svg';
 import doneIcon from '../../../../public/images/Icons/done.png';
 import errorIcon from '../../../../public/images/Icons/error-full.png';
 import loaderIcon from '../../../../public/images/Icons/loader.svg';
+import Button from '../Button/Button';
 
 export enum NotificationStepState {
   waiting,
@@ -33,6 +43,10 @@ export default class MultiStepNotification {
 
   protected error: string | AdrenaTransactionError | null = null;
 
+  protected report_code: string | null = null;
+
+  protected isSendingErrorReport = false;
+
   protected txHash: string | null = null;
 
   protected constructor(
@@ -46,7 +60,7 @@ export default class MultiStepNotification {
     title,
     steps,
     closingTimeSuccessInMs = 5_000,
-    closingTimeErrorInMs = 10_000,
+    closingTimeErrorInMs = 30_000,
   }: {
     title: string;
     steps: Omit<NotificationStep, 'state'>[];
@@ -117,6 +131,64 @@ export default class MultiStepNotification {
     });
   }
 
+  private async sendErrorReport(): Promise<void> {
+    try {
+      if (typeof window === 'undefined' || !window.adrena) return;
+      const walletAddress = window.adrena.client.getWalletAddress();
+
+      this.isSendingErrorReport = true;
+      const error = this.error;
+
+      if (error === null || this.toastId === null) return;
+
+      const currentUrl =
+        typeof window !== 'undefined' ? window.location.href : '';
+
+
+      const timestamp = new Date().toISOString();
+
+      const recentLogs = getLogs()
+
+      const response = await fetch('/api/error_reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wallet_address: walletAddress,
+          error_message:
+            error instanceof AdrenaTransactionError ? error.errorString : error,
+          console_log: recentLogs,
+          timestamp,
+          txHash: error instanceof AdrenaTransactionError ? error.txHash : null,
+          url: currentUrl,
+          action: this.title || '',
+          step: this.steps[this.activeStepIndex]?.title || '',
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send error report:', response.statusText);
+      } else {
+        // Get the report code from the API response
+        const data = await response.json();
+        console.log('Error report response:', data);
+        this.report_code = data.report_code;
+        console.log('Error report sent successfully:', data);
+      }
+    } catch (err) {
+      console.error('Error sending error report:', err);
+    } finally {
+      this.isSendingErrorReport = false;
+
+      if (this.toastId) {
+        toast.update(this.toastId, {
+          render: this.getContent(),
+        });
+      }
+    }
+  }
+
   public currentStepErrored(error: string | AdrenaTransactionError): void {
     // Nothing to do there
     if (this.activeStepIndex >= this.steps.length || this.toastId === null)
@@ -162,13 +234,23 @@ export default class MultiStepNotification {
     })();
 
     return (
-      <div className="w-[20em] min-h-[10em] max-h-[15em] h-auto bg-[#162a3d] shadow-2xl z-[9999] border">
-        <div className="flex flex-col pt-2 pb-2 pl-4 h-full w-full">
-          <div className="flex w-full h-[2em]">
-            <h2>{this.title ?? 'Title'}</h2>
+      <motion.div
+        animate={{
+          height: this.report_code
+            ? '10em'
+            : this.error !== null
+              ? 'auto'
+              : '11em',
+        }}
+        transition={{ duration: 0.2 }}
+        className="w-[20em] bg-[#08141E] shadow-2xl z-[9999] border border-[#1A2938] rounded-xl"
+      >
+        <div className="flex flex-col h-full w-full">
+          <div className="flex w-full justify-between p-2 px-3">
+            <h3 className="font-boldy capitalize">{this.title ?? 'Title'}</h3>
 
             <Image
-              className="opacity-20 hover:opacity-40 cursor-pointer ml-auto mr-4"
+              className="opacity-20 hover:opacity-40 cursor-pointer"
               onClick={() => {
                 this.close(0);
               }}
@@ -179,100 +261,197 @@ export default class MultiStepNotification {
             />
           </div>
 
-          <div className="h-[1px] mt-2 w-full bg-bcolor" />
+          <div className="h-[1px] w-full bg-[#1A2938]" />
 
-          <div className="flex h-full w-full items-center justify-center pt-1">
-            <div className="h-full min-w-[11em] w-full flex flex-col justify-center gap-2 max-h-full overflow-auto">
-              {this.steps.map((step, index) => (
-                <div key={index} className="w-full items-center flex min-h-4 h-auto">
-                  <div className="w-[1.6em] mr-1 flex items-center justify-center">
-                    {step.state === NotificationStepState.waiting ? (
-                      <Image
-                        className="opacity-40"
-                        src={clockIcon}
-                        alt="clock icon"
-                        width={13}
-                        height={13}
-                      />
-                    ) : null}
+          {this.report_code !== null ? (
+            <div className="flex flex-col gap-3 p-2 px-3">
+              <div>
+                <p className="mb-1 text-sm font-boldy bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
+                  Report code:{' '}
+                  <span className="text-white font-mono">{this.report_code}</span>
+                  <Image
+                    src={copyIcon}
+                    alt="copy icon"
+                    width={10}
+                    height={10}
+                    className="inline-block cursor-pointer ml-2 opacity-50 hover:opacity-100 transition-opacity duration-300"
+                    onClick={() => {
+                      navigator.clipboard.writeText(this.report_code!);
+                      addNotification({
+                        title: 'Report code copied',
+                        type: 'success',
+                        duration: 'regular',
+                        position: 'top-right',
+                      });
+                    }}
+                  />
+                </p>
 
-                    {step.state === NotificationStepState.inProgress ? (
-                      <Image
-                        src={loaderIcon}
-                        alt="loader icon"
-                        width={28}
-                        height={28}
-                      />
-                    ) : null}
+                <p className="text-sm text-txtfade">
+                  If you need help, please provide this code to the support team.
+                </p>
+              </div>
+              <Button
+                title="Open Discord"
+                className="w-full text-xs border border-[#1A2938]"
+                leftIcon={discordLogo}
+                onClick={() => {
+                  window.open(
+                    'https://discord.gg/adrena',
+                    '_blank',
+                  );
+                }}
+                variant="outline"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col h-full w-full items-center justify-center p-2">
+              {this.error === null ? (
+                <div className="h-full min-w-[11em] w-full flex flex-col justify-center gap-1 max-h-full overflow-auto">
+                  {this.steps.map((step, index) => (
+                    <div
+                      key={index}
+                      className="w-full items-center flex min-h-4 h-auto"
+                    >
+                      <div className="w-[1.6em] h-[1.6em] mr-1 flex items-center justify-center">
+                        {step.state === NotificationStepState.waiting ? (
+                          <Image
+                            className="opacity-40"
+                            src={clockIcon}
+                            alt="clock icon"
+                            width={13}
+                            height={13}
+                          />
+                        ) : null}
 
-                    {step.state === NotificationStepState.error ? (
+                        {step.state === NotificationStepState.inProgress ? (
+                          <Image
+                            src={loaderIcon}
+                            alt="loader icon"
+                            width={28}
+                            height={28}
+                          />
+                        ) : null}
+
+                        {step.state === NotificationStepState.error ? (
+                          <Image
+                            src={errorIcon}
+                            alt="error icon"
+                            width={14}
+                            height={14}
+                          />
+                        ) : null}
+
+                        {step.state === NotificationStepState.succeeded ? (
+                          <Image
+                            src={doneIcon}
+                            alt="done icon"
+                            width={15}
+                            height={15}
+                          />
+                        ) : null}
+                      </div>
+
+                      <div
+                        className={twMerge(
+                          'flex flex-row items-center gap-2 w-auto text-sm font-interMedium text-nowrap max-w-full overflow-hidden transition duration-500',
+                          step.state === NotificationStepState.inProgress &&
+                          'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
+                          step.state === NotificationStepState.error &&
+                          'text-red-500',
+                          step.state === NotificationStepState.succeeded &&
+                          'text-green',
+                          step.state === NotificationStepState.waiting &&
+                          'opacity-40',
+                          step.title === 'Sign transaction' &&
+                          this.txHash &&
+                          'underline cursor-pointer group',
+                        )}
+                        onClick={() => {
+                          if (
+                            step.title === 'Sign transaction' &&
+                            this.txHash
+                          ) {
+                            window.open(getTxExplorer(this.txHash), '_blank');
+                          }
+                        }}
+                      >
+                        {step.title}
+                        {step.title === 'Sign transaction' && this.txHash ? (
+                          <motion.div
+                            initial={{ opacity: 0, x: -5, filter: 'blur(5px)' }}
+                            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <Image
+                              src={arrowIcon}
+                              alt="arrow icon"
+                              className="opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+                              width={7}
+                              height={7}
+                            />{' '}
+                          </motion.div>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {this.error !== null ? (
+                <>
+                  <div className="flex flex-col gap-3 justify-between w-full p-1">
+                    <div className="flex flex-row gap-2 items-center">
                       <Image
                         src={errorIcon}
                         alt="error icon"
-                        width={14}
-                        height={14}
+                        width={12}
+                        height={12}
                       />
-                    ) : null}
 
-                    {step.state === NotificationStepState.succeeded ? (
-                      <Image
-                        src={doneIcon}
-                        alt="done icon"
-                        width={15}
-                        height={15}
+                      <p
+                        className={twMerge(
+                          'text-sm font-boldy text-red w-full h-full',
+                          errorMessage.length >= 70 && 'text-xs',
+                        )}
+                      >
+                        {errorMessage}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-row gap-2 items-center">
+                      <Button
+                        title="Get help"
+                        className="w-full text-xs border border-[#1A2938]"
+                        onClick={() => this.sendErrorReport()}
+                        disabled={this.isSendingErrorReport}
+                        variant="outline"
                       />
-                    ) : null}
-                  </div>
 
-                  <div className="w-auto text-sm font-regular opacity-70 text-nowrap max-w-full overflow-hidden">
-                    {step.title}
+                      {this.error instanceof AdrenaTransactionError &&
+                        this.error.txHash ? (
+                        <Link
+                          href={getTxExplorer(this.error.txHash)}
+                          target="_blank"
+                          className="flex flex-row underline text-sm opacity-50 hover:opacity-100 items-center gap-1 transition-opacity duration-300 w-full"
+                        >
+                          <p className="font-mono">View transaction</p>
+                          <Image
+                            src={arrowIcon}
+                            alt="arrow icon"
+                            width={7}
+                            height={7}
+                          />
+                        </Link>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              ))}
+                </>
+              ) : null}
             </div>
-
-            {this.error !== null ? (
-              <>
-                <div className="h-full w-[1px] bg-bcolor shrink-0 grow-0" />
-
-                <div className="flex flex-col pl-2 pr-2 w-full">
-                  <p
-                    className={twMerge(
-                      'flex items-center text-sm justify-center text-center w-full h-full pl-4 pr-4',
-                      errorMessage.length >= 70 && 'text-xs',
-                    )}
-                  >
-                    {errorMessage}
-                  </p>
-
-                  {this.error instanceof AdrenaTransactionError &&
-                    this.error.txHash ? (
-                    <Link
-                      href={getTxExplorer(this.error.txHash)}
-                      target="_blank"
-                      className="underline mt-2 flex ml-auto mr-auto text-sm"
-                    >
-                      view transaction
-                    </Link>
-                  ) : null}
-                </div>
-              </>
-            ) : this.txHash ? (
-              <>
-                <div className="h-full w-[1px] bg-bcolor shrink-0 grow-0" />
-
-                <Link
-                  href={getTxExplorer(this.txHash)}
-                  target="_blank"
-                  className="underline w-full items-center justify-center flex text-sm"
-                >
-                  view transaction
-                </Link>
-              </>
-            ) : null}
-          </div>
+          )}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -297,6 +476,8 @@ export default class MultiStepNotification {
         marginBottom: 0,
         marginTop: '0.5em',
         padding: 0,
+        borderRadius: '0.76em',
+        backgroundColor: 'transparent',
       },
     });
 

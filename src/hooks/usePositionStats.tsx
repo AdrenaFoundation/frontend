@@ -100,6 +100,7 @@ export default function usePositionStats(isByWalletAddress = false) {
                         totalVolume: activity.totalVolume,
                         totalIncreaseSize: activity.totalIncreaseSize,
                         totalFees: activity.totalExitFees,
+                        winrate: activity.winrate
                     },
                 };
             },
@@ -112,6 +113,7 @@ export default function usePositionStats(isByWalletAddress = false) {
                     totalVolume: number;
                     totalIncreaseSize: number;
                     totalFees: number;
+                    winrate: number;
                 }
             >,
         );
@@ -162,6 +164,7 @@ export default function usePositionStats(isByWalletAddress = false) {
                     totalFees: formattedActivity[dateKey].totalFees,
                     volume: formattedActivity[dateKey].totalVolume,
                     size: formattedActivity[dateKey].totalSize,
+                    winrate: formattedActivity[dateKey].winrate,
                     bubbleSize: normalize(
                         Math.abs(
                             formattedActivity[dateKey][

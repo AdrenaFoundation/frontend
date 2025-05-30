@@ -914,6 +914,13 @@ export class AdrenaClient {
    * LOADERS
    */
 
+  // get current wallet address
+  public getWalletAddress(): PublicKey | null {
+    if (!this.adrenaProgram) return null;
+
+    return (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
+  }
+
   public async getCustodyLiquidityOnchain(
     custody: CustodyExtended,
   ): Promise<number> {

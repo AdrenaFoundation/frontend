@@ -2,6 +2,7 @@ import { twMerge } from 'tailwind-merge';
 
 import crossIcon from '@/../public/images/Icons/cross.svg';
 import Button from '@/components/common/Button/Button';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { PositionExtended } from '@/types';
 
 import { POSITION_BLOCK_STYLES } from '../Positions/PositionBlockComponents/PositionBlockStyles';
@@ -18,6 +19,10 @@ interface ViewTabsProps {
     onCancelAllLimitOrders?: () => void;
     positions?: PositionExtended[] | null;
     limitOrdersExist?: boolean;
+    totalStats?: {
+        totalPnL: number;
+        totalCollateral: number;
+    } | null;
 }
 
 export default function ViewTabs({
@@ -30,6 +35,7 @@ export default function ViewTabs({
     onCancelAllLimitOrders,
     positions,
     limitOrdersExist,
+    totalStats,
 }: ViewTabsProps) {
     const tabClass = (isActive: boolean) =>
         twMerge(
@@ -44,70 +50,101 @@ export default function ViewTabs({
         );
 
     return (
-        <div className="flex items-center justify-start gap-2 px-3 sm:px-4 pt-2 text-sm">
-            <div className={tabClass(view === 'positions')} onClick={() => setView('positions')}>
-                Open positions
-                {isBigScreen && (
-                    <div className="h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor">
+        <div className='flex flex-col xl:flex-row gap-2 xl:items-center justify-between p-2 pb-0'>
+            <div className="flex items-center justify-start gap-2 px-3 sm:px-4 text-sm">
+                <div className={tabClass(view === 'positions')} onClick={() => setView('positions')}>
+                    Open positions
+                    {isBigScreen && (
+                        <div className="h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor">
+                            {positionsCount}
+                        </div>
+                    )}
+                </div>
+
+                {!isBigScreen && (
+                    <div className={badgeClass(view === 'positions')}>
                         {positionsCount}
                     </div>
                 )}
-            </div>
 
-            {!isBigScreen && (
-                <div className={badgeClass(view === 'positions')}>
-                    {positionsCount}
+                <span className="opacity-20">|</span>
+
+                <div className={tabClass(view === 'limitOrder')} onClick={() => setView('limitOrder')}>
+                    Limit orders
+                    {isBigScreen && (
+                        <div className="h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor">
+                            {limitOrdersCount}
+                        </div>
+                    )}
                 </div>
-            )}
 
-            <span className="opacity-20">|</span>
-
-            <div className={tabClass(view === 'limitOrder')} onClick={() => setView('limitOrder')}>
-                Limit orders
-                {isBigScreen && (
-                    <div className="h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor">
+                {!isBigScreen && (
+                    <div className={badgeClass(view === 'limitOrder')}>
                         {limitOrdersCount}
                     </div>
                 )}
+
+                <span className="opacity-20">|</span>
+
+                <span className={tabClass(view === 'history')} onClick={() => setView('history')}>
+                    Trade history
+                </span>
+
             </div>
 
-            {!isBigScreen && (
-                <div className={badgeClass(view === 'limitOrder')}>
-                    {limitOrdersCount}
+            {totalStats ? (
+                <div className='flex flex-row gap-3 items-center px-3'>
+                    <div className="flex flex-row gap-1 border p-1 px-4 rounded-lg w-full">
+                        <p className="text-xs opacity-50 text-nowrap">Total pnl: </p>
+                        <FormatNumber
+                            nb={totalStats.totalPnL}
+                            format="currency"
+                            minimumFractionDigits={2}
+                            prefixClassName={twMerge(
+                                totalStats.totalPnL < 0 ? 'text-redbright text-xs' : 'text-green text-xs',
+                            )}
+                            className={
+                                twMerge(totalStats.totalPnL < 0 ? 'text-redbright text-xs' : 'text-green text-xs')
+                            }
+                            isDecimalDimmed={false}
+                        />
+                    </div>
+
+                    <div className="items-center flex flex-row gap-1 border p-1 px-4 rounded-lg w-full">
+                        <p className="opacity-50 text-nowrap text-xs">Total collateral: </p>
+                        <FormatNumber nb={
+                            totalStats.totalCollateral
+                        } format="currency" className="text-xs" />
+                    </div>
+
+                    {/* Action buttons */}
+                    {view === 'positions' && positions?.length && onCloseAllPositions ? (
+                        <Button
+                            size="xs"
+                            className={twMerge(
+                                POSITION_BLOCK_STYLES.button.filled,
+                                isBigScreen ? 'w-[13em] flex-none' : 'w-[3em] max-w-[3em] flex-none'
+                            )}
+                            title={isBigScreen ? "Close All Positions" : ""}
+                            icon={!isBigScreen ? crossIcon : undefined}
+                            rounded={false}
+                            onClick={onCloseAllPositions}
+                        />
+                    ) : null}
+                    {view === 'limitOrder' && limitOrdersExist && onCancelAllLimitOrders ? (
+                        <Button
+                            size="xs"
+                            className={twMerge(
+                                POSITION_BLOCK_STYLES.button.filled,
+                                isBigScreen ? 'w-[15em] flex-none' : 'w-[3em] max-w-[3em] flex-none'
+                            )}
+                            title={isBigScreen ? "Cancel All Limit Order" : ""}
+                            icon={!isBigScreen ? crossIcon : undefined}
+                            rounded={false}
+                            onClick={onCancelAllLimitOrders}
+                        />
+                    ) : null}
                 </div>
-            )}
-
-            <span className="opacity-20">|</span>
-
-            <span className={tabClass(view === 'history')} onClick={() => setView('history')}>
-                Trade history
-            </span>
-            {/* Action buttons */}
-            {view === 'positions' && positions?.length && onCloseAllPositions ? (
-                <Button
-                    size="xs"
-                    className={twMerge(
-                        POSITION_BLOCK_STYLES.button.filled,
-                        isBigScreen ? 'w-[13em] ml-auto' : 'w-[3em] max-w-[3em] ml-auto'
-                    )}
-                    title={isBigScreen ? "Close All Positions" : ""}
-                    icon={!isBigScreen ? crossIcon : undefined}
-                    rounded={false}
-                    onClick={onCloseAllPositions}
-                />
-            ) : null}
-            {view === 'limitOrder' && limitOrdersExist && onCancelAllLimitOrders ? (
-                <Button
-                    size="xs"
-                    className={twMerge(
-                        POSITION_BLOCK_STYLES.button.filled,
-                        isBigScreen ? 'w-[15em] ml-auto' : 'w-[3em] max-w-[3em] ml-auto'
-                    )}
-                    title={isBigScreen ? "Cancel All Limit Order" : ""}
-                    icon={!isBigScreen ? crossIcon : undefined}
-                    rounded={false}
-                    onClick={onCancelAllLimitOrders}
-                />
             ) : null}
         </div>
     );
