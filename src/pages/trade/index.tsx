@@ -103,7 +103,7 @@ export default function Trade({
       showAllActivePositions: cookies?.showAllActivePositions === true,
       showPositionHistory: cookies?.showPositionHistory === true,
       updateTPSLByDrag: cookies?.updateTPSLByDrag === true,
-      showHighLow: cookies?.showHighLow === true,
+      showHighLow: true,
     }
   );
 
