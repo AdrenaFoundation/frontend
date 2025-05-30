@@ -1085,9 +1085,11 @@ export default class DataApiClient {
                 latestDate: apiData.latest_date,
                 latestTimestamp: apiData.latest_timestamp,
                 prices: apiData.prices.map((price) => ({
+                    symbol: price.symbol,
                     feedId: price.feed_id,
                     price: new BN(price.price),
                     timestamp: new BN(price.timestamp),
+                    exponent: price.exponent,
                 })),
                 signature: apiData.signature,
                 signatureByteArray: hexStringToByteArray(apiData.signature),

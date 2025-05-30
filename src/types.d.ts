@@ -53,7 +53,6 @@ export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
   mainConnection: Connection;
-  pythConnection: Connection;
   cluster: SupportedCluster;
   settings: Settings;
 };
@@ -1724,11 +1723,11 @@ export type ChaosLabsPricesExtended = {
   latestDate: Date;
   latestTimestamp: number;
   prices: {
-    // symbol: string;
+    symbol: string;
     feedId: number;
     price: BN;
     timestamp: BN;
-    // exponent: number;
+    exponent: number;
   }[];
   signature: string;
   signatureByteArray: number[];

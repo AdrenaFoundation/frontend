@@ -1,20 +1,20 @@
-import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { Connection, Transaction } from "@solana/web3.js";
+import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
+import { Connection, Transaction } from '@solana/web3.js';
 
-import { AdrenaClient } from "@/AdrenaClient";
-import IConfiguration from "@/config/IConfiguration";
-import { DEFAULT_PERPS_USER } from "@/constant";
-import { IDL as ADRENA_IDL } from "@/target/adrena";
+import { AdrenaClient } from '@/AdrenaClient';
+import IConfiguration from '@/config/IConfiguration';
+import { DEFAULT_PERPS_USER } from '@/constant';
+import { IDL as ADRENA_IDL } from '@/target/adrena';
 
-import { SolanaExplorerOptions } from "./types";
+import { SolanaExplorerOptions } from './types';
 
 export function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
     connection,
     new NodeWallet(DEFAULT_PERPS_USER),
     {
-      commitment: "processed",
+      commitment: 'processed',
       skipPreflight: true,
     },
   );
@@ -51,7 +51,6 @@ export function createReadOnlyAdrenaProgram(connection: Connection) {
 export default async function initializeApp(
   config: IConfiguration,
   mainConnection: Connection,
-  pythConnection: Connection,
 ) {
   const readOnlyAdrenaProgram = createReadOnlyAdrenaProgram(mainConnection);
 
@@ -63,10 +62,9 @@ export default async function initializeApp(
     config,
     client,
     mainConnection,
-    pythConnection,
     cluster: config.cluster,
     settings: {
-      solanaExplorer: "Solana Explorer" as SolanaExplorerOptions,
+      solanaExplorer: 'Solana Explorer' as SolanaExplorerOptions,
     },
   };
 }

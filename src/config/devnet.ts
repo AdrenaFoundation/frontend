@@ -100,10 +100,6 @@ export default class DevnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly pythProgram: PublicKey = new PublicKey(
-    'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
-  );
-
   public readonly governanceRealmName = 'AdrenaDaoTestingA';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
@@ -136,22 +132,4 @@ export default class DevnetConfiguration implements IConfiguration {
           url: 'https://api.devnet.solana.com',
         },
       ];
-
-  public readonly pythnetRpc: RpcOption = {
-    name: 'Triton Pythnet Devnet',
-    url: (() => {
-      const url = 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com';
-
-      if (!this.devMode) return url;
-
-      const apiKey = process.env.NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY;
-
-      if (!apiKey)
-        throw new Error(
-          'Missing environment variable NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY',
-        );
-
-      return `${url}/${apiKey}`;
-    })(),
-  };
 }

@@ -54,8 +54,6 @@ function Loader(): JSX.Element {
 // initialized once, doesn't move afterwards.
 // actually twice, once on the server to `null` & once on the client.
 const CONFIG = initConfig();
-export const PYTH_CONNECTION =
-  CONFIG && new Connection(CONFIG.pythnetRpc.url, 'processed');
 
 // Load cluster from URL then load the config and initialize the app.
 // When everything is ready load the main component
@@ -83,7 +81,6 @@ export default function App(props: AppProps) {
   // No need to use an Effect as long as we guard with the correct conditions.
   if (
     CONFIG !== null &&
-    PYTH_CONNECTION !== null &&
     initStatus === 'not-started' &&
     activeRpc !== null
   ) {
@@ -91,7 +88,6 @@ export default function App(props: AppProps) {
     initializeApp(
       CONFIG,
       activeRpc.connection,
-      PYTH_CONNECTION,
     ).then(() => {
       setInitStatus('done');
     });
