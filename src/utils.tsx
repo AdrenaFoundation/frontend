@@ -1163,6 +1163,7 @@ export function hexStringToByteArray(hexString: string): number[] {
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
   return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
 }
+
 // Memory-safe logging system with configurable limits
 const MAX_LOGS = 50; // Keep only the most recent 50 logs
 const logs: LogEntry[] = [];
