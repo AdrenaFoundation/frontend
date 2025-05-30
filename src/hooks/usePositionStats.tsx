@@ -158,6 +158,7 @@ export default function usePositionStats(isByWalletAddress = false) {
             } else {
                 const stats = {
                     color: getColor(formattedActivity[dateKey].totalPnl, averagePnl),
+                    totalPositions: formattedActivity[dateKey].totalPositions,
                     pnl: formattedActivity[dateKey].totalPnl,
                     increaseSize: formattedActivity[dateKey].totalIncreaseSize,
                     totalFees: formattedActivity[dateKey].totalFees,
