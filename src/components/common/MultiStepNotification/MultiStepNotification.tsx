@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { Id, toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
+import { getLogs } from '@/logs';
 import {
   addNotification,
   AdrenaTransactionError,
-  getLogs,
   getTxExplorer,
 } from '@/utils';
 
@@ -133,9 +133,8 @@ export default class MultiStepNotification {
 
   private async sendErrorReport(): Promise<void> {
     try {
-      // if (typeof window === 'undefined' || !window.adrena) return;
-      // const adrenaProgram = window.adrena.client.getReadonlyAdrenaProgram();
-      // const wallet = (adrenaProgram.provider as AnchorProvider).wallet;
+      if (typeof window === 'undefined' || !window.adrena) return;
+      const walletAddress = window.adrena.client.getWalletAddress();
 
       this.isSendingErrorReport = true;
       const error = this.error;
@@ -145,7 +144,6 @@ export default class MultiStepNotification {
       const currentUrl =
         typeof window !== 'undefined' ? window.location.href : '';
 
-      const walletAddress = 'anonymous';
 
       const timestamp = new Date().toISOString();
 
