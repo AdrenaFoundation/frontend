@@ -853,7 +853,7 @@ export function useChartDrawing({
       500,
     );
 
-    widget.subscribe('drawing_event', (id) => {
+    const handleDrawingEvent = (id: EntityId) => {
       setTimeout(() => {
         try {
           const line = chart?.getShapeById(id);
@@ -884,9 +884,18 @@ export function useChartDrawing({
           console.log('Error handling drawing event:', error);
         }
       }, 500);
-    });
+    };
+
+    // Subscribe to drawing events
+    widget.subscribe('drawing_event', handleDrawingEvent);
+
+    // Cleanup function to unsubscribe and cancel pending operations
+    return () => {
+      widget.unsubscribe('drawing_event', handleDrawingEvent);
+      debouncedUpdateTPSL.clear();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [widgetReady, chartPreferences.updateTPSLByDrag]);
+  }, [widgetReady, chartPreferences.updateTPSLByDrag, positions, updateTPSL]);
 
   useEffect(() => {
     if (!chart || !widget || !widgetReady) return;
