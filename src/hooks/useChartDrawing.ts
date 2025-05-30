@@ -1159,8 +1159,9 @@ export function useChartDrawing({
   }, [
     chart,
     chartPreferences.showPositionHistory,
-    chartPreferences.showAllActivePositions,
+    // chartPreferences.showAllActivePositions, // disabled
     positionHistory,
+    // allActivePositions, // disabled
   ]);
 
   useEffect(() => {

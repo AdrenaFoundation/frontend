@@ -84,8 +84,14 @@ export function useMarks({
 
       onDataCallback(data);
     },
+    // Include positionsHistory and allActivePositions as dependencies so marks refresh when data changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [
+      positionsHistory,
+      // allActivePositions, // disabled
+      chartPreferences.showPositionHistory,
+      // chartPreferences.showAllActivePositions, // disabled
+    ],
   );
 
   const getPositionHistoryMarks = useCallback(() => {
