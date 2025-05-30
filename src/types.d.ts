@@ -1057,6 +1057,7 @@ export interface PositionActivityRawAPi {
   increase_count: number;
   total_fees: number;
   total_exit_fees: number;
+  winrate: number;
 }
 
 export type PositionStatsRawApi = {
@@ -1106,6 +1107,7 @@ export type GetPositionStatsReturnType<
         increaseCount: number;
         totalFees: number;
         totalExitFees: number;
+        winrate: number;
       }[];
     }
   : object);

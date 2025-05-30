@@ -606,6 +606,7 @@ export default class DataApiClient {
                             increaseCount: positionActivity.increase_count,
                             totalFees: positionActivity.total_fees,
                             totalExitFees: positionActivity.total_exit_fees,
+                            winrate: positionActivity.winrate,
                         }),
                     ),
                 }),

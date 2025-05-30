@@ -100,6 +100,7 @@ export default function usePositionStats(isByWalletAddress = false) {
                         totalVolume: activity.totalVolume,
                         totalIncreaseSize: activity.totalIncreaseSize,
                         totalFees: activity.totalExitFees,
+                        winrate: activity.winrate
                     },
                 };
             },
@@ -112,6 +113,7 @@ export default function usePositionStats(isByWalletAddress = false) {
                     totalVolume: number;
                     totalIncreaseSize: number;
                     totalFees: number;
+                    winrate: number;
                 }
             >,
         );
@@ -156,19 +158,12 @@ export default function usePositionStats(isByWalletAddress = false) {
             } else {
                 const stats = {
                     color: getColor(formattedActivity[dateKey].totalPnl, averagePnl),
-                    totalPositions: formattedActivity[dateKey].totalPositions,
-                    // winratePercentage: formattedActivity[dateKey].totalPositions
-                    //     ? Math.round(
-                    //         (formattedActivity[dateKey].winningPositionsCount /
-                    //             formattedActivity[dateKey].totalPositions) *
-                    //         100
-                    //     )
-                    //     : 0,
                     pnl: formattedActivity[dateKey].totalPnl,
                     increaseSize: formattedActivity[dateKey].totalIncreaseSize,
                     totalFees: formattedActivity[dateKey].totalFees,
                     volume: formattedActivity[dateKey].totalVolume,
                     size: formattedActivity[dateKey].totalSize,
+                    winrate: formattedActivity[dateKey].winrate,
                     bubbleSize: normalize(
                         Math.abs(
                             formattedActivity[dateKey][
