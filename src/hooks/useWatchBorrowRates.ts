@@ -22,26 +22,26 @@ export default function useWatchBorrowRates() {
       (custody) => !custody.equals(PublicKey.default),
     );
 
-    const result = await readonlyProgram.account.custody.fetchMultiple(custodiesAddresses);
+    const result =
+      await readonlyProgram.account.custody.fetchMultiple(custodiesAddresses);
 
-    const borrowRates = result.reduce((acc, custody, i) => { 
+    const borrowRates = result.reduce(
+      (acc, custody, i) => {
         if (!custody) return acc;
 
         acc[custodiesAddresses[i].toBase58()] = nativeToUi(
           custody.borrowRateState.currentRate,
           RATE_DECIMALS,
         );
-        
-        return acc;
-      }, {} as {
-        [custody: string]: number | null;
-    });
 
-    dispatch(
-      setBorrowRatesAction(
-        borrowRates,
-      ),
+        return acc;
+      },
+      {} as {
+        [custody: string]: number | null;
+      },
     );
+
+    dispatch(setBorrowRatesAction(borrowRates));
   }, [dispatch]);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function useWatchBorrowRates() {
 
     borrowRateInterval = setInterval(() => {
       loadBorrowRates().catch((e) =>
-        console.error('error happened loading pyth prices', e),
+        console.error('error happened loading borrow rates', e),
       );
     }, BORROW_RATE_LOADING_INTERVAL_IN_MS);
 
@@ -72,4 +72,3 @@ export default function useWatchBorrowRates() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadBorrowRates, !!window.adrena.client.connection]);
 }
-

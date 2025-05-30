@@ -134,10 +134,6 @@ export default class MainnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly pythProgram: PublicKey = new PublicKey(
-    'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
-  );
-
   public readonly governanceRealmName = 'AdrenaDAO';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
@@ -170,22 +166,4 @@ export default class MainnetConfiguration implements IConfiguration {
           url: 'https://mainnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
         },
       ];
-
-  public readonly pythnetRpc: RpcOption = {
-    name: 'Triton Pythnet Devnet',
-    url: (() => {
-      const url = 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com';
-
-      if (!this.devMode) return url;
-
-      const apiKey = process.env.NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY;
-
-      if (!apiKey)
-        throw new Error(
-          'Missing environment variable NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY',
-        );
-
-      return `${url}/${apiKey}`;
-    })(),
-  };
 }

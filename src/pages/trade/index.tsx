@@ -1,28 +1,31 @@
 import { BN } from '@coral-xyz/anchor';
-import { Switch } from '@mui/material';
 import { Transaction } from '@solana/web3.js';
-import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
-import crossIcon from '@/../public/images/Icons/cross.svg';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import ChartControlsDesktop from '@/components/pages/trading/ChartControls/ChartControlsDesktop';
+import ChartControlsMobile from '@/components/pages/trading/ChartControls/ChartControlsMobile';
 import LimitOrder from '@/components/pages/trading/LimitOrder/LimitOrder';
-import { POSITION_BLOCK_STYLES } from '@/components/pages/trading/Positions/PositionBlockComponents/PositionBlockStyles';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
+import { ChartPreferences } from '@/components/pages/trading/TradingChart/types';
+import { useMarks } from '@/components/pages/trading/TradingChart/useMarks';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
+import ViewTabs, { ViewType } from '@/components/pages/trading/ViewTabs/ViewTabs';
 import { PRICE_DECIMALS } from '@/constant';
+import { useAllPositions } from '@/hooks/useAllPositions';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
+import usePositionsHistory from '@/hooks/usePositionHistory';
 import usePositions from '@/hooks/usePositions';
 import { useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
@@ -78,6 +81,9 @@ export default function Trade({
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
+  const { positionsHistory } = usePositionsHistory({ walletAddress: wallet?.publicKey.toBase58() ?? null, refreshInterval: 60_000 });
+  const { allPositions } = useAllPositions({ connected });
+
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );
@@ -87,10 +93,27 @@ export default function Trade({
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
-  const [cookies, setCookie] = useCookies([
-    'showBreakEvenLine',
-    'toggleSizeUsdInChart',
+  const [cookies] = useCookies(['showBreakEvenLine', 'toggleSizeUsdInChart',
+    'showAllActivePositionsLiquidationLines', 'showAllActivePositions', 'showPositionHistory', 'updateTPSLByDrag', 'showHighLow'
   ]);
+
+  const [chartPreferences, setChartPreferences] = useState<ChartPreferences>(
+    {
+      showAllActivePositionsLiquidationLines: cookies?.showAllActivePositionsLiquidationLines === true,
+      showAllActivePositions: cookies?.showAllActivePositions === true,
+      showPositionHistory: cookies?.showPositionHistory === true,
+      updateTPSLByDrag: cookies?.updateTPSLByDrag === true,
+      showHighLow: true,
+    }
+  );
+
+  const { getMarksCallback } = useMarks({
+    positionsHistory,
+    allActivePositions: allPositions,
+    activeToken: tokenB,
+    walletAddress: wallet?.publicKey.toBase58() ?? null,
+    chartPreferences,
+  });
 
   const [showBreakEvenLine, setShowBreakEvenLine] = useState<boolean>(
     cookies?.showBreakEvenLine !== false,
@@ -109,7 +132,7 @@ export default function Trade({
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
   const isExtraWideScreen = useBetterMediaQuery('(min-width: 1600px)');
-  const [view, setView] = useState<'history' | 'positions' | 'limitOrder'>('positions');
+  const [view, setView] = useState<ViewType>('positions');
 
   const { limitOrderBook, reload } = useLimitOrderBook({
     walletAddress: wallet?.publicKey.toBase58() ?? null,
@@ -352,12 +375,14 @@ export default function Trade({
     }
   }, [positions, tokenPrices]);
 
+  const allActivePositions = tokenB ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint)) : null
+
   return (
-    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[200px] sm:pb-4">
+    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full sm:p-4 pb-[200px] sm:pb-4">
       <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border rounded-lg overflow-hidden bg-secondary">
+        <div className="flex flex-col w-full border sm:rounded-lg overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -370,6 +395,7 @@ export default function Trade({
               onChange={(t: Token) => {
                 setTokenB(t);
               }}
+              allActivePositions={allActivePositions}
             />
           ) : null}
 
@@ -379,91 +405,47 @@ export default function Trade({
                 <TradingChart
                   token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                   positions={positions}
+                  allActivePositions={allActivePositions}
+                  positionHistory={positionsHistory}
+                  chartPreferences={chartPreferences}
                   limitOrders={limitOrderBook?.limitOrders ?? null}
                   showBreakEvenLine={showBreakEvenLine}
                   toggleSizeUsdInChart={toggleSizeUsdInChart}
+                  getMarksCallback={getMarksCallback}
                 />
               ) : null}
             </div>
           </div>
 
           <div className="flex flex-col border-t border-white/10">
-            <div className="flex flex-row gap-3 items-center justify-end p-2">
-              <div className="flex items-center p-0.5 text-white">
-                <Tippy content="The break-even line is the price at which the position would be at breakeven given the fees to be paid at exit.">
-                  <p className="opacity-50 text-xs underline-dashed cursor-help">
-                    Show Break Even line
-                  </p>
-                </Tippy>
-                <Switch
-                  checked={showBreakEvenLine}
-                  onChange={() => {
-                    setCookie('showBreakEvenLine', !showBreakEvenLine);
-                    setShowBreakEvenLine(!showBreakEvenLine);
-                  }}
-                  size="small"
-                  sx={{
-                    transform: 'scale(0.7)',
-                    '& .MuiSwitch-switchBase': {
-                      color: '#ccc',
-                    },
-                    '& .MuiSwitch-switchBase.Mui-checked': {
-                      color: '#1a1a1a',
-                    },
-                    '& .MuiSwitch-track': {
-                      backgroundColor: '#555',
-                    },
-                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                      backgroundColor: '#10e1a3',
-                    },
-                  }}
-                />
-              </div>
+            {/* Chart Controls */}
+            <ChartControlsDesktop
+              chartPreferences={chartPreferences}
+              setChartPreferences={setChartPreferences}
+              showBreakEvenLine={showBreakEvenLine}
+              setShowBreakEvenLine={setShowBreakEvenLine}
+              toggleSizeUsdInChart={toggleSizeUsdInChart}
+              setToggleSizeUsdInChart={setToggleSizeUsdInChart}
+              isResizing={isResizing}
+              setIsResizing={setIsResizing}
+              isBigScreen={!!isBigScreen}
+            />
 
-              <div className="flex items-center p-0.5 text-white">
-                <p className="opacity-50 text-xs underline-dashed cursor-help">
-                  Show size in chart
-                </p>
-                <Switch
-                  checked={toggleSizeUsdInChart}
-                  onChange={() => {
-                    setCookie('toggleSizeUsdInChart', !toggleSizeUsdInChart);
-                    setToggleSizeUsdInChart(!toggleSizeUsdInChart);
-                  }}
-                  size="small"
-                  sx={{
-                    transform: 'scale(0.7)',
-                    '& .MuiSwitch-switchBase': {
-                      color: '#ccc',
-                    },
-                    '& .MuiSwitch-switchBase.Mui-checked': {
-                      color: '#1a1a1a',
-                    },
-                    '& .MuiSwitch-track': {
-                      backgroundColor: '#555',
-                    },
-                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                      backgroundColor: '#10e1a3',
-                    },
-                  }}
-                />
-              </div>
+            <ChartControlsMobile
+              chartPreferences={chartPreferences}
+              setChartPreferences={setChartPreferences}
+              showBreakEvenLine={showBreakEvenLine}
+              setShowBreakEvenLine={setShowBreakEvenLine}
+              toggleSizeUsdInChart={toggleSizeUsdInChart}
+              setToggleSizeUsdInChart={setToggleSizeUsdInChart}
+              isResizing={isResizing}
+              setIsResizing={setIsResizing}
+            />
 
-              {isBigScreen && (
-                <div
-                  className="flex items-center p-0.5 text-white cursor-pointer"
-                  onClick={() => setIsResizing(!isResizing)}
-                >
-                  <p className={twMerge("opacity-50 text-xs hover:opacity-100 transition-opacity", isResizing && "opacity-100")}>
-                    Resize
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {isBigScreen && isResizing && (
+            {/* Chart Resize Handle - appears right below chart when resize mode is active */}
+            {!!isBigScreen && isResizing && (
               <div
-                className="h-6 w-full flex items-center justify-center cursor-ns-resize hover:bg-white/5"
+                className="h-6 w-full flex items-center justify-center cursor-ns-resize hover:bg-white/5 border-t border-white/10"
                 onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.preventDefault();
                   const startY = e.clientY;
@@ -472,7 +454,7 @@ export default function Trade({
                   const handleMouseMove = (moveEvent: MouseEvent) => {
                     moveEvent.preventDefault();
                     const deltaY = moveEvent.clientY - startY;
-                    const newHeight = Math.max(minChartHeight, Math.min(maxChartHeight, initialHeight + deltaY));
+                    const newHeight = Math.max(200, Math.min(1200, initialHeight + deltaY));
                     setChartHeight(newHeight);
                   };
 
@@ -487,70 +469,26 @@ export default function Trade({
                 }}
               >
                 <div className="w-12 h-1 bg-white/20 rounded-full hover:bg-white/40 transition-colors" />
+                <span className="ml-2 text-xs text-white/60">Drag to resize chart</span>
               </div>
             )}
           </div>
         </div>
 
-        {isBigScreen ? (
+        {!!isBigScreen ? (
           <>
             <div className="bg-secondary mt-4 border rounded-lg relative">
-              <div className="flex items-center justify-start gap-2 px-3 sm:px-4 pt-2 text-sm">
-                <div
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300 flex items-center gap-2',
-                    view === 'positions' ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setView('positions')}
-                >
-                  Open positions
-
-                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{positions?.length ?? 0}</div>
-                </div>
-
-                <span className="opacity-20">|</span>
-
-                <div
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300 flex gap-2 items-center',
-                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setView('limitOrder')}
-                >
-                  Limit orders
-
-                  <div className='h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor'>{limitOrderBook?.limitOrders.length ?? 0}</div>
-                </div>
-
-
-                <span className="opacity-20">|</span>
-
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    view === 'history' ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setView('history')}
-                >
-                  Trade history
-                </span>
-
-                {view === 'positions' && positions?.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[13em] ml-auto')}
-                  title="Close All Positions"
-                  rounded={false}
-                  onClick={() => triggerCloseAllPosition()}
-                /> : null}
-
-                {view === 'limitOrder' && limitOrderBook?.limitOrders.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[15em] ml-auto')}
-                  title="Cancel All Limit Order"
-                  rounded={false}
-                  onClick={() => triggerCancelAllLimitOrder()}
-                /> : null}
-              </div>
+              <ViewTabs
+                view={view}
+                setView={setView}
+                positionsCount={positions?.length ?? 0}
+                limitOrdersCount={limitOrderBook?.limitOrders.length ?? 0}
+                isBigScreen={!!isBigScreen}
+                onCloseAllPositions={triggerCloseAllPosition}
+                onCancelAllLimitOrders={triggerCancelAllLimitOrder}
+                positions={positions}
+                limitOrdersExist={!!limitOrderBook?.limitOrders.length}
+              />
 
               {view === 'history' ? (
                 <div className="flex flex-col w-full p-4">
@@ -588,69 +526,17 @@ export default function Trade({
         ) : (
           <div className="flex">
             <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col relative">
-              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    view === 'positions' ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setView('positions')}
-                >
-                  Open positions
-
-                </span>
-                <div className={twMerge(
-                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
-                  view === 'positions' ? 'opacity-100' : 'opacity-40'
-                )}>{positions?.length ?? 0}</div>
-
-                <span className="opacity-20">|</span>
-
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    view === 'limitOrder' ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setView('limitOrder')}
-                >
-                  Limit orders
-                </span>
-
-                <div className={twMerge(
-                  'h-4 min-w-4 pl-1.5 pr-1.5 flex items-center justify-center text-center rounded text-xxs bg-inputcolor',
-                  view === 'limitOrder' ? 'opacity-100' : 'opacity-40'
-                )}>{limitOrderBook?.limitOrders.length ?? 0}</div>
-
-                <span className="opacity-20">|</span>
-
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    view === 'history' ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setView('history')}
-                >
-                  Trade history
-                </span>
-
-                {view === 'positions' && positions?.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[3em] max-w-[3em] ml-auto')}
-                  title=""
-                  icon={crossIcon}
-                  rounded={false}
-                  onClick={() => triggerCloseAllPosition()}
-                /> : null}
-
-                {view === 'limitOrder' && limitOrderBook?.limitOrders.length ? <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.filled, 'w-[3em] max-w-[3em] ml-auto')}
-                  title=""
-                  icon={crossIcon}
-                  rounded={false}
-                  onClick={() => triggerCancelAllLimitOrder()}
-                /> : null}
-              </div>
+              <ViewTabs
+                view={view}
+                setView={setView}
+                positionsCount={positions?.length ?? 0}
+                limitOrdersCount={limitOrderBook?.limitOrders.length ?? 0}
+                isBigScreen={!!isBigScreen}
+                onCloseAllPositions={triggerCloseAllPosition}
+                onCancelAllLimitOrders={triggerCancelAllLimitOrder}
+                positions={positions}
+                limitOrdersExist={!!limitOrderBook?.limitOrders.length}
+              />
 
               {view === 'history' ? (
                 <div className="mt-1 w-full p-4 flex grow">
@@ -707,7 +593,7 @@ export default function Trade({
         )}
       </div>
 
-      {isBigScreen && (
+      {!!isBigScreen && (
         <div className={twMerge(
           "hidden sm:flex ml-4",
           isExtraWideScreen ? "w-[20%] min-w-[350px]" : "w-[25%] min-w-[320px]"
