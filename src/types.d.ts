@@ -21,6 +21,13 @@ import {
 } from './constant';
 import type { WalletAdapterName } from './hooks/useWalletAdapters';
 
+export type LogEntry = {
+  type: 'log' | 'warn' | 'error';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  message: any[];
+  timestamp: string;
+};
+
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
 
@@ -46,7 +53,6 @@ export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
   mainConnection: Connection;
-  pythConnection: Connection;
   cluster: SupportedCluster;
   settings: Settings;
 };
@@ -1050,6 +1056,7 @@ export interface PositionActivityRawAPi {
   increase_count: number;
   total_fees: number;
   total_exit_fees: number;
+  winrate: number;
 }
 
 export type PositionStatsRawApi = {
@@ -1099,6 +1106,7 @@ export type GetPositionStatsReturnType<
         increaseCount: number;
         totalFees: number;
         totalExitFees: number;
+        winrate: number;
       }[];
     }
   : object);
@@ -1715,11 +1723,11 @@ export type ChaosLabsPricesExtended = {
   latestDate: Date;
   latestTimestamp: number;
   prices: {
-    // symbol: string;
+    symbol: string;
     feedId: number;
     price: BN;
     timestamp: BN;
-    // exponent: number;
+    exponent: number;
   }[];
   signature: string;
   signatureByteArray: number[];

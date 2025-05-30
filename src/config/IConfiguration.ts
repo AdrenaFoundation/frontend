@@ -31,11 +31,8 @@ export default interface IConfiguration {
 
   readonly governanceProgram: PublicKey;
   readonly stakesClaimPayer: PublicKey;
-  readonly pythProgram: PublicKey;
 
   readonly governanceRealmName: string;
 
   readonly rpcOptions: RpcOption[];
-
-  readonly pythnetRpc: RpcOption;
 }

@@ -7,20 +7,20 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
-export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
-    return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
-}
-
 export default function TradingChartHeaderStats({
     className,
     priceClassName,
     selected,
     statsClassName,
+    numberLong,
+    numberShort,
 }: {
     className?: string;
     selected: Token;
     priceClassName?: string;
     statsClassName?: string;
+    numberLong?: number;
+    numberShort?: number;
 }) {
     const selectedTokenPrice = useSelector(
         (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
@@ -60,82 +60,170 @@ export default function TradingChartHeaderStats({
     const lastDayLow = stats?.[selected.symbol]?.lastDayLow ?? null;
 
     return (
+        <div className={twMerge("flex w-full sm:p-0 flex-row sm:flex-row justify-between sm:justify-end sm:gap-6 items-center sm:items-center sm:pr-5", className)}>
+            {/* Mobile: Price on left */}
+            <div className="flex sm:hidden items-center ml-2">
+                <FormatNumber
+                    nb={selectedTokenPrice}
+                    format="currency"
+                    minimumFractionDigits={2}
+                    precision={selected.displayPriceDecimalsPrecision}
+                    className={twMerge('text-xl font-bold', tokenColor, priceClassName)}
+                />
+            </div>
 
-
-        <div className={twMerge("flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5", className)}>
-            <FormatNumber
-                nb={selectedTokenPrice}
-                format="currency"
-                minimumFractionDigits={2}
-                precision={selected.displayPriceDecimalsPrecision}
-                className={twMerge('text-lg font-bold', tokenColor, priceClassName)}
-            />
-            <div className="flex flex-row gap-3">
-                <div className="flex items-center rounded-full flex-wrap">
-                    <span className="flex font-mono sm:text-xxs text-txtfade text-right">
-                        24h:
-                    </span>
-                </div>
-
-                <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
-                    <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-                        Ch.
-                    </span>
+            {/* Mobile: Compact stats on right - labels above values */}
+            <div className="flex sm:hidden items-center justify-center gap-2 text-xxs font-mono mt-1">
+                {/* 24h Change */}
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-txtfade text-xxs leading-none mb-0.5">24h Change</span>
                     <span
-                        className={twMerge(
-                            'font-mono text-xs sm:text-xxs', // Adjusted to text-xs
-                            dailyChange
-                                ? dailyChange > 0
-                                    ? 'text-green'
-                                    : 'text-red'
-                                : 'text-white',
-                        )}
+                        className={`font-mono leading-none text-xxs ${dailyChange
+                            ? dailyChange > 0
+                                ? 'text-green'
+                                : 'text-red'
+                            : 'text-white'
+                            }`}
                     >
-                        {dailyChange
-                            ? `${dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
-                            : '-'}
+                        {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
                     </span>
                 </div>
 
-                <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
-                    <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-                        Vol.
-                    </span>
-                    <span className="font-mono text-xs sm:text-xxs">
-                        <FormatNumber
-                            nb={dailyVolume}
-                            format="currency"
-                            isAbbreviate={true}
-                            isDecimalDimmed={false}
-                            className="font-mono text-xxs" // Ensure smaller font
-                        />
-                    </span>
-                </div>
-
-                <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
-                    <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-                        Hi
-                    </span>
-                    <span className="font-mono text-xs sm:text-xxs">
-                        <FormatNumber
-                            nb={lastDayHigh} // Assuming high is available in stats
-                            format="currency"
-                            className="font-mono text-xxs"
-                        />
+                {/* Volume */}
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-txtfade text-xxs leading-none mb-0.5">24h Vol</span>
+                    <span className="text-white text-xxs font-mono leading-none">
+                        {dailyVolume ? (
+                            <FormatNumber
+                                nb={dailyVolume}
+                                format="currency"
+                                isAbbreviate={true}
+                                isDecimalDimmed={false}
+                                className="font-mono text-xxs"
+                            />
+                        ) : '-'}
                     </span>
                 </div>
 
-                <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
-                    <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-                        Lo
+                {/* 24h High */}
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-txtfade text-xxs leading-none mb-0.5">24h Hi</span>
+                    <span className="text-white text-xxs font-mono leading-none">
+                        {lastDayHigh ? (
+                            <FormatNumber
+                                nb={lastDayHigh}
+                                format="currency"
+                                className="font-mono text-xxs"
+                            />
+                        ) : '-'}
                     </span>
-                    <span className="font-mono text-xxs sm:text-xs">
-                        <FormatNumber
-                            nb={lastDayLow} // Assuming low is available in stats
-                            format="currency"
-                            className="font-mono text-xxs"
-                        />
+                </div>
+
+                {/* 24h Low */}
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-txtfade text-xxs leading-none mb-0.5">24h Lo</span>
+                    <span className="text-white text-xxs font-mono leading-none">
+                        {lastDayLow ? (
+                            <FormatNumber
+                                nb={lastDayLow}
+                                format="currency"
+                                className="font-mono text-xxs"
+                            />
+                        ) : '-'}
                     </span>
+                </div>
+            </div>
+
+            {/* Desktop layout */}
+            <div className="hidden sm:flex w-auto justify-start gap-6 items-center">
+                {/* Desktop: Long/Short first, Mobile: Price first */}
+                {numberLong && numberShort ? (
+                    <div className="flex flex-row gap-2 mr-0 xl:mr-4">
+                        <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
+                            <div className="text-center justify-start text-greenSide text-xxs font-mono">Long:{numberLong}</div>
+                        </div>
+                        <div className="px-2 py-1 bg-red/10 rounded-lg inline-flex justify-center items-center gap-2">
+                            <div className="text-center justify-start text-redSide text-xxs font-mono">Short:{numberShort}</div>
+                        </div>
+                    </div>
+                ) : null}
+
+                <FormatNumber
+                    nb={selectedTokenPrice}
+                    format="currency"
+                    minimumFractionDigits={2}
+                    precision={selected.displayPriceDecimalsPrecision}
+                    className={twMerge('text-lg font-bold', tokenColor, priceClassName)}
+                />
+
+                {/* Desktop stats section */}
+                <div className="flex flex-row gap-3">
+                    <div className="flex items-center rounded-full flex-wrap">
+                        <span className="flex font-mono sm:text-xxs text-txtfade text-right">
+                            24h:
+                        </span>
+                    </div>
+
+                    <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
+                        <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                            Ch.
+                        </span>
+                        <span
+                            className={twMerge(
+                                'font-mono text-xs sm:text-xxs', // Adjusted to text-xs
+                                dailyChange
+                                    ? dailyChange > 0
+                                        ? 'text-green'
+                                        : 'text-red'
+                                    : 'text-white',
+                            )}
+                        >
+                            {dailyChange
+                                ? `${dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
+                                : '-'}
+                        </span>
+                    </div>
+
+                    <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
+                        <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                            Vol.
+                        </span>
+                        <span className="font-mono text-xs sm:text-xxs">
+                            <FormatNumber
+                                nb={dailyVolume}
+                                format="currency"
+                                isAbbreviate={true}
+                                isDecimalDimmed={false}
+                                className="font-mono text-xxs" // Ensure smaller font
+                            />
+                        </span>
+                    </div>
+
+                    <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
+                        <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                            Hi
+                        </span>
+                        <span className="font-mono text-xs sm:text-xxs">
+                            <FormatNumber
+                                nb={lastDayHigh} // Assuming high is available in stats
+                                format="currency"
+                                className="font-mono text-xxs"
+                            />
+                        </span>
+                    </div>
+
+                    <div className={twMerge("flex items-center sm:gap-1 rounded-full flex-wrap", statsClassName)}>
+                        <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                            Lo
+                        </span>
+                        <span className="font-mono text-xxs sm:text-xs">
+                            <FormatNumber
+                                nb={lastDayLow} // Assuming low is available in stats
+                                format="currency"
+                                className="font-mono text-xxs"
+                            />
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

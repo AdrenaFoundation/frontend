@@ -12,6 +12,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import {
   DEFAULT_LOCKED_STAKE_LOCK_DURATION,
@@ -49,6 +50,7 @@ export default function StakeOverview({
   handleLockedStakeRedeem,
   handleClickOnStakeMore,
   handleClickOnClaimRewards,
+  handleClickOnClaimRewardsAndBuyAdx,
   handleClickOnFinalizeLockedRedeem,
   userPendingUsdcRewards,
   userPendingAdxRewards,
@@ -68,6 +70,7 @@ export default function StakeOverview({
   ) => void;
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
   handleClickOnClaimRewards: () => Promise<void>;
+  handleClickOnClaimRewardsAndBuyAdx: () => Promise<void>;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   userPendingUsdcRewards: number;
   userPendingAdxRewards: number;
@@ -78,12 +81,15 @@ export default function StakeOverview({
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
   claimsHistory: ClaimHistoryExtended[] | null;
 }) {
+  const isMobile = useBetterMediaQuery('(max-width: 570px)');
   const isALP = token === 'ALP';
   const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
   const { stakingAccount, triggerReload } = useStakingAccount(
     isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
+  const [isClaimingAndBuyAdxRewards, setIsClaimingAndBuyAdxRewards] = useState(false);
+
   const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
     const savedConfig = localStorage.getItem(storageKey);
     return savedConfig
@@ -166,6 +172,16 @@ export default function StakeOverview({
       await handleClickOnClaimRewards();
     } finally {
       setIsClaimingRewards(false);
+    }
+  };
+
+  const handleClaimAndBuyAdx = async () => {
+    setIsClaimingAndBuyAdxRewards(true);
+
+    try {
+      await handleClickOnClaimRewardsAndBuyAdx();
+    } finally {
+      setIsClaimingAndBuyAdxRewards(false);
     }
   };
 
@@ -318,61 +334,79 @@ export default function StakeOverview({
         {/* Pending rewards block */}
         <div className="h-[1px] bg-bcolor w-full my-3" />
         <div className="px-5">
-          <div className="flex items-center mb-2">
-            <h3 className="text-lg font-semibold">Pending Rewards</h3>
-            <Tippy
-              content={
-                <div className="p-2">
-                  {isALP ? (
-                    <>
-                      <p className="text-sm mb-1">
-                        ADX and USDC rewards automatically accrue at the end of
-                        every staking round.
-                      </p>
-                      <p className="text-sm">
-                        Locked ALP can be retrieved once the locking period is
-                        over, or by doing an early exit.
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-sm mb-1">
-                        ADX rewards automatically accrue at the end of every
-                        staking round.
-                      </p>
-                      <p className="text-sm">
-                        Liquid staked ADX can be unstaked at any time. Locked
-                        ADX can be retrieved once the locking period is over, or
-                        by performing an early exit.
-                      </p>
-                    </>
-                  )}
-                </div>
-              }
-              placement="auto"
-            >
-              <Image
-                src={infoIcon}
-                width={16}
-                height={16}
-                alt="info icon"
-                className="inline-block ml-2 cursor-pointer txt op center"
-              />
-            </Tippy>
+          <div className={twMerge("flex mb-2 items-center w-full", isMobile ? 'flex-col' : '')}>
+            <div className='flex gap-2'>
+              <h3 className="text-lg font-semibold">Pending Rewards</h3>
+              <Tippy
+                content={
+                  <div className="p-2">
+                    {isALP ? (
+                      <>
+                        <p className="text-sm mb-1">
+                          ADX and USDC rewards automatically accrue at the end of
+                          every staking round.
+                        </p>
+                        <p className="text-sm">
+                          Locked ALP can be retrieved once the locking period is
+                          over, or by doing an early exit.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm mb-1">
+                          ADX rewards automatically accrue at the end of every
+                          staking round.
+                        </p>
+                        <p className="text-sm">
+                          Liquid staked ADX can be unstaked at any time. Locked
+                          ADX can be retrieved once the locking period is over, or
+                          by performing an early exit.
+                        </p>
+                      </>
+                    )}
+                  </div>
+                }
+                placement="auto"
+              >
+                <Image
+                  src={infoIcon}
+                  width={16}
+                  height={16}
+                  alt="info icon"
+                  className="inline-block ml-2 cursor-pointer txt op center mr-2"
+                />
+              </Tippy>
+            </div>
 
-            <Button
-              variant="primary"
-              size="sm"
-              title={isClaimingRewards ? 'Claiming...' : 'Claim'}
-              className="px-5 ml-auto w-[9em]"
-              onClick={handleClaim}
-              disabled={
-                userPendingUsdcRewards +
-                userPendingAdxRewards +
-                pendingGenesisAdxRewards <=
-                0
-              }
-            />
+            <div className={twMerge('flex gap-4', isMobile ? 'mt-2 w-full' : 'ml-auto')}>
+              <Button
+                variant="primary"
+                size="sm"
+                title={isClaimingAndBuyAdxRewards ? 'Claiming & buying ADX...' : 'Claim & Buy ADX'}
+                className={twMerge("px-5", isMobile ? 'w-1/2' : 'w-[13em] min-w-[13em]')}
+                onClick={handleClaimAndBuyAdx}
+                disabled={
+                  userPendingUsdcRewards +
+                  userPendingAdxRewards +
+                  pendingGenesisAdxRewards <=
+                  0
+                }
+              />
+
+              <Button
+                variant="primary"
+                size="sm"
+                title={isClaimingRewards ? 'Claiming...' : 'Claim'}
+                className={twMerge("px-5", isMobile ? 'w-1/2' : 'w-[9em]')}
+                onClick={handleClaim}
+                disabled={
+                  userPendingUsdcRewards +
+                  userPendingAdxRewards +
+                  pendingGenesisAdxRewards <=
+                  0
+                }
+              />
+            </div>
           </div>
 
           <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">

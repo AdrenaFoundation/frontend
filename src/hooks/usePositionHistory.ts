@@ -5,8 +5,10 @@ import { EnrichedPositionApi } from '@/types';
 
 export default function usePositionsHistory({
   walletAddress,
+  refreshInterval,
 }: {
   walletAddress: string | null;
+  refreshInterval?: number;
 }): {
   positionsHistory: EnrichedPositionApi[];
   triggerPositionsReload: () => void;
@@ -47,7 +49,7 @@ export default function usePositionsHistory({
 
     const interval = setInterval(() => {
       loadPositionsHistory();
-    }, 10000);
+    }, refreshInterval ?? 10000);
 
     return () => {
       clearInterval(interval);
