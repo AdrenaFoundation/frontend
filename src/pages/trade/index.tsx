@@ -522,6 +522,7 @@ export default function Trade({
                 onCloseAllPositions={triggerCloseAllPosition}
                 onCancelAllLimitOrders={triggerCancelAllLimitOrder}
                 positions={positions}
+                totalStats={totalStats}
                 limitOrdersExist={!!limitOrderBook?.limitOrders.length}
               />
 
@@ -570,6 +571,7 @@ export default function Trade({
                 onCloseAllPositions={triggerCloseAllPosition}
                 onCancelAllLimitOrders={triggerCancelAllLimitOrder}
                 positions={positions}
+                totalStats={totalStats}
                 limitOrdersExist={!!limitOrderBook?.limitOrders.length}
               />
 

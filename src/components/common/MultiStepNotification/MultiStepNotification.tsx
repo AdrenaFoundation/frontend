@@ -149,7 +149,7 @@ export default class MultiStepNotification {
 
       const timestamp = new Date().toISOString();
 
-      const recentLogs = getLogs().slice(-10);
+      const recentLogs = getLogs()
 
       const response = await fetch('/api/error_reports', {
         method: 'POST',
