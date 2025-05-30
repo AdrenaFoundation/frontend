@@ -1304,7 +1304,16 @@ export function useChartDrawing({
 
       // Return cleanup function
       return () => {
-        widget.unsubscribe('drawing_event', handleDrawingEvent);
+        if (widget) {
+          try {
+            widget.unsubscribe('drawing_event', handleDrawingEvent);
+          } catch (error) {
+            console.warn(
+              'Error while unsubscribing from drawing_event:',
+              error,
+            );
+          }
+        }
       };
     };
 
