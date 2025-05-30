@@ -17,7 +17,6 @@ import { setupStudiesSubscription } from './subscriptions/studiesSubscription';
 export function configureChartOnReady(
   widget: IChartingLibraryWidget,
   savedTimezone: string,
-  showHighLow?: boolean,
 ) {
   // Apply chart visual overrides
   widget.applyOverrides({
@@ -29,8 +28,8 @@ export function configureChartOnReady(
     'paneProperties.legendProperties.showSeriesTitle': false,
     'paneProperties.legendProperties.showBarChange': false,
     'paneProperties.legendProperties.showSeriesOHLC': true,
-    'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesVisible':
-      showHighLow || true,
+    'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesVisible': true,
+    'mainSeriesProperties.highLowAvgPrice.highLowPriceLabelsVisible': true,
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesColor': '#132e61',
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesWidth': 1,
     'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,
