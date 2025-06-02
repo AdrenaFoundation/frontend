@@ -30,7 +30,7 @@ export default function ClosePosition({
   position: PositionExtended;
   triggerUserProfileReload: () => void;
   onClose: () => void;
-  tokenImage: ImageRef;
+  tokenImage: ImageRef | string;
   setShareClosePosition: (position: PositionExtended) => void;
 }) {
   const showPopupOnPositionClose = useSelector((state) => state.settings.showPopupOnPositionClose);

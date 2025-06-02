@@ -721,7 +721,7 @@ export function formatMilliseconds(milliseconds: number): string {
 }
 
 // Handle specific case of jitoSOL and WBTC
-export function getTokenImage(token: Token): ImageRef {
+export function getTokenImage(token: Token): ImageRef | string {
   if (token.symbol === 'JITOSOL') return solLogo;
   if (token.symbol === 'WBTC') return btcLogo;
 
@@ -1161,4 +1161,19 @@ export function hexStringToByteArray(hexString: string): number[] {
 
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
   return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
+}
+
+// Small structure used to ease usage of top accounts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function jupInstructionToTransactionInstruction(ix: any): TransactionInstruction {
+  return new TransactionInstruction({
+    programId: new PublicKey(ix.programId),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    keys: ix.accounts.map((acc: any) => ({
+      pubkey: new PublicKey(acc.pubkey),
+      isSigner: acc.isSigner,
+      isWritable: acc.isWritable,
+    })),
+    data: Buffer.from(ix.data, 'base64'),
+  });
 }

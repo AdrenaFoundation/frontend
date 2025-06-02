@@ -1,5 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
-import { PublicKey, TransactionInstruction } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -36,6 +36,7 @@ import {
   getAdxLockedStakes,
   getAlpLockedStakes,
   getNextStakingRoundStartTime,
+  jupInstructionToTransactionInstruction,
   nativeToUi,
   uiToNative,
 } from '@/utils';
@@ -61,21 +62,6 @@ export type ALPTokenDetails = {
 
 export const DEFAULT_LOCKED_STAKE_LOCK_DURATION = 180;
 export const LIQUID_STAKE_LOCK_DURATION = 0;
-
-// Small structure used to ease usage of top accounts
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function toInstruction(ix: any): TransactionInstruction {
-  return new TransactionInstruction({
-    programId: new PublicKey(ix.programId),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    keys: ix.accounts.map((acc: any) => ({
-      pubkey: new PublicKey(acc.pubkey),
-      isSigner: acc.isSigner,
-      isWritable: acc.isWritable,
-    })),
-    data: Buffer.from(ix.data, 'base64'),
-  });
-}
 
 export default function Stake({
   connected,
@@ -572,9 +558,9 @@ export default function Stake({
       });
 
       const jupiterInstructions = [
-        ...(swapInstructions.setupInstructions || []).map(toInstruction),
-        toInstruction(swapInstructions.swapInstruction),
-        ...(swapInstructions.cleanupInstruction ? [toInstruction(swapInstructions.cleanupInstruction)] : []),
+        ...(swapInstructions.setupInstructions || []).map(jupInstructionToTransactionInstruction),
+        jupInstructionToTransactionInstruction(swapInstructions.swapInstruction),
+        ...(swapInstructions.cleanupInstruction ? [jupInstructionToTransactionInstruction(swapInstructions.cleanupInstruction)] : []),
       ];
 
       builder.postInstructions(jupiterInstructions);

@@ -8,13 +8,15 @@ import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { useDebounce } from '@/hooks/useDebounce';
 import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
 import { useDispatch, useSelector } from '@/store/store';
-import { PositionExtended } from '@/types';
+import { ChaosLabsPricesExtended, PositionExtended } from '@/types';
 import {
   addNotification,
   AdrenaTransactionError,
+  applySlippage,
   getTokenSymbol,
   nativeToUi,
   uiLeverageToNative,
@@ -29,6 +31,7 @@ import { LimitOrderContent } from './LongShortTradingInputs/LimitOrderContent';
 import { MarketOrderContent } from './LongShortTradingInputs/MarketOrderContent';
 import { PositionInfoSection } from './LongShortTradingInputs/PositionInfoSection';
 import { ShortWarning } from './LongShortTradingInputs/ShortWarning';
+import { SwapSlippageSection } from './LongShortTradingInputs/SwapSlippageSection';
 import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
 import { PositionInfoState, TradingInputsProps, TradingInputState } from './LongShortTradingInputs/types';
 import { calculateLimitOrderLimitPrice, calculateLimitOrderTriggerPrice } from './LongShortTradingInputs/utils';
@@ -325,6 +328,7 @@ export default function LongShortTradingInputs({
     }
 
     const tokenBPrice = tokenPrices[tokenB.symbol];
+
     if (!tokenBPrice) {
       return addNotification({
         type: 'info',
@@ -335,15 +339,10 @@ export default function LongShortTradingInputs({
 
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
-    if (!tokenAPrice) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: `Missing ${tokenA.symbol} price`,
-      });
-    }
+
     if (tokenAPrice) {
       const collateralValue = inputState.inputA * tokenAPrice;
+
       if (collateralValue < 9.5) {
         return addNotification({
           type: 'info',
@@ -360,18 +359,15 @@ export default function LongShortTradingInputs({
     // Existing position or not, it's the same
     const collateralAmount = uiToNative(inputState.inputA, tokenA.decimals);
 
-    const openPositionWithSwapAmountAndFees = await window.adrena.client.getOpenPositionWithSwapAmountAndFees(
-      {
-        collateralMint: tokenA.mint,
-        mint: tokenB.mint,
-        collateralAmount,
-        leverage: uiLeverageToNative(inputState.leverage),
-        side,
-      },
-    );
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
-    if (!openPositionWithSwapAmountAndFees) {
-      return notification.currentStepErrored('Error calculating fees');
+    const tradeTokenSymbol = getTokenSymbol(tokenB.symbol);
+
+    const entryPrice = oraclePrices?.prices.find(x => x.symbol === `${tradeTokenSymbol}USD`)?.price ?? null;
+
+    if (!entryPrice) {
+      throw new Error('Cannot find entry price for ' + tradeTokenSymbol);
     }
 
     try {
@@ -399,7 +395,7 @@ export default function LongShortTradingInputs({
           owner: new PublicKey(wallet.publicKey),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
-          price: openPositionWithSwapAmountAndFees.entryPrice,
+          price: entryPrice,
           collateralAmount,
           leverage: uiLeverageToNative(inputState.leverage),
           notification,
@@ -412,7 +408,7 @@ export default function LongShortTradingInputs({
           owner: new PublicKey(wallet.publicKey),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
-          price: openPositionWithSwapAmountAndFees.entryPrice,
+          price: entryPrice,
           collateralAmount,
           leverage: uiLeverageToNative(inputState.leverage),
           notification,
@@ -520,19 +516,21 @@ export default function LongShortTradingInputs({
               inputMint: tokenA.mint.toBase58(),
               outputMint: tokenB.mint.toBase58(),
               amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals).toNumber(),
-              slippageBps: 50, // 0.5%
+              slippageBps: 30, // 0.3%
+              swapMode: 'ExactIn',
+              maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
             });
 
-            console.log('Quote result:', quoteResult);
+            // Apply the slippage so we never fail for not enough collateral in the openPosition
+            // Can still fail due to jupiter swap failing, but that's expected
+            collateralAmount = applySlippage(new BN(quoteResult.outAmount), -0.3);
 
-            collateralAmount = new BN(quoteResult.outAmount);
-
-            console.log('Collateral amount after swap:', collateralAmount.toString());
+            console.log('QUOTE', quoteResult)
           }
 
           infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
             {
-              tokenA: side === 'long' ? tokenB : window.adrena.client.getUsdcToken(),
+              tokenA: tokenB,
               tokenB,
               collateralAmount,
               leverage: uiLeverageToNative(inputState.leverage),
@@ -542,23 +540,37 @@ export default function LongShortTradingInputs({
           );
         } else {
           // Short
+          let collateralAmount: BN = uiToNative(inputState.inputA ?? 0, tokenA.decimals);
 
+          const usdcToken = window.adrena.client.getUsdcToken();
+
+          // Need to do a swap, get the quote
+          if (tokenA.symbol !== usdcToken.symbol) {
+            const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
+              inputMint: tokenA.mint.toBase58(),
+              outputMint: usdcToken.mint.toBase58(),
+              amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals).toNumber(),
+              slippageBps: 50, // 0.5%
+            });
+
+            collateralAmount = new BN(quoteResult.outAmount);
+          }
+
+          infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
+            {
+              tokenA: usdcToken,
+              tokenB,
+              collateralAmount,
+              leverage: uiLeverageToNative(inputState.leverage),
+              side,
+              tokenPrices,
+            },
+          );
         }
 
         if (!infos) {
           return;
         }
-
-        // infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
-        //   {
-        //     tokenA: side === 'long' ? tokenB : window.adrena.client.getUsdcToken(),
-        //     tokenB,
-        //     collateralAmount: uiToNative(inputState.inputB ?? 0, side === 'long' ? tokenB.decimals : window.adrena.client.getUsdcToken().decimals),
-        //     leverage: uiLeverageToNative(inputState.leverage),
-        //     side,
-        //     tokenPrices,
-        //   },
-        // );
 
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means
@@ -873,6 +885,8 @@ export default function LongShortTradingInputs({
           }))}
           onMax={handleMax}
         />
+
+        {tokenA.additionalSwapToken ? <SwapSlippageSection /> : null}
 
         <TPSLModeSelector
           positionInfo={positionInfo}
