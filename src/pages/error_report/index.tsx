@@ -1,14 +1,15 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import copyIcon from '@/../public/images/copy.svg';
+import shovelIcon from '@/../public/images/icons/shovel.svg';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
 import { ErrorReportType } from '@/types';
 import { addNotification } from '@/utils';
-
 
 export default function ErrorReport() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function ErrorReport() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [reportData, setReportData] = useState<ErrorReportType | null>(null);
+  const [isUTC, setIsUTC] = useState<boolean>(true);
 
   useEffect(() => {
     if (code && typeof code === 'string') {
@@ -170,8 +172,23 @@ export default function ErrorReport() {
 
               <div className="mb-3">
                 <div className="text-sm text-gray-400">Timestamp</div>
-                <div className="text-sm">
-                  {new Date(reportData.timestamp).toLocaleString()}
+                <div
+                  className="text-sm cursor-pointer"
+                  onClick={() => setIsUTC(!isUTC)}
+                >
+                  {new Date(reportData.created_at).toLocaleString(
+                    isUTC ? 'en-US' : undefined,
+                    {
+                      timeZone: isUTC
+                        ? 'UTC'
+                        : Intl.DateTimeFormat().resolvedOptions().timeZone,
+                      dateStyle: 'medium',
+                      timeStyle: 'medium',
+                    },
+                  )}
+                  <span className="opacity-50 text-xs underline ml-2">
+                    {isUTC ? 'UTC' : 'Local Time'}
+                  </span>
                 </div>
               </div>
 
@@ -241,6 +258,21 @@ export default function ErrorReport() {
                       )
                     }
                   />
+
+                  <Link
+                    href={`/monitoring?view=walletDigger&wallet=${reportData.wallet_address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300"
+                  >
+                    <Image
+                      src={shovelIcon}
+                      alt="shovel"
+                      width={12}
+                      height={12}
+                      className=""
+                    />
+                  </Link>
                 </div>
               </div>
 
