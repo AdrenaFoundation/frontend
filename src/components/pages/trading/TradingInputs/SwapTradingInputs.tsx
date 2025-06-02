@@ -269,6 +269,79 @@ export default function SwapTradingInputs({
     handleInputAChange(amount);
   };
 
+
+  // try {
+  //   const quoteResult = await fetch(
+  //     `https://lite-api.jup.ag/swap/v1/quote?inputMint=${window.adrena.client.getUsdcToken().mint.toBase58()}&outputMint=${stakedTokenMint.toBase58()}&amount=${uiToNative(adxRewards.pendingUsdcRewards, USD_DECIMALS)}`,
+  //   )
+  //     .then((res) => res.json())
+  //     .catch((e) => {
+  //       notification.currentStepErrored(String(e));
+
+  //       throw e;
+  //     });
+
+  //   notification.currentStepSucceeded();
+
+  //   const swapInstructions: {
+  //     setupInstructions?: unknown[];
+  //     swapInstruction: unknown;
+  //     cleanupInstruction?: unknown;
+  //     addressLookupTableAddresses: string[];
+  //   } = await fetch('https://lite-api.jup.ag/swap/v1/swap-instructions', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Accept: 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       userPublicKey: owner.toBase58(),
+  //       quoteResponse: quoteResult,
+  //       prioritizationFeeLamports: {
+  //         priorityLevelWithMaxLamports: {
+  //           maxLamports: 10_000_000,
+  //           priorityLevel: 'veryHigh',
+  //         },
+  //       },
+  //       dynamicComputeUnitLimit: true,
+  //     }),
+  //   })
+  //     .then((res) => res.json())
+  //     .catch((e) => {
+  //       notification.currentStepErrored(String(e));
+
+  //       throw e;
+  //     });
+
+  //   const builder = await window.adrena.client.buildClaimStakesInstruction({
+  //     owner,
+  //     stakedTokenMint,
+  //     caller: owner,
+  //     // TODO: replace this with a proper system allowing the user to claim on a TA instead of the ATA, but pretty niche usecase tbh
+  //     // Special override for a user that has a different reward token account following a hack
+  //     overrideRewardTokenAccount: owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs' ?
+  //       new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
+  //   });
+
+  //   const jupiterInstructions = [
+  //     ...(swapInstructions.setupInstructions || []).map(toInstruction),
+  //     toInstruction(swapInstructions.swapInstruction),
+  //     ...(swapInstructions.cleanupInstruction ? [toInstruction(swapInstructions.cleanupInstruction)] : []),
+  //   ];
+
+  //   builder.postInstructions(jupiterInstructions);
+
+  //   const transaction = await builder.transaction();
+
+  //   console.log('transaction', transaction);
+
+  //   await window.adrena.client.signAndExecuteTxAlternative({
+  //     transaction,
+  //     notification,
+  //     additionalAddressLookupTables: swapInstructions.addressLookupTableAddresses.map(x => new PublicKey(x)),
+  //   });
+
+
   return (
     <div
       className={twMerge('relative flex flex-col h-full sm:pb-2', className)}

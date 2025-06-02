@@ -747,7 +747,6 @@ export class AdrenaClient {
               decimals: number;
               displayAmountDecimalsPrecision: number;
               displayPriceDecimalsPrecision: number;
-              pythPriceUpdateV2: PublicKey;
               oracle: LimitedString;
               tradeOracle: LimitedString;
             }
@@ -770,7 +769,6 @@ export class AdrenaClient {
           // loadCustodies gets the custodies on the same order as in the main pool
           custody: custodiesAddresses[i],
           coingeckoId: infos.coingeckoId,
-          pythPriceUpdateV2: infos.pythPriceUpdateV2,
           oracle: infos.oracle,
           tradeOracle: infos.tradeOracle,
         };

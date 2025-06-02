@@ -1,8 +1,8 @@
 import { BN } from '@coral-xyz/anchor';
-import { NATIVE_MINT } from '@solana/spl-token';
+import { AccountLayout, NATIVE_MINT } from '@solana/spl-token';
 import type { AccountInfo, PublicKey } from '@solana/web3.js';
 
-import { SOL_DECIMALS } from '@/constant';
+import { ALTERNATIVE_SWAP_TOKENS, SOL_DECIMALS } from '@/constant';
 import type { TokenPricesState } from '@/reducers/streamingTokenPricesReducer';
 import { selectPossibleUserPositions } from '@/selectors/positions';
 import { selectStreamingTokenPricesFallback } from '@/selectors/streamingTokenPrices';
@@ -221,39 +221,46 @@ export const fetchWalletTokenBalances =
       ...window.adrena.client.tokens,
       window.adrena.client.alpToken,
       window.adrena.client.adxToken,
-      { mint: NATIVE_MINT, symbol: 'SOL' },
+      { mint: NATIVE_MINT, symbol: 'SOL', decimals: SOL_DECIMALS },
+      ...ALTERNATIVE_SWAP_TOKENS,
     ];
 
+    const atas = tokens.map(({ mint }) =>
+      findATAAddressSync(walletPublicKey, mint),
+    );
+
+    const accounts = await connection.getMultipleAccountsInfo(atas);
+
     const balances = await Promise.all(
-      tokens.map(async ({ mint }) => {
-        const ata = findATAAddressSync(walletPublicKey, mint);
+      tokens.map(async ({ mint }, i) => {
+        const accountInfo = accounts[i];
 
-        // in case of SOL, consider both SOL in the wallet + WSOL in ATA
-        if (mint.equals(NATIVE_MINT)) {
-          try {
-            const [wsolBalance, solBalance] = await Promise.all([
-              // Ignore ATA error if any, consider there are 0 WSOL
-              connection.getTokenAccountBalance(ata).catch(() => null),
-              connection.getBalance(walletPublicKey),
-            ]);
+        // Handle special case for SOL and WSOL
+        const extra = mint.equals(NATIVE_MINT)
+          ? nativeToUi(
+              new BN(
+                await connection.getBalance(walletPublicKey).catch(() => 0),
+              ),
+              SOL_DECIMALS,
+            )
+          : null;
 
-            return (
-              (wsolBalance?.value.uiAmount ?? 0) +
-              nativeToUi(new BN(solBalance), SOL_DECIMALS)
-            );
-          } catch {
-            // Error loading info
-            return null;
-          }
+        const amount = accountInfo
+          ? nativeToUi(
+              new BN(
+                AccountLayout.decode(
+                  Uint8Array.from(accountInfo.data),
+                ).amount.toString(),
+              ),
+              tokens[i].decimals,
+            )
+          : null;
+
+        if (amount !== null || extra !== null) {
+          return (amount ?? 0) + (extra ?? 0);
         }
 
-        try {
-          const balance = await connection.getTokenAccountBalance(ata);
-          return balance.value.uiAmount;
-        } catch {
-          // Cannot find ATA
-          return null;
-        }
+        return null;
       }),
     );
 

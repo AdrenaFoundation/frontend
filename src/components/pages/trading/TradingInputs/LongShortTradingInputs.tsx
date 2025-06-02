@@ -509,16 +509,56 @@ export default function LongShortTradingInputs({
 
     (async () => {
       try {
-        const infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
-          {
-            tokenA,
-            tokenB,
-            collateralAmount: uiToNative(inputState.inputA ?? 0, tokenA.decimals),
-            leverage: uiLeverageToNative(inputState.leverage),
-            side,
-            tokenPrices,
-          },
-        );
+        let infos: Awaited<ReturnType<typeof window.adrena.client.getOpenPositionWithConditionalSwapInfos>> | null = null;
+
+        if (side === 'long') {
+          let collateralAmount: BN = uiToNative(inputState.inputA ?? 0, tokenA.decimals);
+
+          // Need to do a swap, get the quote
+          if (tokenA.symbol !== tokenB.symbol) {
+            const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
+              inputMint: tokenA.mint.toBase58(),
+              outputMint: tokenB.mint.toBase58(),
+              amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals).toNumber(),
+              slippageBps: 50, // 0.5%
+            });
+
+            console.log('Quote result:', quoteResult);
+
+            collateralAmount = new BN(quoteResult.outAmount);
+
+            console.log('Collateral amount after swap:', collateralAmount.toString());
+          }
+
+          infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
+            {
+              tokenA: side === 'long' ? tokenB : window.adrena.client.getUsdcToken(),
+              tokenB,
+              collateralAmount,
+              leverage: uiLeverageToNative(inputState.leverage),
+              side,
+              tokenPrices,
+            },
+          );
+        } else {
+          // Short
+
+        }
+
+        if (!infos) {
+          return;
+        }
+
+        // infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
+        //   {
+        //     tokenA: side === 'long' ? tokenB : window.adrena.client.getUsdcToken(),
+        //     tokenB,
+        //     collateralAmount: uiToNative(inputState.inputB ?? 0, side === 'long' ? tokenB.decimals : window.adrena.client.getUsdcToken().decimals),
+        //     leverage: uiLeverageToNative(inputState.leverage),
+        //     side,
+        //     tokenPrices,
+        //   },
+        // );
 
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means

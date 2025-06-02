@@ -18,7 +18,8 @@ export const WalletBalance = ({ tokenA, walletTokenBalances, onMax, onPercentage
         return <div className="h-6" />;
     }
 
-    const balance = walletTokenBalances[tokenA.symbol];
+    const balance = walletTokenBalances[tokenA.symbol] ?? null;
+
     if (balance === null) {
         return <div className="h-6" />;
     }
@@ -36,7 +37,7 @@ export const WalletBalance = ({ tokenA, walletTokenBalances, onMax, onPercentage
                     <button
                         key={percentage}
                         onClick={() => onPercentageClick(percentage)}
-                        className="px-1.5 py-0.5 text-txtfade hover:text-white text-txtfade font-mono text-xs cursor-pointer relative group"
+                        className="px-1.5 py-0.5 hover:text-white text-txtfade font-mono text-xs cursor-pointer relative group"
                         title={`${getPercentageAmount(percentage)} ${tokenA.symbol}`}
                     >
                         {percentage}%

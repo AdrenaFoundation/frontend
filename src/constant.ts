@@ -7,6 +7,7 @@ import {
   AdxLockPeriod,
   AlpLockPeriod,
   SupportedCluster,
+  Token,
 } from './types';
 
 export const RATE_DECIMALS = 9;
@@ -1667,3 +1668,19 @@ export const ALL_CHAT_ROOMS = {
     group: 'information',
   },
 } as const;
+
+export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
+  {
+    mint: new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'),
+    symbol: 'USDT',
+    color: '#26A17B',
+    name: 'USDT',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: true,
+    image:
+      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg',
+    additionalSwapToken: true,
+  },
+];
