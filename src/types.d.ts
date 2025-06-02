@@ -28,6 +28,22 @@ export type LogEntry = {
   timestamp: string;
 };
 
+export type ErrorReportType = {
+  id: number;
+  created_at: string;
+  wallet_address: string;
+  error_message: string;
+  console_log: LogEntry[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  recent_post_data?: any;
+  url: string;
+  action: string;
+  step: string;
+  timestamp: string;
+  ref: string;
+  txHash?: string;
+};
+
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
 

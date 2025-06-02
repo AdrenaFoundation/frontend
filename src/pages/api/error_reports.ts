@@ -2,23 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { LogEntry } from '@/types';
-
-type ErrorReport = {
-  id?: number;
-  created_at?: string;
-  wallet_address: string;
-  error_message: string;
-  console_log?: LogEntry[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  recent_post_data?: any;
-  url?: string;
-  action?: string;
-  step?: string;
-  timestamp?: string;
-  ref?: string;
-  txHash?: string;
-};
+import { ErrorReportType } from '@/types';
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,9 +14,12 @@ export default async function handler(
   );
 
   if (req.method === 'GET') {
+    const { error_code } = req.query;
+
     const { data, error } = await supabase
       .from('error_reports')
       .select('*')
+      .eq('ref', error_code as string)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -58,7 +45,9 @@ export default async function handler(
       action,
       step,
       txHash,
-    } = req.body as ErrorReport;
+      id,
+      created_at,
+    } = req.body as ErrorReportType;
 
     // Validate required fields
     if (!error_message) {
@@ -72,6 +61,7 @@ export default async function handler(
     const ref = `ERR-${Date.now()}-${random}`;
 
     const report = {
+      id,
       wallet_address: wallet_address ?? 'anonymous',
       error_message,
       console_log: console_log ?? '',
@@ -82,6 +72,7 @@ export default async function handler(
       timestamp: new Date().toISOString(),
       txHash: txHash ?? null,
       ref: ref ?? '',
+      created_at,
     };
 
     const { error } = await supabase
