@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import copyIcon from '@/../public/images/copy.svg';
-import shovelIcon from '@/../public/images/icons/shovel.svg';
+import shovelIcon from '@/../public/images/Icons/shovel.svg';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
 import { ErrorReportType } from '@/types';
