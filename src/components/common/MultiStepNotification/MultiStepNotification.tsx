@@ -363,13 +363,13 @@ export default class MultiStepNotification {
                           'text-green',
                           step.state === NotificationStepState.waiting &&
                           'opacity-40',
-                          step.title === 'Sign transaction' &&
+                          step.title === 'Execute transaction' &&
                           this.txHash &&
                           'underline cursor-pointer group',
                         )}
                         onClick={() => {
                           if (
-                            step.title === 'Sign transaction' &&
+                            step.title === 'Execute transaction' &&
                             this.txHash
                           ) {
                             window.open(getTxExplorer(this.txHash), '_blank');
@@ -377,7 +377,7 @@ export default class MultiStepNotification {
                         }}
                       >
                         {step.title}
-                        {step.title === 'Sign transaction' && this.txHash ? (
+                        {step.title === 'Execute transaction' && this.txHash ? (
                           <motion.div
                             initial={{ opacity: 0, x: -5, filter: 'blur(5px)' }}
                             animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
