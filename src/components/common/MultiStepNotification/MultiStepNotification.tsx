@@ -240,7 +240,7 @@ export default class MultiStepNotification {
             ? '10em'
             : this.error !== null
               ? 'auto'
-              : '11em',
+              : this.steps.length === 5 ? '12.873125em' : '11em',
         }}
         transition={{ duration: 0.2 }}
         className="w-[20em] bg-[#08141E] shadow-2xl z-[9999] border border-[#1A2938] rounded-xl"
