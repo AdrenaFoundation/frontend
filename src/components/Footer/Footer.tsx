@@ -57,19 +57,12 @@ export default function Footer({ className }: { className?: string }) {
         </Link> */}
 
         <div className='h-full w-[1px] bg-bcolor' />
+
         <Link
-          href="https://docs.adrena.xyz/"
-          target='_blank'
+          href="/error_report"
           className="text-txtfade hover:text-white font-mono text-xs"
         >
-          Learn
-        </Link>
-        <Link
-          href="https://dao.adrena.xyz/"
-          target='_blank'
-          className="text-txtfade hover:text-white font-mono text-xs"
-        >
-          Vote
+          error report
         </Link>
       </div>
     </footer>
