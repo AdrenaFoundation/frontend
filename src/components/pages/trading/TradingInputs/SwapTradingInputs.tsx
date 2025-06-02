@@ -269,12 +269,6 @@ export default function SwapTradingInputs({
     handleInputAChange(amount);
   };
 
-  //   await window.adrena.client.signAndExecuteTxAlternative({
-  //     transaction,
-  //     notification,
-  //     additionalAddressLookupTables: swapInstructions.addressLookupTableAddresses.map(x => new PublicKey(x)),
-  //   });
-
   return (
     <div
       className={twMerge('relative flex flex-col h-full sm:pb-2', className)}

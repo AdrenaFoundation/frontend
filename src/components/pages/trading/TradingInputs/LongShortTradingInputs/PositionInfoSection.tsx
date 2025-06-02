@@ -42,7 +42,7 @@ export const PositionInfoSection = ({
             <Tippy
                 content={
                     <p className="font-medium text-txtfade">
-                        The information below is calculated locally based on current market prices, and does not account for confidence of the price feed at execution time, as such the Liquidation price and init. leverage may slightly differ.
+                        The values shown are estimates based on current prices. Actual results may vary at execution, especially if a token swap is involved. This means your initial leverage and liquidation price might differ slightly.
                     </p>
                 }
             >
