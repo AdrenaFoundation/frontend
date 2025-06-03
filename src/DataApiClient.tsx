@@ -2,12 +2,12 @@ import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 
 import {
+    ChaosLabsPricesExtended,
+    ChaosLabsPricesResponse,
     ClaimHistoryApi,
     ClaimHistoryBySymbolExtended,
     ClaimHistoryExtended,
     ClaimHistoryExtendedApi,
-    ChaosLabsPricesExtended,
-    ChaosLabsPricesResponse,
     CustodyInfoResponse,
     EnrichedPositionApi,
     EnrichedPositionApiV2,
@@ -21,8 +21,10 @@ import {
     PositionActivityRawAPi,
     PositionApiRawDataV2,
     PositionStatsRawApi,
+    PositionTransaction,
     PreSeasonLeaderboardReturnTypeAPI,
     RankedRewards,
+    RawTransactionPositionData,
     SeasonLeaderboardsData,
     SeasonLeaderboardsRawAPI,
     Token,
@@ -40,8 +42,8 @@ import { hexStringToByteArray } from './utils';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
-    // public static DATAPI_URL = "http://localhost:8080";
-    public static DATAPI_URL = 'https://datapi.adrena.xyz';
+    public static DATAPI_URL = "http://localhost:8080";
+    // public static DATAPI_URL = 'https://datapi.adrena.xyz';
 
     public static async getPriceAtDate(date: Date): Promise<{
         adxPrice: number | null;
@@ -808,7 +810,12 @@ export default class DataApiClient {
                         entryLeverage: data.entry_leverage,
                         lowestLeverage: data.lowest_leverage,
                         entryCollateralAmount: data.entry_collateral_amount,
+                        entryCollateralAmountNative: data.entry_collateral_amount_native,
                         collateralAmount: data.collateral_amount,
+                        collateralAmountNative: data.collateral_amount_native,
+                        increaseCollateralAmount: data.increase_collateral_amount,
+                        increaseCollateralAmountNative: data.increase_collateral_amount_native,
+                        exitAmountNative: data.exit_amount_native,
                         closedBySlTp: data.closed_by_sl_tp,
                         volume: data.volume,
                         duration: data.duration,
@@ -1213,7 +1220,6 @@ export default class DataApiClient {
         };
     }
 
-
     public static async getChaosLabsPrices(): Promise<ChaosLabsPricesExtended | null> {
         try {
             const response = await fetch(
@@ -1251,4 +1257,64 @@ export default class DataApiClient {
             return null;
         }
     }
+
+    public static async getPositionTransactions({
+        positionId,
+    }: {
+        positionId: number;
+    }): Promise<PositionTransaction[] | null> {
+        try {
+            const response = await fetch(
+                `${DataApiClient.DATAPI_URL}/transaction-position?position_id=${positionId}`,
+            );
+
+            if (!response.ok) {
+                console.log('API response was not ok');
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            if (!apiBody.success || !apiBody.data) {
+                return null;
+            }
+
+            const transactions: PositionTransaction[] = apiBody.data.map((transaction: RawTransactionPositionData) => ({
+                transactionId: transaction.transaction_id,
+                rawTransactionId: transaction.raw_transaction_id,
+                userId: transaction.user_id,
+                positionId: transaction.position_id,
+                signature: transaction.signature,
+                method: transaction.method,
+                additionalInfos: {
+                    pnl: transaction.additional_infos?.pnl ?? null,
+                    fees: transaction.additional_infos?.fees ?? null,
+                    size: transaction.additional_infos?.size ?? null,
+                    price: transaction.additional_infos?.price ?? null,
+                    exitFees: transaction.additional_infos?.exitFees ?? null,
+                    leverage: transaction.additional_infos?.leverage ?? null,
+                    referrer: transaction.additional_infos?.referrer ?? null,
+                    borrowFees: transaction.additional_infos?.borrowFees ?? null,
+                    positionId: transaction.additional_infos?.positionId ?? null,
+                    addAmountUsd: transaction.additional_infos?.addAmountUsd ?? null,
+                    positionPubkey: transaction.additional_infos?.position_pubkey ?? null,
+                    removeAmountUsd: transaction.additional_infos?.removeAmountUsd ?? null,
+                    collateralAmount: transaction.additional_infos?.collateralAmount ?? null,
+                    exitAmountNative: transaction.additional_infos?.exitAmountNative ?? null,
+                    stopLossLimitPrice: transaction.additional_infos?.stopLossLimitPrice ?? null,
+                    collateralAmountUsd: transaction.additional_infos?.collateralAmountUsd ?? null,
+                    takeProfitLimitPrice: transaction.additional_infos?.takeProfitLimitPrice ?? null,
+                    collateralAmountNative: transaction.additional_infos?.collateralAmountNative ?? null,
+                    newCollateralAmountUsd: transaction.additional_infos?.newCollateralAmountUsd ?? null,
+                },
+                transactionDate: transaction.transaction_date,
+            }));
+
+            return transactions;
+        } catch (e) {
+            console.error('Error fetching position transactions:', e);
+            return null;
+        }
+    }
+
 }

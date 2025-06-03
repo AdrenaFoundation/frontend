@@ -1498,7 +1498,12 @@ export type PositionApiRawData = {
   exit_fees: number;
   last_ix: string;
   entry_collateral_amount: number;
+  entry_collateral_amount_native: number;
+  increase_collateral_amount: number;
+  increase_collateral_amount_native: number;
   collateral_amount: number;
+  collateral_amount_native: number;
+  exit_amount_native: number;
   closed_by_sl_tp: boolean;
   volume: number;
   duration: number;
@@ -1542,7 +1547,12 @@ export type EnrichedPositionApi = {
   exitFees: number;
   lastIx: string;
   entryCollateralAmount: number;
+  entryCollateralAmountNative: number;
+  increaseCollateralAmount: number;
+  increaseCollateralAmountNative: number;
   collateralAmount: number;
+  collateralAmountNative: number;
+  exitAmountNative: number;
   closedBySlTp: boolean;
   volume: number;
   duration: number;
@@ -1793,4 +1803,66 @@ export type ChaosLabsPricesExtended = {
   signature: string;
   signatureByteArray: number[];
   recoveryId: number;
+};
+
+export type PositionTransaction = {
+  transactionId: number;
+  rawTransactionId: number;
+  userId: number;
+  positionId: number;
+  signature: string;
+  method: string;
+  additionalInfos: {
+    pnl: number | null;
+    fees: number | null;
+    size: number | null;
+    price: number | null;
+    exitFees: number | null;
+    leverage: number | null;
+    referrer: string | null;
+    borrowFees: number | null;
+    positionId: number | null;
+    addAmountUsd: number | null;
+    positionPubkey: string | null;
+    removeAmountUsd: number | null;
+    collateralAmount: number | null;
+    exitAmountNative: number | null;
+    stopLossLimitPrice: number | null;
+    collateralAmountUsd: number | null;
+    takeProfitLimitPrice: number | null;
+    collateralAmountNative: number | null;
+    newCollateralAmountUsd: number | null;
+  };
+  transactionDate: Date;
+};
+
+export type RawTransactionPositionData = {
+  transaction_id: number;
+  raw_transaction_id: number;
+  user_id: number;
+  position_id: number;
+  signature: string;
+  method: string;
+  additional_infos?: {
+    pnl?: number | null;
+    fees?: number | null;
+    size?: number | null;
+    price?: number | null;
+    exitFees?: number | null;
+    leverage?: number | null;
+    referrer?: string | null;
+    borrowFees?: number | null;
+    positionId?: number | null;
+    addAmountUsd?: number | null;
+    position_pubkey?: string | null;
+    removeAmountUsd?: number | null;
+    collateralAmount?: number | null;
+    exitAmountNative?: number | null;
+    stopLossLimitPrice?: number | null;
+    collateralAmountUsd?: number | null;
+    takeProfitLimitPrice?: number | null;
+    collateralAmountNative?: number | null;
+    newCollateralAmountUsd?: number | null;
+  };
+  transaction_date: Date;
 };
