@@ -3,7 +3,6 @@ import '../../../styles/Animation.css';
 import React, { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import {
   DEFAULT_LOCKED_STAKE_LOCK_DURATION,
@@ -13,7 +12,6 @@ import {
   AdxLockPeriod,
   AlpLockPeriod,
   ClaimHistoryExtended,
-  ClaimHistoryExtendedApi,
   LockedStakeExtended,
 } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
@@ -55,6 +53,7 @@ export default function StakeOverview({
   handleClickOnClaimRewardsAndBuyAdx: () => Promise<void>;
   handleClickOnRedeem?: () => void;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
   userPendingUsdcRewards: number;
   userPendingAdxRewards: number;
   roundPendingUsdcRewards: number;
@@ -175,34 +174,32 @@ export default function StakeOverview({
       />
 
       <div className="flex flex-col h-full">
-        {/* Divider */}
         <div className="h-[1px] bg-bcolor w-full my-3" />
 
-        {/* Pending rewards section */}
         <PendingRewardsSection
           token={token}
           userPendingUsdcRewards={userPendingUsdcRewards}
           userPendingAdxRewards={userPendingAdxRewards}
           pendingGenesisAdxRewards={pendingGenesisAdxRewards}
           isClaimingRewards={isClaimingRewards}
+          isClaimingAndBuyAdxRewards={isClaimingAndBuyAdxRewards}
           roundPassed={roundPassed}
           onClaim={handleClaim}
           onResolveStakingRound={triggerResolveStakingRound}
+          onClaimAndBuyAdx={handleClaimAndBuyAdx}
         />
 
-        {/* Divider */}
         <div className="h-[1px] bg-bcolor w-full my-4" />
 
-        {/* Claims history section */}
         <ClaimHistorySection
           token={token}
           walletAddress={walletAddress}
           optimisticClaim={optimisticClaim}
           setOptimisticClaim={setOptimisticClaim}
+          itemsPerPage={4}
         />
         <div className="h-[1px] bg-bcolor w-full my-4" />
 
-        {/* Locked stakes section */}
         <LockedStakesSection
           lockedStakes={lockedStakes}
           sortConfig={sortConfig}
@@ -214,7 +211,6 @@ export default function StakeOverview({
           defaultLockPeriod={DEFAULT_LOCKED_STAKE_LOCK_DURATION}
         />
 
-        {/* Liquid stake section */}
         {!isALP && (
           <LiquidStakeSection
             totalLiquidStaked={totalLiquidStaked ?? 0}

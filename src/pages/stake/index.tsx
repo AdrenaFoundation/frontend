@@ -5,7 +5,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
-import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
@@ -119,7 +118,6 @@ export default function Stake({
   const [activeStakingToken, setActiveStakingToken] = useState<
     'ADX' | 'ALP' | null
   >(null);
-  const [showLpHistory, setShowLpHistory] = useState(false);
 
   const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
     useState<boolean>(false);
@@ -589,7 +587,7 @@ export default function Stake({
       adxRewards.pendingGenesisAdxRewards = 0;
       fetchAdxRewards();
 
-      setOptimisticClaimAdx([optimisticClaim]);
+      setOptimisticClaimAdx(optimisticClaim);
     } catch (error) {
       console.error('error', error);
     } finally {
@@ -974,27 +972,7 @@ export default function Stake({
           </>
         </div>
 
-        {(alpLockedStakes === null || alpLockedStakes?.length == 0) && !showLpHistory ? (
-          <div className="pl-4 pr-4 w-full">
-            <div className="flex flex-col rounded-2xl border bg-main overflow-hidden">
-              <p className="opacity-75 text-base p-4 flex flex-col gap-2 text-center w-full">
-                <span className='text-base'>Starting March 19th, 2025, at 12:00 UTC, ALP is now fully liquid. You were there and want to see your history ? </span>
-              </p>
-
-              <div className="flex justify-center border-t py-4">
-                <Button
-                  variant={showLpHistory ? "secondary" : "primary"}
-                  size="sm"
-                  title={showLpHistory ? "Hide LP rewards History" : "Show LP rewards History"}
-                  onClick={() => setShowLpHistory(!showLpHistory)}
-                  className="px-6"
-                />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <ALPStakingRecap walletAddress={wallet?.walletAddress ?? null} />
-        )}
+        <ALPStakingRecap walletAddress={wallet?.walletAddress ?? null} />
       </div >
     </div>
   );

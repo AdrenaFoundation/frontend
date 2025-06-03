@@ -2,10 +2,12 @@ import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -19,9 +21,11 @@ interface PendingRewardsSectionProps {
     userPendingAdxRewards: number;
     pendingGenesisAdxRewards: number;
     isClaimingRewards: boolean;
+    isClaimingAndBuyAdxRewards: boolean;
     roundPassed: boolean;
     onClaim: () => Promise<void>;
     onResolveStakingRound: () => Promise<void>;
+    onClaimAndBuyAdx: () => Promise<void>;
 }
 
 export default function PendingRewardsSection({
@@ -30,9 +34,11 @@ export default function PendingRewardsSection({
     userPendingAdxRewards,
     pendingGenesisAdxRewards,
     isClaimingRewards,
+    isClaimingAndBuyAdxRewards,
     roundPassed,
     onClaim,
     onResolveStakingRound,
+    onClaimAndBuyAdx,
 }: PendingRewardsSectionProps) {
     const isALP = token === 'ALP';
 
@@ -40,9 +46,11 @@ export default function PendingRewardsSection({
         isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
     );
 
+    const isMobile = useBetterMediaQuery('(max-width: 570px)');
+
     return (
         <div className="px-5">
-            <div className="flex items-center mb-2">
+            <div className={twMerge("flex mb-2 items-center w-full", isMobile ? 'flex-col' : '')}>
                 <h3 className="text-lg font-semibold">Pending Rewards</h3>
                 <Tippy
                     content={
@@ -84,19 +92,36 @@ export default function PendingRewardsSection({
                     />
                 </Tippy>
 
-                <Button
-                    variant="primary"
-                    size="sm"
-                    title={isClaimingRewards ? 'Claiming...' : 'Claim'}
-                    className="px-5 ml-auto w-[9em]"
-                    onClick={onClaim}
-                    disabled={
-                        userPendingUsdcRewards +
-                        userPendingAdxRewards +
-                        pendingGenesisAdxRewards <=
-                        0
-                    }
-                />
+                <div className={twMerge('flex gap-4', isMobile ? 'mt-2 w-full' : 'ml-auto')}>
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        title={isClaimingAndBuyAdxRewards ? 'Claiming & buying ADX...' : 'Claim & Buy ADX'}
+                        className={twMerge("px-5", isMobile ? 'w-1/2' : 'w-[13em] min-w-[13em]')}
+                        onClick={onClaimAndBuyAdx}
+                        disabled={
+                            userPendingUsdcRewards +
+                            userPendingAdxRewards +
+                            pendingGenesisAdxRewards <=
+                            0
+                        }
+                    />
+
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        title={isClaimingRewards ? 'Claiming...' : 'Claim'}
+                        className={twMerge("px-5", isMobile ? 'w-1/2' : 'w-[9em]')}
+                        onClick={onClaim}
+                        disabled={
+                            userPendingUsdcRewards +
+                            userPendingAdxRewards +
+                            pendingGenesisAdxRewards <=
+                            0
+                        }
+                    />
+                </div>
+
             </div>
 
             <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">

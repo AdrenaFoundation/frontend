@@ -219,73 +219,68 @@ export default function ClaimHistorySection({
                 </div>
 
                 {/* TOTALs */}
-                {claimsHistory ? (
-                    <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
-                        <div className="flex flex-row items-center">
-                            <p className="text-txtfade">
-                                All time claimed amounts:
-                            </p>
+                <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
+                    <div className="flex flex-row items-center">
+                        <p className="text-txtfade">
+                            All time claimed amounts:
+                        </p>
+                    </div>
+                    <div className="flex flex-row space-x-4 text-xs">
+                        <div className="flex items-center">
+                            <FormatNumber
+                                nb={allTimeClaimedUsdc}
+                                precisionIfPriceDecimalsBelow={
+                                    isMediumUsdcAllTimeClaimAmount ? 0 : 2
+                                }
+                                minimumFractionDigits={
+                                    isMediumUsdcAllTimeClaimAmount ? 0 : 2
+                                }
+                                precision={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
+                                isAbbreviate={isBigUsdcAllTimeClaimAmount}
+                                info={
+                                    isBigUsdcAllTimeClaimAmount
+                                        ? formatNumber(allTimeClaimedUsdc, 2, 2)
+                                        : undefined
+                                }
+                                className="text-txtfade text-xs"
+                            />
+                            <Image
+                                src={usdcTokenLogo}
+                                width={16}
+                                height={16}
+                                alt="USDC logo"
+                                className="ml-1 opacity-50"
+                            />
                         </div>
-                        <div className="flex flex-row space-x-4 text-xs">
-                            <div className="flex items-center">
-                                <FormatNumber
-                                    nb={allTimeClaimedUsdc}
-                                    precisionIfPriceDecimalsBelow={
-                                        isMediumUsdcAllTimeClaimAmount ? 0 : 2
-                                    }
-                                    minimumFractionDigits={
-                                        isMediumUsdcAllTimeClaimAmount ? 0 : 2
-                                    }
-                                    precision={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
-                                    isAbbreviate={isBigUsdcAllTimeClaimAmount}
-                                    info={
-                                        isBigUsdcAllTimeClaimAmount
-                                            ? formatNumber(allTimeClaimedUsdc, 2, 2)
-                                            : undefined
-                                    }
-                                    className="text-txtfade text-xs"
-                                />
-                                <Image
-                                    src={usdcTokenLogo}
-                                    width={16}
-                                    height={16}
-                                    alt="USDC logo"
-                                    className="ml-1 opacity-50"
-                                />
-                            </div>
-                            <div className="flex items-center">
-                                <FormatNumber
-                                    nb={allTimeClaimedAdx}
-                                    precisionIfPriceDecimalsBelow={
-                                        isMediumAdxAllTimeClaimAmount ? 0 : 2
-                                    }
-                                    minimumFractionDigits={
-                                        isMediumAdxAllTimeClaimAmount ? 0 : 2
-                                    }
-                                    precision={isMediumAdxAllTimeClaimAmount ? 0 : 2}
-                                    isAbbreviate={isBigAdxAllTimeClaimAmount}
-                                    info={
-                                        isBigAdxAllTimeClaimAmount
-                                            ? formatNumber(allTimeClaimedAdx, 2, 2)
-                                            : undefined
-                                    }
-                                    className="text-txtfade text-xs"
-                                />
-                                <Image
-                                    src={adxTokenLogo}
-                                    width={16}
-                                    height={16}
-                                    alt="ADX logo"
-                                    className="ml-1 opacity-50"
-                                />
-                            </div>
+                        <div className="flex items-center">
+                            <FormatNumber
+                                nb={allTimeClaimedAdx}
+                                precisionIfPriceDecimalsBelow={
+                                    isMediumAdxAllTimeClaimAmount ? 0 : 2
+                                }
+                                minimumFractionDigits={
+                                    isMediumAdxAllTimeClaimAmount ? 0 : 2
+                                }
+                                precision={isMediumAdxAllTimeClaimAmount ? 0 : 2}
+                                isAbbreviate={isBigAdxAllTimeClaimAmount}
+                                info={
+                                    isBigAdxAllTimeClaimAmount
+                                        ? formatNumber(allTimeClaimedAdx, 2, 2)
+                                        : undefined
+                                }
+                                className="text-txtfade text-xs"
+                            />
+                            <Image
+                                src={adxTokenLogo}
+                                width={16}
+                                height={16}
+                                alt="ADX logo"
+                                className="ml-1 opacity-50"
+                            />
                         </div>
                     </div>
-                ) : (
-                    <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
-                        <Loader />
-                    </div>
-                )}
+                </div>
+
             </div>
 
             {/* Claim History Section */}

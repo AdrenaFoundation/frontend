@@ -35,6 +35,10 @@ export default function ALPStakingRecap({
         0,
     ) ?? 0;
 
+    if (!claimsHistory || (claimsHistory?.allTimeUsdcClaimed === 0 && claimsHistory?.allTimeAdxClaimed === 0)) {
+        return null;
+    }
+
     return (
         <div className='pl-4 pr-4 w-full'>
             <div className="flex flex-col bg-main rounded-2xl border">
