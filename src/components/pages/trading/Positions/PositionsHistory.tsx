@@ -164,7 +164,6 @@ function PositionsHistory({
             totalExported += pageResult.metadata.exportCount;
           }
 
-          // Respect rate limits - small delay between requests knowing API rate limit is 3 exports requests per 5 min
           if (page < metadata.totalPages) {
             await new Promise(resolve => setTimeout(resolve, 100));
           }
