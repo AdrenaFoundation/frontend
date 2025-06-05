@@ -1,15 +1,29 @@
+import 'react-datepicker/dist/react-datepicker.css';
+
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import DatePicker from 'react-datepicker';
 
 import Pagination from '@/components/common/Pagination/Pagination';
 import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import usePositionsHistory from '@/hooks/usePositionHistory';
 import { EnrichedPositionApi } from '@/types';
+import DataApiClient from '@/DataApiClient';
+import Modal from '@/components/common/Modal/Modal';
 
 import downloadIcon from '../../../../../public/images/download.png';
 import PositionHistoryBlock from './PositionHistoryBlock';
+import Button from '@/components/common/Button/Button';
+import Select from '@/components/common/Select/Select';
+
+interface ExportOptions {
+  type: 'all' | 'year' | 'dateRange';
+  year?: number;
+  entryDate?: string;
+  exitDate?: string;
+}
 
 function PositionsHistory({
   connected,
@@ -22,13 +36,19 @@ function PositionsHistory({
   className?: string;
   walletAddress: string | null;
   showShareButton?: boolean;
-  exportButtonPosition: 'top' | 'bottom';
+  exportButtonPosition?: 'top' | 'bottom';
 }) {
   const [itemsPerPage, setItemsPerPage] = useState(() => {
     return parseInt(localStorage.getItem('itemsPerPage') || '5', 10);
   });
 
   const [initialLoad, setInitialLoad] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportOptions, setExportOptions] = useState<ExportOptions>({
+    type: 'year',
+    year: new Date().getFullYear()
+  });
 
   const {
     isLoadingPositionsHistory,
@@ -88,56 +108,95 @@ function PositionsHistory({
     localStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [itemsPerPage]);
 
-  const downloadPositionHistory = useCallback(() => {
-    if (!positionsData || !positionsData.positions) {
+  const downloadPositionHistory = useCallback(async (options: ExportOptions) => {
+    if (!walletAddress || isDownloading) {
       return;
     }
 
-    const keys = [
-      'positionId',
-      'entryDate',
-      'exitDate',
-      'symbol',
-      'entryPrice',
-      'exitPrice',
-      'pnl',
-      'finalCollateralAmount',
-      'exitSize',
-      'fees',
-      'borrowFees',
-      'exitFees',
-    ];
+    setIsDownloading(true);
 
-    const csvRows = positionsData.positions
-      .map((position: EnrichedPositionApi) =>
-        keys
-          .map((key) => {
-            let value = position[key as keyof EnrichedPositionApi];
+    try {
+      // Server uses large default page size (500,000), so most if not all users get everything in one request
+      const exportParams: Parameters<typeof DataApiClient.exportPositions>[0] = {
+        userWallet: walletAddress,
+      };
 
-            // Format the date field if it's `transaction_date`
-            if ((key === 'entryDate' || key === 'exitDate') && value instanceof Date) {
-              value = (value as Date).toISOString(); // Format to ISO 8601
+      if (options.type === 'year' && options.year) {
+        exportParams.year = options.year;
+      } else if (options.type === 'dateRange') {
+        if (options.entryDate) {
+          exportParams.entryDate = new Date(options.entryDate);
+        }
+        if (options.exitDate) {
+          exportParams.exitDate = new Date(options.exitDate);
+        }
+      }
+
+      const firstPageResult = await DataApiClient.exportPositions(exportParams);
+
+      if (!firstPageResult) {
+        return null;
+      }
+
+      const { csvData, metadata } = firstPageResult;
+
+      if (!csvData || csvData.trim().length === 0 || metadata.totalPositions === 0) {
+        return null;
+      }
+
+      let allCsvData = csvData;
+      let totalExported = metadata.exportCount;
+
+      // Handle rare case where data spans multiple pages (very large datasets +500k position events)
+      if (metadata.totalPages > 1) {
+        for (let page = 2; page <= metadata.totalPages; page++) {
+          const pageResult = await DataApiClient.exportPositions({
+            ...exportParams,
+            page,
+          });
+
+          if (pageResult && pageResult.csvData) {
+            const lines = pageResult.csvData.split('\n');
+            const dataWithoutHeader = lines.slice(1).join('\n');
+            if (dataWithoutHeader.trim()) {
+              allCsvData += '\n' + dataWithoutHeader;
             }
+            totalExported += pageResult.metadata.exportCount;
+          }
 
-            return `"${String(value).replace(/"/g, '""')}"`;
-          })
-          .join(',')
-      );
+          // Respect rate limits - small delay between requests knowing API rate limit is 3 exports requests per 5 min
+          if (page < metadata.totalPages) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        }
+      }
 
-    const csvFileContent = [keys.join(','), ...csvRows].join('\n');
+      // Create filename based on options
+      let filename = `positions-${walletAddress.slice(0, 8)}`;
+      if (options.type === 'year' && options.year) {
+        filename += `-${options.year}`;
+      } else if (options.type === 'dateRange') {
+        if (options.entryDate) filename += `-from-${options.entryDate}`;
+        if (options.exitDate) filename += `-to-${options.exitDate}`;
+      }
+      filename += `-${new Date().toISOString().split('T')[0]}.csv`;
 
-    const blob = new Blob([csvFileContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
+      // Create and download the CSV file
+      const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `position-history-${new Date().toISOString()}.csv`;
-    document.body.appendChild(a);
-    a.click();
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
 
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-  }, [positionsData]);
+    } catch (error) {
+      console.error('Error downloading position history:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [walletAddress, isDownloading]);
 
   const getNoDataMessage = () => {
     if (!connected) return "Connect your wallet to view your trade history.";
@@ -148,9 +207,42 @@ function PositionsHistory({
     return "No data available for this page.";
   };
 
+  const handleExportSubmit = () => {
+    downloadPositionHistory(exportOptions);
+    setShowExportModal(false);
+  };
+
+  const getCurrentYear = () => new Date().getFullYear();
+  const getYearOptions = () => {
+    const currentYear = getCurrentYear();
+    const years = [];
+    for (let year = currentYear; year >= 2024; year--) {
+      years.push(year);
+    }
+    return years;
+  };
+
+  const hasDateFields = Boolean(exportOptions.entryDate || exportOptions.exitDate);
+
+  const isExportValid = () => {
+    if (!hasDateFields) {
+      return true;
+    } else {
+      return Boolean(exportOptions.entryDate && exportOptions.exitDate);
+    }
+  };
+
   const exportButton = (
-    <div className='flex gap-1 items-center opacity-50 hover:opacity-100 cursor-pointer' onClick={downloadPositionHistory}>
-      <div className='text-xs tracking-wider'>Export</div>
+    <div
+      className={twMerge(
+        "flex gap-1 items-center cursor-pointer transition-opacity",
+        showExportModal ? "opacity-100" : "opacity-50 hover:opacity-100"
+      )}
+      onClick={() => setShowExportModal(!showExportModal)}
+    >
+      <div className='text-sm tracking-wider'>
+        Export
+      </div>
       <Image
         src={downloadIcon}
         width={14}
@@ -162,6 +254,110 @@ function PositionsHistory({
 
   return (
     <div className={twMerge("w-full h-full flex flex-col relative", className)}>
+      {showExportModal ? (
+        <Modal
+          title="Export Position History"
+          close={() => setShowExportModal(false)}
+        >
+          <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
+            {/* Year Option */}
+            <div className="flex flex-col gap-3">
+              <h3 className="text-xl font-medium text-white">Export by Year</h3>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-white/60">Year:</label>
+                <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                  <Select
+                    selected={String(exportOptions.year || getCurrentYear())}
+                    onSelect={(value: string) => setExportOptions({
+                      type: 'year',
+                      year: parseInt(value),
+                      entryDate: '',
+                      exitDate: ''
+                    })}
+                    options={getYearOptions().map(year => ({ title: String(year) }))}
+                    reversed={true}
+                    className="h-8 flex items-center px-2"
+                    selectedTextClassName="text-xs font-medium flex-1 text-left"
+                    menuTextClassName="text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4">
+              <div className="flex-1 h-px bg-white/10"></div>
+              <span className="text-xs text-white/40">OR</span>
+              <div className="flex-1 h-px bg-white/10"></div>
+            </div>
+
+            {/* Date Range Option */}
+            <div className="flex flex-col gap-3">
+              <h3 className="text-xl font-medium text-white">Export by Date Range</h3>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-xs text-white/60">From:</label>
+                  <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
+                    <DatePicker
+                      selected={exportOptions.entryDate ? new Date(exportOptions.entryDate) : null}
+                      onChange={(date) => setExportOptions({
+                        ...exportOptions,
+                        type: 'dateRange',
+                        entryDate: date ? date.toISOString().split('T')[0] : ''
+                      })}
+                      className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
+                      placeholderText="Select start date"
+                      dateFormat="yyyy-MM-dd"
+                      minDate={new Date('2024-09-25')}
+                      maxDate={exportOptions.exitDate ? new Date(exportOptions.exitDate) : new Date()}
+                      popperClassName="z-[200]"
+                      popperPlacement="bottom-start"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-xs text-white/60">To:</label>
+                  <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
+                    <DatePicker
+                      selected={exportOptions.exitDate ? new Date(exportOptions.exitDate) : null}
+                      onChange={(date) => setExportOptions({
+                        ...exportOptions,
+                        type: 'dateRange',
+                        exitDate: date ? date.toISOString().split('T')[0] : ''
+                      })}
+                      className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
+                      placeholderText="Select end date"
+                      dateFormat="yyyy-MM-dd"
+                      minDate={exportOptions.entryDate ? new Date(exportOptions.entryDate) : new Date('2024-09-25')}
+                      maxDate={new Date()}
+                      popperClassName="z-[200]"
+                      popperPlacement="bottom-start"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Export Button */}
+            <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <Button
+                onClick={() => setShowExportModal(false)}
+                variant="secondary"
+                className="px-4 py-2"
+                title="Cancel"
+              />
+              <Button
+                onClick={handleExportSubmit}
+                disabled={!isExportValid()}
+                className="px-4 py-2"
+                title={isDownloading ? 'Exporting...' : 'Export'}
+              />
+            </div>
+          </div>
+        </Modal>
+      ) : null}
+
       <div
         className="flex flex-col justify-center"
         style={{

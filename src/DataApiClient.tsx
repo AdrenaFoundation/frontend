@@ -1264,57 +1264,177 @@ export default class DataApiClient {
         positionId: number;
     }): Promise<PositionTransaction[] | null> {
         try {
-            const response = await fetch(
-                `${DataApiClient.DATAPI_URL}/transaction-position?position_id=${positionId}`,
-            );
+            const url = `${DataApiClient.DATAPI_URL}/transaction-position?position_id=${positionId}`;
 
-            if (!response.ok) {
-                console.log('API response was not ok');
+            const result = await fetch(url).then((res) => res.json());
+
+            if (!result.success || !result.data) {
                 return null;
             }
 
-            const apiBody = await response.json();
-
-            if (!apiBody.success || !apiBody.data) {
-                return null;
-            }
-
-            const transactions: PositionTransaction[] = apiBody.data.map((transaction: RawTransactionPositionData) => ({
-                transactionId: transaction.transaction_id,
-                rawTransactionId: transaction.raw_transaction_id,
-                userId: transaction.user_id,
-                positionId: transaction.position_id,
-                signature: transaction.signature,
-                method: transaction.method,
-                additionalInfos: {
-                    pnl: transaction.additional_infos?.pnl ?? null,
-                    fees: transaction.additional_infos?.fees ?? null,
-                    size: transaction.additional_infos?.size ?? null,
-                    price: transaction.additional_infos?.price ?? null,
-                    exitFees: transaction.additional_infos?.exitFees ?? null,
-                    leverage: transaction.additional_infos?.leverage ?? null,
-                    referrer: transaction.additional_infos?.referrer ?? null,
-                    borrowFees: transaction.additional_infos?.borrowFees ?? null,
-                    positionId: transaction.additional_infos?.positionId ?? null,
-                    addAmountUsd: transaction.additional_infos?.addAmountUsd ?? null,
-                    positionPubkey: transaction.additional_infos?.position_pubkey ?? null,
-                    removeAmountUsd: transaction.additional_infos?.removeAmountUsd ?? null,
-                    collateralAmount: transaction.additional_infos?.collateralAmount ?? null,
-                    exitAmountNative: transaction.additional_infos?.exitAmountNative ?? null,
-                    stopLossLimitPrice: transaction.additional_infos?.stopLossLimitPrice ?? null,
-                    collateralAmountUsd: transaction.additional_infos?.collateralAmountUsd ?? null,
-                    takeProfitLimitPrice: transaction.additional_infos?.takeProfitLimitPrice ?? null,
-                    collateralAmountNative: transaction.additional_infos?.collateralAmountNative ?? null,
-                    newCollateralAmountUsd: transaction.additional_infos?.newCollateralAmountUsd ?? null,
-                },
-                transactionDate: transaction.transaction_date,
+            const transactions: PositionTransaction[] = result.data.map((item: RawTransactionPositionData) => ({
+                transactionId: item.transaction_id,
+                rawTransactionId: item.raw_transaction_id,
+                userId: item.user_id,
+                positionId: item.position_id,
+                signature: item.signature,
+                method: item.method,
+                transactionDate: new Date(item.transaction_date),
+                additionalInfos: item.additional_infos || {}
             }));
 
             return transactions;
-        } catch (e) {
-            console.error('Error fetching position transactions:', e);
+        } catch (error) {
+            console.error('Error fetching position transactions:', error);
             return null;
         }
+    }
+
+    public static async exportPositions({
+        userWallet,
+        year,
+        entryDate,
+        exitDate,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        entryDate?: Date;
+        exitDate?: Date;
+        page?: number;
+        pageSize?: number;
+    }): Promise<{
+        csvData: string;
+        metadata: {
+            totalPositions: number;
+            exportCount: number;
+            isTruncated: boolean;
+            totalPages: number;
+            currentPage: number;
+            pageSize: number;
+        };
+    } | null> {
+        try {
+            const params = new URLSearchParams();
+            params.append('user_wallet', userWallet);
+
+            if (year) {
+                params.append('year', year.toString());
+            } else {
+                if (entryDate) {
+                    params.append('entry_date', entryDate.toISOString());
+                }
+                if (exitDate) {
+                    params.append('exit_date', exitDate.toISOString());
+                }
+            }
+
+            if (page) {
+                params.append('page', page.toString());
+            }
+            if (pageSize) {
+                params.append('page_size', pageSize.toString());
+            }
+
+            const url = `${DataApiClient.DATAPI_URL}/export/positions?${params.toString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.error('Export positions failed:', response.statusText);
+                return null;
+            }
+
+            const csvData = await response.text();
+
+            // Extract metadata from response headers
+            const totalPositionsHeader = response.headers.get('X-Total-Positions');
+            const exportCountHeader = response.headers.get('X-Export-Count');
+
+            let metadata;
+
+            if (totalPositionsHeader && exportCountHeader) {
+                // Server sent proper headers
+                metadata = {
+                    totalPositions: parseInt(totalPositionsHeader),
+                    exportCount: parseInt(exportCountHeader),
+                    isTruncated: response.headers.get('X-Is-Truncated') === 'true',
+                    totalPages: parseInt(response.headers.get('X-Total-Pages') || '1'),
+                    currentPage: parseInt(response.headers.get('X-Current-Page') || '1'),
+                    pageSize: parseInt(response.headers.get('X-Page-Size') || '0'),
+                };
+            } else {
+                // Headers missing - fallback to parsing CSV
+                console.log('X-* headers missing, parsing CSV content...');
+                const lines = csvData.split('\n').filter(line => line.trim().length > 0);
+                const dataRows = lines.length > 1 ? lines.length - 1 : 0; // Subtract header row
+
+                metadata = {
+                    totalPositions: dataRows,
+                    exportCount: dataRows,
+                    isTruncated: false, // Can't determine without headers
+                    totalPages: 1, // Assume single page when headers missing
+                    currentPage: 1,
+                    pageSize: dataRows,
+                };
+            }
+
+            return {
+                csvData,
+                metadata,
+            };
+        } catch (error) {
+            console.error('Error exporting positions:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Direct download approach - opens export URL directly in browser
+     * Most efficient for large files as browser handles download directly
+     */
+    public static triggerDirectExportDownload({
+        userWallet,
+        year,
+        entryDate,
+        exitDate,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        entryDate?: Date;
+        exitDate?: Date;
+        page?: number;
+        pageSize?: number;
+    }): void {
+        const params = new URLSearchParams();
+        params.append('user_wallet', userWallet);
+        params.append('download', 'true'); // Signal server to send download headers
+
+        if (year) {
+            params.append('year', year.toString());
+        } else {
+            if (entryDate) {
+                params.append('entry_date', entryDate.toISOString());
+            }
+            if (exitDate) {
+                params.append('exit_date', exitDate.toISOString());
+            }
+        }
+
+        if (page) {
+            params.append('page', page.toString());
+        }
+        if (pageSize) {
+            params.append('page_size', pageSize.toString());
+        }
+
+        const url = `${DataApiClient.DATAPI_URL}/export/positions?${params.toString()}`;
+
+        // Open URL directly - browser will handle download if server sends proper headers
+        window.open(url, '_blank');
     }
 
 }
