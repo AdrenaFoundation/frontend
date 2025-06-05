@@ -35,6 +35,7 @@ import { SwapSlippageSection } from './LongShortTradingInputs/SwapSlippageSectio
 import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
 import { PositionInfoState, TradingInputsProps, TradingInputState } from './LongShortTradingInputs/types';
 import { calculateLimitOrderLimitPrice, calculateLimitOrderTriggerPrice } from './LongShortTradingInputs/utils';
+import Tippy from '@tippyjs/react';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -62,6 +63,7 @@ export default function LongShortTradingInputs({
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
   const [stopLossInput, setStopLossInput] = useState<number | null>(null);
+  const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
   const [inputState, setInputState] = useState<TradingInputState>({
     inputA: null,
     inputB: null,
@@ -226,40 +228,8 @@ export default function LongShortTradingInputs({
       });
     }
 
-    if (side === 'short' && tokenA.symbol !== 'USDC') {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: 'Only USDC is allowed as collateral for short positions',
-      });
-    }
-
-    if (side === 'long' && tokenA.symbol !== tokenB.symbol) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: `You must provide ${tokenB.symbol} as collateral`,
-      });
-    }
-
-    const tokenBPrice = tokenPrices[tokenB.symbol];
-    if (!tokenBPrice) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: `Missing ${tokenB.symbol} price`,
-      });
-    }
-
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
-    if (!tokenAPrice) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: `Missing ${tokenA.symbol} price`,
-      });
-    }
 
     if (tokenAPrice) {
       const collateralValue = inputState.inputA * tokenAPrice;
@@ -291,6 +261,7 @@ export default function LongShortTradingInputs({
         notification,
         mint: tokenB.mint,
         collateralMint: tokenA.mint,
+        swapSlippage,
       });
 
       dispatch(fetchWalletTokenBalances());
@@ -324,16 +295,6 @@ export default function LongShortTradingInputs({
         type: 'info',
         title: 'Cannot open position',
         message: 'Missing information',
-      });
-    }
-
-    const tokenBPrice = tokenPrices[tokenB.symbol];
-
-    if (!tokenBPrice) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: `Missing ${tokenB.symbol} price`,
       });
     }
 
@@ -403,6 +364,7 @@ export default function LongShortTradingInputs({
           takeProfitLimitPrice,
           isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
+          swapSlippage,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -416,6 +378,7 @@ export default function LongShortTradingInputs({
           takeProfitLimitPrice,
           isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
+          swapSlippage,
         }));
 
       dispatch(fetchWalletTokenBalances());
@@ -865,6 +828,25 @@ export default function LongShortTradingInputs({
     }
   };
 
+  // TODO: Adapt when having custodies backed by USDC
+  const doJupiterSwap = useMemo(() => {
+    if (side === 'long') {
+      return tokenA.symbol !== tokenB.symbol;
+    }
+
+    return tokenA.symbol !== 'USDC';
+  }, [side, tokenA.symbol, tokenB.symbol]);
+
+  // TODO: Adapt when having custodies backed by USDC
+  const recommendedToken = useMemo(() => {
+    if (side === 'long') {
+      return tokenB;
+    }
+
+    // For shorts, we recommend USDC
+    return window.adrena.client.getUsdcToken();
+  }, [tokenB, side]);
+
   return (
     <>
       <div className={twMerge('flex flex-col', className)}>
@@ -884,9 +866,25 @@ export default function LongShortTradingInputs({
             leverage: v,
           }))}
           onMax={handleMax}
+          recommendedToken={recommendedToken}
         />
 
-        {tokenA.additionalSwapToken ? <SwapSlippageSection /> : null}
+        {doJupiterSwap && recommendedToken ? <>
+          <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
+            <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
+              <span className='text-white/30'>{tokenA.symbol}</span>
+              <span className='text-white/30'>auto-swapped to</span>
+              <span className='text-white/30'>{recommendedToken.symbol}</span>
+              <span className='text-white/30'>via Jupiter</span>
+            </div>
+          </Tippy>
+
+          <SwapSlippageSection
+            swapSlippage={swapSlippage}
+            setSwapSlippage={setSwapSlippage}
+            className='mt-2'
+          />
+        </> : null}
 
         <TPSLModeSelector
           positionInfo={positionInfo}

@@ -127,9 +127,7 @@ export const LimitOrderContent = ({
         {
             side === 'short' && tokenA.symbol !== 'USDC' ?
                 <ErrorDisplay errorMessage="Only USDC is allowed as collateral for short positions" /> :
-                side === 'long' && tokenA.symbol !== tokenB.symbol ?
-                    <ErrorDisplay errorMessage="You must provide the same token as collateral for long positions" /> :
-                    errorMessage && <ErrorDisplay errorMessage={errorMessage} />
+                errorMessage && <ErrorDisplay errorMessage={errorMessage} />
         }
 
         <Button
@@ -139,7 +137,7 @@ export const LimitOrderContent = ({
             )}
             size="lg"
             title="Add Limit Order"
-            disabled={limitOrderTriggerPrice === null || insufficientAmount || errorMessage !== null || (side === 'short' && tokenA.symbol !== 'USDC') || (side === 'long' && tokenA.symbol !== tokenB.symbol)}
+            disabled={limitOrderTriggerPrice === null || insufficientAmount || errorMessage !== null}
             onClick={onAddLimitOrder}
         />
     </>

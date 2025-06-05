@@ -19,6 +19,36 @@ module.exports = (phase, { defaultConfig }) => {
       ];
     },
 
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'raw.githubusercontent.com',
+          pathname: '/solana-labs/token-list/main/assets/mainnet/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'metadata.jito.network',
+          pathname: '/token/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'static.jup.ag',
+          pathname: '/jlp/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'arweave.net',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'ipfs.io',
+          pathname: '/ipfs/QmQr3Fz4h1etNsF7oLGMRHiCzhB5y9a7GjyodnF7zLHK1g',
+        },
+      ],
+    },
+
     webpack: (config) => {
       config.resolve = {
         ...config.resolve,

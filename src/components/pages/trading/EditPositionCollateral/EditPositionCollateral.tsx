@@ -1,6 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -8,7 +8,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
-import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
+import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -20,6 +20,11 @@ import warningIcon from '../../../../../public/images/Icons/warning.png';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import TradingInput from '../TradingInput/TradingInput';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
+import Tippy from '@tippyjs/react';
+import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
+import { PickTokenModal } from '../TradingInput/PickTokenModal';
+
+import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
 
 // hardcoded in backend too
 const MIN_LEVERAGE = 1.1;
@@ -39,6 +44,9 @@ export default function EditPositionCollateral({
   triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
+  const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
+  const [isPickTokenModalOpen, setIsPickTokenModalOpen] = useState(false);
+
   const [selectedAction, setSelectedAction] = useState<'deposit' | 'withdraw'>(
     'deposit',
   );
@@ -52,6 +60,9 @@ export default function EditPositionCollateral({
 
   const debouncedInput = useDebounce(input);
 
+  const [depositToken, setDepositToken] = useState<Token>(position.collateralToken);
+  const [redeemToken, setRedeemToken] = useState<Token>(position.collateralToken);
+
   const [updatedInfos, setUpdatedInfos] = useState<{
     currentLeverage: number;
     collateral: number;
@@ -64,14 +75,16 @@ export default function EditPositionCollateral({
     tokenPrices[position.collateralToken.symbol];
 
   const walletBalance: number | null =
-    walletTokenBalances?.[
-    position.side === 'long'
-      ? position.token.symbol
-      : position.collateralToken.symbol
-    ] ?? null;
+    useMemo(() => walletTokenBalances?.[depositToken.symbol] ?? null, [walletTokenBalances, depositToken]);
 
   const [belowMinLeverage, setBelowMinLeverage] = useState(false);
   const [aboveMaxLeverage, setAboveMaxLeverage] = useState(false);
+
+  const doJupiterSwap = useMemo(() => {
+    return depositToken.symbol !== position.collateralToken.symbol;
+  }, [depositToken]);
+
+  const recommendedToken = position.collateralToken;
 
   const maxInitialLeverage = window.adrena.client.getCustodyByPubkey(
     position.custody,
@@ -344,435 +357,530 @@ export default function EditPositionCollateral({
 
   return (
     <div
-      className={twMerge('flex flex-col gap-2 h-full w-[24em] pt-4', className)}
+      className={twMerge('flex flex-col gap-2 h-full w-full max-w-[45em] pt-4 px-4', className)}
     >
-      <div className="px-4">
-        <div className="flex flex-col p-3 py-2.5 border bg-[#040D14] rounded-lg">
-          <div className="w-full flex justify-between mt-">
-            <div className="flex items-center">
-              <Image
-                src={getTokenImage(position.token)}
-                width={20}
-                height={20}
-                alt={`${getTokenSymbol(position.token.symbol)} logo`}
-                className="mr-2"
-              />
-              <div className="text-sm text-bold">
-                {getTokenSymbol(position.token.symbol)} Price
+      <div className='flex gap-4 w-full flex-col sm:flex-row items-center sm:items-start'>
+        <div className="flex flex-col w-full sm:w-1/2 items-center">
+          <div className='flex w-full'>
+            <div className="flex flex-col p-3 py-2.5 border bg-[#040D14] rounded-lg w-full">
+              <div className="w-full flex justify-between mt-">
+                <div className="flex items-center">
+                  <Image
+                    src={getTokenImage(position.token)}
+                    width={20}
+                    height={20}
+                    alt={`${getTokenSymbol(position.token.symbol)} logo`}
+                    className="mr-2"
+                  />
+                  <div className="text-sm text-bold">
+                    {getTokenSymbol(position.token.symbol)} Price
+                  </div>
+                </div>
+                <FormatNumber
+                  nb={markPrice}
+                  format="currency"
+                  className="text-sm text-bold"
+                  precision={position.token.displayPriceDecimalsPrecision}
+                />
               </div>
-            </div>
-            <FormatNumber
-              nb={markPrice}
-              format="currency"
-              className="text-sm text-bold"
-              precision={position.token.displayPriceDecimalsPrecision}
-            />
-          </div>
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+              <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Entry</div>
+              <div className={rowStyle}>
+                <div className="text-sm text-txtfade">Entry</div>
 
-            <FormatNumber
-              nb={position.price}
-              format="currency"
-              precision={position.token.displayPriceDecimalsPrecision}
-              className="text-txtfade"
-              minimumFractionDigits={2}
-            />
-          </div>
+                <FormatNumber
+                  nb={position.price}
+                  format="currency"
+                  precision={position.token.displayPriceDecimalsPrecision}
+                  className="text-txtfade text-sm"
+                  minimumFractionDigits={2}
+                />
+              </div>
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+              <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Liquidation</div>
-            <div className="flex items-center justify-end">
-              <FormatNumber
-                nb={position.liquidationPrice}
-                format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
-                className={`${input ? 'text-xs' : 'text-sm'} text-orange`}
-                isDecimalDimmed={false}
-                minimumFractionDigits={2}
-              />
-
-              {input ? (
-                <>
-                  {rightArrowElement}
-
-                  <div className="flex flex-col">
-                    <div className="flex flex-col items-end text-sm">
-                      {updatedInfos ? (
-                        <FormatNumber
-                          nb={liquidationPrice}
-                          format="currency"
-                          precision={
-                            position.token.displayPriceDecimalsPrecision
-                          }
-                          className={`text-orange`}
-                          isDecimalDimmed={false}
-                        />
-                      ) : (
-                        '-'
-                      )}
-                    </div>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-4 mt-2">
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Size</div>
-
-            <FormatNumber
-              nb={position.sizeUsd}
-              format="currency"
-              className="text-txtfade"
-              minimumFractionDigits={2}
-            />
-          </div>
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Size native</div>
-
-            <FormatNumber
-              nb={
-                position.side === 'long'
-                  ? position.size
-                  : position.sizeUsd / position.price
-              }
-              className="text-txtfade"
-              precision={position.token.displayAmountDecimalsPrecision}
-              suffix={getTokenSymbol(position.token.symbol)}
-              isDecimalDimmed={true}
-              minimumFractionDigits={2}
-            />
-          </div>
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className={rowStyle}>
-            <div className="text-sm text-txtfade">Initial Leverage</div>
-
-            <FormatNumber
-              nb={position.sizeUsd / position.collateralUsd}
-              prefix="x"
-              className="text-txtfade"
-              minimumFractionDigits={2}
-            />
-          </div>
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className={rowStyle}>
-            <div className="text-sm">
-              PnL <span className="test-xs text-txtfade">(after fees)</span>
-            </div>
-
-            <div className="text-sm font-mono font-bold">
-              <FormatNumber
-                nb={position.pnl && markPrice ? position.pnl : null}
-                prefix={position.pnl && position.pnl > 0 ? '+' : ''}
-                format="currency"
-                className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                  }`}
-                isDecimalDimmed={false}
-              />
-            </div>
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className={rowStyle}>
-            <div className="text-sm">Collateral</div>
-            <div className="flex items-center justify-end">
-              <FormatNumber
-                nb={position.collateralUsd}
-                format="currency"
-                className={input ? 'text-xs' : 'text-sm'}
-              />
-
-              {input ? (
-                <>
-                  {rightArrowElement}
-
-                  <div className="flex flex-col">
-                    <div className="flex flex-col items-end text-sm">
-                      <FormatNumber
-                        nb={updatedInfos?.collateralUsd}
-                        format="currency"
-                        minimumFractionDigits={2}
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="w-full h-[1px] bg-bcolor my-1" />
-
-          <div className={rowStyle}>
-            <div className="text-sm">Net Value</div>
-            <div className="flex items-center justify-end">
-              <NetValueTooltip position={position}>
-                <span className="underline-dashed">
+              <div className={rowStyle}>
+                <div className="text-sm text-txtfade">Liquidation</div>
+                <div className="flex items-center justify-end">
                   <FormatNumber
-                    nb={positionNetValue}
+                    nb={position.liquidationPrice}
                     format="currency"
-                    className={input ? 'text-xs' : 'text-sm'}
+                    precision={position.token.displayPriceDecimalsPrecision}
+                    className={'text-sm text-orange'}
+                    isDecimalDimmed={false}
                     minimumFractionDigits={2}
                   />
-                </span>
-              </NetValueTooltip>
 
-              {input ? (
-                <>
-                  {rightArrowElement}
+                  {input ? (
+                    <>
+                      {rightArrowElement}
 
-                  <div className="flex flex-col">
-                    <div className="flex flex-col items-end text-sm">
-                      <FormatNumber
-                        nb={newPositionNetValue}
-                        format="currency"
-                        className="text-sm text-regular"
-                        minimumFractionDigits={2}
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : null}
+                      <div className="flex flex-col">
+                        <div className="flex flex-col items-end text-sm">
+                          {updatedInfos ? (
+                            <FormatNumber
+                              nb={liquidationPrice}
+                              format="currency"
+                              precision={
+                                position.token.displayPriceDecimalsPrecision
+                              }
+                              className={`text-orange`}
+                              isDecimalDimmed={false}
+                            />
+                          ) : (
+                            '-'
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="w-full h-[1px] bg-bcolor my-1" />
+          <div className="mt-2 w-full">
+            <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
+              <div className={rowStyle}>
+                <div className="text-sm text-txtfade">Size</div>
 
-          <div className={rowStyle}>
-            <div className="text-sm">Current Leverage</div>
-            <div className="flex items-center">
-              <FormatNumber
-                nb={position.currentLeverage}
-                suffix="x"
-                className={input ? ' text-xs' : 'text-sm'}
-                isDecimalDimmed={true}
-                minimumFractionDigits={2}
-              />
+                <FormatNumber
+                  nb={position.sizeUsd}
+                  format="currency"
+                  className="text-txtfade text-sm"
+                  minimumFractionDigits={2}
+                />
+              </div>
+              <div className="w-full h-[1px] bg-bcolor my-1" />
 
-              {input ? (
-                <>
-                  {rightArrowElement}
+              <div className={rowStyle}>
+                <div className="text-sm text-txtfade">Size native</div>
 
-                  <div className="flex flex-col">
-                    <div className="flex flex-col items-end text-sm">
-                      {updatedInfos ? (
-                        <FormatNumber
-                          nb={updatedInfos?.currentLeverage}
-                          suffix="x"
-                          className={
-                            maxInitialLeverage &&
-                              updatedInfos.currentLeverage > maxInitialLeverage
-                              ? 'text-redbright'
-                              : ''
-                          }
-                          minimumFractionDigits={2}
-                        />
-                      ) : (
-                        '-'
-                      )}
-                    </div>
-                  </div>
-                </>
-              ) : null}
+                <FormatNumber
+                  nb={
+                    position.side === 'long'
+                      ? position.size
+                      : position.sizeUsd / position.price
+                  }
+                  className="text-txtfade text-sm"
+                  precision={position.token.displayAmountDecimalsPrecision}
+                  suffix={getTokenSymbol(position.token.symbol)}
+                  isDecimalDimmed={true}
+                  minimumFractionDigits={2}
+                />
+              </div>
+              <div className="w-full h-[1px] bg-bcolor my-1" />
+
+              <div className={rowStyle}>
+                <div className="text-sm text-txtfade">Initial Leverage</div>
+
+                <FormatNumber
+                  nb={position.sizeUsd / position.collateralUsd}
+                  prefix="x"
+                  className="text-txtfade text-sm"
+                  minimumFractionDigits={2}
+                />
+              </div>
+              <div className="w-full h-[1px] bg-bcolor my-1" />
+
+              <div className={rowStyle}>
+                <div className="text-sm">
+                  PnL <span className="test-xs text-txtfade">(after fees)</span>
+                </div>
+
+                <div className="text-sm font-mono font-bold">
+                  <FormatNumber
+                    nb={position.pnl && markPrice ? position.pnl : null}
+                    prefix={position.pnl && position.pnl > 0 ? '+' : ''}
+                    format="currency"
+                    className={`font-bold text-sm text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                      }`}
+                    isDecimalDimmed={false}
+                  />
+                </div>
+              </div>
+
+              <div className="w-full h-[1px] bg-bcolor my-1" />
+
+              <div className={rowStyle}>
+                <div className="text-sm">Collateral</div>
+                <div className="flex items-center justify-end">
+                  <FormatNumber
+                    nb={position.collateralUsd}
+                    format="currency"
+                    className='text-sm'
+                  />
+
+                  {input ? (
+                    <>
+                      {rightArrowElement}
+
+                      <div className="flex flex-col">
+                        <div className="flex flex-col items-end text-sm">
+                          <FormatNumber
+                            nb={updatedInfos?.collateralUsd}
+                            format="currency"
+                            minimumFractionDigits={2}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="w-full h-[1px] bg-bcolor my-1" />
+
+              <div className={rowStyle}>
+                <div className="text-sm">Net Value</div>
+                <div className="flex items-center justify-end">
+                  <NetValueTooltip position={position}>
+                    <span className="underline-dashed">
+                      <FormatNumber
+                        nb={positionNetValue}
+                        format="currency"
+                        className={input ? 'text-xs' : 'text-sm'}
+                        minimumFractionDigits={2}
+                      />
+                    </span>
+                  </NetValueTooltip>
+
+                  {input ? (
+                    <>
+                      {rightArrowElement}
+
+                      <div className="flex flex-col">
+                        <div className="flex flex-col items-end text-sm">
+                          <FormatNumber
+                            nb={newPositionNetValue}
+                            format="currency"
+                            className="text-sm text-regular"
+                            minimumFractionDigits={2}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="w-full h-[1px] bg-bcolor my-1" />
+
+              <div className={rowStyle}>
+                <div className="text-sm">Current Leverage</div>
+                <div className="flex items-center">
+                  <FormatNumber
+                    nb={position.currentLeverage}
+                    suffix="x"
+                    className={input ? ' text-xs' : 'text-sm'}
+                    isDecimalDimmed={true}
+                    minimumFractionDigits={2}
+                  />
+
+                  {input ? (
+                    <>
+                      {rightArrowElement}
+
+                      <div className="flex flex-col">
+                        <div className="flex flex-col items-end text-sm">
+                          {updatedInfos ? (
+                            <FormatNumber
+                              nb={updatedInfos?.currentLeverage}
+                              suffix="x"
+                              className={
+                                maxInitialLeverage &&
+                                  updatedInfos.currentLeverage > maxInitialLeverage
+                                  ? 'text-redbright'
+                                  : ''
+                              }
+                              minimumFractionDigits={2}
+                            />
+                          ) : (
+                            '-'
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <TabSelect
-        wrapperClassName="h-12 flex items-center mt-auto"
-        selected={selectedAction}
-        tabs={[
-          { title: 'deposit', activeColor: 'border-b-gray-700' },
-          { title: 'withdraw', activeColor: 'border-b-gray-700' },
-        ]}
-        onClick={(title) => {
-          // Reset input when changing selected action
-          setInput(null);
-          setSelectedAction(title);
-        }}
-      />
+        <div className='flex flex-col w-full sm:w-1/2'>
+          <TabSelect
+            wrapperClassName="h-12 flex items-center"
+            selected={selectedAction}
+            tabs={[
+              { title: 'deposit', activeColor: 'border-b-gray-700' },
+              { title: 'withdraw', activeColor: 'border-b-gray-700' },
+            ]}
+            onClick={(title) => {
+              // Reset input when changing selected action
+              setInput(null);
+              setSelectedAction(title);
+            }}
+          />
 
-      <div className="flex flex-col gap-2">
-        {selectedAction === 'deposit' ? (
-          <>
-            {belowMinLeverage && (
-              <div className="flex flex-col text-sm ml-4 mr-4">
-                <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
-                  <Image
-                    className="opacity-100 absolute left-3 top-auto bottom-auto"
-                    src={warningIcon}
-                    height={20}
-                    width={20}
-                    alt="Warning icon"
-                  />
-                  This action would take the leverage below the minimum of 1.1x.
-                  Please adjust your input.
-                </div>
-              </div>
-            )}
-
-            <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
-              <TradingInput
-                className="text-sm"
-                inputClassName="border-0 bg-third"
-                value={input}
-                selectedToken={
-                  position.side === 'long'
-                    ? position.token
-                    : position.collateralToken
-                }
-                tokenList={[]}
-                onTokenSelect={() => {
-                  // One token only
-                }}
-                onChange={setInput}
-              />
-            </div>
-
-            {
-              /* Display wallet balance */
-              (() => {
-                if (!walletTokenBalances) return null;
-
-                const balance =
-                  walletTokenBalances[position.collateralToken.symbol];
-                if (balance === null) return null;
-
-                return (
-                  <div
-                    className="flex flex-row items-center ml-auto mr-4 cursor-pointer"
-                    onClick={() => setInput(walletBalance)}
-                  >
-                    <Image
-                      className="mr-1 opacity-60 relative"
-                      src={walletImg}
-                      height={17}
-                      width={17}
-                      alt="Wallet icon"
-                    />
-                    <FormatNumber
-                      nb={balance}
-                      precision={
-                        position.collateralToken.displayAmountDecimalsPrecision
-                      }
-                      className="text-txtfade"
-                      isDecimalDimmed={false}
-                      suffix={position.collateralToken.symbol}
-                    />
-
-                    <RefreshButton className="ml-1" />
+          <div className="flex flex-col gap-2">
+            {selectedAction === 'deposit' ? (
+              <>
+                {belowMinLeverage && (
+                  <div className="flex flex-col text-sm ml-4 mr-4">
+                    <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
+                      <Image
+                        className="opacity-100 absolute left-3 top-auto bottom-auto"
+                        src={warningIcon}
+                        height={20}
+                        width={20}
+                        alt="Warning icon"
+                      />
+                      This action would take the leverage below the minimum of 1.1x.
+                      Please adjust your input.
+                    </div>
                   </div>
-                );
-              })()
-            }
-          </>
-        ) : (
-          <>
-            {/* Withdraw collateral info */}
-            <div className="flex flex-col text-sm ml-4 mr-4">
-              <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
-                <Image
-                  className="opacity-60 absolute left-3 top-auto bottom-auto"
-                  src={infoIcon}
-                  height={16}
-                  width={16}
-                  alt="Info icon"
-                />
-                <span className="text-sm">
-                  Withdrawn collateral will be received in{' '}
-                  {position.collateralToken.symbol}
-                </span>
-              </div>
-            </div>
+                )}
 
-            {/* Check for max leverage*/}
-            {maxInitialLeverage &&
-              position.currentLeverage &&
-              position.currentLeverage >= maxInitialLeverage ? (
-              <div className="flex flex-col text-sm ml-4 mr-4">
-                <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
-                  <Image
-                    className="opacity-60 absolute left-3 top-auto bottom-auto"
-                    src={infoIcon}
-                    height={16}
-                    width={16}
-                    alt="Info icon"
+                <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
+                  <TradingInput
+                    className="text-sm"
+                    inputClassName="border-0 bg-third"
+                    value={input}
+                    selectedToken={depositToken}
+                    // Adrena tokens + swappable tokens
+                    tokenList={[
+                      ...window.adrena.client.tokens,
+                      ...ALTERNATIVE_SWAP_TOKENS,
+                    ]}
+                    recommendedToken={recommendedToken}
+                    onTokenSelect={(t: Token) => {
+                      setDepositToken(t);
+                    }}
+                    onChange={setInput}
                   />
-                  <span className="text-sm">
-                    Your position is above the maximum leverage of{' '}
-                    {maxInitialLeverage}x, you cannot withdraw more collateral.
-                  </span>
                 </div>
-              </div>
-            ) : null}
 
-            <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
-              <TradingInput
-                className="text-sm"
-                inputClassName="border-0 bg-third"
-                value={input}
-                selectedToken={
-                  {
-                    symbol: 'USD',
-                  } as Token
-                }
-                tokenList={[]}
-                onTokenSelect={() => {
-                  // One token only
-                }}
-                onChange={setInput}
-                disabled={
-                  position.currentLeverage !== null &&
-                  position.currentLeverage <= 1.1
-                }
-              />
-            </div>
+                {
+                  /* Display wallet balance */
+                  (() => {
+                    if (!walletTokenBalances) return null;
 
-            {!aboveMaxLeverage && !belowMinLeverage && (
-              <div className="flex flex-row gap-3 px-4">
-                {[25, 50, 75].map((percent, i) => {
-                  return (
-                    <Button
-                      key={i}
-                      title={`${percent}%`}
-                      variant="secondary"
-                      rounded={false}
-                      className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
-                      onClick={() =>
-                        setInput(calculateCollateralPercentage(percent))
-                      }
-                    ></Button>
-                  );
-                })}
-              </div>
+                    const balance =
+                      walletTokenBalances[depositToken.symbol];
+                    if (balance === null) return null;
+
+                    return (
+                      <div
+                        className="flex flex-row items-center ml-auto mr-4 cursor-pointer"
+                        onClick={() => setInput(walletBalance)}
+                      >
+                        <Image
+                          className="mr-1 opacity-60 relative"
+                          src={walletImg}
+                          height={17}
+                          width={17}
+                          alt="Wallet icon"
+                        />
+
+                        <FormatNumber
+                          nb={balance}
+                          precision={
+                            depositToken.displayAmountDecimalsPrecision
+                          }
+                          className="text-txtfade text-sm"
+                          isDecimalDimmed={false}
+                          suffix={depositToken.symbol}
+                        />
+
+                        <RefreshButton className="ml-1" />
+                      </div>
+                    );
+                  })()
+                }
+
+                {doJupiterSwap && recommendedToken ? <>
+                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
+                    <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
+                      <span className='text-white/30'>{depositToken.symbol}</span>
+                      <span className='text-white/30'>auto-swapped to</span>
+                      <span className='text-white/30'>{position.collateralToken.symbol}</span>
+                      <span className='text-white/30'>via Jupiter</span>
+                    </div>
+                  </Tippy>
+
+                  <SwapSlippageSection
+                    swapSlippage={swapSlippage}
+                    setSwapSlippage={setSwapSlippage}
+                    className="mt-4 mb-4"
+                    titleClassName="ml-0"
+                  />
+
+                  <PickTokenModal
+                    recommendedToken={recommendedToken}
+                    isPickTokenModalOpen={isPickTokenModalOpen}
+                    setIsPickTokenModalOpen={setIsPickTokenModalOpen}
+                    // Adrena tokens + swappable tokens
+                    tokenList={[
+                      ...window.adrena.client.tokens,
+                      ...ALTERNATIVE_SWAP_TOKENS,
+                    ]}
+                    pick={(t: Token) => {
+                      setDepositToken(t);
+                      setIsPickTokenModalOpen(false);
+                    }}
+                  />
+                </> : null}
+              </>
+            ) : (
+              <>
+                {/* Withdraw collateral info */}
+                <div className="flex flex-col text-sm ml-4 mr-4">
+                  <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+                    <Image
+                      className="opacity-60 absolute left-3 top-auto bottom-auto"
+                      src={infoIcon}
+                      height={16}
+                      width={16}
+                      alt="Info icon"
+                    />
+                    <span className="text-sm">
+                      Withdrawn collateral will be received in{' '}
+                      {position.collateralToken.symbol}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Check for max leverage*/}
+                {maxInitialLeverage &&
+                  position.currentLeverage &&
+                  position.currentLeverage >= maxInitialLeverage ? (
+                  <div className="flex flex-col text-sm ml-4 mr-4">
+                    <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+                      <Image
+                        className="opacity-60 absolute left-3 top-auto bottom-auto"
+                        src={infoIcon}
+                        height={16}
+                        width={16}
+                        alt="Info icon"
+                      />
+                      <span className="text-sm">
+                        Your position is above the maximum leverage of{' '}
+                        {maxInitialLeverage}x, you cannot withdraw more collateral.
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
+                  <TradingInput
+                    className="text-sm"
+                    inputClassName="border-0 bg-third"
+                    value={input}
+                    selectedToken={
+                      {
+                        symbol: 'USD',
+                        image: window.adrena.client.getUsdcToken().image,
+                      } as Token
+                    }
+                    tokenList={[]}
+                    onTokenSelect={() => {
+                      // One token only
+                    }}
+                    onChange={setInput}
+                    disabled={
+                      position.currentLeverage !== null &&
+                      position.currentLeverage <= 1.1
+                    }
+                  />
+                </div>
+
+                {!aboveMaxLeverage && !belowMinLeverage && (
+                  <div className="flex flex-row gap-3 px-4">
+                    {[25, 50, 75].map((percent, i) => {
+                      return (
+                        <Button
+                          key={i}
+                          title={`${percent}%`}
+                          variant="secondary"
+                          rounded={false}
+                          className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
+                          onClick={() =>
+                            setInput(calculateCollateralPercentage(percent))
+                          }
+                        ></Button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="text-sm text-txtfade ml-auto mr-4 gap-1 flex items-center mt-1">
+                  <FormatNumber
+                    nb={Math.min(positionNetValue, position.collateralUsd)}
+                    format="currency"
+                    className="inline text-xs text-txtfade"
+                    isDecimalDimmed={false}
+                  />
+                  of collateral in the position
+                </div>
+
+                <div className='text-sm'>
+                  Withdraw in
+                </div>
+
+                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer' onClick={() => setIsPickTokenModalOpen(true)}>
+                  <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
+                    <Image src={chevronDownIcon} alt="chevron down" />
+                  </div>
+
+                  <div className='font-archivo text-base'>{redeemToken.symbol ?? '-'}</div>
+
+                  <Image
+                    className='h-4 w-4'
+                    src={redeemToken.image}
+                    alt="logo"
+                    width="20"
+                    height="20"
+                  />
+                </div>
+
+                {doJupiterSwap && recommendedToken ? <>
+                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
+                    <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
+                      <span className='text-white/30'>{depositToken.symbol}</span>
+                      <span className='text-white/30'>auto-swapped to</span>
+                      <span className='text-white/30'>{position.collateralToken.symbol}</span>
+                      <span className='text-white/30'>via Jupiter</span>
+                    </div>
+                  </Tippy>
+
+                  <SwapSlippageSection
+                    swapSlippage={swapSlippage}
+                    setSwapSlippage={setSwapSlippage}
+                    className="mt-4 mb-4"
+                    titleClassName="ml-0"
+                  />
+                </> : null}
+
+                <PickTokenModal
+                  recommendedToken={recommendedToken}
+                  isPickTokenModalOpen={isPickTokenModalOpen}
+                  setIsPickTokenModalOpen={setIsPickTokenModalOpen}
+                  // Adrena tokens + swappable tokens
+                  tokenList={[
+                    ...window.adrena.client.tokens,
+                    ...ALTERNATIVE_SWAP_TOKENS,
+                  ]}
+                  pick={(t: Token) => {
+                    setRedeemToken(t);
+                    setIsPickTokenModalOpen(false);
+                  }}
+                />
+              </>
             )}
-
-            <div className="text-sm text-txtfade ml-auto mr-4 gap-1 flex items-center mt-1">
-              <FormatNumber
-                nb={Math.min(positionNetValue, position.collateralUsd)}
-                format="currency"
-                className="inline text-xs text-txtfade"
-                isDecimalDimmed={false}
-              />
-              of collateral in the position
-            </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
 
       <div className="p-4 border-t w-full">

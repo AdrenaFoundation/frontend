@@ -87,7 +87,7 @@ export default function TradeComp({
               <LongShortTradingInputs
                 side={selectedAction}
 
-                // Adrena tokens + jupiter tokens
+                // Adrena tokens + swappable tokens
                 allowedTokenA={[
                   ...window.adrena.client.tokens,
                   ...ALTERNATIVE_SWAP_TOKENS,
