@@ -1,21 +1,21 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
 import Image from 'next/image';
-import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import DatePicker from 'react-datepicker';
 import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
-import DatePicker from 'react-datepicker';
 
+import Button from '@/components/common/Button/Button';
+import Modal from '@/components/common/Modal/Modal';
 import Pagination from '@/components/common/Pagination/Pagination';
+import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
+import DataApiClient from '@/DataApiClient';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import { ClaimHistoryExtended } from '@/types';
 import { formatNumber } from '@/utils';
-import DataApiClient from '@/DataApiClient';
-import Modal from '@/components/common/Modal/Modal';
-import Button from '@/components/common/Button/Button';
-import Select from '@/components/common/Select/Select';
 
 import adxTokenLogo from '../../../../public/images/adx.svg';
 import chevronDown from '../../../../public/images/chevron-down.svg';
@@ -204,7 +204,6 @@ export default function ClaimHistorySection({
             }
 
             let allCsvData = csvData;
-            let totalExported = metadata.exportCount;
 
             // Handle rare case where data spans multiple pages (very large datasets +500k claims)
             if (metadata.totalPages > 1) {
@@ -220,7 +219,6 @@ export default function ClaimHistorySection({
                         if (dataWithoutHeader.trim()) {
                             allCsvData += '\n' + dataWithoutHeader;
                         }
-                        totalExported += pageResult.metadata.exportCount;
                     }
 
                     if (page < metadata.totalPages) {
@@ -250,7 +248,6 @@ export default function ClaimHistorySection({
             document.body.removeChild(a);
 
             return true; // Success
-
         } catch (error) {
             console.error('Error downloading claim history:', error);
             setExportWarning('Failed to export claims. Please try again.');

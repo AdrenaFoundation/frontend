@@ -2,21 +2,21 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 import DatePicker from 'react-datepicker';
+import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
+import Modal from '@/components/common/Modal/Modal';
 import Pagination from '@/components/common/Pagination/Pagination';
+import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import DataApiClient from '@/DataApiClient';
 import usePositionsHistory from '@/hooks/usePositionHistory';
 import { EnrichedPositionApi } from '@/types';
-import DataApiClient from '@/DataApiClient';
-import Modal from '@/components/common/Modal/Modal';
 
 import downloadIcon from '../../../../../public/images/download.png';
 import PositionHistoryBlock from './PositionHistoryBlock';
-import Button from '@/components/common/Button/Button';
-import Select from '@/components/common/Select/Select';
 
 interface ExportOptions {
   type: 'all' | 'year' | 'dateRange';
@@ -151,7 +151,6 @@ function PositionsHistory({
       }
 
       let allCsvData = csvData;
-      let totalExported = metadata.exportCount;
 
       // Handle rare case where data spans multiple pages (very large datasets +500k position events)
       if (metadata.totalPages > 1) {
@@ -167,7 +166,6 @@ function PositionsHistory({
             if (dataWithoutHeader.trim()) {
               allCsvData += '\n' + dataWithoutHeader;
             }
-            totalExported += pageResult.metadata.exportCount;
           }
 
           if (page < metadata.totalPages) {
