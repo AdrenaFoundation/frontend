@@ -1290,6 +1290,8 @@ export default class DataApiClient {
         }
     }
 
+    // Used for server-side export
+    // Handles pagination and serve file as blob to the client
     public static async exportPositions({
         userWallet,
         year,
@@ -1394,7 +1396,7 @@ export default class DataApiClient {
      * Direct download approach - opens export URL directly in browser
      * Most efficient for large files as browser handles download directly
      */
-    public static triggerDirectExportDownload({
+    public static triggerDirectExportDownloadPositions({
         userWallet,
         year,
         entryDate,
@@ -1435,6 +1437,167 @@ export default class DataApiClient {
 
         // Open URL directly - browser will handle download if server sends proper headers
         window.open(url, '_blank');
+    }
+
+    /**
+     * Direct download approach for claims - opens export URL directly in browser
+     * Most efficient for large files as browser handles download directly
+     */
+    public static triggerDirectExportDownloadClaims({
+        userWallet,
+        year,
+        startDate,
+        endDate,
+        symbol,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        startDate?: Date;
+        endDate?: Date;
+        symbol?: 'ADX' | 'ALP';
+        page?: number;
+        pageSize?: number;
+    }): void {
+        const params = new URLSearchParams();
+        params.append('user_wallet', userWallet);
+        params.append('download', 'true'); // Signal server to send download headers
+
+        if (year) {
+            params.append('year', year.toString());
+        } else {
+            if (startDate) {
+                params.append('start_date', startDate.toISOString());
+            }
+            if (endDate) {
+                params.append('end_date', endDate.toISOString());
+            }
+        }
+
+        if (symbol) {
+            params.append('symbol', symbol);
+        }
+
+        if (page) {
+            params.append('page', page.toString());
+        }
+        if (pageSize) {
+            params.append('page_size', pageSize.toString());
+        }
+
+        const url = `${DataApiClient.DATAPI_URL}/export/claims?${params.toString()}`;
+
+        // Open URL directly - browser will handle download if server sends proper headers
+        window.open(url, '_blank');
+    }
+
+    // Used for server-side export
+    // Handles pagination and serve file as blob to the client
+    public static async exportClaims({
+        userWallet,
+        year,
+        startDate,
+        endDate,
+        symbol,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        startDate?: Date;
+        endDate?: Date;
+        symbol?: 'ADX' | 'ALP';
+        page?: number;
+        pageSize?: number;
+    }): Promise<{
+        csvData: string;
+        metadata: {
+            totalClaims: number;
+            exportCount: number;
+            isTruncated: boolean;
+            totalPages: number;
+            currentPage: number;
+            pageSize: number;
+        };
+    } | null> {
+        try {
+            const params = new URLSearchParams();
+            params.append('user_wallet', userWallet);
+
+            if (year) {
+                params.append('year', year.toString());
+            } else {
+                if (startDate) {
+                    params.append('start_date', startDate.toISOString());
+                }
+                if (endDate) {
+                    params.append('end_date', endDate.toISOString());
+                }
+            }
+
+            if (symbol) {
+                params.append('symbol', symbol);
+            }
+
+            if (page) {
+                params.append('page', page.toString());
+            }
+            if (pageSize) {
+                params.append('page_size', pageSize.toString());
+            }
+
+            const url = `${DataApiClient.DATAPI_URL}/export/claims?${params.toString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.error('Export claims failed:', response.statusText);
+                return null;
+            }
+
+            const csvData = await response.text();
+
+            // Extract metadata from response headers
+            const totalClaimsHeader = response.headers.get('X-Total-Claims');
+            const exportCountHeader = response.headers.get('X-Export-Count');
+
+            let metadata;
+
+            if (totalClaimsHeader && exportCountHeader) {
+                // Server sent proper headers
+                metadata = {
+                    totalClaims: parseInt(totalClaimsHeader),
+                    exportCount: parseInt(exportCountHeader),
+                    isTruncated: response.headers.get('X-Is-Truncated') === 'true',
+                    totalPages: parseInt(response.headers.get('X-Total-Pages') || '1'),
+                    currentPage: parseInt(response.headers.get('X-Current-Page') || '1'),
+                    pageSize: parseInt(response.headers.get('X-Page-Size') || '0'),
+                };
+            } else {
+                // Headers missing - fallback to parsing CSV
+                console.log('X-* headers missing, parsing CSV content...');
+                const lines = csvData.split('\n').filter(line => line.trim().length > 0);
+                const dataRows = lines.length > 1 ? lines.length - 1 : 0; // Subtract header row
+
+                metadata = {
+                    totalClaims: dataRows,
+                    exportCount: dataRows,
+                    isTruncated: false, // Can't determine without headers
+                    totalPages: 1, // Assume single page when headers missing
+                    currentPage: 1,
+                    pageSize: dataRows,
+                };
+            }
+
+            return {
+                csvData,
+                metadata,
+            };
+        } catch (error) {
+            console.error('Error exporting claims:', error);
+            return null;
+        }
     }
 
 }

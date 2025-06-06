@@ -1,7 +1,10 @@
+import 'react-datepicker/dist/react-datepicker.css';
+
 import Image from 'next/image';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
+import DatePicker from 'react-datepicker';
 
 import Pagination from '@/components/common/Pagination/Pagination';
 import Loader from '@/components/Loader/Loader';
@@ -9,12 +12,23 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import { ClaimHistoryExtended } from '@/types';
 import { formatNumber } from '@/utils';
+import DataApiClient from '@/DataApiClient';
+import Modal from '@/components/common/Modal/Modal';
+import Button from '@/components/common/Button/Button';
+import Select from '@/components/common/Select/Select';
 
 import adxTokenLogo from '../../../../public/images/adx.svg';
 import chevronDown from '../../../../public/images/chevron-down.svg';
 import downloadIcon from '../../../../public/images/download.png';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import ClaimBlock from './ClaimBlock';
+
+interface ExportOptions {
+    type: 'all' | 'year' | 'dateRange';
+    year?: number;
+    startDate?: string;
+    endDate?: string;
+}
 
 interface ClaimHistorySectionProps {
     token: 'ADX' | 'ALP';
@@ -35,6 +49,14 @@ export default function ClaimHistorySection({
 }: ClaimHistorySectionProps) {
     const [isClaimHistoryVisible, setIsClaimHistoryVisible] = React.useState(false);
     const nodeRef = useRef(null); // Reference for CSSTransition
+
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [showExportModal, setShowExportModal] = useState(false);
+    const [exportOptions, setExportOptions] = useState<ExportOptions>({
+        type: 'year',
+        year: new Date().getFullYear()
+    });
+    const [exportWarning, setExportWarning] = useState<string>('');
 
     // Track which pages we've already attempted to load to prevent loops
     const [attemptedLoads, setAttemptedLoads] = React.useState<Record<number, boolean>>({});
@@ -138,58 +160,263 @@ export default function ClaimHistorySection({
         return "No data available for this page.";
     };
 
-    // Download handler
-    const downloadClaimHistory = () => {
-        if (!claimsHistory) {
-            return;
+    // Download handler - new server-side export
+    const downloadClaimHistory = useCallback(async (options: ExportOptions): Promise<boolean> => {
+        if (!walletAddress || isDownloading) {
+            return false;
         }
 
-        const keys = [
-            'claim_id',
-            'transaction_date',
-            'rewards_adx',
-            ...(token === 'ADX' ? [] : ['rewards_adx_genesis']),
-            'rewards_usdc',
-            'signature',
-        ];
+        setIsDownloading(true);
+        setExportWarning(''); // Clear any previous warnings
 
-        const csvRows = claimsHistory.symbols.flatMap(symbol => symbol.claims)
-            .filter(
-                (claim) =>
-                    claim.rewards_adx !== 0 ||
-                    claim.rewards_adx_genesis !== 0 ||
-                    claim.rewards_usdc !== 0
-            )
-            .map((claim) =>
-                keys
-                    .map((key) => {
-                        let value = claim[key as keyof typeof claim];
-                        // Format the date field if it's `transaction_date`
-                        if (key === 'transaction_date' && value instanceof Date) {
-                            value = (value as Date).toISOString(); // Format to ISO 8601
+        try {
+            // Server uses large default page size (500,000), so most users get everything in one request
+            const exportParams: Parameters<typeof DataApiClient.exportClaims>[0] = {
+                userWallet: walletAddress,
+                symbol: token, // Use the current token (ADX or ALP)
+            };
+
+            if (options.type === 'year' && options.year) {
+                exportParams.year = options.year;
+            } else if (options.type === 'dateRange') {
+                if (options.startDate) {
+                    exportParams.startDate = new Date(options.startDate);
+                }
+                if (options.endDate) {
+                    const endDate = new Date(options.endDate);
+                    endDate.setUTCHours(23, 59, 59, 999);
+                    exportParams.endDate = endDate;
+                }
+            }
+
+            const firstPageResult = await DataApiClient.exportClaims(exportParams);
+
+            if (!firstPageResult) {
+                setExportWarning('Failed to export claims. Please try again.');
+                return false;
+            }
+
+            const { csvData, metadata } = firstPageResult;
+
+            if (!csvData || csvData.trim().length === 0 || metadata.totalClaims === 0) {
+                setExportWarning(`No claims available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.startDate} to ${options.endDate}`}`);
+                return false;
+            }
+
+            let allCsvData = csvData;
+            let totalExported = metadata.exportCount;
+
+            // Handle rare case where data spans multiple pages (very large datasets +500k claims)
+            if (metadata.totalPages > 1) {
+                for (let page = 2; page <= metadata.totalPages; page++) {
+                    const pageResult = await DataApiClient.exportClaims({
+                        ...exportParams,
+                        page,
+                    });
+
+                    if (pageResult && pageResult.csvData) {
+                        const lines = pageResult.csvData.split('\n');
+                        const dataWithoutHeader = lines.slice(1).join('\n');
+                        if (dataWithoutHeader.trim()) {
+                            allCsvData += '\n' + dataWithoutHeader;
                         }
-                        return `"${String(value).replace(/"/g, '""')}"`;
-                    })
-                    .join(',')
-            );
+                        totalExported += pageResult.metadata.exportCount;
+                    }
 
-        const csvFileContent = [keys.join(','), ...csvRows].join('\n');
+                    if (page < metadata.totalPages) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+            }
 
-        const blob = new Blob([csvFileContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
+            // Create filename based on options
+            let filename = `claims-${token.toLowerCase()}-${walletAddress.slice(0, 8)}`;
+            if (options.type === 'year' && options.year) {
+                filename += `-${options.year}`;
+            } else if (options.type === 'dateRange') {
+                if (options.startDate) filename += `-from-${options.startDate}`;
+                if (options.endDate) filename += `-to-${options.endDate}`;
+            }
+            filename += `-${new Date().toISOString().split('T')[0]}.csv`;
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${token}-staking-claim-history-${new Date().toISOString()}.csv`;
-        document.body.appendChild(a);
-        a.click();
+            // Create and download the CSV file
+            const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
 
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            return true; // Success
+
+        } catch (error) {
+            console.error('Error downloading claim history:', error);
+            setExportWarning('Failed to export claims. Please try again.');
+            return false;
+        } finally {
+            setIsDownloading(false);
+        }
+    }, [walletAddress, token, isDownloading]);
+
+    const handleExportSubmit = async () => {
+        const success = await downloadClaimHistory(exportOptions);
+        // Only close modal if export was successful
+        if (success) {
+            setShowExportModal(false);
+        }
+    };
+
+    const getCurrentYear = () => new Date().getFullYear();
+    const getYearOptions = () => {
+        const currentYear = getCurrentYear();
+        const years = [];
+        for (let year = currentYear; year >= 2024; year--) {
+            years.push(year);
+        }
+        return years;
+    };
+
+    const hasDateFields = Boolean(exportOptions.startDate || exportOptions.endDate);
+
+    const isExportValid = () => {
+        if (!hasDateFields) {
+            return true;
+        } else {
+            return Boolean(exportOptions.startDate && exportOptions.endDate);
+        }
     };
 
     return (
         <div className="flex flex-col text-sm py-0 px-5 w-full">
+            {/* Export Modal */}
+            {showExportModal && (
+                <Modal
+                    title={`Export Claim History - ${token}`}
+                    close={() => {
+                        setExportWarning(''); // Clear warning when closing modal
+                        setShowExportModal(false);
+                    }}
+                >
+                    <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
+                        {/* Year Option */}
+                        <div className="flex flex-col gap-3">
+                            <h3 className="text-xl font-medium text-white">Export by Year</h3>
+                            <div className="flex items-center gap-3">
+                                <label className="text-xs text-white/60">Year:</label>
+                                <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                                    <Select
+                                        selected={String(exportOptions.year || getCurrentYear())}
+                                        onSelect={(value: string) => {
+                                            setExportWarning(''); // Clear warning when changing options
+                                            setExportOptions({
+                                                type: 'year',
+                                                year: parseInt(value),
+                                                startDate: '',
+                                                endDate: ''
+                                            });
+                                        }}
+                                        options={getYearOptions().map(year => ({ title: String(year) }))}
+                                        reversed={true}
+                                        className="h-8 flex items-center px-2"
+                                        selectedTextClassName="text-xs font-medium flex-1 text-left"
+                                        menuTextClassName="text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="flex items-center gap-4">
+                            <div className="flex-1 h-px bg-white/10"></div>
+                            <span className="text-xs text-white/40">OR</span>
+                            <div className="flex-1 h-px bg-white/10"></div>
+                        </div>
+
+                        {/* Date Range Option */}
+                        <div className="flex flex-col gap-3">
+                            <h3 className="text-xl font-medium text-white">Export by Date Range</h3>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="flex flex-col gap-2 flex-1">
+                                    <label className="text-xs text-white/60">From:</label>
+                                    <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
+                                        <DatePicker
+                                            selected={exportOptions.startDate ? new Date(exportOptions.startDate) : null}
+                                            onChange={(date) => {
+                                                setExportWarning(''); // Clear warning when changing options
+                                                setExportOptions({
+                                                    ...exportOptions,
+                                                    type: 'dateRange',
+                                                    startDate: date ? date.toISOString().split('T')[0] : ''
+                                                });
+                                            }}
+                                            className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
+                                            placeholderText="Select start date"
+                                            dateFormat="yyyy-MM-dd"
+                                            minDate={new Date('2024-09-25')}
+                                            maxDate={exportOptions.endDate ? new Date(exportOptions.endDate) : new Date()}
+                                            popperClassName="z-[200]"
+                                            popperPlacement="bottom-start"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-2 flex-1">
+                                    <label className="text-xs text-white/60">To:</label>
+                                    <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
+                                        <DatePicker
+                                            selected={exportOptions.endDate ? new Date(exportOptions.endDate) : null}
+                                            onChange={(date) => {
+                                                setExportWarning(''); // Clear warning when changing options
+                                                setExportOptions({
+                                                    ...exportOptions,
+                                                    type: 'dateRange',
+                                                    endDate: date ? date.toISOString().split('T')[0] : ''
+                                                });
+                                            }}
+                                            className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
+                                            placeholderText="Select end date"
+                                            dateFormat="yyyy-MM-dd"
+                                            minDate={exportOptions.startDate ? new Date(exportOptions.startDate) : new Date('2024-09-25')}
+                                            maxDate={new Date()}
+                                            popperClassName="z-[200]"
+                                            popperPlacement="bottom-start"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Warning Message */}
+                        {exportWarning && (
+                            <div className='text-xs text-orange font-boldy'>
+                                {exportWarning}
+                            </div>
+                        )}
+
+                        {/* Export Button */}
+                        <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                            <Button
+                                onClick={() => {
+                                    setExportWarning(''); // Clear warning when canceling
+                                    setShowExportModal(false);
+                                }}
+                                variant="secondary"
+                                className="px-4 py-2"
+                                title="Cancel"
+                            />
+                            <Button
+                                onClick={handleExportSubmit}
+                                disabled={!isExportValid()}
+                                className="px-4 py-2"
+                                title={isDownloading ? 'Exporting...' : 'Export'}
+                            />
+                        </div>
+                    </div>
+                </Modal>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200">
                 <div className='flex flex-col'>
                     <div className='flex flex-row gap-2 items-center select-none'>
@@ -202,7 +429,10 @@ export default function ClaimHistorySection({
                                 {totalItems && totalItems != claimsHistory?.allTimeCountClaims ? ` (${totalItems}/${claimsHistory?.allTimeCountClaims})` : ` (${totalItems})`}
                             </h3>
 
-                            {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 ml-2' onClick={downloadClaimHistory}>
+                            {claimsHistory ? <div className='w-auto flex mr-2 mt-2 opacity-50 hover:opacity-100 cursor-pointer gap-1 ml-2' onClick={() => {
+                                setExportWarning(''); // Clear any previous warnings
+                                setShowExportModal(true);
+                            }}>
                                 <Image
                                     src={downloadIcon}
                                     width={18}

@@ -49,6 +49,7 @@ function PositionsHistory({
     type: 'year',
     year: new Date().getFullYear()
   });
+  const [exportWarning, setExportWarning] = useState<string>('');
 
   const {
     isLoadingPositionsHistory,
@@ -108,12 +109,13 @@ function PositionsHistory({
     localStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [itemsPerPage]);
 
-  const downloadPositionHistory = useCallback(async (options: ExportOptions) => {
+  const downloadPositionHistory = useCallback(async (options: ExportOptions): Promise<boolean> => {
     if (!walletAddress || isDownloading) {
-      return;
+      return false;
     }
 
     setIsDownloading(true);
+    setExportWarning(''); // Clear any previous warnings
 
     try {
       // Server uses large default page size (500,000), so most if not all users get everything in one request
@@ -128,20 +130,24 @@ function PositionsHistory({
           exportParams.entryDate = new Date(options.entryDate);
         }
         if (options.exitDate) {
-          exportParams.exitDate = new Date(options.exitDate);
+          const exitDate = new Date(options.exitDate);
+          exitDate.setUTCHours(23, 59, 59, 999);
+          exportParams.exitDate = exitDate;
         }
       }
 
       const firstPageResult = await DataApiClient.exportPositions(exportParams);
 
       if (!firstPageResult) {
-        return null;
+        setExportWarning('Failed to export positions. Please try again.');
+        return false;
       }
 
       const { csvData, metadata } = firstPageResult;
 
       if (!csvData || csvData.trim().length === 0 || metadata.totalPositions === 0) {
-        return null;
+        setExportWarning(`No positions available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.entryDate} to ${options.exitDate}`}`);
+        return false;
       }
 
       let allCsvData = csvData;
@@ -190,8 +196,12 @@ function PositionsHistory({
       a.click();
       document.body.removeChild(a);
 
+      return true; // Success
+
     } catch (error) {
       console.error('Error downloading position history:', error);
+      setExportWarning('Failed to export positions. Please try again.');
+      return false;
     } finally {
       setIsDownloading(false);
     }
@@ -206,9 +216,12 @@ function PositionsHistory({
     return "No data available for this page.";
   };
 
-  const handleExportSubmit = () => {
-    downloadPositionHistory(exportOptions);
-    setShowExportModal(false);
+  const handleExportSubmit = async () => {
+    const success = await downloadPositionHistory(exportOptions);
+    // Only close modal if export was successful
+    if (success) {
+      setShowExportModal(false);
+    }
   };
 
   const getCurrentYear = () => new Date().getFullYear();
@@ -237,7 +250,10 @@ function PositionsHistory({
         "flex gap-1 items-center cursor-pointer transition-opacity",
         showExportModal ? "opacity-100" : "opacity-50 hover:opacity-100"
       )}
-      onClick={() => setShowExportModal(!showExportModal)}
+      onClick={() => {
+        setExportWarning(''); // Clear any previous warnings
+        setShowExportModal(!showExportModal);
+      }}
     >
       <div className='text-sm tracking-wider'>
         Export
@@ -256,7 +272,10 @@ function PositionsHistory({
       {showExportModal ? (
         <Modal
           title="Export Position History"
-          close={() => setShowExportModal(false)}
+          close={() => {
+            setExportWarning(''); // Clear warning when closing modal
+            setShowExportModal(false);
+          }}
         >
           <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
             {/* Year Option */}
@@ -267,12 +286,15 @@ function PositionsHistory({
                 <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
                   <Select
                     selected={String(exportOptions.year || getCurrentYear())}
-                    onSelect={(value: string) => setExportOptions({
-                      type: 'year',
-                      year: parseInt(value),
-                      entryDate: '',
-                      exitDate: ''
-                    })}
+                    onSelect={(value: string) => {
+                      setExportWarning(''); // Clear warning when changing options
+                      setExportOptions({
+                        type: 'year',
+                        year: parseInt(value),
+                        entryDate: '',
+                        exitDate: ''
+                      });
+                    }}
                     options={getYearOptions().map(year => ({ title: String(year) }))}
                     reversed={true}
                     className="h-8 flex items-center px-2"
@@ -299,11 +321,14 @@ function PositionsHistory({
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
                       selected={exportOptions.entryDate ? new Date(exportOptions.entryDate) : null}
-                      onChange={(date) => setExportOptions({
-                        ...exportOptions,
-                        type: 'dateRange',
-                        entryDate: date ? date.toISOString().split('T')[0] : ''
-                      })}
+                      onChange={(date) => {
+                        setExportWarning(''); // Clear warning when changing options
+                        setExportOptions({
+                          ...exportOptions,
+                          type: 'dateRange',
+                          entryDate: date ? date.toISOString().split('T')[0] : ''
+                        });
+                      }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select start date"
                       dateFormat="yyyy-MM-dd"
@@ -320,11 +345,14 @@ function PositionsHistory({
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
                       selected={exportOptions.exitDate ? new Date(exportOptions.exitDate) : null}
-                      onChange={(date) => setExportOptions({
-                        ...exportOptions,
-                        type: 'dateRange',
-                        exitDate: date ? date.toISOString().split('T')[0] : ''
-                      })}
+                      onChange={(date) => {
+                        setExportWarning(''); // Clear warning when changing options
+                        setExportOptions({
+                          ...exportOptions,
+                          type: 'dateRange',
+                          exitDate: date ? date.toISOString().split('T')[0] : ''
+                        });
+                      }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select end date"
                       dateFormat="yyyy-MM-dd"
@@ -338,10 +366,20 @@ function PositionsHistory({
               </div>
             </div>
 
+            {/* Warning Message */}
+            {exportWarning && (
+              <div className='text-xs text-orange font-boldy'>
+                {exportWarning}
+              </div>
+            )}
+
             {/* Export Button */}
             <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
               <Button
-                onClick={() => setShowExportModal(false)}
+                onClick={() => {
+                  setExportWarning(''); // Clear warning when canceling
+                  setShowExportModal(false);
+                }}
                 variant="secondary"
                 className="px-4 py-2"
                 title="Cancel"
