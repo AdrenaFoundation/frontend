@@ -1,0 +1,3 @@
+export enum InventoryGridContext {
+  inventory,
+}
