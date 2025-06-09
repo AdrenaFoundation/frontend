@@ -18,7 +18,6 @@ export const SwapSlippageSection = ({
         <div className={twMerge("flex flex-col w-full", className)}>
             <Tippy content={<div className="flex flex-col gap-2">
                 <span>This sets how much the price can move during the swap.</span>
-                <span>If it’s too low, the swap might fail. If it’s too high, you might get a worse deal and have leftover tokens.</span>
             </div>}>
                 <div className="flex flex-col w-full gap-2">
                     <h5 className={twMerge("ml-4", titleClassName)}>Swap Slippage</h5>

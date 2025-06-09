@@ -287,7 +287,7 @@ export default function ClosePosition({
               </div>
 
               {doJupiterSwap && recommendedToken ? <>
-                <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
+                <Tippy content={"When closing a long position, you receive the same collateral you used to open it. When closing a short position, the collateral is returned in USDC. If you want a different asset, a Jupiter swap is required."}>
                   <div className="text-xs gap-1 flex w-full items-center justify-center">
                     <span className='text-white/30'>{position.collateralToken.symbol}</span>
                     <span className='text-white/30'>auto-swapped to</span>

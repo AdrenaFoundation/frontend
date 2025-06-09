@@ -779,7 +779,7 @@ export default function EditPositionCollateral({
                 }
 
                 {doJupiterSwapOnDeposit && recommendedToken ? <>
-                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
+                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before adding collateral to the position."}>
                     <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
                       <span className='text-white/30'>{depositToken.symbol}</span>
                       <span className='text-white/30'>auto-swapped to</span>
@@ -924,14 +924,12 @@ export default function EditPositionCollateral({
                 </div>
 
                 {doJupiterSwapOnWithdraw && recommendedToken ? <>
-                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
-                    <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
-                      <span className='text-white/30'>{depositToken.symbol}</span>
-                      <span className='text-white/30'>auto-swapped to</span>
-                      <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                      <span className='text-white/30'>via Jupiter</span>
-                    </div>
-                  </Tippy>
+                  <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
+                    <span className='text-white/30'>{depositToken.symbol}</span>
+                    <span className='text-white/30'>auto-swapped to</span>
+                    <span className='text-white/30'>{position.collateralToken.symbol}</span>
+                    <span className='text-white/30'>via Jupiter</span>
+                  </div>
 
                   <SwapSlippageSection
                     swapSlippage={swapSlippage}
