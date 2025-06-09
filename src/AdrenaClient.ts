@@ -96,6 +96,7 @@ import {
   DEFAULT_PRIORITY_FEE_OPTION,
   DEFAULT_PRIORITY_FEES,
   findATAAddressSync,
+  getJupiterApiQuote,
   getTokenSymbol,
   isAccountInitialized,
   jupInstructionToTransactionInstruction,
@@ -2200,13 +2201,11 @@ export class AdrenaClient {
     }
 
     if (doJupiterSwap) {
-      const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
-        inputMint: collateralMint.toBase58(),
-        outputMint: usdcToken.mint.toBase58(),
-        amount: collateralAmount.toNumber(),
-        slippageBps: swapSlippage * 100,
-        swapMode: 'ExactIn',
-        maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: collateralMint,
+        outputMint: usdcToken.mint,
+        amount: collateralAmount,
+        swapSlippage,
       });
 
       // Apply the slippage so we never fail for not enough collateral in the openPosition
@@ -2558,13 +2557,11 @@ export class AdrenaClient {
     }
 
     if (doJupiterSwap) {
-      const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
-        inputMint: collateralMint.toBase58(),
-        outputMint: mint.toBase58(),
-        amount: collateralAmount.toNumber(),
-        slippageBps: swapSlippage * 100,
-        swapMode: 'ExactIn',
-        maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: collateralMint,
+        outputMint: mint,
+        amount: collateralAmount,
+        swapSlippage,
       });
 
       // Apply the slippage so we never fail for not enough collateral in the openPosition
@@ -2640,10 +2637,14 @@ export class AdrenaClient {
   public async addCollateralToPosition({
     position,
     addedCollateral,
+    depositToken,
+    swapSlippage,
     notification,
   }: {
     position: PositionExtended;
     addedCollateral: BN;
+    depositToken: Token;
+    swapSlippage: number;
     notification: MultiStepNotification;
   }) {
     if (!this.connection) {
@@ -2652,6 +2653,63 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
+    const additionalAddressLookupTables: PublicKey[] = [];
+
+    const doJupiterSwap =
+      position.collateralToken.symbol !== depositToken.symbol;
+
+    if (doJupiterSwap) {
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: depositToken.mint,
+        outputMint: position.collateralToken.mint,
+        amount: addedCollateral,
+        swapSlippage,
+      });
+
+      // Apply the slippage so we never fail for not enough collateral in the depositCollateral
+      // Can still fail due to jupiter swap failing, but that's expected
+      addedCollateral = applySlippage(
+        new BN(quoteResult.outAmount),
+        -swapSlippage,
+      );
+
+      console.log('QUOTE', quoteResult);
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: position.owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        notification.currentStepErrored('Failed to get swap instructions');
+        return;
+      }
+
+      preInstructions.push(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
 
     const builder = await (
       position.side === 'long'
@@ -4291,14 +4349,11 @@ export class AdrenaClient {
     }
 
     if (doJupiterSwap) {
-      const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
-        inputMint: collateralMint.toBase58(),
-        outputMint:
-          side === 'long' ? mint.toBase58() : usdcToken.mint.toBase58(),
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: collateralMint,
+        outputMint: side === 'long' ? mint : usdcToken.mint,
         amount: collateralAmount.toNumber(),
-        slippageBps: swapSlippage * 100,
-        swapMode: 'ExactIn',
-        maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+        swapSlippage,
       });
 
       // Apply the slippage so we never fail for not enough collateral in the openPosition

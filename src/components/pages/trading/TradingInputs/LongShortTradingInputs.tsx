@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -17,6 +18,7 @@ import {
   addNotification,
   AdrenaTransactionError,
   applySlippage,
+  getJupiterApiQuote,
   getTokenSymbol,
   nativeToUi,
   uiLeverageToNative,
@@ -35,7 +37,6 @@ import { SwapSlippageSection } from './LongShortTradingInputs/SwapSlippageSectio
 import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
 import { PositionInfoState, TradingInputsProps, TradingInputState } from './LongShortTradingInputs/types';
 import { calculateLimitOrderLimitPrice, calculateLimitOrderTriggerPrice } from './LongShortTradingInputs/utils';
-import Tippy from '@tippyjs/react';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -475,13 +476,11 @@ export default function LongShortTradingInputs({
 
           // Need to do a swap, get the quote
           if (tokenA.symbol !== tokenB.symbol) {
-            const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
-              inputMint: tokenA.mint.toBase58(),
-              outputMint: tokenB.mint.toBase58(),
-              amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals).toNumber(),
-              slippageBps: 30, // 0.3%
-              swapMode: 'ExactIn',
-              maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+            const quoteResult = await getJupiterApiQuote({
+              inputMint: tokenA.mint,
+              outputMint: tokenB.mint,
+              amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals),
+              swapSlippage: 0.3,
             });
 
             // Apply the slippage so we never fail for not enough collateral in the openPosition

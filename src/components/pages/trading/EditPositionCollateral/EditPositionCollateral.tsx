@@ -1,8 +1,12 @@
 import { BN } from '@coral-xyz/anchor';
+import { PublicKey, Transaction } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -10,21 +14,18 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { getTokenImage, getTokenSymbol, nativeToUi, uiToNative } from '@/utils';
+import { findATAAddressSync, getJupiterApiQuote, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import warningIcon from '../../../../../public/images/Icons/warning.png';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
-import TradingInput from '../TradingInput/TradingInput';
-import NetValueTooltip from '../TradingInputs/NetValueTooltip';
-import Tippy from '@tippyjs/react';
-import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
-
-import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
+import TradingInput from '../TradingInput/TradingInput';
+import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
+import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 // hardcoded in backend too
 const MIN_LEVERAGE = 1.1;
@@ -44,6 +45,8 @@ export default function EditPositionCollateral({
   triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
+  const dispatch = useDispatch();
+
   const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
   const [isPickTokenModalOpen, setIsPickTokenModalOpen] = useState(false);
 
@@ -82,7 +85,7 @@ export default function EditPositionCollateral({
 
   const doJupiterSwap = useMemo(() => {
     return depositToken.symbol !== position.collateralToken.symbol;
-  }, [depositToken]);
+  }, [depositToken.symbol, position.collateralToken.symbol]);
 
   const recommendedToken = position.collateralToken;
 
@@ -155,10 +158,18 @@ export default function EditPositionCollateral({
 
     const notification =
       MultiStepNotification.newForRegularTransaction(
-        'Remove Collateral',
+        `Remove Collateral${doJupiterSwap ? ' 1/2' : ''}`
       ).fire();
 
     try {
+      const ataAddress = findATAAddressSync(position.owner, position.collateralToken.mint);
+
+      if (!window.adrena.client.readonlyConnection) {
+        throw new Error('Connection is not available');
+      }
+
+      const ataBalanceBefore = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
+
       await (position.side === 'long'
         ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
         : window.adrena.client.removeCollateralShort.bind(
@@ -168,6 +179,68 @@ export default function EditPositionCollateral({
           collateralUsd: uiToNative(input, USD_DECIMALS),
           notification,
         });
+
+      if (doJupiterSwap) {
+        const ataBalanceAfter = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
+
+        const diff = new BN(ataBalanceAfter).sub(new BN(ataBalanceBefore));
+
+        const notification =
+          MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
+
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: position.collateralToken.mint,
+          outputMint: redeemToken.mint,
+          amount: diff,
+          swapSlippage,
+        });
+
+        console.log('QUOTE', quoteResult);
+
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: position.owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          notification.currentStepErrored('Failed to get swap instructions');
+          return;
+        }
+
+        const transaction = new Transaction();
+
+        transaction.add(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+            : []),
+        );
+
+        await window.adrena.client.signAndExecuteTxAlternative({
+          transaction,
+          notification,
+          additionalAddressLookupTables: [
+            ...swapInstructions.addressLookupTableAddresses.map(
+              (x) => new PublicKey(x),
+            ),
+          ],
+        });
+      }
+
+      dispatch(fetchWalletTokenBalances());
+      triggerUserProfileReload();
     } catch (error) {
       console.log('error', error);
     }
@@ -182,6 +255,7 @@ export default function EditPositionCollateral({
     try {
       await window.adrena.client.addCollateralToPosition({
         position,
+        depositToken,
         addedCollateral: uiToNative(
           input,
           position.side === 'long'
@@ -189,8 +263,10 @@ export default function EditPositionCollateral({
             : position.collateralToken.decimals,
         ),
         notification,
+        swapSlippage,
       });
 
+      dispatch(fetchWalletTokenBalances());
       triggerUserProfileReload();
     } catch (error) {
       console.log('error', error);

@@ -1,23 +1,23 @@
 import { BN } from '@coral-xyz/anchor';
+import { PublicKey, Transaction } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ALTERNATIVE_SWAP_TOKENS, USD_DECIMALS } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
-import { ClosePositionEvent, ExitPriceAndFee, ImageRef, PositionExtended, Token } from '@/types';
-import { findATAAddressSync, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi } from '@/utils';
+import { ClosePositionEvent, ExitPriceAndFee, PositionExtended, Token } from '@/types';
+import { findATAAddressSync, getJupiterApiQuote, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi } from '@/utils';
 
-import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
-import { PublicKey, Transaction } from '@solana/web3.js';
-import { fetchWalletTokenBalances } from '@/actions/thunks';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -28,14 +28,12 @@ export default function ClosePosition({
   position,
   triggerUserProfileReload,
   onClose,
-  tokenImage,
   setShareClosePosition,
 }: {
   className?: string;
   position: PositionExtended;
   triggerUserProfileReload: () => void;
   onClose: () => void;
-  tokenImage: ImageRef | string;
   setShareClosePosition: (position: PositionExtended) => void;
 }) {
   const dispatch = useDispatch();
@@ -60,7 +58,7 @@ export default function ClosePosition({
 
   const doJupiterSwap = useMemo(() => {
     return redeemToken.symbol !== position.collateralToken.symbol;
-  }, [redeemToken]);
+  }, [position.collateralToken.symbol, redeemToken.symbol]);
 
   const recommendedToken = position.collateralToken;
 
@@ -76,13 +74,11 @@ export default function ClosePosition({
       ));
     }
 
-    window.adrena.jupiterApiClient.quoteGet({
-      inputMint: position.collateralToken.mint.toBase58(),
-      outputMint: redeemToken.mint.toBase58(),
-      amount: exitPriceAndFee.amountOut.toNumber(),
-      slippageBps: 0, // No slippage for the quote
-      swapMode: 'ExactIn',
-      maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+    getJupiterApiQuote({
+      inputMint: position.collateralToken.mint,
+      outputMint: redeemToken.mint,
+      amount: exitPriceAndFee.amountOut,
+      swapSlippage: 0, // No slippage for the quote
     })
       .then((quote) => {
         setAmountOut(nativeToUi(
@@ -90,7 +86,7 @@ export default function ClosePosition({
           redeemToken.decimals,
         ));
       });
-  }, [exitPriceAndFee, redeemToken]);
+  }, [doJupiterSwap, exitPriceAndFee, position.collateralToken.mint, redeemToken]);
 
   useEffect(() => {
     const localLoadingCounter = ++loadingCounter;
@@ -121,7 +117,7 @@ export default function ClosePosition({
   const doFullClose = useCallback(async () => {
     if (!markPrice) return;
 
-    let notification =
+    const notification =
       MultiStepNotification.newForRegularTransaction(`Close Position${doJupiterSwap ? ' 1/2' : ''}`).fire();
 
     try {
@@ -181,16 +177,14 @@ export default function ClosePosition({
 
         const diff = new BN(ataBalanceAfter).sub(new BN(ataBalanceBefore));
 
-        let notification =
+        const notification =
           MultiStepNotification.newForRegularTransaction('Close Position 2/2').fire();
 
-        const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
-          inputMint: position.collateralToken.mint.toBase58(),
-          outputMint: redeemToken.mint.toBase58(),
-          amount: diff.toNumber(),
-          slippageBps: swapSlippage * 100,
-          swapMode: 'ExactIn',
-          maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: position.collateralToken.mint,
+          outputMint: redeemToken.mint,
+          amount: diff,
+          swapSlippage,
         });
 
         console.log('QUOTE', quoteResult);
@@ -244,7 +238,7 @@ export default function ClosePosition({
     } catch (error) {
       console.error('error', error);
     }
-  }, [doJupiterSwap, redeemToken, swapSlippage, position, markPrice, triggerUserProfileReload, onClose, setShareClosePosition, showPopupOnPositionClose]);
+  }, [markPrice, doJupiterSwap, position, dispatch, triggerUserProfileReload, onClose, showPopupOnPositionClose, setShareClosePosition, redeemToken.mint, swapSlippage]);
 
   const handleExecute = async () => {
     await doFullClose();
