@@ -118,7 +118,7 @@ export default function ClosePosition({
     if (!markPrice) return;
 
     const notification =
-      MultiStepNotification.newForRegularTransaction(`Close Position${doJupiterSwap ? ' 1/2' : ''}`).fire();
+      MultiStepNotification.newForRegularTransaction('Close Position').fire();
 
     try {
       const priceAndFee = await window.adrena.client.getExitPriceAndFee({
@@ -156,6 +156,9 @@ export default function ClosePosition({
         : window.adrena.client.closePositionShort.bind(window.adrena.client))({
           position,
           price: priceWithSlippage,
+          expectedCollateralAmountOut: new BN(priceAndFee.amountOut),
+          redeemToken,
+          swapSlippage,
           notification,
           getTransactionLogs: (logs) => {
             if (!logs) return;
@@ -238,7 +241,18 @@ export default function ClosePosition({
     } catch (error) {
       console.error('error', error);
     }
-  }, [markPrice, doJupiterSwap, position, dispatch, triggerUserProfileReload, onClose, showPopupOnPositionClose, setShareClosePosition, redeemToken.mint, swapSlippage]);
+  }, [
+    markPrice,
+    doJupiterSwap,
+    position,
+    redeemToken,
+    swapSlippage,
+    dispatch,
+    triggerUserProfileReload,
+    onClose,
+    showPopupOnPositionClose,
+    setShareClosePosition,
+  ]);
 
   const handleExecute = async () => {
     await doFullClose();
@@ -274,7 +288,7 @@ export default function ClosePosition({
 
               {doJupiterSwap && recommendedToken ? <>
                 <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
-                  <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
+                  <div className="text-xs gap-1 flex w-full items-center justify-center">
                     <span className='text-white/30'>{position.collateralToken.symbol}</span>
                     <span className='text-white/30'>auto-swapped to</span>
                     <span className='text-white/30'>{redeemToken.symbol}</span>
@@ -291,6 +305,7 @@ export default function ClosePosition({
               </> : null}
 
               <PickTokenModal
+                key="close-pick-token-modal"
                 recommendedToken={recommendedToken}
                 isPickTokenModalOpen={isPickTokenModalOpen}
                 setIsPickTokenModalOpen={setIsPickTokenModalOpen}

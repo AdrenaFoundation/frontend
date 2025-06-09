@@ -83,7 +83,11 @@ export default function EditPositionCollateral({
   const [belowMinLeverage, setBelowMinLeverage] = useState(false);
   const [aboveMaxLeverage, setAboveMaxLeverage] = useState(false);
 
-  const doJupiterSwap = useMemo(() => {
+  const doJupiterSwapOnWithdraw = useMemo(() => {
+    return redeemToken.symbol !== position.collateralToken.symbol;
+  }, [redeemToken.symbol, position.collateralToken.symbol]);
+
+  const doJupiterSwapOnDeposit = useMemo(() => {
     return depositToken.symbol !== position.collateralToken.symbol;
   }, [depositToken.symbol, position.collateralToken.symbol]);
 
@@ -158,7 +162,7 @@ export default function EditPositionCollateral({
 
     const notification =
       MultiStepNotification.newForRegularTransaction(
-        `Remove Collateral${doJupiterSwap ? ' 1/2' : ''}`
+        `Remove Collateral${doJupiterSwapOnWithdraw ? ' 1/2' : ''}`
       ).fire();
 
     try {
@@ -180,7 +184,7 @@ export default function EditPositionCollateral({
           notification,
         });
 
-      if (doJupiterSwap) {
+      if (doJupiterSwapOnWithdraw) {
         const ataBalanceAfter = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
 
         const diff = new BN(ataBalanceAfter).sub(new BN(ataBalanceBefore));
@@ -258,9 +262,7 @@ export default function EditPositionCollateral({
         depositToken,
         addedCollateral: uiToNative(
           input,
-          position.side === 'long'
-            ? position.token.decimals
-            : position.collateralToken.decimals,
+          depositToken.decimals,
         ),
         notification,
         swapSlippage,
@@ -776,7 +778,7 @@ export default function EditPositionCollateral({
                   })()
                 }
 
-                {doJupiterSwap && recommendedToken ? <>
+                {doJupiterSwapOnDeposit && recommendedToken ? <>
                   <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
                     <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
                       <span className='text-white/30'>{depositToken.symbol}</span>
@@ -921,7 +923,7 @@ export default function EditPositionCollateral({
                   />
                 </div>
 
-                {doJupiterSwap && recommendedToken ? <>
+                {doJupiterSwapOnWithdraw && recommendedToken ? <>
                   <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
                     <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
                       <span className='text-white/30'>{depositToken.symbol}</span>

@@ -23,7 +23,7 @@ export const SwapSlippageSection = ({
                 <div className="flex flex-col w-full gap-2">
                     <h5 className={twMerge("ml-4", titleClassName)}>Swap Slippage</h5>
 
-                    <div className="flex gap-2 w-full items-center justify-evenly">
+                    <div className="flex gap-2 w-full items-center justify-evenly border pt-1 pb-1">
                         {percentages.map((percentage) => (<div
                             className={twMerge(
                                 "text-[0.7em] font-archivo cursor-pointer hover:text-white",
