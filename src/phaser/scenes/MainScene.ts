@@ -52,7 +52,7 @@ class MainScene extends Phaser.Scene {
 
     this.load.image(
       'tiles',
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/pixel-cyberpunk-interior-rKgPFK5iDNifFzDrzhVG1mRgE1TN2I.png',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/pixel-cyberpunk-interior-XtYiFktpomtHWKti7d7M04TetN7FGY.png',
     );
     // this.load.tilemapTiledJSON(
     //   'map',
