@@ -1,0 +1,145 @@
+{
+  "textures": [
+    {
+      "image": "https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/inventory-IxO6leHEeX7bNFWCmh9evri3HmIkxZ.png",
+      "format": "RGBA8888",
+      "size": {
+        "w": 230,
+        "h": 164
+      },
+      "scale": 1,
+      "frames": [
+        {
+          "filename": "inventory.png",
+          "rotated": false,
+          "trimmed": false,
+          "sourceSize": {
+            "w": 194,
+            "h": 162
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 194,
+            "h": 162
+          },
+          "frame": {
+            "x": 1,
+            "y": 1,
+            "w": 194,
+            "h": 162
+          },
+          "anchor": {
+            "x": 0.47936508,
+            "y": 0.508
+          }
+        },
+        {
+          "filename": "slot-default.png",
+          "rotated": false,
+          "trimmed": false,
+          "sourceSize": {
+            "w": 32,
+            "h": 32
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "frame": {
+            "x": 197,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 0.47936508,
+            "y": 0.508
+          }
+        },
+        {
+          "filename": "slot-hover.png",
+          "rotated": false,
+          "trimmed": false,
+          "sourceSize": {
+            "w": 32,
+            "h": 32
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "frame": {
+            "x": 197,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 0.47936508,
+            "y": 0.508
+          }
+        },
+        {
+          "filename": "slot-filter-hover.png",
+          "rotated": false,
+          "trimmed": false,
+          "sourceSize": {
+            "w": 16,
+            "h": 16
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 16,
+            "h": 16
+          },
+          "frame": {
+            "x": 197,
+            "y": 69,
+            "w": 16,
+            "h": 16
+          },
+          "anchor": {
+            "x": 0.47936508,
+            "y": 0.508
+          }
+        },
+        {
+          "filename": "slot-filter.png",
+          "rotated": false,
+          "trimmed": false,
+          "sourceSize": {
+            "w": 16,
+            "h": 16
+          },
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 16,
+            "h": 16
+          },
+          "frame": {
+            "x": 197,
+            "y": 87,
+            "w": 16,
+            "h": 16
+          },
+          "anchor": {
+            "x": 0.47936508,
+            "y": 0.508
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "app": "https://www.codeandweb.com/texturepacker",
+    "version": "3.0",
+    "smartupdate": "$TexturePacker:SmartUpdate:80aba19e410d0a8abeffabf48b0d07ff:91197360a3c0aa4cb9942c43be18b485:15284f2f553a864e8470f6749c519a20$"
+  }
+}

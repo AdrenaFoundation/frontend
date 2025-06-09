@@ -61,6 +61,7 @@ export default function App(props: AppProps) {
   const [initStatus, setInitStatus] = useState<
     'not-started' | 'starting' | 'done'
   >('not-started');
+
   // FIXME: RPC selection shouldn't be hook / effect-based.
   // A default RPC should be picked by the server during ssr.
   const {
