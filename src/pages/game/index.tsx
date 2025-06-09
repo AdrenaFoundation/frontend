@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react'
 
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import { useSelector } from '@/store/store';
+
 
 export default function Game() {
+  const wallet = useSelector((state) => state.walletState.wallet);
+
   useEffect(() => {
     // Only execute this code on the client side
     const initGame = async () => {
@@ -51,6 +56,14 @@ export default function Game() {
 
     initGame();
   }, []);
+
+  if (!wallet) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <WalletConnection />
+      </div>
+    );
+  }
 
   return <div id='phaser'></div>;
 }

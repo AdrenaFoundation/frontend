@@ -403,10 +403,10 @@ class MainScene extends Phaser.Scene {
     const height = this.cameras.main.height;
 
     // Generate random starting position near center
-    const randomX = width / 2 + (Math.random() * 100 - 50);
-    const randomY = height / 2 + (Math.random() * 100 - 50);
+    // const randomX = width / 2 + (Math.random() * 100 - 50);
+    // const randomY = height / 2 + (Math.random() * 100 - 50);
 
-    const player = this.physics.add.sprite(randomX, randomY, 'player', 1);
+    const player = this.physics.add.sprite(width / 2, height / 2, 'player', 1);
 
     if (!player.body) {
       this.physics.world.enable(player);
