@@ -35,6 +35,9 @@ const MIN_LEVERAGE = 1.1;
 // always ignore outdated information
 let loadingCounter = 0;
 
+// Used for jup swap async call
+let loadingCounterSwap = 0;
+
 export default function EditPositionCollateral({
   className,
   position,
@@ -340,6 +343,48 @@ export default function EditPositionCollateral({
     selectedAction,
   ]);
 
+  // Calculate the equivalence of the token to be deposited in position.collateralMint amount
+  // Used to display proper information in the UI (Display Only)
+  const [depositCollateralAmountPostSwap, setDepositCollateralAmountPostSwap] = useState<number | null>(null);
+
+  // Do a quote to know the number of collateral get after the swap for informational purpose
+  useEffect(() => {
+    (async () => {
+      if (!input || !doJupiterSwapOnDeposit) {
+        return setDepositCollateralAmountPostSwap(null);
+      }
+
+      const localLoadingCounter = ++loadingCounterSwap;
+
+      // Need to quote to know the value of the token to calculate new leverage
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: depositToken.mint,
+        outputMint: position.collateralToken.mint,
+        amount: uiToNative(
+          input,
+          depositToken.decimals,
+        ),
+        swapSlippage,
+      });
+
+      if (!quoteResult) {
+        return setDepositCollateralAmountPostSwap(null);
+      }
+
+      // Verify that information is not outdated
+      // If loaderCounter doesn't match it means
+      // an other request has been casted due to input change
+      if (localLoadingCounter !== loadingCounterSwap) {
+        return;
+      }
+
+      setDepositCollateralAmountPostSwap(nativeToUi(new BN(quoteResult.outAmount), position.collateralToken.decimals));
+    })().catch((e) => {
+      // Ignore error
+      console.log(e);
+    });
+  }, [doJupiterSwapOnDeposit, input, depositToken, position.collateralToken, swapSlippage]);
+
   // Recalculate leverage/collateral depending on the input and price
   useEffect(() => {
     if (
@@ -357,8 +402,15 @@ export default function EditPositionCollateral({
     let updatedCollateralUsd: number;
 
     if (selectedAction === 'deposit') {
+      const depositAmount = doJupiterSwapOnDeposit ? depositCollateralAmountPostSwap : input;
+
+      // Can't calculate yet
+      if (depositAmount === null) {
+        return;
+      }
+
       updatedCollateralAmount =
-        position.collateralUsd / collateralPrice + input;
+        position.collateralUsd / collateralPrice + depositAmount;
       updatedCollateralUsd = updatedCollateralAmount * collateralPrice;
     } else {
       updatedCollateralUsd = Math.max(0, position.collateralUsd - (input || 0));
@@ -379,6 +431,7 @@ export default function EditPositionCollateral({
       } else {
         setAboveMaxLeverage(false);
       }
+
       setUpdatedInfos({
         currentLeverage: updatedCurrentLeverage,
         collateral: updatedCollateralAmount,
@@ -394,6 +447,8 @@ export default function EditPositionCollateral({
     position.sizeUsd,
     selectedAction,
     maxInitialLeverage,
+    doJupiterSwapOnDeposit,
+    depositCollateralAmountPostSwap,
   ]);
 
   const calculateCollateralPercentage = (percentage: number) =>
