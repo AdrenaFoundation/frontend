@@ -435,9 +435,265 @@ export default function EditPositionCollateral({
 
   return (
     <div
-      className={twMerge('flex flex-col gap-2 h-full w-full max-w-[45em] pt-4 px-4', className)}
+      className={twMerge('flex flex-col gap-2 h-full w-full sm:w-[40em] max-w-full pt-4 px-4', className)}
     >
       <div className='flex gap-4 w-full flex-col sm:flex-row items-center sm:items-start'>
+
+        {/* DEPOSIT / WITHDRAW */}
+        <div className='flex flex-col w-full sm:w-1/2'>
+          <TabSelect
+            wrapperClassName="h-12 flex items-center"
+            selected={selectedAction}
+            tabs={[
+              { title: 'deposit', activeColor: 'border-b-gray-700' },
+              { title: 'withdraw', activeColor: 'border-b-gray-700' },
+            ]}
+            onClick={(title) => {
+              // Reset input when changing selected action
+              setInput(null);
+              setSelectedAction(title);
+            }}
+          />
+
+          <div className="flex flex-col gap-2">
+            {selectedAction === 'deposit' ? (
+              <>
+                {belowMinLeverage && (
+                  <div className="flex flex-col text-sm">
+                    <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
+                      <Image
+                        className="opacity-100 absolute left-3 top-auto bottom-auto"
+                        src={warningIcon}
+                        height={20}
+                        width={20}
+                        alt="Warning icon"
+                      />
+                      This action would take the leverage below the minimum of 1.1x.
+                      Please adjust your input.
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col border rounded-lg bg-third">
+                  <TradingInput
+                    className="text-sm"
+                    inputClassName="border-0 bg-third"
+                    value={input}
+                    selectedToken={depositToken}
+                    // Adrena tokens + swappable tokens
+                    tokenList={[
+                      ...window.adrena.client.tokens,
+                      ...ALTERNATIVE_SWAP_TOKENS,
+                    ]}
+                    recommendedToken={recommendedToken}
+                    onTokenSelect={(t: Token) => {
+                      setDepositToken(t);
+                    }}
+                    onChange={setInput}
+                  />
+                </div>
+
+                {
+                  /* Display wallet balance */
+                  (() => {
+                    if (!walletTokenBalances) return null;
+
+                    const balance =
+                      walletTokenBalances[depositToken.symbol];
+                    if (balance === null) return null;
+
+                    return (
+                      <div
+                        className="flex flex-row items-center ml-auto mr-4 cursor-pointer"
+                        onClick={() => setInput(walletBalance)}
+                      >
+                        <Image
+                          className="mr-1 opacity-60 relative"
+                          src={walletImg}
+                          height={17}
+                          width={17}
+                          alt="Wallet icon"
+                        />
+
+                        <FormatNumber
+                          nb={balance}
+                          precision={
+                            depositToken.displayAmountDecimalsPrecision
+                          }
+                          className="text-txtfade text-sm"
+                          isDecimalDimmed={false}
+                          suffix={depositToken.symbol}
+                        />
+
+                        <RefreshButton className="ml-1" />
+                      </div>
+                    );
+                  })()
+                }
+
+                {doJupiterSwapOnDeposit && recommendedToken ? <>
+                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before adding collateral to the position."}>
+                    <div className="text-xs gap-1 flex pt-1 pb-1 w-full items-center justify-center">
+                      <span className='text-white/30'>{depositToken.symbol}</span>
+                      <span className='text-white/30'>auto-swapped to</span>
+                      <span className='text-white/30'>{position.collateralToken.symbol}</span>
+                      <span className='text-white/30'>via Jupiter</span>
+                    </div>
+                  </Tippy>
+
+                  <SwapSlippageSection
+                    swapSlippage={swapSlippage}
+                    setSwapSlippage={setSwapSlippage}
+                    className="mt-4 mb-4"
+                  />
+
+                  <PickTokenModal
+                    recommendedToken={recommendedToken}
+                    isPickTokenModalOpen={isPickTokenModalOpen}
+                    setIsPickTokenModalOpen={setIsPickTokenModalOpen}
+                    // Adrena tokens + swappable tokens
+                    tokenList={[
+                      ...window.adrena.client.tokens,
+                      ...ALTERNATIVE_SWAP_TOKENS,
+                    ]}
+                    pick={(t: Token) => {
+                      setDepositToken(t);
+                      setIsPickTokenModalOpen(false);
+                    }}
+                  />
+                </> : null}
+              </>
+            ) : (
+              <>
+                {/* Check for max leverage*/}
+                {maxInitialLeverage &&
+                  position.currentLeverage &&
+                  position.currentLeverage >= maxInitialLeverage ? (
+                  <div className="flex flex-col text-sm ml-4 mr-4">
+                    <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+                      <Image
+                        className="opacity-60 absolute left-3 top-auto bottom-auto"
+                        src={infoIcon}
+                        height={16}
+                        width={16}
+                        alt="Info icon"
+                      />
+                      <span className="text-sm">
+                        Your position is above the maximum leverage of{' '}
+                        {maxInitialLeverage}x, you cannot withdraw more collateral.
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col border rounded-lg bg-third">
+                  <TradingInput
+                    className="text-sm"
+                    inputClassName="border-0 bg-third"
+                    value={input}
+                    selectedToken={
+                      {
+                        symbol: 'USD',
+                        image: window.adrena.client.getUsdcToken().image,
+                      } as Token
+                    }
+                    tokenList={[]}
+                    onTokenSelect={() => {
+                      // One token only
+                    }}
+                    onChange={setInput}
+                    disabled={
+                      position.currentLeverage !== null &&
+                      position.currentLeverage <= 1.1
+                    }
+                  />
+                </div>
+
+                {!aboveMaxLeverage && !belowMinLeverage && (
+                  <div className="flex flex-row gap-3 w-full">
+                    {[25, 50, 75].map((percent, i) => {
+                      return (
+                        <Button
+                          key={i}
+                          title={`${percent}%`}
+                          variant="secondary"
+                          rounded={false}
+                          className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
+                          onClick={() =>
+                            setInput(calculateCollateralPercentage(percent))
+                          }
+                        ></Button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="text-sm text-txtfade ml-auto mr-4 gap-1 flex items-center mt-1">
+                  <FormatNumber
+                    nb={Math.min(positionNetValue, position.collateralUsd)}
+                    format="currency"
+                    className="inline text-xs text-txtfade"
+                    isDecimalDimmed={false}
+                  />
+                  of collateral in the position
+                </div>
+
+                <div className='text-sm'>
+                  Withdraw in
+                </div>
+
+                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer' onClick={() => setIsPickTokenModalOpen(true)}>
+                  <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
+                    <Image src={chevronDownIcon} alt="chevron down" />
+                  </div>
+
+                  <div className='font-archivo text-base'>{redeemToken.symbol ?? '-'}</div>
+
+                  <Image
+                    className='h-4 w-4'
+                    src={redeemToken.image}
+                    alt="logo"
+                    width="20"
+                    height="20"
+                  />
+                </div>
+
+                {doJupiterSwapOnWithdraw && recommendedToken ? <>
+                  <div className="text-xs gap-1 flex ml-auto mr-auto pt-1 pb-1 w-full items-center justify-center">
+                    <span className='text-white/30'>{depositToken.symbol}</span>
+                    <span className='text-white/30'>auto-swapped to</span>
+                    <span className='text-white/30'>{position.collateralToken.symbol}</span>
+                    <span className='text-white/30'>via Jupiter</span>
+                  </div>
+
+                  <SwapSlippageSection
+                    swapSlippage={swapSlippage}
+                    setSwapSlippage={setSwapSlippage}
+                    className="mt-4 mb-4"
+                    titleClassName="ml-0"
+                  />
+                </> : null}
+
+                <PickTokenModal
+                  recommendedToken={recommendedToken}
+                  isPickTokenModalOpen={isPickTokenModalOpen}
+                  setIsPickTokenModalOpen={setIsPickTokenModalOpen}
+                  // Adrena tokens + swappable tokens
+                  tokenList={[
+                    ...window.adrena.client.tokens,
+                    ...ALTERNATIVE_SWAP_TOKENS,
+                  ]}
+                  pick={(t: Token) => {
+                    setRedeemToken(t);
+                    setIsPickTokenModalOpen(false);
+                  }}
+                />
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Position Info */}
         <div className="flex flex-col w-full sm:w-1/2 items-center">
           <div className='flex w-full'>
             <div className="flex flex-col p-3 py-2.5 border bg-[#040D14] rounded-lg w-full">
@@ -685,260 +941,6 @@ export default function EditPositionCollateral({
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className='flex flex-col w-full sm:w-1/2'>
-          <TabSelect
-            wrapperClassName="h-12 flex items-center"
-            selected={selectedAction}
-            tabs={[
-              { title: 'deposit', activeColor: 'border-b-gray-700' },
-              { title: 'withdraw', activeColor: 'border-b-gray-700' },
-            ]}
-            onClick={(title) => {
-              // Reset input when changing selected action
-              setInput(null);
-              setSelectedAction(title);
-            }}
-          />
-
-          <div className="flex flex-col gap-2">
-            {selectedAction === 'deposit' ? (
-              <>
-                {belowMinLeverage && (
-                  <div className="flex flex-col text-sm ml-4 mr-4">
-                    <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
-                      <Image
-                        className="opacity-100 absolute left-3 top-auto bottom-auto"
-                        src={warningIcon}
-                        height={20}
-                        width={20}
-                        alt="Warning icon"
-                      />
-                      This action would take the leverage below the minimum of 1.1x.
-                      Please adjust your input.
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
-                  <TradingInput
-                    className="text-sm"
-                    inputClassName="border-0 bg-third"
-                    value={input}
-                    selectedToken={depositToken}
-                    // Adrena tokens + swappable tokens
-                    tokenList={[
-                      ...window.adrena.client.tokens,
-                      ...ALTERNATIVE_SWAP_TOKENS,
-                    ]}
-                    recommendedToken={recommendedToken}
-                    onTokenSelect={(t: Token) => {
-                      setDepositToken(t);
-                    }}
-                    onChange={setInput}
-                  />
-                </div>
-
-                {
-                  /* Display wallet balance */
-                  (() => {
-                    if (!walletTokenBalances) return null;
-
-                    const balance =
-                      walletTokenBalances[depositToken.symbol];
-                    if (balance === null) return null;
-
-                    return (
-                      <div
-                        className="flex flex-row items-center ml-auto mr-4 cursor-pointer"
-                        onClick={() => setInput(walletBalance)}
-                      >
-                        <Image
-                          className="mr-1 opacity-60 relative"
-                          src={walletImg}
-                          height={17}
-                          width={17}
-                          alt="Wallet icon"
-                        />
-
-                        <FormatNumber
-                          nb={balance}
-                          precision={
-                            depositToken.displayAmountDecimalsPrecision
-                          }
-                          className="text-txtfade text-sm"
-                          isDecimalDimmed={false}
-                          suffix={depositToken.symbol}
-                        />
-
-                        <RefreshButton className="ml-1" />
-                      </div>
-                    );
-                  })()
-                }
-
-                {doJupiterSwapOnDeposit && recommendedToken ? <>
-                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before adding collateral to the position."}>
-                    <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
-                      <span className='text-white/30'>{depositToken.symbol}</span>
-                      <span className='text-white/30'>auto-swapped to</span>
-                      <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                      <span className='text-white/30'>via Jupiter</span>
-                    </div>
-                  </Tippy>
-
-                  <SwapSlippageSection
-                    swapSlippage={swapSlippage}
-                    setSwapSlippage={setSwapSlippage}
-                    className="mt-4 mb-4"
-                    titleClassName="ml-0"
-                  />
-
-                  <PickTokenModal
-                    recommendedToken={recommendedToken}
-                    isPickTokenModalOpen={isPickTokenModalOpen}
-                    setIsPickTokenModalOpen={setIsPickTokenModalOpen}
-                    // Adrena tokens + swappable tokens
-                    tokenList={[
-                      ...window.adrena.client.tokens,
-                      ...ALTERNATIVE_SWAP_TOKENS,
-                    ]}
-                    pick={(t: Token) => {
-                      setDepositToken(t);
-                      setIsPickTokenModalOpen(false);
-                    }}
-                  />
-                </> : null}
-              </>
-            ) : (
-              <>
-                {/* Check for max leverage*/}
-                {maxInitialLeverage &&
-                  position.currentLeverage &&
-                  position.currentLeverage >= maxInitialLeverage ? (
-                  <div className="flex flex-col text-sm ml-4 mr-4">
-                    <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
-                      <Image
-                        className="opacity-60 absolute left-3 top-auto bottom-auto"
-                        src={infoIcon}
-                        height={16}
-                        width={16}
-                        alt="Info icon"
-                      />
-                      <span className="text-sm">
-                        Your position is above the maximum leverage of{' '}
-                        {maxInitialLeverage}x, you cannot withdraw more collateral.
-                      </span>
-                    </div>
-                  </div>
-                ) : null}
-
-                <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
-                  <TradingInput
-                    className="text-sm"
-                    inputClassName="border-0 bg-third"
-                    value={input}
-                    selectedToken={
-                      {
-                        symbol: 'USD',
-                        image: window.adrena.client.getUsdcToken().image,
-                      } as Token
-                    }
-                    tokenList={[]}
-                    onTokenSelect={() => {
-                      // One token only
-                    }}
-                    onChange={setInput}
-                    disabled={
-                      position.currentLeverage !== null &&
-                      position.currentLeverage <= 1.1
-                    }
-                  />
-                </div>
-
-                {!aboveMaxLeverage && !belowMinLeverage && (
-                  <div className="flex flex-row gap-3 px-4">
-                    {[25, 50, 75].map((percent, i) => {
-                      return (
-                        <Button
-                          key={i}
-                          title={`${percent}%`}
-                          variant="secondary"
-                          rounded={false}
-                          className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
-                          onClick={() =>
-                            setInput(calculateCollateralPercentage(percent))
-                          }
-                        ></Button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <div className="text-sm text-txtfade ml-auto mr-4 gap-1 flex items-center mt-1">
-                  <FormatNumber
-                    nb={Math.min(positionNetValue, position.collateralUsd)}
-                    format="currency"
-                    className="inline text-xs text-txtfade"
-                    isDecimalDimmed={false}
-                  />
-                  of collateral in the position
-                </div>
-
-                <div className='text-sm'>
-                  Withdraw in
-                </div>
-
-                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer' onClick={() => setIsPickTokenModalOpen(true)}>
-                  <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
-                    <Image src={chevronDownIcon} alt="chevron down" />
-                  </div>
-
-                  <div className='font-archivo text-base'>{redeemToken.symbol ?? '-'}</div>
-
-                  <Image
-                    className='h-4 w-4'
-                    src={redeemToken.image}
-                    alt="logo"
-                    width="20"
-                    height="20"
-                  />
-                </div>
-
-                {doJupiterSwapOnWithdraw && recommendedToken ? <>
-                  <div className="text-xs gap-1 flex ml-auto mr-auto pt-1 pb-1 w-full items-center justify-center">
-                    <span className='text-white/30'>{depositToken.symbol}</span>
-                    <span className='text-white/30'>auto-swapped to</span>
-                    <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                    <span className='text-white/30'>via Jupiter</span>
-                  </div>
-
-                  <SwapSlippageSection
-                    swapSlippage={swapSlippage}
-                    setSwapSlippage={setSwapSlippage}
-                    className="mt-4 mb-4"
-                    titleClassName="ml-0"
-                  />
-                </> : null}
-
-                <PickTokenModal
-                  recommendedToken={recommendedToken}
-                  isPickTokenModalOpen={isPickTokenModalOpen}
-                  setIsPickTokenModalOpen={setIsPickTokenModalOpen}
-                  // Adrena tokens + swappable tokens
-                  tokenList={[
-                    ...window.adrena.client.tokens,
-                    ...ALTERNATIVE_SWAP_TOKENS,
-                  ]}
-                  pick={(t: Token) => {
-                    setRedeemToken(t);
-                    setIsPickTokenModalOpen(false);
-                  }}
-                />
-              </>
-            )}
           </div>
         </div>
       </div>
