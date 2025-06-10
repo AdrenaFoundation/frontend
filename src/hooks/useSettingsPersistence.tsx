@@ -7,8 +7,11 @@ import { SettingsState } from "@/reducers/settingsReducer";
 import { useDispatch, useSelector } from "@/store/store";
 import { PercentilePriorityFeeList } from "@/utils";
 
+import useFetchUserSettings from "./useFetchUserSettings";
+
 // Loads Settings from cookies and saves them to cookies
 export default function useSettingsPersistence() {
+    const { preferences, updatePreferences } = useFetchUserSettings();
     const dispatch = useDispatch();
     const [cookies, setCookie] = useCookies([
         'disable-chat',
@@ -31,37 +34,37 @@ export default function useSettingsPersistence() {
         const updatedSettings: Partial<SettingsState> = {};
 
         {
-            const v = cookies['disable-chat'];
+            const v = preferences?.disableChat ?? cookies['disable-chat'];
             if (v === false || v === true)
                 updatedSettings.disableChat = v;
         }
 
         {
-            const v = cookies['show-fees-in-pnl'];
+            const v = preferences?.showFeesInPnl ?? cookies['show-fees-in-pnl'];
             if (v === false || v === true)
                 updatedSettings.showFeesInPnl = v;
         }
 
         {
-            const v = cookies['show-popup-on-position-close'];
+            const v = preferences?.showPopupOnPositionClose ?? cookies['show-popup-on-position-close'];
             if (v === false || v === true)
                 updatedSettings.showPopupOnPositionClose = v;
         }
 
         {
-            const v = cookies['preferred-solana-explorer'];
+            const v = preferences?.preferredSolanaExplorer ?? cookies['preferred-solana-explorer'];
             if (Object.keys(SOLANA_EXPLORERS_OPTIONS).includes(v))
                 updatedSettings.preferredSolanaExplorer = v;
         }
 
         {
-            const v = cookies['priority-fee'];
+            const v = preferences?.priorityFeeOption ?? cookies['priority-fee'];
             if (Object.keys(PercentilePriorityFeeList).includes(v))
                 updatedSettings.priorityFeeOption = v;
         }
 
         {
-            const v = cookies['max-priority-fee'];
+            const v = preferences?.maxPriorityFee ?? cookies['max-priority-fee'];
             if (typeof v !== 'undefined' && !isNaN(v))
                 updatedSettings.maxPriorityFee = v;
         }
@@ -90,7 +93,7 @@ export default function useSettingsPersistence() {
             setSettings(updatedSettings),
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [!!cookies, !!dispatch]);
+    }, [!!cookies, !!dispatch, preferences]);
 
     // When selector change, save in cookie
     useEffect(() => {
@@ -115,4 +118,9 @@ export default function useSettingsPersistence() {
         window.adrena.client.setPriorityFeeOption(settings.priorityFeeOption);
         window.adrena.client.setMaxPriorityFee(settings.maxPriorityFee);
     }, [setCookie, settings]);
+
+    useEffect(() => {
+        updatePreferences(settings);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [settings]);
 }
