@@ -18,6 +18,7 @@ import { findATAAddressSync, getJupiterApiQuote, getTokenImage, getTokenSymbol, 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
+import { setSettings } from '@/actions/settingsActions';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -37,6 +38,7 @@ export default function ClosePosition({
   setShareClosePosition: (position: PositionExtended) => void;
 }) {
   const dispatch = useDispatch();
+  const settings = useSelector((state) => state.settings);
 
   const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
 
@@ -55,6 +57,16 @@ export default function ClosePosition({
     tokenPrices[position.collateralToken.symbol];
 
   const [showFees, setShowFees] = useState(false);
+
+  // Pick default redeem token
+  useEffect(() => {
+    const token = [
+      ...window.adrena.client.tokens,
+      ...ALTERNATIVE_SWAP_TOKENS,
+    ].find((t) => t.symbol === settings.closePositionCollateralSymbol) ?? position.token;
+
+    setRedeemToken(token);
+  }, []);
 
   const doJupiterSwap = useMemo(() => {
     return redeemToken.symbol !== position.collateralToken.symbol;
@@ -248,6 +260,13 @@ export default function ClosePosition({
                   ...ALTERNATIVE_SWAP_TOKENS,
                 ]}
                 pick={(t: Token) => {
+                  // Persist the selected token in the settings
+                  dispatch(
+                    setSettings({
+                      closePositionCollateralSymbol: t?.symbol ?? '',
+                    }),
+                  );
+
                   setRedeemToken(t);
                   setIsPickTokenModalOpen(false);
                 }}

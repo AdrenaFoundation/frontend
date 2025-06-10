@@ -1926,8 +1926,6 @@ export class AdrenaClient {
         swapSlippage,
       });
 
-      console.log('QUOTE', quoteResult);
-
       const swapInstructions =
         await window.adrena.jupiterApiClient.swapInstructionsPost({
           swapRequest: {
@@ -2013,8 +2011,6 @@ export class AdrenaClient {
         amount: expectedCollateralAmountOut,
         swapSlippage,
       });
-
-      console.log('QUOTE', quoteResult);
 
       const swapInstructions =
         await window.adrena.jupiterApiClient.swapInstructionsPost({
@@ -2330,8 +2326,6 @@ export class AdrenaClient {
         new BN(quoteResult.outAmount),
         -swapSlippage,
       );
-
-      console.log('QUOTE', quoteResult);
 
       const swapInstructions =
         await window.adrena.jupiterApiClient.swapInstructionsPost({
@@ -2687,8 +2681,6 @@ export class AdrenaClient {
         -swapSlippage,
       );
 
-      console.log('QUOTE', quoteResult);
-
       const swapInstructions =
         await window.adrena.jupiterApiClient.swapInstructionsPost({
           swapRequest: {
@@ -2790,8 +2782,6 @@ export class AdrenaClient {
       );
 
       console.log('addedCollateral with slippage', addedCollateral.toString());
-
-      console.log('QUOTE', quoteResult);
 
       const swapInstructions =
         await window.adrena.jupiterApiClient.swapInstructionsPost({
@@ -4483,8 +4473,6 @@ export class AdrenaClient {
         new BN(quoteResult.outAmount),
         -swapSlippage,
       );
-
-      console.log('QUOTE', quoteResult);
 
       const swapInstructions =
         await window.adrena.jupiterApiClient.swapInstructionsPost({

@@ -26,6 +26,7 @@ import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import TradingInput from '../TradingInput/TradingInput';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
+import { setSettings } from '@/actions/settingsActions';
 
 // hardcoded in backend too
 const MIN_LEVERAGE = 1.1;
@@ -46,6 +47,7 @@ export default function EditPositionCollateral({
   onClose: () => void;
 }) {
   const dispatch = useDispatch();
+  const settings = useSelector((state) => state.settings);
 
   const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
   const [isPickTokenModalOpen, setIsPickTokenModalOpen] = useState(false);
@@ -82,6 +84,17 @@ export default function EditPositionCollateral({
 
   const [belowMinLeverage, setBelowMinLeverage] = useState(false);
   const [aboveMaxLeverage, setAboveMaxLeverage] = useState(false);
+
+  // Pick default redeem/deposit token
+  useEffect(() => {
+    const tokens = [
+      ...window.adrena.client.tokens,
+      ...ALTERNATIVE_SWAP_TOKENS,
+    ];
+
+    setRedeemToken(tokens.find((t) => t.symbol === settings.withdrawCollateralSymbol) ?? position.token);
+    setDepositToken(tokens.find((t) => t.symbol === settings.depositCollateralSymbol) ?? position.token);
+  }, []);
 
   const doJupiterSwapOnWithdraw = useMemo(() => {
     return redeemToken.symbol !== position.collateralToken.symbol;
@@ -198,8 +211,6 @@ export default function EditPositionCollateral({
           amount: diff,
           swapSlippage,
         });
-
-        console.log('QUOTE', quoteResult);
 
         const swapInstructions =
           await window.adrena.jupiterApiClient.swapInstructionsPost({
@@ -487,6 +498,13 @@ export default function EditPositionCollateral({
                     ]}
                     recommendedToken={recommendedToken}
                     onTokenSelect={(t: Token) => {
+                      // Persist the selected token in the settings
+                      dispatch(
+                        setSettings({
+                          depositCollateralSymbol: t?.symbol ?? '',
+                        }),
+                      );
+
                       setDepositToken(t);
                     }}
                     onChange={setInput}
@@ -545,21 +563,6 @@ export default function EditPositionCollateral({
                     swapSlippage={swapSlippage}
                     setSwapSlippage={setSwapSlippage}
                     className="mt-4 mb-4"
-                  />
-
-                  <PickTokenModal
-                    recommendedToken={recommendedToken}
-                    isPickTokenModalOpen={isPickTokenModalOpen}
-                    setIsPickTokenModalOpen={setIsPickTokenModalOpen}
-                    // Adrena tokens + swappable tokens
-                    tokenList={[
-                      ...window.adrena.client.tokens,
-                      ...ALTERNATIVE_SWAP_TOKENS,
-                    ]}
-                    pick={(t: Token) => {
-                      setDepositToken(t);
-                      setIsPickTokenModalOpen(false);
-                    }}
                   />
                 </> : null}
               </>
@@ -684,6 +687,13 @@ export default function EditPositionCollateral({
                     ...ALTERNATIVE_SWAP_TOKENS,
                   ]}
                   pick={(t: Token) => {
+                    // Persist the selected token in the settings
+                    dispatch(
+                      setSettings({
+                        withdrawCollateralSymbol: t?.symbol ?? '',
+                      }),
+                    );
+
                     setRedeemToken(t);
                     setIsPickTokenModalOpen(false);
                   }}

@@ -1182,7 +1182,7 @@ export function jupInstructionToTransactionInstruction(ix: any): TransactionInst
   });
 }
 
-export function getJupiterApiQuote({
+export async function getJupiterApiQuote({
   inputMint,
   outputMint,
   amount,
@@ -1193,7 +1193,7 @@ export function getJupiterApiQuote({
   amount: BN | number;
   swapSlippage: number;
 }): Promise<QuoteResponse> {
-  return window.adrena.jupiterApiClient.quoteGet({
+  const ret = await window.adrena.jupiterApiClient.quoteGet({
     inputMint: inputMint.toBase58(),
     outputMint: outputMint.toBase58(),
     amount: typeof amount === 'number' ? amount : amount.toNumber(),
@@ -1201,4 +1201,8 @@ export function getJupiterApiQuote({
     swapMode: 'ExactIn',
     maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
   });
+
+  console.log('JupiterQuote', ret);
+
+  return ret;
 }

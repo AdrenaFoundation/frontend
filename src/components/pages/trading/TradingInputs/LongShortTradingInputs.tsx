@@ -87,7 +87,7 @@ export default function LongShortTradingInputs({
     priceB: null,
   });
 
-  const usdcMint = window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
+  const usdcMint = window.adrena.client.getUsdcToken().mint;
   const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
 
@@ -486,8 +486,6 @@ export default function LongShortTradingInputs({
             // Apply the slippage so we never fail for not enough collateral in the openPosition
             // Can still fail due to jupiter swap failing, but that's expected
             collateralAmount = applySlippage(new BN(quoteResult.outAmount), -0.3);
-
-            console.log('QUOTE', quoteResult)
           }
 
           infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
