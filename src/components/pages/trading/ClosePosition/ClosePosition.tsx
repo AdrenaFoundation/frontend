@@ -143,14 +143,6 @@ export default function ClosePosition({
             .mul(new BN(10_000 - slippageInBps))
             .div(new BN(10_000));
 
-      const ataAddress = findATAAddressSync(position.owner, position.collateralToken.mint);
-
-      if (!window.adrena.client.readonlyConnection) {
-        throw new Error('Connection is not available');
-      }
-
-      const ataBalanceBefore = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
-
       await (position.side === 'long'
         ? window.adrena.client.closePositionLong.bind(window.adrena.client)
         : window.adrena.client.closePositionShort.bind(window.adrena.client))({
@@ -174,65 +166,6 @@ export default function ClosePosition({
               setShareClosePosition({ ...position, pnl: (profit - loss), exitFeeUsd, borrowFeeUsd });
           },
         });
-
-      if (doJupiterSwap) {
-        const ataBalanceAfter = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
-
-        const diff = new BN(ataBalanceAfter).sub(new BN(ataBalanceBefore));
-
-        const notification =
-          MultiStepNotification.newForRegularTransaction('Close Position 2/2').fire();
-
-        const quoteResult = await getJupiterApiQuote({
-          inputMint: position.collateralToken.mint,
-          outputMint: redeemToken.mint,
-          amount: diff,
-          swapSlippage,
-        });
-
-        console.log('QUOTE', quoteResult);
-
-        const swapInstructions =
-          await window.adrena.jupiterApiClient.swapInstructionsPost({
-            swapRequest: {
-              userPublicKey: position.owner.toBase58(),
-              quoteResponse: quoteResult,
-            },
-          });
-
-        if (swapInstructions === null) {
-          notification.currentStepErrored('Failed to get swap instructions');
-          return;
-        }
-
-        const transaction = new Transaction();
-
-        transaction.add(
-          ...(swapInstructions.setupInstructions || []).map(
-            jupInstructionToTransactionInstruction,
-          ),
-          jupInstructionToTransactionInstruction(
-            swapInstructions.swapInstruction,
-          ),
-          ...(swapInstructions.cleanupInstruction
-            ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-            : []),
-        );
-
-        await window.adrena.client.signAndExecuteTxAlternative({
-          transaction,
-          notification,
-          additionalAddressLookupTables: [
-            ...swapInstructions.addressLookupTableAddresses.map(
-              (x) => new PublicKey(x),
-            ),
-          ],
-        });
-      }
 
       dispatch(fetchWalletTokenBalances());
       triggerUserProfileReload();

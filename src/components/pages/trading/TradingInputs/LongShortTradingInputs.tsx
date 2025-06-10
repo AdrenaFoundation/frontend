@@ -870,7 +870,7 @@ export default function LongShortTradingInputs({
 
         {doJupiterSwap && recommendedToken ? <>
           <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
-            <div className="text-xs gap-1 flex mt-3 mb-1 w-full items-center justify-center">
+            <div className="text-xs gap-1 flex mt-3 pb-1 w-full items-center">
               <span className='text-white/30'>{tokenA.symbol}</span>
               <span className='text-white/30'>auto-swapped to</span>
               <span className='text-white/30'>{recommendedToken.symbol}</span>

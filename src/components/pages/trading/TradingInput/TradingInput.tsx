@@ -59,7 +59,7 @@ export default function TradingInput({
       <div className={twMerge('relative flex flex-col', className)}>
         <div
           className={twMerge(
-            'rounded-lg flex w-full border h-16',
+            'rounded-lg flex w-full border h-14',
             inputClassName,
           )}
           style={

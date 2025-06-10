@@ -472,6 +472,7 @@ export default function EditPositionCollateral({
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
                   className="text-txtfade text-sm"
+                  isDecimalDimmed={false}
                   minimumFractionDigits={2}
                 />
               </div>
@@ -618,7 +619,7 @@ export default function EditPositionCollateral({
                       <FormatNumber
                         nb={positionNetValue}
                         format="currency"
-                        className={input ? 'text-xs' : 'text-sm'}
+                        className='text-sm'
                         minimumFractionDigits={2}
                       />
                     </span>
@@ -651,7 +652,7 @@ export default function EditPositionCollateral({
                   <FormatNumber
                     nb={position.currentLeverage}
                     suffix="x"
-                    className={input ? ' text-xs' : 'text-sm'}
+                    className='text-sm'
                     isDecimalDimmed={true}
                     minimumFractionDigits={2}
                   />
@@ -813,23 +814,6 @@ export default function EditPositionCollateral({
               </>
             ) : (
               <>
-                {/* Withdraw collateral info */}
-                <div className="flex flex-col text-sm ml-4 mr-4">
-                  <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
-                    <Image
-                      className="opacity-60 absolute left-3 top-auto bottom-auto"
-                      src={infoIcon}
-                      height={16}
-                      width={16}
-                      alt="Info icon"
-                    />
-                    <span className="text-sm">
-                      Withdrawn collateral will be received in{' '}
-                      {position.collateralToken.symbol}
-                    </span>
-                  </div>
-                </div>
-
                 {/* Check for max leverage*/}
                 {maxInitialLeverage &&
                   position.currentLeverage &&
@@ -924,7 +908,7 @@ export default function EditPositionCollateral({
                 </div>
 
                 {doJupiterSwapOnWithdraw && recommendedToken ? <>
-                  <div className="text-xs gap-1 flex mt-2 ml-auto mr-auto border pt-1 pb-1 w-full items-center justify-center bg-third">
+                  <div className="text-xs gap-1 flex ml-auto mr-auto pt-1 pb-1 w-full items-center justify-center">
                     <span className='text-white/30'>{depositToken.symbol}</span>
                     <span className='text-white/30'>auto-swapped to</span>
                     <span className='text-white/30'>{position.collateralToken.symbol}</span>

@@ -37,7 +37,7 @@ export const PositionInfoSection = ({
     tokenB,
 }: PositionInfoSectionProps) => (
     <>
-        <div className="flex items-center ml-4 mt-1 mb-2">
+        <div className="flex items-center mt-1 mb-2">
             <h5 className="hidden sm:flex items-center">Position info</h5>
             <Tippy
                 content={

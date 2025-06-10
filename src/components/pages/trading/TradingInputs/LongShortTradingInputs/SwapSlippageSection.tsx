@@ -20,7 +20,7 @@ export const SwapSlippageSection = ({
                 <span>This sets how much the price can move during the swap.</span>
             </div>}>
                 <div className="flex flex-col w-full gap-2">
-                    <h5 className={twMerge("ml-4", titleClassName)}>Swap Slippage</h5>
+                    <h5 className={twMerge(titleClassName)}>Swap Slippage</h5>
 
                     <div className="flex gap-2 w-full items-center justify-evenly border pt-1 pb-1">
                         {percentages.map((percentage) => (<div

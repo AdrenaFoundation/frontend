@@ -43,7 +43,7 @@ export const InputSection = ({
     return (
         <>
             <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
-                <h5 className="ml-4">Provide</h5>
+                <h5>Provide</h5>
 
                 <WalletBalance
                     tokenA={tokenA}
@@ -61,7 +61,7 @@ export const InputSection = ({
                         value={inputA}
                         subText={
                             priceA ? (
-                                <div className="text-sm text-txtfade font-mono">
+                                <div className="text-xs text-txtfade font-mono">
                                     {priceA > 500000000
                                         ? `> ${formatPriceInfo(500000000)}`
                                         : formatPriceInfo(priceA)}
@@ -77,7 +77,7 @@ export const InputSection = ({
 
                     <LeverageSlider
                         value={leverage}
-                        className="w-full font-mono border-t select-none"
+                        className="w-full font-mono select-none"
                         onChange={onLeverageChange}
                     />
                 </div>
