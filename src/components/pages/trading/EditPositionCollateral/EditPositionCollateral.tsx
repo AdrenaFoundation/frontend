@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
+import { setSettings } from '@/actions/settingsActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -26,7 +27,6 @@ import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import TradingInput from '../TradingInput/TradingInput';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
-import { setSettings } from '@/actions/settingsActions';
 
 // hardcoded in backend too
 const MIN_LEVERAGE = 1.1;
@@ -97,6 +97,7 @@ export default function EditPositionCollateral({
 
     setRedeemToken(tokens.find((t) => t.symbol === settings.withdrawCollateralSymbol) ?? position.token);
     setDepositToken(tokens.find((t) => t.symbol === settings.depositCollateralSymbol) ?? position.token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const doJupiterSwapOnWithdraw = useMemo(() => {

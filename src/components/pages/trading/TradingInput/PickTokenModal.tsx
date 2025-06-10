@@ -8,11 +8,11 @@ import closeBtnIcon from '@/../public/images/Icons/cross.svg';
 import searchIcon from '@/../public/images/Icons/search.svg';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 
 import Modal from '../../../common/Modal/Modal';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 export function PickTokenModal({
     isPickTokenModalOpen,

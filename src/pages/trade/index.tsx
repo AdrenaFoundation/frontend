@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import { setSettings } from '@/actions/settingsActions';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -30,7 +31,6 @@ import usePositions from '@/hooks/usePositions';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol, uiToNative } from '@/utils';
-import { setSettings } from '@/actions/settingsActions';
 
 export type Action = 'long' | 'short' | 'swap';
 

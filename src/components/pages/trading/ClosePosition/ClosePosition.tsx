@@ -1,11 +1,11 @@
 import { BN } from '@coral-xyz/anchor';
-import { PublicKey, Transaction } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
+import { setSettings } from '@/actions/settingsActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -13,12 +13,11 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { ALTERNATIVE_SWAP_TOKENS, USD_DECIMALS } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { ClosePositionEvent, ExitPriceAndFee, PositionExtended, Token } from '@/types';
-import { findATAAddressSync, getJupiterApiQuote, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi } from '@/utils';
+import { getJupiterApiQuote, getTokenImage, getTokenSymbol, nativeToUi } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
-import { setSettings } from '@/actions/settingsActions';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -66,6 +65,7 @@ export default function ClosePosition({
     ].find((t) => t.symbol === settings.closePositionCollateralSymbol) ?? position.token;
 
     setRedeemToken(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const doJupiterSwap = useMemo(() => {
@@ -186,18 +186,7 @@ export default function ClosePosition({
     } catch (error) {
       console.error('error', error);
     }
-  }, [
-    markPrice,
-    doJupiterSwap,
-    position,
-    redeemToken,
-    swapSlippage,
-    dispatch,
-    triggerUserProfileReload,
-    onClose,
-    showPopupOnPositionClose,
-    setShareClosePosition,
-  ]);
+  }, [markPrice, position, redeemToken, swapSlippage, dispatch, triggerUserProfileReload, onClose, showPopupOnPositionClose, setShareClosePosition]);
 
   const handleExecute = async () => {
     await doFullClose();
