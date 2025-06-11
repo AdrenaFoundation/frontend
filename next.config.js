@@ -46,6 +46,11 @@ module.exports = (phase, { defaultConfig }) => {
           hostname: 'ipfs.io',
           pathname: '/ipfs/QmQr3Fz4h1etNsF7oLGMRHiCzhB5y9a7GjyodnF7zLHK1g',
         },
+        {
+          protocol: 'https',
+          hostname: 'gateway.irys.xyz',
+          pathname: '/**',
+        },
       ],
     },
 

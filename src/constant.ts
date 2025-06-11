@@ -1671,6 +1671,18 @@ export const ALL_CHAT_ROOMS = {
 
 export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
   {
+    mint: new PublicKey('4yCLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj'),
+    symbol: 'ALP',
+    color: '#130AAA',
+    name: 'Adrena Liquidity Pool Token',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://arweave.net/fRrkJvBTj9ZMa3j1sy5HMEvBNVIP0MDfonXXyKfbSW4',
+    additionalSwapToken: true,
+  },
+  {
     mint: new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'),
     symbol: 'USDT',
     color: '#26A17B',
@@ -1681,19 +1693,6 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     isStable: true,
     image:
       'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg',
-    additionalSwapToken: true,
-  },
-  {
-    mint: new PublicKey('7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs'),
-    symbol: 'WETH',
-    color: '#26A17B',
-    name: 'Wrapped Ether (Wormhole)',
-    decimals: 8,
-    displayAmountDecimalsPrecision: 2,
-    displayPriceDecimalsPrecision: 2,
-    isStable: false,
-    image:
-      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
     additionalSwapToken: true,
   },
   {
@@ -1708,6 +1707,32 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     image: 'https://metadata.jito.network/token/jto/image',
     additionalSwapToken: true,
   },
+  {
+    mint: new PublicKey('KMNo3nJsBXfcpJTVhZcXLW7RmTwTt4GVFE7suUBo9sS'),
+    symbol: 'KMNO',
+    color: '#130AAA',
+    name: 'Kamino Finance',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://cdn.kamino.finance/kamino.svg',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('vSoLxydx6akxyMD9XEcPvGYNGq6Nn66oqVb3UkGkei7'),
+    symbol: 'vSOL',
+    color: '#130AAA',
+    name: 'The Vault',
+    decimals: 9,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://gateway.irys.xyz/DTBps6awrJWectiBhMubYke4TBnE9kkVqyCVP4MB4irB',
+    additionalSwapToken: true,
+  },
+
   {
     mint: new PublicKey('27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4'),
     symbol: 'JLP',
@@ -1746,6 +1771,18 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     additionalSwapToken: true,
   },
   {
+    mint: new PublicKey('DriFtupJYLTosbwoN8koMbEYSx54aFAVLddWsbksjwg7'),
+    symbol: 'DRIFT',
+    color: '#26A17B',
+    name: 'DRIFT',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://metadata.drift.foundation/drift.png',
+    additionalSwapToken: true,
+  },
+  {
     mint: new PublicKey('mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So'),
     symbol: 'mSOL',
     color: '#26A17B',
@@ -1756,6 +1793,19 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     isStable: false,
     image:
       'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So/logo.png',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs'),
+    symbol: 'WETH',
+    color: '#26A17B',
+    name: 'Wrapped Ether (Wormhole)',
+    decimals: 8,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
     additionalSwapToken: true,
   },
 ];
