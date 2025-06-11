@@ -8,7 +8,7 @@ export interface FetchedSettingsType {
   id: string;
   wallet_address: string;
   preferences: SettingsState;
-  created_at: string;
+  created_at: Date;
 }
 
 interface UseFetchUserSettingsResult {
