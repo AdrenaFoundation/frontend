@@ -55,7 +55,7 @@ export const MarketOrderContent = ({
     custodyLiquidity,
 }: MarketOrderContentProps) => (
     <div className="flex flex-col transition-opacity duration-500 mt-4">
-        <h5 className="flex items-center ml-4">Size</h5>
+        <h5 className="flex items-center">Size</h5>
 
         <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
             <Select

@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
+import { ALTERNATIVE_SWAP_TOKENS } from '@/constant';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token, WalletAdapterExtended } from '@/types';
 
@@ -85,7 +86,12 @@ export default function TradeComp({
             {selectedAction === 'long' || selectedAction === 'short' ? (
               <LongShortTradingInputs
                 side={selectedAction}
-                allowedTokenA={window.adrena.client.tokens}
+
+                // Adrena tokens + swappable tokens
+                allowedTokenA={[
+                  ...window.adrena.client.tokens,
+                  ...ALTERNATIVE_SWAP_TOKENS,
+                ]}
                 allowedTokenB={window.adrena.client.tokens.filter(
                   (t) => !t.isStable,
                 )}

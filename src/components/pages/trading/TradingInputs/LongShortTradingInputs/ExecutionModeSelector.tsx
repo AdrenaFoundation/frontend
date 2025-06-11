@@ -7,7 +7,7 @@ interface ExecutionModeSelectorProps {
 
 export const ExecutionModeSelector = ({ isLimitOrder, onModeChange }: ExecutionModeSelectorProps) => (
     <>
-        <h5 className="flex items-center ml-4 mt-4">Execute at</h5>
+        <h5 className="flex items-center mt-4">Execute at</h5>
 
         <div className='w-full h-10 flex mt-2 justify-between gap-1'>
             <div

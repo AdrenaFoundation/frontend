@@ -39,7 +39,7 @@ export const LimitOrderContent = ({
     onAddLimitOrder,
 }: LimitOrderContentProps) => (
     <>
-        <h5 className='ml-4 mt-4 flex'>Open Position after reaching</h5>
+        <h5 className='mt-4 flex'>Open Position after reaching</h5>
 
         <div className="flex items-center border-l border-t border-r rounded-tl-lg rounded-tr-lg bg-inputcolor pt-2 pb-2 mt-2 grow text-sm w-full relative gap-[0.1em]">
             <div className='pl-4 mt-[0.1em] text-[1.4em]'>{limitOrderTriggerPrice !== null ? '$' : null}</div>
@@ -106,7 +106,7 @@ export const LimitOrderContent = ({
             </div>
         </div>
 
-        <h5 className='ml-4 mt-4 flex'>Slippage</h5>
+        <h5 className='mt-4 flex'>Slippage</h5>
 
         <div className={`flex flex-row flex-wrap rounded-bl-lg rounded-br-lg h-7 gap-2 mt-3 mb-2`}>
             {limitOrderSlippagePresets.map((percent, i) => (
@@ -127,9 +127,7 @@ export const LimitOrderContent = ({
         {
             side === 'short' && tokenA.symbol !== 'USDC' ?
                 <ErrorDisplay errorMessage="Only USDC is allowed as collateral for short positions" /> :
-                side === 'long' && tokenA.symbol !== tokenB.symbol ?
-                    <ErrorDisplay errorMessage="You must provide the same token as collateral for long positions" /> :
-                    errorMessage && <ErrorDisplay errorMessage={errorMessage} />
+                errorMessage && <ErrorDisplay errorMessage={errorMessage} />
         }
 
         <Button
@@ -139,7 +137,7 @@ export const LimitOrderContent = ({
             )}
             size="lg"
             title="Add Limit Order"
-            disabled={limitOrderTriggerPrice === null || insufficientAmount || errorMessage !== null || (side === 'short' && tokenA.symbol !== 'USDC') || (side === 'long' && tokenA.symbol !== tokenB.symbol)}
+            disabled={limitOrderTriggerPrice === null || insufficientAmount || errorMessage !== null}
             onClick={onAddLimitOrder}
         />
     </>

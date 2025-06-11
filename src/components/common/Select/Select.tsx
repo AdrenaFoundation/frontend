@@ -33,7 +33,7 @@ export default function Select<T extends string>({
   menuItemClassName?: string;
   menuTextClassName?: string;
   selected: T;
-  options: { title: T; img?: ImageRef; disabled?: boolean }[];
+  options: { title: T; img?: ImageRef | string; disabled?: boolean }[];
   onSelect: (opt: T) => void;
 
   // Reverse the image position
@@ -45,9 +45,10 @@ export default function Select<T extends string>({
   // Option hovering on
   const [optionHover, setOptionHover] = useState<number | null>(null);
 
-  const img = selectedImg ? (
-    <Image src={selectedImg} className="w-[20px] h-[20px]" alt="logo" />
-  ) : null;
+  const img = selectedImg ? typeof selectedImg === "string" ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={selectedImg} className="w-[20px] h-[20px]" alt="logo" />
+  ) : <Image src={selectedImg} className="w-[20px] h-[20px]" alt="logo" /> : null;
 
   const chevron =
     options.length > 1 ? (

@@ -4,6 +4,7 @@ import {
   IdlEvents,
   IdlTypes,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
+import { SwapApi } from '@jup-ag/api';
 import { Adapter } from '@solana/wallet-adapter-base';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
@@ -71,6 +72,7 @@ export type AdrenaGlobal = {
   mainConnection: Connection;
   cluster: SupportedCluster;
   settings: Settings;
+  jupiterApiClient: SwapApi;
 };
 
 // Rive doesn't expose the type
@@ -245,10 +247,12 @@ export interface Token {
   displayAmountDecimalsPrecision: number;
   displayPriceDecimalsPrecision: number;
   isStable: boolean;
-  image: ImageRef;
+  image: ImageRef | string;
   custody?: PublicKey;
   coingeckoId?: string;
-  pythPriceUpdateV2?: PublicKey;
+
+  // When this is a token dedicated only for swaps, meant to improve UX for traders
+  additionalSwapToken?: boolean;
 }
 
 export type UserProfileMetadata = {
