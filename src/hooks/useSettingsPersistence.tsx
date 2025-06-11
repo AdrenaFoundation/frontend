@@ -17,6 +17,11 @@ export default function useSettingsPersistence() {
         'preferred-solana-explorer',
         'max-priority-fee',
         'priority-fee',
+        // Persistence for trading actions
+        'open-position-collateral-symbol',
+        'close-position-collateral-symbol',
+        'deposit-collateral-symbol',
+        'withdraw-collateral-symbol',
     ]);
 
     const settings = useSelector((state) => state.settings);
@@ -61,6 +66,26 @@ export default function useSettingsPersistence() {
                 updatedSettings.maxPriorityFee = v;
         }
 
+        {
+            const v = cookies['open-position-collateral-symbol'];
+            updatedSettings.openPositionCollateralSymbol = v;
+        }
+
+        {
+            const v = cookies['close-position-collateral-symbol'];
+            updatedSettings.closePositionCollateralSymbol = v;
+        }
+
+        {
+            const v = cookies['deposit-collateral-symbol'];
+            updatedSettings.depositCollateralSymbol = v;
+        }
+
+        {
+            const v = cookies['withdraw-collateral-symbol'];
+            updatedSettings.withdrawCollateralSymbol = v;
+        }
+
         dispatch(
             setSettings(updatedSettings),
         );
@@ -78,6 +103,10 @@ export default function useSettingsPersistence() {
                 // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
                 maxPriorityFee: 'max-priority-fee',
                 priorityFeeOption: 'priority-fee',
+                openPositionCollateralSymbol: 'open-position-collateral-symbol',
+                closePositionCollateralSymbol: 'close-position-collateral-symbol',
+                depositCollateralSymbol: 'deposit-collateral-symbol',
+                withdrawCollateralSymbol: 'withdraw-collateral-symbol',
             } as Record<keyof SettingsState, keyof typeof cookies>)[key as keyof SettingsState], value);
         });
 

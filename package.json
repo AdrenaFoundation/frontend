@@ -12,6 +12,7 @@
     "@coral-xyz/anchor": "=0.29.0",
     "@emotion/react": "=11.14.0",
     "@emotion/styled": "=11.14.0",
+    "@jup-ag/api": "^6.0.42",
     "@mui/material": "=6.2.0",
     "@pythnetwork/client": "git+https://github.com/AdrenaFoundation/pyth-client-js.git#optimization",
     "@pythnetwork/pyth-solana-receiver": "=0.8.2",

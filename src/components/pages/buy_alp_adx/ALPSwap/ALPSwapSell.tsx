@@ -187,9 +187,6 @@ export default function ALPSwapSell({
             <TradingInput
                 className="text-sm rounded-full"
                 inputClassName='bg-third'
-                tokenListClassName='rounded-tr-lg rounded-br-lg bg-third'
-                menuClassName="shadow-none justify-end mr-2"
-                menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
                 value={alpInput}
                 selectedToken={window.adrena.client.alpToken}
                 tokenList={[window.adrena.client.alpToken]}
@@ -207,9 +204,6 @@ export default function ALPSwapSell({
             <TradingInput
                 className="text-sm rounded-full"
                 inputClassName='bg-inputcolor'
-                tokenListClassName='rounded-tr-lg rounded-br-lg bg-inputcolor'
-                menuClassName="shadow-none"
-                menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
                 value={collateralInput}
                 selectedToken={collateralToken ?? undefined}
                 loading={isMainDataLoading}

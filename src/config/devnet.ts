@@ -25,7 +25,6 @@ export default class DevnetConfiguration implements IConfiguration {
       decimals: number;
       displayAmountDecimalsPrecision: number;
       displayPriceDecimalsPrecision: number;
-      pythPriceUpdateV2: PublicKey;
       oracle: LimitedString; // Oracle V2
       tradeOracle: LimitedString; // Oracle V2
     };
@@ -39,9 +38,6 @@ export default class DevnetConfiguration implements IConfiguration {
       decimals: 6,
       displayAmountDecimalsPrecision: 2,
       displayPriceDecimalsPrecision: 4,
-      pythPriceUpdateV2: new PublicKey(
-        'Dpw1EAVrSB1ibxiDQyTAW6Zip3J4Btk2x4SgApQCeFbX',
-      ),
       oracle: stringToLimitedString('USDCUSD'),
       tradeOracle: stringToLimitedString('USDCUSD'),
     },
@@ -54,9 +50,6 @@ export default class DevnetConfiguration implements IConfiguration {
       decimals: 5,
       displayAmountDecimalsPrecision: 0,
       displayPriceDecimalsPrecision: 8,
-      pythPriceUpdateV2: new PublicKey(
-        'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
-      ),
       oracle: stringToLimitedString('BONKUSD'),
       tradeOracle: stringToLimitedString('BONKUSD'),
     },
@@ -69,9 +62,6 @@ export default class DevnetConfiguration implements IConfiguration {
       decimals: 6,
       displayAmountDecimalsPrecision: 6,
       displayPriceDecimalsPrecision: 2,
-      pythPriceUpdateV2: new PublicKey(
-        '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
-      ),
       oracle: stringToLimitedString('WBTCUSD'),
       tradeOracle: stringToLimitedString('BTCUSD'),
     },
@@ -84,9 +74,6 @@ export default class DevnetConfiguration implements IConfiguration {
       decimals: 9,
       displayAmountDecimalsPrecision: 4,
       displayPriceDecimalsPrecision: 2,
-      pythPriceUpdateV2: new PublicKey(
-        'AxaxyeDT8JnWERSaTKvFXvPKkEdxnamKSqpWbsSjYg1g',
-      ),
       oracle: stringToLimitedString('JITOSOLUSD'),
       tradeOracle: stringToLimitedString('SOLUSD'),
     },

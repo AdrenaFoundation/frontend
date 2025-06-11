@@ -11,7 +11,6 @@ export type TokenInfo = {
   decimals: number;
   displayAmountDecimalsPrecision: number;
   displayPriceDecimalsPrecision: number;
-  pythPriceUpdateV2: PublicKey; // Oracle V1
   oracle: LimitedString; // Oracle V2
   tradeOracle: LimitedString; // Oracle V2
 };

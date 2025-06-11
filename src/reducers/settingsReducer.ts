@@ -9,6 +9,10 @@ export type SettingsState = {
   preferredSolanaExplorer: SolanaExplorerOptions;
   priorityFeeOption: PriorityFeeOption;
   maxPriorityFee: number;
+  openPositionCollateralSymbol: string;
+  closePositionCollateralSymbol: string;
+  depositCollateralSymbol: string;
+  withdrawCollateralSymbol: string;
 };
 
 // freeze the initial state object to make sure it can be re-used through
@@ -20,6 +24,10 @@ const initialState: SettingsState = Object.freeze({
   preferredSolanaExplorer: 'Solana Explorer',
   priorityFeeOption: DEFAULT_PRIORITY_FEE_OPTION,
   maxPriorityFee: DEFAULT_MAX_PRIORITY_FEE,
+  openPositionCollateralSymbol: '',
+  closePositionCollateralSymbol: '',
+  depositCollateralSymbol: '',
+  withdrawCollateralSymbol: '',
 });
 
 export default function settingsRatesReducer(

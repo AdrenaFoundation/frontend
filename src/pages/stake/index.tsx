@@ -1,5 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
-import { PublicKey, TransactionInstruction } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -17,7 +17,6 @@ import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
-import { USD_DECIMALS } from '@/constant';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -33,6 +32,8 @@ import {
   addNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
+  getJupiterApiQuote,
+  jupInstructionToTransactionInstruction,
   nativeToUi,
   uiToNative,
 } from '@/utils';
@@ -58,21 +59,6 @@ export type ALPTokenDetails = {
 
 export const DEFAULT_LOCKED_STAKE_LOCK_DURATION = 180;
 export const LIQUID_STAKE_LOCK_DURATION = 0;
-
-// Small structure used to ease usage of top accounts
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function toInstruction(ix: any): TransactionInstruction {
-  return new TransactionInstruction({
-    programId: new PublicKey(ix.programId),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    keys: ix.accounts.map((acc: any) => ({
-      pubkey: new PublicKey(acc.pubkey),
-      isSigner: acc.isSigner,
-      isWritable: acc.isWritable,
-    })),
-    data: Buffer.from(ix.data, 'base64'),
-  });
-}
 
 export default function Stake({
   connected,
@@ -498,47 +484,33 @@ export default function Stake({
     }).fire();
 
     try {
-      const quoteResult = await fetch(
-        `https://lite-api.jup.ag/swap/v1/quote?inputMint=${window.adrena.client.getUsdcToken().mint.toBase58()}&outputMint=${stakedTokenMint.toBase58()}&amount=${uiToNative(adxRewards.pendingUsdcRewards, USD_DECIMALS)}`,
-      )
-        .then((res) => res.json())
-        .catch((e) => {
-          notification.currentStepErrored(String(e));
+      const usdcToken = window.adrena.client.getUsdcToken();
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: usdcToken.mint,
+        outputMint: stakedTokenMint,
+        amount: uiToNative(adxRewards.pendingUsdcRewards, usdcToken.decimals),
+        swapSlippage: 1,
+      });
 
-          throw e;
-        });
+      if (!quoteResult) {
+        notification.currentStepErrored('Cannot find jupiter route');
+        return;
+      }
 
       notification.currentStepSucceeded();
 
-      const swapInstructions: {
-        setupInstructions?: unknown[];
-        swapInstruction: unknown;
-        cleanupInstruction?: unknown;
-        addressLookupTableAddresses: string[];
-      } = await fetch('https://lite-api.jup.ag/swap/v1/swap-instructions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          userPublicKey: owner.toBase58(),
-          quoteResponse: quoteResult,
-          prioritizationFeeLamports: {
-            priorityLevelWithMaxLamports: {
-              maxLamports: 10_000_000,
-              priorityLevel: 'veryHigh',
-            },
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: owner.toBase58(),
+            quoteResponse: quoteResult,
           },
-          dynamicComputeUnitLimit: true,
-        }),
-      })
-        .then((res) => res.json())
-        .catch((e) => {
-          notification.currentStepErrored(String(e));
-
-          throw e;
         });
+
+      if (!swapInstructions) {
+        notification.currentStepErrored('Cannot build jupiter swap instructions');
+        return;
+      }
 
       const builder = await window.adrena.client.buildClaimStakesInstruction({
         owner,
@@ -551,9 +523,9 @@ export default function Stake({
       });
 
       const jupiterInstructions = [
-        ...(swapInstructions.setupInstructions || []).map(toInstruction),
-        toInstruction(swapInstructions.swapInstruction),
-        ...(swapInstructions.cleanupInstruction ? [toInstruction(swapInstructions.cleanupInstruction)] : []),
+        ...(swapInstructions.setupInstructions || []).map(jupInstructionToTransactionInstruction),
+        jupInstructionToTransactionInstruction(swapInstructions.swapInstruction),
+        ...(swapInstructions.cleanupInstruction ? [jupInstructionToTransactionInstruction(swapInstructions.cleanupInstruction)] : []),
       ];
 
       builder.postInstructions(jupiterInstructions);
@@ -829,7 +801,7 @@ export default function Stake({
       />
     </>
   ) : (
-    <div className={twMerge("w-full flex flex-col items-center z-10 min-h-full pl-4 pr-4 pb-4 pt-2 m-auto items-center justify-center", alpLockedStakes && alpLockedStakes?.length ? 'max-w-[80em]' : 'max-w-[50em]')}>
+    <div className={twMerge("w-full flex flex-col z-10 min-h-full pl-4 pr-4 pb-4 pt-2 m-auto items-center justify-center", alpLockedStakes && alpLockedStakes?.length ? 'max-w-[80em]' : 'max-w-[50em]')}>
       <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className='flex flex-col items-center justify-center flex-grow w-full my-auto'>
