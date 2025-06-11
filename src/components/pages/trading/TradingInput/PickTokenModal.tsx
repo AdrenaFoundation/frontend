@@ -84,7 +84,7 @@ export function PickTokenModal({
                             <div className='text-sm text-txtfade ml-1'>Recommended</div>
                         </Tippy>
 
-                        <div className='flex items-center cursor-pointer gap-2 border-2 border-white/30 rounded-lg pl-2 pr-2 pt-1 pb-1' onClick={() => pick(recommendedToken)}>
+                        <div className='flex items-center cursor-pointer gap-2 rounded-lg pl-2 pr-2 pt-1 pb-1' onClick={() => pick(recommendedToken)}>
                             <Image
                                 className='h-4 w-4'
                                 src={recommendedToken.image}
