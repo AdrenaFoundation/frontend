@@ -374,7 +374,7 @@ export default function ClosePosition({
                 </div>
               </div>
 
-              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
+              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-4">
                 <div className={rowStyle}>
                   <div className="text-sm text-txtfade">Size</div>
 
@@ -450,9 +450,7 @@ export default function ClosePosition({
               </div>
             </div>
 
-            <div className="w-full h-[1px] bg-bcolor my-1" />
-
-            <div className="pt-2 pb-2">
+            <div className="pt-4 pb-2">
               <div className="flex justify-between items-center">
                 <div className="text-white text-sm font-boldy">Fees</div>
 
@@ -463,7 +461,6 @@ export default function ClosePosition({
                   {showFees ? 'Show Less' : 'Show More'}
                 </button>
               </div>
-
 
               {showFees && (
                 <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-2">
