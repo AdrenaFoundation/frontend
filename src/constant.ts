@@ -1670,18 +1670,30 @@ export const ALL_CHAT_ROOMS = {
 } as const;
 
 export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
-  {
-    mint: new PublicKey('4yCLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj'),
-    symbol: 'ALP',
-    color: '#130AAA',
-    name: 'Adrena Liquidity Pool Token',
-    decimals: 6,
-    displayAmountDecimalsPrecision: 2,
-    displayPriceDecimalsPrecision: 2,
-    isStable: false,
-    image: 'https://arweave.net/fRrkJvBTj9ZMa3j1sy5HMEvBNVIP0MDfonXXyKfbSW4',
-    additionalSwapToken: true,
-  },
+  // {
+  //   mint: new PublicKey('4yCLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj'),
+  //   symbol: 'ALP',
+  //   color: '#130AAA',
+  //   name: 'Adrena Liquidity Pool Token',
+  //   decimals: 6,
+  //   displayAmountDecimalsPrecision: 2,
+  //   displayPriceDecimalsPrecision: 2,
+  //   isStable: false,
+  //   image: 'https://arweave.net/fRrkJvBTj9ZMa3j1sy5HMEvBNVIP0MDfonXXyKfbSW4',
+  //   additionalSwapToken: true,
+  // },
+  // {
+  //   mint: new PublicKey('AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw'),
+  //   symbol: 'ADX',
+  //   color: '#130AAA',
+  //   name: 'Adrena Governance Token',
+  //   decimals: 6,
+  //   displayAmountDecimalsPrecision: 2,
+  //   displayPriceDecimalsPrecision: 2,
+  //   isStable: false,
+  //   image: 'https://arweave.net/8HohRjBW7P5uMUR0Cz9eHxLfOO2PcnLzciyvhhgNkck',
+  //   additionalSwapToken: true,
+  // },
   {
     mint: new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'),
     symbol: 'USDT',
@@ -1732,7 +1744,18 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
       'https://gateway.irys.xyz/DTBps6awrJWectiBhMubYke4TBnE9kkVqyCVP4MB4irB',
     additionalSwapToken: true,
   },
-
+  {
+    mint: new PublicKey('HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3'),
+    symbol: 'PYTH',
+    color: '#26A17B',
+    name: 'Pyth Network',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://pyth.network/token.svg',
+    additionalSwapToken: true,
+  },
   {
     mint: new PublicKey('27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4'),
     symbol: 'JLP',
@@ -1806,6 +1829,18 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     isStable: false,
     image:
       'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('SNS8DJbHc34nKySHVhLGMUUE72ho6igvJaxtq9T3cX3'),
+    symbol: 'SNS',
+    color: '#26A17B',
+    name: 'Solana Name Service',
+    decimals: 5,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://www.sns.id/token/image.png',
     additionalSwapToken: true,
   },
 ];

@@ -51,6 +51,16 @@ module.exports = (phase, { defaultConfig }) => {
           hostname: 'gateway.irys.xyz',
           pathname: '/**',
         },
+        {
+          protocol: 'https',
+          hostname: 'www.sns.id',
+          pathname: '/token/image.png',
+        },
+        {
+          protocol: 'https',
+          hostname: 'metadata.drift.foundation',
+          pathname: '/drift.png',
+        },
       ],
     },
 
