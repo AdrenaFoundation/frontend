@@ -17,9 +17,6 @@ import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
-import { USD_DECIMALS } from '@/constant';
-import useClaimHistory from '@/hooks/useClaimHistory';
-import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -35,7 +32,7 @@ import {
   addNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
-  getNextStakingRoundStartTime,
+  getJupiterApiQuote,
   jupInstructionToTransactionInstruction,
   nativeToUi,
   uiToNative,
@@ -69,14 +66,11 @@ export default function Stake({
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+
   const {
-    claimsHistoryAdx,
-    claimsHistoryAlp,
-    optimisticClaimAdx,
-    optimisticClaimAlp,
-    setOptimisticClaimAlp,
-    setOptimisticClaimAdx,
-  } = useClaimHistory(wallet?.walletAddress ?? null);
+    stakingAccounts,
+    triggerWalletStakingAccountsReload
+  } = useWalletStakingAccounts(wallet?.walletAddress ?? null);
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -86,8 +80,7 @@ export default function Stake({
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
 
-  const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts(wallet?.walletAddress ?? null);
+  const [optimisticClaimAdx, setOptimisticClaimAdx] = useState<ClaimHistoryExtended | null>(null);
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
@@ -145,6 +138,10 @@ export default function Stake({
 
   const alpLockedStakes: LockedStakeExtended[] | null =
     getAlpLockedStakes(stakingAccounts);
+
+  // Generate fake ALP staking data for testing the change from locked to liquid ALP
+  /*   const alpLockedStakes: LockedStakeExtended[] | null =
+      generateFakeAlpStakingData(); */
 
   const stakeAmount = async () => {
     if (!owner) {
@@ -374,7 +371,7 @@ export default function Stake({
           id: lockedStake.id,
           stakedTokenMint: window.adrena.client.alpToken.mint,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
+          // @ts-expect-errorÒ
           lockedStakeIndex: new BN(lockedStake.index),
           earlyExit: true,
           notification,
@@ -424,45 +421,27 @@ export default function Stake({
           new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
       });
 
-      const optimisticClaim = {
-        claim_id: new BN(Date.now()).toString(),
-        rewards_adx:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingAdxRewards
-            : alpRewards.pendingAdxRewards,
-        rewards_adx_genesis:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingGenesisAdxRewards
-            : alpRewards.pendingGenesisAdxRewards,
-        rewards_usdc:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingUsdcRewards
-            : alpRewards.pendingUsdcRewards,
-        signature: 'optimistic',
-        transaction_date: new Date(),
-        created_at: new Date(),
-        stake_mint: stakedTokenMint,
-        symbol: tokenSymbol,
-        source: 'optimistic',
-      } as unknown as ClaimHistoryExtended;
-
-      // Reset rewards in the ui until next fetch
+      // No alp claim anymore since it became liquid
       if (tokenSymbol === 'ADX') {
+        const optimisticClaim = {
+          claim_id: new BN(Date.now()).toString(),
+          rewards_adx: adxRewards.pendingAdxRewards,
+          rewards_adx_genesis: adxRewards.pendingGenesisAdxRewards,
+          rewards_usdc: adxRewards.pendingUsdcRewards,
+          signature: 'optimistic',
+          transaction_date: new Date(),
+          created_at: new Date(),
+          stake_mint: stakedTokenMint,
+          symbol: tokenSymbol,
+          source: 'optimistic',
+        } as unknown as ClaimHistoryExtended;
+
+        // Reset rewards in the ui until next fetch
         adxRewards.pendingUsdcRewards = 0;
         adxRewards.pendingAdxRewards = 0;
         adxRewards.pendingGenesisAdxRewards = 0;
         fetchAdxRewards();
-      } else {
-        alpRewards.pendingUsdcRewards = 0;
-        alpRewards.pendingAdxRewards = 0;
-        alpRewards.pendingGenesisAdxRewards = 0;
-        fetchAlpRewards();
-      }
-
-      if (tokenSymbol === 'ADX') {
-        setOptimisticClaimAdx([optimisticClaim]);
-      } else {
-        setOptimisticClaimAlp([optimisticClaim]);
+        setOptimisticClaimAdx(optimisticClaim);
       }
     } catch (error) {
       console.error('error', error);
@@ -505,47 +484,33 @@ export default function Stake({
     }).fire();
 
     try {
-      const quoteResult = await fetch(
-        `https://lite-api.jup.ag/swap/v1/quote?inputMint=${window.adrena.client.getUsdcToken().mint.toBase58()}&outputMint=${stakedTokenMint.toBase58()}&amount=${uiToNative(adxRewards.pendingUsdcRewards, USD_DECIMALS)}`,
-      )
-        .then((res) => res.json())
-        .catch((e) => {
-          notification.currentStepErrored(String(e));
+      const usdcToken = window.adrena.client.getUsdcToken();
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: usdcToken.mint,
+        outputMint: stakedTokenMint,
+        amount: uiToNative(adxRewards.pendingUsdcRewards, usdcToken.decimals),
+        swapSlippage: 1,
+      });
 
-          throw e;
-        });
+      if (!quoteResult) {
+        notification.currentStepErrored('Cannot find jupiter route');
+        return;
+      }
 
       notification.currentStepSucceeded();
 
-      const swapInstructions: {
-        setupInstructions?: unknown[];
-        swapInstruction: unknown;
-        cleanupInstruction?: unknown;
-        addressLookupTableAddresses: string[];
-      } = await fetch('https://lite-api.jup.ag/swap/v1/swap-instructions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          userPublicKey: owner.toBase58(),
-          quoteResponse: quoteResult,
-          prioritizationFeeLamports: {
-            priorityLevelWithMaxLamports: {
-              maxLamports: 10_000_000,
-              priorityLevel: 'veryHigh',
-            },
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: owner.toBase58(),
+            quoteResponse: quoteResult,
           },
-          dynamicComputeUnitLimit: true,
-        }),
-      })
-        .then((res) => res.json())
-        .catch((e) => {
-          notification.currentStepErrored(String(e));
-
-          throw e;
         });
+
+      if (!swapInstructions) {
+        notification.currentStepErrored('Cannot build jupiter swap instructions');
+        return;
+      }
 
       const builder = await window.adrena.client.buildClaimStakesInstruction({
         owner,
@@ -594,7 +559,7 @@ export default function Stake({
       adxRewards.pendingGenesisAdxRewards = 0;
       fetchAdxRewards();
 
-      setOptimisticClaimAdx([optimisticClaim]);
+      setOptimisticClaimAdx(optimisticClaim);
     } catch (error) {
       console.error('error', error);
     } finally {
@@ -713,9 +678,7 @@ export default function Stake({
   // const { stakingAccount: alpStakingAccount } = useStakingAccount(
   //   window.adrena.client.lpTokenMint,
   // );
-  const { stakingAccount: adxStakingAccount } = useStakingAccount(
-    window.adrena.client.lmTokenMint,
-  );
+
 
   // const nextStakingRoundTimeAlp = alpStakingAccount
   //   ? getNextStakingRoundStartTime(
@@ -723,15 +686,12 @@ export default function Stake({
   //   ).getTime()
   //   : null;
 
-  const nextStakingRoundTimeAdx = adxStakingAccount
-    ? getNextStakingRoundStartTime(
-      adxStakingAccount.currentStakingRound.startTime,
-    ).getTime()
-    : null;
+
 
   // The rewards pending for the user
   const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
     useStakingClaimableRewards('ADX');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { rewards: alpRewards, fetchRewards: fetchAlpRewards } =
     useStakingClaimableRewards('ALP');
 
@@ -841,11 +801,11 @@ export default function Stake({
       />
     </>
   ) : (
-    <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
+    <div className={twMerge("w-full flex flex-col z-10 min-h-full pl-4 pr-4 pb-4 pt-2 m-auto items-center justify-center", alpLockedStakes && alpLockedStakes?.length ? 'max-w-[80em]' : 'max-w-[50em]')}>
+      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className={twMerge('flex flex-col items-center self-center', alpLockedStakes && alpLockedStakes?.length ? 'max-w-[80em]' : 'max-w-[50em]')}>
-        <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full m-auto max-w-full">
+      <div className='flex flex-col items-center justify-center flex-grow w-full my-auto'>
+        <div className="flex flex-col lg:flex-row gap-4 pl-4 pr-4 pb-4 pt-2 justify-center z-10 w-full">
           <>
             {alpLockedStakes && alpLockedStakes?.length ? <div className="flex-1">
               <FullyLiquidALPStaking
@@ -864,26 +824,14 @@ export default function Stake({
                 userPendingAdxRewards={alpRewards.pendingAdxRewards}
                 roundPendingUsdcRewards={
                   alpStakingCurrentRoundRewards.usdcRewards ??
-                  0 +
-                  optimisticClaimAlp?.reduce(
-                    (acc, claim) => acc + claim.rewards_usdc,
-                    0,
-                  )
+                  0
                 }
                 roundPendingAdxRewards={
                   alpStakingCurrentRoundRewards.adxRewards ??
-                  0 +
-                  optimisticClaimAlp?.reduce(
-                    (acc, claim) => acc + claim.rewards_adx,
-                    0,
-                  )
+                  0
                 }
                 pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
-                claimsHistory={
-                  claimsHistoryAlp
-                    ? optimisticClaimAlp?.length > 0 ? [...optimisticClaimAlp, ...claimsHistoryAlp] : claimsHistoryAlp
-                    : null
-                }
+                walletAddress={wallet?.walletAddress ?? null}
               />
             </div> : null}
 
@@ -914,23 +862,12 @@ export default function Stake({
                 userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
                 userPendingAdxRewards={adxRewards.pendingAdxRewards}
                 roundPendingUsdcRewards={
-                  adxStakingCurrentRoundRewards.usdcRewards ??
-                  0 +
-                  optimisticClaimAdx?.reduce(
-                    (acc, claim) => acc + claim.rewards_usdc,
-                    0,
-                  )
+                  adxStakingCurrentRoundRewards.usdcRewards ?? 0
                 }
                 roundPendingAdxRewards={
-                  adxStakingCurrentRoundRewards.adxRewards ??
-                  0 +
-                  optimisticClaimAdx?.reduce(
-                    (acc, claim) => acc + claim.rewards_adx,
-                    0,
-                  )
+                  adxStakingCurrentRoundRewards.adxRewards ?? 0
                 }
                 pendingGenesisAdxRewards={adxRewards.pendingGenesisAdxRewards}
-                nextRoundTime={nextStakingRoundTimeAdx ?? 0}
                 handleClickOnUpdateLockedStake={(
                   lockedStake: LockedStakeExtended,
                 ) => {
@@ -938,11 +875,9 @@ export default function Stake({
                   setUpgradeLockedStake(true);
                   setFinalizeLockedStakeRedeem(false);
                 }}
-                claimsHistory={
-                  claimsHistoryAdx
-                    ? optimisticClaimAdx?.length > 0 ? [...optimisticClaimAdx, ...claimsHistoryAdx] : claimsHistoryAdx
-                    : null
-                }
+                walletAddress={wallet?.walletAddress ?? null}
+                optimisticClaim={optimisticClaimAdx}
+                setOptimisticClaim={setOptimisticClaimAdx}
               />
             </div>
 
@@ -1009,13 +944,8 @@ export default function Stake({
           </>
         </div>
 
-        {(alpLockedStakes === null || alpLockedStakes?.length == 0) && claimsHistoryAlp && claimsHistoryAlp?.length ?
-          <div className='p-4 z-10'>
-            <div className="flex flex-col bg-main rounded-2xl border mb-4 w-full">
-              <ALPStakingRecap claimsHistory={claimsHistoryAlp} />
-            </div>
-          </div> : null}
-      </div>
-    </>
+        <ALPStakingRecap walletAddress={wallet?.walletAddress ?? null} />
+      </div >
+    </div>
   );
 }

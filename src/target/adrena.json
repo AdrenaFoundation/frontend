@@ -1,5 +1,5 @@
 {
-  "version": "1.2.4",
+  "version": "1.3.1",
   "name": "adrena",
   "instructions": [
     {
@@ -3660,6 +3660,14 @@
           "docs": [
             "#4"
           ]
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
         }
       ],
       "args": [
@@ -6830,7 +6838,7 @@
         },
         {
           "name": "pool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "docs": [
             "#2"
@@ -6876,7 +6884,7 @@
         },
         {
           "name": "pool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "docs": [
             "#2"
@@ -9402,13 +9410,8 @@
             "type": "u64"
           },
           {
-            "name": "padding1",
-            "type": {
-              "array": [
-                "u8",
-                8
-              ]
-            }
+            "name": "lpTokenPriceUsd",
+            "type": "u64"
           },
           {
             "name": "whitelistedSwapper",
@@ -9426,13 +9429,8 @@
             }
           },
           {
-            "name": "padding2",
-            "type": {
-              "array": [
-                "u8",
-                8
-              ]
-            }
+            "name": "lastAumAndLpTokenPriceUsdUpdate",
+            "type": "i64"
           },
           {
             "name": "uniqueLimitOrderIdCounter",
@@ -12783,7 +12781,10 @@
         "kind": "enum",
         "variants": [
           {
-            "name": "Zero"
+            "name": "V1"
+          },
+          {
+            "name": "V2"
           }
         ]
       }

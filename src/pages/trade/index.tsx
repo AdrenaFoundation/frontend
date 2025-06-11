@@ -85,7 +85,7 @@ export default function Trade({
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
-  const { positionsHistory } = usePositionsHistory({ walletAddress: wallet?.publicKey.toBase58() ?? null, refreshInterval: 60_000 });
+  const { positionsData } = usePositionsHistory({ walletAddress: wallet?.publicKey.toBase58() ?? null, batchSize: 200, interval: 10_000 });
   const { allPositions } = useAllPositions({ connected });
 
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
@@ -112,7 +112,7 @@ export default function Trade({
   );
 
   const { getMarksCallback } = useMarks({
-    positionsHistory,
+    positionsHistory: positionsData?.positions ?? [],
     allActivePositions: allPositions,
     activeToken: tokenB,
     walletAddress: wallet?.publicKey.toBase58() ?? null,
@@ -454,7 +454,7 @@ export default function Trade({
                   token={tokenB ? tokenB : tokenA.isStable ? tokenB : tokenA}
                   positions={positions}
                   allActivePositions={allActivePositions}
-                  positionHistory={positionsHistory}
+                  positionHistory={positionsData?.positions ?? []}
                   chartPreferences={chartPreferences}
                   limitOrders={limitOrderBook?.limitOrders ?? null}
                   showBreakEvenLine={showBreakEvenLine}
@@ -466,7 +466,6 @@ export default function Trade({
           </div>
 
           <div className="flex flex-col border-t border-white/10">
-            {/* Chart Controls */}
             <ChartControlsDesktop
               chartPreferences={chartPreferences}
               setChartPreferences={setChartPreferences}
@@ -544,7 +543,8 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition="top"
+                    exportButtonPosition='top'
+                    key={`history-${wallet?.publicKey.toBase58() || 'none'}`}
                   />
                 </div>
               ) : null}
@@ -593,7 +593,8 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition="top"
+                    exportButtonPosition='top'
+                    key={`history-${wallet?.publicKey.toBase58() || 'none'}`}
                   />
                 </div>
               ) : null}
