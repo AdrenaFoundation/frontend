@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
+import useAPR from '@/hooks/useAPR';
 import { useSelector } from '@/store/store';
 import {
   LinksType,
@@ -15,6 +16,7 @@ import {
 import { formatPriceInfo } from '@/utils';
 
 import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
+import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import competitionIcon from '../../../public/images/competition.svg';
 import logo from '../../../public/images/logo.svg';
@@ -24,6 +26,7 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import Mutagen from '../Mutagen/Mutagen';
+import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
@@ -46,7 +49,7 @@ export default function Header({
   adapters,
 }: {
   userProfile: UserProfileExtended | null | false;
-  PAGES: LinksType[]
+  PAGES: LinksType[];
   activeRpc: {
     name: string;
     connection: Connection;
@@ -67,26 +70,21 @@ export default function Header({
   adapters: WalletAdapterExtended[];
 }) {
   const pathname = usePathname();
-
+  const { aprs } = useAPR();
   const tokenPriceALP = useSelector((s) => s.tokenPrices.ALP);
   const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
   const clusterSwitchEnabled = false;
 
-  const INTERNAL_PAGES = PAGES.filter(
-    (p) => !p?.external)
+  const INTERNAL_PAGES = PAGES.filter((p) => !p?.external);
 
   const DROPDOWN_PAGES = INTERNAL_PAGES.filter(
-    (p) => p.dropdown && (p.name !== 'Vest' || (userVest || userDelegatedVest)),
-  )
+    (p) => p.dropdown && (p.name !== 'Vest' || userVest || userDelegatedVest),
+  );
 
-  const MAIN_PAGES = INTERNAL_PAGES.filter(
-    (p) => !p?.dropdown,
-  )
+  const MAIN_PAGES = INTERNAL_PAGES.filter((p) => !p?.dropdown);
 
-  const EXTERNAL_LINKS = PAGES.filter(
-    (p) => p.external,
-  )
+  const EXTERNAL_LINKS = PAGES.filter((p) => p.external);
 
   return (
     <div className="w-full flex flex-row items-center justify-between p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
@@ -127,7 +125,9 @@ export default function Header({
               href={page.link}
               className={twMerge(
                 'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center',
-                pathname === page.link ? 'grayscale-0 opacity-100' : 'grayscale',
+                pathname === page.link
+                  ? 'grayscale-0 opacity-100'
+                  : 'grayscale',
               )}
               key={page.name}
               target={page.external ? '_blank' : '_self'}
@@ -165,56 +165,87 @@ export default function Header({
           );
         })}
 
-        <MoreMenu PAGES={DROPDOWN_PAGES} EXTERNAL_LINKS={EXTERNAL_LINKS} pathname={pathname}
+        <MoreMenu
+          PAGES={DROPDOWN_PAGES}
+          EXTERNAL_LINKS={EXTERNAL_LINKS}
+          pathname={pathname}
         />
       </div>
 
       <div className="flex flex-row items-center gap-2 sm:gap-3">
-        <Link
-          href="/buy_alp"
-          className={twMerge(
-            'flex flex-col 2xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
-            pathname !== '/buy_alp' && 'opacity-50',
-          )}
-        >
-          <div className="text-sm font-boldy">ALP</div>
+        <Link href="/buy_alp">
+          {tokenPriceALP && aprs ? (
+            <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+              <Image
+                src={alpLogo}
+                alt="ALP Logo"
+                className="opacity-50"
+                width={10}
+                height={10}
+              />
 
-          {tokenPriceALP ? (
-            <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
-              <div className="text-xxs font-mono flex items-center justify-center">
-                {formatPriceInfo(
-                  tokenPriceALP,
-                  window.adrena.client.alpToken.displayPriceDecimalsPrecision,
-                  window.adrena.client.alpToken.displayPriceDecimalsPrecision,
-                )}
+              <div className="flex flex-col lg:flex-row  gap-0 lg:gap-1">
+                <div className="text-xxs font-mono">
+                  {formatPriceInfo(
+                    tokenPriceALP,
+                    window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                    window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                  )}
+                </div>
+
+                <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+
+                <FormatNumber
+                  nb={aprs.lp}
+                  format="percentage"
+                  precision={0}
+                  suffix="APR"
+                  suffixClassName="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  className="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  isDecimalDimmed={false}
+                />
               </div>
             </div>
           ) : (
-            <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+            <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
           )}
         </Link>
 
-        <Link
-          href="/buy_adx"
-          className={twMerge(
-            'flex flex-col 2xl:flex-row items-center justify-center hover:opacity-100 gap-x-2',
-            pathname !== '/buy_adx' && 'opacity-50',
-          )}
-        >
-          <div className="text-sm font-boldy">ADX</div>
+        <Link href="/buy_adx">
+          {tokenPriceADX && aprs ? (
+            <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+              <Image
+                src={adxLogo}
+                alt="ALP Logo"
+                className="opacity-50"
+                width={10}
+                height={10}
+              />
 
-          {tokenPriceADX ? (
-            <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
-              <div className="text-xxs font-mono flex items-center justify-center">
-                {formatPriceInfo(
-                  tokenPriceADX,
-                  window.adrena.client.adxToken.displayPriceDecimalsPrecision,
-                  window.adrena.client.adxToken.displayPriceDecimalsPrecision,
-                )}
+              <div className="flex flex-col lg:flex-row  gap-0 lg:gap-1">
+                <div className="text-xxs font-mono">
+                  {formatPriceInfo(
+                    tokenPriceADX,
+                    window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                    window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                  )}
+                </div>
+
+                <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+
+                <FormatNumber
+                  nb={aprs.lm}
+                  format="percentage"
+                  precision={0}
+                  suffix="APR"
+                  suffixClassName="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  className="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  isDecimalDimmed={false}
+                />
               </div>
             </div>
           ) : (
-            <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+            <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
           )}
         </Link>
 

@@ -217,6 +217,25 @@ export default function WalletAdapter({
                 >
                   Settings
                 </MenuItem>
+
+                <MenuSeparator />
+                <MenuItem
+                  onClick={() => {
+                    router.push('/referral');
+                  }}
+                  className="py-2"
+                >
+                  Referral
+                </MenuItem>
+                <MenuSeparator />
+                <MenuItem
+                  onClick={() => {
+                    router.push('/mutagen_leaderboard');
+                  }}
+                  className="py-2"
+                >
+                  Leaderboard
+                </MenuItem>
                 <MenuSeparator />
               </>
             ) : null}
