@@ -1,6 +1,5 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { createClient } from '@supabase/supabase-js';
 import Tippy from '@tippyjs/react';
 import { kv } from '@vercel/kv';
 import Image from 'next/image';
@@ -22,6 +21,7 @@ import {
 import DataApiClient from '@/DataApiClient';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import { useDispatch } from '@/store/store';
+import supabaseClient from '@/supabase';
 import {
     EnrichedTraderInfo,
     ProfilePicture,
@@ -39,10 +39,6 @@ import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Loader from '../Loader/Loader';
 import FormatNumber from '../Number/FormatNumber';
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
-);
 
 const MAX_MESSAGES = 1000;
 const OPEN_CHAT_TTL = 600000; // 10 minute TTL - in millisecond
@@ -238,7 +234,7 @@ function Chat({
         // Fetch initial messages
         const fetchMessages = async () => {
             try {
-                const { data } = await supabase
+                const { data } = await supabaseClient
                     .from('messages')
                     .select('*')
                     .eq('room_id', roomId)
@@ -259,7 +255,7 @@ function Chat({
         fetchMessages();
 
         // Subscribe to real-time updates
-        const channel = supabase
+        const channel = supabaseClient
             .channel('realtime:messages')
             .on(
                 'postgres_changes',
@@ -286,7 +282,7 @@ function Chat({
             });
 
         return () => {
-            supabase.removeChannel(channel); // Cleanup subscription
+            supabaseClient.removeChannel(channel); // Cleanup subscription
         };
     }, [roomId]);
 
@@ -300,7 +296,7 @@ function Chat({
 
     const sendMessage = async () => {
         if (input.trim()) {
-            await supabase.from('messages').insert([
+            await supabaseClient.from('messages').insert([
                 {
                     room_id: roomId,
                     text: input,
