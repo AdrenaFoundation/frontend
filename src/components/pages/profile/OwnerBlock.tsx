@@ -655,53 +655,62 @@ export default function OwnerBloc({
             </div>
 
           </div>
+          <div className='w-full flex flex-row items-center justify-between'>
+            <Tippy
+              content={
+                titleUnlockedByAchievement ? (
+                  <div className="text-center flex flex-col">
+                    <div>
+                      Unlocked by achievement #
+                      {titleUnlockedByAchievement.index + 1}
+                    </div>
 
-          <Tippy
-            content={
-              titleUnlockedByAchievement ? (
-                <div className="text-center flex flex-col">
-                  <div>
-                    Unlocked by achievement #
-                    {titleUnlockedByAchievement.index + 1}
+                    <div>&quot;{titleUnlockedByAchievement.title}&quot;</div>
                   </div>
+                ) : (
+                  <div></div>
+                )
+              }
+              disabled={typeof titleUnlockedByAchievement === 'undefined'}
+            >
 
-                  <div>&quot;{titleUnlockedByAchievement.title}&quot;</div>
-                </div>
-              ) : (
-                <div></div>
-              )
-            }
-            disabled={typeof titleUnlockedByAchievement === 'undefined'}
-          >
-            <div className="flex gap-x-2 items-end relative bottom-1">
-              <span className="text-lg font-cursive relative top-1">
-                &quot;
-              </span>
-              <span className="text-sm font-archivoblack">{title}</span>
-              <span className="text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100">
-                &quot;
-              </span>
+              <div className="flex gap-x-2 items-end relative bottom-1">
+                <span className="text-lg font-cursive relative top-1">
+                  &quot;
+                </span>
+                <span className="text-sm font-archivoblack">{title}</span>
+                <span className="text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100">
+                  &quot;
+                </span>
 
-              {canUpdateNickname && userProfile.version > 1 ? (
-                <div
-                  className="text-xs opacity-70 cursor-pointer hover:opacity-100 relative"
-                  onClick={() => {
-                    setIsUpdatingMetadata?.(true);
-                    setActiveUpdateTab?.('title');
-                  }}
-                >
-                  Edit
-                </div>
-              ) : null}
-            </div>
-          </Tippy>
+                {canUpdateNickname && userProfile.version > 1 ? (
+                  <div
+                    className="text-xs opacity-70 cursor-pointer hover:opacity-100 relative"
+                    onClick={() => {
+                      setIsUpdatingMetadata?.(true);
+                      setActiveUpdateTab?.('title');
+                    }}
+                  >
+                    Edit
+                  </div>
+                ) : null}
+              </div>
 
-          {snsDomain ? (
-            <div className='flex flex-row gap-1 items-center justify-center sm:justify-end w-full sm:pr-4'>
-              <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
-              <p className='text-xs font-boldy opacity-50'>{snsDomain}.sol</p>
-            </div>
-          ) : null}
+            </Tippy>
+            {snsDomain ? (
+              <Tippy
+                content="Registered Domain through Solana Name Service (SNS)"
+                className='!text-xs !font-boldy'
+                placement="top"
+              >
+                <div className='flex flex-row gap-1 items-center sm:pr-4'>
+                  <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
+                  <p className='text-[0.625rem] font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]'>{snsDomain}.sol</p>
+                </div></Tippy>
+            ) : null}
+          </div>
+
+
 
           {!readonly && userProfile.version > 1 ? (
             <div className="absolute top-2 right-4 z-20 ">
