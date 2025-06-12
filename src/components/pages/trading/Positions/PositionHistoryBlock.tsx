@@ -441,11 +441,15 @@ const PositionHistoryBlock = ({
                                     <FormatNumber
                                       nb={value}
                                       format={
-                                        key === 'nativeExitAmount'
+                                        key === 'exitAmountNative'
                                           ? 'number'
                                           : 'currency'
                                       }
-                                      precision={2}
+                                      precision={
+                                        positionHistory.token.symbol === 'BONK'
+                                          ? 8
+                                          : 2
+                                      }
                                       className="text-xs text-white"
                                       isDecimalDimmed={false}
                                     />
