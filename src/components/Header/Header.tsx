@@ -87,7 +87,7 @@ export default function Header({
   const EXTERNAL_LINKS = PAGES.filter((p) => p.external);
 
   return (
-    <div className="w-full flex flex-row items-center justify-between p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
+    <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
       <div className="flex flex-row items-center gap-4">
         <Link className="font-bold uppercase relative" href="/">
           <Image
@@ -180,12 +180,12 @@ export default function Header({
                 src={alpLogo}
                 alt="ALP Logo"
                 className="opacity-50"
-                width={10}
-                height={10}
+                width={12}
+                height={12}
               />
 
               <div className="flex flex-col lg:flex-row  gap-0 lg:gap-1">
-                <div className="text-xxs font-mono">
+                <div className="text-xxs sm:text-sm font-mono">
                   {formatPriceInfo(
                     tokenPriceALP,
                     window.adrena.client.alpToken.displayPriceDecimalsPrecision,
@@ -200,8 +200,8 @@ export default function Header({
                   format="percentage"
                   precision={0}
                   suffix="APR"
-                  suffixClassName="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-                  className="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  suffixClassName="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  className="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
                   isDecimalDimmed={false}
                 />
               </div>
@@ -218,12 +218,12 @@ export default function Header({
                 src={adxLogo}
                 alt="ALP Logo"
                 className="opacity-50"
-                width={10}
-                height={10}
+                width={12}
+                height={12}
               />
 
               <div className="flex flex-col lg:flex-row  gap-0 lg:gap-1">
-                <div className="text-xxs font-mono">
+                <div className="text-xxs sm:text-sm font-mono">
                   {formatPriceInfo(
                     tokenPriceADX,
                     window.adrena.client.adxToken.displayPriceDecimalsPrecision,
@@ -238,8 +238,8 @@ export default function Header({
                   format="percentage"
                   precision={0}
                   suffix="APR"
-                  suffixClassName="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-                  className="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  suffixClassName="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                  className="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
                   isDecimalDimmed={false}
                 />
               </div>
