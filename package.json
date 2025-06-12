@@ -13,12 +13,10 @@
     "@emotion/react": "=11.14.0",
     "@emotion/styled": "=11.14.0",
     "@mui/material": "=6.2.0",
-    "@pythnetwork/client": "git+https://github.com/AdrenaFoundation/pyth-client-js.git#optimization",
-    "@pythnetwork/pyth-solana-receiver": "=0.8.2",
     "@reduxjs/toolkit": "=2.5.0",
     "@rive-app/react-canvas": "=4.17.3",
     "@solana/actions": "^1.6.6",
-    "@solana/spl-token": "=0.4.9",
+    "@solana/spl-token": "=0.4.13",
     "@solana/wallet-adapter-base": "=0.9.23",
     "@solana/wallet-adapter-coinbase": "=0.1.19",
     "@solana/wallet-adapter-phantom": "=0.9.24",
@@ -27,8 +25,9 @@
     "@solana/wallet-adapter-walletconnect": "=0.1.16",
     "@solana/wallet-standard-wallet-adapter-base": "=1.1.2",
     "@solana/wallet-standard-wallet-adapter-react": "=1.1.2",
-    "@solana/web3.js": "=1.95.3",
-    "@supabase/supabase-js": "^2.48.1",
+    "@solana/web3.js": "=1.98.2",
+    "@supabase/auth-js": ">=2.69.1",
+    "@supabase/supabase-js": "^2.50.0",
     "@tippyjs/react": "=4.2.6",
     "@types/react-resizable": "^3.0.8",
     "@vercel/analytics": "=1.4.1",
@@ -37,10 +36,12 @@
     "@vercel/speed-insights": "=1.1.0",
     "@wallet-standard/app": "=1.1.0",
     "@walletconnect/types": "=2.17.2",
+    "base-x": ">=4.0.1",
     "big.js": "=6.2.2",
     "bignumber.js": "=9.1.2",
     "date-fns": "=4.1.0",
     "framer-motion": "=11.14.4",
+    "image-size": ">=1.2.1",
     "lottie-react": "=2.4.0",
     "next": "^15.2.4",
     "next-seo": "=6.6.0",
@@ -59,6 +60,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@supabase/auth-js": ">=2.69.1",
     "@types/big.js": "=6.2.2",
     "@types/bn.js": "=5.1.6",
     "@types/node": "=20.11.1",
@@ -67,11 +69,13 @@
     "@types/react-transition-group": "=4.4.5",
     "@typescript-eslint/eslint-plugin": "=8.18.0",
     "autoprefixer": "=10.4.20",
+    "base-x": ">=4.0.1",
     "eslint": "=8.57.1",
     "eslint-config-next": "=15.1.0",
     "eslint-config-prettier": "=9.1.0",
     "eslint-plugin-simple-import-sort": "=12.1.1",
     "husky": "=9.1.7",
+    "image-size": ">=1.2.1",
     "postcss": "=8.4.49",
     "prettier": "=3.4.2",
     "sass": "=1.83.0",
@@ -83,14 +87,15 @@
     "elliptic": "=6.6.1",
     "@ethersproject/signing-key": "=5.7.0",
     "@ethersproject/transactions": "=5.7.0",
-    "@ethersproject/hash": "=5.7.0"
+    "@ethersproject/hash": "=5.7.0",
+    "bigint-buffer": "1.1.5"
   },
   "overrides": {
     "elliptic": "=6.6.1",
     "@ethersproject/signing-key": "=5.7.0",
     "@ethersproject/transactions": "=5.7.0",
     "@ethersproject/hash": "=5.7.0",
-    "@solana/web3.js": "$@solana/web3.js"
+    "bigint-buffer": "1.1.5"
   },
   "react-lottie": {
     "npm": ">=10.0.0"
