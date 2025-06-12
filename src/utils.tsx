@@ -34,6 +34,7 @@ import {
   SOLANA_EXPLORERS_OPTIONS,
 } from './constant';
 import { WalletStakingAccounts } from './hooks/useWalletStakingAccounts';
+import { SettingsState } from './reducers/settingsReducer';
 import {
   ImageRef,
   LimitedString,
@@ -333,6 +334,7 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
   return d;
 }
 
+
 // In microLamports, these values aren't very reliable, they are here in case the dynamic values are not available
 export const DEFAULT_PRIORITY_FEES = {
   medium: 100_000,
@@ -344,6 +346,19 @@ export const DEFAULT_PRIORITY_FEE_OPTION = 'high';
 
 // in SOL
 export const DEFAULT_MAX_PRIORITY_FEE = 0.0001;
+
+export const DEFAULT_SETTINGS = {
+  disableChat: false,
+  showFeesInPnl: true,
+  showPopupOnPositionClose: true,
+  preferredSolanaExplorer: 'Solana Explorer',
+  priorityFeeOption: DEFAULT_PRIORITY_FEE_OPTION,
+  maxPriorityFee: DEFAULT_MAX_PRIORITY_FEE,
+  openPositionCollateralSymbol: '',
+  closePositionCollateralSymbol: '',
+  depositCollateralSymbol: '',
+  withdrawCollateralSymbol: '',
+} as SettingsState;
 
 export const PercentilePriorityFeeList = {
   medium: 3000,

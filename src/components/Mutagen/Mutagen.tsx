@@ -213,14 +213,14 @@ export default function Mutagen({
   if (isMobile) {
     return (
       <AnimatePresence>
-        <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer' onClick={() => setIsModalOpen(true)}>
-          <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
+        <div className='gap-x-1 sm:gap-x-2 flex items-center justify-center rounded-full pl-2 sm:pl-4 pr-1 sm:pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer' onClick={() => setIsModalOpen(true)}>
+          <div className='text-xxs sm:text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
           <Image
             src={needle}
             alt={'needle'}
             width="30"
             height="30"
-            className={'w-4 h-4 grayscale'}
+            className={'w-3 h-3 sm:w-4 sm:h-4 grayscale'}
           />
         </div>
 
