@@ -599,7 +599,7 @@ export default function OwnerBloc({
         </Tippy>
 
         <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
-          <div className="flex">
+          <div className="flex flex-row items-center gap-3">
             {walletPubkey ? (
               <Tippy content={'Wallet address'}>
                 <div className="z-20 flex gap-1">
@@ -635,6 +635,18 @@ export default function OwnerBloc({
                 </div>
               </Tippy>
             ) : null}
+
+            {snsDomain ? (
+              <Tippy
+                content="Registered Domain through Solana Name Service (SNS)"
+                className='!text-xs !font-boldy'
+                placement="top"
+              >
+                <div className='flex flex-row gap-1 items-center sm:pr-4'>
+                  <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
+                  <p className='text-xs font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]'>{snsDomain}.sol</p>
+                </div></Tippy>
+            ) : null}
           </div>
 
           <div className="flex mt-1">
@@ -655,60 +667,49 @@ export default function OwnerBloc({
             </div>
 
           </div>
-          <div className='w-full flex flex-row items-center justify-between'>
-            <Tippy
-              content={
-                titleUnlockedByAchievement ? (
-                  <div className="text-center flex flex-col">
-                    <div>
-                      Unlocked by achievement #
-                      {titleUnlockedByAchievement.index + 1}
-                    </div>
 
-                    <div>&quot;{titleUnlockedByAchievement.title}&quot;</div>
+          <Tippy
+            content={
+              titleUnlockedByAchievement ? (
+                <div className="text-center flex flex-col">
+                  <div>
+                    Unlocked by achievement #
+                    {titleUnlockedByAchievement.index + 1}
                   </div>
-                ) : (
-                  <div></div>
-                )
-              }
-              disabled={typeof titleUnlockedByAchievement === 'undefined'}
-            >
 
-              <div className="flex gap-x-2 items-end relative bottom-1">
-                <span className="text-lg font-cursive relative top-1">
-                  &quot;
-                </span>
-                <span className="text-sm font-archivoblack">{title}</span>
-                <span className="text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100">
-                  &quot;
-                </span>
+                  <div>&quot;{titleUnlockedByAchievement.title}&quot;</div>
+                </div>
+              ) : (
+                <div></div>
+              )
+            }
+            disabled={typeof titleUnlockedByAchievement === 'undefined'}
+          >
 
-                {canUpdateNickname && userProfile.version > 1 ? (
-                  <div
-                    className="text-xs opacity-70 cursor-pointer hover:opacity-100 relative"
-                    onClick={() => {
-                      setIsUpdatingMetadata?.(true);
-                      setActiveUpdateTab?.('title');
-                    }}
-                  >
-                    Edit
-                  </div>
-                ) : null}
-              </div>
+            <div className="flex gap-x-2 items-end relative bottom-1">
+              <span className="text-lg font-cursive relative top-1">
+                &quot;
+              </span>
+              <span className="text-sm font-archivoblack">{title}</span>
+              <span className="text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100">
+                &quot;
+              </span>
 
-            </Tippy>
-            {snsDomain ? (
-              <Tippy
-                content="Registered Domain through Solana Name Service (SNS)"
-                className='!text-xs !font-boldy'
-                placement="top"
-              >
-                <div className='flex flex-row gap-1 items-center sm:pr-4'>
-                  <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
-                  <p className='text-[0.625rem] font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]'>{snsDomain}.sol</p>
-                </div></Tippy>
-            ) : null}
-          </div>
+              {canUpdateNickname && userProfile.version > 1 ? (
+                <div
+                  className="text-xs opacity-70 cursor-pointer hover:opacity-100 relative"
+                  onClick={() => {
+                    setIsUpdatingMetadata?.(true);
+                    setActiveUpdateTab?.('title');
+                  }}
+                >
+                  Edit
+                </div>
+              ) : null}
+            </div>
+
+          </Tippy>
+
 
 
 
