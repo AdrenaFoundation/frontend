@@ -15,7 +15,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import DataApiClient from '@/DataApiClient';
 import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, PositionExtended, PositionTransaction } from '@/types';
-import { formatDate2Digits, formatTimeDifference, getFullTimeDifference, getTxExplorer } from '@/utils';
+import { formatDate2Digits, formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getTxExplorer } from '@/utils';
 
 import CollateralTooltip from './CollateralTootltip';
 import FeesPaidTooltip from './FeesPaidTooltip';
@@ -397,7 +397,7 @@ const PositionHistoryBlock = ({
                 <div className="space-y-2 w-full">
                   {events.map((transaction: PositionTransaction) => (
                     <div key={transaction.transactionId} className="w-full rounded border border-white/[0.03]">
-                      <div className="flex items-center justify-between px-3 py-2.5">
+                      <div className="flex flex-col lg:flex-row gap-3 lg:gap-0 items-center justify-between px-3 py-2.5">
                         <div className="flex items-center gap-1">
                           <span className={getEventTypeColor(transaction.method)}>
                             {getEventTypeLabel(transaction.method)}
@@ -409,7 +409,7 @@ const PositionHistoryBlock = ({
                         <div className='ml-2 text-xxs opacity-50'>
                           {formatDate2Digits(transaction.transactionDate)}
                         </div>
-                        <div className="text-xs text-white flex items-center gap-4 flex-1 justify-center">
+                        <div className="text-xs text-white flex items-center gap-4 flex-1 justify-center flex-wrap">
                           {transaction.additionalInfos ? (
                             Object.entries(transaction.additionalInfos).filter(([key, value]) => value !== null && key !== 'positionPubkey' && key !== 'positionId').map(([key, value]) => {
                               const formatKey = (key: string) => {
@@ -429,14 +429,41 @@ const PositionHistoryBlock = ({
                                   'collateralAmount': 'Collateral',
                                   'collateralAmountNative': 'Native Collateral',
                                   'stopLossLimitPrice': 'Stop Loss',
-                                  'takeProfitLimitPrice': 'Take Profit'
+                                  'takeProfitLimitPrice': 'Take Profit',
+                                  'position_pubkey': 'Position Pubkey',
                                 };
                                 return keyMap[key] || key;
                               };
 
+                              const formatValue = (value: string | number | null) => {
+                                if (typeof value === 'number') {
+                                  return (
+                                    <FormatNumber
+                                      nb={value}
+                                      format={
+                                        key === 'exitAmountNative'
+                                          ? 'number'
+                                          : 'currency'
+                                      }
+                                      precision={
+                                        positionHistory.token.symbol === 'BONK'
+                                          ? 8
+                                          : 2
+                                      }
+                                      className="text-xs text-white"
+                                      isDecimalDimmed={false}
+                                    />
+                                  );
+                                }
+                                if (key === 'position_pubkey') {
+                                  return getAbbrevWalletAddress(value as string);
+                                }
+                                return value;
+                              };
+
                               return (
                                 <span key={key} className='text-xxs opacity-50'>
-                                  {formatKey(key)}: {value}
+                                  {formatKey(key)}: {formatValue(value)}
                                 </span>
                               )
                             })

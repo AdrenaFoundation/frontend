@@ -24,6 +24,8 @@ export default function MobileNavbar({
             'Vote',
             'Learn',
             'Profile',
+            'Referral',
+            'Leaderboard',
             userVest || userDelegatedVest ? null : 'Vest',
             'Achievements'
           ].includes(p.name),
