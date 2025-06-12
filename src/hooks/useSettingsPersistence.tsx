@@ -70,22 +70,22 @@ export default function useSettingsPersistence() {
         }
 
         {
-            const v = cookies['open-position-collateral-symbol'];
+            const v = preferences?.openPositionCollateralSymbol ?? cookies['open-position-collateral-symbol'];
             updatedSettings.openPositionCollateralSymbol = v;
         }
 
         {
-            const v = cookies['close-position-collateral-symbol'];
+            const v = preferences?.closePositionCollateralSymbol ?? cookies['close-position-collateral-symbol'];
             updatedSettings.closePositionCollateralSymbol = v;
         }
 
         {
-            const v = cookies['deposit-collateral-symbol'];
+            const v = preferences?.depositCollateralSymbol ?? cookies['deposit-collateral-symbol'];
             updatedSettings.depositCollateralSymbol = v;
         }
 
         {
-            const v = cookies['withdraw-collateral-symbol'];
+            const v = preferences?.withdrawCollateralSymbol ?? cookies['withdraw-collateral-symbol'];
             updatedSettings.withdrawCollateralSymbol = v;
         }
 
