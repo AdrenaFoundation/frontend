@@ -27,7 +27,7 @@ export default async function handler(
       .single();
 
     if (error) {
-      return res.status(500).json({
+      return res.status(404).json({
         settings: null,
         error: error.message,
       });
@@ -57,7 +57,7 @@ export default async function handler(
       .single();
 
     if (error) {
-      return res.status(500).json({
+      return res.status(404).json({
         settings: null,
         error: error.message,
       });
@@ -93,7 +93,7 @@ export default async function handler(
         .single();
 
       if (createError) {
-        return res.status(500).json({
+        return res.status(404).json({
           settings: null,
           error: createError.message,
         });
@@ -112,7 +112,7 @@ export default async function handler(
       .single();
 
     if (error) {
-      return res.status(500).json({
+      return res.status(404).json({
         settings: null,
         error: error.message,
       });
