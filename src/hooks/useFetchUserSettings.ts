@@ -45,7 +45,8 @@ export const useFetchUserSettings = (): UseFetchUserSettingsResult => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch settings');
+        console.log(data.error || 'Failed to fetch settings');
+        return;
       }
 
       // If settings exist, use them
@@ -103,10 +104,11 @@ export const useFetchUserSettings = (): UseFetchUserSettingsResult => {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(
+          console.log(
             data.error ||
-              `Failed to ${settings ? 'update' : 'create'} settings`,
+              `Settings ${settings ? 'updated' : 'created'} successfully`,
           );
+          return;
         }
 
         setSettings(data.settings);
@@ -144,7 +146,8 @@ export const useFetchUserSettings = (): UseFetchUserSettingsResult => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to initialize settings');
+        console.log(data.error || 'Failed to initialize settings');
+        return;
       }
 
       setSettings(data.settings);

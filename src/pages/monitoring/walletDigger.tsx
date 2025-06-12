@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
@@ -227,10 +228,15 @@ export default function WalletDigger({
             <StyledContainer className="p-4 w-full relative overflow-hidden">
                 <div className="flex flex-col w-full items-center justify-center gap-2 relative h-[15em]">
                     {snsDomain ? (
-                        <div className='absolute left-2 top-2 flex flex-row gap-1 items-center'>
-                            <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
-                            <p className='text-xs font-boldy opacity-50'>{snsDomain}.sol</p>
-                        </div>
+                        <Tippy
+                            content="Registered Domain through Solana Name Service (SNS)"
+                            className='!text-xs !font-boldy'
+                            placement="auto"
+                        >
+                            <div className='absolute left-2 top-2 flex flex-row gap-1 items-center'>
+                                <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
+                                <p className='text-[0.625rem] font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]'>{snsDomain}.sol</p>
+                            </div></Tippy>
                     ) : null}
                     <div>Target Wallet</div>
 
