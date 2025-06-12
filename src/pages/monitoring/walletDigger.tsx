@@ -23,6 +23,7 @@ import PositionsHistory from '@/components/pages/trading/Positions/PositionsHist
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
+import useSNSPrimaryDomain from '@/hooks/useSNSPrimaryDomain';
 import useTraderInfo from '@/hooks/useTraderInfo';
 import useUserProfile from '@/hooks/useUserProfile';
 import useUserVest from '@/hooks/useUserVest';
@@ -32,6 +33,7 @@ import { getAdxLockedStakes, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import chevronDown from '../../../public/images/chevron-down.svg';
 import shovelMonster from '../../../public/images/shovel-monster.png';
+import snsBadgeIcon from '../../../public/images/sns-badge.svg';
 import Achievements from '../achievements';
 
 const claimHistoryItemsPerPage = 4;
@@ -48,6 +50,7 @@ export default function WalletDigger({
 
     const [targetWallet, setTargetWallet] = useState<string | null>(null);
     const [targetWalletPubkey, setTargetWalletPubkey] = useState<PublicKey | null>(null);
+    const snsDomain = useSNSPrimaryDomain(targetWalletPubkey?.toBase58());
 
     const { userProfile } = useUserProfile(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
     const { userVest } = useUserVest(targetWalletPubkey ? targetWalletPubkey.toBase58() : null);
@@ -223,6 +226,12 @@ export default function WalletDigger({
         <div className="flex flex-col gap-2 p-2 w-full">
             <StyledContainer className="p-4 w-full relative overflow-hidden">
                 <div className="flex flex-col w-full items-center justify-center gap-2 relative h-[15em]">
+                    {snsDomain ? (
+                        <div className='absolute left-2 top-2 flex flex-row gap-1 items-center'>
+                            <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
+                            <p className='text-xs font-boldy opacity-50'>{snsDomain}.sol</p>
+                        </div>
+                    ) : null}
                     <div>Target Wallet</div>
 
                     {targetWalletPubkey ? <OnchainAccountInfo iconClassName="w-[0.7em] h-[0.7em] ml-4" address={targetWalletPubkey} noAddress={true} className='absolute right-2 top-2' /> : null}
