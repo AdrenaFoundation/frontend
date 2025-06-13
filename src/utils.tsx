@@ -1,4 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
+import { QuoteResponse } from '@jup-ag/api';
 import { sha256 } from '@noble/hashes/sha256';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -33,6 +34,7 @@ import {
   SOLANA_EXPLORERS_OPTIONS,
 } from './constant';
 import { WalletStakingAccounts } from './hooks/useWalletStakingAccounts';
+import { SettingsState } from './reducers/settingsReducer';
 import {
   ImageRef,
   LimitedString,
@@ -332,6 +334,7 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
   return d;
 }
 
+
 // In microLamports, these values aren't very reliable, they are here in case the dynamic values are not available
 export const DEFAULT_PRIORITY_FEES = {
   medium: 100_000,
@@ -343,6 +346,19 @@ export const DEFAULT_PRIORITY_FEE_OPTION = 'high';
 
 // in SOL
 export const DEFAULT_MAX_PRIORITY_FEE = 0.0001;
+
+export const DEFAULT_SETTINGS = {
+  disableChat: false,
+  showFeesInPnl: true,
+  showPopupOnPositionClose: true,
+  preferredSolanaExplorer: 'Solana Explorer',
+  priorityFeeOption: DEFAULT_PRIORITY_FEE_OPTION,
+  maxPriorityFee: DEFAULT_MAX_PRIORITY_FEE,
+  openPositionCollateralSymbol: '',
+  closePositionCollateralSymbol: '',
+  depositCollateralSymbol: '',
+  withdrawCollateralSymbol: '',
+} as SettingsState;
 
 export const PercentilePriorityFeeList = {
   medium: 3000,
@@ -721,7 +737,7 @@ export function formatMilliseconds(milliseconds: number): string {
 }
 
 // Handle specific case of jitoSOL and WBTC
-export function getTokenImage(token: Token): ImageRef {
+export function getTokenImage(token: Token): ImageRef | string {
   if (token.symbol === 'JITOSOL') return solLogo;
   if (token.symbol === 'WBTC') return btcLogo;
 
@@ -1212,11 +1228,14 @@ export function hexStringToByteArray(hexString: string): number[] {
 
   // Convert hex string to byte array
   const byteArray: number[] = [];
+
   for (let i = 0; i < cleanHex.length; i += 2) {
     const byte = parseInt(cleanHex.slice(i, i + 2), 16);
+
     if (isNaN(byte)) {
       throw new Error('Invalid hex string');
     }
+
     byteArray.push(byte);
   }
 
@@ -1225,4 +1244,44 @@ export function hexStringToByteArray(hexString: string): number[] {
 
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
   return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
+}
+
+// Small structure used to ease usage of top accounts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function jupInstructionToTransactionInstruction(ix: any): TransactionInstruction {
+  return new TransactionInstruction({
+    programId: new PublicKey(ix.programId),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    keys: ix.accounts.map((acc: any) => ({
+      pubkey: new PublicKey(acc.pubkey),
+      isSigner: acc.isSigner,
+      isWritable: acc.isWritable,
+    })),
+    data: Buffer.from(ix.data, 'base64'),
+  });
+}
+
+export async function getJupiterApiQuote({
+  inputMint,
+  outputMint,
+  amount,
+  swapSlippage,
+}: {
+  inputMint: PublicKey;
+  outputMint: PublicKey;
+  amount: BN | number;
+  swapSlippage: number;
+}): Promise<QuoteResponse> {
+  const ret = await window.adrena.jupiterApiClient.quoteGet({
+    inputMint: inputMint.toBase58(),
+    outputMint: outputMint.toBase58(),
+    amount: typeof amount === 'number' ? amount : amount.toNumber(),
+    slippageBps: swapSlippage * 100,
+    swapMode: 'ExactIn',
+    maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+  });
+
+  console.log('JupiterQuote', ret);
+
+  return ret;
 }

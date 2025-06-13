@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import { setSettings } from '@/actions/settingsActions';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -21,13 +22,13 @@ import { useMarks } from '@/components/pages/trading/TradingChart/useMarks';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import ViewTabs, { ViewType } from '@/components/pages/trading/ViewTabs/ViewTabs';
-import { PRICE_DECIMALS } from '@/constant';
+import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS } from '@/constant';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
 import usePositionsHistory from '@/hooks/usePositionHistory';
 import usePositions from '@/hooks/usePositions';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol, uiToNative } from '@/utils';
 
@@ -78,6 +79,9 @@ export default function Trade({
   adapters,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const dispatch = useDispatch();
+
+  const settings = useSelector((state) => state.settings);
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
@@ -179,7 +183,10 @@ export default function Trade({
 
   // Setup
   useEffect(() => {
-    const tokenACandidate = window.adrena.client.tokens;
+    const tokenACandidate = [
+      ...window.adrena.client.tokens,
+      ...ALTERNATIVE_SWAP_TOKENS,
+    ];
 
     // First initialization of the component
     // Load trading pair and action type (long/short/swap) from URL
@@ -256,6 +263,13 @@ export default function Trade({
       !tokenA ||
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
     ) {
+      const settingsPick: Token | undefined = tokenACandidate.find((t) => t.symbol === settings.openPositionCollateralSymbol);
+
+      if (settingsPick) {
+        setTokenA(settingsPick);
+        return;
+      }
+
       // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
       const candidate =
         selectedAction === 'long'
@@ -268,7 +282,6 @@ export default function Trade({
         setTokenA(tokenACandidate[0]);
       }
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // Only call when the user get initialized or we change of action
@@ -615,7 +628,16 @@ export default function Trade({
                 setSelectedAction={setSelectedAction}
                 tokenA={tokenA}
                 tokenB={tokenB}
-                setTokenA={setTokenA}
+                setTokenA={(t: Token | null) => {
+                  // Persist the selected token in the settings
+                  dispatch(
+                    setSettings({
+                      openPositionCollateralSymbol: t?.symbol ?? '',
+                    }),
+                  );
+
+                  setTokenA(t);
+                }}
                 setTokenB={setTokenB}
                 openedPosition={openedPosition}
                 wallet={wallet}
@@ -642,7 +664,16 @@ export default function Trade({
             setSelectedAction={setSelectedAction}
             tokenA={tokenA}
             tokenB={tokenB}
-            setTokenA={setTokenA}
+            setTokenA={(t: Token | null) => {
+              // Persist the selected token in the settings
+              dispatch(
+                setSettings({
+                  openPositionCollateralSymbol: t?.symbol ?? '',
+                }),
+              );
+
+              setTokenA(t);
+            }}
             setTokenB={setTokenB}
             openedPosition={openedPosition}
             wallet={wallet}
@@ -714,7 +745,16 @@ export default function Trade({
                     setSelectedAction={setSelectedAction}
                     tokenA={tokenA}
                     tokenB={tokenB}
-                    setTokenA={setTokenA}
+                    setTokenA={(t: Token | null) => {
+                      // Persist the selected token in the settings
+                      dispatch(
+                        setSettings({
+                          openPositionCollateralSymbol: t?.symbol ?? '',
+                        }),
+                      );
+
+                      setTokenA(t);
+                    }}
                     setTokenB={setTokenB}
                     openedPosition={openedPosition}
                     className="p-0 m-0"

@@ -1,5 +1,6 @@
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
+import { createJupiterApiClient } from '@jup-ag/api';
 import { Connection, Transaction } from '@solana/web3.js';
 
 import { AdrenaClient } from '@/AdrenaClient';
@@ -66,5 +67,6 @@ export default async function initializeApp(
     settings: {
       solanaExplorer: 'Solana Explorer' as SolanaExplorerOptions,
     },
+    jupiterApiClient: createJupiterApiClient({}),
   };
 }

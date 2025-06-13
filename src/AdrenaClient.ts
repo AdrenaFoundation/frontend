@@ -96,8 +96,10 @@ import {
   DEFAULT_PRIORITY_FEE_OPTION,
   DEFAULT_PRIORITY_FEES,
   findATAAddressSync,
+  getJupiterApiQuote,
   getTokenSymbol,
   isAccountInitialized,
+  jupInstructionToTransactionInstruction,
   nativeToUi,
   parseTransactionError,
   PercentilePriorityFeeList,
@@ -747,7 +749,6 @@ export class AdrenaClient {
               decimals: number;
               displayAmountDecimalsPrecision: number;
               displayPriceDecimalsPrecision: number;
-              pythPriceUpdateV2: PublicKey;
               oracle: LimitedString;
               tradeOracle: LimitedString;
             }
@@ -770,7 +771,6 @@ export class AdrenaClient {
           // loadCustodies gets the custodies on the same order as in the main pool
           custody: custodiesAddresses[i],
           coingeckoId: infos.coingeckoId,
-          pythPriceUpdateV2: infos.pythPriceUpdateV2,
           oracle: infos.oracle,
           tradeOracle: infos.tradeOracle,
         };
@@ -1886,11 +1886,17 @@ export class AdrenaClient {
   public async closePositionLong({
     position,
     price,
+    redeemToken,
+    expectedCollateralAmountOut,
+    swapSlippage,
     notification,
     getTransactionLogs,
   }: {
     position: PositionExtended;
     price: BN;
+    redeemToken: Token;
+    expectedCollateralAmountOut: BN;
+    swapSlippage: number;
     notification?: MultiStepNotification;
     getTransactionLogs?: (
       logs: {
@@ -1898,18 +1904,68 @@ export class AdrenaClient {
         events?: EventData<IdlEventField, Record<string, never>>;
       } | null,
     ) => void;
-  }): Promise<string> {
+  }): Promise<string | null> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
-    // preInstructions.push(await this.buildDistributeFeesIx());
-    const ix = await this.buildClosePositionLongIx({ position, price });
+    const additionalAddressLookupTables: PublicKey[] = [];
+
+    const builder = await this.buildClosePositionLongIx({ position, price });
+
+    const transaction = await builder.transaction();
+
+    const doJupiterSwap =
+      position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
+
+    if (doJupiterSwap) {
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: position.collateralToken.mint,
+        outputMint: redeemToken.mint,
+        amount: expectedCollateralAmountOut,
+        swapSlippage,
+      });
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: position.owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        return null;
+      }
+
+      transaction.add(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
 
     return this.signAndExecuteTxAlternative({
-      transaction: await ix.transaction(),
+      transaction,
       getTransactionLogs,
       notification,
+      additionalAddressLookupTables,
     });
   }
 
@@ -1917,10 +1973,16 @@ export class AdrenaClient {
     position,
     price,
     notification,
+    expectedCollateralAmountOut,
+    swapSlippage,
+    redeemToken,
     getTransactionLogs,
   }: {
     position: PositionExtended;
     price: BN;
+    expectedCollateralAmountOut: BN;
+    swapSlippage: number;
+    redeemToken: Token;
     notification?: MultiStepNotification;
     getTransactionLogs?: (
       logs: {
@@ -1928,18 +1990,68 @@ export class AdrenaClient {
         events?: EventData<IdlEventField, Record<string, never>>;
       } | null,
     ) => void;
-  }): Promise<string> {
+  }): Promise<string | null> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
-    // preInstructions.push(await this.buildDistributeFeesIx());
-    const ix = await this.buildClosePositionShortIx({ position, price });
+    const additionalAddressLookupTables: PublicKey[] = [];
+
+    const builder = await this.buildClosePositionShortIx({ position, price });
+
+    const transaction = await builder.transaction();
+
+    const doJupiterSwap =
+      position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
+
+    if (doJupiterSwap) {
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: position.collateralToken.mint,
+        outputMint: redeemToken.mint,
+        amount: expectedCollateralAmountOut,
+        swapSlippage,
+      });
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: position.owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        return null;
+      }
+
+      transaction.add(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
 
     return this.signAndExecuteTxAlternative({
-      transaction: await ix.transaction(),
+      transaction,
       getTransactionLogs,
       notification,
+      additionalAddressLookupTables,
     });
   }
 
@@ -2038,6 +2150,7 @@ export class AdrenaClient {
     stopLossLimitPrice,
     takeProfitLimitPrice,
     isIncrease,
+    swapSlippage,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -2050,6 +2163,7 @@ export class AdrenaClient {
     stopLossLimitPrice?: BN | null;
     takeProfitLimitPrice?: BN | null;
     isIncrease?: boolean;
+    swapSlippage: number;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -2057,14 +2171,21 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
+    const additionalAddressLookupTables: PublicKey[] = [];
 
     const usdcToken = this.getUsdcToken();
 
-    await this.checkATAAddressInitializedAndCreatePreInstruction({
-      owner,
-      mint: usdcToken.mint,
-      preInstructions,
-    });
+    const doJupiterSwap =
+      collateralMint.toBase58() !== usdcToken.mint.toBase58();
+
+    // Only check ATA if not using jupiter, as jupiter instructions will set it up for us
+    if (!doJupiterSwap) {
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
+        owner,
+        mint: usdcToken.mint,
+        preInstructions,
+      });
+    }
 
     //
     // Handle automatic profile creation or update when a referrer is set
@@ -2074,15 +2195,33 @@ export class AdrenaClient {
 
       // If user_profile doesn't exist, create it
       if (userProfileAccount === false) {
-        preInstructions.push(
-          await this.buildInitUserProfileIx({
+        if (doJupiterSwap) {
+          // We are most likely going to hit max instruction size if we try to create the user profile along the swap
+          // Better to have the user to execute two transactions
+          const initProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Initialize Profile',
+            ).fire();
+
+          await this.initUserProfile({
             nickname: await this.getUniqueMonsterName(),
             profilePicture: 0,
             wallpaper: 0,
             title: 0,
             referrerProfile,
-          }),
-        );
+            notification: initProfileNotification,
+          });
+        } else {
+          preInstructions.push(
+            await this.buildInitUserProfileIx({
+              nickname: await this.getUniqueMonsterName(),
+              profilePicture: 0,
+              wallpaper: 0,
+              title: 0,
+              referrerProfile,
+            }),
+          );
+        }
       } else if (userProfileAccount === null) {
         // Do nothing - idk the reason why but we couldn't load the user profile, it shouldn't stop the user from opening a position
       } else if (
@@ -2090,11 +2229,25 @@ export class AdrenaClient {
           ? userProfileAccount.referrerProfile.toBase58()
           : null) !== (referrerProfile ? referrerProfile.toBase58() : null)
       ) {
-        preInstructions.push(
-          await this.buildEditUserProfileIx({
+        if (doJupiterSwap) {
+          // We are most likely going to hit max instruction size if we try to edit the user profile along the swap
+          // Better to have the user to execute two transactions
+          const editProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Edit Profile Referral',
+            ).fire();
+
+          await this.editUserProfile({
             referrerProfile,
-          }),
-        );
+            notification: editProfileNotification,
+          });
+        } else {
+          preInstructions.push(
+            await this.buildEditUserProfileIx({
+              referrerProfile,
+            }),
+          );
+        }
       } else {
         // Do nothing - the referrer is already set
       }
@@ -2159,12 +2312,63 @@ export class AdrenaClient {
       );
     }
 
+    if (doJupiterSwap) {
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: collateralMint,
+        outputMint: usdcToken.mint,
+        amount: collateralAmount,
+        swapSlippage,
+      });
+
+      // Apply the slippage so we never fail for not enough collateral in the openPosition
+      // Can still fail due to jupiter swap failing, but that's expected
+      collateralAmount = applySlippage(
+        new BN(quoteResult.outAmount),
+        -swapSlippage,
+      );
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        notification.currentStepErrored('Failed to get swap instructions');
+        return;
+      }
+
+      preInstructions.push(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
+
     const openPositionWithSwapIx = await (
       await this.buildOpenOrIncreasePositionWithSwapShort({
         owner,
         mint,
         price,
-        collateralMint,
+        collateralMint: usdcToken.mint,
         collateralAmount,
         leverage,
       })
@@ -2310,6 +2514,7 @@ export class AdrenaClient {
     stopLossLimitPrice,
     takeProfitLimitPrice,
     isIncrease,
+    swapSlippage,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -2322,6 +2527,7 @@ export class AdrenaClient {
     stopLossLimitPrice?: BN | null;
     takeProfitLimitPrice?: BN | null;
     isIncrease?: boolean;
+    swapSlippage: number;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -2329,12 +2535,18 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
+    const additionalAddressLookupTables: PublicKey[] = [];
 
-    await this.checkATAAddressInitializedAndCreatePreInstruction({
-      owner,
-      mint,
-      preInstructions,
-    });
+    const doJupiterSwap = mint.toBase58() !== collateralMint.toBase58();
+
+    // Only check ATA if not using jupiter, as jupiter instructions will set it up for us
+    if (!doJupiterSwap) {
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
+        owner,
+        mint,
+        preInstructions,
+      });
+    }
 
     //
     // Handle automatic profile creation or update when a referrer is set
@@ -2344,15 +2556,33 @@ export class AdrenaClient {
 
       // If user_profile doesn't exist, create it
       if (userProfileAccount === false) {
-        preInstructions.push(
-          await this.buildInitUserProfileIx({
+        if (doJupiterSwap) {
+          // We are most likely going to hit max instruction size if we try to create the user profile along the swap
+          // Better to have the user to execute two transactions
+          const initProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Initialize Profile',
+            ).fire();
+
+          await this.initUserProfile({
             nickname: await this.getUniqueMonsterName(),
             profilePicture: 0,
             wallpaper: 0,
             title: 0,
             referrerProfile,
-          }),
-        );
+            notification: initProfileNotification,
+          });
+        } else {
+          preInstructions.push(
+            await this.buildInitUserProfileIx({
+              nickname: await this.getUniqueMonsterName(),
+              profilePicture: 0,
+              wallpaper: 0,
+              title: 0,
+              referrerProfile,
+            }),
+          );
+        }
       } else if (userProfileAccount === null) {
         // Do nothing - idk the reason why but we couldn't load the user profile, it shouldn't stop the user from opening a position
       } else if (
@@ -2360,11 +2590,25 @@ export class AdrenaClient {
           ? userProfileAccount.referrerProfile.toBase58()
           : null) !== (referrerProfile ? referrerProfile.toBase58() : null)
       ) {
-        preInstructions.push(
-          await this.buildEditUserProfileIx({
+        if (doJupiterSwap) {
+          // We are most likely going to hit max instruction size if we try to edit the user profile along the swap
+          // Better to have the user to execute two transactions
+          const editProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Edit Profile Referral',
+            ).fire();
+
+          await this.editUserProfile({
             referrerProfile,
-          }),
-        );
+            notification: editProfileNotification,
+          });
+        } else {
+          preInstructions.push(
+            await this.buildEditUserProfileIx({
+              referrerProfile,
+            }),
+          );
+        }
       } else {
         // Do nothing - the referrer is already set
       }
@@ -2422,12 +2666,63 @@ export class AdrenaClient {
       );
     }
 
+    if (doJupiterSwap) {
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: collateralMint,
+        outputMint: mint,
+        amount: collateralAmount,
+        swapSlippage,
+      });
+
+      // Apply the slippage so we never fail for not enough collateral in the openPosition
+      // Can still fail due to jupiter swap failing, but that's expected
+      collateralAmount = applySlippage(
+        new BN(quoteResult.outAmount),
+        -swapSlippage,
+      );
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        notification.currentStepErrored('Failed to get swap instructions');
+        return;
+      }
+
+      preInstructions.push(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
+
     const openPositionWithSwapIx = await (
       await this.buildOpenOrIncreasePositionWithSwapLong({
         owner,
         mint,
         price,
-        collateralMint,
+        collateralMint: mint,
         collateralAmount,
         leverage,
       })
@@ -2443,16 +2738,21 @@ export class AdrenaClient {
     return this.signAndExecuteTxAlternative({
       transaction,
       notification,
+      additionalAddressLookupTables,
     });
   }
 
   public async addCollateralToPosition({
     position,
     addedCollateral,
+    depositToken,
+    swapSlippage,
     notification,
   }: {
     position: PositionExtended;
     addedCollateral: BN;
+    depositToken: Token;
+    swapSlippage: number;
     notification: MultiStepNotification;
   }) {
     if (!this.connection) {
@@ -2461,6 +2761,63 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
+    const additionalAddressLookupTables: PublicKey[] = [];
+
+    const doJupiterSwap =
+      position.collateralToken.symbol !== depositToken.symbol;
+
+    if (doJupiterSwap) {
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: depositToken.mint,
+        outputMint: position.collateralToken.mint,
+        amount: addedCollateral,
+        swapSlippage,
+      });
+
+      // Apply the slippage so we never fail for not enough collateral in the depositCollateral
+      // Can still fail due to jupiter swap failing, but that's expected
+      addedCollateral = applySlippage(
+        new BN(quoteResult.outAmount),
+        -swapSlippage,
+      );
+
+      console.log('addedCollateral with slippage', addedCollateral.toString());
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: position.owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        notification.currentStepErrored('Failed to get swap instructions');
+        return;
+      }
+
+      preInstructions.push(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
 
     const builder = await (
       position.side === 'long'
@@ -2476,9 +2833,12 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
+    console.log('Transaction to add collateral:', transaction);
+
     return this.signAndExecuteTxAlternative({
       transaction,
       notification,
+      additionalAddressLookupTables,
     });
   }
 
@@ -4040,6 +4400,7 @@ export class AdrenaClient {
     notification,
     mint,
     collateralMint,
+    swapSlippage,
   }: {
     triggerPrice: number;
     limitPrice: number | null;
@@ -4049,6 +4410,7 @@ export class AdrenaClient {
     notification?: MultiStepNotification;
     mint: PublicKey;
     collateralMint: PublicKey;
+    swapSlippage: number;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -4058,6 +4420,7 @@ export class AdrenaClient {
       .publicKey;
 
     const usdcToken = this.getUsdcToken();
+
     const fundingAccount = findATAAddressSync(
       owner,
       side === 'long' ? mint : usdcToken?.mint,
@@ -4066,16 +4429,21 @@ export class AdrenaClient {
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const cortex = AdrenaClient.cortexPda;
     const pool = this.mainPool.pubkey;
-    const custody = this.getCustodyByMint(mint);
-    const collateralCustody = this.getCustodyByMint(collateralMint);
     const limitOrderBook = this.getLimitOrderBookPda(owner);
-    const collateralEscrow = this.getCollateralEscrowPda(owner, collateralMint);
 
     const limitOrderBookAccount =
       await this.adrenaProgram.account.limitOrderBook.fetchNullable(
         limitOrderBook,
       );
+
     const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+    const additionalAddressLookupTables: PublicKey[] = [];
+
+    const doJupiterSwap =
+      side === 'long'
+        ? mint.toBase58() !== collateralMint.toBase58()
+        : collateralMint.toBase58() !== usdcToken.mint.toBase58();
 
     if (!limitOrderBookAccount) {
       const initLimitOrderBookIx = await this.adrenaProgram.methods
@@ -4090,6 +4458,67 @@ export class AdrenaClient {
 
       preInstructions.push(initLimitOrderBookIx);
     }
+
+    if (doJupiterSwap) {
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: collateralMint,
+        outputMint: side === 'long' ? mint : usdcToken.mint,
+        amount: collateralAmount.toNumber(),
+        swapSlippage,
+      });
+
+      // Apply the slippage so we never fail for not enough collateral in the openPosition
+      // Can still fail due to jupiter swap failing, but that's expected
+      collateralAmount = applySlippage(
+        new BN(quoteResult.outAmount),
+        -swapSlippage,
+      );
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        notification?.currentStepErrored('Failed to get swap instructions');
+        return;
+      }
+
+      preInstructions.push(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
+
+    const custody = this.getCustodyByMint(mint);
+
+    const collateralCustody =
+      side === 'long' ? custody : this.getCustodyByMint(usdcToken.mint);
+
+    const collateralEscrow = this.getCollateralEscrowPda(
+      owner,
+      collateralCustody.mint,
+    );
 
     const transaction = await this.adrenaProgram.methods
       .addLimitOrder({
@@ -4115,11 +4544,13 @@ export class AdrenaClient {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
       .transaction();
 
     return this.signAndExecuteTxAlternative({
       transaction,
       notification,
+      additionalAddressLookupTables,
     });
   }
 

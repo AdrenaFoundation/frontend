@@ -288,9 +288,6 @@ export default function SwapTradingInputs({
       <TradingInput
         className="text-sm rounded-full"
         inputClassName="tr-rounded-lg bg-inputcolor"
-        tokenListClassName="border-none bg-inputcolor rounded-tr-lg rounded-br-lg"
-        menuClassName="shadow-none"
-        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
         value={inputA}
         subText={
           priceA ? (
@@ -370,9 +367,6 @@ export default function SwapTradingInputs({
         disabled={true}
         className="mt-3 text-sm rounded-full"
         inputClassName="tr-rounded-lg bg-third"
-        tokenListClassName="border-none bg-third rounded-tr-lg rounded-br-lg"
-        menuClassName="shadow-none"
-        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
         value={inputB}
         subText={
           priceB ? (

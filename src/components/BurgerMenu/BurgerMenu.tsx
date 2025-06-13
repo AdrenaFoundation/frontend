@@ -6,7 +6,7 @@ import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
+import useAPR from '@/hooks/useAPR';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
@@ -16,6 +16,8 @@ import {
 } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
+import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
+import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
 import chatIcon from '../../../public/images/chat-text.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import competitionIcon from '../../../public/images/competition.svg';
@@ -28,6 +30,7 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import Mutagen from '../Mutagen/Mutagen';
+import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
@@ -75,8 +78,8 @@ export default function BurgerMenu({
   isChatOpen: boolean | null;
   setIsChatOpen: (isChatOpen: boolean | null) => void;
 }) {
+  const { aprs } = useAPR();
   const { pathname } = useRouter();
-  const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
   const isSmallerScreen = useBetterMediaQuery('(max-width: 640px)');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -109,80 +112,89 @@ export default function BurgerMenu({
       <div className="py-3 p-4 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
         <div className="flex flex-row gap-3 items-center">
           <Link href="/trade">
-            <Image src={adrenaLogo} alt="logo" width={28} height={28} />
+            <Image src={adxLogo} alt="logo" width={28} height={28} className='w-6 h-6' />
           </Link>
 
-          <div className="flex flex-row gap-3">
-            <Link
-              href="/buy_alp"
-              className={twMerge(
-                'flex-col sm:flex-row gap-1 items-center justify-center flex hover:opacity-100',
+          <div className="flex flex-row items-center gap-2">
+            <Link href="/buy_alp">
+              {alpPrice && aprs ? (
+                <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={alpLogo}
+                    alt="ALP Logo"
+                    className="opacity-50"
+                    width={10}
+                    height={10}
+                  />
 
-                pathname !== '/buy_alp' && 'opacity-50',
-              )}
-            >
-              <div
-                className={twMerge(
-                  'text-xs font-boldy',
-                  isSmallScreen ? 'mr-0' : 'mr-2',
-                )}
-              >
-                ALP
-              </div>
+                  <div className="flex flex-col lg:flex-row  gap-0 lg:gap-1">
+                    <div className="text-xxs font-mono">
+                      {formatPriceInfo(
+                        alpPrice,
+                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                      )}
+                    </div>
 
-              {alpPrice ? (
-                <div className="w-[3em] border bg-third p-1 px-2 rounded">
-                  <div className="text-xxs font-mono flex items-center justify-center">
-                    {formatPriceInfo(
-                      alpPrice,
-                      window.adrena.client.alpToken
-                        .displayPriceDecimalsPrecision,
-                      window.adrena.client.alpToken
-                        .displayPriceDecimalsPrecision,
-                    )}
+                    <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+
+                    <FormatNumber
+                      nb={aprs.lp}
+                      format="percentage"
+                      precision={0}
+                      suffix="APR"
+                      suffixClassName="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      isDecimalDimmed={false}
+                    />
                   </div>
                 </div>
               ) : (
-                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+                <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
               )}
             </Link>
 
-            <Link
-              href="/buy_adx"
-              className={twMerge(
-                'flex-col sm:flex-row gap-1 items-center justify-center flex hover:opacity-100',
-                pathname !== '/buy_adx' && 'opacity-50',
-              )}
-            >
-              <div
-                className={twMerge(
-                  'text-xs font-boldy',
-                  isSmallScreen ? 'mr-0' : 'mr-2',
-                )}
-              >
-                ADX
-              </div>
+            <Link href="/buy_adx">
+              {adxPrice && aprs ? (
+                <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={adxLogo}
+                    alt="ALP Logo"
+                    className="opacity-50"
+                    width={10}
+                    height={10}
+                  />
 
-              {adxPrice ? (
-                <div className="w-[3em] border bg-third p-1 px-2 rounded">
-                  <div className="text-xxs font-mono flex items-center justify-center">
-                    {formatPriceInfo(
-                      adxPrice,
-                      window.adrena.client.adxToken
-                        .displayPriceDecimalsPrecision,
-                      window.adrena.client.adxToken
-                        .displayPriceDecimalsPrecision,
-                    )}
+                  <div className="flex flex-col lg:flex-row  gap-0 lg:gap-1">
+                    <div className="text-xxs font-mono">
+                      {formatPriceInfo(
+                        adxPrice,
+                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                      )}
+                    </div>
+
+                    <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+
+                    <FormatNumber
+                      nb={aprs.lm}
+                      format="percentage"
+                      precision={0}
+                      suffix="APR"
+                      suffixClassName="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      isDecimalDimmed={false}
+                    />
                   </div>
                 </div>
               ) : (
-                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+                <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
               )}
             </Link>
           </div>
         </div>
 
-        <div className="flex flex-row gap-3 items-center">
+        <div className="flex flex-row gap-2 sm:gap-3 items-center">
           <Mutagen isMobile />
           {disableChat === true ? (
             null

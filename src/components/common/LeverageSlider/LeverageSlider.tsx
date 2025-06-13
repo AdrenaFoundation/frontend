@@ -50,12 +50,12 @@ export default function LeverageSlider({
   return (
     <div className={twMerge('flex flex-col overflow-hidden', className)}>
       <div className="flex">
-        <div className="flex flex-col pl-1 pt-1 pr-2 pb-1 w-[4.5em] h-12">
-          <div className="flex w-full h-full items-center ml-1 shrink-0">
-            <span className="shrink-0 w-2">x</span>
+        <div className="flex flex-col pl-1 pt-1 pr-2 pb-1 w-[4.5em] h-8">
+          <div className="flex w-full h-full items-center ml-3.5 shrink-0">
+            <span className="shrink-0 w-2 font-mono">X</span>
 
             <InputNumber
-              className="flex w-full max-w-full overflow-hidden text-center bg-inputcolor"
+              className="flex w-full max-w-full overflow-hidden font-mono text-left ml-1 bg-inputcolor"
               value={isLeverageInputEmpty ? undefined : value}
               min={1.1}
               max={100}
@@ -67,16 +67,16 @@ export default function LeverageSlider({
                 onChange(value);
                 setIsLeverageInputEmpty(false);
               }}
-              inputFontSize="1em"
+              inputFontSize="0.9em"
               onBlur={handleBlur}
               decimalConstraint={1}
             />
           </div>
         </div>
 
-        <div className="flex h-full w-full pr-4 pl-4 border-r">
+        <div className="flex h-full w-full pr-4 pl-4">
           <Slider
-            className="relative top-5"
+            className="relative top-2.5"
             min={1.1}
             max={100}
             value={value}
@@ -116,18 +116,20 @@ export default function LeverageSlider({
           />
         </div>
       </div>
-      <div className="flex h-7">
+
+      <div className="flex h-6">
         {marks.map((mark, index) => (
           <Button
             key={index}
             title={`x${mark.toString()}`}
-            variant="secondary"
+            variant="text"
             rounded={false}
+
             className={twMerge(
-              'flex-1 opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor h-full',
+              'flex-1 flex-grow text-xs h-full',
               // Put 0.7 e.m instead of lg because conflicts in the border handling by browser
               index === 0 ? 'rounded-bl-[0.7em]' : '',
-              index === marks.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',
+              index === marks.length - 1 ? 'rounded-br-[0.7em]' : '',
             )}
             onClick={() => {
               onChange(mark);

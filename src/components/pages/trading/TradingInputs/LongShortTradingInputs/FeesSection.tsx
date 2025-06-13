@@ -44,7 +44,7 @@ export const FeesSection = ({
 
     return (
         <>
-            <h5 className="hidden sm:flex items-center ml-4 mt-2 mb-2">
+            <h5 className="hidden sm:flex items-center mt-2 mb-2">
                 Fees
                 <span className="ml-1">
                     <Tippy

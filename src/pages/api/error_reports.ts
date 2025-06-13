@@ -1,22 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import supabaseClient from '@/supabase';
 import { ErrorReportType } from '@/types';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
-  );
-
   if (req.method === 'GET') {
     const { error_code } = req.query;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('error_reports')
       .select('*')
       .eq('ref', error_code as string)
@@ -75,7 +70,7 @@ export default async function handler(
       created_at,
     };
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('error_reports')
       .insert([report])
       .select();

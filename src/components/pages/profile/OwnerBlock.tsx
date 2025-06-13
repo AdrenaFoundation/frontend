@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
 import copyIcon from '@/../../public/images/copy.svg';
+import snsBadgeIcon from '@/../../public/images/sns-badge.svg';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
@@ -18,6 +19,7 @@ import {
   USER_PROFILE_TITLES,
   WALLPAPERS,
 } from '@/constant';
+import useSNSPrimaryDomain from '@/hooks/useSNSPrimaryDomain';
 import {
   AchievementInfoExtended,
   ProfilePicture,
@@ -71,6 +73,8 @@ export default function OwnerBloc({
   setActiveUpdateTab?: (tab: TabType) => void;
   activeUpdateTab?: TabType;
 }) {
+  const snsDomain = useSNSPrimaryDomain()
+
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
   >({});
@@ -595,7 +599,7 @@ export default function OwnerBloc({
         </Tippy>
 
         <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
-          <div className="flex">
+          <div className="flex flex-row items-center gap-3">
             {walletPubkey ? (
               <Tippy content={'Wallet address'}>
                 <div className="z-20 flex gap-1">
@@ -631,25 +635,37 @@ export default function OwnerBloc({
                 </div>
               </Tippy>
             ) : null}
+
+            {snsDomain ? (
+              <Tippy
+                content="Registered Domain through Solana Name Service (SNS)"
+                className='!text-xs !font-boldy'
+                placement="top"
+              >
+                <div className='flex flex-row gap-1 items-center sm:pr-4'>
+                  <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
+                  <p className='text-xs font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]'>{snsDomain}.sol</p>
+                </div></Tippy>
+            ) : null}
           </div>
 
           <div className="flex mt-1">
-            <div className="flex items-end">
-              <div className="font-archivoblack uppercase text-3xl relative">
-                {userProfile.nickname}
-              </div>
+
+            <div className="flex flex-row items-end gap-1 font-archivoblack uppercase text-3xl relative">
+              {userProfile.nickname}
 
               {canUpdateNickname && userProfile.version > 1 ? (
                 <div
                   onClick={() => {
                     setNicknameUpdating(true);
                   }}
-                  className="text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100"
+                  className="text-xs opacity-70 cursor-pointer hover:opacity-100 mb-2"
                 >
                   Edit
                 </div>
               ) : null}
             </div>
+
           </div>
 
           <Tippy
@@ -669,6 +685,7 @@ export default function OwnerBloc({
             }
             disabled={typeof titleUnlockedByAchievement === 'undefined'}
           >
+
             <div className="flex gap-x-2 items-end relative bottom-1">
               <span className="text-lg font-cursive relative top-1">
                 &quot;
@@ -690,7 +707,11 @@ export default function OwnerBloc({
                 </div>
               ) : null}
             </div>
+
           </Tippy>
+
+
+
 
           {!readonly && userProfile.version > 1 ? (
             <div className="absolute top-2 right-4 z-20 ">
