@@ -15,7 +15,7 @@ export default function Game() {
       const { default: MainScene } = await import('@/phaser/scenes/MainScene');
       const { default: Phaser } = await import('phaser');
       const RexUIPlugin = (await import('phaser3-rex-plugins/templates/ui/ui-plugin.js')).default;
-      const { insertCoin } = await import('playroomkit');
+      // const { insertCoin } = await import('playroomkit');
 
       const config = {
         type: Phaser.AUTO,
@@ -46,12 +46,12 @@ export default function Game() {
         scene: MainScene,
       };
 
-      setTimeout(() => {
-        insertCoin().then(() => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          new Phaser.Game(config as any);
-        });
-      }, 1000);
+      // setTimeout(() => {
+      // insertCoin().then(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      new Phaser.Game(config as any);
+      // });
+      // }, 1000);
     };
 
     initGame();

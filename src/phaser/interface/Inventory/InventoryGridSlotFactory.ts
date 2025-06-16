@@ -17,6 +17,7 @@ export default class InventoryGridSlotFactory {
       const slotSprite = createSlotSprite(scene);
 
       const slot = new InventoryGridSlot(
+        scene,
         slotSprite,
         InventoryGridContext.inventory,
       );

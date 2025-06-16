@@ -82,7 +82,7 @@ export default class Item {
     this.itemSprite.setData('slotIndex', newSlotIndex);
     this.slotIndex = newSlotIndex;
 
-    newSlot.addItem(this.scene, this.item);
+    newSlot.addItem(this.item);
   }
 
   setSlotIndex(slotIndex: number) {

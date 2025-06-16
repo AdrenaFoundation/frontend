@@ -1,12 +1,15 @@
+import { centerVH } from '@/phaser/utils/Utils.ts';
 import MainScene from '../../scenes/MainScene.ts';
 // import { centerVH } from '../../utils/Utils';
 // import InventoryWindowManager from "../managers/InventoryWindowManager.ts";
 import InventoryGridFactory from './InventoryGridFactory.ts';
 import InventoryGridSlotFactory from './InventoryGridSlotFactory.ts';
 import InventoryGridSlotSpriteFactory from './InventoryGridSlotSpriteFactory.ts';
-// import InventoryGridFilterFactory from "./InventoryGridFilterFactory.ts";
 
 export default class InventoryWindow {
+  private static inventoryWindow: any | null = null;
+  private static inventoryOpen: boolean = false;
+
   static create(scene: MainScene) {
     const backgroundImg = scene.add.image(
       0,
@@ -15,7 +18,7 @@ export default class InventoryWindow {
       'inventory.png',
     );
 
-    const inventoryWindow = scene.rexUI.add.sizer({
+    this.inventoryWindow = scene.rexUI.add.sizer({
       x: 150,
       y: 150,
       draggable: true,
@@ -24,9 +27,10 @@ export default class InventoryWindow {
       orientation: 'x',
     });
 
-    inventoryWindow.addBackground(backgroundImg);
+    this.inventoryWindow.addBackground(backgroundImg);
 
-    // centerVH(inventoryWindow);
+    // centerVH(this.inventoryWindow);
+
     const slots = InventoryGridSlotFactory.create(
       scene,
       30,
@@ -35,14 +39,14 @@ export default class InventoryWindow {
 
     const inventoryGridManager = InventoryGridFactory.create(scene, slots);
 
-    inventoryWindow.add(inventoryGridManager, {
+    this.inventoryWindow.add(inventoryGridManager, {
       expand: false,
     });
 
-    inventoryWindow.layout();
+    this.inventoryWindow.layout();
 
     return {
-      window: inventoryWindow,
+      window: this.inventoryWindow,
       slots: slots,
     };
   }

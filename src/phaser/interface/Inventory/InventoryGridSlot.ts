@@ -10,6 +10,7 @@ export default class InventoryGridSlot {
   private currentItem: Item | null = null;
 
   constructor(
+    public scene: MainScene,
     public slotSprite: OverlapSizer,
     public slotType: InventoryGridContext,
   ) {
@@ -17,13 +18,13 @@ export default class InventoryGridSlot {
     this.slotSprite.setData('slotType', slotType);
   }
 
-  addItem(scene: MainScene, item: ItemConfig) {
+  addItem(item: ItemConfig) {
     if (this.slotSprite.getData('hasItem')) {
       console.warn('Slot already has an item. Cannot add another item.');
       return null;
     }
 
-    const itemInstance = new Item(scene, this, item);
+    const itemInstance = new Item(this.scene, this, item);
     this.currentItem = itemInstance;
 
     this.slotSprite.add(this.currentItem.itemSprite, {
@@ -42,8 +43,7 @@ export default class InventoryGridSlot {
 
       console.log('Slot clicked:', this.currentItem);
 
-      // move item one slot to the right
-      const nextSlotIndex = (this.slotIndex + 1) % 30; // Assuming a grid of 30 slots
+      const nextSlotIndex = (this.slotIndex + 1) % 30;
 
       this.currentItem.moveToSlot(nextSlotIndex);
     });

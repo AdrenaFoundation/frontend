@@ -23,12 +23,16 @@ class MainScene extends Phaser.Scene {
 
   public rexUI!: RexUIPlugin;
   // private showDebug = false;
-  // private player: any;
+  private player: Phaser.Physics.Arcade.Sprite | undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cursors: any;
   public text: Phaser.GameObjects.Text | undefined;
   public inventoryItems: InventoryGridSlot[] = [];
-  public gridWindow: Sizer | undefined;
+  public inventoryWindow: Sizer | undefined;
+
+  private chestPosition: Phaser.Math.Vector2 | undefined;
+  private interactionText: Phaser.GameObjects.Text | undefined;
+  private readonly INTERACTION_DISTANCE: number = 50; // Distance to show "Press I" text
 
   preload() {
     // this.load.setBaseURL('https://labs.phaser.io');
@@ -71,15 +75,32 @@ class MainScene extends Phaser.Scene {
     );
   }
   create() {
-    onPlayerJoin((playerState) => this.addPlayer(playerState));
-
     this.cursors = this.input?.keyboard?.createCursorKeys();
 
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
-    // const map = this.add.tilemap('map');
-    // const tiles = map.addTilesetImage('pixel-cyberpunk-interior', 'tiles');
+    // Define the chest position (adjust x,y coordinates based on your map)
+
+    this.chestPosition = new Phaser.Math.Vector2(width / 2, height / 2 - 100);
+
+    // Create the interaction text (initially hidden)
+    this.interactionText = this.add.text(
+      width / 2 - 50,
+      height / 2 - 100,
+      'Press I to open',
+      {
+        font: '16px monospace',
+        color: '#ffffff',
+        stroke: '#000000',
+        strokeThickness: 3,
+        backgroundColor: '#00000080',
+        padding: { x: 10, y: 5 },
+      },
+    );
+    this.interactionText.setOrigin(0.5);
+    this.interactionText.setDepth(1000);
+    this.interactionText.setVisible(false);
 
     // if (!tiles) {
     //   console.error('Tileset not found. Please check the tileset image URL.');
@@ -116,7 +137,16 @@ class MainScene extends Phaser.Scene {
 
     const inventoryWindow = InventoryWindowFactory.create(this);
     this.inventoryItems = inventoryWindow.slots as InventoryGridSlot[];
-    this.gridWindow = inventoryWindow.window;
+    this.inventoryWindow = inventoryWindow.window;
+    this.inventoryWindow?.setVisible(false);
+
+    this.input?.keyboard?.on('keydown-I', () => {
+      if (this.isNearChest()) {
+        if (this.inventoryWindow) {
+          this.inventoryWindow.setVisible(!this.inventoryWindow.visible);
+        }
+      }
+    });
 
     const items = [
       {
@@ -255,9 +285,9 @@ class MainScene extends Phaser.Scene {
       },
     ];
 
-    this.text = this.add.text(50, 250, 'Click on an item slot to see details', {
-      font: '16px monospace',
-    });
+    // this.text = this.add.text(50, 250, 'Click on an item slot to see details', {
+    //   font: '16px monospace',
+    // });
 
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
@@ -267,7 +297,7 @@ class MainScene extends Phaser.Scene {
         continue;
       }
 
-      slot.addItem(this, {
+      slot.addItem({
         context: InventoryGridContext.inventory,
         quantity: item.quantity,
         equipped: item.equipped,
@@ -333,22 +363,6 @@ class MainScene extends Phaser.Scene {
     //   loop: true,
     // });
 
-    // this.background.setScale(2.6).setOrigin(0).setDepth(-13); // first tile's depth is -12.5
-
-    // const particles = this.add.particles(0, 0, 'red', {
-    //   speed: 100,
-    //   scale: { start: 1, end: 0 },
-    //   blendMode: 'ADD',
-    // });
-
-    // const logo = this.physics.add.image(400, 100, 'logo');
-
-    // logo.setVelocity(100, 200);
-    // logo.setBounce(1, 1);
-    // logo.setCollideWorldBounds(true);
-
-    // particles.startFollow(logo);
-
     this.anims.create({
       key: 'left',
       frames: this.anims.generateFrameNumbers('player', { start: 5, end: 6 }),
@@ -396,160 +410,166 @@ class MainScene extends Phaser.Scene {
     this.objects =
       map.createLayer('objects', tiles, width / 2 - 192, height / 2 - 250) ??
       undefined;
-  }
 
-  addPlayer(playerState: PlayerState) {
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+    this.player = this.physics.add.sprite(width / 2, height / 2, 'player', 1);
 
-    // Generate random starting position near center
-    // const randomX = width / 2 + (Math.random() * 100 - 50);
-    // const randomY = height / 2 + (Math.random() * 100 - 50);
+    this.player.setCollideWorldBounds(true);
 
-    const player = this.physics.add.sprite(width / 2, height / 2, 'player', 1);
+    this.physics.add.collider(this.player, this.outerWalls!);
+    this.outerWalls!.setCollisionBetween(0, 1000);
 
-    if (!player.body) {
-      this.physics.world.enable(player);
-    }
-
-    player.body.setCollideWorldBounds(true);
-
-    if (this.outerWalls) {
-      this.physics.add.collider(player, this.outerWalls);
-      this.outerWalls.setCollisionBetween(0, 1000);
-    }
-
-    // this.cameras.main.startFollow(this.player);
-
-    this.players.push({
-      sprite: player,
-      state: playerState,
-    });
-
-    if (!playerState.getState('dir')) {
-      playerState.setState('dir', {
-        left: false,
-        right: false,
-        up: false,
-        down: false,
-      });
-    }
-
-    playerState.onQuit(() => {
-      player.destroy();
-      this.players = this.players.filter((p) => p.state !== playerState);
-    });
+    // if user collides with outerWalls open inventory
   }
 
   update() {
-    if (!myPlayer()) {
-      return; // Wait until PlayroomKit is fully initialized
-    }
+    this.updatePlayer();
+    this.updateChestInteraction();
+    // if (!myPlayer()) {
+    //   return; // Wait until PlayroomKit is fully initialized
+    // }
 
-    if (this.cursors) {
-      const directionState = {
-        left: this.cursors.left.isDown,
-        right: this.cursors.right.isDown,
-        up: this.cursors.up.isDown,
-        down: this.cursors.down.isDown,
-      };
+    // if (this.cursors) {
+    //   const directionState = {
+    //     left: this.cursors.left.isDown,
+    //     right: this.cursors.right.isDown,
+    //     up: this.cursors.up.isDown,
+    //     down: this.cursors.down.isDown,
+    //   };
 
-      myPlayer().setState('dir', directionState);
+    // myPlayer().setState('dir', directionState);
 
-      const localPlayerObj = this.players.find((p) => p.state === myPlayer());
-      if (localPlayerObj) {
-        this.updatePlayer(directionState, localPlayerObj.sprite);
-      }
-    }
+    // const localPlayerObj = this.players.find((p) => p.state === myPlayer());
+    // if (localPlayerObj) {
+    //   this.updatePlayer(directionState, localPlayerObj.sprite);
+    // }
+    // }
 
-    if (isHost()) {
-      for (const player of this.players) {
-        if (!player.sprite.body) continue;
+    // if (isHost()) {
+    //   for (const player of this.players) {
+    //     if (!player.sprite.body) continue;
 
-        const controls = player.state.getState('dir') || {};
+    //     const controls = player.state.getState('dir') || {};
 
-        this.updatePlayer(controls, player.sprite);
+    //     this.updatePlayer(controls, player.sprite);
 
-        player.state.setState('pos', {
-          x: player.sprite.x,
-          y: player.sprite.y,
-        });
-      }
+    //     player.state.setState('pos', {
+    //       x: player.sprite.x,
+    //       y: player.sprite.y,
+    //     });
+    //   }
+    // } else {
+    //   for (const player of this.players) {
+    //     const pos = player.state.getState('pos');
+    //     const controls = player.state.getState('dir');
+
+    //     if (player.state !== myPlayer()) {
+    //       if (pos) {
+    //         // Apply smoothing for remote players
+    //         player.sprite.x = Phaser.Math.Linear(player.sprite.x, pos.x, 0.3);
+    //         player.sprite.y = Phaser.Math.Linear(player.sprite.y, pos.y, 0.3);
+    //       }
+
+    //       if (controls) {
+    //         this.updateAnimationsOnly(controls, player.sprite);
+    //       }
+    //     }
+    //   }
+    // }
+  }
+
+  private updateChestInteraction() {
+    if (!this.player || !this.chestPosition || !this.interactionText) return;
+
+    const distance = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      this.chestPosition.x,
+      this.chestPosition.y,
+    );
+
+    // Show/hide interaction text based on distance
+    if (distance <= this.INTERACTION_DISTANCE) {
+      // Position text above player
+      this.interactionText.setPosition(this.player.x, this.player.y - 40);
+      this.interactionText.setVisible(!this.inventoryWindow?.visible);
     } else {
-      for (const player of this.players) {
-        const pos = player.state.getState('pos');
-        const controls = player.state.getState('dir');
-
-        if (player.state !== myPlayer()) {
-          if (pos) {
-            // Apply smoothing for remote players
-            player.sprite.x = Phaser.Math.Linear(player.sprite.x, pos.x, 0.3);
-            player.sprite.y = Phaser.Math.Linear(player.sprite.y, pos.y, 0.3);
-          }
-
-          if (controls) {
-            this.updateAnimationsOnly(controls, player.sprite);
-          }
-        }
-      }
+      this.interactionText.setVisible(false);
     }
+  }
+
+  private isNearChest(): boolean {
+    if (!this.player || !this.chestPosition) return false;
+
+    const distance = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      this.chestPosition.x,
+      this.chestPosition.y,
+    );
+
+    return distance <= this.INTERACTION_DISTANCE;
   }
 
   // Add this new method for non-host players
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateAnimationsOnly(controls: any, player: any) {
-    if (!controls) return;
+  // updateAnimationsOnly(controls: any, player: any) {
+  //   if (!controls) return;
 
-    // Only handle animations, not movement (since position is synced)
-    if (controls.left) {
-      player.anims.play('left', true);
-    } else if (controls.right) {
-      player.anims.play('right', true);
-    } else if (controls.up) {
-      player.anims.play('up', true);
-    } else if (controls.down) {
-      player.anims.play('down', true);
-    } else if (
-      !controls.left &&
-      !controls.right &&
-      !controls.up &&
-      !controls.down
-    ) {
-      player.anims.stop();
-    }
-  }
+  //   // Only handle animations, not movement (since position is synced)
+  //   if (controls.left) {
+  //     player.anims.play('left', true);
+  //   } else if (controls.right) {
+  //     player.anims.play('right', true);
+  //   } else if (controls.up) {
+  //     player.anims.play('up', true);
+  //   } else if (controls.down) {
+  //     player.anims.play('down', true);
+  //   } else if (
+  //     !controls.left &&
+  //     !controls.right &&
+  //     !controls.up &&
+  //     !controls.down
+  //   ) {
+  //     player.anims.stop();
+  //   }
+  // }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updatePlayer(controls: any, player: any) {
-    if (!controls) return;
+  updatePlayer() {
+    if (!this.player) return;
 
-    player.body.setVelocity(0);
+    this.player.setVelocity(0);
 
     // Handle movement based on controls
-    if (controls.left) {
-      player.body.setVelocityX(-100);
-      player.anims.play('left', true);
-    } else if (controls.right) {
-      player.body.setVelocityX(100);
-      player.anims.play('right', true);
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-100);
+      this.player.anims.play('left', true);
+    } else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(100);
+      this.player.anims.play('right', true);
     }
 
-    if (controls.up) {
-      player.body.setVelocityY(-100);
+    if (this.cursors.up.isDown) {
+      this.player.setVelocityY(-100);
       // Only play up animation if we're not moving left/right
-      if (!controls.left && !controls.right) {
-        player.anims.play('up', true);
+      if (!this.cursors.left.isDown && !this.cursors.right.isDown) {
+        this.player.anims.play('up', true);
       }
-    } else if (controls.down) {
-      player.body.setVelocityY(100);
+    } else if (this.cursors.down.isDown) {
+      this.player.setVelocityY(100);
       // Only play down animation if we're not moving left/right
-      if (!controls.left && !controls.right) {
-        player.anims.play('down', true);
+      if (!this.cursors.left.isDown && !this.cursors.right.isDown) {
+        this.player.anims.play('down', true);
       }
     }
 
     // If no keys are pressed, stop animations
-    if (!controls.left && !controls.right && !controls.up && !controls.down) {
-      player.anims.stop();
+    if (
+      !this.cursors.left.isDown &&
+      !this.cursors.right.isDown &&
+      !this.cursors.up.isDown &&
+      !this.cursors.down.isDown
+    ) {
+      this.player.anims.stop();
     }
   }
 }
