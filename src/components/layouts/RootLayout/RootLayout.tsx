@@ -81,6 +81,7 @@ export default function RootLayout({
 
   const [pages, setPages] = useState<LinksType[]>([
     { name: 'Trade', link: '/trade', icon: tradeIcon },
+    { name: 'Play', link: '/play', icon: tradeIcon },
     {
       name: 'Profile',
       link: '/profile',

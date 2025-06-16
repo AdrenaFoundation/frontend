@@ -1,0 +1,138 @@
+import { Scene } from 'phaser';
+
+import { GameConfig } from '../config/GameConfig';
+
+export class TilemapService {
+  private scene: Scene;
+  private map: Phaser.Tilemaps.Tilemap | null = null;
+  private tiles: Phaser.Tilemaps.Tileset | null = null;
+  private floor: Phaser.Tilemaps.TilemapLayer | undefined;
+  private outerWalls: Phaser.Tilemaps.TilemapLayer | undefined;
+  private objects: Phaser.Tilemaps.TilemapLayer | undefined;
+
+  constructor(scene: Scene) {
+    this.scene = scene;
+  }
+
+  createTilemap(): void {
+    const { width, height, tilemapOffsetX, tilemapOffsetY } = GameConfig;
+
+    this.map = this.scene.add.tilemap('map');
+    this.tiles = this.map.addTilesetImage('pixel-cyberpunk-interior', 'tiles');
+
+    if (!this.tiles) {
+      console.error('Tileset not found. Please check the tileset image URL.');
+      return;
+    }
+
+    const offsetX = width / 2 - tilemapOffsetX;
+    const offsetY = height / 2 - tilemapOffsetY;
+
+    this.floor =
+      this.map.createLayer('floor', this.tiles, offsetX, offsetY) || undefined;
+    this.outerWalls =
+      this.map.createLayer('outerWalls', this.tiles, offsetX, offsetY) ||
+      undefined;
+    this.objects =
+      this.map.createLayer('objects', this.tiles, offsetX, offsetY) ||
+      undefined;
+
+    this.makeLayersResponsive();
+
+    if (this.outerWalls) {
+      // magic number TODO: check later the good practice
+      this.outerWalls.setCollisionBetween(0, 1000);
+    }
+  }
+
+  private makeLayersResponsive(): void {
+    const { width, height, responsive } = GameConfig;
+    const layers = [this.floor, this.outerWalls, this.objects].filter(Boolean);
+
+    layers.forEach((layer) => {
+      if (layer) {
+        const scale = this.calculateOptimalScaleForLayer(
+          layer,
+          width,
+          height,
+          responsive,
+        );
+        this.applyScaleToLayer(layer, scale);
+        this.centerLayerOnScreenIfEnabled(
+          layer,
+          width,
+          height,
+          scale,
+          responsive,
+        );
+      }
+    });
+  }
+
+  private calculateOptimalScaleForLayer(
+    layer: Phaser.Tilemaps.TilemapLayer,
+    width: number,
+    height: number,
+    responsive: {
+      minScale: number;
+      maxScale: number;
+      maintainAspectRatio: boolean;
+    },
+  ): number {
+    const scaleX = width / (layer.width || 1);
+    const scaleY = height / (layer.height || 1);
+
+    let scale: number;
+    if (responsive.maintainAspectRatio) {
+      scale = Math.min(scaleX, scaleY);
+    } else {
+      scale = Math.min(scaleX, scaleY);
+    }
+
+    return Math.max(responsive.minScale, Math.min(responsive.maxScale, scale));
+  }
+
+  private applyScaleToLayer(
+    layer: Phaser.Tilemaps.TilemapLayer,
+    scale: number,
+  ): void {
+    layer.setScale(scale);
+  }
+
+  private centerLayerOnScreenIfEnabled(
+    layer: Phaser.Tilemaps.TilemapLayer,
+    width: number,
+    height: number,
+    scale: number,
+    responsive: { centerOnResize: boolean },
+  ): void {
+    if (responsive.centerOnResize) {
+      layer.setPosition(
+        (width - (layer.width || 0) * scale) / 2,
+        (height - (layer.height || 0) * scale) / 2,
+      );
+    }
+  }
+
+  updateResponsivePosition(): void {
+    this.makeLayersResponsive();
+  }
+
+  getFloor(): Phaser.Tilemaps.TilemapLayer | undefined {
+    return this.floor;
+  }
+
+  getOuterWalls(): Phaser.Tilemaps.TilemapLayer | undefined {
+    return this.outerWalls;
+  }
+
+  getObjects(): Phaser.Tilemaps.TilemapLayer | undefined {
+    return this.objects;
+  }
+
+  addColliderWithPlayer(playerSprite: Phaser.Physics.Arcade.Sprite): void {
+    if (this.outerWalls) {
+      this.scene.physics.add.collider(playerSprite, this.outerWalls);
+    }
+  }
+}
