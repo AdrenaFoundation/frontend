@@ -1,10 +1,10 @@
 import GridSizer from 'phaser3-rex-plugins/templates/ui/gridsizer/GridSizer';
 
-import { MainScene } from '../../game/scenes/MainScene';
+import { AScene } from '../../AScene';
 import InventoryGridSlot from './InventoryGridSlot';
 
 export default class InventoryGridFactory {
-  public static create(scene: MainScene, slots: InventoryGridSlot[]) {
+  public static create(scene: AScene, slots: InventoryGridSlot[]) {
     const cols = 6;
     const rows = 5;
 

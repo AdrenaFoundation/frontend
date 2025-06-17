@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 
-import { GameConfig } from '../config/GameConfig';
+import config from '../../GameScenes/MainScene/config';
 
 export class Player {
   private scene: Scene;
@@ -21,7 +21,7 @@ export class Player {
   }
 
   private createAnimations(): void {
-    const { animations } = GameConfig;
+    const { animations } = config;
 
     this.scene.anims.create({
       key: 'left',
@@ -69,21 +69,21 @@ export class Player {
 
     // Handle movement based on controls
     if (this.cursors.left.isDown) {
-      this.sprite.setVelocityX(-GameConfig.playerSpeed);
+      this.sprite.setVelocityX(-config.playerSpeed);
       this.sprite.anims.play('left', true);
     } else if (this.cursors.right.isDown) {
-      this.sprite.setVelocityX(GameConfig.playerSpeed);
+      this.sprite.setVelocityX(config.playerSpeed);
       this.sprite.anims.play('right', true);
     }
 
     if (this.cursors.up.isDown) {
-      this.sprite.setVelocityY(-GameConfig.playerSpeed);
+      this.sprite.setVelocityY(-config.playerSpeed);
       // Only play up animation if we're not moving left/right
       if (!this.cursors.left.isDown && !this.cursors.right.isDown) {
         this.sprite.anims.play('up', true);
       }
     } else if (this.cursors.down.isDown) {
-      this.sprite.setVelocityY(GameConfig.playerSpeed);
+      this.sprite.setVelocityY(config.playerSpeed);
       // Only play down animation if we're not moving left/right
       if (!this.cursors.left.isDown && !this.cursors.right.isDown) {
         this.sprite.anims.play('down', true);

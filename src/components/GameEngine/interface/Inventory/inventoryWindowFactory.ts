@@ -3,19 +3,19 @@ import Sizer from 'phaser3-rex-plugins/templates/ui/sizer/Sizer';
 
 import { centerVH } from '@/utils';
 
-import { MainScene } from '../../game/scenes/MainScene';
+import { AScene } from '../../AScene';
 import InventoryGridFactory from './InventoryGridFactory';
 import InventoryGridSlot from './InventoryGridSlot';
 import InventoryGridSlotFactory from './InventoryGridSlotFactory';
 import InventoryGridSlotSpriteFactory from './inventoryGridSlotSpriteFactory';
 
-type SlotSpriteFactory = (scene: MainScene) => OverlapSizer;
+type SlotSpriteFactory = (scene: AScene) => OverlapSizer;
 
 export default class InventoryWindow {
   private static inventoryWindow: Sizer | null = null;
   private static inventoryOpen: boolean = false;
 
-  public static create(scene: MainScene) {
+  public static create(scene: AScene) {
     const backgroundImg = scene.add.image(
       0,
       0,

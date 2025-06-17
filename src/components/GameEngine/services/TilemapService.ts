@@ -1,21 +1,19 @@
-import { Scene } from 'phaser';
-
-import { GameConfig } from '../config/GameConfig';
+import { AScene } from '../AScene';
 
 export class TilemapService {
-  private scene: Scene;
+  private scene: AScene;
   private map: Phaser.Tilemaps.Tilemap | null = null;
   private tiles: Phaser.Tilemaps.Tileset | null = null;
-  private floor: Phaser.Tilemaps.TilemapLayer | undefined;
-  private outerWalls: Phaser.Tilemaps.TilemapLayer | undefined;
-  private objects: Phaser.Tilemaps.TilemapLayer | undefined;
+  private floor: Phaser.Tilemaps.TilemapLayer | null = null;
+  private outerWalls: Phaser.Tilemaps.TilemapLayer | null = null;
+  private objects: Phaser.Tilemaps.TilemapLayer | null = null;
 
-  constructor(scene: Scene) {
+  constructor(scene: AScene) {
     this.scene = scene;
   }
 
   public createTilemap(): void {
-    const { width, height, tilemapOffsetX, tilemapOffsetY } = GameConfig;
+    const { width, height, tilemapOffsetX, tilemapOffsetY } = this.scene.config;
 
     this.map = this.scene.add.tilemap('map');
     this.tiles = this.map.addTilesetImage('pixel-cyberpunk-interior', 'tiles');
@@ -28,14 +26,21 @@ export class TilemapService {
     const offsetX = width / 2 - tilemapOffsetX;
     const offsetY = height / 2 - tilemapOffsetY;
 
-    this.floor =
-      this.map.createLayer('floor', this.tiles, offsetX, offsetY) || undefined;
-    this.outerWalls =
-      this.map.createLayer('outerWalls', this.tiles, offsetX, offsetY) ||
-      undefined;
-    this.objects =
-      this.map.createLayer('objects', this.tiles, offsetX, offsetY) ||
-      undefined;
+    this.floor = this.map.createLayer('floor', this.tiles, offsetX, offsetY);
+
+    this.outerWalls = this.map.createLayer(
+      'outerWalls',
+      this.tiles,
+      offsetX,
+      offsetY,
+    );
+
+    this.objects = this.map.createLayer(
+      'objects',
+      this.tiles,
+      offsetX,
+      offsetY,
+    );
 
     this.makeLayersResponsive();
 
@@ -46,7 +51,7 @@ export class TilemapService {
   }
 
   private makeLayersResponsive(): void {
-    const { width, height, responsive } = GameConfig;
+    const { width, height, responsive } = this.scene.config;
     const layers = [this.floor, this.outerWalls, this.objects].filter(Boolean);
 
     layers.forEach((layer) => {
@@ -57,7 +62,9 @@ export class TilemapService {
           height,
           responsive,
         );
+
         this.applyScaleToLayer(layer, scale);
+
         this.centerLayerOnScreenIfEnabled(
           layer,
           width,
@@ -118,16 +125,33 @@ export class TilemapService {
     this.makeLayersResponsive();
   }
 
-  public getFloor(): Phaser.Tilemaps.TilemapLayer | undefined {
-    return this.floor;
-  }
+  public getObjectsLayer(): Phaser.Tilemaps.TilemapLayer {
+    if (!this.objects) {
+      throw new Error(
+        'Objects layer not found. Please create the tilemap first.',
+      );
+    }
 
-  public getOuterWalls(): Phaser.Tilemaps.TilemapLayer | undefined {
-    return this.outerWalls;
-  }
-
-  public getObjects(): Phaser.Tilemaps.TilemapLayer | undefined {
     return this.objects;
+  }
+
+  public getObjectsByName(name: string): Promise<Phaser.Tilemaps.Tile[]> {
+    return new Promise((resolve) => {
+      if (!this.objects) {
+        resolve([]);
+        return;
+      }
+
+      const matchingTiles: Phaser.Tilemaps.Tile[] = [];
+
+      this.objects.forEachTile((tile) => {
+        if (tile.properties?.name === name) {
+          matchingTiles.push(tile);
+        }
+      });
+
+      resolve(matchingTiles);
+    });
   }
 
   public addColliderWithPlayer(

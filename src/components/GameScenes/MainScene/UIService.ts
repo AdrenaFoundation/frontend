@@ -1,19 +1,17 @@
-import { Scene } from 'phaser';
-
-import { GameConfig } from '../config/GameConfig';
+import { MainScene } from './MainScene';
 
 export class UIService {
-  private scene: Scene;
+  private scene: MainScene;
   private interactionText: Phaser.GameObjects.Text | undefined;
   private titleText: Phaser.GameObjects.Text | undefined;
   private instructionsText: Phaser.GameObjects.Text | undefined;
 
-  constructor(scene: Scene) {
+  constructor(scene: MainScene) {
     this.scene = scene;
   }
 
   public createTitle(): void {
-    const { width, ui } = GameConfig;
+    const { width, ui } = this.scene.config;
 
     this.titleText = this.scene.add
       .text(width / 2, 50, 'Which name should I use?', ui.title)
@@ -22,7 +20,7 @@ export class UIService {
   }
 
   public createInstructions(): void {
-    const { width, height, ui } = GameConfig;
+    const { width, height, ui } = this.scene.config;
 
     this.instructionsText = this.scene.add
       .text(
@@ -36,7 +34,7 @@ export class UIService {
   }
 
   public createInteractionText(): void {
-    const { width, height, ui } = GameConfig;
+    const { width, height, ui } = this.scene.config;
 
     this.interactionText = this.scene.add.text(
       width / 2 - 50,

@@ -1,9 +1,9 @@
 import OverlapSizer from 'phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer';
 
-import { MainScene } from '../../game/scenes/MainScene';
+import { AScene } from '../../AScene';
 
 export default class InventoryGridSlotSpriteFactory {
-  public static create(scene: MainScene) {
+  public static create(scene: AScene) {
     const slotSpriteBg = scene.add.image(
       0,
       0,

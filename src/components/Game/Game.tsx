@@ -1,28 +1,67 @@
-import { Scene } from 'phaser';
+import { AUTO, Game as PhaserGame, Scene, Types } from 'phaser';
+import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js';
 import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { useSelector } from '@/store/store';
 
+import { EventBus } from '../GameEngine/EventBus';
+import { MainScene } from '../GameScenes/MainScene/MainScene';
 import WalletConnection from '../WalletAdapter/WalletConnection';
-import { EventBus } from './game/EventBus';
-import startGame from './game/main';
 
-export interface IRefAdrenasino {
-    game: Phaser.Game | null;
-    scene: Phaser.Scene | null;
+export interface IRefGame {
+    game: PhaserGame | null;
+    scene: Scene | null;
 }
 
 interface IProps {
-    currentActiveScene?: (scene_instance: Phaser.Scene) => void
+    currentActiveScene?: (scene: Scene) => void;
+    config?: Types.Core.GameConfig;
 }
 
-export const Adrenasino = forwardRef<IRefAdrenasino, IProps>(function Adrenasino({ currentActiveScene }, ref) {
-    const game = useRef<Phaser.Game | null>(null);
+// Find out more information about the Game Config at:
+// https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
+const DEFAULT_CONFIG: Types.Core.GameConfig = {
+    type: AUTO,
+    parent: 'game-container',
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: '#028af8',
+    pixelArt: true,
+    scene: [MainScene],
+    plugins: {
+        scene: [
+            {
+                key: 'rexUI',
+                plugin: RexUIPlugin,
+                mapping: 'rexUI',
+            },
+        ],
+    },
+    dom: {
+        createContainer: true,
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { x: 0, y: 0 },
+            debug: false,
+        },
+    },
+};
+
+export const Game = forwardRef<IRefGame, IProps>(function Game({
+    currentActiveScene,
+    config = DEFAULT_CONFIG,
+}, ref) {
+    const game = useRef<PhaserGame | null>(null);
     const wallet = useSelector((state) => state.walletState.wallet);
 
     useLayoutEffect(() => {
         if (game.current === null) {
-            game.current = startGame("game-container");
+            game.current = new PhaserGame({
+                ...config,
+                parent: "game-container",
+            });
 
             if (typeof ref === 'function') {
                 ref({
@@ -47,23 +86,23 @@ export const Adrenasino = forwardRef<IRefAdrenasino, IProps>(function Adrenasino
                 }
             }
         }
-    }, [ref]);
+    }, [config, ref]);
 
     useEffect(() => {
-        EventBus.on('scene-ready', (scene_instance: Scene) => {
+        EventBus.on('scene-ready', (scene: Scene) => {
             if (currentActiveScene && typeof currentActiveScene === 'function') {
-                currentActiveScene(scene_instance);
+                currentActiveScene(scene);
             }
 
             if (typeof ref === 'function') {
                 ref({
                     game: game.current,
-                    scene: scene_instance,
+                    scene,
                 });
             } else if (ref) {
                 ref.current = {
                     game: game.current,
-                    scene: scene_instance,
+                    scene,
                 };
             }
 
@@ -87,4 +126,4 @@ export const Adrenasino = forwardRef<IRefAdrenasino, IProps>(function Adrenasino
     );
 });
 
-export default Adrenasino;
+export default Game;

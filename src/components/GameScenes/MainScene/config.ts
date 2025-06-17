@@ -1,4 +1,4 @@
-export const GameConfig = {
+export default {
   // Game dimensions
   width: 1024,
   height: 768,
@@ -46,7 +46,7 @@ export const GameConfig = {
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tyro-5KW3g9ugXSgLEHY3pKwyzR7bu2x6yV.png',
     },
     local: {
-      basePath: '/assets/Adrenasino',
+      basePath: '/assets/Game',
       star: 'star.png',
       background: 'bg.png',
       logo: 'logo.png',

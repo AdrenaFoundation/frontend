@@ -1,6 +1,6 @@
 import OverlapSizer from 'phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer';
 
-import { MainScene } from '../../game/scenes/MainScene';
+import { AScene } from '../../AScene';
 import { InventoryGridContext } from '../Inventory/InventoryGridContext';
 import InventoryGridSlot from '../Inventory/InventoryGridSlot';
 
@@ -34,7 +34,7 @@ export default class Item {
   private currentSlot: InventoryGridSlot | null = null;
 
   constructor(
-    public readonly scene: MainScene,
+    public readonly scene: AScene,
     public readonly slot: InventoryGridSlot,
     public readonly item: ItemConfig,
   ) {

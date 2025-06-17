@@ -1,25 +1,23 @@
-import { Scene } from 'phaser';
 import Sizer from 'phaser3-rex-plugins/templates/ui/sizer/Sizer';
 
-import { InventoryGridContext } from '../../interface/Inventory/InventoryGridContext';
-import InventoryGridSlot from '../../interface/Inventory/InventoryGridSlot';
-import InventoryWindowFactory from '../../interface/Inventory/inventoryWindowFactory';
+import { AScene } from '../AScene';
 import { INITIAL_INVENTORY_ITEMS } from '../data/InventoryData';
-import { MainScene } from '../scenes/MainScene';
+import { InventoryGridContext } from '../interface/Inventory/InventoryGridContext';
+import InventoryGridSlot from '../interface/Inventory/InventoryGridSlot';
+import InventoryWindowFactory from '../interface/Inventory/inventoryWindowFactory';
 
 export class InventoryService {
-  private scene: Scene;
+  private scene: AScene;
   private inventoryItems: InventoryGridSlot[] = [];
   private inventoryWindow: Sizer | undefined;
 
-  constructor(scene: Scene) {
+  constructor(scene: AScene) {
     this.scene = scene;
   }
 
   public initializeInventory(): void {
-    const inventoryWindow = InventoryWindowFactory.create(
-      this.scene as MainScene,
-    );
+    const inventoryWindow = InventoryWindowFactory.create(this.scene);
+
     this.inventoryItems = inventoryWindow.slots as InventoryGridSlot[];
     this.inventoryWindow = inventoryWindow.window || undefined;
     this.inventoryWindow?.setVisible(false);

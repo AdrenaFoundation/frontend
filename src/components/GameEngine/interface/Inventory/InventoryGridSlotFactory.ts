@@ -1,14 +1,14 @@
 import OverlapSizer from 'phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer';
 
-import { MainScene } from '../../game/scenes/MainScene';
+import { AScene } from '../../AScene';
 import { InventoryGridContext } from './InventoryGridContext';
 import InventoryGridSlot from './InventoryGridSlot';
 
 export default class InventoryGridSlotFactory {
   public static create(
-    scene: MainScene,
+    scene: AScene,
     amount: number,
-    createSlotSprite: (scene: MainScene) => OverlapSizer,
+    createSlotSprite: (scene: AScene) => OverlapSizer,
   ) {
     const slots = [];
 
