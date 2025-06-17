@@ -12,7 +12,7 @@ export class UIService {
     this.scene = scene;
   }
 
-  createTitle(): void {
+  public createTitle(): void {
     const { width, ui } = GameConfig;
 
     this.titleText = this.scene.add
@@ -21,7 +21,7 @@ export class UIService {
       .setDepth(100);
   }
 
-  createInstructions(): void {
+  public createInstructions(): void {
     const { width, height, ui } = GameConfig;
 
     this.instructionsText = this.scene.add
@@ -35,7 +35,7 @@ export class UIService {
       .setDepth(100);
   }
 
-  createInteractionText(): void {
+  public createInteractionText(): void {
     const { width, height, ui } = GameConfig;
 
     this.interactionText = this.scene.add.text(
@@ -49,7 +49,7 @@ export class UIService {
     this.interactionText.setVisible(false);
   }
 
-  updateInteractionText(
+  public updateInteractionText(
     playerX: number,
     playerY: number,
     isVisible: boolean,
@@ -65,7 +65,7 @@ export class UIService {
     }
   }
 
-  updateResponsivePosition(width: number, height: number): void {
+  public updateResponsivePosition(width: number, height: number): void {
     this.repositionTitleToCenterOfScreen(width);
     this.repositionInstructionsToBottomOfScreen(width, height);
     this.repositionInteractionTextNearPlayerIfVisible();
@@ -101,7 +101,7 @@ export class UIService {
     return null;
   }
 
-  getInteractionText(): Phaser.GameObjects.Text | undefined {
+  public getInteractionText(): Phaser.GameObjects.Text | undefined {
     return this.interactionText;
   }
 }

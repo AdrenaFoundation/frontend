@@ -17,7 +17,7 @@ export default class InventoryGridSlot {
     this.slotSprite.setData('slotType', slotType);
   }
 
-  addItem(item: ItemConfig) {
+  public addItem(item: ItemConfig) {
     if (this.slotSprite.getData('hasItem')) {
       console.warn('Slot already has an item. Cannot add another item.');
       return null;
@@ -51,7 +51,7 @@ export default class InventoryGridSlot {
     return item;
   }
 
-  removeItem() {
+  public removeItem() {
     this.currentItem = null;
 
     this.slotSprite.removeAll(true);
@@ -59,12 +59,12 @@ export default class InventoryGridSlot {
     this.slotSprite.setData('hasItem', false);
   }
 
-  setSlotIndex(slotIndex: number) {
+  public setSlotIndex(slotIndex: number) {
     this.slotIndex = slotIndex;
     this.slotSprite.setData('slotIndex', this.slotIndex);
   }
 
-  getItem() {
+  public getItem() {
     return this.currentItem;
   }
 

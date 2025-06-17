@@ -3,6 +3,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "cSpell.words": [
     "adrena",
+    "Adrenasino",
     "aprs",
     "archivoblack",
     "bcolor",
@@ -33,6 +34,7 @@
     "solflare",
     "solscan",
     "supabase",
+    "Tilemap",
     "tippyjs",
     "Tokenomics",
     "txtfade",

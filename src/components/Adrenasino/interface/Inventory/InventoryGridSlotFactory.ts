@@ -5,7 +5,7 @@ import { InventoryGridContext } from './InventoryGridContext';
 import InventoryGridSlot from './InventoryGridSlot';
 
 export default class InventoryGridSlotFactory {
-  static create(
+  public static create(
     scene: MainScene,
     amount: number,
     createSlotSprite: (scene: MainScene) => OverlapSizer,

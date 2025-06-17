@@ -7,7 +7,7 @@ export class InteractionService {
     this.chestPosition = new Phaser.Math.Vector2(chestX, chestY);
   }
 
-  isNearChest(playerX: number, playerY: number): boolean {
+  public isNearChest(playerX: number, playerY: number): boolean {
     const distance = Phaser.Math.Distance.Between(
       playerX,
       playerY,
@@ -18,11 +18,11 @@ export class InteractionService {
     return distance <= GameConfig.interactionDistance;
   }
 
-  getChestPosition(): Phaser.Math.Vector2 {
+  public getChestPosition(): Phaser.Math.Vector2 {
     return this.chestPosition;
   }
 
-  setChestPosition(x: number, y: number): void {
+  public setChestPosition(x: number, y: number): void {
     this.chestPosition.set(x, y);
   }
 }

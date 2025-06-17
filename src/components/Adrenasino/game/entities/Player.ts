@@ -15,6 +15,7 @@ export class Player {
     if (!scene.input?.keyboard) {
       throw new Error('Keyboard input is not available');
     }
+
     this.cursors = scene.input.keyboard.createCursorKeys();
     this.createAnimations();
   }
@@ -63,7 +64,7 @@ export class Player {
     });
   }
 
-  update(): void {
+  public update(): void {
     this.sprite.setVelocity(0);
 
     // Handle movement based on controls
@@ -100,19 +101,19 @@ export class Player {
     }
   }
 
-  getSprite(): Phaser.Physics.Arcade.Sprite {
+  public getSprite(): Phaser.Physics.Arcade.Sprite {
     return this.sprite;
   }
 
-  getPosition(): { x: number; y: number } {
+  public getPosition(): { x: number; y: number } {
     return { x: this.sprite.x, y: this.sprite.y };
   }
 
-  setPosition(x: number, y: number): void {
+  public setPosition(x: number, y: number): void {
     this.sprite.setPosition(x, y);
   }
 
-  addCollider(object: Phaser.GameObjects.GameObject): void {
+  public addCollider(object: Phaser.GameObjects.GameObject): void {
     this.scene.physics.add.collider(this.sprite, object);
   }
 }

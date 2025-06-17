@@ -67,7 +67,7 @@ export default class Item {
     this.itemSprite.setData('data', item.data);
   }
 
-  moveToSlot(newSlotIndex: number) {
+  public moveToSlot(newSlotIndex: number) {
     const newSlot = this.scene.getInventoryService().getInventoryItems()[
       newSlotIndex
     ];
@@ -86,28 +86,32 @@ export default class Item {
     newSlot.addItem(this.item);
   }
 
-  setSlotIndex(slotIndex: number) {
+  public setSlotIndex(slotIndex: number) {
     this.slotIndex = slotIndex;
     this.itemSprite.setData('slotIndex', slotIndex);
   }
 
-  getItemData() {
+  public getItemData(): ItemConfig['data'] {
     return this.itemSprite.getData('data');
   }
-  getQuantity() {
+
+  public getQuantity(): ItemConfig['quantity'] {
     return this.itemSprite.getData('quantity');
   }
-  isEquipped() {
+
+  public isEquipped(): ItemConfig['equipped'] {
     return this.itemSprite.getData('equipped');
   }
-  getSlotIndex() {
+
+  public getSlotIndex(): ItemConfig['slotIndex'] {
     return this.itemSprite.getData('slotIndex');
   }
-  getContext() {
+
+  public getContext(): ItemConfig['context'] {
     return this.itemSprite.getData('context');
   }
 
-  getItemSprite() {
+  public getItemSprite() {
     return this.itemSprite;
   }
 }

@@ -14,7 +14,7 @@ export class TilemapService {
     this.scene = scene;
   }
 
-  createTilemap(): void {
+  public createTilemap(): void {
     const { width, height, tilemapOffsetX, tilemapOffsetY } = GameConfig;
 
     this.map = this.scene.add.tilemap('map');
@@ -114,23 +114,25 @@ export class TilemapService {
     }
   }
 
-  updateResponsivePosition(): void {
+  public updateResponsivePosition(): void {
     this.makeLayersResponsive();
   }
 
-  getFloor(): Phaser.Tilemaps.TilemapLayer | undefined {
+  public getFloor(): Phaser.Tilemaps.TilemapLayer | undefined {
     return this.floor;
   }
 
-  getOuterWalls(): Phaser.Tilemaps.TilemapLayer | undefined {
+  public getOuterWalls(): Phaser.Tilemaps.TilemapLayer | undefined {
     return this.outerWalls;
   }
 
-  getObjects(): Phaser.Tilemaps.TilemapLayer | undefined {
+  public getObjects(): Phaser.Tilemaps.TilemapLayer | undefined {
     return this.objects;
   }
 
-  addColliderWithPlayer(playerSprite: Phaser.Physics.Arcade.Sprite): void {
+  public addColliderWithPlayer(
+    playerSprite: Phaser.Physics.Arcade.Sprite,
+  ): void {
     if (this.outerWalls) {
       this.scene.physics.add.collider(playerSprite, this.outerWalls);
     }

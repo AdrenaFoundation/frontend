@@ -16,7 +16,7 @@ export class InventoryService {
     this.scene = scene;
   }
 
-  initializeInventory(): void {
+  public initializeInventory(): void {
     const inventoryWindow = InventoryWindowFactory.create(
       this.scene as MainScene,
     );
@@ -64,19 +64,19 @@ export class InventoryService {
     }
   }
 
-  getInventoryItems(): InventoryGridSlot[] {
+  public getInventoryItems(): InventoryGridSlot[] {
     return this.inventoryItems;
   }
 
-  getInventoryWindow(): Sizer | undefined {
+  public getInventoryWindow(): Sizer | undefined {
     return this.inventoryWindow;
   }
 
-  isInventoryVisible(): boolean {
+  public isInventoryVisible(): boolean {
     return this.inventoryWindow?.visible || false;
   }
 
-  toggleInventory(): void {
+  public toggleInventory(): void {
     if (this.inventoryWindow) {
       this.inventoryWindow.setVisible(!this.inventoryWindow.visible);
     }

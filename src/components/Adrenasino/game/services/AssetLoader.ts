@@ -9,7 +9,7 @@ export class AssetLoader {
     this.scene = scene;
   }
 
-  async loadAllAssets(): Promise<void> {
+  public async loadAllAssets(): Promise<void> {
     this.loadInventoryAndItemAtlases();
     this.loadIndividualGameImages();
     this.loadTilemapAndPlayerSpritesheet();

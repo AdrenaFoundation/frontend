@@ -15,7 +15,7 @@ export default class InventoryWindow {
   private static inventoryWindow: Sizer | null = null;
   private static inventoryOpen: boolean = false;
 
-  static create(scene: MainScene) {
+  public static create(scene: MainScene) {
     const backgroundImg = scene.add.image(
       0,
       0,

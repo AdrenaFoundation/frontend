@@ -4,7 +4,7 @@ import { MainScene } from '../../game/scenes/MainScene';
 import InventoryGridSlot from './InventoryGridSlot';
 
 export default class InventoryGridFactory {
-  static create(scene: MainScene, slots: InventoryGridSlot[]) {
+  public static create(scene: MainScene, slots: InventoryGridSlot[]) {
     const cols = 6;
     const rows = 5;
 

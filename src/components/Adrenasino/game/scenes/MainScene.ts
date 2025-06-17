@@ -39,11 +39,11 @@ export class MainScene extends Scene {
     this.inventoryService = new InventoryService(this);
   }
 
-  async preload() {
+  public async preload() {
     await this.assetLoader.loadAllAssets();
   }
 
-  async create() {
+  public async create() {
     // TODO: use for multiplayer
     //await this.playroomKit.initialize();
 
@@ -120,7 +120,7 @@ export class MainScene extends Scene {
     });
   }
 
-  update() {
+  public update() {
     if (this.player) {
       this.player.update();
     }
@@ -147,7 +147,7 @@ export class MainScene extends Scene {
     // }
   }
 
-  getInventoryService(): InventoryService {
+  public getInventoryService(): InventoryService {
     return this.inventoryService;
   }
 }

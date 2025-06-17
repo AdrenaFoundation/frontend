@@ -1,10 +1,11 @@
+import { Scene } from 'phaser';
 import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { useSelector } from '@/store/store';
 
 import WalletConnection from '../WalletAdapter/WalletConnection';
 import { EventBus } from './game/EventBus';
-import StartGame from './game/main';
+import startGame from './game/main';
 
 export interface IRefAdrenasino {
     game: Phaser.Game | null;
@@ -21,13 +22,18 @@ export const Adrenasino = forwardRef<IRefAdrenasino, IProps>(function Adrenasino
 
     useLayoutEffect(() => {
         if (game.current === null) {
-
-            game.current = StartGame("game-container");
+            game.current = startGame("game-container");
 
             if (typeof ref === 'function') {
-                ref({ game: game.current, scene: null });
-            } else if (ref) {
-                ref.current = { game: game.current, scene: null };
+                ref({
+                    game: game.current,
+                    scene: null,
+                });
+            } else if (ref !== null) {
+                ref.current = {
+                    game: game.current,
+                    scene: null,
+                };
             }
 
         }
@@ -35,6 +41,7 @@ export const Adrenasino = forwardRef<IRefAdrenasino, IProps>(function Adrenasino
         return () => {
             if (game.current) {
                 game.current.destroy(true);
+
                 if (game.current !== null) {
                     game.current = null;
                 }
@@ -43,29 +50,28 @@ export const Adrenasino = forwardRef<IRefAdrenasino, IProps>(function Adrenasino
     }, [ref]);
 
     useEffect(() => {
-        EventBus.on('scene-ready', (scene_instance: Phaser.Scene) => {
+        EventBus.on('scene-ready', (scene_instance: Scene) => {
             if (currentActiveScene && typeof currentActiveScene === 'function') {
-
                 currentActiveScene(scene_instance);
-
             }
 
             if (typeof ref === 'function') {
-
-                ref({ game: game.current, scene: scene_instance });
-
+                ref({
+                    game: game.current,
+                    scene: scene_instance,
+                });
             } else if (ref) {
-
-                ref.current = { game: game.current, scene: scene_instance };
-
+                ref.current = {
+                    game: game.current,
+                    scene: scene_instance,
+                };
             }
 
         });
+
         return () => {
-
             EventBus.removeListener('scene-ready');
-
-        }
+        };
     }, [currentActiveScene, ref]);
 
     if (!wallet) {
@@ -79,7 +85,6 @@ export const Adrenasino = forwardRef<IRefAdrenasino, IProps>(function Adrenasino
     return (
         <div id="game-container"></div>
     );
-
 });
 
 export default Adrenasino;
