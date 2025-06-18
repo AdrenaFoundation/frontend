@@ -1,6 +1,7 @@
 import OverlapSizer from 'phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer';
 
-import { AScene } from '../AScene';
+import { AScene } from '../../GameEngine/AScene';
+import InventoryService from '../InventoryService';
 import Item, { ItemConfig } from '../Item/Item';
 import { InventoryGridContext } from './InventoryGridContext';
 
@@ -12,6 +13,7 @@ export default class InventoryGridSlot {
     public scene: AScene,
     public slotSprite: OverlapSizer,
     public slotType: InventoryGridContext,
+    public readonly inventoryService: InventoryService,
   ) {
     this.slotSprite.setData('slotIndex', this.slotIndex);
     this.slotSprite.setData('slotType', slotType);
@@ -23,7 +25,12 @@ export default class InventoryGridSlot {
       return null;
     }
 
-    const itemInstance = new Item(this.scene, this, item);
+    const itemInstance = new Item(
+      this.scene,
+      this,
+      item,
+      this.inventoryService,
+    );
     this.currentItem = itemInstance;
 
     this.slotSprite.add(this.currentItem.itemSprite, {

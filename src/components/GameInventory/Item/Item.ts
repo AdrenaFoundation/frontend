@@ -1,8 +1,9 @@
 import OverlapSizer from 'phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer';
 
-import { AScene } from '../AScene';
+import { AScene } from '../../GameEngine/AScene';
 import { InventoryGridContext } from '../Inventory/InventoryGridContext';
 import InventoryGridSlot from '../Inventory/InventoryGridSlot';
+import InventoryService from '../InventoryService';
 
 export interface ItemConfig {
   context: InventoryGridContext;
@@ -37,6 +38,7 @@ export default class Item {
     public readonly scene: AScene,
     public readonly slot: InventoryGridSlot,
     public readonly item: ItemConfig,
+    public readonly inventoryService: InventoryService,
   ) {
     this.currentSlot = slot;
 
@@ -68,9 +70,7 @@ export default class Item {
   }
 
   public moveToSlot(newSlotIndex: number) {
-    const newSlot = this.scene.getInventoryService().getInventoryItems()[
-      newSlotIndex
-    ];
+    const newSlot = this.inventoryService.getInventoryItems()[newSlotIndex];
     if (newSlot.slotSprite.getData('hasItem')) {
       console.warn('Target slot already has an item. Cannot move item.');
       return;

@@ -1,9 +1,23 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
 import ObjectTile from '@/components/GameEngine/ObjectTile';
+import InventoryService from '@/components/GameInventory/InventoryService';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
 type MainSceneConfig = ASceneConfig & {
   interactionDistance: number;
+
+  assets: {
+    external: {
+      tiles: string;
+      map: string;
+      player: string;
+      inventoryAtlas: {
+        image: string;
+        json: string;
+      };
+      inventoryWindow: string;
+    };
+  };
 
   // Default UI elements
   ui: {
@@ -70,12 +84,12 @@ const config: MainSceneConfig = {
       player:
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tyro-5KW3g9ugXSgLEHY3pKwyzR7bu2x6yV.png',
     },
-    local: {
-      basePath: '/assets/Game',
-      star: 'star.png',
-      background: 'bg.png',
-      logo: 'logo.png',
-    },
+    // local: {
+    //   basePath: '/assets/Game',
+    //   star: 'star.png',
+    //   background: 'bg.png',
+    //   logo: 'logo.png',
+    // },
   },
 
   // UI settings
@@ -111,21 +125,38 @@ export class MainScene extends AScene<MainSceneConfig> {
   // Chest doesn't move
   protected chest: ObjectTile | null = null;
 
+  public readonly inventoryService: InventoryService;
+
   constructor() {
     super({
       name: 'Main',
       config,
-      enableInventory: true,
     });
 
     this.uiService = new UIService(this);
+    this.inventoryService = new InventoryService(this);
   }
 
-  protected repositionUIElementsForNewScreenSize(
-    width: number,
-    height: number,
-  ): void {
+  // Abstract method implementation
+  protected handleResize(gameSize: { width: number; height: number }): void {
+    super.handleResize(gameSize);
+
+    const { width, height } = gameSize;
     this.uiService.updateResponsivePosition(width, height);
+  }
+
+  protected loadAssets(): void {
+    super.loadAssets();
+
+    const { inventoryAtlas, inventoryWindow } = this.config.assets.external;
+
+    this.load.atlas(
+      'A_inventory_window',
+      inventoryAtlas.image,
+      inventoryAtlas.json,
+    );
+
+    this.load.image('inventory_window', inventoryWindow);
   }
 
   public async create() {
@@ -135,18 +166,24 @@ export class MainScene extends AScene<MainSceneConfig> {
 
     await super.create();
 
+    // Do it after the super call so it's on top layer
+    this.inventoryService.initializeInventory();
+
     // We know there is only one chest in the scene
     this.chest = (await this.tilemapService.getObjectsByName('chest'))[0];
   }
 
   protected setupInteractionControls(): void {
+    // Open/Close inventory with 'I' key when close to the chest
     this.input?.keyboard?.on('keydown-I', () => {
       if (
         this.player &&
         this.chest &&
         this.player?.isNearObject(this.chest, this.config.interactionDistance)
       ) {
-        this.getInventoryService().toggleInventory();
+        this.inventoryService.toggleInventory();
+      } else {
+        this.inventoryService.hideInventory();
       }
     });
   }
@@ -160,7 +197,7 @@ export class MainScene extends AScene<MainSceneConfig> {
         this.config.interactionDistance,
       );
 
-      const isInventoryOpen = this.getInventoryService().isInventoryVisible();
+      const isInventoryOpen = this.inventoryService.isInventoryVisible();
 
       const { x: playerX, y: playerY } = this.player.getPosition();
 

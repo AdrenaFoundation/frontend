@@ -1,6 +1,6 @@
 import OverlapSizer from 'phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer';
 
-import { AScene } from '../AScene';
+import { AScene } from '../../GameEngine/AScene';
 
 export default class InventoryGridSlotSpriteFactory {
   public static create(scene: AScene) {

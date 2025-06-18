@@ -1,10 +1,10 @@
 import Sizer from 'phaser3-rex-plugins/templates/ui/sizer/Sizer';
 
-import { AScene } from './AScene';
+import { AScene } from '../GameEngine/AScene';
+import { INITIAL_INVENTORY_ITEMS } from '../GameEngine/InventoryData';
 import { InventoryGridContext } from './Inventory/InventoryGridContext';
 import InventoryGridSlot from './Inventory/InventoryGridSlot';
 import InventoryWindowFactory from './Inventory/inventoryWindowFactory';
-import { INITIAL_INVENTORY_ITEMS } from './InventoryData';
 
 class InventoryService {
   private scene: AScene;
@@ -16,24 +16,13 @@ class InventoryService {
   }
 
   public initializeInventory(): void {
-    const inventoryWindow = InventoryWindowFactory.create(this.scene);
+    const inventoryWindow = InventoryWindowFactory.create(this.scene, this);
 
     this.inventoryItems = inventoryWindow.slots as InventoryGridSlot[];
     this.inventoryWindow = inventoryWindow.window || undefined;
     this.inventoryWindow?.setVisible(false);
 
-    this.setupKeyboardControls();
     this.populateInventory();
-  }
-
-  private setupKeyboardControls(): void {
-    this.scene.input?.keyboard?.on('keydown-I', () => {
-      console.log('I key pressed, toggling inventory visibility');
-
-      if (this.inventoryWindow) {
-        this.inventoryWindow.setVisible(!this.inventoryWindow.visible);
-      }
-    });
   }
 
   private populateInventory(): void {
@@ -74,6 +63,12 @@ class InventoryService {
 
   public isInventoryVisible(): boolean {
     return this.inventoryWindow?.visible || false;
+  }
+
+  public hideInventory(): void {
+    if (this.inventoryWindow) {
+      this.inventoryWindow.setVisible(false);
+    }
   }
 
   public toggleInventory(): void {

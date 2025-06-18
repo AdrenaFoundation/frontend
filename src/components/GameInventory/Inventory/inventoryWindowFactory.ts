@@ -3,7 +3,8 @@ import Sizer from 'phaser3-rex-plugins/templates/ui/sizer/Sizer';
 
 import { centerVH } from '@/utils';
 
-import { AScene } from '../AScene';
+import { AScene } from '../../GameEngine/AScene';
+import InventoryService from '../InventoryService';
 import InventoryGridFactory from './InventoryGridFactory';
 import InventoryGridSlot from './InventoryGridSlot';
 import InventoryGridSlotFactory from './InventoryGridSlotFactory';
@@ -15,7 +16,7 @@ export default class InventoryWindow {
   private static inventoryWindow: Sizer | null = null;
   private static inventoryOpen: boolean = false;
 
-  public static create(scene: AScene) {
+  public static create(scene: AScene, inventoryService: InventoryService) {
     const backgroundImg = scene.add.image(
       0,
       0,
@@ -40,6 +41,7 @@ export default class InventoryWindow {
       scene,
       30,
       InventoryGridSlotSpriteFactory.create as SlotSpriteFactory,
+      inventoryService,
     );
 
     const inventoryGridManager = InventoryGridFactory.create(

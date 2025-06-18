@@ -1,8 +1,6 @@
 import { Scene } from 'phaser';
-import { PlayerState } from 'playroomkit';
 
 import { EventBus } from './EventBus';
-import InventoryService from './InventoryService';
 import Player from './Player';
 import TilemapService from './TilemapService';
 
@@ -28,22 +26,13 @@ export interface ASceneConfig {
       tiles: string;
       map: string;
       player: string;
-      //
-      // Optional if inventory is enabled
-      inventoryAtlas?: {
-        image: string;
-        json: string;
-      };
-      inventoryWindow?: string;
-      //
-      //
     };
-    local?: {
-      basePath?: string;
-      star?: string;
-      background?: string;
-      logo?: string;
-    };
+    // local?: {
+    //   basePath?: string;
+    //   star?: string;
+    //   background?: string;
+    //   logo?: string;
+    // };
   };
 }
 
@@ -52,35 +41,20 @@ export abstract class AScene<
 > extends Scene {
   protected tilemapService: TilemapService;
 
-  // Optional inventory
-  protected inventoryService: InventoryService | null = null;
-
   public readonly config: T;
 
-  protected player: Player | undefined;
+  protected player: Player | null = null;
 
-  protected players: {
-    sprite: Phaser.GameObjects.Sprite;
-    state: PlayerState;
-  }[] = [];
+  // protected players: {
+  //   sprite: Phaser.GameObjects.Sprite;
+  //   state: PlayerState;
+  // }[] = [];
 
-  constructor({
-    name = 'Main',
-    config,
-    enableInventory = false,
-  }: {
-    name: string;
-    config: T;
-    enableInventory: boolean;
-  }) {
+  constructor({ name = 'Main', config }: { name: string; config: T }) {
     super(name);
 
     this.config = config;
     this.tilemapService = new TilemapService(this);
-
-    if (enableInventory) {
-      this.inventoryService = new InventoryService(this);
-    }
   }
 
   protected loadAssets(): void {
@@ -104,36 +78,14 @@ export abstract class AScene<
       frameWidth: playerFrameWidth,
       frameHeight: playerFrameHeight,
     });
-
-    if (this.inventoryService) {
-      if (!external.inventoryAtlas || !external.inventoryWindow) {
-        throw new Error(
-          'Inventory Atlas and Window are required when inventory is enabled.',
-        );
-      }
-
-      this.load.atlas(
-        'A_inventory_window',
-        external.inventoryAtlas.image,
-        external.inventoryAtlas.json,
-      );
-
-      this.load.image('inventory_window', external.inventoryWindow);
-    }
   }
 
   public async preload() {
     this.loadAssets();
   }
 
+  // Called automatically by Phaser after preload
   public async create() {
-    this.initializeGame();
-    this.setupResponsiveHandling();
-
-    EventBus.emit('scene-ready', this);
-  }
-
-  protected initializeGame(): void {
     const { width, height } = this.config;
 
     this.tilemapService.createTilemap();
@@ -142,11 +94,11 @@ export abstract class AScene<
 
     this.tilemapService.addColliderWithPlayer(this.player.getSprite());
 
-    if (this.inventoryService) {
-      this.inventoryService.initializeInventory();
-    }
-
     this.setupInteractionControls();
+
+    this.setupResponsiveHandling();
+
+    EventBus.emit('scene-ready', this);
   }
 
   protected setupResponsiveHandling(): void {
@@ -159,13 +111,8 @@ export abstract class AScene<
   protected handleResize(gameSize: { width: number; height: number }): void {
     const { width, height } = gameSize;
 
-    this.repositionTilemapForNewScreenSize();
-    this.keepPlayerWithinScreenBounds(width, height);
-    this.repositionUIElementsForNewScreenSize(width, height);
-  }
-
-  protected repositionTilemapForNewScreenSize(): void {
     this.tilemapService.updateResponsivePosition();
+    this.keepPlayerWithinScreenBounds(width, height);
   }
 
   protected keepPlayerWithinScreenBounds(width: number, height: number): void {
@@ -177,26 +124,11 @@ export abstract class AScene<
     }
   }
 
-  protected abstract repositionUIElementsForNewScreenSize(
-    width: number,
-    height: number,
-  ): void;
-
   protected abstract setupInteractionControls(): void;
 
   public update() {
     if (this.player) {
       this.player.update();
     }
-  }
-
-  public getInventoryService(): InventoryService {
-    if (this.inventoryService === null) {
-      throw new Error(
-        'InventoryService is not initialized. Please enable inventory in the scene constructor.',
-      );
-    }
-
-    return this.inventoryService;
   }
 }
