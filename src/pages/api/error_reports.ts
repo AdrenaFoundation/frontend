@@ -40,8 +40,6 @@ export default async function handler(
       action,
       step,
       txHash,
-      id,
-      created_at,
     } = req.body as ErrorReportType;
 
     // Validate required fields
@@ -56,7 +54,6 @@ export default async function handler(
     const ref = `ERR-${Date.now()}-${random}`;
 
     const report = {
-      id,
       wallet_address: wallet_address ?? 'anonymous',
       error_message,
       console_log: console_log ?? '',
@@ -67,7 +64,6 @@ export default async function handler(
       timestamp: new Date().toISOString(),
       txHash: txHash ?? null,
       ref: ref ?? '',
-      created_at,
     };
 
     const { error } = await supabaseClient
