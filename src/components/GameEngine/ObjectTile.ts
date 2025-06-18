@@ -1,4 +1,4 @@
-import TilemapService from '../services/TilemapService';
+import TilemapService from './TilemapService';
 
 class ObjectTile {
   public readonly tile: Phaser.Tilemaps.Tile;

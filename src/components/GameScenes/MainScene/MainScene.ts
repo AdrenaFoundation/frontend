@@ -1,5 +1,5 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
-import ObjectTile from '@/components/GameEngine/entities/ObjectTile';
+import ObjectTile from '@/components/GameEngine/ObjectTile';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
 type MainSceneConfig = ASceneConfig & {

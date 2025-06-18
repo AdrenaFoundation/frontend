@@ -1,10 +1,10 @@
 import Sizer from 'phaser3-rex-plugins/templates/ui/sizer/Sizer';
 
-import { AScene } from '../AScene';
-import { INITIAL_INVENTORY_ITEMS } from '../data/InventoryData';
-import { InventoryGridContext } from '../interface/Inventory/InventoryGridContext';
-import InventoryGridSlot from '../interface/Inventory/InventoryGridSlot';
-import InventoryWindowFactory from '../interface/Inventory/inventoryWindowFactory';
+import { AScene } from './AScene';
+import { InventoryGridContext } from './Inventory/InventoryGridContext';
+import InventoryGridSlot from './Inventory/InventoryGridSlot';
+import InventoryWindowFactory from './Inventory/inventoryWindowFactory';
+import { INITIAL_INVENTORY_ITEMS } from './InventoryData';
 
 class InventoryService {
   private scene: AScene;

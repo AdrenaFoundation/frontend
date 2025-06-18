@@ -1,10 +1,10 @@
 import { Scene } from 'phaser';
 import { PlayerState } from 'playroomkit';
 
-import Player from './entities/Player';
 import { EventBus } from './EventBus';
-import InventoryService from './services/InventoryService';
-import TilemapService from './services/TilemapService';
+import InventoryService from './InventoryService';
+import Player from './Player';
+import TilemapService from './TilemapService';
 
 // Cherry picked by:
 // type t = Phaser.Types.Core.GameConfig;

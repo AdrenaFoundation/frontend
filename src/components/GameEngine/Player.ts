@@ -1,5 +1,5 @@
-import config from '../../GameScenes/MainScene/config';
-import { AScene } from '../AScene';
+import config from '../GameScenes/MainScene/config';
+import { AScene } from './AScene';
 import ObjectTile from './ObjectTile';
 
 class Player {

@@ -1,5 +1,5 @@
-import { AScene } from '../AScene';
-import ObjectTile from '../entities/ObjectTile';
+import { AScene } from './AScene';
+import ObjectTile from './ObjectTile';
 
 class TilemapService {
   private scene: AScene;
