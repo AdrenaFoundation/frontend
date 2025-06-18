@@ -1,6 +1,7 @@
 import { AScene } from '../AScene';
+import ObjectTile from '../entities/ObjectTile';
 
-export class TilemapService {
+class TilemapService {
   private scene: AScene;
   private map: Phaser.Tilemaps.Tilemap | null = null;
   private tiles: Phaser.Tilemaps.Tileset | null = null;
@@ -135,18 +136,18 @@ export class TilemapService {
     return this.objects;
   }
 
-  public getObjectsByName(name: string): Promise<Phaser.Tilemaps.Tile[]> {
+  public getObjectsByName(name: string): Promise<ObjectTile[]> {
     return new Promise((resolve) => {
       if (!this.objects) {
         resolve([]);
         return;
       }
 
-      const matchingTiles: Phaser.Tilemaps.Tile[] = [];
+      const matchingTiles: ObjectTile[] = [];
 
       this.objects.forEachTile((tile) => {
         if (tile.properties?.name === name) {
-          matchingTiles.push(tile);
+          matchingTiles.push(new ObjectTile(tile, this));
         }
       });
 
@@ -162,3 +163,5 @@ export class TilemapService {
     }
   }
 }
+
+export default TilemapService;

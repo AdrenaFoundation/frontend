@@ -1,13 +1,13 @@
-import { Scene } from 'phaser';
-
 import config from '../../GameScenes/MainScene/config';
+import { AScene } from '../AScene';
+import ObjectTile from './ObjectTile';
 
-export class Player {
-  private scene: Scene;
+class Player {
+  private scene: AScene;
   private sprite: Phaser.Physics.Arcade.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  constructor(scene: Scene, x: number, y: number) {
+  constructor(scene: AScene, x: number, y: number) {
     this.scene = scene;
     this.sprite = scene.physics.add.sprite(x, y, 'player', 1);
     this.sprite.setCollideWorldBounds(true);
@@ -116,4 +116,30 @@ export class Player {
   public addCollider(object: Phaser.GameObjects.GameObject): void {
     this.scene.physics.add.collider(this.sprite, object);
   }
+
+  public isNearObject(
+    objectTile: ObjectTile,
+    interactionDistance: number,
+  ): boolean {
+    const { x: playerX, y: playerY } = this.getPosition();
+
+    const {
+      x: offsetX,
+      y: offsetY,
+      tilemap: { tileHeight, tileWidth },
+    } = objectTile.tilemapService.getObjectsLayer();
+
+    const { pixelX: objectX, pixelY: objectY } = objectTile.tile;
+
+    const distance = Phaser.Math.Distance.Between(
+      playerX,
+      playerY,
+      objectX + offsetX + tileWidth / 2,
+      objectY + offsetY + tileHeight / 2,
+    );
+
+    return distance <= interactionDistance;
+  }
 }
+
+export default Player;

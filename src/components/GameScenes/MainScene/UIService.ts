@@ -1,6 +1,6 @@
 import { MainScene } from './MainScene';
 
-export class UIService {
+class UIService {
   private scene: MainScene;
   private interactionText: Phaser.GameObjects.Text | undefined;
   private titleText: Phaser.GameObjects.Text | undefined;
@@ -103,3 +103,5 @@ export class UIService {
     return this.interactionText;
   }
 }
+
+export default UIService;

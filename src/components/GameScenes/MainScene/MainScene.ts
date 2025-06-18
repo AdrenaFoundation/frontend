@@ -1,5 +1,6 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
-import { UIService } from '@/components/GameScenes/MainScene/UIService';
+import ObjectTile from '@/components/GameEngine/entities/ObjectTile';
+import UIService from '@/components/GameScenes/MainScene/UIService';
 
 type MainSceneConfig = ASceneConfig & {
   interactionDistance: number;
@@ -112,7 +113,7 @@ export class MainScene extends AScene<MainSceneConfig> {
   protected uiService: UIService;
 
   // Chest doesn't move
-  protected chestPosition: Phaser.Tilemaps.Tile | null = null;
+  protected chest: ObjectTile | null = null;
 
   constructor() {
     super({
@@ -139,39 +140,16 @@ export class MainScene extends AScene<MainSceneConfig> {
     await super.create();
 
     // We know there is only one chest in the scene
-    this.chestPosition = (
-      await this.tilemapService.getObjectsByName('chest')
-    )[0];
-  }
-
-  // TODO: Create a generic logic for checking proximity to objects directly in TilemapService with callbacks
-  protected isPlayerNearChest(): boolean {
-    if (!this.player) {
-      return false;
-    }
-    const { x: playerX, y: playerY } = this.player.getPosition();
-
-    if (!this.chestPosition) {
-      return false;
-    }
-
-    const { x: offsetX, y: offsetY } = this.tilemapService.getObjectsLayer();
-
-    const { pixelX: chestX, pixelY: chestY } = this.chestPosition;
-
-    const distance = Phaser.Math.Distance.Between(
-      playerX,
-      playerY,
-      chestX + offsetX,
-      chestY + offsetY,
-    );
-
-    return distance <= this.config.interactionDistance;
+    this.chest = (await this.tilemapService.getObjectsByName('chest'))[0];
   }
 
   protected setupInteractionControls(): void {
     this.input?.keyboard?.on('keydown-I', () => {
-      if (this.player && this.isPlayerNearChest()) {
+      if (
+        this.player &&
+        this.chest &&
+        this.player?.isNearObject(this.chest, this.config.interactionDistance)
+      ) {
         this.getInventoryService().toggleInventory();
       }
     });
@@ -180,8 +158,12 @@ export class MainScene extends AScene<MainSceneConfig> {
   public update() {
     super.update();
 
-    if (this.player) {
-      const isNearChest = this.isPlayerNearChest();
+    if (this.player && this.chest) {
+      const isNearChest = this.player.isNearObject(
+        this.chest,
+        this.config.interactionDistance,
+      );
+
       const isInventoryOpen = this.getInventoryService().isInventoryVisible();
 
       const { x: playerX, y: playerY } = this.player.getPosition();

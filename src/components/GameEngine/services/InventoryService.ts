@@ -6,7 +6,7 @@ import { InventoryGridContext } from '../interface/Inventory/InventoryGridContex
 import InventoryGridSlot from '../interface/Inventory/InventoryGridSlot';
 import InventoryWindowFactory from '../interface/Inventory/inventoryWindowFactory';
 
-export class InventoryService {
+class InventoryService {
   private scene: AScene;
   private inventoryItems: InventoryGridSlot[] = [];
   private inventoryWindow: Sizer | undefined;
@@ -80,3 +80,5 @@ export class InventoryService {
     }
   }
 }
+
+export default InventoryService;
