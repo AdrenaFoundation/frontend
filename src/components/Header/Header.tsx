@@ -207,7 +207,7 @@ export default function Header({
               </div>
             </div>
           ) : (
-            <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
+            <div className="w-[8.33875rem] h-[1.75rem] bg-gray-800 rounded-xl" />
           )}
         </Link>
 
@@ -245,7 +245,7 @@ export default function Header({
               </div>
             </div>
           ) : (
-            <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
+            <div className="w-[8.33875rem] h-[1.75rem] bg-gray-800 rounded-xl" />
           )}
         </Link>
 

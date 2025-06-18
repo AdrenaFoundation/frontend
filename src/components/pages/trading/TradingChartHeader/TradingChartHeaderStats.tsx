@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -140,10 +141,10 @@ export default function TradingChartHeaderStats({
                 {numberLong && numberShort ? (
                     <div className="flex flex-row gap-2 mr-0 xl:mr-4">
                         <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
-                            <div className="text-center justify-start text-greenSide text-xxs font-mono">Long:{numberLong}</div>
+                            <Link href="/monitoring?view=livePositions" className="text-center justify-start text-greenSide text-xxs font-mono">Long:{numberLong}</Link>
                         </div>
                         <div className="px-2 py-1 bg-red/10 rounded-lg inline-flex justify-center items-center gap-2">
-                            <div className="text-center justify-start text-redSide text-xxs font-mono">Short:{numberShort}</div>
+                            <Link href="/monitoring?view=livePositions" className="text-center justify-start text-redSide text-xxs font-mono">Short:{numberShort}</Link>
                         </div>
                     </div>
                 ) : null}

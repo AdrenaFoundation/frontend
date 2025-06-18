@@ -150,7 +150,7 @@ export default function BurgerMenu({
                   </div>
                 </div>
               ) : (
-                <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
+                <div className="w-[4.75125rem] sm:w-[7em] h-[2.4625rem] animate-pulse bg-gray-800 rounded-xl" />
               )}
             </Link>
 
@@ -188,7 +188,7 @@ export default function BurgerMenu({
                   </div>
                 </div>
               ) : (
-                <div className="w-[7em] h-4 bg-gray-800 rounded-xl" />
+                <div className="w-[4.75125rem] sm:w-[7em] h-[2.4625rem] animate-pulse bg-gray-800 rounded-xl" />
               )}
             </Link>
           </div>
