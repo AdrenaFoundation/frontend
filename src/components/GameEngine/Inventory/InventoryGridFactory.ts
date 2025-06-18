@@ -1,6 +1,6 @@
 import GridSizer from 'phaser3-rex-plugins/templates/ui/gridsizer/GridSizer';
 
-import { AScene } from '../../AScene';
+import { AScene } from '../AScene';
 import InventoryGridSlot from './InventoryGridSlot';
 
 export default class InventoryGridFactory {

@@ -3,7 +3,7 @@ import Sizer from 'phaser3-rex-plugins/templates/ui/sizer/Sizer';
 
 import { centerVH } from '@/utils';
 
-import { AScene } from '../../AScene';
+import { AScene } from '../AScene';
 import InventoryGridFactory from './InventoryGridFactory';
 import InventoryGridSlot from './InventoryGridSlot';
 import InventoryGridSlotFactory from './InventoryGridSlotFactory';
