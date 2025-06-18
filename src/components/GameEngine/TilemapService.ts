@@ -14,7 +14,7 @@ class TilemapService {
   }
 
   public createTilemap(): void {
-    const { width, height, tilemapOffsetX, tilemapOffsetY } = this.scene.config;
+    const { width, height } = this.scene.config;
 
     this.map = this.scene.add.tilemap('map');
     this.tiles = this.map.addTilesetImage('pixel-cyberpunk-interior', 'tiles');
@@ -24,8 +24,11 @@ class TilemapService {
       return;
     }
 
-    const offsetX = width / 2 - tilemapOffsetX;
-    const offsetY = height / 2 - tilemapOffsetY;
+    const mapWidth = this.map.widthInPixels;
+    const mapHeight = this.map.heightInPixels;
+
+    const offsetX = (width - mapWidth) / 2;
+    const offsetY = (height - mapHeight) / 2;
 
     this.floor = this.map.createLayer('floor', this.tiles, offsetX, offsetY);
 

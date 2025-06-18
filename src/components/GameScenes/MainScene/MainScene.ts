@@ -33,17 +33,13 @@ type MainSceneConfig = ASceneConfig & {
 };
 
 const config: MainSceneConfig = {
-  width: 1024,
-  height: 768,
+  width: 500,
+  height: 500,
 
   playerFrameWidth: 32,
   playerFrameHeight: 32,
 
   interactionDistance: 50,
-
-  // Tilemap settings
-  tilemapOffsetX: 192,
-  tilemapOffsetY: 250,
 
   // Responsive settings
   responsive: {
@@ -133,8 +129,8 @@ export class MainScene extends AScene<MainSceneConfig> {
   }
 
   public async create() {
-    this.uiService.createTitle();
-    this.uiService.createInstructions();
+    // this.uiService.createTitle();
+    // this.uiService.createInstructions();
     this.uiService.createInteractionText();
 
     await super.create();

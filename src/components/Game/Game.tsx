@@ -25,7 +25,7 @@ const DEFAULT_CONFIG: Types.Core.GameConfig = {
     parent: 'game-container',
     width: window.innerWidth,
     height: window.innerHeight,
-    backgroundColor: '#028af8',
+    backgroundColor: '#0c1119',
     pixelArt: true,
     scene: [MainScene],
     plugins: {

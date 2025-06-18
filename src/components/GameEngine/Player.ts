@@ -126,16 +126,22 @@ class Player {
     const {
       x: offsetX,
       y: offsetY,
-      tilemap: { tileHeight, tileWidth },
+      scaleX,
+      scaleY,
+      tilemap: { tileWidth, tileHeight },
     } = objectTile.tilemapService.getObjectsLayer();
 
     const { pixelX: objectX, pixelY: objectY } = objectTile.tile;
 
+    // Apply scale to object center
+    const centerX = (objectX + tileWidth / 2) * scaleX + offsetX;
+    const centerY = (objectY + tileHeight / 2) * scaleY + offsetY;
+
     const distance = Phaser.Math.Distance.Between(
       playerX,
       playerY,
-      objectX + offsetX + tileWidth / 2,
-      objectY + offsetY + tileHeight / 2,
+      centerX,
+      centerY,
     );
 
     return distance <= interactionDistance;

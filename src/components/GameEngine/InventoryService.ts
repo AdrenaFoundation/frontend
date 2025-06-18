@@ -28,6 +28,8 @@ class InventoryService {
 
   private setupKeyboardControls(): void {
     this.scene.input?.keyboard?.on('keydown-I', () => {
+      console.log('I key pressed, toggling inventory visibility');
+
       if (this.inventoryWindow) {
         this.inventoryWindow.setVisible(!this.inventoryWindow.visible);
       }

@@ -11,8 +11,6 @@ import TilemapService from './TilemapService';
 export interface ASceneConfig {
   width: number;
   height: number;
-  tilemapOffsetX: number;
-  tilemapOffsetY: number;
   responsive: {
     minScale: number;
     maxScale: number;
