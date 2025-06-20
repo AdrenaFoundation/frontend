@@ -4,13 +4,14 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Legend,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
-import { AxisDomain } from 'recharts/types/util/types';
+import { AxisDomain, DataKey } from 'recharts/types/util/types';
 
 import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
@@ -30,12 +31,16 @@ export default function AreaRechart<T extends string>({
   tippyContent,
   subValue,
   formatY = 'currency',
+  formatTooltipNumber = 'currency',
   gmt,
   events,
+  lockPeriod,
+  setLockPeriod,
+  lockPeriods,
 }: {
   title: string;
   data: RechartsData[];
-  labels: {
+  labels?: {
     name: string;
     color?: string;
   }[];
@@ -49,9 +54,15 @@ export default function AreaRechart<T extends string>({
   tippyContent?: ReactNode;
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
+  formatTooltipNumber?: 'percentage' | 'currency' | 'number';
   gmt?: number;
-  events?: AdrenaEvent[],
+  events?: AdrenaEvent[];
+  lockPeriod?: number;
+  setLockPeriod?: (period: number) => void;
+  lockPeriods?: number[];
 }) {
+  const [hiddenLabels, setHiddenLabels] = React.useState<DataKey<string | number>[]>([]);
+
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
       return formatPercentage(tickItem, 0);
@@ -70,25 +81,43 @@ export default function AreaRechart<T extends string>({
         <div className="flex flex-row gap-3 items-center">
           <h2 className="">{title}</h2>
 
-          {tippyContent && (
+          {tippyContent ? (
             <Tippy content={tippyContent} placement="auto">
               <span className="cursor-help text-txtfade">ⓘ</span>
             </Tippy>
-          )}
+          ) : null}
 
-          <FormatNumber
+          {subValue ? <FormatNumber
             nb={subValue}
             className="text-sm text-txtfade sm:text-xs"
-            format="currency"
+            format={formatTooltipNumber}
             prefix="("
             suffix=")"
             suffixClassName='ml-0 text-txtfade'
             isDecimalDimmed={false}
             precision={title === 'ALP Price' ? 4 : 0}
-          />
+          /> : null}
         </div>
 
-        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+        <div className="flex flex-col gap-2 items-end">
+          <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+
+          {lockPeriods && setLockPeriod && (
+            <div className="flex gap-2 text-sm items-center">
+              <span className="text-txtfade mr-1">Lock:</span>
+              {lockPeriods.map((period) => (
+                <div
+                  key={period}
+                  className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                    }`}
+                  onClick={() => setLockPeriod(period)}
+                >
+                  {period}d
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -102,7 +131,8 @@ export default function AreaRechart<T extends string>({
           <Tooltip
             content={
               <CustomRechartsToolTip
-                isValueOnly={labels.length === 1}
+                isValueOnly={labels?.length === 1}
+                format={formatTooltipNumber}
                 gmt={gmt}
                 events={events}
               />
@@ -110,14 +140,37 @@ export default function AreaRechart<T extends string>({
             cursor={false}
           />
 
+          <Legend
+            onClick={(e) => {
+              setHiddenLabels(() => {
+                if (
+                  hiddenLabels.includes(
+                    String(e.dataKey).trim() as DataKey<string | number>,
+                  )
+                ) {
+                  return hiddenLabels.filter(
+                    (l) => l !== String(e.dataKey).trim(),
+                  ) as DataKey<string | number>[];
+                }
+
+                return [
+                  ...hiddenLabels,
+                  String(e.dataKey).trim() as DataKey<string | number>,
+                ];
+              });
+            }}
+            wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
+          />
+
           {labels?.map(({ name, color }) => {
+            const isHidden = hiddenLabels.includes(name);
             return (
               <Area
                 type="monotone"
-                dataKey={name}
+                dataKey={isHidden ? name + ' ' : name} // Add space to hide the area but keep the legend
                 key={name}
-                stroke={color}
-                fill={color}
+                stroke={isHidden ? `${color}80` : color} // 50% opacity for hidden areas
+                fill={isHidden ? `${color}40` : color} // More transparent fill for hidden areas
               />
             );
           })}

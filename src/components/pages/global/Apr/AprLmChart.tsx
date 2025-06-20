@@ -1,31 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import LineRechart from '@/components/ReCharts/LineRecharts';
+import AreaRechart from '@/components/ReCharts/AreaRecharts';
 import DataApiClient from '@/DataApiClient';
 import { getGMT } from '@/utils';
 
-interface AprChartProps {
-  isSmallScreen: boolean;
-}
-
-export function AprLmChart({ isSmallScreen }: AprChartProps) {
+export function AprLmChart() {
   const [infos, setInfos] = useState<{
-    formattedData: (
-      | {
-        time: string;
-      }
-      | { [key: string]: number }
-    )[];
-
-    // custodiesColors: string[];
+    formattedData: {
+      time: string;
+      [key: string]: string | number;
+    }[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('3M');
+  const [period, setPeriod] = useState<string | null>('6M');
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(540);
   const periodRef = useRef(period);
+  const selectedPeriodRef = useRef(selectedPeriod);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
+    selectedPeriodRef.current = selectedPeriod;
 
     getInfo();
 
@@ -41,7 +36,8 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         intervalRef.current = null;
       }
     };
-  }, [period]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [period, selectedPeriod]);
 
   const getInfo = async () => {
     try {
@@ -62,7 +58,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         }
       })();
 
-      const data = await DataApiClient.getChartAprsInfo(dataPeriod);
+      const data = await DataApiClient.getChartAprsInfo(dataPeriod, 'lm', selectedPeriodRef.current);
 
       const timeStamp = data.aprs[0].end_date.map((time: string) => {
         if (periodRef.current === '1d') {
@@ -92,23 +88,18 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         throw new Error('Invalid period');
       });
 
-      const totalAprInfo = [0, 90, 180, 360, 540].reduce((acc, c) => {
-        acc.push({
-          lockedPeriod: `${c}D TOTAL`,
-          values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.total_apr ?? [],
-        });
+      // Get data for the selected period only
+      const selectedData = data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === selectedPeriodRef.current);
 
-        return acc;
-      }, [] as { lockedPeriod: string; values: number[] }[]);
+      if (!selectedData) {
+        console.error('No data found for selected period:', selectedPeriodRef.current);
+        return;
+      }
 
       const formatted = timeStamp.map((time: string, i: number) => ({
         time,
-
-        ...totalAprInfo.reduce((acc, { lockedPeriod, values }) => {
-          acc[lockedPeriod] = values[i];
-
-          return acc;
-        }, {} as { [key: string]: number }),
+        'ADX APR': selectedData.locked_adx_apr[i] || 0,
+        'USDC APR': (selectedData.locked_usdc_apr[i] || 0) + (selectedData.liquid_apr[i] || 0),
       }));
 
       setInfos({
@@ -127,36 +118,28 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
     );
   }
 
-  return (
-    <LineRechart
-      title="STAKED ADX APR"
-      data={infos.formattedData}
-      labels={[
-        ...Object.keys(infos.formattedData[0])
-          .filter((key) => key !== 'time')
-          .map((x) => ({
-            name: x,
-            color: (() => {
-              if (x.includes('90')) return '#99cc99'; // Light green
-              if (x.includes('180')) return '#ffd966'; // Light yellow
-              if (x.includes('360')) return '#ff9999'; // Light red
-              if (x.includes('540')) return '#ccccff'; // Light purple
-              if (x.includes('0')) return '#66b3ff'; // Light blue
+  const labels = [
+    { name: 'ADX APR', color: '#fa6b6b' },
+    { name: 'USDC APR', color: '#66b3ff' },
+  ];
 
-              return '#ccccff'; // Light purple as a fallback
-            })(),
-          })),
-      ]}
-      yDomain={[0]}
+  return (
+    <AreaRechart
+      title="STAKED ADX APR - BREAKDOWN"
+      data={infos.formattedData}
+      labels={labels}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      gmt={getGMT()}
       setPeriod={setPeriod}
       periods={['1d', '7d', '1M', '3M', '6M', {
         name: '1Y',
         disabled: true,
       }]}
-      isSmallScreen={isSmallScreen}
       formatY='percentage'
+      formatTooltipNumber='percentage'
+      lockPeriod={selectedPeriod}
+      setLockPeriod={setSelectedPeriod}
+      lockPeriods={[0, 90, 180, 360, 540]}
     />
   );
 }

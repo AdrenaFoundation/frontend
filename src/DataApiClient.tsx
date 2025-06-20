@@ -155,7 +155,7 @@ export default class DataApiClient {
         return result.data;
     }
 
-    public static async getChartAprsInfo(nbDays: number): Promise<{
+    public static async getChartAprsInfo(nbDays: number, stakingType?: 'lm' | 'lp', lockPeriod?: number): Promise<{
         aprs: {
             annualized_rate_adx: number[];
             annualized_rate_adx_normalized_usd: number[];
@@ -178,7 +178,7 @@ export default class DataApiClient {
                 startDate.setDate(startDate.getDate() - nbDays);
 
                 return startDate.toISOString();
-            })()}&end_date=${new Date().toISOString()}`,
+            })()}&end_date=${new Date().toISOString()}${stakingType ? `&staking_type=${stakingType}` : ''}${lockPeriod ? `&lock_period=${lockPeriod}` : ''}`,
         ).then((res) => res.json());
 
         return result.data;
