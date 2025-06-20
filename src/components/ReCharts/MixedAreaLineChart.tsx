@@ -47,6 +47,7 @@ export default function MixedAreaLineChart<T extends string>({
     lockPeriod,
     setLockPeriod,
     lockPeriods,
+    exportToCSV,
 }: {
     title: string;
     data: RechartsData[];
@@ -68,6 +69,7 @@ export default function MixedAreaLineChart<T extends string>({
     lockPeriod?: number;
     setLockPeriod?: (period: number) => void;
     lockPeriods?: number[];
+    exportToCSV?: () => void;
 }) {
     const [hiddenLabels, setHiddenLabels] = React.useState<
         DataKey<string | number>[]
@@ -117,6 +119,15 @@ export default function MixedAreaLineChart<T extends string>({
                         isDecimalDimmed={false}
                         precision={title.includes('ALP Price') ? 4 : 0}
                     /> : null}
+
+                    {exportToCSV ? (
+                        <button
+                            onClick={exportToCSV}
+                            className="text-sm text-txtfade hover:text-white transition-colors cursor-pointer underline"
+                        >
+                            Export
+                        </button>
+                    ) : null}
                 </div>
 
                 <div className="flex flex-col gap-2 items-end">

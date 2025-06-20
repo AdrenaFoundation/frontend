@@ -53,6 +53,8 @@ export function AprLmChart() {
             return 93;
           case '6M':
             return 183;
+          case '1Y':
+            return 365;
           default:
             return 1;
         }
@@ -76,7 +78,7 @@ export function AprLmChart() {
           });
         }
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -107,14 +109,17 @@ export function AprLmChart() {
         };
       });
 
+      // Remove first value if period is 1Y (it's the first value of the platform, values are too big to display in the chart)
+      const filteredFormatted = periodRef.current === '1Y' ? formatted.slice(1) : formatted;
+
       // Calculate average of total APR values
-      const usdcAprValues = formatted.map(item => item['USDC APR']);
-      const adxAprValues = formatted.map(item => item['ADX APR']);
+      const usdcAprValues = filteredFormatted.map(item => item['USDC APR']);
+      const adxAprValues = filteredFormatted.map(item => item['ADX APR']);
       const averageAprUsdc = usdcAprValues.reduce((sum, value) => sum + value, 0) / usdcAprValues.length;
       const averageAprAdx = adxAprValues.reduce((sum, value) => sum + value, 0) / adxAprValues.length;
 
       // Add average line to each data point
-      const formattedWithAverage = formatted.map(item => ({
+      const formattedWithAverage = filteredFormatted.map(item => ({
         ...item,
         'Average APR USDC': averageAprUsdc,
         'Average APR ADX': averageAprAdx,
@@ -126,6 +131,43 @@ export function AprLmChart() {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const exportToCSV = () => {
+    if (!infos?.formattedData) return;
+
+    const csvData = infos.formattedData.map((row) => ({
+      time: row.time,
+      adxApr: row['ADX APR'],
+      usdcApr: row['USDC APR'],
+      averageAdxApr: row['Average APR ADX'],
+      averageUsdcApr: row['Average APR USDC'],
+    }));
+
+    const headers = ['Time', 'ADX APR (%)', 'USDC APR (%)', 'Average ADX APR (%)', 'Average USDC APR (%)'];
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => [
+        `"${row.time}"`, // Wrap time in quotes to handle commas
+        row.adxApr,
+        row.usdcApr,
+        row.averageAdxApr,
+        row.averageUsdcApr
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+
+    // Create filename with period and lock period info
+    const filename = `staked-adx-apr-${selectedPeriod}d-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (!infos) {
@@ -151,14 +193,12 @@ export function AprLmChart() {
       period={period}
       gmt={getGMT()}
       setPeriod={setPeriod}
-      periods={['1d', '7d', '1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       formatLeftY='percentage'
       lockPeriod={selectedPeriod}
       setLockPeriod={setSelectedPeriod}
       lockPeriods={[0, 90, 180, 360, 540]}
+      exportToCSV={exportToCSV}
     />
   );
 }
