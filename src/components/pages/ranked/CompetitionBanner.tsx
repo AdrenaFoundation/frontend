@@ -26,6 +26,7 @@ export default function CompetitionBanner({
     bonkRewards,
     jtoRewards,
     bannerClassName,
+    jtoPrice,
 }: {
     banner: string;
     endDate: Date | null;
@@ -38,6 +39,7 @@ export default function CompetitionBanner({
     bonkRewards: number;
     jtoRewards: number;
     bannerClassName: string;
+    jtoPrice: number | null;
 }) {
     const { days, hours, minutes, seconds } = useCountDown(
         new Date(),
@@ -47,8 +49,8 @@ export default function CompetitionBanner({
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
     const totalPrize = useMemo(() => {
-        return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (tokenPrices.JTO ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0);
-    }, [adxRewards, bonkRewards, jtoRewards, tokenPrices.ADX, tokenPrices.BONK, tokenPrices.JTO]);
+        return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (jtoPrice ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0);
+    }, [adxRewards, bonkRewards, jtoRewards, tokenPrices.ADX, tokenPrices.BONK, jtoPrice]);
 
     return (
         <div className="relative">
@@ -151,7 +153,7 @@ export default function CompetitionBanner({
                     <div className='text-xs font-thin text-txtfade'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
 
                     <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-lg flex-col')}>
-                        {!tokenPrices.ADX || !tokenPrices.JTO || !tokenPrices.BONK ? '-' :
+                        {!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
                             <FormatNumber
                                 format='currency'
                                 nb={totalPrize}
