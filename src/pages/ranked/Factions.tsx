@@ -8,9 +8,11 @@ import { UserProfileExtended } from '@/types';
 export default function Factions({
     userProfile,
     triggerUserProfileReload,
+    jtoPrice,
 }: {
     userProfile: UserProfileExtended | null | false;
     triggerUserProfileReload: () => void;
+    jtoPrice: number | null;
 }) {
     const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
@@ -68,7 +70,7 @@ export default function Factions({
                 </button>
             </div>
 
-            {activeTab === 'leaderboard' ? <FactionsLeaderboards userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} /> : <FactionsDocs />}
+            {activeTab === 'leaderboard' ? <FactionsLeaderboards jtoPrice={jtoPrice} userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} /> : <FactionsDocs />}
         </div>
     );
 }

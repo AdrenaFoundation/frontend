@@ -69,9 +69,11 @@ function getWeekIndexFromWeek(week: string): number {
 export default function FactionsLeaderboards({
     userProfile,
     triggerUserProfileReload,
+    jtoPrice,
 }: {
     userProfile: UserProfileExtended | null | false;
     triggerUserProfileReload: () => void;
+    jtoPrice: number | null;
 }) {
     const tokenPrices = useSelector((s) => s.tokenPrices);
     const [week, setWeek] = useState<string>('Week 1');
@@ -127,14 +129,14 @@ export default function FactionsLeaderboards({
             maxWeeklyRewardsTokens: leaderboardData.weekly.maxWeeklyRewards[weekIndex],
             weeklyUnlockedRewardsUsd: Object.entries(leaderboardData.weekly.weeklyUnlockedRewards[weekIndex]).reduce((acc, [token, count]) => ({
                 ...acc,
-                [token]: tokenPrices && tokenPrices[token] ? count * tokenPrices[token] : 0,
+                [token]: tokenPrices && (token === 'JTO' && jtoPrice) ? count * jtoPrice : tokenPrices[token] ? count * tokenPrices[token] : 0,
             }), {} as Record<string, number>),
             maxWeeklyRewardsUsd: Object.entries(leaderboardData.weekly.maxWeeklyRewards[weekIndex]).reduce((acc, [token, count]) => ({
                 ...acc,
-                [token]: tokenPrices && tokenPrices[token] ? count * tokenPrices[token] : 0,
+                [token]: tokenPrices && (token === 'JTO' && jtoPrice) ? count * jtoPrice : tokenPrices[token] ? count * tokenPrices[token] : 0,
             }), {} as Record<string, number>),
         } as const;
-    }, [leaderboardData, weekIndex, tokenPrices]);
+    }, [leaderboardData, weekIndex, jtoPrice, tokenPrices]);
 
     const [displayBossVideo, setDisplayBossVideo] = useState(false);
 
@@ -397,6 +399,7 @@ export default function FactionsLeaderboards({
                         officers={weekInfo.bonkOfficers}
                         setActiveProfile={setActiveProfile}
                         triggerUserProfileReload={triggerUserProfileReload}
+                        jtoPrice={jtoPrice}
                     />
 
                     <FactionsWeeklyLeaderboard
@@ -418,6 +421,7 @@ export default function FactionsLeaderboards({
                         officers={weekInfo.jitoOfficers}
                         setActiveProfile={setActiveProfile}
                         triggerUserProfileReload={triggerUserProfileReload}
+                        jtoPrice={jtoPrice}
                     />
                 </div>
             </div>

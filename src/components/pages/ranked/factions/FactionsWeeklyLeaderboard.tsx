@@ -30,6 +30,7 @@ export default function FactionsWeeklyLeaderboard({
     officers,
     userProfile,
     triggerUserProfileReload,
+    jtoPrice,
 }: {
     team: 'B' | 'A';
     weeklyDamageTeam: number;
@@ -49,6 +50,7 @@ export default function FactionsWeeklyLeaderboard({
     };
     userProfile: UserProfileExtended | null | false;
     triggerUserProfileReload: () => void;
+    jtoPrice: number | null;
 }) {
     const wallet = useSelector((s) => s.walletState.wallet);
     const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -75,7 +77,7 @@ export default function FactionsWeeklyLeaderboard({
 
         const adxValue = (rewardTokens.ADX || 0) * (tokenPrices.ADX || 0);
         const bonkValue = (rewardTokens.BONK || 0) * (tokenPrices.BONK || 0);
-        const jtoValue = (rewardTokens.JTO || 0) * (tokenPrices.JTO || 0);
+        const jtoValue = (rewardTokens.JTO || 0) * (jtoPrice || 0);
 
         return adxValue + bonkValue + jtoValue;
     };
