@@ -5,6 +5,7 @@ import {
   AreaChart,
   CartesianGrid,
   Legend,
+  Line,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -43,6 +44,7 @@ export default function AreaRechart<T extends string>({
   labels?: {
     name: string;
     color?: string;
+    type?: 'area' | 'line';
   }[];
   period: T | null;
   setPeriod: (v: T | null) => void;
@@ -162,8 +164,22 @@ export default function AreaRechart<T extends string>({
             wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
           />
 
-          {labels?.map(({ name, color }) => {
+          {labels?.map(({ name, color, type = 'area' }) => {
             const isHidden = hiddenLabels.includes(name);
+
+            if (type === 'line') {
+              return (
+                <Line
+                  type="monotone"
+                  dataKey={isHidden ? name + ' ' : name} // Add space to hide the line but keep the legend
+                  key={name}
+                  stroke={isHidden ? `${color}80` : color} // 50% opacity for hidden lines
+                  strokeWidth={2}
+                  dot={false}
+                />
+              );
+            }
+
             return (
               <Area
                 type="monotone"

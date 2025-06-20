@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import AreaRechart from '@/components/ReCharts/AreaRecharts';
+import MixedAreaLineChart from '@/components/ReCharts/MixedAreaLineChart';
 import DataApiClient from '@/DataApiClient';
 import { getGMT } from '@/utils';
 
@@ -12,7 +12,7 @@ export function AprLmChart() {
       [key: string]: string | number;
     }[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<string | null>('3M');
   const [selectedPeriod, setSelectedPeriod] = useState<number>(540);
   const periodRef = useRef(period);
   const selectedPeriodRef = useRef(selectedPeriod);
@@ -96,14 +96,32 @@ export function AprLmChart() {
         return;
       }
 
-      const formatted = timeStamp.map((time: string, i: number) => ({
-        time,
-        'ADX APR': selectedData.locked_adx_apr[i] || 0,
-        'USDC APR': (selectedData.locked_usdc_apr[i] || 0) + (selectedData.liquid_apr[i] || 0),
+      const formatted = timeStamp.map((time: string, i: number) => {
+        const adxApr = selectedData.locked_adx_apr[i] || 0;
+        const usdcApr = selectedData.locked_usdc_apr[i] || 0;
+
+        return {
+          time,
+          'ADX APR': adxApr,
+          'USDC APR': usdcApr,
+        };
+      });
+
+      // Calculate average of total APR values
+      const usdcAprValues = formatted.map(item => item['USDC APR']);
+      const adxAprValues = formatted.map(item => item['ADX APR']);
+      const averageAprUsdc = usdcAprValues.reduce((sum, value) => sum + value, 0) / usdcAprValues.length;
+      const averageAprAdx = adxAprValues.reduce((sum, value) => sum + value, 0) / adxAprValues.length;
+
+      // Add average line to each data point
+      const formattedWithAverage = formatted.map(item => ({
+        ...item,
+        'Average APR USDC': averageAprUsdc,
+        'Average APR ADX': averageAprAdx,
       }));
 
       setInfos({
-        formattedData: formatted,
+        formattedData: formattedWithAverage
       });
     } catch (e) {
       console.error(e);
@@ -119,13 +137,15 @@ export function AprLmChart() {
   }
 
   const labels = [
-    { name: 'ADX APR', color: '#fa6b6b' },
-    { name: 'USDC APR', color: '#66b3ff' },
+    { name: 'USDC APR', color: '#2563eb', type: 'area' as const, stackId: 'stack1' },
+    { name: 'ADX APR', color: '#a92e2e', type: 'area' as const, stackId: 'stack1' },
+    { name: 'Average APR USDC', color: '#00d9ff', type: 'line' as const },
+    { name: 'Average APR ADX', color: '#ff1493', type: 'line' as const },
   ];
 
   return (
-    <AreaRechart
-      title="STAKED ADX APR - BREAKDOWN"
+    <MixedAreaLineChart
+      title={`STAKED ADX APR`}
       data={infos.formattedData}
       labels={labels}
       period={period}
@@ -135,8 +155,7 @@ export function AprLmChart() {
         name: '1Y',
         disabled: true,
       }]}
-      formatY='percentage'
-      formatTooltipNumber='percentage'
+      formatLeftY='percentage'
       lockPeriod={selectedPeriod}
       setLockPeriod={setSelectedPeriod}
       lockPeriods={[0, 90, 180, 360, 540]}
