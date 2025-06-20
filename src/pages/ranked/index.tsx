@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import CompetitionBanner from '@/components/pages/ranked/CompetitionBanner';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { PageProps } from '@/types';
+import { nativeToUi } from '@/utils';
 
 import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
 import Competition from './Awakening';
@@ -18,11 +19,42 @@ export default function Ranked({
     //
     const [activeSeason, setActiveSeason] =
         useState<keyof typeof TRADING_COMPETITION_SEASONS>('factions');
+    const [jtoPrice, setJTOPrice] = useState<number | null>(null);
 
-    const data = useMemo(() => TRADING_COMPETITION_SEASONS[activeSeason], [activeSeason]);
+    const data = useMemo(
+        () => TRADING_COMPETITION_SEASONS[activeSeason],
+        [activeSeason],
+    );
+
+    useEffect(() => {
+        getJTOPrice();
+    }, []);
+
+    const getJTOPrice = async () => {
+        try {
+            const response = await fetch(
+                'https://hermes.pyth.network/v2/updates/price/latest?ids%5B%5D=0xb43660a5f790c69354b0729a5ef9d50d68f1df92107540210b9cccba1f947cc2',
+            );
+
+            if (!response.ok) {
+                return setJTOPrice(null);
+            }
+
+            const data = await response.json();
+            setJTOPrice(
+                nativeToUi(
+                    data.parsed[0]?.price.price ?? null,
+                    Math.abs(data.parsed[0]?.price.expo),
+                ),
+            );
+        } catch (error) {
+            console.error('Error fetching JTO price:', error);
+            setJTOPrice(null);
+        }
+    };
 
     return (
-        <div className='flex flex-col'>
+        <div className="flex flex-col">
             <div className="relative">
                 <SeasonNavigator
                     activeSeason={activeSeason}
@@ -42,12 +74,19 @@ export default function Ranked({
                 jtoRewards={data.jtoRewards}
                 bonkRewards={data.bonkRewards}
                 bannerClassName={data.bannerClassName}
+                jtoPrice={jtoPrice}
             />
 
             <div className=" sm:px-8 max-w-[2200px] mx-auto w-full mt-10">
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
-                {activeSeason === 'factions' ? <Factions userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} /> : null}
+                {activeSeason === 'factions' ? (
+                    <Factions
+                        jtoPrice={jtoPrice}
+                        userProfile={userProfile}
+                        triggerUserProfileReload={triggerUserProfileReload}
+                    />
+                ) : null}
             </div>
         </div>
     );
