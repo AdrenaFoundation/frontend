@@ -82,6 +82,7 @@ export default function Ranked({
                 {activeSeason === 'expanse' ? <Expanse /> : null}
                 {activeSeason === 'factions' ? (
                     <Factions
+                        jtoPrice={jtoPrice}
                         userProfile={userProfile}
                         triggerUserProfileReload={triggerUserProfileReload}
                     />
