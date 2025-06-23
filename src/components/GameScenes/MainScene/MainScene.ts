@@ -1,5 +1,5 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
-import ItemTile from '@/components/GameEngine/ItemTile';
+import InventoryTableTile from '@/components/GameEngine/InventoryTableTile';
 import ObjectTile from '@/components/GameEngine/ObjectTile';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
@@ -63,19 +63,16 @@ export class MainScene extends AScene<MainSceneConfig> {
 
     await super.create();
 
-    const inventoryTables = await this.getTilemapService().getObjectsByPrefix(
-      'table',
-      ObjectTile,
-    );
+    const inventoryTables =
+      await this.getTilemapService().getObjectsByPrefix<InventoryTableTile>(
+        'table',
+        InventoryTableTile,
+      );
 
     console.log('Inventory tables:', inventoryTables);
 
     inventoryTables.forEach((table) => {
-      new ItemTile({
-        scene: this,
-        itemId: '1',
-        position: table.getCenter(),
-      });
+      table.addItemOnTable('1');
     });
 
     const pets = await this.getTilemapService().getObjectsByPrefix(

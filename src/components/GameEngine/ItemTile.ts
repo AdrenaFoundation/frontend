@@ -25,7 +25,7 @@ class ItemTile extends ObjectTile {
     offsetY?: number;
     depth?: number;
   }) {
-    super({ tiles: [], tilemapService: scene.getTilemapService() });
+    super({ tiles: [], tilemapService: scene.getTilemapService(), scene });
 
     this.scene = scene;
     this.tilesetItemIds = this.tilemapService.getTilesIdsFromIdProperty(itemId);
@@ -62,6 +62,10 @@ class ItemTile extends ObjectTile {
   public destroy(): void {
     this.image.destroy();
   }
+
+  public override handleInteractionOn() {}
+  public override handleInteractionOff() {}
+  public override updateInteraction() {}
 }
 
 export default ItemTile;

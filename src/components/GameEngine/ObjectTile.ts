@@ -1,19 +1,24 @@
+import { AScene } from './AScene';
 import TilemapService from './TilemapService';
 
 // One object is one or multiple consecutive tiles
 class ObjectTile {
   public readonly tiles: Phaser.Tilemaps.Tile[];
   public readonly tilemapService: TilemapService;
+  public readonly scene: AScene;
 
   constructor({
     tiles,
     tilemapService,
+    scene,
   }: {
     tiles: Phaser.Tilemaps.Tile[];
     tilemapService: TilemapService;
+    scene: AScene;
   }) {
     this.tiles = tiles;
     this.tilemapService = tilemapService;
+    this.scene = scene;
   }
 
   // i.e 0xff0000
@@ -49,6 +54,15 @@ class ObjectTile {
 
     return new Phaser.Math.Vector2(centerX, centerY);
   }
+
+  // Override this method to handle interaction logic
+  public handleInteractionOn() {}
+
+  // Override this method to handle interaction logic
+  public handleInteractionOff() {}
+
+  // Override this method to update interaction logic
+  public updateInteraction() {}
 }
 
 export default ObjectTile;

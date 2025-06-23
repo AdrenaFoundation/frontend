@@ -7,7 +7,6 @@ class Player {
   protected sprite: Phaser.Physics.Arcade.Sprite;
   protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   protected nameTag: Phaser.GameObjects.Text;
-  protected text: Phaser.GameObjects.Text;
 
   protected objectsInteractionDistance = 20; // Distance to interact with objects
 
@@ -58,25 +57,6 @@ class Player {
       .setOrigin(0.5, 0.25)
       .setDepth(100)
       .setVisible(showNickname);
-
-    this.text = this.scene.add
-      .text(startingPosition.x, startingPosition.y - 20, 'Interact [E]', {
-        font: '10px Monospace',
-        color: '#ffffff',
-        backgroundColor: '#00000080',
-        padding: { x: 4, y: 2 },
-      })
-      .setOrigin(0.5, 0.5)
-      .setDepth(100)
-      .setVisible(false); // hidden by default
-  }
-
-  public setText(text: string): void {
-    this.text.setText(text);
-  }
-
-  public setTextVisible(visible: boolean): void {
-    this.text.setVisible(visible);
   }
 
   public addInteractiveObjects(objectTiles: ObjectTile[]): void {
@@ -167,34 +147,25 @@ class Player {
       }
     }
 
-    // Make the name tag and text follow the player
-    {
-      this.nameTag.setPosition(
-        this.sprite.x,
-        this.sprite.y - this.sprite.height / 2 + 30,
-      );
+    // Make the name tag follow the player
+    this.nameTag.setPosition(
+      this.sprite.x,
+      this.sprite.y - this.sprite.height / 2 + 30,
+    );
 
-      this.text.setPosition(
-        this.sprite.x,
-        this.sprite.y - this.sprite.height / 2 - 10,
-      );
-    }
-
-    const facingOneObject = this.interactiveObjects.some((objectTile) => {
-      if (this.isFacingObject(objectTile)) {
-        // this.setText('Press [E]');
-        this.facedObject = objectTile;
-        return true;
-      }
-
-      return false;
+    const facingOneObject = this.interactiveObjects.find((objectTile) => {
+      return this.isFacingObject(objectTile);
     });
 
     if (!facingOneObject) {
+      this.facedObject?.handleInteractionOff();
       this.facedObject = null;
+    } else if (this.facedObject !== facingOneObject) {
+      this.facedObject = facingOneObject;
+      this.facedObject.handleInteractionOn();
+    } else if (this.facedObject) {
+      this.facedObject.updateInteraction();
     }
-
-    this.text.setVisible(facingOneObject);
   }
 
   public getSprite(): Phaser.Physics.Arcade.Sprite {

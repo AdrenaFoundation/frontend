@@ -71,42 +71,6 @@ class TilemapService {
     this.manual?.setDepth(4);
   }
 
-  // public applyScaleToLayer(
-  //   layer: Phaser.Tilemaps.TilemapLayer,
-  //   scale: number,
-  // ): void {
-  //   layer.setScale(scale);
-  // }
-
-  // public updateResponsivePosition(): void {
-  //   this.makeLayersResponsive();
-  // }
-
-  // private makeLayersResponsive(): void {
-  //   const layers = [this.floor, this.walls, this.objects].filter(Boolean);
-
-  //   layers.forEach((layer) => {
-  //     if (layer) {
-  //       this.applyScaleToLayer(layer, 1.0);
-  //     }
-  //   });
-  // }
-
-  // private centerLayerOnScreenIfEnabled(
-  //   layer: Phaser.Tilemaps.TilemapLayer,
-  //   width: number,
-  //   height: number,
-  //   scale: number,
-  //   responsive: { centerOnResize: boolean },
-  // ): void {
-  //   if (responsive.centerOnResize) {
-  //     layer.setPosition(
-  //       (width - (layer.width || 0) * scale) / 2,
-  //       (height - (layer.height || 0) * scale) / 2,
-  //     );
-  //   }
-  // }
-
   public getObjectsLayer(): Phaser.Tilemaps.TilemapLayer {
     if (!this.objects) {
       throw new Error(
@@ -161,6 +125,7 @@ class TilemapService {
     ctor: new (p: {
       tiles: Phaser.Tilemaps.Tile[];
       tilemapService: TilemapService;
+      scene: AScene;
     }) => T,
   ): Promise<T[]> {
     return new Promise((resolve) => {
@@ -249,6 +214,7 @@ class TilemapService {
               new ctor({
                 tiles: group,
                 tilemapService: this,
+                scene: this.scene,
               }),
             );
           }

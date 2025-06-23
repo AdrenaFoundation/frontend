@@ -93,8 +93,14 @@ export abstract class AScene<
         clearTimeout(resizeTimeout);
 
         resizeTimeout = window.setTimeout(() => {
-          const { width, height } = this.getContainerSize();
-          this.scale.resize(width, height);
+          try {
+            const { width, height } = this.getContainerSize();
+
+            // TODO: handle scale that crashes idk why when resizing sometimes
+            this.scale.resize(width, height);
+          } catch {
+            // Ignore
+          }
         }, 150);
       });
     }
@@ -126,6 +132,7 @@ export abstract class AScene<
     height: number;
   } {
     const parent = this.game.config.parent;
+
     const container =
       typeof parent === 'string'
         ? document.getElementById(parent)
@@ -137,8 +144,7 @@ export abstract class AScene<
       throw new Error('Could not resolve Phaser container from config.parent');
     }
 
-    const { width, height } = container.getBoundingClientRect();
-    return { width, height };
+    return container.getBoundingClientRect();
   }
 
   protected abstract setupInteractionControls(): void;
