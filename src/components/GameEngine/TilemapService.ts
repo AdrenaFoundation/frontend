@@ -19,8 +19,6 @@ class TilemapService {
   constructor(scene: AScene) {
     this.scene = scene;
 
-    const { width, height } = this.scene.config;
-
     this.map = this.scene.add.tilemap('map');
 
     // 1st parameter is the name of the tileset as defined in Tiled
@@ -39,11 +37,8 @@ class TilemapService {
       return;
     }
 
-    const mapWidth = this.map.widthInPixels;
-    const mapHeight = this.map.heightInPixels;
-
-    const offsetX = (width - mapWidth) / 2;
-    const offsetY = (height - mapHeight) / 2;
+    const offsetX = 0;
+    const offsetY = 0;
 
     this.floor = this.map.createLayer('floor', this.tiles, offsetX, offsetY);
     this.walls = this.map.createLayer('walls', this.tiles, offsetX, offsetY);
@@ -64,8 +59,6 @@ class TilemapService {
       offsetY,
     );
 
-    this.makeLayersResponsive();
-
     // Set collision for everything in walls layer and objects layer
     this.walls?.setCollisionByExclusion([-1]);
     this.objects?.setCollisionByExclusion([-1]);
@@ -78,80 +71,41 @@ class TilemapService {
     this.manual?.setDepth(4);
   }
 
-  private makeLayersResponsive(): void {
-    const { width, height, responsive } = this.scene.config;
-    const layers = [this.floor, this.walls, this.objects].filter(Boolean);
+  // public applyScaleToLayer(
+  //   layer: Phaser.Tilemaps.TilemapLayer,
+  //   scale: number,
+  // ): void {
+  //   layer.setScale(scale);
+  // }
 
-    layers.forEach((layer) => {
-      if (layer) {
-        const scale = this.calculateOptimalScaleForLayer(
-          layer,
-          width,
-          height,
-          responsive,
-        );
+  // public updateResponsivePosition(): void {
+  //   this.makeLayersResponsive();
+  // }
 
-        this.applyScaleToLayer(layer, scale);
+  // private makeLayersResponsive(): void {
+  //   const layers = [this.floor, this.walls, this.objects].filter(Boolean);
 
-        this.centerLayerOnScreenIfEnabled(
-          layer,
-          width,
-          height,
-          scale,
-          responsive,
-        );
-      }
-    });
-  }
+  //   layers.forEach((layer) => {
+  //     if (layer) {
+  //       this.applyScaleToLayer(layer, 1.0);
+  //     }
+  //   });
+  // }
 
-  private calculateOptimalScaleForLayer(
-    layer: Phaser.Tilemaps.TilemapLayer,
-    width: number,
-    height: number,
-    responsive: {
-      minScale: number;
-      maxScale: number;
-      maintainAspectRatio: boolean;
-    },
-  ): number {
-    const scaleX = width / (layer.width || 1);
-    const scaleY = height / (layer.height || 1);
-
-    let scale: number;
-    if (responsive.maintainAspectRatio) {
-      scale = Math.min(scaleX, scaleY);
-    } else {
-      scale = Math.min(scaleX, scaleY);
-    }
-
-    return Math.max(responsive.minScale, Math.min(responsive.maxScale, scale));
-  }
-
-  private applyScaleToLayer(
-    layer: Phaser.Tilemaps.TilemapLayer,
-    scale: number,
-  ): void {
-    layer.setScale(scale);
-  }
-
-  private centerLayerOnScreenIfEnabled(
-    layer: Phaser.Tilemaps.TilemapLayer,
-    width: number,
-    height: number,
-    scale: number,
-    responsive: { centerOnResize: boolean },
-  ): void {
-    if (responsive.centerOnResize) {
-      layer.setPosition(
-        (width - (layer.width || 0) * scale) / 2,
-        (height - (layer.height || 0) * scale) / 2,
-      );
-    }
-  }
-
-  public updateResponsivePosition(): void {
-    this.makeLayersResponsive();
-  }
+  // private centerLayerOnScreenIfEnabled(
+  //   layer: Phaser.Tilemaps.TilemapLayer,
+  //   width: number,
+  //   height: number,
+  //   scale: number,
+  //   responsive: { centerOnResize: boolean },
+  // ): void {
+  //   if (responsive.centerOnResize) {
+  //     layer.setPosition(
+  //       (width - (layer.width || 0) * scale) / 2,
+  //       (height - (layer.height || 0) * scale) / 2,
+  //     );
+  //   }
+  // }
 
   public getObjectsLayer(): Phaser.Tilemaps.TilemapLayer {
     if (!this.objects) {

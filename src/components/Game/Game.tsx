@@ -16,6 +16,7 @@ export interface IRefGame {
 interface IProps {
     currentActiveScene?: (scene: Scene) => void;
     config?: Types.Core.GameConfig;
+    className?: string;
 }
 
 // Find out more information about the Game Config at:
@@ -23,10 +24,9 @@ interface IProps {
 const DEFAULT_CONFIG: Types.Core.GameConfig = {
     type: AUTO,
     parent: 'game-container',
-    width: window.innerWidth,
-    height: window.innerHeight,
     backgroundColor: '#0c1119',
     pixelArt: true,
+    roundPixels: true,
     scene: [MainScene],
     plugins: {
         scene: [
@@ -51,6 +51,7 @@ const DEFAULT_CONFIG: Types.Core.GameConfig = {
 
 export const Game = forwardRef<IRefGame, IProps>(function Game({
     currentActiveScene,
+    className,
     config = DEFAULT_CONFIG,
 }, ref) {
     const game = useRef<PhaserGame | null>(null);
@@ -58,8 +59,14 @@ export const Game = forwardRef<IRefGame, IProps>(function Game({
 
     useLayoutEffect(() => {
         if (game.current === null) {
+            const parent = document.getElementById("game-container");
+            const width = parent?.clientWidth || window.innerWidth;
+            const height = parent?.clientHeight || window.innerHeight;
+
             game.current = new PhaserGame({
                 ...config,
+                width,
+                height,
                 parent: "game-container",
             });
 
@@ -122,7 +129,7 @@ export const Game = forwardRef<IRefGame, IProps>(function Game({
     }
 
     return (
-        <div id="game-container"></div>
+        <div id="game-container" className={className}></div>
     );
 });
 

@@ -4,19 +4,10 @@ import { EventBus } from './EventBus';
 import Player from './Player';
 import TilemapService from './TilemapService';
 
-// Cherry picked by:
-// type t = Phaser.Types.Core.GameConfig;
 export interface ASceneConfig {
-  width: number;
-  height: number;
-  responsive: {
-    minScale: number;
-    maxScale: number;
-    maintainAspectRatio: boolean;
-    centerOnResize: boolean;
-  };
   playerFrameWidth: number;
   playerFrameHeight: number;
+  playerStartingPosition: Phaser.Math.Vector2;
   assets: {
     external: {
       tiles: string;
@@ -30,19 +21,11 @@ export abstract class AScene<
   T extends ASceneConfig = ASceneConfig,
 > extends Scene {
   protected tilemapService: TilemapService | null = null;
-
   public readonly config: T;
-
   protected player: Player | null = null;
-
-  // protected players: {
-  //   sprite: Phaser.GameObjects.Sprite;
-  //   state: PlayerState;
-  // }[] = [];
 
   constructor({ name = 'Main', config }: { name: string; config: T }) {
     super(name);
-
     this.config = config;
   }
 
@@ -54,16 +37,13 @@ export abstract class AScene<
     } = this.config;
 
     this.load.image('tiles', external.tiles);
-
     this.load.tilemapTiledJSON('map', external.map);
-
     this.load.spritesheet('player', external.player, {
       frameWidth: playerFrameWidth,
       frameHeight: playerFrameHeight,
     });
-
     this.load.spritesheet('tiles-sprite', external.tiles, {
-      frameWidth: 16, // 🟢 must match your tile size
+      frameWidth: 16,
       frameHeight: 16,
     });
   }
@@ -72,51 +52,103 @@ export abstract class AScene<
     this.loadAssets();
   }
 
-  // Called automatically by Phaser after preload
   public async create() {
-    const { width, height } = this.config;
-
     this.tilemapService = new TilemapService(this);
 
-    this.player = new Player(this, width / 2, height / 2);
+    this.player = new Player({
+      scene: this,
+      startingPosition: this.config.playerStartingPosition,
+      nickname: 'Orex',
+    });
 
     this.tilemapService.addColliderWithPlayer(this.player);
 
+    this.cameras.main.startFollow(this.player.getSprite());
+    console.log(
+      'Camera bounds set to tilemap size',
+      this.tilemapService.map!.widthInPixels,
+      this.tilemapService.map!.heightInPixels,
+    );
+
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.tilemapService.map!.widthInPixels,
+      this.tilemapService.map!.heightInPixels,
+    );
+
+    this.physics.world.setBounds(
+      0,
+      0,
+      this.tilemapService.map!.widthInPixels,
+      this.tilemapService.map!.heightInPixels,
+    );
+
     this.setupInteractionControls();
-    this.setupResponsiveHandling();
+
+    this.scale.on('resize', this.handleResize, this);
+
+    this.setupResizeListener();
 
     EventBus.emit('scene-ready', this);
   }
 
-  protected setupResponsiveHandling(): void {
-    this.scale.on('resize', this.handleResize, this);
+  protected setupResizeListener(): void {
+    let resizeTimeout: number;
 
-    this.scale.setGameSize(this.config.width, this.config.height);
-    this.scale.setZoom(1);
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+
+      resizeTimeout = window.setTimeout(() => {
+        const { width, height } = this.getContainerSize();
+        this.scale.resize(width, height);
+      }, 150);
+    });
   }
 
-  protected handleResize(gameSize: { width: number; height: number }): void {
+  protected handleResize(gameSize: Phaser.Structs.Size): void {
     const { width, height } = gameSize;
 
-    this.getTilemapService().updateResponsivePosition();
-    this.keepPlayerWithinScreenBounds(width, height);
-  }
+    // Resize camera to match new screen size
+    this.cameras.resize(width, height);
 
-  protected keepPlayerWithinScreenBounds(width: number, height: number): void {
-    if (this.player) {
-      const playerPos = this.player.getPosition();
-      const newX = Math.max(0, Math.min(width, playerPos.x));
-      const newY = Math.max(0, Math.min(height, playerPos.y));
+    // Keep player within the bounds of the tilemap
+    if (this.player && this.tilemapService && this.tilemapService.map) {
+      const mapWidth = this.tilemapService.map.widthInPixels;
+      const mapHeight = this.tilemapService.map.heightInPixels;
+
+      const { x: playerX, y: playerY } = this.player.getPosition();
+
+      const newX = Phaser.Math.Clamp(playerX, 0, mapWidth);
+      const newY = Phaser.Math.Clamp(playerY, 0, mapHeight);
       this.player.setPosition(newX, newY);
     }
+  }
+
+  protected getContainerSize(): {
+    width: number;
+    height: number;
+  } {
+    const parent = this.game.config.parent;
+    const container =
+      typeof parent === 'string'
+        ? document.getElementById(parent)
+        : parent instanceof HTMLElement
+          ? parent
+          : null;
+
+    if (!container) {
+      throw new Error('Could not resolve Phaser container from config.parent');
+    }
+
+    const { width, height } = container.getBoundingClientRect();
+    return { width, height };
   }
 
   protected abstract setupInteractionControls(): void;
 
   public update() {
-    if (this.player) {
-      this.player.update();
-    }
+    this.player?.update();
   }
 
   public getPlayer(): Player | null {
@@ -127,7 +159,6 @@ export abstract class AScene<
     if (!this.tilemapService) {
       throw new Error('TilemapService is not initialized');
     }
-
     return this.tilemapService;
   }
 }
