@@ -94,36 +94,9 @@ export class MainScene extends AScene<MainSceneConfig> {
     this.player?.addInteractiveObjects(buttons);
   }
 
-  protected override setupInteractionControls(): void {
-    // Open/Close inventory with 'I' key when close to the chest
-    // this.input?.keyboard?.on('keydown-I', () => {
-    //   if (
-    //     this.player &&
-    //     this.chest &&
-    //     this.player?.isNearObject(this.chest, this.config.interactionDistance)
-    //   ) {
-    //     this.inventoryService.toggleInventory();
-    //   } else {
-    //     this.inventoryService.hideInventory();
-    //   }
-    // });
-  }
+  protected override setupInteractionControls(): void {}
 
   public override update() {
     super.update();
-
-    // if (this.player && this.chest) {
-    //   const isNearChest = this.player.isNearObject(
-    //     this.chest,
-    //     this.config.interactionDistance,
-    //   );
-
-    //   const { x: playerX, y: playerY } = this.player.getPosition();
-    // }
-
-    // TODO: Multiplayer logic would go here
-    // if (!myPlayer()) {
-    //   return; // Wait until PlayroomKit is fully initialized
-    // }
   }
 }

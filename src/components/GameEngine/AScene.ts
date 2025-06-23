@@ -79,6 +79,8 @@ export abstract class AScene<
       this.tilemapService.map!.heightInPixels,
     );
 
+    this.cameras.main.roundPixels = true;
+
     this.setupInteractionControls();
 
     // Handle resizing the game

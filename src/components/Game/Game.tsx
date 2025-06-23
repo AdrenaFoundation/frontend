@@ -47,6 +47,10 @@ const DEFAULT_CONFIG: Types.Core.GameConfig = {
             debug: false,
         },
     },
+    render: {
+        pixelArt: true,
+        antialias: false,
+    },
 };
 
 export const Game = forwardRef<IRefGame, IProps>(function Game({

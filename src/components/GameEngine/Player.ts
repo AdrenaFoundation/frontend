@@ -8,8 +8,6 @@ class Player {
   protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   protected nameTag: Phaser.GameObjects.Text;
 
-  protected objectsInteractionDistance = 20; // Distance to interact with objects
-
   // List of interactive objects the player can interact with
   protected interactiveObjects: ObjectTile[] = [];
 
@@ -161,6 +159,7 @@ class Player {
       this.facedObject?.handleInteractionOff();
       this.facedObject = null;
     } else if (this.facedObject !== facingOneObject) {
+      this.facedObject?.handleInteractionOff();
       this.facedObject = facingOneObject;
       this.facedObject.handleInteractionOn();
     } else if (this.facedObject) {
@@ -241,7 +240,7 @@ class Player {
       y: layerOffsetY,
       scaleX,
       scaleY,
-    } = object.tilemapService.getObjectsLayer(); // or the layer the object is on
+    } = object.tilemapService.getObjectsLayer();
 
     return object.tiles.some((tile) => {
       const worldX =
@@ -255,6 +254,7 @@ class Player {
         worldX,
         worldY,
       );
+
       return distance <= tileSize / 2;
     });
   }

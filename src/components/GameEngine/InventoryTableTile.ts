@@ -9,11 +9,12 @@ class InventoryTableTile extends ObjectTile {
 
   public override handleInteractionOn() {
     if (!this.infoWindow) {
-      this.infoWindow = new ItemInfoWindow(
-        this.scene,
-        'Sword of Devil',
-        '+0.5bps of trading fee',
-      );
+      this.infoWindow = new ItemInfoWindow({
+        scene: this.scene,
+        name: 'Sword of Devil',
+        effect: '+0.5bps of trading fee',
+        hint: '[E] to equip', // TODO: change depending on the type of item
+      });
 
       const { x, y } = this.getCenter();
 
@@ -26,7 +27,8 @@ class InventoryTableTile extends ObjectTile {
   }
 
   public override handleInteractionOff() {
-    this.infoWindow?.destroy();
+    console.log('handleInteractionOff called on InventoryTableTile');
+    this.infoWindow?.destroy(true);
     this.infoWindow = null;
   }
 
