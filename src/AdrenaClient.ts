@@ -5619,6 +5619,8 @@ export class AdrenaClient {
     const positions =
       (await this.readonlyAdrenaProgram.account.position.all()) as (ProgramAccount<Position> | null)[];
 
+    console.log('LOAD ALL POSITIONS', positions.length);
+
     return positions.reduce<PositionExtended[]>(
       (acc: PositionExtended[], position: ProgramAccount<Position> | null) => {
         if (!position) {

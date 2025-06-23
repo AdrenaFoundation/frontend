@@ -19,27 +19,17 @@ export interface ASceneConfig {
   playerFrameHeight: number;
   assets: {
     external: {
-      itemsAtlas: {
-        image: string;
-        json: string;
-      };
       tiles: string;
       map: string;
       player: string;
     };
-    // local?: {
-    //   basePath?: string;
-    //   star?: string;
-    //   background?: string;
-    //   logo?: string;
-    // };
   };
 }
 
 export abstract class AScene<
   T extends ASceneConfig = ASceneConfig,
 > extends Scene {
-  protected tilemapService: TilemapService;
+  protected tilemapService: TilemapService | null = null;
 
   public readonly config: T;
 
@@ -54,7 +44,6 @@ export abstract class AScene<
     super(name);
 
     this.config = config;
-    this.tilemapService = new TilemapService(this);
   }
 
   protected loadAssets(): void {
@@ -64,12 +53,6 @@ export abstract class AScene<
       playerFrameHeight,
     } = this.config;
 
-    this.load.atlas(
-      'A_items',
-      external.itemsAtlas.image,
-      external.itemsAtlas.json,
-    );
-
     this.load.image('tiles', external.tiles);
 
     this.load.tilemapTiledJSON('map', external.map);
@@ -77,6 +60,11 @@ export abstract class AScene<
     this.load.spritesheet('player', external.player, {
       frameWidth: playerFrameWidth,
       frameHeight: playerFrameHeight,
+    });
+
+    this.load.spritesheet('tiles-sprite', external.tiles, {
+      frameWidth: 16, // 🟢 must match your tile size
+      frameHeight: 16,
     });
   }
 
@@ -88,14 +76,13 @@ export abstract class AScene<
   public async create() {
     const { width, height } = this.config;
 
-    this.tilemapService.createTilemap();
+    this.tilemapService = new TilemapService(this);
 
     this.player = new Player(this, width / 2, height / 2);
 
-    this.tilemapService.addColliderWithPlayer(this.player.getSprite());
+    this.tilemapService.addColliderWithPlayer(this.player);
 
     this.setupInteractionControls();
-
     this.setupResponsiveHandling();
 
     EventBus.emit('scene-ready', this);
@@ -111,7 +98,7 @@ export abstract class AScene<
   protected handleResize(gameSize: { width: number; height: number }): void {
     const { width, height } = gameSize;
 
-    this.tilemapService.updateResponsivePosition();
+    this.getTilemapService().updateResponsivePosition();
     this.keepPlayerWithinScreenBounds(width, height);
   }
 
@@ -130,5 +117,17 @@ export abstract class AScene<
     if (this.player) {
       this.player.update();
     }
+  }
+
+  public getPlayer(): Player | null {
+    return this.player;
+  }
+
+  public getTilemapService(): TilemapService {
+    if (!this.tilemapService) {
+      throw new Error('TilemapService is not initialized');
+    }
+
+    return this.tilemapService;
   }
 }

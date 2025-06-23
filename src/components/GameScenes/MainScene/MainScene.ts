@@ -1,6 +1,6 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
+import ItemTile from '@/components/GameEngine/ItemTile';
 import ObjectTile from '@/components/GameEngine/ObjectTile';
-import InventoryService from '@/components/GameInventory/InventoryService';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
 type MainSceneConfig = ASceneConfig & {
@@ -8,14 +8,8 @@ type MainSceneConfig = ASceneConfig & {
 
   assets: {
     external: {
-      tiles: string;
       map: string;
       player: string;
-      inventoryAtlas: {
-        image: string;
-        json: string;
-      };
-      inventoryWindow: string;
     };
   };
 
@@ -47,8 +41,8 @@ type MainSceneConfig = ASceneConfig & {
 };
 
 const config: MainSceneConfig = {
-  width: 500,
-  height: 500,
+  width: 1200,
+  height: 1000,
 
   playerFrameWidth: 32,
   playerFrameHeight: 32,
@@ -66,30 +60,12 @@ const config: MainSceneConfig = {
   // Asset paths
   assets: {
     external: {
-      inventoryAtlas: {
-        image:
-          'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/inventory-cIfE3BZyKhWuGpKQPaEudyssmD6dGB.png',
-        json: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/inventory-S2GJxM5Fp7vwUBCBKayeL59US8BnUw.json',
-      },
-      itemsAtlas: {
-        image:
-          'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/items-DTpUL0sSJs15YcqGe5JegStUJE39jv.png',
-        json: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/items-FtK6rnKW6AigB8kb0kErCSS8RoS9s9.json',
-      },
-      inventoryWindow:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/inventory-IxO6leHEeX7bNFWCmh9evri3HmIkxZ.png',
       tiles:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/pixel-cyberpunk-interior-XtYiFktpomtHWKti7d7M04TetN7FGY.png',
-      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-xuf4TSQUQoyicGByzWaiSIx25NGjw5.tmj',
+        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-zVprLuvmZEAp5vplEXMKUcU7yQ8fQb.png',
+      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-3Ai8xbysUAgatNctiMrPRkf5x353uw.tmj',
       player:
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tyro-5KW3g9ugXSgLEHY3pKwyzR7bu2x6yV.png',
     },
-    // local: {
-    //   basePath: '/assets/Game',
-    //   star: 'star.png',
-    //   background: 'bg.png',
-    //   logo: 'logo.png',
-    // },
   },
 
   // UI settings
@@ -125,8 +101,6 @@ export class MainScene extends AScene<MainSceneConfig> {
   // Chest doesn't move
   protected chest: ObjectTile | null = null;
 
-  public readonly inventoryService: InventoryService;
-
   constructor() {
     super({
       name: 'Main',
@@ -134,80 +108,78 @@ export class MainScene extends AScene<MainSceneConfig> {
     });
 
     this.uiService = new UIService(this);
-    this.inventoryService = new InventoryService(this);
   }
 
-  // Abstract method implementation
-  protected handleResize(gameSize: { width: number; height: number }): void {
+  protected override handleResize(gameSize: {
+    width: number;
+    height: number;
+  }): void {
     super.handleResize(gameSize);
 
     const { width, height } = gameSize;
     this.uiService.updateResponsivePosition(width, height);
   }
 
-  protected loadAssets(): void {
+  protected override loadAssets(): void {
     super.loadAssets();
-
-    const { inventoryAtlas, inventoryWindow } = this.config.assets.external;
-
-    this.load.atlas(
-      'A_inventory_window',
-      inventoryAtlas.image,
-      inventoryAtlas.json,
-    );
-
-    this.load.image('inventory_window', inventoryWindow);
   }
 
-  public async create() {
+  public override async create() {
     // this.uiService.createTitle();
     // this.uiService.createInstructions();
-    this.uiService.createInteractionText();
+    // this.uiService.createInteractionText();
 
     await super.create();
 
-    // Do it after the super call so it's on top layer
-    this.inventoryService.initializeInventory();
+    const inventoryTables = await this.getTilemapService().getObjectsByPrefix(
+      'table',
+      ObjectTile,
+    );
 
-    // We know there is only one chest in the scene
-    this.chest = (await this.tilemapService.getObjectsByName('chest'))[0];
-  }
+    console.log('Inventory tables:', inventoryTables);
 
-  protected setupInteractionControls(): void {
-    // Open/Close inventory with 'I' key when close to the chest
-    this.input?.keyboard?.on('keydown-I', () => {
-      if (
-        this.player &&
-        this.chest &&
-        this.player?.isNearObject(this.chest, this.config.interactionDistance)
-      ) {
-        this.inventoryService.toggleInventory();
-      } else {
-        this.inventoryService.hideInventory();
-      }
+    const petTables = await this.getTilemapService().getObjectsByPrefix(
+      'pet',
+      ObjectTile,
+    );
+
+    console.log('Pet tables:', petTables);
+
+    inventoryTables.forEach((table) => {
+      const t = new ItemTile({
+        scene: this,
+        itemId: '1',
+        position: table.getCenter(),
+      });
     });
   }
 
-  public update() {
+  protected override setupInteractionControls(): void {
+    // Open/Close inventory with 'I' key when close to the chest
+    // this.input?.keyboard?.on('keydown-I', () => {
+    //   if (
+    //     this.player &&
+    //     this.chest &&
+    //     this.player?.isNearObject(this.chest, this.config.interactionDistance)
+    //   ) {
+    //     this.inventoryService.toggleInventory();
+    //   } else {
+    //     this.inventoryService.hideInventory();
+    //   }
+    // });
+  }
+
+  public override update() {
     super.update();
 
-    if (this.player && this.chest) {
-      const isNearChest = this.player.isNearObject(
-        this.chest,
-        this.config.interactionDistance,
-      );
+    // if (this.player && this.chest) {
+    //   const isNearChest = this.player.isNearObject(
+    //     this.chest,
+    //     this.config.interactionDistance,
+    //   );
 
-      const isInventoryOpen = this.inventoryService.isInventoryVisible();
-
-      const { x: playerX, y: playerY } = this.player.getPosition();
-
-      this.uiService.updateInteractionText(
-        playerX,
-        playerY,
-        isNearChest,
-        isInventoryOpen,
-      );
-    }
+    //   const { x: playerX, y: playerY } = this.player.getPosition();
+    // }
 
     // TODO: Multiplayer logic would go here
     // if (!myPlayer()) {

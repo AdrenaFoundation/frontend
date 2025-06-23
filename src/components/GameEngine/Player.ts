@@ -10,6 +10,11 @@ class Player {
   constructor(scene: AScene, x: number, y: number) {
     this.scene = scene;
     this.sprite = scene.physics.add.sprite(x, y, 'player', 1);
+    this.sprite.setScale(0.5); // Adjust from 32px player to 16px
+
+    // Make the user in between the tiles layers (see TilemapService)
+    this.sprite.setDepth(2.5);
+
     this.sprite.setCollideWorldBounds(true);
 
     if (!scene.input?.keyboard) {
@@ -131,20 +136,20 @@ class Player {
       tilemap: { tileWidth, tileHeight },
     } = objectTile.tilemapService.getObjectsLayer();
 
-    const { pixelX: objectX, pixelY: objectY } = objectTile.tile;
+    return objectTile.tiles.some(({ pixelX: objectX, pixelY: objectY }) => {
+      // Apply scale to object center
+      const centerX = (objectX + tileWidth / 2) * scaleX + offsetX;
+      const centerY = (objectY + tileHeight / 2) * scaleY + offsetY;
 
-    // Apply scale to object center
-    const centerX = (objectX + tileWidth / 2) * scaleX + offsetX;
-    const centerY = (objectY + tileHeight / 2) * scaleY + offsetY;
+      const distance = Phaser.Math.Distance.Between(
+        playerX,
+        playerY,
+        centerX,
+        centerY,
+      );
 
-    const distance = Phaser.Math.Distance.Between(
-      playerX,
-      playerY,
-      centerX,
-      centerY,
-    );
-
-    return distance <= interactionDistance;
+      return distance <= interactionDistance;
+    });
   }
 }
 

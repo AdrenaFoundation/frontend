@@ -1,23 +1,38 @@
 import { AScene } from './AScene';
 import ObjectTile from './ObjectTile';
+import Player from './Player';
 
 class TilemapService {
-  private scene: AScene;
-  private map: Phaser.Tilemaps.Tilemap | null = null;
-  private tiles: Phaser.Tilemaps.Tileset | null = null;
-  private floor: Phaser.Tilemaps.TilemapLayer | null = null;
-  private outerWalls: Phaser.Tilemaps.TilemapLayer | null = null;
-  private objects: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly scene: AScene;
+  public readonly map: Phaser.Tilemaps.Tilemap | null = null;
+
+  public readonly tiles: Phaser.Tilemaps.Tileset | null = null;
+
+  public readonly floor: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly walls: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly objects: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly doors: Phaser.Tilemaps.TilemapLayer | null = null;
+
+  // Layer used to dynamically place manual objects like items, etc.
+  public readonly manual: Phaser.Tilemaps.TilemapLayer | null = null;
 
   constructor(scene: AScene) {
     this.scene = scene;
-  }
 
-  public createTilemap(): void {
     const { width, height } = this.scene.config;
 
     this.map = this.scene.add.tilemap('map');
-    this.tiles = this.map.addTilesetImage('pixel-cyberpunk-interior', 'tiles');
+
+    // 1st parameter is the name of the tileset as defined in Tiled
+    // 2nd parameter is the key of the tileset image loaded in preload
+    this.tiles = this.map.addTilesetImage(
+      'tileset-v1.0.0',
+      'tiles',
+      16,
+      16,
+      0,
+      0,
+    );
 
     if (!this.tiles) {
       console.error('Tileset not found. Please check the tileset image URL.');
@@ -31,9 +46,12 @@ class TilemapService {
     const offsetY = (height - mapHeight) / 2;
 
     this.floor = this.map.createLayer('floor', this.tiles, offsetX, offsetY);
+    this.walls = this.map.createLayer('walls', this.tiles, offsetX, offsetY);
+    this.doors = this.map.createLayer('doors', this.tiles, offsetX, offsetY);
 
-    this.outerWalls = this.map.createLayer(
-      'outerWalls',
+    // Create a blank layer for manual objects
+    this.manual = this.map.createBlankLayer(
+      'manual',
       this.tiles,
       offsetX,
       offsetY,
@@ -48,15 +66,21 @@ class TilemapService {
 
     this.makeLayersResponsive();
 
-    if (this.outerWalls) {
-      // magic number TODO: check later the good practice
-      this.outerWalls.setCollisionBetween(0, 1000);
-    }
+    // Set collision for everything in walls layer and objects layer
+    this.walls?.setCollisionByExclusion([-1]);
+    this.objects?.setCollisionByExclusion([-1]);
+
+    // Set depth for layers
+    this.floor?.setDepth(0);
+    this.walls?.setDepth(1);
+    this.objects?.setDepth(2);
+    this.doors?.setDepth(3);
+    this.manual?.setDepth(4);
   }
 
   private makeLayersResponsive(): void {
     const { width, height, responsive } = this.scene.config;
-    const layers = [this.floor, this.outerWalls, this.objects].filter(Boolean);
+    const layers = [this.floor, this.walls, this.objects].filter(Boolean);
 
     layers.forEach((layer) => {
       if (layer) {
@@ -139,30 +163,152 @@ class TilemapService {
     return this.objects;
   }
 
-  public getObjectsByName(name: string): Promise<ObjectTile[]> {
+  // Looks at the tileset and returns all tile IDs that match the given id
+  public getTilesIdsFromIdProperty(id: string): number[] {
+    if (!this.tiles) {
+      throw new Error('Tileset not found. Please create the tilemap first.');
+    }
+
+    const result: number[] = [];
+
+    for (
+      let i = this.tiles.firstgid;
+      i < this.tiles.firstgid + this.tiles.total;
+      i++
+    ) {
+      const props = this.tiles.getTileProperties(i);
+
+      if (
+        props &&
+        typeof props === 'object' &&
+        'id' in props &&
+        typeof props.id === 'string' &&
+        props.id === id
+      ) {
+        result.push(i);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Groups directional object tiles (top/right/bottom) based on a shared name prefix and sequential pattern.
+   *
+   * Example: for prefix "table", tiles should be named:
+   *  - table-1/6
+   *  - table-2/6
+   *  - ...
+   *  - table-6/6
+   * They must be placed in order, connected in a straight line (top, right, or bottom).
+   */
+  public getObjectsByPrefix<T extends ObjectTile>(
+    prefix: string,
+    ctor: new (p: {
+      tiles: Phaser.Tilemaps.Tile[];
+      tilemapService: TilemapService;
+    }) => T,
+  ): Promise<T[]> {
     return new Promise((resolve) => {
       if (!this.objects) {
         resolve([]);
         return;
       }
 
-      const matchingTiles: ObjectTile[] = [];
+      const width = this.objects.width;
+      const height = this.objects.height;
+      const visited = new Set<string>();
+      const result: T[] = [];
 
-      this.objects.forEachTile((tile) => {
-        if (tile.properties?.name === name) {
-          matchingTiles.push(new ObjectTile(tile, this));
+      // Helper: creates a unique key for a tile position
+      const key = (x: number, y: number) => `${x},${y}`;
+
+      // Helper: safely get a tile at a position
+      const getTile = (x: number, y: number) => {
+        if (x < 0 || y < 0 || x >= width || y >= height) return null;
+        if (!this.objects) return null;
+
+        return this.objects.getTileAt(x, y);
+      };
+
+      // Iterate over every tile in the map
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const start = getTile(x, y);
+          if (!start?.properties?.name || visited.has(key(x, y))) continue;
+
+          // Match tiles like `prefix-1/N` to identify starting tiles
+          const match = start.properties.name.match(
+            new RegExp(`^${prefix}-1/(\\d+)$`),
+          );
+          if (!match) continue;
+
+          const total = parseInt(match[1], 10); // number of parts for this object
+          const group: Phaser.Tilemaps.Tile[] = [start];
+          visited.add(key(x, y)); // mark the starting tile as visited
+
+          let cx = x;
+          let cy = y;
+          let valid = true;
+
+          // Try to find the next N-1 parts
+          for (let i = 2; i <= total; i++) {
+            let next: Phaser.Tilemaps.Tile | null = null;
+
+            // Only check forward directions (top, right, bottom)
+            const directions = [
+              { dx: 1, dy: 0 }, // right
+              { dx: 0, dy: -1 }, // top
+              { dx: 0, dy: 1 }, // bottom
+            ];
+
+            // Try each direction to find the expected next tile
+            for (const { dx, dy } of directions) {
+              const nx = cx + dx;
+              const ny = cy + dy;
+              const ntile = getTile(nx, ny);
+              if (
+                ntile &&
+                ntile.properties?.name === `${prefix}-${i}/${total}` &&
+                !visited.has(key(nx, ny))
+              ) {
+                next = ntile;
+                cx = nx;
+                cy = ny;
+                break;
+              }
+            }
+
+            // If no next tile found, this group is invalid
+            if (!next) {
+              valid = false;
+              break;
+            }
+
+            group.push(next);
+            visited.add(key(cx, cy));
+          }
+
+          // Only add the group if all parts were found and it's complete
+          if (valid && group.length === total) {
+            result.push(
+              new ctor({
+                tiles: group,
+                tilemapService: this,
+              }),
+            );
+          }
         }
-      });
+      }
 
-      resolve(matchingTiles);
+      resolve(result);
     });
   }
 
-  public addColliderWithPlayer(
-    playerSprite: Phaser.Physics.Arcade.Sprite,
-  ): void {
-    if (this.outerWalls) {
-      this.scene.physics.add.collider(playerSprite, this.outerWalls);
+  public addColliderWithPlayer(player: Player): void {
+    if (this.walls && this.objects) {
+      player.addCollider(this.walls);
+      player.addCollider(this.objects);
     }
   }
 }
