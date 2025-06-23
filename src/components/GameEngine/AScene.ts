@@ -64,11 +64,6 @@ export abstract class AScene<
     this.tilemapService.addColliderWithPlayer(this.player);
 
     this.cameras.main.startFollow(this.player.getSprite());
-    console.log(
-      'Camera bounds set to tilemap size',
-      this.tilemapService.map!.widthInPixels,
-      this.tilemapService.map!.heightInPixels,
-    );
 
     this.cameras.main.setBounds(
       0,
@@ -86,24 +81,25 @@ export abstract class AScene<
 
     this.setupInteractionControls();
 
-    this.scale.on('resize', this.handleResize, this);
+    // Handle resizing the game
+    {
+      // Handle when the game is resized
+      this.scale.on('resize', this.handleResize, this);
 
-    this.setupResizeListener();
+      let resizeTimeout: number;
+
+      // Tell the game when the window is resized
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+
+        resizeTimeout = window.setTimeout(() => {
+          const { width, height } = this.getContainerSize();
+          this.scale.resize(width, height);
+        }, 150);
+      });
+    }
 
     EventBus.emit('scene-ready', this);
-  }
-
-  protected setupResizeListener(): void {
-    let resizeTimeout: number;
-
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-
-      resizeTimeout = window.setTimeout(() => {
-        const { width, height } = this.getContainerSize();
-        this.scale.resize(width, height);
-      }, 150);
-    });
   }
 
   protected handleResize(gameSize: Phaser.Structs.Size): void {
