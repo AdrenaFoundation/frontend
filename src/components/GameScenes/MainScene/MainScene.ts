@@ -5,6 +5,7 @@ import GearTiles from '@/components/GameEngine/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/InventoryTableTiles';
 import KennelButtonTiles from '@/components/GameEngine/KennelButtonTiles';
 import ObjectTiles from '@/components/GameEngine/ObjectTiles';
+import PlantTiles from '@/components/GameEngine/PlantTiles';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
 type MainSceneConfig = ASceneConfig & {
@@ -95,12 +96,16 @@ export class MainScene extends AScene<MainSceneConfig> {
       BedTiles,
     );
 
-    console.log('Beds:', beds);
+    const plants = await this.getTilemapService().getObjectsByPrefix(
+      'plant',
+      PlantTiles,
+    );
 
     this.player?.addInteractiveObjects(inventoryTables);
     this.player?.addInteractiveObjects(pets);
     this.player?.addInteractiveObjects(buttons);
     this.player?.addInteractiveObjects(beds);
+    this.player?.addInteractiveObjects(plants);
   }
 
   protected override setupInteractionControls(): void {}
