@@ -1,23 +1,47 @@
 import { AScene } from './AScene';
 import ItemTiles from './ItemTiles';
+import { LockedInfoWindow } from './LockedInfoWindow';
 import ObjectTiles from './ObjectTiles';
 
 class InventoryTableTiles extends ObjectTiles {
   protected itemTiles: ItemTiles | null = null;
+  protected locked: boolean = false;
+  private lockedWindow: LockedInfoWindow | null = null;
 
-  // Propagate interactions to Items
   public override handleInteractionOn() {
-    this.itemTiles?.handleInteractionOn({
-      position: this.getCenter(),
-    });
+    if (this.locked) {
+      this.lockedWindow?.destroy();
+
+      const center = this.getCenter();
+      this.lockedWindow = new LockedInfoWindow(
+        this.scene,
+        'Reach level 15 to unlock',
+      );
+
+      const { width, height } = this.lockedWindow.getSize();
+
+      this.lockedWindow.setPosition(
+        center.x - width / 2,
+        center.y - 30 - height / 2,
+      );
+    } else {
+      this.itemTiles?.handleInteractionOn({ position: this.getCenter() });
+    }
   }
 
   public override handleInteractionOff() {
-    this.itemTiles?.handleInteractionOff();
+    this.lockedWindow?.destroy();
+    this.lockedWindow = null;
+
+    if (!this.locked) {
+      this.itemTiles?.handleInteractionOff();
+    }
   }
 
   public override updateInteraction() {
-    this.itemTiles?.updateInteraction();
+    if (!this.locked) {
+      this.itemTiles?.updateInteraction();
+    }
   }
 
   public addItemOnTable<T extends ItemTiles>({
@@ -44,8 +68,6 @@ class InventoryTableTiles extends ObjectTiles {
       this.itemTiles.destroy();
     }
 
-    console.log('Adding item from table:');
-
     this.itemTiles = new ctor({
       scene: this.scene,
       position: this.getCenter(),
@@ -54,15 +76,41 @@ class InventoryTableTiles extends ObjectTiles {
       offsetY,
       depth,
     });
+
+    if (this.locked) {
+      this.itemTiles.setVisible(false);
+    }
   }
 
   public removeItemFromTable(): void {
     if (this.itemTiles) {
-      console.log('Removing item from table:', this.itemTiles);
-
       this.itemTiles.destroy();
       this.itemTiles = null;
     }
+  }
+
+  public lock(): void {
+    this.locked = true;
+
+    if (this.itemTiles) {
+      this.itemTiles.handleInteractionOff();
+      this.itemTiles.setVisible(false);
+    }
+
+    this.changeColor(0x887c73);
+  }
+
+  public unlock(): void {
+    this.locked = false;
+
+    if (this.itemTiles) {
+      this.itemTiles.setVisible(true);
+    }
+
+    this.lockedWindow?.destroy();
+    this.lockedWindow = null;
+
+    this.changeColor(0xffffff);
   }
 }
 

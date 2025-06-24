@@ -74,7 +74,7 @@ export class MainScene extends AScene<MainSceneConfig> {
 
     console.log('Inventory tables:', inventoryTables);
 
-    inventoryTables.forEach((table, i) => {
+    inventoryTables.slice(0, inventoryTables.length - 2).forEach((table, i) => {
       if (i % 2 === 0) {
         table.addItemOnTable({
           itemId: '2',
@@ -86,6 +86,10 @@ export class MainScene extends AScene<MainSceneConfig> {
           ctor: GearTiles,
         });
       }
+    });
+
+    inventoryTables.slice(inventoryTables.length - 2).forEach((table) => {
+      table.lock();
     });
 
     const pets = await this.getTilemapService().getObjectsByPrefix(
