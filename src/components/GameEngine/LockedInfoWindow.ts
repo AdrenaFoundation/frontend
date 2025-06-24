@@ -9,7 +9,6 @@ export class LockedInfoWindow extends Phaser.GameObjects.Container {
     const padding = 10;
     let currentY = padding;
 
-    // Title: "Locked" in yellow
     const titleText = scene.add.text(0, 0, 'Inventory Slot Locked', {
       fontSize: '12px',
       color: '#FFFF00',
@@ -19,7 +18,6 @@ export class LockedInfoWindow extends Phaser.GameObjects.Container {
     this.add(titleText);
     currentY += titleText.height + 4;
 
-    // Reason: white
     const reasonText = scene.add.text(0, 0, reason, {
       fontSize: '12px',
       color: '#FFFFFF',
@@ -33,7 +31,6 @@ export class LockedInfoWindow extends Phaser.GameObjects.Container {
     // Calculate width based on longest text
     const width = Math.max(titleText.width, reasonText.width) + padding * 2;
 
-    // Background with stroke
     this.bg = scene.add
       .rectangle(0, 0, width, currentY, 0x000000, 0.8)
       .setOrigin(0)

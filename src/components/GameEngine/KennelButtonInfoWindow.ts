@@ -19,7 +19,6 @@ export class KennelButtonInfoWindow extends Phaser.GameObjects.Container {
         : 'Pay 500 ADX to unlock more slots';
     const hint = '[E] to buy';
 
-    // Title (yellow)
     const titleText = scene.add.text(padding, currentY, title, {
       fontSize: '12px',
       color: '#FFFF00',
@@ -27,7 +26,6 @@ export class KennelButtonInfoWindow extends Phaser.GameObjects.Container {
     this.add(titleText);
     currentY += titleText.height + 4;
 
-    // Description (white)
     const descriptionText = scene.add.text(padding, currentY, description, {
       fontSize: '12px',
       color: '#FFFFFF',
@@ -36,14 +34,12 @@ export class KennelButtonInfoWindow extends Phaser.GameObjects.Container {
     this.add(descriptionText);
     currentY += descriptionText.height + 6;
 
-    // Separator
     const separator = scene.add
       .rectangle(padding, currentY, width - padding * 2, 1, 0xaaaaaa)
       .setOrigin(0, 0);
     this.add(separator);
     currentY += 6;
 
-    // Hint
     const hintText = scene.add.text(padding, currentY, hint, {
       fontSize: '11px',
       color: '#aaaaaa',
@@ -51,7 +47,6 @@ export class KennelButtonInfoWindow extends Phaser.GameObjects.Container {
     this.add(hintText);
     currentY += hintText.height + padding;
 
-    // Background
     this.bg = scene.add
       .rectangle(0, 0, width, currentY, 0x000000, 0.8)
       .setOrigin(0)

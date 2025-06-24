@@ -56,7 +56,6 @@ export class ItemInfoWindow extends Phaser.GameObjects.Container {
 
     currentY += Math.max(effectLabel.height, effectValue.height) + 6;
 
-    // Separator line
     const separator = scene.add
       .rectangle(padding, currentY, width - padding * 2, 1, 0xaaaaaa)
       .setOrigin(0, 0);
