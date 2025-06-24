@@ -1,13 +1,14 @@
+import { AScene } from './AScene';
 import { ItemInfoWindow } from './ItemInfoWindow';
-import ItemTile from './ItemTile';
-import ObjectTile from './ObjectTile';
+import ItemTiles from './ItemTiles';
+import ObjectTiles from './ObjectTiles';
 
-class InventoryTableTile extends ObjectTile {
+class InventoryTableTiles extends ObjectTiles {
   private infoWindow: ItemInfoWindow | null = null;
 
   private interactionKey: Phaser.Input.Keyboard.Key | null = null;
 
-  protected itemTile: ItemTile | null = null;
+  protected ItemTiles: ItemTiles | null = null;
 
   public override handleInteractionOn() {
     if (this.infoWindow) {
@@ -44,7 +45,7 @@ class InventoryTableTile extends ObjectTile {
   }
 
   public override handleInteractionOff() {
-    console.log('handleInteractionOff called on InventoryTableTile');
+    console.log('handleInteractionOff called on InventoryTableTiles');
     this.infoWindow?.destroy(true);
     this.infoWindow = null;
     this.interactionKey?.destroy();
@@ -53,24 +54,46 @@ class InventoryTableTile extends ObjectTile {
 
   public override updateInteraction() {}
 
-  public addItemOnTable(itemId: string): void {
-    if (this.itemTile) {
-      this.itemTile.destroy();
+  public addItemOnTable<T extends ItemTiles>({
+    itemId,
+    offsetX = 0.5,
+    offsetY = 0.5,
+    depth = 10,
+    ctor,
+  }: {
+    itemId: string;
+    offsetX?: number;
+    offsetY?: number;
+    depth?: number;
+    ctor: new (p: {
+      scene: AScene;
+      itemId: string;
+      position: Phaser.Math.Vector2;
+      offsetX?: number;
+      offsetY?: number;
+      depth?: number;
+    }) => T;
+  }): void {
+    if (this.ItemTiles) {
+      this.ItemTiles.destroy();
     }
 
-    this.itemTile = new ItemTile({
+    this.ItemTiles = new ctor({
       scene: this.scene,
-      itemId,
       position: this.getCenter(),
+      itemId,
+      offsetX,
+      offsetY,
+      depth,
     });
   }
 
   public removeItemFromTable(): void {
-    if (this.itemTile) {
-      this.itemTile.destroy();
-      this.itemTile = null;
+    if (this.ItemTiles) {
+      this.ItemTiles.destroy();
+      this.ItemTiles = null;
     }
   }
 }
 
-export default InventoryTableTile;
+export default InventoryTableTiles;

@@ -1,6 +1,7 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
-import InventoryTableTile from '@/components/GameEngine/InventoryTableTile';
-import ObjectTile from '@/components/GameEngine/ObjectTile';
+import InventoryTableTiles from '@/components/GameEngine/InventoryTableTiles';
+import ItemTiles from '@/components/GameEngine/ItemTiles';
+import ObjectTiles from '@/components/GameEngine/ObjectTiles';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
 type MainSceneConfig = ASceneConfig & {
@@ -34,7 +35,7 @@ export class MainScene extends AScene<MainSceneConfig> {
   protected uiService: UIService;
 
   // Chest doesn't move
-  protected chest: ObjectTile | null = null;
+  protected chest: ObjectTiles | null = null;
 
   constructor() {
     super({
@@ -64,27 +65,31 @@ export class MainScene extends AScene<MainSceneConfig> {
     await super.create();
 
     const inventoryTables =
-      await this.getTilemapService().getObjectsByPrefix<InventoryTableTile>(
+      await this.getTilemapService().getObjectsByPrefix<InventoryTableTiles>(
         'table',
-        InventoryTableTile,
+        InventoryTableTiles,
       );
 
     console.log('Inventory tables:', inventoryTables);
 
     inventoryTables.forEach((table) => {
-      table.addItemOnTable('1');
+      table.addItemOnTable({
+        itemId: '2',
+        offsetX: 1,
+        ctor: ItemTiles,
+      });
     });
 
     const pets = await this.getTilemapService().getObjectsByPrefix(
       'pet',
-      ObjectTile,
+      ObjectTiles,
     );
 
     console.log('Pet:', pets);
 
     const buttons = await this.getTilemapService().getObjectsByPrefix(
       'button',
-      ObjectTile,
+      ObjectTiles,
     );
 
     console.log('Buttons:', buttons);

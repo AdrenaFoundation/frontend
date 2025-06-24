@@ -1,5 +1,5 @@
 import { AScene } from './AScene';
-import ObjectTile from './ObjectTile';
+import ObjectTiles from './ObjectTiles';
 import Player from './Player';
 
 class TilemapService {
@@ -120,7 +120,7 @@ class TilemapService {
    *  - table-6/6
    * They must be placed in order, connected in a straight line (top, right, or bottom).
    */
-  public getObjectsByPrefix<T extends ObjectTile>(
+  public getObjectsByPrefix<T extends ObjectTiles>(
     prefix: string,
     ctor: new (p: {
       tiles: Phaser.Tilemaps.Tile[];

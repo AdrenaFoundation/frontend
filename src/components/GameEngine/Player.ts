@@ -1,6 +1,6 @@
 import config from '../GameScenes/MainScene/config';
 import { AScene } from './AScene';
-import ObjectTile from './ObjectTile';
+import ObjectTiles from './ObjectTiles';
 
 class Player {
   protected scene: AScene;
@@ -9,11 +9,11 @@ class Player {
   protected nameTag: Phaser.GameObjects.Text;
 
   // List of interactive objects the player can interact with
-  protected interactiveObjects: ObjectTile[] = [];
+  protected interactiveObjects: ObjectTiles[] = [];
 
   protected facingDirection: 'up' | 'down' | 'left' | 'right' = 'down';
 
-  protected facedObject: ObjectTile | null = null;
+  protected facedObject: ObjectTiles | null = null;
 
   constructor({
     scene,
@@ -57,8 +57,8 @@ class Player {
       .setVisible(showNickname);
   }
 
-  public addInteractiveObjects(objectTiles: ObjectTile[]): void {
-    this.interactiveObjects.push(...objectTiles);
+  public addInteractiveObjects(ObjectTiless: ObjectTiles[]): void {
+    this.interactiveObjects.push(...ObjectTiless);
   }
 
   protected createAnimations(): void {
@@ -151,8 +151,8 @@ class Player {
       this.sprite.y - this.sprite.height / 2 + 30,
     );
 
-    const facingOneObject = this.interactiveObjects.find((objectTile) => {
-      return this.isFacingObject(objectTile);
+    const facingOneObject = this.interactiveObjects.find((ObjectTiles) => {
+      return this.isFacingObject(ObjectTiles);
     });
 
     if (!facingOneObject) {
@@ -184,7 +184,7 @@ class Player {
   }
 
   public isNearObject(
-    objectTile: ObjectTile,
+    ObjectTiles: ObjectTiles,
     interactionDistance: number,
   ): boolean {
     const { x: playerX, y: playerY } = this.getPosition();
@@ -195,9 +195,9 @@ class Player {
       scaleX,
       scaleY,
       tilemap: { tileWidth, tileHeight },
-    } = objectTile.tilemapService.getObjectsLayer();
+    } = ObjectTiles.tilemapService.getObjectsLayer();
 
-    return objectTile.tiles.some(({ pixelX: objectX, pixelY: objectY }) => {
+    return ObjectTiles.tiles.some(({ pixelX: objectX, pixelY: objectY }) => {
       // Apply scale to object center
       const centerX = (objectX + tileWidth / 2) * scaleX + offsetX;
       const centerY = (objectY + tileHeight / 2) * scaleY + offsetY;
@@ -213,7 +213,7 @@ class Player {
     });
   }
 
-  public isFacingObject(object: ObjectTile): boolean {
+  public isFacingObject(object: ObjectTiles): boolean {
     const { x, y } = this.getPosition();
     const tileSize = 16;
 

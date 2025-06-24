@@ -1,13 +1,13 @@
 import { AScene } from './AScene';
-import ObjectTile from './ObjectTile';
+import ObjectTiles from './ObjectTiles';
 
 // One object is one or multiple consecutive tiles
-class ItemTile extends ObjectTile {
+class ItemTiles extends ObjectTiles {
   // The IDs from the tileset that constitute the item
   protected tilesetItemIds: number[] = [];
 
   public readonly scene: AScene;
-  protected image: Phaser.GameObjects.Image;
+  protected images: Phaser.GameObjects.Image[];
 
   constructor({
     scene,
@@ -36,31 +36,41 @@ class ItemTile extends ObjectTile {
       throw new Error('Tilemap manual layer not found.');
     }
 
-    const frameIndex =
-      this.tilesetItemIds[0] - this.tilemapService.tiles.firstgid;
+    const tileWidth = manual.tilemap.tileWidth;
+    const tileHeight = manual.tilemap.tileHeight;
 
-    this.image = this.scene.add
-      .image(
-        position.x,
-        position.y + -manual.tilemap.tileHeight / 2,
-        'tiles-sprite',
-        frameIndex,
-      )
-      .setOrigin(offsetX, offsetY)
-      .setDepth(depth);
+    const images: Phaser.GameObjects.Image[] = [];
+
+    this.tilesetItemIds.forEach((id, i) => {
+      const frameIndex = id - this.tilemapService.tiles!.firstgid;
+
+      const image = scene.add
+        .image(
+          position.x + i * tileWidth, // place next to each other horizontally
+          position.y - tileHeight / 2,
+          'tiles-sprite',
+          frameIndex,
+        )
+        .setOrigin(offsetX, offsetY)
+        .setDepth(depth);
+
+      images.push(image);
+    });
+
+    this.images = images;
   }
 
   public override setVisible(v: boolean): void {
-    this.image.setVisible(v);
+    this.images.forEach((image) => image.setVisible(v));
   }
 
   public override changeColor(color: number): void {
-    this.image.setTint(color);
+    this.images.forEach((image) => image.setTint(color));
   }
 
   // After calling this method, the object should not be used anymore and could lead to unexpected behavior
   public destroy(): void {
-    this.image.destroy();
+    this.images.forEach((image) => image.destroy());
   }
 
   public override handleInteractionOn() {}
@@ -68,4 +78,4 @@ class ItemTile extends ObjectTile {
   public override updateInteraction() {}
 }
 
-export default ItemTile;
+export default ItemTiles;

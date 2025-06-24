@@ -2,7 +2,7 @@ import { AScene } from './AScene';
 import TilemapService from './TilemapService';
 
 // One object is one or multiple consecutive tiles
-class ObjectTile {
+class ObjectTiles {
   public readonly tiles: Phaser.Tilemaps.Tile[];
   public readonly tilemapService: TilemapService;
   public readonly scene: AScene;
@@ -65,4 +65,4 @@ class ObjectTile {
   public updateInteraction() {}
 }
 
-export default ObjectTile;
+export default ObjectTiles;
