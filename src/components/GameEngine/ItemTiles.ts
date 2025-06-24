@@ -14,7 +14,7 @@ class ItemTiles extends ObjectTiles {
     itemId,
     position,
     // Adapt theses offsets depending on where you want to place the item
-    offsetX = 0.5,
+    offsetX,
     offsetY = 0.5,
     depth = 10,
   }: {
@@ -40,6 +40,12 @@ class ItemTiles extends ObjectTiles {
     const tileHeight = manual.tilemap.tileHeight;
 
     const images: Phaser.GameObjects.Image[] = [];
+
+    if (typeof offsetX === 'undefined') {
+      // Default to center if not provided
+      // Depends on the number of tiles of the item
+      offsetX = this.tilesetItemIds.length > 1 ? 1 : 0.5;
+    }
 
     this.tilesetItemIds.forEach((id, i) => {
       const frameIndex = id - this.tilemapService.tiles!.firstgid;

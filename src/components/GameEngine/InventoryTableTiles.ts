@@ -22,8 +22,8 @@ class InventoryTableTiles extends ObjectTiles {
 
   public addItemOnTable<T extends ItemTiles>({
     itemId,
-    offsetX = 0.5,
-    offsetY = 0.5,
+    offsetX,
+    offsetY,
     depth = 10,
     ctor,
   }: {

@@ -77,7 +77,6 @@ export class MainScene extends AScene<MainSceneConfig> {
       if (i % 2 === 0) {
         table.addItemOnTable({
           itemId: '2',
-          offsetX: 1,
           ctor: CrateTiles,
         });
       } else {
