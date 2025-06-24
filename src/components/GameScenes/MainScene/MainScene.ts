@@ -1,4 +1,5 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
+import BedTiles from '@/components/GameEngine/BedTiles';
 import CrateTiles from '@/components/GameEngine/CrateTiles';
 import GearTiles from '@/components/GameEngine/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/InventoryTableTiles';
@@ -21,7 +22,6 @@ const config: MainSceneConfig = {
 
   playerStartingPosition: new Phaser.Math.Vector2(300, 300),
 
-  // Asset paths
   assets: {
     external: {
       tiles:
@@ -36,9 +36,6 @@ const config: MainSceneConfig = {
 export class MainScene extends AScene<MainSceneConfig> {
   protected uiService: UIService;
 
-  // Chest doesn't move
-  protected chest: ObjectTiles | null = null;
-
   constructor() {
     super({
       name: 'Main',
@@ -50,9 +47,6 @@ export class MainScene extends AScene<MainSceneConfig> {
 
   protected override handleResize(gameSize: Phaser.Structs.Size): void {
     super.handleResize(gameSize);
-
-    // const { width, height } = gameSize;
-    // this.uiService.updateResponsivePosition(width, height);
   }
 
   protected override loadAssets(): void {
@@ -60,10 +54,6 @@ export class MainScene extends AScene<MainSceneConfig> {
   }
 
   public override async create() {
-    // this.uiService.createTitle();
-    // this.uiService.createInstructions();
-    // this.uiService.createInteractionText();
-
     await super.create();
 
     const inventoryTables =
@@ -71,8 +61,6 @@ export class MainScene extends AScene<MainSceneConfig> {
         'table',
         InventoryTableTiles,
       );
-
-    console.log('Inventory tables:', inventoryTables);
 
     inventoryTables.slice(0, inventoryTables.length - 2).forEach((table, i) => {
       if (i % 2 === 0) {
@@ -97,18 +85,22 @@ export class MainScene extends AScene<MainSceneConfig> {
       ObjectTiles,
     );
 
-    console.log('Pet:', pets);
-
     const buttons = await this.getTilemapService().getObjectsByPrefix(
       'button',
       KennelButtonTiles,
     );
 
-    console.log('Buttons:', buttons);
+    const beds = await this.getTilemapService().getObjectsByPrefix(
+      'bed',
+      BedTiles,
+    );
+
+    console.log('Beds:', beds);
 
     this.player?.addInteractiveObjects(inventoryTables);
     this.player?.addInteractiveObjects(pets);
     this.player?.addInteractiveObjects(buttons);
+    this.player?.addInteractiveObjects(beds);
   }
 
   protected override setupInteractionControls(): void {}
