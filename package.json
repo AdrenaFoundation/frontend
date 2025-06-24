@@ -11,6 +11,8 @@
   "dependencies": {
     "@bonfida/spl-name-service": "^3.0.11",
     "@coral-xyz/anchor": "=0.29.0",
+    "@dialectlabs/react-sdk-blockchain-solana": "^3.0.0-beta.6",
+    "@dialectlabs/react-ui": "^3.0.0-beta.6",
     "@emotion/react": "=11.14.0",
     "@emotion/styled": "=11.14.0",
     "@jup-ag/api": "^6.0.42",
