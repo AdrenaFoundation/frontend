@@ -1,58 +1,24 @@
 import { AScene } from './AScene';
-import { ItemInfoWindow } from './ItemInfoWindow';
 import ItemTiles from './ItemTiles';
 import ObjectTiles from './ObjectTiles';
 
 class InventoryTableTiles extends ObjectTiles {
-  private infoWindow: ItemInfoWindow | null = null;
+  protected itemTiles: ItemTiles | null = null;
 
-  private interactionKey: Phaser.Input.Keyboard.Key | null = null;
-
-  protected ItemTiles: ItemTiles | null = null;
-
+  // Propagate interactions to Items
   public override handleInteractionOn() {
-    if (this.infoWindow) {
-      this.handleInteractionOff();
-    }
-
-    // Set info window
-    {
-      this.infoWindow = new ItemInfoWindow({
-        scene: this.scene,
-        name: 'Sword of Devil',
-        effect: '+0.5bps of trading fee',
-        hint: '[E] to equip', // TODO: change depending on the type of item
-      });
-
-      const { x, y } = this.getCenter();
-
-      const { width, height } = this.infoWindow.getSize();
-
-      this.infoWindow.setPosition(x - width / 2, y - 50 - height / 2);
-
-      this.infoWindow.setVisible(true);
-    }
-
-    {
-      if (this.scene.input.keyboard) {
-        this.interactionKey = this.scene.input.keyboard.addKey('E');
-
-        this.interactionKey.on('down', () => {
-          console.log('DO EQUIP!'); // TODO: change depending on the type of item
-        });
-      }
-    }
+    this.itemTiles?.handleInteractionOn({
+      position: this.getCenter(),
+    });
   }
 
   public override handleInteractionOff() {
-    console.log('handleInteractionOff called on InventoryTableTiles');
-    this.infoWindow?.destroy(true);
-    this.infoWindow = null;
-    this.interactionKey?.destroy();
-    this.interactionKey = null;
+    this.itemTiles?.handleInteractionOff();
   }
 
-  public override updateInteraction() {}
+  public override updateInteraction() {
+    this.itemTiles?.updateInteraction();
+  }
 
   public addItemOnTable<T extends ItemTiles>({
     itemId,
@@ -74,11 +40,13 @@ class InventoryTableTiles extends ObjectTiles {
       depth?: number;
     }) => T;
   }): void {
-    if (this.ItemTiles) {
-      this.ItemTiles.destroy();
+    if (this.itemTiles) {
+      this.itemTiles.destroy();
     }
 
-    this.ItemTiles = new ctor({
+    console.log('Adding item from table:');
+
+    this.itemTiles = new ctor({
       scene: this.scene,
       position: this.getCenter(),
       itemId,
@@ -89,9 +57,11 @@ class InventoryTableTiles extends ObjectTiles {
   }
 
   public removeItemFromTable(): void {
-    if (this.ItemTiles) {
-      this.ItemTiles.destroy();
-      this.ItemTiles = null;
+    if (this.itemTiles) {
+      console.log('Removing item from table:', this.itemTiles);
+
+      this.itemTiles.destroy();
+      this.itemTiles = null;
     }
   }
 }

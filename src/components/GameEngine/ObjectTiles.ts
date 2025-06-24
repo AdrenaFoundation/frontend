@@ -56,7 +56,8 @@ class ObjectTiles {
   }
 
   // Override this method to handle interaction logic
-  public handleInteractionOn() {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public handleInteractionOn(params: { [key: string]: unknown }) {}
 
   // Override this method to handle interaction logic
   public handleInteractionOff() {}

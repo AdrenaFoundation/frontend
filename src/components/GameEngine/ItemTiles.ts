@@ -72,10 +72,6 @@ class ItemTiles extends ObjectTiles {
   public destroy(): void {
     this.images.forEach((image) => image.destroy());
   }
-
-  public override handleInteractionOn() {}
-  public override handleInteractionOff() {}
-  public override updateInteraction() {}
 }
 
 export default ItemTiles;

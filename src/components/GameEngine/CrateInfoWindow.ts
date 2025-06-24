@@ -1,17 +1,17 @@
 import { Scene } from 'phaser';
 
-export class ItemInfoWindow extends Phaser.GameObjects.Container {
+export class CrateInfoWindow extends Phaser.GameObjects.Container {
   private bg: Phaser.GameObjects.Rectangle;
 
   constructor({
     scene,
     name,
-    effect,
+    rarity,
     hint,
   }: {
     scene: Scene;
     name: string;
-    effect: string;
+    rarity: string;
     hint: string;
   }) {
     super(scene);
@@ -38,35 +38,36 @@ export class ItemInfoWindow extends Phaser.GameObjects.Container {
 
     currentY += Math.max(nameLabel.height, nameValue.height) + 4;
 
-    const effectLabel = scene.add.text(padding, currentY, 'Effect: ', {
+    const rarityLabel = scene.add.text(padding, currentY, 'Rarity: ', {
       fontSize: '12px',
       color: '#FFFF00',
     });
 
-    const effectValue = scene.add.text(
-      effectLabel.x + effectLabel.width,
+    const rarityValue = scene.add.text(
+      rarityLabel.x + rarityLabel.width,
       currentY,
-      effect,
+      rarity,
       {
         fontSize: '12px',
         color: '#FFFFFF',
-        wordWrap: { width: width - padding * 2 - effectLabel.width },
+        wordWrap: { width: width - padding * 2 - rarityLabel.width },
       },
     );
 
-    currentY += Math.max(effectLabel.height, effectValue.height) + 6;
+    currentY += Math.max(rarityLabel.height, rarityValue.height) + 6;
 
-    // Separator line
     const separator = scene.add
       .rectangle(padding, currentY, width - padding * 2, 1, 0xaaaaaa)
       .setOrigin(0, 0);
 
     currentY += 6;
 
-    const hintText = scene.add.text(padding, currentY, hint, {
-      fontSize: '11px',
-      color: '#aaaaaa',
-    });
+    const hintText = scene.add
+      .text(padding, currentY, hint, {
+        fontSize: '11px',
+        color: '#aaaaaa',
+      })
+      .setOrigin(0);
 
     currentY += hintText.height + padding;
 
@@ -79,14 +80,13 @@ export class ItemInfoWindow extends Phaser.GameObjects.Container {
       this.bg,
       nameLabel,
       nameValue,
-      effectLabel,
-      effectValue,
+      rarityLabel,
+      rarityValue,
       separator,
       hintText,
     ]);
 
     this.setDepth(9999);
-
     scene.add.existing(this);
   }
 

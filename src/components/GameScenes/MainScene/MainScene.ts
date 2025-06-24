@@ -1,6 +1,7 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
+import CrateTiles from '@/components/GameEngine/CrateTiles';
+import GearTiles from '@/components/GameEngine/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/InventoryTableTiles';
-import ItemTiles from '@/components/GameEngine/ItemTiles';
 import ObjectTiles from '@/components/GameEngine/ObjectTiles';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
@@ -72,12 +73,19 @@ export class MainScene extends AScene<MainSceneConfig> {
 
     console.log('Inventory tables:', inventoryTables);
 
-    inventoryTables.forEach((table) => {
-      table.addItemOnTable({
-        itemId: '2',
-        offsetX: 1,
-        ctor: ItemTiles,
-      });
+    inventoryTables.forEach((table, i) => {
+      if (i % 2 === 0) {
+        table.addItemOnTable({
+          itemId: '2',
+          offsetX: 1,
+          ctor: CrateTiles,
+        });
+      } else {
+        table.addItemOnTable({
+          itemId: '1',
+          ctor: GearTiles,
+        });
+      }
     });
 
     const pets = await this.getTilemapService().getObjectsByPrefix(
