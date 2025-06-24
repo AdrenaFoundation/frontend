@@ -2,6 +2,7 @@ import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
 import CrateTiles from '@/components/GameEngine/CrateTiles';
 import GearTiles from '@/components/GameEngine/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/InventoryTableTiles';
+import KennelButtonTiles from '@/components/GameEngine/KennelButtonTiles';
 import ObjectTiles from '@/components/GameEngine/ObjectTiles';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
@@ -96,7 +97,7 @@ export class MainScene extends AScene<MainSceneConfig> {
 
     const buttons = await this.getTilemapService().getObjectsByPrefix(
       'button',
-      ObjectTiles,
+      KennelButtonTiles,
     );
 
     console.log('Buttons:', buttons);
