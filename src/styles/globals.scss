@@ -35,13 +35,18 @@
   --color-light: #f5f5f5;
   --color-dark: #080a0d;
 
+  --color-main: #060d16;
+  --color-secondary: #061018;
+  --color-third: #151e29;
   --color-bcolor: #15202c;
+  --color-txtfade: #858789;
+  --color-inputcolor: #1e2c3c;
 
   --color-gray-200: #1a2431;
 
   --color-blue-500: #3b82f6;
 
-  --color-red-500: #c9243a;
+  --color-redbright: #ff344e, --color-red-500: #c9243a;
 
   --color-green-500: #07956b;
 
@@ -871,4 +876,62 @@ blockquote {
   background-size: 300% 100%;
   animation: shimmer 6s linear infinite;
   filter: brightness(0.9) saturate(1.5);
+}
+
+// .dialect {
+//   --dt-bg-primary: #ff00ff; /* make sure your css is imported after the dialect styles */
+//   --dt-bg-secondary: #ff00ff !important; /* You might want to add !important tag to avoid css import ordering issue */
+//   --dt-bg-tertiary: var(
+//     --my-cool-background
+//   ); /* You can reference you css variable to avoid copy/paste and handle light/dark theme for example */
+// }
+
+.dialect {
+  --dt-accent-brand: var(--color-green-500) !important;
+  --dt-accent-error: var(--color-redbright) !important;
+  --dt-bg-brand: var(--color-third) !important;
+  --dt-bg-primary: var(--color-secondary) !important;
+  --dt-bg-secondary: var(--color-secondary) !important;
+  --dt-bg-tertiary: var(--color-third) !important;
+  --dt-brand-transparent: #15202c43 !important;
+  --dt-button-primary: var(--color-light) !important;
+  --dt-button-primary-disabled: #656564 !important;
+  --dt-button-primary-hover: #d9d9d9 !important;
+  --dt-button-secondary: var(--color-secondary) !important;
+  --dt-button-secondary-disabled: #f2f3f5 !important;
+  --dt-button-secondary-hover: var(--color-bcolor) !important;
+  --dt-icon-primary: var(--color-light) !important;
+  --dt-icon-secondary: var(--color-third) !important;
+  --dt-icon-tertiary: var(--color-bcolor) !important;
+  --dt-input-checked: var(--color-green-500) !important;
+  --dt-input-primary: var(--color-bcolor) !important;
+  --dt-input-secondary: var(--color-inputcolor) !important;
+  --dt-input-unchecked: var(--color-bcolor) !important;
+  --dt-stroke-primary: var(--color-bcolor) !important;
+  --dt-text-accent: var(--color-green-500) !important;
+  --dt-text-inverse: var(--color-dark) !important;
+  --dt-text-primary: var(--color-light) !important;
+  --dt-text-quaternary: #888989 !important;
+  --dt-text-secondary: var(--color-txtfade) !important;
+  --dt-text-tertiary: #737373 !important;
+  .dt-h-10 {
+    height: 1.75rem !important;
+  }
+
+  .dt-w-10 {
+    width: 1.75rem !important;
+
+    svg {
+      width: 1rem !important;
+      height: 1rem !important;
+    }
+  }
+
+  .dt-modal {
+    top: 2rem !important;
+    h3 {
+      font-family: interMedium;
+      src: url('/fonts/Inter_18pt-Medium.ttf');
+    }
+  }
 }

@@ -25,6 +25,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import { DialectNotification } from '../DialectNotification/DialectNotification';
 import Mutagen from '../Mutagen/Mutagen';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
@@ -172,7 +173,11 @@ export default function Header({
         />
       </div>
 
+
+
       <div className="flex flex-row items-center gap-2 sm:gap-3">
+        <DialectNotification adapters={adapters} />
+
         <Link href="/buy_alp">
           {tokenPriceALP && aprs ? (
             <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
@@ -291,6 +296,6 @@ export default function Header({
           </Menu>
         ) : null}
       </div>
-    </div>
+    </div >
   );
 }
