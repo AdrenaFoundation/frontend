@@ -5,10 +5,17 @@ import ObjectTile from './ObjectTile';
 class InventoryTableTile extends ObjectTile {
   private infoWindow: ItemInfoWindow | null = null;
 
+  private interactionKey: Phaser.Input.Keyboard.Key | null = null;
+
   protected itemTile: ItemTile | null = null;
 
   public override handleInteractionOn() {
-    if (!this.infoWindow) {
+    if (this.infoWindow) {
+      this.handleInteractionOff();
+    }
+
+    // Set info window
+    {
       this.infoWindow = new ItemInfoWindow({
         scene: this.scene,
         name: 'Sword of Devil',
@@ -21,15 +28,27 @@ class InventoryTableTile extends ObjectTile {
       const { width, height } = this.infoWindow.getSize();
 
       this.infoWindow.setPosition(x - width / 2, y - 50 - height / 2);
+
+      this.infoWindow.setVisible(true);
     }
 
-    this.infoWindow.setVisible(true);
+    {
+      if (this.scene.input.keyboard) {
+        this.interactionKey = this.scene.input.keyboard.addKey('E');
+
+        this.interactionKey.on('down', () => {
+          console.log('DO EQUIP!'); // TODO: change depending on the type of item
+        });
+      }
+    }
   }
 
   public override handleInteractionOff() {
     console.log('handleInteractionOff called on InventoryTableTile');
     this.infoWindow?.destroy(true);
     this.infoWindow = null;
+    this.interactionKey?.destroy();
+    this.interactionKey = null;
   }
 
   public override updateInteraction() {}

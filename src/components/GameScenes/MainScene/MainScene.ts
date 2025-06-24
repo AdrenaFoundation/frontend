@@ -22,8 +22,8 @@ const config: MainSceneConfig = {
   assets: {
     external: {
       tiles:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-q6GEZYurYLlnRk9xRq054LCHSwZprZ.png',
-      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-yA5A8v7UqifQf8fiGUYlGObP1WUr9p.tmj',
+        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-kmN3pq8g1Hry2iGmBZja2aiawblaWP.png',
+      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-I4j1XE9e2mYCqRx7aBXcE2c60Rlu0p.tmj',
       player:
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tyro-5KW3g9ugXSgLEHY3pKwyzR7bu2x6yV.png',
     },
