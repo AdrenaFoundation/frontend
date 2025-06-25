@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
+import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -26,17 +27,16 @@ export default function ALPSwapSell({
 }) {
     const dispatch = useDispatch();
     const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-    const tokenPrices = useSelector((s) => s.tokenPrices);
     const wallet = useSelector((s) => s.walletState.wallet);
+    const usdcToken = window.adrena.client.getUsdcToken();
     const [collateralInput, setCollateralInput] = useState<number | null>(null);
-    const [collateralToken, setCollateralToken] = useState<Token>(window.adrena.client.tokens[2]);
+    const [collateralToken, setCollateralToken] = useState<Token>(usdcToken);
     const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
     const [collateralInputUsd, setCollateralInputUsd] = useState<number | null>(null);
     const [isMainDataLoading, setIsMainDataLoading] = useState(false);
     const [alpInput, setAlpInput] = useState<number | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [fee, setFee] = useState<number | null>(null);
-    const [feeUsd, setFeeUsd] = useState<number | null>(null);
 
     const executeSellAlp = useCallback(async () => {
         if (!connected) {
@@ -80,7 +80,6 @@ export default function ALPSwapSell({
 
         setErrorMessage(null);
         setFee(null);
-        setFeeUsd(null);
 
         // Cannot calculate
         if (alpInput === null || alpInput === 0) {
@@ -137,31 +136,6 @@ export default function ALPSwapSell({
         }
     }, [alpInput, collateralToken]);
 
-    // Keep price up tp date
-    useEffect(() => {
-        setCollateralPrice(tokenPrices[collateralToken.symbol]);
-    }, [collateralToken, collateralInput, tokenPrices]);
-
-    // Keep collateral input usd value up to date
-    useEffect(() => {
-        if (collateralToken !== null && collateralPrice !== null && collateralInput !== null) {
-            setCollateralInputUsd(collateralPrice * collateralInput);
-        } else {
-            setCollateralInputUsd(null);
-        }
-    }, [collateralInput, collateralPrice, collateralToken]);
-
-    // Keep fee usd value up to date
-    useEffect(() => {
-        if (fee !== null && collateralPrice !== null) {
-            setFeeUsd(fee * collateralPrice);
-            return;
-        }
-
-        setFeeUsd(null);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fee, tokenPrices && collateralPrice]);
-
     // Trigger calculations
     useEffect(() => {
         estimateRemoveLiquidityAndFee();
@@ -184,8 +158,9 @@ export default function ALPSwapSell({
                 </div> : null}
 
             </div>
+
             <TradingInput
-                className="text-sm rounded-full"
+                className="text-xs rounded-full"
                 inputClassName='bg-third'
                 value={alpInput}
                 selectedToken={window.adrena.client.alpToken}
@@ -199,16 +174,15 @@ export default function ALPSwapSell({
                 }}
             />
 
-
             <h5 className="text-white mt-4 mb-2">Receive</h5>
             <TradingInput
-                className="text-sm rounded-full"
+                className="text-xs rounded-full"
                 inputClassName='bg-inputcolor'
                 value={collateralInput}
                 selectedToken={collateralToken ?? undefined}
                 loading={isMainDataLoading}
                 disabled={true}
-                tokenList={window.adrena.client.tokens}
+                tokenList={[]}
                 subText={
                     collateralPrice !== null && collateralToken ? (
                         <span className="text-txtfade">
@@ -223,7 +197,6 @@ export default function ALPSwapSell({
                     setCollateralInput(null);
                     setCollateralInputUsd(null);
                     setFee(null);
-                    setFeeUsd(null);
                     setCollateralPrice(null);
                     setCollateralToken(t);
                 }}
@@ -232,42 +205,45 @@ export default function ALPSwapSell({
                 }}
             />
 
-            <h5 className="text-white mt-4 mb-2">Sell Info</h5>
+            <h5 className="text-white mt-4 mb-1">Fees</h5>
 
             <div
                 className={twMerge(
-                    'flex flex-col bg-third border rounded-lg pt-2 pr-2 pl-2 gap-1',
+                    'flex flex-col border bg-[#040D14] rounded-lg gap-0',
                     className,
                 )}
             >
                 <div className="flex justify-between items-center h-12 p-4">
-                    <div className="flex items-center">
-                        <div className="text-sm text-txtfade">Fees</div>
+                    <div className="flex gap-2 items-center">
+                        <Image
+                            src={usdcToken?.image}
+                            className="w-4 h-4"
+                            alt="token logo"
+                        />
+                        <p className="text-base font-boldy">
+                            {usdcToken?.symbol}
+                        </p>
                     </div>
 
-                    {fee !== null ? <div className='flex flex-col justify-end pr-4'>
-                        <div className='flex gap-1 items-center'>
-                            <FormatNumber
-                                nb={fee}
-                                isDecimalDimmed={false}
-                                className='text-base'
-                                format="number"
-                            />
-                            <div className='text-base'>{collateralToken.symbol}</div>
-                        </div>
+                    {fee !== null ? (
+                        <div className="flex flex-col">
+                            <div className="flex gap-1 items-center">
+                                <FormatNumber
+                                    nb={fee}
+                                    isDecimalDimmed={false}
+                                    className="text-base font-mono"
+                                    format="number"
+                                />
 
-                        <div>
-                            <FormatNumber
-                                nb={feeUsd}
-                                isDecimalDimmed={false}
-                                className='text-xs text-txtfade'
-                                format="currency"
-                            />
+                                <div className="text-base font-mono">
+                                    {usdcToken?.symbol}
+                                </div>
+                            </div>
                         </div>
-                    </div> : <div className="w-[9em] h-6 bg-gray-800 rounded-xl" />}
+                    ) : (
+                        <div className="w-[9em] h-6 bg-gray-800 rounded-xl" />
+                    )}
                 </div>
-
-                <div className='w-full h-[1px] bg-gray-800' />
             </div>
 
             {errorMessage ? (
