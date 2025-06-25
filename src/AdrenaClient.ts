@@ -1296,24 +1296,84 @@ export class AdrenaClient {
     amountIn,
     minLpAmountOut,
     notification,
+    swapSlippage,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     amountIn: BN;
     minLpAmountOut: BN;
     notification: MultiStepNotification;
-  }): Promise<string> {
+    swapSlippage: number;
+  }): Promise<string | null> {
     if (!this.connection) {
       throw new Error('not connected');
     }
 
+    const usdcToken = this.getUsdcToken();
+
+    const doJupiterSwap = usdcToken.mint.toBase58() !== mint.toBase58();
+
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
+
+    const additionalAddressLookupTables: PublicKey[] = [];
+
+    if (doJupiterSwap) {
+      console.log('Amount in', amountIn.toString());
+
+      const quoteResult = await getJupiterApiQuote({
+        inputMint: mint,
+        outputMint: usdcToken.mint,
+        amount: amountIn,
+        swapSlippage,
+      });
+
+      // Apply the slippage so we never fail for not enough collateral in the addLiquidity
+      // Can still fail due to jupiter swap failing, but that's expected
+      amountIn = applySlippage(new BN(quoteResult.outAmount), -swapSlippage);
+
+      console.log('Amount in after slippage', amountIn.toString());
+
+      const swapInstructions =
+        await window.adrena.jupiterApiClient.swapInstructionsPost({
+          swapRequest: {
+            userPublicKey: owner.toBase58(),
+            quoteResponse: quoteResult,
+          },
+        });
+
+      if (swapInstructions === null) {
+        notification.currentStepErrored('Failed to get swap instructions');
+        return null;
+      }
+
+      preInstructions.push(
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
+      );
+
+      additionalAddressLookupTables.push(
+        ...swapInstructions.addressLookupTableAddresses.map(
+          (x) => new PublicKey(x),
+        ),
+      );
+    }
 
     const transaction = await (
       await this.buildAddLiquidityTx({
         owner,
-        mint,
+        mint: usdcToken.mint,
         amountIn,
         minLpAmountOut,
       })
@@ -1325,6 +1385,7 @@ export class AdrenaClient {
     return this.signAndExecuteTxAlternative({
       transaction,
       notification,
+      additionalAddressLookupTables,
     });
   }
 
