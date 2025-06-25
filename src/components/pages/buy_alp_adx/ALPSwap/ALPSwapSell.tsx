@@ -10,10 +10,12 @@ import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 let loadingCounterMainData = 0;
@@ -25,10 +27,11 @@ export default function ALPSwapSell({
     className?: string;
     connected: boolean;
 }) {
+    const usdcToken = window.adrena.client.getUsdcToken();
+    const usdcCustodyLiquidity = useDynamicCustodyAvailableLiquidity(window.adrena.client.getCustodyByMint(usdcToken.mint));
     const dispatch = useDispatch();
     const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
     const wallet = useSelector((s) => s.walletState.wallet);
-    const usdcToken = window.adrena.client.getUsdcToken();
     const [collateralInput, setCollateralInput] = useState<number | null>(null);
     const [collateralToken, setCollateralToken] = useState<Token>(usdcToken);
     const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
@@ -156,7 +159,6 @@ export default function ALPSwapSell({
 
                     <RefreshButton />
                 </div> : null}
-
             </div>
 
             <TradingInput
@@ -173,6 +175,28 @@ export default function ALPSwapSell({
                     setAlpInput(v);
                 }}
             />
+
+            <div className="ml-auto items-center flex mr-2 mt-1">
+                <span className="text-txtfade mr-1">available pool USDC liquidity:</span>
+                <FormatNumber
+                    nb={usdcCustodyLiquidity}
+                    format="currency"
+                    precision={0}
+                    className="text-txtfade text-xs"
+                />
+                <InfoAnnotation
+                    className="inline-flex"
+                    text={
+                        <div className="flex flex-col gap-2 text-sm">
+                            <div>ALP can only be redeemed for USDC.</div>
+                            <div>Available USDC depends on pool ratios and what&nbsp;s currently borrowed by traders.</div>
+                            <div>If USDC is fully utilized, wait for traders to close positions.</div>
+                            <div>If you try to redeem more than available, consider DCA — the pool will rebalance automatically.</div>
+                            <div>Need help? Reach out on Discord.</div>
+                        </div>
+                    }
+                />
+            </div>
 
             <h5 className="text-white mt-4 mb-2">Receive</h5>
             <TradingInput
