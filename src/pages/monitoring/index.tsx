@@ -168,7 +168,7 @@ export default function Monitoring(pageProps: PageProps) {
   function MonitoringHeaderLink(searchParam: MonitorViews) {
     return <span
       className={twMerge(
-        'font-boldy uppercase w-15 h-8 flex items-center justify-center md:opacity-40 cursor-pointer md:hover:opacity-100',
+        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer md:hover:opacity-100',
         view === searchParam ? 'opacity-100' : ''
       )}
       onClick={() => {
