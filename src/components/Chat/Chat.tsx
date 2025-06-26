@@ -11,6 +11,7 @@ import Button from '../common/Button/Button';
 import Loader from '../Loader/Loader';
 
 function Chat({
+  walletAddress,
   firstRender,
   isLoading,
   messages,
@@ -18,6 +19,7 @@ function Chat({
   userProfilesMap,
   setActiveProfile,
 }: {
+  walletAddress: string | null;
   firstRender: boolean;
   isLoading: boolean;
   messages: Message[];
@@ -97,7 +99,7 @@ function Chat({
                     className={twMerge(
                       'text-sm font-mono',
                       userProfilesMap?.[message.wallet] &&
-                        'hover:underline cursor-pointer',
+                      'hover:underline cursor-pointer',
                     )}
                     style={{
                       color: generateColorFromString(message.wallet),
@@ -128,7 +130,9 @@ function Chat({
         )}
       </motion.ul>
 
-      <div className="relative flex flex-row gap-1 items-center w-full p-2 pb-14 bg-secondary border-t">
+      <div className={twMerge("relative flex flex-row gap-1 items-center w-full p-2 pb-14 bg-secondary border-t",
+        !walletAddress && 'opacity-20 cursor-not-allowed pointer-events-none'
+      )}>
         <input
           type="text"
           placeholder="Type a message..."
