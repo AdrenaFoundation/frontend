@@ -11,7 +11,7 @@ const CACHE_TTL = 5000; // 5 seconds
 const OPEN_CHAT_TTL = 600000; // 10 minutes in milliseconds
 
 interface UseLiveCountProps {
-  roomId: number;
+  roomId?: number;
   walletAddress: string | null;
   refreshInterval?: number;
 }
@@ -24,7 +24,7 @@ interface UseLiveCountReturn {
 }
 
 export const useLiveCount = ({
-  roomId,
+  roomId = 0,
   walletAddress,
   refreshInterval = 30000,
 }: UseLiveCountProps): UseLiveCountReturn => {
@@ -51,6 +51,7 @@ export const useLiveCount = ({
   }, [roomId, walletAddress]);
 
   const fetchConnectedUsers = useCallback(async (): Promise<string[]> => {
+
     try {
       const cacheKey = `room_${roomId}`;
       const cached = connectedUsersCache.get(cacheKey);
@@ -89,8 +90,6 @@ export const useLiveCount = ({
   }, [fetchConnectedUsers]);
 
   useEffect(() => {
-    if (!walletAddress) return;
-
     let mounted = true;
 
     const updatePresence = async () => {

@@ -53,13 +53,17 @@ function ChatContainer() {
     loading: loadingLiveCount,
   } = useLiveCount({
     walletAddress,
-    roomId: currentChatroomId,
     refreshInterval: 30000, // refresh every 30 seconds
   });
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
   const [friendRequestWindowOpen, setFriendRequestWindowOpen] = useState(false);
+  const [totalNotifications, setTotalNotifications] = useState<number | null>(
+    null,
+  );
+
+  const [title, setTitle] = useState('General');
   const [activeProfile, setActiveProfile] =
     useState<UserProfileMetadata | null>(null);
 
@@ -91,6 +95,30 @@ function ChatContainer() {
     }
   }, [isChatOpen, firstRender]);
 
+  useEffect(() => {
+    if (chatrooms.length > 0) {
+      const name =
+        chatrooms.find((r) => r.id === currentChatroomId)?.type !== 'private'
+          ? chatrooms[currentChatroomId].name
+          : 'Private';
+      setTitle(name ?? 'General');
+    }
+  }, [chatrooms, currentChatroomId, setCurrentChatroom]);
+
+  useEffect(() => {
+    if (!walletAddress) return;
+    const totalPendingRequests = friendRequests.filter(
+      (req) =>
+        req.status === 'pending' && req.receiver_pubkey === walletAddress,
+    ).length;
+
+    const totalUnreadMessages = chatrooms.reduce((acc, room) => {
+      return acc + room.unread_count;
+    }, 0);
+
+    setTotalNotifications(totalPendingRequests + totalUnreadMessages);
+  }, [friendRequests, walletAddress, chatrooms]);
+
   return (
     <>
       <ChatContainerWrapper isChatOpen={isChatOpen}>
@@ -110,16 +138,14 @@ function ChatContainer() {
 
         <div className="w-full">
           <ChatTitle
-            title={
-              chatrooms?.find((room) => room.id === currentChatroomId)?.name ||
-              'General'
-            }
+            title={title}
             isLoading={loading.chatrooms}
             isChatOpen={isChatOpen}
             setIsChatOpen={setIsChatOpen}
             friendRequestWindowOpen={friendRequestWindowOpen}
             connectedCount={connectedCount}
             loadingLiveCount={loadingLiveCount}
+            totalNotifications={totalNotifications}
           />
 
           {isChatOpen ? (
@@ -175,6 +201,7 @@ function ChatTitle({
   friendRequestWindowOpen = false,
   connectedCount,
   loadingLiveCount,
+  totalNotifications,
 }: {
   isLoading: boolean;
   title: string;
@@ -183,6 +210,7 @@ function ChatTitle({
   friendRequestWindowOpen: boolean;
   connectedCount: number;
   loadingLiveCount: boolean;
+  totalNotifications: number | null;
 }) {
   return (
     <div
@@ -194,7 +222,8 @@ function ChatTitle({
     >
       <div className="flex flex-row items-center gap-2">
         <p className="text-lg font-boldy capitalize">
-          {friendRequestWindowOpen ? 'Friend Requests' : `# ${title}`}{' '}
+          <span className="opacity-50 text-lg"># </span>
+          {friendRequestWindowOpen ? 'Friend Requests' : `${title}`}{' '}
         </p>
 
         {!friendRequestWindowOpen ? (
@@ -207,8 +236,27 @@ function ChatTitle({
         ) : null}
       </div>
 
-      <div className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300">
-        <Image src={collapseIcon} alt="collapse logo" width={6} height={6} />
+      <div className="flex flex-row items-center gap-2">
+        {totalNotifications !== null &&
+          totalNotifications > 0 &&
+          !isChatOpen ? (
+          <div
+            className={twMerge(
+              'flex items-center justify-center bg-redbright min-w-4 h-4 px-1 rounded-full',
+              friendRequestWindowOpen && 'bg-blue',
+            )}
+          >
+            <p className="text-xxs text-white font-mono">
+              {Intl.NumberFormat('en-US', {
+                notation: 'compact',
+                compactDisplay: 'short',
+              }).format(totalNotifications)}
+            </p>
+          </div>
+        ) : null}
+        <div className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300">
+          <Image src={collapseIcon} alt="collapse logo" width={6} height={6} />
+        </div>
       </div>
     </div>
   );
