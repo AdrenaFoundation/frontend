@@ -26,6 +26,7 @@ interface ChartLabel {
     color?: string;
     type?: 'area' | 'line';
     yAxisId?: 'left' | 'right';
+    stackId?: string;
 }
 
 export default function MixedAreaLineChart<T extends string>({
@@ -43,6 +44,10 @@ export default function MixedAreaLineChart<T extends string>({
     formatRightY = 'currency',
     gmt,
     events,
+    lockPeriod,
+    setLockPeriod,
+    lockPeriods,
+    exportToCSV,
 }: {
     title: string;
     data: RechartsData[];
@@ -61,6 +66,10 @@ export default function MixedAreaLineChart<T extends string>({
     formatRightY?: 'percentage' | 'currency' | 'number';
     gmt?: number;
     events?: AdrenaEvent[];
+    lockPeriod?: number;
+    setLockPeriod?: (period: number) => void;
+    lockPeriods?: number[];
+    exportToCSV?: () => void;
 }) {
     const [hiddenLabels, setHiddenLabels] = React.useState<
         DataKey<string | number>[]
@@ -94,13 +103,13 @@ export default function MixedAreaLineChart<T extends string>({
                 <div className="flex flex-row gap-3 items-center">
                     <h2 className="">{title}</h2>
 
-                    {tippyContent && (
+                    {tippyContent ? (
                         <Tippy content={tippyContent} placement="auto">
                             <span className="cursor-help text-txtfade">ⓘ</span>
                         </Tippy>
-                    )}
+                    ) : null}
 
-                    <FormatNumber
+                    {subValue ? <FormatNumber
                         nb={subValue}
                         className="text-sm text-txtfade sm:text-xs"
                         format="currency"
@@ -109,10 +118,37 @@ export default function MixedAreaLineChart<T extends string>({
                         suffixClassName='ml-0 text-txtfade'
                         isDecimalDimmed={false}
                         precision={title.includes('ALP Price') ? 4 : 0}
-                    />
+                    /> : null}
+
+                    {exportToCSV ? (
+                        <button
+                            onClick={exportToCSV}
+                            className="text-sm text-txtfade hover:text-white transition-colors cursor-pointer underline"
+                        >
+                            Export
+                        </button>
+                    ) : null}
                 </div>
 
-                <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+                <div className="flex flex-col gap-2 items-end">
+                    <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+
+                    {lockPeriods && setLockPeriod && (
+                        <div className="flex gap-2 text-sm items-center">
+                            <span className="text-txtfade mr-1">Lock:</span>
+                            {lockPeriods.map((period) => (
+                                <div
+                                    key={period}
+                                    className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                                        }`}
+                                    onClick={() => setLockPeriod(period)}
+                                >
+                                    {period}d
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
 
             <ResponsiveContainer width="100%" height="100%">
@@ -177,7 +213,7 @@ export default function MixedAreaLineChart<T extends string>({
                     ) : null}
 
                     {/* Render area charts */}
-                    {areaLabels.map(({ name, color, yAxisId = 'left' }) => (
+                    {areaLabels.map(({ name, color, yAxisId = 'left', stackId }) => (
                         <Area
                             key={name}
                             type="monotone"
@@ -188,6 +224,7 @@ export default function MixedAreaLineChart<T extends string>({
                             xAxisId="0"
                             connectNulls={true}
                             hide={hiddenLabels.includes(name)}
+                            stackId={stackId}
                         />
                     ))}
 
