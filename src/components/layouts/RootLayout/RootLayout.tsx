@@ -248,11 +248,9 @@ export default function RootLayout({
 
       {disableChat === true ? null : (
         <ChatContainer
-          userProfile={userProfile}
-          wallet={wallet}
-          isMobile={!isBigScreen}
-          isChatOpen={isChatOpen}
-          setIsChatOpen={setIsChatOpen}
+        // isMobile={!isBigScreen}
+        // isChatOpen={isChatOpen}
+        // setIsChatOpen={setIsChatOpen}
         />
       )}
 
