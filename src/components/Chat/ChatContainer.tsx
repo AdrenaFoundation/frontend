@@ -7,6 +7,7 @@ import collapseIcon from '@/../public/images/collapse-all.svg';
 import { PROFILE_PICTURES } from '@/constant';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useChatrooms from '@/hooks/useChatrooms';
+import useChatWindowResize from '@/hooks/useChatWindowResize';
 import useFriendReq from '@/hooks/useFriendReq';
 import useLiveCount from '@/hooks/useLiveCount';
 import { useSelector } from '@/store/store';
@@ -18,7 +19,6 @@ import ViewProfileModal from '../pages/profile/ViewProfileModal';
 import Chat from './Chat';
 import ChatSidebar from './ChatSidebar';
 import FriendRequestView from './FriendRequestView';
-import useChatWindowResize from '@/hooks/useChatWindowResize';
 
 function ChatContainer() {
   const { wallet } = useSelector((state) => state.walletState);
