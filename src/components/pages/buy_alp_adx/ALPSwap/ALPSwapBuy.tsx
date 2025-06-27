@@ -7,11 +7,12 @@ import { twMerge } from 'tailwind-merge';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import Checkbox from '@/components/common/Checkbox/Checkbox';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ALTERNATIVE_SWAP_TOKENS } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
-import { Token } from '@/types';
+import { AmountAndFee, Token } from '@/types';
 import {
     formatPriceInfo,
     getJupiterApiQuote,
@@ -47,6 +48,8 @@ export default function ALPSwapBuy({
     const [alpInput, setAlpInput] = useState<number | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [fee, setFee] = useState<number | null>(null);
+
+    const [useSwaplessRoute, setUseSwaplessRoute] = useState<boolean>(false);
 
     const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
 
@@ -94,8 +97,16 @@ export default function ALPSwapBuy({
     ]);
 
     const doJupiterSwap = useMemo(() => {
-        return usdcToken.symbol !== collateralToken.symbol;
-    }, [usdcToken.symbol, collateralToken.symbol]);
+        return usdcToken.symbol !== collateralToken.symbol && !useSwaplessRoute;
+    }, [usdcToken.symbol, collateralToken.symbol, useSwaplessRoute]);
+
+    const elligibleToSwaplessRoute = useMemo(() => {
+        if (usdcToken.symbol === collateralToken.symbol) {
+            return false; // No need to swap if the token is already USDC
+        }
+
+        return window.adrena.client.tokens.some(t => t.symbol === collateralToken.symbol);
+    }, [collateralToken.symbol, usdcToken.symbol]);
 
     const estimateAddLiquidityAndFee = useCallback(async () => {
         // Because we fire one request every time the user change the input, needs to keep only the last one
@@ -113,31 +124,44 @@ export default function ALPSwapBuy({
         setIsMainDataLoading(true);
 
         try {
-            let amountUsd = uiToNative(collateralInput, collateralToken.decimals);
+            let amountAndFee: AmountAndFee | null = null;
 
-            // Use jupiter swap quote to know the USD value of the amount the user wants to deposit
-            // Good enough to estimate the ALP amount 
-            if (doJupiterSwap) {
-                const quoteResult = await getJupiterApiQuote({
-                    inputMint: collateralToken.mint,
-                    outputMint: usdcToken.mint,
-                    amount: amountUsd,
-                    swapSlippage,
-                });
+            if (!useSwaplessRoute) {
+                let amountUsd = uiToNative(collateralInput, collateralToken.decimals);
 
-                amountUsd = new BN(quoteResult.outAmount);
+                // Use jupiter swap quote to know the USD value of the amount the user wants to deposit
+                // Good enough to estimate the ALP amount 
+                if (doJupiterSwap) {
+                    const quoteResult = await getJupiterApiQuote({
+                        inputMint: collateralToken.mint,
+                        outputMint: usdcToken.mint,
+                        amount: amountUsd,
+                        swapSlippage,
+                    });
+
+                    amountUsd = new BN(quoteResult.outAmount);
+                }
+
+                setCollateralInputUsd(
+                    (tokenPrices[usdcToken.symbol] ?? 1) *
+                    nativeToUi(amountUsd, usdcToken.decimals),
+                );
+
+                amountAndFee =
+                    await window.adrena.client.getAddLiquidityAmountAndFee({
+                        amountIn: amountUsd,
+                        token: usdcToken,
+                    });
+            } else {
+                amountAndFee =
+                    await window.adrena.client.getAddLiquidityAmountAndFee({
+                        amountIn: uiToNative(
+                            collateralInput,
+                            collateralToken.decimals,
+                        ),
+                        token: collateralToken,
+                    });
             }
-
-            setCollateralInputUsd(
-                (tokenPrices[usdcToken.symbol] ?? 1) *
-                nativeToUi(amountUsd, usdcToken.decimals),
-            );
-
-            const amountAndFee =
-                await window.adrena.client.getAddLiquidityAmountAndFee({
-                    amountIn: amountUsd,
-                    token: usdcToken,
-                });
 
             setIsMainDataLoading(false);
 
@@ -245,8 +269,16 @@ export default function ALPSwapBuy({
                 }}
             />
 
+            {elligibleToSwaplessRoute ? <div className='ml-auto flex gap-2 items-center cursor-pointer'>
+                <Checkbox checked={useSwaplessRoute} onChange={() => setUseSwaplessRoute(!useSwaplessRoute)} />
+
+                <div className='text-xs text-white/30' onClick={() => setUseSwaplessRoute(!useSwaplessRoute)}>
+                    use swapless route
+                </div>
+            </div> : null}
+
             {doJupiterSwap ? <>
-                <div className="text-xs gap-1 flex ml-auto mr-auto pt-1 pb-1 w-full items-center justify-center">
+                <div className="text-xs gap-1 flex ml-auto mr-auto mt-4 pt-1 pb-1 w-full items-center justify-center">
                     <span className='text-white/30'>{collateralToken.symbol}</span>
                     <span className='text-white/30'>auto-swapped to</span>
                     <span className='text-white/30'>{usdcToken.symbol}</span>
@@ -294,12 +326,12 @@ export default function ALPSwapBuy({
                         <div className="flex justify-between items-center h-12 p-4">
                             <div className="flex gap-2 items-center">
                                 <Image
-                                    src={usdcToken?.image}
+                                    src={useSwaplessRoute ? collateralToken.image : usdcToken?.image}
                                     className="w-4 h-4"
                                     alt="token logo"
                                 />
                                 <p className="text-base font-boldy">
-                                    {usdcToken?.symbol}
+                                    {useSwaplessRoute ? collateralToken.symbol : usdcToken?.symbol}
                                 </p>
                             </div>
 
@@ -314,7 +346,7 @@ export default function ALPSwapBuy({
                                         />
 
                                         <div className="text-base font-mono">
-                                            {usdcToken?.symbol}
+                                            {useSwaplessRoute ? collateralToken.symbol : usdcToken?.symbol}
                                         </div>
                                     </div>
                                 </div>

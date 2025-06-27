@@ -1,7 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -28,12 +28,24 @@ export default function ALPSwapSell({
     connected: boolean;
 }) {
     const usdcToken = window.adrena.client.getUsdcToken();
-    const usdcCustodyLiquidity = useDynamicCustodyAvailableLiquidity(window.adrena.client.getCustodyByMint(usdcToken.mint));
     const dispatch = useDispatch();
     const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
     const wallet = useSelector((s) => s.walletState.wallet);
     const [collateralInput, setCollateralInput] = useState<number | null>(null);
     const [collateralToken, setCollateralToken] = useState<Token>(usdcToken);
+    const tokenPrices = useSelector((s) => s.tokenPrices);
+
+    const collateralTokenCustody = useMemo(() => window.adrena.client.getCustodyByMint(collateralToken.mint), [collateralToken.mint]);
+    const collateralTokenCustodyLiquidity = useDynamicCustodyAvailableLiquidity(collateralTokenCustody);
+    const collateralTokenCustodyLiquidityUsd = useMemo(() => {
+        const tokenPrice = tokenPrices[collateralToken.symbol];
+        if (!collateralTokenCustodyLiquidity || !tokenPrice) {
+            return null;
+        }
+
+        return collateralTokenCustodyLiquidity * tokenPrice;
+    }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity]);
+
     const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
     const [collateralInputUsd, setCollateralInputUsd] = useState<number | null>(null);
     const [isMainDataLoading, setIsMainDataLoading] = useState(false);
@@ -100,15 +112,6 @@ export default function ALPSwapSell({
                     lpAmountIn: uiToNative(alpInput, window.adrena.client.alpToken.decimals),
                     token: collateralToken,
                 });
-
-            console.log('>>>> Amount and fee', {
-                amount: amountAndFee?.amount.toString(),
-                fee: amountAndFee?.fee.toString(),
-                collateralTokenDecimals: nativeToUi(amountAndFee?.fee ?? new BN(0), collateralToken.decimals),
-            }, {
-                lpAmount: uiToNative(alpInput, window.adrena.client.alpToken.decimals),
-                token: collateralToken.symbol,
-            })
 
             setIsMainDataLoading(false);
 
@@ -177,9 +180,9 @@ export default function ALPSwapSell({
             />
 
             <div className="ml-auto items-center flex mr-2 mt-1">
-                <span className="text-txtfade mr-1">available pool USDC liquidity:</span>
+                <span className="text-txtfade mr-1">available pool {collateralToken.symbol} liquidity:</span>
                 <FormatNumber
-                    nb={usdcCustodyLiquidity}
+                    nb={collateralTokenCustodyLiquidityUsd}
                     format="currency"
                     precision={0}
                     className="text-txtfade text-xs"
@@ -188,10 +191,9 @@ export default function ALPSwapSell({
                     className="inline-flex"
                     text={
                         <div className="flex flex-col gap-2 text-sm">
-                            <div>ALP can only be redeemed for USDC.</div>
-                            <div>Available USDC depends on pool ratios and what&nbsp;s currently borrowed by traders.</div>
-                            <div>If USDC is fully utilized, wait for traders to close positions.</div>
-                            <div>If you try to redeem more than available, consider DCA — the pool will rebalance automatically.</div>
+                            <div>Available {collateralToken.symbol} depends on pool ratios and what&nbsp;s currently borrowed by traders.</div>
+                            <div>If {collateralToken.symbol} is fully utilized, wait for traders to close positions.</div>
+                            <div>If you try to redeem more than available, consider DCA or another pair — the pool will rebalance automatically.</div>
                             <div>Need help? Reach out on Discord.</div>
                         </div>
                     }
@@ -199,6 +201,7 @@ export default function ALPSwapSell({
             </div>
 
             <h5 className="text-white mt-4 mb-2">Receive</h5>
+
             <TradingInput
                 className="text-xs rounded-full"
                 inputClassName='bg-inputcolor'
@@ -206,7 +209,8 @@ export default function ALPSwapSell({
                 selectedToken={collateralToken ?? undefined}
                 loading={isMainDataLoading}
                 disabled={true}
-                tokenList={[]}
+                tokenList={window.adrena.client.tokens}
+                recommendedToken={usdcToken}
                 subText={
                     collateralPrice !== null && collateralToken ? (
                         <span className="text-txtfade">
@@ -240,12 +244,12 @@ export default function ALPSwapSell({
                 <div className="flex justify-between items-center h-12 p-4">
                     <div className="flex gap-2 items-center">
                         <Image
-                            src={usdcToken?.image}
+                            src={collateralToken?.image}
                             className="w-4 h-4"
                             alt="token logo"
                         />
                         <p className="text-base font-boldy">
-                            {usdcToken?.symbol}
+                            {collateralToken?.symbol}
                         </p>
                     </div>
 
@@ -260,7 +264,7 @@ export default function ALPSwapSell({
                                 />
 
                                 <div className="text-base font-mono">
-                                    {usdcToken?.symbol}
+                                    {collateralToken?.symbol}
                                 </div>
                             </div>
                         </div>
