@@ -270,7 +270,7 @@ export default function ALPSwapBuy({
                 }}
             />
 
-            {eligibleToSwaplessRoute ? <Tippy content={"Use swapless route to mint ALP directly with this token. Fees are higher when minting with non-stable."} placement="top">
+            {eligibleToSwaplessRoute ? <Tippy content={"Use the swapless route to mint ALP directly with this token. Fees are higher when minting with non-stable assets."} placement="top">
                 <div className='ml-auto flex gap-2 items-center cursor-pointer'>
                     <Checkbox checked={useSwaplessRoute} onChange={() => setUseSwaplessRoute(!useSwaplessRoute)} />
 
