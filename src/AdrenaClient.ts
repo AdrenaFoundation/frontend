@@ -5337,7 +5337,9 @@ export class AdrenaClient {
       .mul(position.nativeObject.borrowSizeUsd)
       .div(new BN(1000000000));
 
-    return totalInterestUsd.add(position.nativeObject.unrealizedInterestUsd);
+    return totalInterestUsd
+      .add(position.nativeObject.unrealizedInterestUsd)
+      .add(position.nativeObject.paidInterestUsd);
   }
 
   public calculatePositionPnL({
