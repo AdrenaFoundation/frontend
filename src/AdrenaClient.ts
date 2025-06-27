@@ -1721,6 +1721,7 @@ export class AdrenaClient {
               recoveryId: oraclePrices.recoveryId,
             }
           : null,
+        percentage: new BN(100 * 10000), // BPS 100%
       })
       .accountsStrict({
         owner: position.owner,
@@ -1807,6 +1808,7 @@ export class AdrenaClient {
               recoveryId: oraclePrices.recoveryId,
             }
           : null,
+        percentage: new BN(100 * 10000), // BPS 100%
       })
       .accountsStrict({
         owner: position.owner,
@@ -4273,6 +4275,8 @@ export class AdrenaClient {
     const transaction = await this.adrenaProgram.methods
       .initUserStaking()
       .accountsStrict({
+        caller: owner,
+        payer: owner,
         owner,
         rewardTokenAccount,
         lmTokenAccount,
@@ -4287,7 +4291,6 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
         pool: this.mainPool.pubkey,
-        genesisLock: this.genesisLockPda,
         systemProgram: SystemProgram.programId,
       })
       .preInstructions(preInstructions)
