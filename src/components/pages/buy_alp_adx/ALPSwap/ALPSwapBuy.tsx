@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -100,7 +101,7 @@ export default function ALPSwapBuy({
         return usdcToken.symbol !== collateralToken.symbol && !useSwaplessRoute;
     }, [usdcToken.symbol, collateralToken.symbol, useSwaplessRoute]);
 
-    const elligibleToSwaplessRoute = useMemo(() => {
+    const eligibleToSwaplessRoute = useMemo(() => {
         if (usdcToken.symbol === collateralToken.symbol) {
             return false; // No need to swap if the token is already USDC
         }
@@ -269,13 +270,15 @@ export default function ALPSwapBuy({
                 }}
             />
 
-            {elligibleToSwaplessRoute ? <div className='ml-auto flex gap-2 items-center cursor-pointer'>
-                <Checkbox checked={useSwaplessRoute} onChange={() => setUseSwaplessRoute(!useSwaplessRoute)} />
+            {eligibleToSwaplessRoute ? <Tippy content={"Use swapless route to mint ALP directly with this token. Fees are higher when minting with non-stable."} placement="top">
+                <div className='ml-auto flex gap-2 items-center cursor-pointer'>
+                    <Checkbox checked={useSwaplessRoute} onChange={() => setUseSwaplessRoute(!useSwaplessRoute)} />
 
-                <div className='text-xs text-white/30' onClick={() => setUseSwaplessRoute(!useSwaplessRoute)}>
-                    use swapless route
+                    <div className='text-xs text-white/30' onClick={() => setUseSwaplessRoute(!useSwaplessRoute)}>
+                        use swapless route
+                    </div>
                 </div>
-            </div> : null}
+            </Tippy> : null}
 
             {doJupiterSwap ? <>
                 <div className="text-xs gap-1 flex ml-auto mr-auto mt-4 pt-1 pb-1 w-full items-center justify-center">
