@@ -3588,6 +3588,64 @@ export class AdrenaClient {
     return this.signAndExecuteTxAlternative({ transaction, notification });
   }
 
+  public async positionBorrowResolve({
+    notification,
+    targetPosition,
+  }: {
+    notification: MultiStepNotification;
+    targetPosition: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
+
+    const position =
+      await this.readonlyAdrenaProgram.account.position.fetch(targetPosition);
+
+    const userProfileAccount = await this.loadUserProfile({
+      user: position.owner,
+    });
+
+    const transaction = await this.adrenaProgram.methods
+      .resolvePositionBorrowFees({
+        oraclePrices: oraclePrices
+          ? {
+              prices: oraclePrices.prices,
+              signature: oraclePrices.signatureByteArray,
+              recoveryId: oraclePrices.recoveryId,
+            }
+          : null,
+      })
+      .accountsStrict({
+        signer: caller,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        position: targetPosition,
+        oracle: AdrenaClient.oraclePda,
+        adrenaProgram: this.adrenaProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        userProfile: userProfileAccount ? userProfileAccount.pubkey : null,
+        custody: position.custody,
+        collateralCustody: position.collateralCustody,
+        referrerProfile: userProfileAccount
+          ? userProfileAccount.referrerProfile
+          : null,
+      })
+      .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTxAlternative({ transaction, notification });
+  }
+
   public async claimUserVest({
     notification,
     targetWallet, // Wallet to receive the vest
