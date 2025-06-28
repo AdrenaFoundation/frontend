@@ -158,7 +158,7 @@ export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: b
 
     const unrealizedBorrowFee = useMemo(() => {
         return allPositions.reduce((total, position) => {
-            return total + (position.borrowFeeUsd ?? 0);
+            return total + ((position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0));
         }, 0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allPositions.map((x) => x.borrowFeeUsd ?? 0).join(',')]);

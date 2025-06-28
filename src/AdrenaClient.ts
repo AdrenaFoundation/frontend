@@ -5593,6 +5593,7 @@ export class AdrenaClient {
       position.unrealizedInterestUsd,
       USD_DECIMALS,
     );
+    const paidInterestUsd = nativeToUi(position.paidInterestUsd, USD_DECIMALS);
     const sizeUsd = nativeToUi(position.sizeUsd, USD_DECIMALS);
     const breakEvenPrice =
       side === 'long'
@@ -5638,6 +5639,7 @@ export class AdrenaClient {
       takeProfitIsSet: position.takeProfitIsSet === 1,
       breakEvenPrice,
       unrealizedInterestUsd,
+      paidInterestUsd,
       //
       nativeObject: position,
     };
@@ -5721,6 +5723,10 @@ export class AdrenaClient {
           positionAccount.unrealizedInterestUsd,
           USD_DECIMALS,
         );
+        const paidInterestUsd = nativeToUi(
+          positionAccount.paidInterestUsd,
+          USD_DECIMALS,
+        );
         const collateralUsd = nativeToUi(
           positionAccount.collateralUsd,
           USD_DECIMALS,
@@ -5771,6 +5777,7 @@ export class AdrenaClient {
               : null,
             takeProfitIsSet: positionAccount.takeProfitIsSet === 1,
             unrealizedInterestUsd,
+            paidInterestUsd,
             //
             nativeObject: positionAccount,
           },
