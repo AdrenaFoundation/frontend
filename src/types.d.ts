@@ -181,6 +181,7 @@ export type PositionExtended = {
   profitUsd?: number | null;
   lossUsd?: number | null;
   borrowFeeUsd?: number | null;
+  paidInterestUsd: number;
   liquidationPrice?: number | null;
   sizeUsd: number;
   size: number; // The size in tokens
