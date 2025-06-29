@@ -54,6 +54,8 @@ export default function UtilizationChart() {
             return 'custodyinfodaily';
           case '6M':
             return 'custodyinfodaily';
+          case '1Y':
+            return 'custodyinfodaily';
           default:
             return 'custodyinfo';
         }
@@ -71,6 +73,8 @@ export default function UtilizationChart() {
             return 93;
           case '6M':
             return 183;
+          case '1Y':
+            return 365;
           default:
             return 1;
         }
@@ -130,7 +134,7 @@ export default function UtilizationChart() {
             });
           }
 
-          if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
+          if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
             return new Date(time).toLocaleDateString('en-US', {
               day: 'numeric',
               month: 'numeric',
@@ -208,11 +212,8 @@ export default function UtilizationChart() {
         })}
       yDomain={[0, 100]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
-      periods={['1d', '7d', '1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       isMaxUtilizationReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
       formatY="percentage"
