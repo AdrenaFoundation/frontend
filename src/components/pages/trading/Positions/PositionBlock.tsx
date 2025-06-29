@@ -450,7 +450,7 @@ export function PositionBlock({
             />
 
             {readOnly ? (positionBorrowFeesShouldBeResolved ? <Tippy content={
-              `Settle the position’s $${(position.borrowFeeUsd ?? 0) - position.paidInterestUsd} in borrow fees now. Fees are distributed to LPs, stakers, the DAO, and referrals.`
+              `Settle the position’s $${((position.borrowFeeUsd ?? 0) - position.paidInterestUsd).toFixed(2)} in borrow fees now. Fees are distributed to LPs, stakers, the DAO, and referrals.`
             }>
               <div>
                 <Button
