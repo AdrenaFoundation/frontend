@@ -1391,6 +1391,7 @@ export class AdrenaClient {
       transaction,
       notification,
       additionalAddressLookupTables,
+      doJupiterSwap,
     });
   }
 
@@ -1983,11 +1984,10 @@ export class AdrenaClient {
 
     const transaction = await builder.transaction();
 
-    try {
-      const doJupiterSwap =
-        position.collateralToken.mint.toBase58() !==
-        redeemToken.mint.toBase58();
+    const doJupiterSwap =
+      position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
 
+    try {
       if (doJupiterSwap) {
         const quoteResult = await getJupiterApiQuote({
           inputMint: position.collateralToken.mint,
@@ -2040,6 +2040,7 @@ export class AdrenaClient {
       getTransactionLogs,
       notification,
       additionalAddressLookupTables,
+      doJupiterSwap,
     });
   }
 
@@ -2075,11 +2076,10 @@ export class AdrenaClient {
 
     const transaction = await builder.transaction();
 
-    try {
-      const doJupiterSwap =
-        position.collateralToken.mint.toBase58() !==
-        redeemToken.mint.toBase58();
+    const doJupiterSwap =
+      position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
 
+    try {
       if (doJupiterSwap) {
         const quoteResult = await getJupiterApiQuote({
           inputMint: position.collateralToken.mint,
@@ -2132,6 +2132,7 @@ export class AdrenaClient {
       getTransactionLogs,
       notification,
       additionalAddressLookupTables,
+      doJupiterSwap,
     });
   }
 
@@ -2472,6 +2473,7 @@ export class AdrenaClient {
       transaction,
       notification,
       additionalAddressLookupTables,
+      doJupiterSwap,
     });
   }
 
@@ -2832,6 +2834,7 @@ export class AdrenaClient {
       transaction,
       notification,
       additionalAddressLookupTables,
+      doJupiterSwap,
     });
   }
 
@@ -2940,6 +2943,7 @@ export class AdrenaClient {
       transaction,
       notification,
       additionalAddressLookupTables,
+      doJupiterSwap,
     });
   }
 
@@ -4716,6 +4720,7 @@ export class AdrenaClient {
       transaction,
       notification,
       additionalAddressLookupTables,
+      doJupiterSwap,
     });
   }
 
@@ -6492,6 +6497,7 @@ export class AdrenaClient {
     notification,
     getTransactionLogs = undefined,
     additionalAddressLookupTables,
+    doJupiterSwap,
   }: {
     transaction: Transaction;
     notification?: MultiStepNotification;
@@ -6502,6 +6508,7 @@ export class AdrenaClient {
       } | null,
     ) => void;
     additionalAddressLookupTables?: PublicKey[];
+    doJupiterSwap?: boolean;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -6674,6 +6681,10 @@ export class AdrenaClient {
       // Solflare add two instructions to the end of the transaction, which cost compute units. Needs to take it into account
       if (wallet.walletName === 'Solflare') {
         computeUnitToUse += 12000;
+      } else if (doJupiterSwap) {
+        // Add minimum 20k compute units for Jupiter swap or 10% of compute units used, whichever is greater
+        // This is to avoid issues with Jupiter swap, where the simulation is different from the actual execution
+        computeUnitToUse += Math.max(computeUnitToUse * 1.1, 20000);
       }
 
       transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
