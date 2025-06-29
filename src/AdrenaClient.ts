@@ -1318,56 +1318,61 @@ export class AdrenaClient {
 
     const additionalAddressLookupTables: PublicKey[] = [];
 
-    if (doJupiterSwap) {
-      console.log('Amount in', amountIn.toString());
+    try {
+      if (doJupiterSwap) {
+        console.log('Amount in', amountIn.toString());
 
-      const quoteResult = await getJupiterApiQuote({
-        inputMint: mint,
-        outputMint: usdcToken.mint,
-        amount: amountIn,
-        swapSlippage,
-      });
-
-      // Apply the slippage so we never fail for not enough collateral in the addLiquidity
-      // Can still fail due to jupiter swap failing, but that's expected
-      amountIn = applySlippage(new BN(quoteResult.outAmount), -swapSlippage);
-
-      console.log('Amount in after slippage', amountIn.toString());
-
-      const swapInstructions =
-        await window.adrena.jupiterApiClient.swapInstructionsPost({
-          swapRequest: {
-            userPublicKey: owner.toBase58(),
-            quoteResponse: quoteResult,
-          },
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: mint,
+          outputMint: usdcToken.mint,
+          amount: amountIn,
+          swapSlippage,
         });
 
-      if (swapInstructions === null) {
-        notification.currentStepErrored('Failed to get swap instructions');
-        return null;
+        // Apply the slippage so we never fail for not enough collateral in the addLiquidity
+        // Can still fail due to jupiter swap failing, but that's expected
+        amountIn = applySlippage(new BN(quoteResult.outAmount), -swapSlippage);
+
+        console.log('Amount in after slippage', amountIn.toString());
+
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          notification.currentStepErrored('Failed to get swap instructions');
+          return null;
+        }
+
+        preInstructions.push(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
+            : []),
+        );
+
+        additionalAddressLookupTables.push(
+          ...swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
+        );
       }
-
-      preInstructions.push(
-        ...(swapInstructions.setupInstructions || []).map(
-          jupInstructionToTransactionInstruction,
-        ),
-        jupInstructionToTransactionInstruction(
-          swapInstructions.swapInstruction,
-        ),
-        ...(swapInstructions.cleanupInstruction
-          ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-          : []),
-      );
-
-      additionalAddressLookupTables.push(
-        ...swapInstructions.addressLookupTableAddresses.map(
-          (x) => new PublicKey(x),
-        ),
-      );
+    } catch {
+      notification?.currentStepErrored('Failed to find Jupiter route');
+      return null;
     }
 
     const transaction = await (
@@ -1978,50 +1983,56 @@ export class AdrenaClient {
 
     const transaction = await builder.transaction();
 
-    const doJupiterSwap =
-      position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
+    try {
+      const doJupiterSwap =
+        position.collateralToken.mint.toBase58() !==
+        redeemToken.mint.toBase58();
 
-    if (doJupiterSwap) {
-      const quoteResult = await getJupiterApiQuote({
-        inputMint: position.collateralToken.mint,
-        outputMint: redeemToken.mint,
-        amount: expectedCollateralAmountOut,
-        swapSlippage,
-      });
-
-      const swapInstructions =
-        await window.adrena.jupiterApiClient.swapInstructionsPost({
-          swapRequest: {
-            userPublicKey: position.owner.toBase58(),
-            quoteResponse: quoteResult,
-          },
+      if (doJupiterSwap) {
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: position.collateralToken.mint,
+          outputMint: redeemToken.mint,
+          amount: expectedCollateralAmountOut,
+          swapSlippage,
         });
 
-      if (swapInstructions === null) {
-        return null;
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: position.owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          return null;
+        }
+
+        transaction.add(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
+            : []),
+        );
+
+        additionalAddressLookupTables.push(
+          ...swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
+        );
       }
-
-      transaction.add(
-        ...(swapInstructions.setupInstructions || []).map(
-          jupInstructionToTransactionInstruction,
-        ),
-        jupInstructionToTransactionInstruction(
-          swapInstructions.swapInstruction,
-        ),
-        ...(swapInstructions.cleanupInstruction
-          ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-          : []),
-      );
-
-      additionalAddressLookupTables.push(
-        ...swapInstructions.addressLookupTableAddresses.map(
-          (x) => new PublicKey(x),
-        ),
-      );
+    } catch {
+      notification?.currentStepErrored('Failed to find Jupiter route');
+      return null;
     }
 
     return this.signAndExecuteTxAlternative({
@@ -2064,50 +2075,56 @@ export class AdrenaClient {
 
     const transaction = await builder.transaction();
 
-    const doJupiterSwap =
-      position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
+    try {
+      const doJupiterSwap =
+        position.collateralToken.mint.toBase58() !==
+        redeemToken.mint.toBase58();
 
-    if (doJupiterSwap) {
-      const quoteResult = await getJupiterApiQuote({
-        inputMint: position.collateralToken.mint,
-        outputMint: redeemToken.mint,
-        amount: expectedCollateralAmountOut,
-        swapSlippage,
-      });
-
-      const swapInstructions =
-        await window.adrena.jupiterApiClient.swapInstructionsPost({
-          swapRequest: {
-            userPublicKey: position.owner.toBase58(),
-            quoteResponse: quoteResult,
-          },
+      if (doJupiterSwap) {
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: position.collateralToken.mint,
+          outputMint: redeemToken.mint,
+          amount: expectedCollateralAmountOut,
+          swapSlippage,
         });
 
-      if (swapInstructions === null) {
-        return null;
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: position.owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          return null;
+        }
+
+        transaction.add(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
+            : []),
+        );
+
+        additionalAddressLookupTables.push(
+          ...swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
+        );
       }
-
-      transaction.add(
-        ...(swapInstructions.setupInstructions || []).map(
-          jupInstructionToTransactionInstruction,
-        ),
-        jupInstructionToTransactionInstruction(
-          swapInstructions.swapInstruction,
-        ),
-        ...(swapInstructions.cleanupInstruction
-          ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-          : []),
-      );
-
-      additionalAddressLookupTables.push(
-        ...swapInstructions.addressLookupTableAddresses.map(
-          (x) => new PublicKey(x),
-        ),
-      );
+    } catch {
+      notification?.currentStepErrored('Failed to find Jupiter route');
+      return null;
     }
 
     return this.signAndExecuteTxAlternative({
@@ -2375,55 +2392,62 @@ export class AdrenaClient {
       );
     }
 
-    if (doJupiterSwap) {
-      const quoteResult = await getJupiterApiQuote({
-        inputMint: collateralMint,
-        outputMint: usdcToken.mint,
-        amount: collateralAmount,
-        swapSlippage,
-      });
-
-      // Apply the slippage so we never fail for not enough collateral in the openPosition
-      // Can still fail due to jupiter swap failing, but that's expected
-      collateralAmount = applySlippage(
-        new BN(quoteResult.outAmount),
-        -swapSlippage,
-      );
-
-      const swapInstructions =
-        await window.adrena.jupiterApiClient.swapInstructionsPost({
-          swapRequest: {
-            userPublicKey: owner.toBase58(),
-            quoteResponse: quoteResult,
-          },
+    try {
+      if (doJupiterSwap) {
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: collateralMint,
+          outputMint: usdcToken.mint,
+          amount: collateralAmount,
+          swapSlippage,
         });
 
-      if (swapInstructions === null) {
-        notification.currentStepErrored('Failed to get swap instructions');
-        return;
+        console.log('quoteResult', quoteResult);
+
+        // Apply the slippage so we never fail for not enough collateral in the openPosition
+        // Can still fail due to jupiter swap failing, but that's expected
+        collateralAmount = applySlippage(
+          new BN(quoteResult.outAmount),
+          -swapSlippage,
+        );
+
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          notification.currentStepErrored('Failed to get swap instructions');
+          return;
+        }
+
+        preInstructions.push(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
+            : []),
+        );
+
+        additionalAddressLookupTables.push(
+          ...swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
+        );
       }
-
-      preInstructions.push(
-        ...(swapInstructions.setupInstructions || []).map(
-          jupInstructionToTransactionInstruction,
-        ),
-        jupInstructionToTransactionInstruction(
-          swapInstructions.swapInstruction,
-        ),
-        ...(swapInstructions.cleanupInstruction
-          ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-          : []),
-      );
-
-      additionalAddressLookupTables.push(
-        ...swapInstructions.addressLookupTableAddresses.map(
-          (x) => new PublicKey(x),
-        ),
-      );
+    } catch {
+      notification?.currentStepErrored('Failed to find Jupiter route');
+      return null;
     }
 
     const openPositionWithSwapIx = await (
@@ -2447,6 +2471,7 @@ export class AdrenaClient {
     return this.signAndExecuteTxAlternative({
       transaction,
       notification,
+      additionalAddressLookupTables,
     });
   }
 
@@ -2729,55 +2754,60 @@ export class AdrenaClient {
       );
     }
 
-    if (doJupiterSwap) {
-      const quoteResult = await getJupiterApiQuote({
-        inputMint: collateralMint,
-        outputMint: mint,
-        amount: collateralAmount,
-        swapSlippage,
-      });
-
-      // Apply the slippage so we never fail for not enough collateral in the openPosition
-      // Can still fail due to jupiter swap failing, but that's expected
-      collateralAmount = applySlippage(
-        new BN(quoteResult.outAmount),
-        -swapSlippage,
-      );
-
-      const swapInstructions =
-        await window.adrena.jupiterApiClient.swapInstructionsPost({
-          swapRequest: {
-            userPublicKey: owner.toBase58(),
-            quoteResponse: quoteResult,
-          },
+    try {
+      if (doJupiterSwap) {
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: collateralMint,
+          outputMint: mint,
+          amount: collateralAmount,
+          swapSlippage,
         });
 
-      if (swapInstructions === null) {
-        notification.currentStepErrored('Failed to get swap instructions');
-        return;
+        // Apply the slippage so we never fail for not enough collateral in the openPosition
+        // Can still fail due to jupiter swap failing, but that's expected
+        collateralAmount = applySlippage(
+          new BN(quoteResult.outAmount),
+          -swapSlippage,
+        );
+
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          notification.currentStepErrored('Failed to get swap instructions');
+          return;
+        }
+
+        preInstructions.push(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
+            : []),
+        );
+
+        additionalAddressLookupTables.push(
+          ...swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
+        );
       }
-
-      preInstructions.push(
-        ...(swapInstructions.setupInstructions || []).map(
-          jupInstructionToTransactionInstruction,
-        ),
-        jupInstructionToTransactionInstruction(
-          swapInstructions.swapInstruction,
-        ),
-        ...(swapInstructions.cleanupInstruction
-          ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-          : []),
-      );
-
-      additionalAddressLookupTables.push(
-        ...swapInstructions.addressLookupTableAddresses.map(
-          (x) => new PublicKey(x),
-        ),
-      );
+    } catch {
+      notification?.currentStepErrored('Failed to find Jupiter route');
+      return null;
     }
 
     const openPositionWithSwapIx = await (
@@ -2829,57 +2859,65 @@ export class AdrenaClient {
     const doJupiterSwap =
       position.collateralToken.symbol !== depositToken.symbol;
 
-    if (doJupiterSwap) {
-      const quoteResult = await getJupiterApiQuote({
-        inputMint: depositToken.mint,
-        outputMint: position.collateralToken.mint,
-        amount: addedCollateral,
-        swapSlippage,
-      });
-
-      // Apply the slippage so we never fail for not enough collateral in the depositCollateral
-      // Can still fail due to jupiter swap failing, but that's expected
-      addedCollateral = applySlippage(
-        new BN(quoteResult.outAmount),
-        -swapSlippage,
-      );
-
-      console.log('addedCollateral with slippage', addedCollateral.toString());
-
-      const swapInstructions =
-        await window.adrena.jupiterApiClient.swapInstructionsPost({
-          swapRequest: {
-            userPublicKey: position.owner.toBase58(),
-            quoteResponse: quoteResult,
-          },
+    try {
+      if (doJupiterSwap) {
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: depositToken.mint,
+          outputMint: position.collateralToken.mint,
+          amount: addedCollateral,
+          swapSlippage,
         });
 
-      if (swapInstructions === null) {
-        notification.currentStepErrored('Failed to get swap instructions');
-        return;
+        // Apply the slippage so we never fail for not enough collateral in the depositCollateral
+        // Can still fail due to jupiter swap failing, but that's expected
+        addedCollateral = applySlippage(
+          new BN(quoteResult.outAmount),
+          -swapSlippage,
+        );
+
+        console.log(
+          'addedCollateral with slippage',
+          addedCollateral.toString(),
+        );
+
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: position.owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          notification.currentStepErrored('Failed to get swap instructions');
+          return;
+        }
+
+        preInstructions.push(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
+            : []),
+        );
+
+        additionalAddressLookupTables.push(
+          ...swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
+        );
       }
-
-      preInstructions.push(
-        ...(swapInstructions.setupInstructions || []).map(
-          jupInstructionToTransactionInstruction,
-        ),
-        jupInstructionToTransactionInstruction(
-          swapInstructions.swapInstruction,
-        ),
-        ...(swapInstructions.cleanupInstruction
-          ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-          : []),
-      );
-
-      additionalAddressLookupTables.push(
-        ...swapInstructions.addressLookupTableAddresses.map(
-          (x) => new PublicKey(x),
-        ),
-      );
+    } catch {
+      notification?.currentStepErrored('Failed to find Jupiter route');
+      return null;
     }
 
     const builder = await (
@@ -4523,55 +4561,60 @@ export class AdrenaClient {
       preInstructions.push(initLimitOrderBookIx);
     }
 
-    if (doJupiterSwap) {
-      const quoteResult = await getJupiterApiQuote({
-        inputMint: collateralMint,
-        outputMint: side === 'long' ? mint : usdcToken.mint,
-        amount: collateralAmount.toNumber(),
-        swapSlippage,
-      });
-
-      // Apply the slippage so we never fail for not enough collateral in the openPosition
-      // Can still fail due to jupiter swap failing, but that's expected
-      collateralAmount = applySlippage(
-        new BN(quoteResult.outAmount),
-        -swapSlippage,
-      );
-
-      const swapInstructions =
-        await window.adrena.jupiterApiClient.swapInstructionsPost({
-          swapRequest: {
-            userPublicKey: owner.toBase58(),
-            quoteResponse: quoteResult,
-          },
+    try {
+      if (doJupiterSwap) {
+        const quoteResult = await getJupiterApiQuote({
+          inputMint: collateralMint,
+          outputMint: side === 'long' ? mint : usdcToken.mint,
+          amount: collateralAmount.toNumber(),
+          swapSlippage,
         });
 
-      if (swapInstructions === null) {
-        notification?.currentStepErrored('Failed to get swap instructions');
-        return;
+        // Apply the slippage so we never fail for not enough collateral in the openPosition
+        // Can still fail due to jupiter swap failing, but that's expected
+        collateralAmount = applySlippage(
+          new BN(quoteResult.outAmount),
+          -swapSlippage,
+        );
+
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
+            swapRequest: {
+              userPublicKey: owner.toBase58(),
+              quoteResponse: quoteResult,
+            },
+          });
+
+        if (swapInstructions === null) {
+          notification?.currentStepErrored('Failed to get swap instructions');
+          return;
+        }
+
+        preInstructions.push(
+          ...(swapInstructions.setupInstructions || []).map(
+            jupInstructionToTransactionInstruction,
+          ),
+          jupInstructionToTransactionInstruction(
+            swapInstructions.swapInstruction,
+          ),
+          ...(swapInstructions.cleanupInstruction
+            ? [
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
+            : []),
+        );
+
+        additionalAddressLookupTables.push(
+          ...swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
+        );
       }
-
-      preInstructions.push(
-        ...(swapInstructions.setupInstructions || []).map(
-          jupInstructionToTransactionInstruction,
-        ),
-        jupInstructionToTransactionInstruction(
-          swapInstructions.swapInstruction,
-        ),
-        ...(swapInstructions.cleanupInstruction
-          ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
-          : []),
-      );
-
-      additionalAddressLookupTables.push(
-        ...swapInstructions.addressLookupTableAddresses.map(
-          (x) => new PublicKey(x),
-        ),
-      );
+    } catch {
+      notification?.currentStepErrored('Failed to find Jupiter route');
+      return null;
     }
 
     const custody = this.getCustodyByMint(mint);
@@ -6456,7 +6499,27 @@ export class AdrenaClient {
     }).compileToV0Message(lookupTableAccounts.filter((x) => x !== null));
 
     let versionedTransaction = new VersionedTransaction(transactionMessage);
-    let serializedTransaction = versionedTransaction.serialize();
+
+    let serializedTransaction: Uint8Array;
+
+    try {
+      serializedTransaction = versionedTransaction.serialize();
+    } catch (e) {
+      let adrenaError: AdrenaTransactionError;
+
+      if (e instanceof Error && e.name === 'RangeError') {
+        adrenaError = new AdrenaTransactionError(null, 'Transaction too big');
+      } else {
+        adrenaError = new AdrenaTransactionError(
+          null,
+          'Transaction serialization error',
+        );
+      }
+
+      notification?.currentStepErrored(adrenaError);
+
+      throw adrenaError;
+    }
 
     try {
       // Refresh priority fees before proceeding
