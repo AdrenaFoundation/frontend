@@ -1,8 +1,11 @@
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
@@ -167,6 +170,22 @@ export function PositionBlock({
       />
     </svg>
   )
+
+  const borrowResolve = () => {
+    try {
+      const notification =
+        MultiStepNotification.newForRegularTransaction('Position Borrow Resolve').fire();
+
+      window.adrena.client.positionBorrowResolve({
+        notification,
+        targetPosition: position.pubkey,
+      });
+    } catch {
+      // Ignore error
+    }
+  };
+
+  const positionBorrowFeesShouldBeResolved = useMemo(() => ((position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0)) > 50, [position.borrowFeeUsd, position.paidInterestUsd]);
 
   return (
     <>
@@ -430,7 +449,19 @@ export function PositionBlock({
               columnClasses={columnClasses}
             />
 
-            {!readOnly && (
+            {readOnly ? (positionBorrowFeesShouldBeResolved ? <Tippy content={
+              `Settle the position’s $${(position.borrowFeeUsd ?? 0) - position.paidInterestUsd} in borrow fees now. Fees are distributed to LPs, stakers, the DAO, and referrals.`
+            }>
+              <div>
+                <Button
+                  size="xs"
+                  className={twMerge(POSITION_BLOCK_STYLES.button.base, 'min-w-[14em] mt-1')}
+                  title='Resolve Borrow Fees'
+                  rounded={false}
+                  onClick={() => borrowResolve()}
+                />
+              </div>
+            </Tippy> : null) : (
               <ButtonGroup
                 position={position}
                 closableIn={closableIn}
@@ -466,6 +497,7 @@ export function PositionBlock({
                   return <Congrats />;
                 })()}
               </div>
+
               <SharePositionModal position={position} />
             </Modal>
           )}
