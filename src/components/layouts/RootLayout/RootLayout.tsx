@@ -76,7 +76,7 @@ export default function RootLayout({
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
-  const [isChatOpen, setIsChatOpen] = useState<boolean | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const disableChat = useSelector((state) => state.settings.disableChat);
 
   const [pages, setPages] = useState<LinksType[]>([
@@ -248,9 +248,9 @@ export default function RootLayout({
 
       {disableChat === true ? null : (
         <ChatContainer
-        // isMobile={!isBigScreen}
-        // isChatOpen={isChatOpen}
-        // setIsChatOpen={setIsChatOpen}
+          isMobile={!isBigScreen}
+          isChatOpen={isChatOpen}
+          setIsChatOpen={setIsChatOpen}
         />
       )}
 

@@ -7,6 +7,7 @@ import {
 
 export interface UseFriendReqReturn {
   loading: boolean;
+  isDisabled?: boolean;
   error: string | null;
   friendRequests: FriendRequest[];
   fetchRequests: (type?: 'sent' | 'received' | 'all') => Promise<void>;
@@ -27,6 +28,7 @@ export const useFriendReq = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [currentFriendRequest, setCurrentFriendRequest] =
     useState<FriendRequest | null>(null);
 
@@ -47,7 +49,7 @@ export const useFriendReq = ({
 
         const queryType = type || 'all';
         const response = await fetch(
-          `/api/friend_requests?user_pubkey=${walletAddress}&type=${queryType}`,
+          `/api/friend_requests?user_pubkey=${walletAddress}&type=${queryType}&receiver_pubkey=${receiverWalletAddress || ''}`,
         );
 
         const data = await response.json();
@@ -60,12 +62,13 @@ export const useFriendReq = ({
 
         setFriendRequests(requests);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
+        setIsDisabled(true);
+        setError(err ? (err as string) : 'Unknown error occurred');
       } finally {
         setLoading(false);
       }
     },
-    [walletAddress, clearError],
+    [walletAddress, receiverWalletAddress, clearError],
   );
 
   // Send a friend request
@@ -225,6 +228,7 @@ export const useFriendReq = ({
 
   return {
     loading,
+    isDisabled,
     error,
     friendRequests,
     fetchRequests,

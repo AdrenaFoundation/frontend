@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 
+import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
 import Button from '@/components/common/Button/Button';
 import useFriendReq from '@/hooks/useFriendReq';
 import { useSelector } from '@/store/store';
@@ -9,6 +10,8 @@ function AddTrader({
 }: {
   receiverWalletAddress: string | null;
 }) {
+  const isFriendReqDisabled = useSelector((state) => state.settings.disableFriendReq);
+
   const wallet = useSelector((state) => state.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;
 
@@ -18,9 +21,11 @@ function AddTrader({
     rejectFriendRequest,
     sendFriendRequest,
     currentFriendRequest,
+    isDisabled,
   } = useFriendReq({ walletAddress, receiverWalletAddress });
 
   if (
+    isFriendReqDisabled ||
     walletAddress === receiverWalletAddress ||
     !receiverWalletAddress ||
     !walletAddress
@@ -35,10 +40,11 @@ function AddTrader({
       <div className="mt-1">
         <Button
           title="Added"
-          variant="outline"
+          variant="text"
           size="xs"
+          leftIcon={addFriendIcon}
           disabled={true}
-          className="px-3"
+          className="px-0"
         />
       </div>
     );
@@ -55,7 +61,7 @@ function AddTrader({
           variant="outline"
           size="xs"
           disabled={true}
-          className="px-3"
+          className="px-3 rounded-md"
         />
       </div>
     );
@@ -66,13 +72,13 @@ function AddTrader({
     currentFriendRequest?.sender_pubkey === receiverWalletAddress
   ) {
     return (
-      <div className="mt-1 flex flex-row items-center">
+      <div className="mt-1 flex flex-row gap-2 items-center">
         <Button
           title="Accept"
-          variant="lightbg"
+          variant="outline"
           size="xs"
           disabled={loading}
-          className="px-3 rounded-r-none hover:bg-secondary"
+          className="px-3 rounded-md hover:bg-secondary/30"
           onClick={() => acceptFriendRequest(currentFriendRequest.id)}
         />
         <Button
@@ -80,7 +86,7 @@ function AddTrader({
           variant="lightbg"
           size="xs"
           disabled={loading}
-          className="px-3 rounded-l-none hover:bg-secondary"
+          className="px-3 rounded-md hover:bg-secondary"
           onClick={() => rejectFriendRequest(currentFriendRequest.id)}
         />
       </div>
@@ -91,10 +97,11 @@ function AddTrader({
     <div className="mt-1">
       <Button
         title="Add Trader"
-        variant="lightbg"
+        variant="text"
+        leftIcon={addFriendIcon}
         size="xs"
-        disabled={loading}
-        className="px-3"
+        disabled={loading || isDisabled}
+        className="px-0 gap-1"
         onClick={() => sendFriendRequest(receiverWalletAddress)}
       />
     </div>

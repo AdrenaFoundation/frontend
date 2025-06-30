@@ -75,8 +75,8 @@ export default function BurgerMenu({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   adapters: WalletAdapterExtended[];
-  isChatOpen: boolean | null;
-  setIsChatOpen: (isChatOpen: boolean | null) => void;
+  isChatOpen: boolean;
+  setIsChatOpen: (isChatOpen: boolean) => void;
 }) {
   const { aprs } = useAPR();
   const { pathname } = useRouter();

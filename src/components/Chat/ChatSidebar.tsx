@@ -1,6 +1,8 @@
+import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
 import { PROFILE_PICTURES } from '@/constant';
 import { Chatroom } from '@/pages/api/chatrooms';
 import { FriendRequest } from '@/pages/api/friend_requests';
@@ -19,6 +21,9 @@ function ChatSidebar({
   friendRequestWindowOpen = false,
   userProfilesMap,
   isLoading = false,
+  isMobile,
+  setIsChatroomsOpen,
+  isChatroomsOpen,
 }: {
   currentChatroomId: number;
   chatrooms: Chatroom[];
@@ -35,6 +40,9 @@ function ChatSidebar({
     }
   >;
   isLoading: boolean;
+  isMobile: boolean;
+  isChatroomsOpen: boolean;
+  setIsChatroomsOpen: (isOpen: boolean) => void;
 }) {
   if (!walletAddress) {
     return null;
@@ -45,13 +53,19 @@ function ChatSidebar({
   );
 
   const privateRooms = chatrooms.filter(
-    (room) => room.type === 'private' && room.participants?.length === 2,
+    (room) => room.type === 'private',
   );
 
   const communityRooms = chatrooms.filter((room) => room.type === 'community');
 
+  if (isMobile && isChatroomsOpen) {
+    return null;
+  }
+
   return (
-    <div className="flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[12rem] bg-secondary">
+    <div className={twMerge("flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[12rem] bg-secondary",
+      isMobile && 'w-full'
+    )}>
       <ul className="flex flex-col gap-1">
         <li className="text-xs font-mono opacity-30">Community</li>
         {communityRooms.map((room) => {
@@ -64,6 +78,8 @@ function ChatSidebar({
               friendRequestWindowOpen={friendRequestWindowOpen}
               setFriendRequestWindowOpen={setFriendRequestWindowOpen}
               walletAddress={walletAddress}
+              setIsChatroomsOpen={setIsChatroomsOpen}
+              isMobile={isMobile}
             />
           );
         })}
@@ -82,6 +98,8 @@ function ChatSidebar({
                   setFriendRequestWindowOpen={setFriendRequestWindowOpen}
                   walletAddress={walletAddress}
                   userProfilesMap={userProfilesMap}
+                  setIsChatroomsOpen={setIsChatroomsOpen}
+                  isMobile={isMobile}
                 />
               );
             })}
@@ -106,6 +124,7 @@ function ChatSidebar({
             setFriendRequestWindowOpen(true);
           }}
         >
+          <Image src={addFriendIcon} alt="Add Friend Icon" width={16} height={16} />
           <p
             className={twMerge(
               'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
@@ -143,6 +162,8 @@ function RoomButton({
   setFriendRequestWindowOpen,
   walletAddress,
   userProfilesMap,
+  setIsChatroomsOpen,
+  isMobile,
 }: {
   room: Chatroom;
   currentChatroomId: number;
@@ -157,6 +178,8 @@ function RoomButton({
       profilePictureUrl?: string;
     }
   >;
+  setIsChatroomsOpen: (isOpen: boolean) => void;
+  isMobile: boolean;
 }) {
   const friendWalletAddress =
     room.participants?.filter((w) => w !== walletAddress)[0] || '';
@@ -185,6 +208,9 @@ function RoomButton({
       onClick={() => {
         setCurrentChatroom(room.id);
         setFriendRequestWindowOpen(false);
+        if (isMobile) {
+          setIsChatroomsOpen(true);
+        }
       }}
     >
       <div className="flex flex-row items-center gap-1">
@@ -201,7 +227,7 @@ function RoomButton({
               className="w-4 h-4 rounded-full flex-none"
             />
             {getProfileByWallet(friendWalletAddress).isOnline ? (
-              <div className="absolute bottom-0 bg-green w-[0.3rem] h-[0.3rem] rounded-full" />
+              <div className="absolute bottom-0 right-0 bg-green w-[0.3rem] h-[0.3rem] rounded-full" />
             ) : null}
           </div>
         ) : null}
@@ -209,11 +235,12 @@ function RoomButton({
           className={twMerge(
             'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
             currentChatroomId === room.id &&
-              !friendRequestWindowOpen &&
-              'opacity-100',
+            !friendRequestWindowOpen &&
+            'opacity-100',
           )}
         >
-          {room.type === 'community' ? `# ${room.name}` : friendName}
+          {room.type === 'community' ? <span className='opacity-50'># </span> : null}
+          {room.type === 'community' ? `${room.name}` : friendName}
         </p>
       </div>
 

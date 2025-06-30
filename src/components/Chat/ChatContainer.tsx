@@ -13,14 +13,22 @@ import useLiveCount from '@/hooks/useLiveCount';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserProfileMetadata } from '@/types';
 
-import LiveIcon from '../common/LiveIcon/LiveIcon';
+// import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Modal from '../common/Modal/Modal';
 import ViewProfileModal from '../pages/profile/ViewProfileModal';
 import Chat from './Chat';
 import ChatSidebar from './ChatSidebar';
 import FriendRequestView from './FriendRequestView';
 
-function ChatContainer() {
+function ChatContainer({
+  isChatOpen,
+  setIsChatOpen,
+  isMobile = false,
+}: {
+  isMobile: boolean;
+  isChatOpen: boolean;
+  setIsChatOpen: (open: boolean) => void;
+}) {
   const { wallet } = useSelector((state) => state.walletState);
   const walletAddress = wallet?.walletAddress || null;
 
@@ -47,21 +55,18 @@ function ChatContainer() {
     walletAddress,
   });
 
-  const {
-    connectedUsers,
-    connectedCount,
-    loading: loadingLiveCount,
-  } = useLiveCount({
+  const { connectedUsers } = useLiveCount({
     walletAddress,
     refreshInterval: 30000, // refresh every 30 seconds
   });
 
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const [firstRender, setFirstRender] = useState(true);
   const [friendRequestWindowOpen, setFriendRequestWindowOpen] = useState(false);
   const [totalNotifications, setTotalNotifications] = useState<number | null>(
     null,
   );
+
+  const [isChatroomsOpen, setIsChatroomsOpen] = useState(true);
 
   const [title, setTitle] = useState('General');
   const [activeProfile, setActiveProfile] =
@@ -121,7 +126,11 @@ function ChatContainer() {
 
   return (
     <>
-      <ChatContainerWrapper isChatOpen={isChatOpen}>
+      <ChatContainerWrapper
+        isChatOpen={isChatOpen}
+        isMobile={isMobile}
+        setIsChatOpen={setIsChatOpen}
+      >
         {isChatOpen ? (
           <ChatSidebar
             currentChatroomId={currentChatroomId}
@@ -133,20 +142,25 @@ function ChatContainer() {
             friendRequestWindowOpen={friendRequestWindowOpen}
             userProfilesMap={userProfilesMap}
             isLoading={loading.chatrooms}
+            isMobile={isMobile}
+            setIsChatroomsOpen={setIsChatroomsOpen}
+            isChatroomsOpen={isChatroomsOpen}
           />
         ) : null}
 
-        <div className="w-full">
-          <ChatTitle
-            title={title}
-            isLoading={loading.chatrooms}
-            isChatOpen={isChatOpen}
-            setIsChatOpen={setIsChatOpen}
-            friendRequestWindowOpen={friendRequestWindowOpen}
-            connectedCount={connectedCount}
-            loadingLiveCount={loadingLiveCount}
-            totalNotifications={totalNotifications}
-          />
+        <div className="w-full h-full">
+          {isChatroomsOpen ? (
+            <ChatTitle
+              title={title}
+              isLoading={loading.chatrooms}
+              isChatOpen={isChatOpen}
+              setIsChatOpen={setIsChatOpen}
+              friendRequestWindowOpen={friendRequestWindowOpen}
+              totalNotifications={totalNotifications}
+              setIsChatroomsOpen={setIsChatroomsOpen}
+              isMobile={isMobile}
+            />
+          ) : null}
 
           {isChatOpen ? (
             friendRequestWindowOpen ? (
@@ -157,6 +171,8 @@ function ChatContainer() {
                 isFriendReqLoading={isFriendReqLoading}
                 acceptFriendRequest={acceptFriendRequest}
                 rejectFriendRequest={rejectFriendRequest}
+                userProfilesMap={userProfilesMap}
+                setActiveProfile={setActiveProfile}
               />
             ) : (
               <Chat
@@ -167,6 +183,9 @@ function ChatContainer() {
                 userProfilesMap={userProfilesMap}
                 setActiveProfile={setActiveProfile}
                 walletAddress={walletAddress}
+                isSendingMessage={loading.sendMessage}
+                isChatroomsOpen={isChatroomsOpen}
+                isMobile={isMobile}
               />
             )
           ) : null}
@@ -199,18 +218,18 @@ function ChatTitle({
   isChatOpen,
   setIsChatOpen,
   friendRequestWindowOpen = false,
-  connectedCount,
-  loadingLiveCount,
   totalNotifications,
+  setIsChatroomsOpen,
+  isMobile,
 }: {
   isLoading: boolean;
   title: string;
   isChatOpen: boolean;
   setIsChatOpen: (open: boolean) => void;
   friendRequestWindowOpen: boolean;
-  connectedCount: number;
-  loadingLiveCount: boolean;
   totalNotifications: number | null;
+  setIsChatroomsOpen: (open: boolean) => void;
+  isMobile?: boolean;
 }) {
   return (
     <div
@@ -218,7 +237,13 @@ function ChatTitle({
         'group flex flex-row items-center justify-between w-full border-bcolor p-2',
         isLoading ? 'cursor-wait opacity-50' : 'cursor-pointer',
       )}
-      onClick={() => setIsChatOpen(!isChatOpen)}
+      onClick={() => {
+        if (isMobile) {
+          setIsChatroomsOpen(false);
+        } else {
+          setIsChatOpen(!isChatOpen);
+        }
+      }}
     >
       <div className="flex flex-row items-center gap-2">
         <p className="text-lg font-boldy capitalize">
@@ -226,14 +251,14 @@ function ChatTitle({
           {friendRequestWindowOpen ? 'Friend Requests' : `${title}`}{' '}
         </p>
 
-        {!friendRequestWindowOpen ? (
+        {/* {!friendRequestWindowOpen ? (
           <div className="flex flex-row gap-1 font-mono items-center">
             <LiveIcon className="h-[0.6250em] w-[0.6250em]" />{' '}
             <p className="text-sm opacity-50">
               {loadingLiveCount ? null : connectedCount}
             </p>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
 
       <div className="flex flex-row items-center gap-2">
@@ -266,26 +291,50 @@ function ChatTitle({
 function ChatContainerWrapper({
   isChatOpen,
   children,
+  isMobile,
+  setIsChatOpen,
 }: {
   isChatOpen: boolean;
   children: ReactNode;
+  isMobile: boolean;
+  setIsChatOpen: (open: boolean) => void;
 }) {
   const { height, isDragging, handleMouseDown } = useChatWindowResize({
     isOpen: isChatOpen,
     minHeight: 200,
   });
 
+  if (!isChatOpen && isMobile) {
+    return null;
+  }
+
+  if (isMobile) {
+    return (
+      <AnimatePresence>
+        <Modal
+          className="h-full w-full overflow-hidden"
+          wrapperClassName="relative h-full"
+          close={() => setIsChatOpen(false)}
+          isWrapped={false}
+          disableFade
+        >
+          {children}
+        </Modal>
+      </AnimatePresence>
+    );
+  }
+
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ height: '2.6rem', width: '18.75rem' }}
+        initial={{ height: '3rem', width: '20rem' }}
         animate={{
-          height: isChatOpen ? height : '2.6rem',
-          width: isChatOpen ? '37.5rem' : '18.75rem',
+          height: isChatOpen ? height : '3rem',
+          width: isChatOpen ? '37.5rem' : '20rem',
         }}
-        exit={{ height: '2.6rem', width: '18.75rem' }}
+        exit={{ height: '3rem', width: '20rem' }}
         transition={{ duration: 0.3 }}
-        className="fixed bottom-4 right-4 z-20 flex flex-row bg-secondary border-2 rounded-lg min-w-[18.75rem] overflow-hidden"
+        className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-t-lg min-w-[18.75rem] overflow-hidden"
         style={{ userSelect: isDragging ? 'none' : 'auto' }}
       >
         <div

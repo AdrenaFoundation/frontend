@@ -70,44 +70,51 @@ export const useChatrooms = ({
     setError(null);
   }, []);
 
-  const fetchChatrooms = useCallback(async (): Promise<Chatroom[]> => {
-    if (!walletAddress) {
-      setError('User public key is required');
-      return [];
-    }
-
-    try {
-      setLoading((prev) => ({ ...prev, chatrooms: true }));
-      clearError();
-
-      const response = await fetch(
-        `/api/chatrooms?type=chatrooms&user_pubkey=${walletAddress}`,
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch chatrooms');
+  const fetchChatrooms = useCallback(
+    async (isRefresh = false): Promise<Chatroom[]> => {
+      if (!walletAddress) {
+        setError('User public key is required');
+        setChatrooms([]);
+        return [];
       }
 
-      const fetchedChatrooms: Chatroom[] = data.chatrooms || [];
+      try {
+        setLoading((prev) => ({ ...prev, chatrooms: true }));
+        clearError();
 
-      setChatrooms((prev) => {
-        const existingIds = new Set(prev.map((c) => c.id));
+        const response = await fetch(
+          `/api/chatrooms?type=chatrooms&user_pubkey=${walletAddress}`,
+        );
+        const data = await response.json();
 
-        return [
-          ...prev,
-          ...fetchedChatrooms.filter((c) => !existingIds.has(c.id)),
-        ];
-      });
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch chatrooms');
+        }
 
-      return fetchedChatrooms;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
-      return [];
-    } finally {
-      setLoading((prev) => ({ ...prev, chatrooms: false }));
-    }
-  }, [walletAddress, clearError]);
+        const fetchedChatrooms: Chatroom[] = data.chatrooms || [];
+
+        if (isRefresh) {
+          setChatrooms((prev) => {
+            const existingIds = new Set(prev.map((room) => room.id));
+            const newChatrooms = fetchedChatrooms.filter(
+              (room) => !existingIds.has(room.id),
+            );
+            return [...newChatrooms, ...prev];
+          });
+        } else {
+          setChatrooms(fetchedChatrooms);
+        }
+
+        return fetchedChatrooms;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error occurred');
+        return [];
+      } finally {
+        setLoading((prev) => ({ ...prev, chatrooms: false }));
+      }
+    },
+    [walletAddress, clearError],
+  );
 
   // Fetch messages for a specific chatroom with pagination
   const fetchMessages = useCallback(
@@ -314,6 +321,7 @@ export const useChatrooms = ({
   // Subscribe to new messages for a specific room
   const subscribeToMessages = useCallback(
     (roomId: number) => {
+      console.log(`Subscribing to messages for room ${roomId}`);
       const channel = supabaseClient
         .channel(`chatroom-${roomId}`)
         .on(

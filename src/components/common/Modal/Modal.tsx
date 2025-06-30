@@ -43,6 +43,7 @@ export default function Modal({
   customTitle,
   isWrapped = true,
   header = true,
+  disableFade = false,
 }: {
   title?: ReactNode;
   customTitle?: ReactNode;
@@ -52,6 +53,7 @@ export default function Modal({
   wrapperClassName?: string;
   isWrapped?: boolean;
   header?: boolean;
+  disableFade?: boolean;
 }) {
   const isMobile = useBetterMediaQuery('(max-width: 955px)');
   const controls = useDragControls();
@@ -113,53 +115,57 @@ export default function Modal({
           dragControls={controls}
           onDragEnd={() => close()}
         >
-          {header ? <div
-            className={twMerge(
-              'h-12 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
-              !isWrapped && 'sm:hidden',
-            )}
-            onPointerDown={isMobile ? startDrag : undefined}
-            style={{ touchAction: 'none' }}
-          >
-            {!isMobile && (
-              <div className="flex text-md text-white/90 font-special h-full items-center justify-center opacity-80">
-                <Image
-                  className="relative h-[1.4em] w-[1.4em]"
-                  alt="adrena logo"
-                  src={adrenaLogo}
-                  width={40}
-                  height={40}
-                />
-                {title && <div className="ml-4 text-xl font-archivo">{title}</div>}
+          {header ? (
+            <div
+              className={twMerge(
+                'h-12 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
+                !isWrapped && 'sm:hidden',
+              )}
+              onPointerDown={isMobile ? startDrag : undefined}
+              style={{ touchAction: 'none' }}
+            >
+              {!isMobile && (
+                <div className="flex text-md text-white/90 font-special h-full items-center justify-center opacity-80">
+                  <Image
+                    className="relative h-[1.4em] w-[1.4em]"
+                    alt="adrena logo"
+                    src={adrenaLogo}
+                    width={40}
+                    height={40}
+                  />
+                  {title && (
+                    <div className="ml-4 text-xl font-archivo">{title}</div>
+                  )}
 
-                {customTitle}
-              </div>
-            )}
+                  {customTitle}
+                </div>
+              )}
 
-            {isMobile && (
-              <div className="w-32 h-1 bg-white rounded-full m-auto" />
-            )}
+              {isMobile && (
+                <div className="w-32 h-1 bg-white rounded-full m-auto" />
+              )}
 
-            {!isMobile && (
-              <div className="h-full absolute right-2 flex items-center justify-center pl-1 rounded-tr-lg">
-                <Image
-                  className="cursor-pointer opacity-40 hover:opacity-100 transition-opacity duration-300"
-                  src={closeBtnIcon}
-                  alt="close icon"
-                  width={25}
-                  height={25}
-                  onClick={() => close()}
-                />
-              </div>
-            )}
-          </div> : null}
+              {!isMobile && (
+                <div className="h-full absolute right-2 flex items-center justify-center pl-1 rounded-tr-lg">
+                  <Image
+                    className="cursor-pointer opacity-40 hover:opacity-100 transition-opacity duration-300"
+                    src={closeBtnIcon}
+                    alt="close icon"
+                    width={25}
+                    height={25}
+                    onClick={() => close()}
+                  />
+                </div>
+              )}
+            </div>
+          ) : null}
 
-          <div className={twMerge('relative', className)}>{children} <div
-            className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-secondary z-20"
-          /></div>
-
+          <div className={twMerge('relative', className)}>
+            {children}{' '}
+            {!disableFade ? <div className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-secondary z-20" /> : null}
+          </div>
         </motion.div>
       </motion.div>
-    </PortalContainer >
+    </PortalContainer>
   );
 }

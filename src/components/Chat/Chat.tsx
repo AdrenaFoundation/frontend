@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { PROFILE_PICTURES } from '@/constant';
@@ -18,6 +18,10 @@ function Chat({
   sendMessage,
   userProfilesMap,
   setActiveProfile,
+  isSendingMessage,
+  isChatroomsOpen,
+  isMobile,
+
 }: {
   walletAddress: string | null;
   firstRender: boolean;
@@ -29,6 +33,9 @@ function Chat({
     UserProfileMetadata & { isOnline?: boolean; profilePictureUrl?: string }
   >;
   setActiveProfile?: (profile: UserProfileMetadata | null) => void;
+  isSendingMessage: boolean;
+  isChatroomsOpen?: boolean;
+  isMobile: boolean;
 }) {
   const [msg, setMsg] = useState('');
 
@@ -55,6 +62,10 @@ function Chat({
       }
     );
   };
+
+  if (isMobile && !isChatroomsOpen) {
+    return null;
+  }
 
   return (
     <div className="relative flex flex-col border-t w-full h-full bg-[#040D14]">
@@ -89,7 +100,7 @@ function Chat({
                   className="w-6 h-6 rounded-full flex-none"
                 />
                 {getProfileByWallet(message.wallet).isOnline ? (
-                  <div className="absolute bottom-0 bg-green w-[0.4rem] h-[0.4rem] rounded-full" />
+                  <div className="absolute bottom-0 right-0 bg-green w-[0.4rem] h-[0.4rem] rounded-full" />
                 ) : null}
               </div>
 
@@ -139,7 +150,7 @@ function Chat({
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !isSendingMessage) {
               handleSendMessage();
             }
           }}
@@ -148,8 +159,11 @@ function Chat({
         <Button
           size="sm"
           title="Send"
-          className="absolute right-4 font-boldy bg-[#E2464A] text-white mt-2 w-14 h-6 rounded-md"
+          className={twMerge("absolute right-4 font-boldy bg-[#E2464A] text-white mt-2 w-14 h-6 rounded-md",
+            isSendingMessage && 'opacity-50 cursor-not-allowed pointer-events-none'
+          )}
           onClick={handleSendMessage}
+          disabled={!walletAddress || isSendingMessage}
         />
       </div>
     </div>
@@ -164,4 +178,4 @@ function LoaderStateComponent() {
   );
 }
 
-export default Chat;
+export default memo(Chat);

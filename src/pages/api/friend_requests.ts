@@ -37,7 +37,15 @@ export default async function handler(
 // Get friend requests for a user (either sent or received)
 async function getFriendRequests(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { user_pubkey, type } = req.query;
+    const { user_pubkey, type, receiver_pubkey } = req.query;
+    if (receiver_pubkey) {
+      const isDisabled = await hasDisabledFriendReq(receiver_pubkey as string);
+      if (isDisabled) {
+        return res.status(500).json({
+          error: 'Friend requests are disabled for this user',
+        });
+      }
+    }
 
     if (!user_pubkey) {
       return res.status(500).json({ error: 'User public key is required' });
@@ -55,9 +63,12 @@ async function getFriendRequests(req: NextApiRequest, res: NextApiResponse) {
       );
     }
 
-    const { data, error } = await query.order('created_at', {
+    const { data, error } = (await query.order('created_at', {
       ascending: false,
-    });
+    })) as {
+      data: FriendRequest[] | null;
+      error: Error | null;
+    };
 
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -94,7 +105,7 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
 
     if (existingRequests && existingRequests.length > 0) {
       return res
-        .status(409)
+        .status(500)
         .json({ error: 'A friend request already exists between these users' });
     }
 
@@ -113,7 +124,7 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: error.message });
     }
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: 'Friend request sent successfully',
       friend_request: data?.[0],
     });
@@ -232,4 +243,19 @@ async function deleteFriendRequest(req: NextApiRequest, res: NextApiResponse) {
     console.error('Error deleting friend request:', error);
     return res.status(500).json({ error: 'Failed to delete friend request' });
   }
+}
+
+async function hasDisabledFriendReq(walletAddress: string): Promise<boolean> {
+  const { data, error } = await supabaseClient
+    .from('settings')
+    .select('wallet_address, preferences')
+    .eq('wallet_address', walletAddress)
+    .single();
+
+  if (error) {
+    console.error('Error fetching settings:', error);
+    return false;
+  }
+
+  return data.preferences.disableFriendReq || false;
 }
