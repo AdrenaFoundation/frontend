@@ -334,7 +334,6 @@ export const useChatrooms = ({
           },
           (payload: { new: Message }) => {
             const newMessage = payload.new;
-            console.log(`New message in room ${roomId}:`, newMessage);
 
             setMessages((prev) => {
               const roomMessages = prev[roomId] || [];
@@ -342,6 +341,11 @@ export const useChatrooms = ({
               if (roomMessages.some((m) => m.id === newMessage.id)) {
                 return prev;
               }
+              console.log(`Adding new message to room ${roomId}:`, newMessage, {
+                roomMessages,
+                prev,
+              });
+              // Add the new message
               return {
                 ...prev,
                 [roomId]: [...roomMessages, newMessage],
