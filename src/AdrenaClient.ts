@@ -1725,9 +1725,11 @@ export class AdrenaClient {
   public async buildClosePositionLongIx({
     position,
     price,
+    percentage = new BN(100 * 10000), // BPS 100%
   }: {
     position: PositionExtended;
     price: BN;
+    percentage: BN;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1782,7 +1784,7 @@ export class AdrenaClient {
               recoveryId: oraclePrices.recoveryId,
             }
           : null,
-        percentage: new BN(100 * 10000), // BPS 100%
+        percentage,
       })
       .accountsStrict({
         owner: position.owner,
@@ -1811,9 +1813,11 @@ export class AdrenaClient {
   public async buildClosePositionShortIx({
     position,
     price,
+    percentage = new BN(100 * 10000), // BPS 100%
   }: {
     position: PositionExtended;
     price: BN;
+    percentage: BN;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1869,7 +1873,7 @@ export class AdrenaClient {
               recoveryId: oraclePrices.recoveryId,
             }
           : null,
-        percentage: new BN(100 * 10000), // BPS 100%
+        percentage,
       })
       .accountsStrict({
         owner: position.owner,
@@ -1953,6 +1957,7 @@ export class AdrenaClient {
     expectedCollateralAmountOut,
     swapSlippage,
     notification,
+    percentage = new BN(100 * 10000), // BPS 100%
     getTransactionLogs,
   }: {
     position: PositionExtended;
@@ -1961,6 +1966,7 @@ export class AdrenaClient {
     expectedCollateralAmountOut: BN;
     swapSlippage: number;
     notification?: MultiStepNotification;
+    percentage: BN;
     getTransactionLogs?: (
       logs: {
         raw: string[];
@@ -1974,7 +1980,15 @@ export class AdrenaClient {
 
     const additionalAddressLookupTables: PublicKey[] = [];
 
-    const builder = await this.buildClosePositionLongIx({ position, price });
+    console.log('Close position:', {
+      price: price.toString(),
+      percentage: percentage.toString(),
+    });
+    const builder = await this.buildClosePositionLongIx({
+      position,
+      price,
+      percentage,
+    });
 
     const transaction = await builder.transaction();
 
@@ -2039,6 +2053,7 @@ export class AdrenaClient {
     expectedCollateralAmountOut,
     swapSlippage,
     redeemToken,
+    percentage = new BN(100 * 10000), // BPS 100%
     getTransactionLogs,
   }: {
     position: PositionExtended;
@@ -2047,6 +2062,7 @@ export class AdrenaClient {
     swapSlippage: number;
     redeemToken: Token;
     notification?: MultiStepNotification;
+    percentage: BN;
     getTransactionLogs?: (
       logs: {
         raw: string[];
@@ -2060,7 +2076,11 @@ export class AdrenaClient {
 
     const additionalAddressLookupTables: PublicKey[] = [];
 
-    const builder = await this.buildClosePositionShortIx({ position, price });
+    const builder = await this.buildClosePositionShortIx({
+      position,
+      price,
+      percentage,
+    });
 
     const transaction = await builder.transaction();
 
