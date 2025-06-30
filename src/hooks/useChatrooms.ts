@@ -378,7 +378,8 @@ export const useChatrooms = ({
         supabaseClient.removeChannel(channel);
       };
     },
-    [currentChatroomId, walletAddress, markAsRead],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [walletAddress, markAsRead],
   );
 
   // Subscribe to read receipt changes
@@ -421,7 +422,8 @@ export const useChatrooms = ({
   useEffect(() => {
     const unsubscribe = subscribeToMessages(currentChatroomId);
     return unsubscribe;
-  }, [currentChatroomId, subscribeToMessages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChatroomId]);
 
   // Subscribe to read receipts
   useEffect(() => {
