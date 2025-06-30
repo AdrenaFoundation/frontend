@@ -1,9 +1,9 @@
-import { AScene } from './AScene';
+import { AScene } from '../AScene';
+import { LockedInfoWindow } from '../LockedInfoWindow';
 import ItemTiles from './ItemTiles';
-import { LockedInfoWindow } from './LockedInfoWindow';
-import UiObjectTiles from './ObjectTiles';
+import ObjectTiles from './ObjectTiles';
 
-class InventoryTableTiles extends UiObjectTiles {
+class InventoryTableTiles extends ObjectTiles {
   protected itemTiles: ItemTiles | null = null;
   protected locked: boolean = false;
   private lockedWindow: LockedInfoWindow | null = null;

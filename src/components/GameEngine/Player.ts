@@ -1,6 +1,6 @@
 import config from '../GameScenes/MainScene/config';
 import { AScene } from './AScene';
-import ObjectTiles from './ObjectTiles';
+import ObjectTiles from './Tiles/ObjectTiles';
 
 class Player {
   protected scene: AScene;

@@ -1,24 +1,30 @@
-import { BedInfoWindow } from './BedInfoWindow';
-import ObjectTiles from './ObjectTiles';
+import { CrateInfoWindow } from '../CrateInfoWindow';
+import ItemTiles from './ItemTiles';
 
-export default class BedTiles extends ObjectTiles {
-  private infoWindow: BedInfoWindow | null = null;
+class CrateTiles extends ItemTiles {
+  private infoWindow: CrateInfoWindow | null = null;
 
   private interactionKey: Phaser.Input.Keyboard.Key | null = null;
 
-  public override handleInteractionOn() {
+  public override handleInteractionOn({
+    position,
+  }: {
+    position: Phaser.Math.Vector2;
+  }) {
     if (this.infoWindow) {
       this.handleInteractionOff();
     }
 
     // Set info window
     {
-      this.infoWindow = new BedInfoWindow({
+      this.infoWindow = new CrateInfoWindow({
         scene: this.scene,
-        variant: 'sleep',
+        name: 'Military Crate',
+        rarity: 'Rare',
+        hint: '[E] to open',
       });
 
-      const { x, y } = this.getCenter();
+      const { x, y } = position;
 
       const { width, height } = this.infoWindow.getSize();
 
@@ -32,7 +38,7 @@ export default class BedTiles extends ObjectTiles {
         this.interactionKey = this.scene.input.keyboard.addKey('E');
 
         this.interactionKey.on('down', () => {
-          this.infoWindow?.setVariant('degen');
+          console.log('DO OPEN!'); // TODO: Do the open logic
         });
       }
     }
@@ -47,3 +53,5 @@ export default class BedTiles extends ObjectTiles {
 
   public override updateInteraction() {}
 }
+
+export default CrateTiles;

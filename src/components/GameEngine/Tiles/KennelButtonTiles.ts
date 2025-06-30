@@ -1,4 +1,4 @@
-import { KennelButtonInfoWindow } from './KennelButtonInfoWindow';
+import { KennelButtonInfoWindow } from '../KennelButtonInfoWindow';
 import ObjectTiles from './ObjectTiles';
 
 export default class KennelButtonTiles extends ObjectTiles {

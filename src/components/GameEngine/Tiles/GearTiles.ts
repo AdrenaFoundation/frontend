@@ -1,4 +1,4 @@
-import { ItemInfoWindow } from './ItemInfoWindow';
+import { ItemInfoWindow } from '../ItemInfoWindow';
 import ItemTiles from './ItemTiles';
 
 class GearTiles extends ItemTiles {

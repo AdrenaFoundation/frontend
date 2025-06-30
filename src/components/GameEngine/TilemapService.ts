@@ -1,6 +1,6 @@
 import { AScene } from './AScene';
-import ObjectTiles from './ObjectTiles';
 import Player from './Player';
+import ObjectTiles from './Tiles/ObjectTiles';
 
 class TilemapService {
   public readonly scene: AScene;

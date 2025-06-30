@@ -1,10 +1,10 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
-import BedTiles from '@/components/GameEngine/BedTiles';
-import CrateTiles from '@/components/GameEngine/CrateTiles';
-import InventoryTableTiles from '@/components/GameEngine/InventoryTableTiles';
-import KennelButtonTiles from '@/components/GameEngine/KennelButtonTiles';
-import UiObjectTiles from '@/components/GameEngine/ObjectTiles';
-import PlantTiles from '@/components/GameEngine/PlantTiles';
+import BedTiles from '@/components/GameEngine/Tiles/BedTiles';
+import CrateTiles from '@/components/GameEngine/Tiles/CrateTiles';
+import InventoryTableTiles from '@/components/GameEngine/Tiles/InventoryTableTiles';
+import KennelButtonTiles from '@/components/GameEngine/Tiles/KennelButtonTiles';
+import ObjectTiles from '@/components/GameEngine/Tiles/ObjectTiles';
+import PlantTiles from '@/components/GameEngine/Tiles/PlantTiles';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
 type MainSceneConfig = ASceneConfig & {
@@ -74,10 +74,7 @@ export class MainScene extends AScene<MainSceneConfig> {
     //   table.lock();
     // });
 
-    const pets = this.getTilemapService().getObjectsByType(
-      'pet',
-      UiObjectTiles,
-    );
+    const pets = this.getTilemapService().getObjectsByType('pet', ObjectTiles);
 
     const buttons = this.getTilemapService().getObjectsByType(
       'kennel',

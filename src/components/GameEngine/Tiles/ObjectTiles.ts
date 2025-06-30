@@ -1,5 +1,5 @@
-import { AScene } from './AScene';
-import TilemapService from './TilemapService';
+import { AScene } from '../AScene';
+import TilemapService from '../TilemapService';
 
 class ObjectTiles {
   public readonly tiles: Phaser.Tilemaps.Tile[];

@@ -1,4 +1,4 @@
-import { AScene } from './AScene';
+import { AScene } from '../AScene';
 import ObjectTiles from './ObjectTiles';
 
 // One object is one or multiple consecutive tiles
