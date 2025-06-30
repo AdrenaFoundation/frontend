@@ -40,7 +40,7 @@ interface UseChatroomsReturn {
   setCurrentChatroom: (roomId: number) => void;
 
   subscribeToMessages: (roomId: number) => () => void;
-  subscribeToReadReceipts: () => () => void;
+  // subscribeToReadReceipts: () => () => void;
 }
 
 export const useChatrooms = ({
@@ -319,95 +319,92 @@ export const useChatrooms = ({
   };
 
   // Subscribe to new messages for a specific room
-  const subscribeToMessages = useCallback(
-    (roomId: number) => {
-      console.log(`Subscribing to messages for room ${roomId}`);
-      const channel = supabaseClient
-        .channel('realtime:messages')
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'messages',
-            filter: `room_id=eq.${roomId}`,
-          },
-          (payload: { new: Message }) => {
-            const newMessage = payload.new;
-
-            setMessages((prev) => {
-              const roomMessages = prev[roomId] || [];
-              // Avoid duplicate messages
-              if (roomMessages.some((m) => m.id === newMessage.id)) {
-                return prev;
-              }
-              console.log(`Adding new message to room ${roomId}:`, newMessage, {
-                roomMessages,
-                prev,
-              });
-              // Add the new message
-              return {
-                ...prev,
-                [roomId]: [...roomMessages, newMessage],
-              };
-            });
-
-            if (currentChatroomId === roomId && walletAddress) {
-              markAsRead(roomId, newMessage.id);
-            } else {
-              setChatrooms((prev) =>
-                prev.map((room) =>
-                  room.id === roomId
-                    ? {
-                        ...room,
-                        unread_count: (room.unread_count || 0) + 1,
-                        last_message: newMessage,
-                      }
-                    : room,
-                ),
-              );
-              setTotalUnreadCount((prev) => prev + 1);
-            }
-          },
-        )
-        .subscribe((status) => {
-          console.log(`Subscription status for room ${roomId}:`, status);
-        });
-
-      return () => {
-        supabaseClient.removeChannel(channel);
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [walletAddress, markAsRead],
-  );
-
-  // Subscribe to read receipt changes
-  const subscribeToReadReceipts = useCallback(() => {
-    if (!walletAddress) return () => {};
-
+  const subscribeToMessages = (roomId: number) => {
+    console.log(`Subscribing to messages for room ${roomId}`);
     const channel = supabaseClient
-      .channel(`read-receipts-${walletAddress}`)
+      .channel('realtime:messages')
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
-          table: 'read_receipts',
-          filter: `user_pubkey=eq.${walletAddress}`,
+          table: 'messages',
+          filter: `room_id=eq.${roomId}`,
         },
-        () => {
-          // Refresh unread counts when read receipts change
-          fetchUnreadCounts();
+        (payload: { new: Message }) => {
+          const newMessage = payload.new;
+
+          setMessages((prev) => {
+            const roomMessages = prev[roomId] || [];
+            // Avoid duplicate messages
+            if (roomMessages.some((m) => m.id === newMessage.id)) {
+              return prev;
+            }
+            console.log(`Adding new message to room ${roomId}:`, newMessage, {
+              roomMessages,
+              prev,
+            });
+            // Add the new message
+            return {
+              ...prev,
+              [roomId]: [...roomMessages, newMessage],
+            };
+          });
+
+          console.log(currentChatroomId, roomId);
+          if (currentChatroomId === roomId && walletAddress) {
+            markAsRead(roomId, newMessage.id);
+          } else {
+            setChatrooms((prev) =>
+              prev.map((room) =>
+                room.id === roomId
+                  ? {
+                      ...room,
+                      unread_count: (room.unread_count || 0) + 1,
+                      last_message: newMessage,
+                    }
+                  : room,
+              ),
+            );
+            setTotalUnreadCount((prev) => prev + 1);
+          }
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Subscription status for room ${roomId}:`, status);
+      });
 
-    // Return unsubscribe function
     return () => {
       supabaseClient.removeChannel(channel);
     };
-  }, [walletAddress, fetchUnreadCounts]);
+  };
+
+  // Subscribe to read receipt changes
+  // const subscribeToReadReceipts = useCallback(() => {
+  //   if (!walletAddress) return () => {};
+
+  //   const channel = supabaseClient
+  //     .channel(`read-receipts-${walletAddress}`)
+  //     .on(
+  //       'postgres_changes',
+  //       {
+  //         event: '*',
+  //         schema: 'public',
+  //         table: 'read_receipts',
+  //         filter: `user_pubkey=eq.${walletAddress}`,
+  //       },
+  //       () => {
+  //         // Refresh unread counts when read receipts change
+  //         fetchUnreadCounts();
+  //       },
+  //     )
+  //     .subscribe();
+
+  //   // Return unsubscribe function
+  //   return () => {
+  //     supabaseClient.removeChannel(channel);
+  //   };
+  // }, [walletAddress, fetchUnreadCounts]);
 
   // Initial fetch of chatrooms and unread counts
   useEffect(() => {
@@ -425,13 +422,13 @@ export const useChatrooms = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChatroomId]);
 
-  // Subscribe to read receipts
-  useEffect(() => {
-    if (walletAddress) {
-      const unsubscribe = subscribeToReadReceipts();
-      return unsubscribe;
-    }
-  }, [walletAddress, subscribeToReadReceipts]);
+  // // Subscribe to read receipts
+  // useEffect(() => {
+  //   if (walletAddress) {
+  //     const unsubscribe = subscribeToReadReceipts();
+  //     return unsubscribe;
+  //   }
+  // }, [walletAddress]);
 
   return {
     loading,
@@ -450,7 +447,7 @@ export const useChatrooms = ({
     setCurrentChatroom,
 
     subscribeToMessages,
-    subscribeToReadReceipts,
+    // subscribeToReadReceipts,
   };
 };
 

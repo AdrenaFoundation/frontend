@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
-import { PROFILE_PICTURES } from '@/constant';
+import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES, TEAMS_MAPPING } from '@/constant';
 import { Chatroom } from '@/pages/api/chatrooms';
 import { FriendRequest } from '@/pages/api/friend_requests';
 import { UserProfileMetadata } from '@/types';
@@ -56,7 +56,7 @@ function ChatSidebar({
     (room) => room.type === 'private',
   );
 
-  const communityRooms = chatrooms.filter((room) => room.type === 'community');
+  const communityRooms = chatrooms.filter((room) => room.type === 'community' && [GENERAL_CHAT_ROOM_ID, userProfilesMap?.[walletAddress].team !== 0 ? userProfilesMap?.[walletAddress].team === 1 ? 2 : 1 : null].includes(room.id));
 
   if (isMobile && isChatroomsOpen) {
     return null;
