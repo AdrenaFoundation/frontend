@@ -80,26 +80,40 @@ export function getNextSaturdayUTC(): Date {
   const daysUntilSaturday = (6 - dayOfWeek + 7) % 7 || 7; // Calculate days to next Saturday
 
   // Get next Saturday at 00:00:00 UTC
-  const nextSaturday = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + daysUntilSaturday,
-    0, 0, 0, 0
-  ));
+  const nextSaturday = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + daysUntilSaturday,
+      0,
+      0,
+      0,
+      0,
+    ),
+  );
 
   return nextSaturday;
 }
 
 export function chunkArray<T>(array: T[], size: number): T[][] {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
-    array.slice(i * size, i * size + size)
+    array.slice(i * size, i * size + size),
   );
 }
 
 export function getNextUTCDate() {
   const now = new Date();
 
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+  return new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + 1,
+      0,
+      0,
+      0,
+    ),
+  );
 }
 
 export function formatNumAbbreviated(num: number, precision = 2): string {
@@ -131,7 +145,7 @@ export function findATAAddressSync(
 // Transfer 12/25 into 25 December
 export function formatToWeekOf(dateString: string, weeksOffset = 0): string {
   // Parse the date string (MM/DD format) as UTC in the current year
-  const [month, day] = dateString.split("/").map(Number);
+  const [month, day] = dateString.split('/').map(Number);
   const currentYear = new Date().getFullYear();
 
   // Create the initial date
@@ -142,7 +156,10 @@ export function formatToWeekOf(dateString: string, weeksOffset = 0): string {
 
   // Format the updated date
   const dayOfMonth = date.getUTCDate();
-  const monthName = date.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
+  const monthName = date.toLocaleString('default', {
+    month: 'long',
+    timeZone: 'UTC',
+  });
 
   return `${dayOfMonth} ${monthName}`;
 }
@@ -152,12 +169,16 @@ export function getLastMondayUTC(): Date {
   const dayOfWeek = now.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
   const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Days since the last Monday
 
-  const lastMonday = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() - diffToMonday, // Go back to last Monday
-    0, 0, 0
-  ));
+  const lastMonday = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - diffToMonday, // Go back to last Monday
+      0,
+      0,
+      0,
+    ),
+  );
 
   return lastMonday;
 }
@@ -167,12 +188,16 @@ export function getLastSundayUTC(): Date {
   const dayOfWeek = now.getUTCDay(); // 0 = Sunday
   const diffToSunday = dayOfWeek === 0 ? 0 : dayOfWeek; // Days since the last Sunday
 
-  const lastSunday = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() - diffToSunday, // Go back to last Sunday
-    23, 59, 59 // Set time to 23:59:59
-  ));
+  const lastSunday = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - diffToSunday, // Go back to last Sunday
+      23,
+      59,
+      59, // Set time to 23:59:59
+    ),
+  );
 
   return lastSunday;
 }
@@ -184,18 +209,17 @@ export function formatNumber(
   precisionIfPriceDecimalsBelow = 6,
 ): string {
   // If price is below decimals precision, display up to 6 decimals (override by minimumFractionDigits)
-  if (Math.abs(nb) < 10 ** -precision) precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
+  if (Math.abs(nb) < 10 ** -precision)
+    precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
 
   if (precision < minimumFractionDigits) {
     precision = minimumFractionDigits;
   }
 
-  return Number(nb.toFixed(precision)).toLocaleString(
-    'en-US'
-    , {
-      minimumFractionDigits,
-      maximumFractionDigits: precision,
-    });
+  return Number(nb.toFixed(precision)).toLocaleString('en-US', {
+    minimumFractionDigits,
+    maximumFractionDigits: precision,
+  });
 }
 
 export function formatPriceInfo(
@@ -234,7 +258,15 @@ export function formatPriceInfo(
   )}`;
 }
 
-export function formatGraphCurrency({ tickItem, maxDecimals = 0, maxDecimalsIfToken = 4 }: { tickItem: number, maxDecimals?: number, maxDecimalsIfToken?: number }): string {
+export function formatGraphCurrency({
+  tickItem,
+  maxDecimals = 0,
+  maxDecimalsIfToken = 4,
+}: {
+  tickItem: number;
+  maxDecimals?: number;
+  maxDecimalsIfToken?: number;
+}): string {
   if (tickItem === 0) return '$0';
 
   const absValue = Math.abs(tickItem);
@@ -243,15 +275,23 @@ export function formatGraphCurrency({ tickItem, maxDecimals = 0, maxDecimalsIfTo
   let num;
   if (absValue > 999_999_999) {
     const billions = absValue / 1_000_000_000;
-    num = (billions % 1 === 0 ? Math.floor(billions) : billions.toFixed(2)) + 'B';
+    num =
+      (billions % 1 === 0 ? Math.floor(billions) : billions.toFixed(2)) + 'B';
   } else if (absValue > 999_999) {
     const millions = absValue / 1_000_000;
-    num = (millions % 1 === 0 ? Math.floor(millions) : millions.toFixed(2)) + 'M';
+    num =
+      (millions % 1 === 0 ? Math.floor(millions) : millions.toFixed(2)) + 'M';
   } else if (absValue > 999) {
     const thousands = absValue / 1_000;
-    num = (thousands % 1 === 0 ? Math.floor(thousands) : thousands.toFixed(maxDecimals)) + 'K';
+    num =
+      (thousands % 1 === 0
+        ? Math.floor(thousands)
+        : thousands.toFixed(maxDecimals)) + 'K';
   } else if (absValue < 100) {
-    num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(maxDecimalsIfToken);
+    num =
+      absValue % 1 === 0
+        ? Math.floor(absValue)
+        : absValue.toFixed(maxDecimalsIfToken);
   } else if (absValue <= 999) {
     num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(2);
   } else {
@@ -334,7 +374,6 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
   return d;
 }
 
-
 // In microLamports, these values aren't very reliable, they are here in case the dynamic values are not available
 export const DEFAULT_PRIORITY_FEES = {
   medium: 100_000,
@@ -358,6 +397,7 @@ export const DEFAULT_SETTINGS = {
   closePositionCollateralSymbol: '',
   depositCollateralSymbol: '',
   withdrawCollateralSymbol: '',
+  disableFriendReq: false,
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {
@@ -697,6 +737,15 @@ export function getAbbrevWalletAddress(address: string, length: number = 6) {
   return `${address.slice(0, length)}...${address.slice(address.length - length)}`;
 }
 
+export const generateColorFromString = (str: string): string => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = hash % 360;
+  return `hsl(${hue}, 70%, 60%)`;
+};
+
 export function formatMilliseconds(milliseconds: number): string {
   const seconds = Math.floor((milliseconds / 1000) % 60);
   milliseconds -= seconds * 1000;
@@ -786,7 +835,9 @@ export function getAlpLockedStakes(
 }
 
 // Generate fake ALP staking data for testing the change from locked to liquid ALP
-export function generateFakeAlpStakingData(totalAmount: number = 88000): LockedStakeExtended[] {
+export function generateFakeAlpStakingData(
+  totalAmount: number = 88000,
+): LockedStakeExtended[] {
   const now = Math.floor(Date.now() / 1000); // Current time in seconds
 
   // Duration in seconds for different lock periods
@@ -794,7 +845,7 @@ export function generateFakeAlpStakingData(totalAmount: number = 88000): LockedS
     '90d': 90 * 24 * 60 * 60,
     '180d': 180 * 24 * 60 * 60,
     '360d': 360 * 24 * 60 * 60,
-    '540d': 540 * 24 * 60 * 60
+    '540d': 540 * 24 * 60 * 60,
   };
 
   // Distribution based on logs - approximately:
@@ -806,7 +857,11 @@ export function generateFakeAlpStakingData(totalAmount: number = 88000): LockedS
   const stakes: LockedStakeExtended[] = [];
 
   // Create example stakes for each duration
-  const createStake = (amount: number, durationKey: keyof typeof durations, indexOffset: number = 0): LockedStakeExtended => {
+  const createStake = (
+    amount: number,
+    durationKey: keyof typeof durations,
+    indexOffset: number = 0,
+  ): LockedStakeExtended => {
     const durationSeconds = durations[durationKey];
     return {
       amount: new BN(amount * 1000000), // Convert to native units with 6 decimals
@@ -830,7 +885,7 @@ export function generateFakeAlpStakingData(totalAmount: number = 88000): LockedS
       padding4: [0, 0, 0, 0, 0, 0, 0],
       genesisClaimTime: new BN(0),
       index: indexOffset,
-      tokenSymbol: 'ALP'
+      tokenSymbol: 'ALP',
     };
   };
 
@@ -840,7 +895,7 @@ export function generateFakeAlpStakingData(totalAmount: number = 88000): LockedS
     stakes.push(createStake(Math.round(totalAmount * 0.34), '540d', 0)); // 34% in 540 days
     stakes.push(createStake(Math.round(totalAmount * 0.06), '360d', 1)); // 6% in 360 days
     stakes.push(createStake(Math.round(totalAmount * 0.58), '180d', 2)); // 58% in 180 days
-    stakes.push(createStake(Math.round(totalAmount * 0.02), '90d', 3));  // 2% in 90 days
+    stakes.push(createStake(Math.round(totalAmount * 0.02), '90d', 3)); // 2% in 90 days
   } else {
     // For smaller amounts, just create one stake with 540 days
     stakes.push(createStake(totalAmount, '540d', 0));
@@ -911,7 +966,7 @@ export const verifyRpcConnection = async (rpc: string) => {
 };
 
 export function getGMT(): number {
-  return new Date().getTimezoneOffset() / 60 * -1;
+  return (new Date().getTimezoneOffset() / 60) * -1;
 }
 
 export const verifyIfValidUrl = (url: string) => {
@@ -1009,35 +1064,29 @@ export const getCustodyByMint = async (mint: string) => {
 export const getDaysBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-}
+};
 
 export const getHoursBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
-  return Math.floor(
-    (diffTime %
-      (1000 * 60 * 60 * 24)) /
-    (1000 * 60 * 60),
-  );
-}
+  return Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+};
 
 export const getMinutesBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
-  return Math.floor(
-    (diffTime % (1000 * 60 * 60)) / (1000 * 60),
-  );
-}
+  return Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+};
 
 export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor((diffTime % (1000 * 60)) / 1000);
-}
+};
 
 export function getFullTimeDifference(date1: Date, date2: Date) {
   return {
     days: getDaysBetweenDates(date1, date2),
     hours: getHoursBetweenDates(date1, date2),
     minutes: getMinutesBetweenDates(date1, date2),
-    seconds: getSecondsBetweenDates(date1, date2)
+    seconds: getSecondsBetweenDates(date1, date2),
   };
 }
 
@@ -1102,10 +1151,15 @@ export const isValidPublicKey = (key: string) => {
 };
 
 export const calculateWeeksPassed = (startDate: Date): number => {
-  return Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
+  return Math.floor(
+    (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
+  );
 };
 
-export function formatSnapshotTimestamp(snapshot_timestamp: string[], period: string | null) {
+export function formatSnapshotTimestamp(
+  snapshot_timestamp: string[],
+  period: string | null,
+) {
   return snapshot_timestamp.map((time: string) => {
     if (period === '1d') {
       return new Date(time).toLocaleTimeString('en-US', {
@@ -1135,16 +1189,21 @@ export function formatSnapshotTimestamp(snapshot_timestamp: string[], period: st
 }
 
 // Validation function
-export const validateTPSLInputs = ({ takeProfitInput,
+export const validateTPSLInputs = ({
+  takeProfitInput,
   setTakeProfitError,
-  stopLossInput, setStopLossError, markPrice, position }: {
-    takeProfitInput: number | null,
-    setTakeProfitError?: (value: boolean) => void,
-    stopLossInput: number | null,
-    setStopLossError?: (value: boolean) => void,
-    markPrice: number | null, position: PositionExtended
-  }) => {
-
+  stopLossInput,
+  setStopLossError,
+  markPrice,
+  position,
+}: {
+  takeProfitInput: number | null;
+  setTakeProfitError?: (value: boolean) => void;
+  stopLossInput: number | null;
+  setStopLossError?: (value: boolean) => void;
+  markPrice: number | null;
+  position: PositionExtended;
+}) => {
   let isValid = true;
 
   // Validate Stop Loss
@@ -1247,8 +1306,10 @@ export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
 }
 
 // Small structure used to ease usage of top accounts
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function jupInstructionToTransactionInstruction(ix: any): TransactionInstruction {
+export function jupInstructionToTransactionInstruction(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ix: any,
+): TransactionInstruction {
   return new TransactionInstruction({
     programId: new PublicKey(ix.programId),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

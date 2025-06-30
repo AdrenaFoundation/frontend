@@ -152,6 +152,37 @@ export default function Settings({
         />
       </div>
 
+      <div className="flex flex-row mt-2 justify-between">
+        <p className="opacity-50 w-full">Disable Friend Requests</p>
+        <Switch
+          checked={settings.disableFriendReq}
+          onChange={(event) => {
+            dispatch(
+              setSettings({
+                disableFriendReq: event.target.checked,
+              }),
+            );
+
+          }}
+          size="small"
+          sx={{
+            transform: 'scale(0.7)',
+            '& .MuiSwitch-switchBase': {
+              color: '#ccc',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked': {
+              color: '#1a1a1a',
+            },
+            '& .MuiSwitch-track': {
+              backgroundColor: '#555',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              backgroundColor: '#10e1a3',
+            },
+          }}
+        />
+      </div>
+
       <div className="flex flex-row justify-between">
         <p className="opacity-50 w-full">Show fees in PnL</p>
         <Switch
