@@ -334,6 +334,7 @@ export const useChatrooms = ({
           },
           (payload: { new: Message }) => {
             const newMessage = payload.new;
+            console.log(`New message in room ${roomId}:`, newMessage);
 
             setMessages((prev) => {
               const roomMessages = prev[roomId] || [];
@@ -365,7 +366,9 @@ export const useChatrooms = ({
             }
           },
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log(`Subscription status for room ${roomId}:`, status);
+        });
 
       return () => {
         supabaseClient.removeChannel(channel);
