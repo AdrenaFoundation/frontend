@@ -230,47 +230,10 @@ export default function ClosePosition({
     await doFullClose();
   };
 
-  const amountOutUsd = useMemo(() => {
-    if (!exitPriceAndFee || !collateralMarkPrice) return null;
-    const value =
-      nativeToUi(exitPriceAndFee.amountOut, position.collateralToken.decimals) *
-      collateralMarkPrice;
-
-    return value;
-  }, [exitPriceAndFee, position.collateralToken.decimals, collateralMarkPrice]);
-
   const calculatePercentage = (percent: number) => {
-    if (!amountOutUsd) return null;
-    const value = Number(Number(amountOutUsd * percent).toFixed(2));
+    const value = Number(Number(position.sizeUsd * percent).toFixed(2));
     if (isNaN(value) || value < 0) return null;
-    verifyCustomAmount(value);
     return value;
-  };
-
-  const verifyCustomAmount = (v: number) => {
-    if (amountOutUsd && v > amountOutUsd) {
-      setErrorMsg(
-        'Custom amount cannot be greater than the net value of the position',
-      );
-      return;
-    }
-
-    if (v < 0) {
-      setErrorMsg('Custom amount cannot be negative');
-      return;
-    }
-
-    if (
-      collateralMarkPrice &&
-      position.collateralAmount * collateralMarkPrice - v < 10
-    ) {
-      setErrorMsg(
-        'Minimum amount of collateral posted to open a position is not met',
-      );
-      return;
-    }
-
-    setErrorMsg(null);
   };
 
   const handleCustomAmount = (v: number | null) => {
@@ -281,14 +244,16 @@ export default function ClosePosition({
       return;
     }
 
-    setCustomAmount(v);
-
-    verifyCustomAmount(v);
-
-    if (amountOutUsd) {
-      const percent = v / amountOutUsd;
-      setActivePercent(percent);
+    if (v > position.sizeUsd) {
+      setCustomAmount(position.sizeUsd);
+      setActivePercent(1);
+      return;
     }
+
+    setCustomAmount(v);
+    const percent = v / position.sizeUsd;
+    setActivePercent(percent);
+
   };
 
   const rightArrowElement = (
@@ -312,43 +277,14 @@ export default function ClosePosition({
         <div className="flex gap-4 flex-col sm:flex-row">
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
-              <div className="flex flex-row items-center justify-between mb-2">
-                <p className="text-sm font-boldy">Amount</p>
-
-                <div
-                  className="opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                  onClick={() => {
-                    if (collateralMarkPrice && amountOutUsd) {
-                      const maxAmount =
-                        position.collateralAmount * collateralMarkPrice - 10
-                      setCustomAmount(maxAmount);
-                      verifyCustomAmount(maxAmount);
-                      setActivePercent(maxAmount / amountOutUsd);
-                    }
-                  }}
-                >
-                  <FormatNumber
-                    nb={
-                      collateralMarkPrice
-                        ? position.collateralAmount * collateralMarkPrice - 10
-                        : null
-                    }
-                    format="currency"
-                    className="ml-auto text-xs"
-                    prefix={'partial max: '}
-                    isDecimalDimmed={false}
-                    precision={2}
-                    minimumFractionDigits={2}
-                  />
-                </div>
-              </div>
+              <p className="text-sm font-boldy mb-2">Amount</p>
 
               <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center justify-between border bg-third rounded-lg p-3">
                   <InputNumber
                     value={customAmount ?? undefined}
                     placeholder={
-                      amountOutUsd ? amountOutUsd.toFixed(2) : '0.00'
+                      position.sizeUsd.toFixed(2)
                     }
                     className="bg-transparent font-mono border-0 !text-xl outline-none w-full"
                     onChange={handleCustomAmount}
@@ -403,14 +339,12 @@ export default function ClosePosition({
                   />
 
                   <FormatNumber
-                    nb={
-                      customAmount ??
-                      (exitPriceAndFee &&
-                        collateralMarkPrice &&
-                        nativeToUi(
-                          exitPriceAndFee.amountOut,
-                          position.collateralToken.decimals,
-                        ) * collateralMarkPrice)
+                    nb={exitPriceAndFee &&
+                      collateralMarkPrice &&
+                      nativeToUi(
+                        exitPriceAndFee.amountOut,
+                        position.collateralToken.decimals,
+                      ) * collateralMarkPrice * (activePercent ?? 1)
                     }
                     format="currency"
                     className="text-txtfade text-sm"
