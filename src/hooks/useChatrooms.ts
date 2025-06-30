@@ -353,6 +353,8 @@ export const useChatrooms = ({
 
   // Subscribe to the current chatroom's messages
   useEffect(() => {
+    if (currentChatroomId === 0) return;
+
     const channel = supabaseClient
       .channel('realtime:messages')
       .on(
