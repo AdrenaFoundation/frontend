@@ -323,7 +323,7 @@ export const useChatrooms = ({
     (roomId: number) => {
       console.log(`Subscribing to messages for room ${roomId}`);
       const channel = supabaseClient
-        .channel(`chatroom-${roomId}`)
+        .channel('realtime:messages')
         .on(
           'postgres_changes',
           {
