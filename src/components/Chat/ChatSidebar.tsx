@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
-import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES, TEAMS_MAPPING } from '@/constant';
+import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES } from '@/constant';
 import { Chatroom } from '@/pages/api/chatrooms';
 import { FriendRequest } from '@/pages/api/friend_requests';
 import { UserProfileMetadata } from '@/types';
