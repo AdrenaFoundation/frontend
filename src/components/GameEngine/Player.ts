@@ -57,8 +57,8 @@ class Player {
       .setVisible(showNickname);
   }
 
-  public addInteractiveObjects(ObjectTiless: ObjectTiles[]): void {
-    this.interactiveObjects.push(...ObjectTiless);
+  public addInteractiveObjects(objectTiles: ObjectTiles[]): void {
+    this.interactiveObjects.push(...objectTiles);
   }
 
   protected createAnimations(): void {
@@ -151,8 +151,8 @@ class Player {
       this.sprite.y - this.sprite.height / 2 + 30,
     );
 
-    const facingOneObject = this.interactiveObjects.find((ObjectTiles) => {
-      return this.isFacingObject(ObjectTiles);
+    const facingOneObject = this.interactiveObjects.find((objectTiles) => {
+      return this.isFacingObject(objectTiles);
     });
 
     if (!facingOneObject) {
@@ -161,7 +161,7 @@ class Player {
     } else if (this.facedObject !== facingOneObject) {
       this.facedObject?.handleInteractionOff();
       this.facedObject = facingOneObject;
-      this.facedObject.handleInteractionOn();
+      this.facedObject.handleInteractionOn({});
     } else if (this.facedObject) {
       this.facedObject.updateInteraction();
     }
@@ -181,36 +181,6 @@ class Player {
 
   public addCollider(object: Phaser.GameObjects.GameObject): void {
     this.scene.physics.add.collider(this.sprite, object);
-  }
-
-  public isNearObject(
-    ObjectTiles: ObjectTiles,
-    interactionDistance: number,
-  ): boolean {
-    const { x: playerX, y: playerY } = this.getPosition();
-
-    const {
-      x: offsetX,
-      y: offsetY,
-      scaleX,
-      scaleY,
-      tilemap: { tileWidth, tileHeight },
-    } = ObjectTiles.tilemapService.getObjectsLayer();
-
-    return ObjectTiles.tiles.some(({ pixelX: objectX, pixelY: objectY }) => {
-      // Apply scale to object center
-      const centerX = (objectX + tileWidth / 2) * scaleX + offsetX;
-      const centerY = (objectY + tileHeight / 2) * scaleY + offsetY;
-
-      const distance = Phaser.Math.Distance.Between(
-        playerX,
-        playerY,
-        centerX,
-        centerY,
-      );
-
-      return distance <= interactionDistance;
-    });
   }
 
   public isFacingObject(object: ObjectTiles): boolean {
@@ -235,28 +205,20 @@ class Player {
         break;
     }
 
-    const {
-      x: layerOffsetX,
-      y: layerOffsetY,
-      scaleX,
-      scaleY,
-    } = object.tilemapService.getObjectsLayer();
+    const obj = object.tiledObject;
+    if (!obj || obj.x == null || obj.y == null) return false;
 
-    return object.tiles.some((tile) => {
-      const worldX =
-        tile.pixelX * scaleX + layerOffsetX + (tile.width * scaleX) / 2;
-      const worldY =
-        tile.pixelY * scaleY + layerOffsetY + (tile.height * scaleY) / 2;
+    const centerX = obj.x + (obj.width ?? 0) / 2;
+    const centerY = obj.y + (obj.height ?? 0) / 2;
 
-      const distance = Phaser.Math.Distance.Between(
-        facingX,
-        facingY,
-        worldX,
-        worldY,
-      );
+    const distance = Phaser.Math.Distance.Between(
+      facingX,
+      facingY,
+      centerX,
+      centerY,
+    );
 
-      return distance <= tileSize / 2;
-    });
+    return distance <= tileSize;
   }
 }
 

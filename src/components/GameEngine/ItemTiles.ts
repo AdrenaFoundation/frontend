@@ -25,7 +25,12 @@ class ItemTiles extends ObjectTiles {
     offsetY?: number;
     depth?: number;
   }) {
-    super({ tiles: [], tilemapService: scene.getTilemapService(), scene });
+    super({
+      tiles: [],
+      tiledObject: null,
+      tilemapService: scene.getTilemapService(),
+      scene,
+    });
 
     this.scene = scene;
     this.tilesetItemIds = this.tilemapService.getTilesIdsFromIdProperty(itemId);

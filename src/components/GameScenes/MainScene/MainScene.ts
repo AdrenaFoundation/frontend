@@ -1,10 +1,9 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
 import BedTiles from '@/components/GameEngine/BedTiles';
 import CrateTiles from '@/components/GameEngine/CrateTiles';
-import GearTiles from '@/components/GameEngine/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/InventoryTableTiles';
 import KennelButtonTiles from '@/components/GameEngine/KennelButtonTiles';
-import ObjectTiles from '@/components/GameEngine/ObjectTiles';
+import UiObjectTiles from '@/components/GameEngine/ObjectTiles';
 import PlantTiles from '@/components/GameEngine/PlantTiles';
 import UIService from '@/components/GameScenes/MainScene/UIService';
 
@@ -26,8 +25,8 @@ const config: MainSceneConfig = {
   assets: {
     external: {
       tiles:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-kmN3pq8g1Hry2iGmBZja2aiawblaWP.png',
-      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-I4j1XE9e2mYCqRx7aBXcE2c60Rlu0p.tmj',
+        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-ShC2gB5oCTKeL4G8xql65LilQiITd8.png',
+      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-CZHoZz3Jc3pJe0rEK6r8SnLnHmPZ6o.tmj',
       player:
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tyro-5KW3g9ugXSgLEHY3pKwyzR7bu2x6yV.png',
     },
@@ -58,48 +57,45 @@ export class MainScene extends AScene<MainSceneConfig> {
     await super.create();
 
     const inventoryTables =
-      await this.getTilemapService().getObjectsByPrefix<InventoryTableTiles>(
+      this.getTilemapService().getObjectsByType<InventoryTableTiles>(
         'table',
         InventoryTableTiles,
+        true,
       );
 
-    inventoryTables.slice(0, inventoryTables.length - 2).forEach((table, i) => {
-      if (i % 2 === 0) {
-        table.addItemOnTable({
-          itemId: '2',
-          ctor: CrateTiles,
-        });
-      } else {
-        table.addItemOnTable({
-          itemId: '1',
-          ctor: GearTiles,
-        });
-      }
+    inventoryTables.forEach((table, i) => {
+      table.addItemOnTable({
+        itemId: (i + 1).toString(),
+        ctor: CrateTiles,
+      });
     });
 
-    inventoryTables.slice(inventoryTables.length - 2).forEach((table) => {
-      table.lock();
-    });
+    // inventoryTables.slice(inventoryTables.length - 2).forEach((table) => {
+    //   table.lock();
+    // });
 
-    const pets = await this.getTilemapService().getObjectsByPrefix(
+    const pets = this.getTilemapService().getObjectsByType(
       'pet',
-      ObjectTiles,
+      UiObjectTiles,
     );
 
-    const buttons = await this.getTilemapService().getObjectsByPrefix(
-      'button',
+    const buttons = this.getTilemapService().getObjectsByType(
+      'kennel',
       KennelButtonTiles,
     );
 
-    const beds = await this.getTilemapService().getObjectsByPrefix(
-      'bed',
-      BedTiles,
-    );
+    const beds = this.getTilemapService().getObjectsByType('bed', BedTiles);
 
-    const plants = await this.getTilemapService().getObjectsByPrefix(
+    const plants = this.getTilemapService().getObjectsByType(
       'plant',
       PlantTiles,
     );
+
+    console.log('inventoryTables', inventoryTables);
+    console.log('pets', pets);
+    console.log('buttons', buttons);
+    console.log('beds', beds);
+    console.log('plants', plants);
 
     this.player?.addInteractiveObjects(inventoryTables);
     this.player?.addInteractiveObjects(pets);

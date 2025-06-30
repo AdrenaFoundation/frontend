@@ -10,7 +10,8 @@ class TilemapService {
 
   public readonly floor: Phaser.Tilemaps.TilemapLayer | null = null;
   public readonly walls: Phaser.Tilemaps.TilemapLayer | null = null;
-  public readonly objects: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly uiObjects: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly objects: Phaser.Tilemaps.ObjectLayer | null = null;
   public readonly doors: Phaser.Tilemaps.TilemapLayer | null = null;
 
   // Layer used to dynamically place manual objects like items, etc.
@@ -40,6 +41,8 @@ class TilemapService {
     const offsetX = 0;
     const offsetY = 0;
 
+    this.objects = this.map.getObjectLayer('objects');
+
     this.floor = this.map.createLayer('floor', this.tiles, offsetX, offsetY);
     this.walls = this.map.createLayer('walls', this.tiles, offsetX, offsetY);
     this.doors = this.map.createLayer('doors', this.tiles, offsetX, offsetY);
@@ -52,8 +55,8 @@ class TilemapService {
       offsetY,
     );
 
-    this.objects = this.map.createLayer(
-      'objects',
+    this.uiObjects = this.map.createLayer(
+      'uiobjects',
       this.tiles,
       offsetX,
       offsetY,
@@ -61,17 +64,16 @@ class TilemapService {
 
     // Set collision for everything in walls layer and objects layer
     this.walls?.setCollisionByExclusion([-1]);
-    this.objects?.setCollisionByExclusion([-1]);
 
     // Set depth for layers
     this.floor?.setDepth(0);
     this.walls?.setDepth(1);
-    this.objects?.setDepth(2);
+    this.uiObjects?.setDepth(2);
     this.doors?.setDepth(3);
     this.manual?.setDepth(4);
   }
 
-  public getObjectsLayer(): Phaser.Tilemaps.TilemapLayer {
+  public getObjectsLayer(): Phaser.Tilemaps.ObjectLayer {
     if (!this.objects) {
       throw new Error(
         'Objects layer not found. Please create the tilemap first.',
@@ -110,125 +112,135 @@ class TilemapService {
     return result;
   }
 
-  /**
-   * Groups directional object tiles (top/right/bottom) based on a shared name prefix and sequential pattern.
-   *
-   * Example: for prefix "table", tiles should be named:
-   *  - table-1/6
-   *  - table-2/6
-   *  - ...
-   *  - table-6/6
-   * They must be placed in order, connected in a straight line (top, right, or bottom).
-   */
-  public getObjectsByPrefix<T extends ObjectTiles>(
-    prefix: string,
+  public getObjectsByType<T extends ObjectTiles>(
+    type: string,
     ctor: new (p: {
       tiles: Phaser.Tilemaps.Tile[];
+      tiledObject: Phaser.Types.Tilemaps.TiledObject;
       tilemapService: TilemapService;
       scene: AScene;
     }) => T,
-  ): Promise<T[]> {
-    return new Promise((resolve) => {
-      if (!this.objects) {
-        resolve([]);
-        return;
+    // Use true if there is a property `sort` in the Tiled object
+    sort: boolean = false,
+  ): T[] {
+    if (!this.objects || !this.uiObjects) {
+      return [];
+    }
+
+    const matchedObjects = this.objects.objects.map((obj) => {
+      if (obj.name !== type) return null;
+
+      const tiles = this.getTilesInsideObject({
+        object: obj,
+        layer: this.uiObjects!,
+        tileSize: this.tiles?.tileWidth ?? 16,
+      });
+
+      return new ctor({
+        tiledObject: obj,
+        tiles,
+        tilemapService: this,
+        scene: this.scene,
+      });
+    });
+
+    const objects = matchedObjects.filter((obj) => obj !== null) as T[];
+
+    if (!sort) {
+      return objects;
+    }
+
+    return objects.sort((a, b) => {
+      if (!a.tiledObject || !b.tiledObject) {
+        return 0; // If either object is missing, do not sort
       }
 
-      const width = this.objects.width;
-      const height = this.objects.height;
-      const visited = new Set<string>();
-      const result: T[] = [];
+      const aSort = a.tiledObject.properties.find(
+        (p: { name: string; value: number }) => p.name === 'sort',
+      ).value;
 
-      // Helper: creates a unique key for a tile position
-      const key = (x: number, y: number) => `${x},${y}`;
+      const bSort = b.tiledObject.properties.find(
+        (p: { name: string; value: number }) => p.name === 'sort',
+      ).value;
 
-      // Helper: safely get a tile at a position
-      const getTile = (x: number, y: number) => {
-        if (x < 0 || y < 0 || x >= width || y >= height) return null;
-        if (!this.objects) return null;
-
-        return this.objects.getTileAt(x, y);
-      };
-
-      // Iterate over every tile in the map
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const start = getTile(x, y);
-          if (!start?.properties?.name || visited.has(key(x, y))) continue;
-
-          // Match tiles like `prefix-1/N` to identify starting tiles
-          const match = start.properties.name.match(
-            new RegExp(`^${prefix}-1/(\\d+)$`),
-          );
-          if (!match) continue;
-
-          const total = parseInt(match[1], 10); // number of parts for this object
-          const group: Phaser.Tilemaps.Tile[] = [start];
-          visited.add(key(x, y)); // mark the starting tile as visited
-
-          let cx = x;
-          let cy = y;
-          let valid = true;
-
-          // Try to find the next N-1 parts
-          for (let i = 2; i <= total; i++) {
-            let next: Phaser.Tilemaps.Tile | null = null;
-
-            // Only check forward directions (top, right, bottom)
-            const directions = [
-              { dx: 1, dy: 0 }, // right
-              { dx: 0, dy: -1 }, // top
-              { dx: 0, dy: 1 }, // bottom
-            ];
-
-            // Try each direction to find the expected next tile
-            for (const { dx, dy } of directions) {
-              const nx = cx + dx;
-              const ny = cy + dy;
-              const ntile = getTile(nx, ny);
-              if (
-                ntile &&
-                ntile.properties?.name === `${prefix}-${i}/${total}` &&
-                !visited.has(key(nx, ny))
-              ) {
-                next = ntile;
-                cx = nx;
-                cy = ny;
-                break;
-              }
-            }
-
-            // If no next tile found, this group is invalid
-            if (!next) {
-              valid = false;
-              break;
-            }
-
-            group.push(next);
-            visited.add(key(cx, cy));
-          }
-
-          // Only add the group if all parts were found and it's complete
-          if (valid && group.length === total) {
-            result.push(
-              new ctor({
-                tiles: group,
-                tilemapService: this,
-                scene: this.scene,
-              }),
-            );
-          }
-        }
-      }
-
-      resolve(result);
+      return aSort - bSort;
     });
   }
 
+  protected getTilesInsideObject({
+    object,
+    layer,
+    tileSize,
+  }: {
+    object: Phaser.Types.Tilemaps.TiledObject;
+    layer: Phaser.Tilemaps.TilemapLayer;
+    tileSize: number;
+  }): Phaser.Tilemaps.Tile[] {
+    const tiles: Phaser.Tilemaps.Tile[] = [];
+
+    const objX = object.x ?? 0;
+    const objY = object.y ?? 0;
+    const objW = object.width ?? 0;
+    const objH = object.height ?? 0;
+
+    const startX = Math.floor(objX / tileSize);
+    const startY = Math.floor(objY / tileSize);
+    const endX = Math.ceil((objX + objW) / tileSize);
+    const endY = Math.ceil((objY + objH) / tileSize);
+
+    for (let tx = startX; tx < endX; tx++) {
+      for (let ty = startY; ty < endY; ty++) {
+        const tile = layer.getTileAt(tx, ty);
+        if (!tile) continue;
+
+        const tileX = tile.pixelX;
+        const tileY = tile.pixelY;
+
+        const tileRect = {
+          x: tileX,
+          y: tileY,
+          width: tile.width,
+          height: tile.height,
+        };
+
+        const objectRect = {
+          x: objX,
+          y: objY,
+          width: objW,
+          height: objH,
+        };
+
+        const intersects =
+          tileRect.x < objectRect.x + objectRect.width &&
+          tileRect.x + tileRect.width > objectRect.x &&
+          tileRect.y < objectRect.y + objectRect.height &&
+          tileRect.y + tileRect.height > objectRect.y;
+
+        if (intersects) {
+          tiles.push(tile);
+        }
+      }
+    }
+
+    return tiles;
+  }
+
   public addColliderWithPlayer(player: Player): void {
-    if (this.walls && this.objects) {
+    if (this.walls) {
       player.addCollider(this.walls);
-      player.addCollider(this.objects);
+    }
+
+    if (this.objects) {
+      this.objects.objects.forEach((obj) => {
+        if (!obj.x || !obj.y || !obj.width || !obj.height) return;
+
+        const body = this.scene.physics.add
+          .staticImage(obj.x + obj.width / 2, obj.y + obj.height / 2, '')
+          .setSize(obj.width, obj.height)
+          .setVisible(false); // hide collision object
+
+        player.addCollider(body);
+      });
     }
   }
 }

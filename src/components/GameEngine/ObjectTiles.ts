@@ -1,24 +1,27 @@
 import { AScene } from './AScene';
 import TilemapService from './TilemapService';
 
-// One object is one or multiple consecutive tiles
 class ObjectTiles {
   public readonly tiles: Phaser.Tilemaps.Tile[];
   public readonly tilemapService: TilemapService;
   public readonly scene: AScene;
+  public readonly tiledObject: Phaser.Types.Tilemaps.TiledObject | null;
 
   constructor({
     tiles,
+    tiledObject,
     tilemapService,
     scene,
   }: {
     tiles: Phaser.Tilemaps.Tile[];
+    tiledObject: Phaser.Types.Tilemaps.TiledObject | null;
     tilemapService: TilemapService;
     scene: AScene;
   }) {
     this.tiles = tiles;
     this.tilemapService = tilemapService;
     this.scene = scene;
+    this.tiledObject = tiledObject;
   }
 
   // i.e 0xff0000
@@ -36,6 +39,16 @@ class ObjectTiles {
 
   // Return the world pixel coordinates of the center of the object
   public getCenter(): Phaser.Math.Vector2 {
+    // Use the tiledObject if available, otherwise calculate from tiles
+    if (this.tiledObject) {
+      const x = this.tiledObject.x ?? 0;
+      const y = this.tiledObject.y ?? 0;
+      const width = this.tiledObject.width ?? 0;
+      const height = this.tiledObject.height ?? 0;
+
+      return new Phaser.Math.Vector2(x + width / 2, y + height / 2);
+    }
+
     if (this.tiles.length === 0) {
       return new Phaser.Math.Vector2(0, 0);
     }
