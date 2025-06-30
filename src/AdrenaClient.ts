@@ -1729,7 +1729,7 @@ export class AdrenaClient {
   }: {
     position: PositionExtended;
     price: BN;
-    percentage: BN;
+    percentage?: BN;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1817,7 +1817,7 @@ export class AdrenaClient {
   }: {
     position: PositionExtended;
     price: BN;
-    percentage: BN;
+    percentage?: BN;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1966,7 +1966,7 @@ export class AdrenaClient {
     expectedCollateralAmountOut: BN;
     swapSlippage: number;
     notification?: MultiStepNotification;
-    percentage: BN;
+    percentage?: BN;
     getTransactionLogs?: (
       logs: {
         raw: string[];
@@ -2062,7 +2062,7 @@ export class AdrenaClient {
     swapSlippage: number;
     redeemToken: Token;
     notification?: MultiStepNotification;
-    percentage: BN;
+    percentage?: BN;
     getTransactionLogs?: (
       logs: {
         raw: string[];
