@@ -8,7 +8,7 @@ import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
 import { setSettings } from '@/actions/settingsActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
-import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
+import InputNumber from '@/components/common/InputNumber/InputNumber';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ALTERNATIVE_SWAP_TOKENS, USD_DECIMALS } from '@/constant';
@@ -26,11 +26,10 @@ import {
   nativeToUi,
 } from '@/utils';
 
+import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
-import TradingInput from '../TradingInput/TradingInput';
-import InputNumber from '@/components/common/InputNumber/InputNumber';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -216,6 +215,7 @@ export default function ClosePosition({
     }
   }, [
     markPrice,
+    activePercent,
     position,
     redeemToken,
     swapSlippage,
