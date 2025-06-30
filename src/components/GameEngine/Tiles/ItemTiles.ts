@@ -16,7 +16,7 @@ class ItemTiles extends ObjectTiles {
     // Adapt theses offsets depending on where you want to place the item
     offsetX,
     offsetY = 0.5,
-    depth = 10,
+    depth = 3,
   }: {
     scene: AScene;
     itemId: string;

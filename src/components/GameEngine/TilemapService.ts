@@ -69,8 +69,8 @@ class TilemapService {
     this.floor?.setDepth(0);
     this.walls?.setDepth(1);
     this.uiObjects?.setDepth(2);
-    this.doors?.setDepth(3);
-    this.manual?.setDepth(4);
+    this.manual?.setDepth(3);
+    this.doors?.setDepth(30);
   }
 
   public getObjectsLayer(): Phaser.Tilemaps.ObjectLayer {

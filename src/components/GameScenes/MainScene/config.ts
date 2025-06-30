@@ -53,15 +53,14 @@ export default {
     },
   },
 
-  // Animation settings
   animations: {
     frameRate: 10,
     repeat: -1,
     playerFrames: {
-      left: { start: 5, end: 6 },
-      right: { start: 0, end: 1 },
-      up: { start: 8, end: 8 },
-      down: { start: 3, end: 3 },
+      up: { start: 1, end: 2 }, // walking back
+      down: { start: 4, end: 5 }, // walking forward
+      right: { start: 6, end: 7 }, // side walk (left-facing frames)
+      left: { start: 6, end: 7 }, // same frames as right, but flipX
     },
   },
 

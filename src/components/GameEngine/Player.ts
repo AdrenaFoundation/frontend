@@ -33,12 +33,15 @@ class Player {
       'player',
       1,
     );
-    this.sprite.setScale(0.5); // Adjust from 32px player to 16px
+    this.sprite.setScale(1);
 
     // Make the user in between the tiles layers (see TilemapService)
-    this.sprite.setDepth(2.5);
+    this.sprite.setDepth(4);
 
     this.sprite.setCollideWorldBounds(true);
+
+    // only bottom part collides
+    this.sprite.setSize(16, 16).setOffset(0, 16);
 
     if (!scene.input?.keyboard) {
       throw new Error('Keyboard input is not available');
@@ -60,46 +63,45 @@ class Player {
   public addInteractiveObjects(objectTiles: ObjectTiles[]): void {
     this.interactiveObjects.push(...objectTiles);
   }
-
   protected createAnimations(): void {
     const { animations } = config;
 
     this.scene.anims.create({
-      key: 'left',
-      frames: this.scene.anims.generateFrameNumbers(
-        'player',
-        animations.playerFrames.left,
-      ),
+      key: 'down', // FRONT-facing
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 3,
+        end: 5,
+      }),
+      frameRate: animations.frameRate,
+      repeat: animations.repeat,
+    });
+
+    this.scene.anims.create({
+      key: 'up', // BACK-facing
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 0,
+        end: 2,
+      }),
       frameRate: animations.frameRate,
       repeat: animations.repeat,
     });
 
     this.scene.anims.create({
       key: 'right',
-      frames: this.scene.anims.generateFrameNumbers(
-        'player',
-        animations.playerFrames.right,
-      ),
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 6,
+        end: 7,
+      }),
       frameRate: animations.frameRate,
       repeat: animations.repeat,
     });
 
     this.scene.anims.create({
-      key: 'up',
-      frames: this.scene.anims.generateFrameNumbers(
-        'player',
-        animations.playerFrames.up,
-      ),
-      frameRate: animations.frameRate,
-      repeat: animations.repeat,
-    });
-
-    this.scene.anims.create({
-      key: 'down',
-      frames: this.scene.anims.generateFrameNumbers(
-        'player',
-        animations.playerFrames.down,
-      ),
+      key: 'left',
+      frames: this.scene.anims.generateFrameNumbers('player', {
+        start: 6,
+        end: 7,
+      }),
       frameRate: animations.frameRate,
       repeat: animations.repeat,
     });
@@ -110,37 +112,43 @@ class Player {
     {
       this.sprite.setVelocity(0);
 
-      // Handle movement based on controls
+      const movingHorizontally =
+        this.cursors.left.isDown || this.cursors.right.isDown;
+      const movingVertically =
+        this.cursors.up.isDown || this.cursors.down.isDown;
+
+      // --- Horizontal Movement ---
       if (this.cursors.left.isDown) {
         this.sprite.setVelocityX(-config.playerSpeed);
-        this.sprite.anims.play('left', true);
+        this.sprite.setFlipX(false); // ← now NO flip = facing left
+        this.sprite.anims.play('right', true); // we still use right frames
         this.facingDirection = 'left';
       } else if (this.cursors.right.isDown) {
         this.sprite.setVelocityX(config.playerSpeed);
+        this.sprite.setFlipX(true); // ← now YES flip = facing right
         this.sprite.anims.play('right', true);
         this.facingDirection = 'right';
       }
+
+      // --- Vertical Movement ---
       if (this.cursors.up.isDown) {
         this.sprite.setVelocityY(-config.playerSpeed);
-        if (!this.cursors.left.isDown && !this.cursors.right.isDown) {
+        if (!movingHorizontally) {
+          this.sprite.setFlipX(false);
           this.sprite.anims.play('up', true);
         }
         this.facingDirection = 'up';
       } else if (this.cursors.down.isDown) {
         this.sprite.setVelocityY(config.playerSpeed);
-        if (!this.cursors.left.isDown && !this.cursors.right.isDown) {
+        if (!movingHorizontally) {
+          this.sprite.setFlipX(false);
           this.sprite.anims.play('down', true);
         }
         this.facingDirection = 'down';
       }
 
-      // If no keys are pressed, stop animations
-      if (
-        !this.cursors.left.isDown &&
-        !this.cursors.right.isDown &&
-        !this.cursors.up.isDown &&
-        !this.cursors.down.isDown
-      ) {
+      // --- Idle ---
+      if (!movingHorizontally && !movingVertically) {
         this.sprite.anims.stop();
       }
     }

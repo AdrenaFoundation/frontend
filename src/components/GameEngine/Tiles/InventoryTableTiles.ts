@@ -48,7 +48,7 @@ class InventoryTableTiles extends ObjectTiles {
     itemId,
     offsetX,
     offsetY,
-    depth = 10,
+    depth = 3,
     ctor,
   }: {
     itemId: string;

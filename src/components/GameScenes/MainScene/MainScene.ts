@@ -17,7 +17,7 @@ type MainSceneConfig = ASceneConfig & {
 };
 
 const config: MainSceneConfig = {
-  playerFrameWidth: 32,
+  playerFrameWidth: 16,
   playerFrameHeight: 32,
 
   playerStartingPosition: new Phaser.Math.Vector2(300, 300),
@@ -28,7 +28,7 @@ const config: MainSceneConfig = {
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-ShC2gB5oCTKeL4G8xql65LilQiITd8.png',
       map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-CZHoZz3Jc3pJe0rEK6r8SnLnHmPZ6o.tmj',
       player:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tyro-5KW3g9ugXSgLEHY3pKwyzR7bu2x6yV.png',
+        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/player-fB1bF09qB6Jk1WleesORLY4aBdvN56.png',
     },
   },
 };
