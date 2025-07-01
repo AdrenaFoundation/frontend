@@ -13,6 +13,7 @@ import useLiveCount from '@/hooks/useLiveCount';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserProfileMetadata } from '@/types';
 
+// import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Modal from '../common/Modal/Modal';
 import ViewProfileModal from '../pages/profile/ViewProfileModal';
 import Chat from './Chat';
@@ -43,10 +44,6 @@ function ChatContainer({
   });
 
   const {
-    setMessages,
-    markAsRead,
-    setChatrooms,
-    setTotalUnreadCount,
     chatrooms,
     messages,
     sendMessage,
@@ -121,16 +118,10 @@ function ChatContainer({
     ).length;
 
     const totalUnreadMessages = chatrooms.reduce((acc, room) => {
-      if (
-        userProfilesMap?.[walletAddress].team !== 0 &&
-        [
-          GENERAL_CHAT_ROOM_ID,
-          userProfilesMap[walletAddress].team === 1 ? 2 : 1,
-        ].includes(room.id)
-      ) {
+      if (userProfilesMap?.[walletAddress].team !== 0 && [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1 ? 2 : 1].includes(room.id)) {
         return acc + room.unread_count;
       } else {
-        return acc;
+        return acc
       }
     }, 0);
 
@@ -199,11 +190,6 @@ function ChatContainer({
                 isSendingMessage={loading.sendMessage}
                 isChatroomsOpen={isChatroomsOpen}
                 isMobile={isMobile}
-                currentChatroomId={currentChatroomId}
-                setMessages={setMessages}
-                markAsRead={markAsRead}
-                setChatrooms={setChatrooms}
-                setTotalUnreadCount={setTotalUnreadCount}
               />
             )
           ) : null}
