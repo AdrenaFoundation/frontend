@@ -4,7 +4,7 @@ import React, { memo, ReactNode, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import collapseIcon from '@/../public/images/collapse-all.svg';
-import { PROFILE_PICTURES } from '@/constant';
+import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES } from '@/constant';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useChatrooms from '@/hooks/useChatrooms';
 import useChatWindowResize from '@/hooks/useChatWindowResize';
@@ -51,9 +51,7 @@ function ChatContainer({
     currentChatroomId,
     fetchChatrooms,
     loading,
-  } = useChatrooms({
-    walletAddress,
-  });
+  } = useChatrooms();
 
   const { connectedUsers } = useLiveCount({
     walletAddress,
@@ -91,7 +89,7 @@ function ChatContainer({
       >,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allUserProfilesMetadata]);
+  }, [connectedUsers, allUserProfilesMetadata]);
 
   useEffect(() => {
     // need this for initial animation for messages to work properly
@@ -118,11 +116,15 @@ function ChatContainer({
     ).length;
 
     const totalUnreadMessages = chatrooms.reduce((acc, room) => {
-      return acc + room.unread_count;
+      if (userProfilesMap?.[walletAddress].team !== 0 && [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1 ? 2 : 1].includes(room.id)) {
+        return acc + room.unread_count;
+      } else {
+        return acc
+      }
     }, 0);
 
     setTotalNotifications(totalPendingRequests + totalUnreadMessages);
-  }, [friendRequests, walletAddress, chatrooms]);
+  }, [friendRequests, userProfilesMap, walletAddress, chatrooms]);
 
   return (
     <>
