@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { RealtimeChannel } from '@supabase/supabase-js';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
+import { useSelector } from '@/store/store';
 import supabaseClient from '@/supabase';
-
-interface UseChatroomsProps {
-  walletAddress: string | null;
-  initialChatroomId?: number;
-}
 
 interface UseChatroomsReturn {
   loading: {
@@ -38,15 +35,12 @@ interface UseChatroomsReturn {
   ) => Promise<ReadReceipt | null>;
   fetchUnreadCounts: () => Promise<number>;
   setCurrentChatroom: (roomId: number) => void;
-
-  subscribeToMessages: (roomId: number) => () => void;
-  subscribeToReadReceipts: () => () => void;
 }
 
-export const useChatrooms = ({
-  walletAddress,
-  initialChatroomId,
-}: UseChatroomsProps): UseChatroomsReturn => {
+export const useChatrooms = (): UseChatroomsReturn => {
+  const { wallet } = useSelector((state) => state.walletState);
+  const walletAddress = wallet?.walletAddress || null;
+
   const [loading, setLoading] = useState({
     chatrooms: false,
     messages: false,
@@ -62,9 +56,12 @@ export const useChatrooms = ({
     Record<number, boolean>
   >({});
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
-  const [currentChatroomId, setCurrentChatroomId] = useState<number>(
-    initialChatroomId || 0,
-  );
+  const currentChatroomId = useRef<number>(0);
+
+  // Use a ref to store the channel instance
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  // Track if we've already subscribed
+  const hasSubscribed = useRef(false);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -72,6 +69,7 @@ export const useChatrooms = ({
 
   const fetchChatrooms = useCallback(
     async (isRefresh = false): Promise<Chatroom[]> => {
+      console.log('Fetching chatrooms...', walletAddress);
       if (!walletAddress) {
         setError('User public key is required');
         setChatrooms([]);
@@ -187,7 +185,7 @@ export const useChatrooms = ({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            chatroom_id: currentChatroomId,
+            chatroom_id: currentChatroomId.current,
             text,
             wallet: walletAddress,
             username: '', // TODO: Replace with actual username if available
@@ -210,7 +208,7 @@ export const useChatrooms = ({
         setLoading((prev) => ({ ...prev, sendMessage: false }));
       }
     },
-    [clearError, walletAddress, currentChatroomId],
+    [clearError, walletAddress],
   );
 
   // Fetch unread counts for all chatrooms
@@ -304,7 +302,7 @@ export const useChatrooms = ({
   );
 
   const setCurrentChatroom = async (roomId: number) => {
-    setCurrentChatroomId(roomId);
+    currentChatroomId.current = roomId;
 
     let roomMessages = messages[roomId] || [];
 
@@ -318,97 +316,6 @@ export const useChatrooms = ({
     }
   };
 
-  // Subscribe to new messages for a specific room
-  const subscribeToMessages = useCallback(
-    (roomId: number) => {
-      console.log(`Subscribing to messages for room ${roomId}`);
-      const channel = supabaseClient
-        .channel('realtime:messages')
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'messages',
-            filter: `room_id=eq.${roomId}`,
-          },
-          (payload: { new: Message }) => {
-            const newMessage = payload.new;
-
-            setMessages((prev) => {
-              const roomMessages = prev[roomId] || [];
-              // Avoid duplicate messages
-              if (roomMessages.some((m) => m.id === newMessage.id)) {
-                return prev;
-              }
-              console.log(`Adding new message to room ${roomId}:`, newMessage, {
-                roomMessages,
-                prev,
-              });
-              // Add the new message
-              return {
-                ...prev,
-                [roomId]: [...roomMessages, newMessage],
-              };
-            });
-
-            if (currentChatroomId === roomId && walletAddress) {
-              markAsRead(roomId, newMessage.id);
-            } else {
-              setChatrooms((prev) =>
-                prev.map((room) =>
-                  room.id === roomId
-                    ? {
-                        ...room,
-                        unread_count: (room.unread_count || 0) + 1,
-                        last_message: newMessage,
-                      }
-                    : room,
-                ),
-              );
-              setTotalUnreadCount((prev) => prev + 1);
-            }
-          },
-        )
-        .subscribe((status) => {
-          console.log(`Subscription status for room ${roomId}:`, status);
-        });
-
-      return () => {
-        supabaseClient.removeChannel(channel);
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [walletAddress, markAsRead],
-  );
-
-  // Subscribe to read receipt changes
-  const subscribeToReadReceipts = useCallback(() => {
-    if (!walletAddress) return () => {};
-
-    const channel = supabaseClient
-      .channel(`read-receipts-${walletAddress}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'read_receipts',
-          filter: `user_pubkey=eq.${walletAddress}`,
-        },
-        () => {
-          // Refresh unread counts when read receipts change
-          fetchUnreadCounts();
-        },
-      )
-      .subscribe();
-
-    // Return unsubscribe function
-    return () => {
-      supabaseClient.removeChannel(channel);
-    };
-  }, [walletAddress, fetchUnreadCounts]);
-
   // Initial fetch of chatrooms and unread counts
   useEffect(() => {
     if (walletAddress) {
@@ -420,25 +327,80 @@ export const useChatrooms = ({
 
   // Subscribe to the current chatroom's messages
   useEffect(() => {
-    const unsubscribe = subscribeToMessages(currentChatroomId);
-    return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChatroomId]);
+    if (hasSubscribed.current) return;
 
-  // Subscribe to read receipts
-  useEffect(() => {
-    if (walletAddress) {
-      const unsubscribe = subscribeToReadReceipts();
-      return unsubscribe;
-    }
-  }, [walletAddress, subscribeToReadReceipts]);
+    const channel = supabaseClient
+      .channel('global_chat_messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload: { new: Message }) => {
+          const newMessage = payload.new;
+          const messageRoomId = newMessage.room_id;
+
+          if (messageRoomId === currentChatroomId.current) {
+            setMessages((prev) => {
+              const roomMessages = prev[messageRoomId] || [];
+
+              if (roomMessages.some((m) => m.id === newMessage.id)) {
+                return prev;
+              }
+
+              return {
+                ...prev,
+                [messageRoomId]: [...roomMessages, newMessage],
+              };
+            });
+
+            // Handle read status
+            if (walletAddress) {
+              markAsRead(messageRoomId, newMessage.id);
+            }
+          } else {
+            setChatrooms((prev) =>
+              prev.map((room) =>
+                room.id === messageRoomId
+                  ? {
+                      ...room,
+                      unread_count: (room.unread_count || 0) + 1,
+                      last_message: newMessage,
+                    }
+                  : room,
+              ),
+            );
+            setTotalUnreadCount((prev) => prev + 1);
+          }
+        },
+      )
+      .subscribe((status, err) => {
+        console.log(`Global subscription status:`, status, err);
+      });
+
+    // Store the channel reference
+    channelRef.current = channel;
+    // Mark as subscribed
+    hasSubscribed.current = true;
+
+    return () => {
+      console.log('Cleaning up Supabase subscription');
+      if (channelRef.current) {
+        supabaseClient.removeChannel(channelRef.current);
+        hasSubscribed.current = false;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     loading,
     error,
     chatrooms,
     messages,
-    currentChatroomId,
+    currentChatroomId: currentChatroomId.current,
     hasMoreMessages,
     totalUnreadCount,
 
@@ -448,9 +410,6 @@ export const useChatrooms = ({
     markAsRead,
     fetchUnreadCounts,
     setCurrentChatroom,
-
-    subscribeToMessages,
-    subscribeToReadReceipts,
   };
 };
 
