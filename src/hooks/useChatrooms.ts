@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { RealtimeChannel } from '@supabase/supabase-js';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
+import { useSelector } from '@/store/store';
 import supabaseClient from '@/supabase';
-
-interface UseChatroomsProps {
-  walletAddress: string | null;
-  initialChatroomId?: number;
-}
 
 interface UseChatroomsReturn {
   loading: {
@@ -40,10 +37,10 @@ interface UseChatroomsReturn {
   setCurrentChatroom: (roomId: number) => void;
 }
 
-export const useChatrooms = ({
-  walletAddress,
-  initialChatroomId,
-}: UseChatroomsProps): UseChatroomsReturn => {
+export const useChatrooms = (): UseChatroomsReturn => {
+  const { wallet } = useSelector((state) => state.walletState);
+  const walletAddress = wallet?.walletAddress || null;
+
   const [loading, setLoading] = useState({
     chatrooms: false,
     messages: false,
@@ -59,9 +56,12 @@ export const useChatrooms = ({
     Record<number, boolean>
   >({});
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
-  const [currentChatroomId, setCurrentChatroomId] = useState<number>(
-    initialChatroomId || 0,
-  );
+  const currentChatroomId = useRef<number>(0);
+
+  // Use a ref to store the channel instance
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  // Track if we've already subscribed
+  const hasSubscribed = useRef(false);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -69,6 +69,7 @@ export const useChatrooms = ({
 
   const fetchChatrooms = useCallback(
     async (isRefresh = false): Promise<Chatroom[]> => {
+      console.log('Fetching chatrooms...', walletAddress);
       if (!walletAddress) {
         setError('User public key is required');
         setChatrooms([]);
@@ -184,7 +185,7 @@ export const useChatrooms = ({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            chatroom_id: currentChatroomId,
+            chatroom_id: currentChatroomId.current,
             text,
             wallet: walletAddress,
             username: '', // TODO: Replace with actual username if available
@@ -207,7 +208,7 @@ export const useChatrooms = ({
         setLoading((prev) => ({ ...prev, sendMessage: false }));
       }
     },
-    [clearError, walletAddress, currentChatroomId],
+    [clearError, walletAddress],
   );
 
   // Fetch unread counts for all chatrooms
@@ -301,7 +302,7 @@ export const useChatrooms = ({
   );
 
   const setCurrentChatroom = async (roomId: number) => {
-    setCurrentChatroomId(roomId);
+    currentChatroomId.current = roomId;
 
     let roomMessages = messages[roomId] || [];
 
@@ -353,46 +354,60 @@ export const useChatrooms = ({
 
   // Subscribe to the current chatroom's messages
   useEffect(() => {
+    if (hasSubscribed.current) return;
+
     const channel = supabaseClient
-      .channel('realtime:messages')
+      .channel('global_chat_messages')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `room_id=eq.${currentChatroomId}`,
         },
         (payload: { new: Message }) => {
           const newMessage = payload.new;
+          const messageRoomId = newMessage.room_id;
 
-          setMessages((prev) => {
-            const roomMessages = prev[currentChatroomId] || [];
-            // Avoid duplicate messages
-            if (roomMessages.some((m) => m.id === newMessage.id)) {
-              return prev;
-            }
-            console.log(
-              `Adding new message to room ${currentChatroomId}:`,
-              newMessage,
-              {
+          console.log(
+            `Current messages in room ${messageRoomId}:`,
+            currentChatroomId.current,
+          );
+          // Only process messages for rooms we care about
+          if (messageRoomId === currentChatroomId.current) {
+            // This message belongs to the current room, add it to state
+            setMessages((prev) => {
+              const roomMessages = prev[messageRoomId] || [];
+              console.log(
+                `Current messages in room ${messageRoomId}:`,
                 roomMessages,
-                prev,
-              },
-            );
-            // Add the new message
-            return {
-              ...prev,
-              [currentChatroomId]: [...roomMessages, newMessage],
-            };
-          });
+              );
 
-          if (walletAddress) {
-            markAsRead(currentChatroomId, newMessage.id);
+              // Avoid duplicate messages
+              if (roomMessages.some((m) => m.id === newMessage.id)) {
+                return prev;
+              }
+
+              console.log(
+                `Adding new message to room ${messageRoomId}:`,
+                newMessage,
+              );
+
+              // Add the new message
+              return {
+                ...prev,
+                [messageRoomId]: [...roomMessages, newMessage],
+              };
+            });
+
+            // Handle read status
+            if (walletAddress) {
+              markAsRead(messageRoomId, newMessage.id);
+            }
           } else {
             setChatrooms((prev) =>
               prev.map((room) =>
-                room.id === currentChatroomId
+                room.id === messageRoomId
                   ? {
                       ...room,
                       unread_count: (room.unread_count || 0) + 1,
@@ -406,18 +421,23 @@ export const useChatrooms = ({
         },
       )
       .subscribe((status, err) => {
-        console.log(
-          `Subscription status for room ${currentChatroomId}:`,
-          status,
-          err,
-        );
+        console.log(`Global subscription status:`, status, err);
       });
 
+    // Store the channel reference
+    channelRef.current = channel;
+    // Mark as subscribed
+    hasSubscribed.current = true;
+
     return () => {
-      supabaseClient.removeChannel(channel);
+      console.log('Cleaning up Supabase subscription');
+      if (channelRef.current) {
+        supabaseClient.removeChannel(channelRef.current);
+        hasSubscribed.current = false;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChatroomId]);
+  }, []);
 
   // // Subscribe to read receipts
   // useEffect(() => {
@@ -432,7 +452,7 @@ export const useChatrooms = ({
     error,
     chatrooms,
     messages,
-    currentChatroomId,
+    currentChatroomId: currentChatroomId.current,
     hasMoreMessages,
     totalUnreadCount,
 

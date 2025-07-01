@@ -51,9 +51,7 @@ function ChatContainer({
     currentChatroomId,
     fetchChatrooms,
     loading,
-  } = useChatrooms({
-    walletAddress,
-  });
+  } = useChatrooms();
 
   const { connectedUsers } = useLiveCount({
     walletAddress,
