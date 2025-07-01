@@ -316,33 +316,6 @@ export const useChatrooms = (): UseChatroomsReturn => {
     }
   };
 
-  // Subscribe to read receipt changes
-  // const subscribeToReadReceipts = useCallback(() => {
-  //   if (!walletAddress) return () => {};
-
-  //   const channel = supabaseClient
-  //     .channel(`read-receipts-${walletAddress}`)
-  //     .on(
-  //       'postgres_changes',
-  //       {
-  //         event: '*',
-  //         schema: 'public',
-  //         table: 'read_receipts',
-  //         filter: `user_pubkey=eq.${walletAddress}`,
-  //       },
-  //       () => {
-  //         // Refresh unread counts when read receipts change
-  //         fetchUnreadCounts();
-  //       },
-  //     )
-  //     .subscribe();
-
-  //   // Return unsubscribe function
-  //   return () => {
-  //     supabaseClient.removeChannel(channel);
-  //   };
-  // }, [walletAddress, fetchUnreadCounts]);
-
   // Initial fetch of chatrooms and unread counts
   useEffect(() => {
     if (walletAddress) {
@@ -369,31 +342,14 @@ export const useChatrooms = (): UseChatroomsReturn => {
           const newMessage = payload.new;
           const messageRoomId = newMessage.room_id;
 
-          console.log(
-            `Current messages in room ${messageRoomId}:`,
-            currentChatroomId.current,
-          );
-          // Only process messages for rooms we care about
           if (messageRoomId === currentChatroomId.current) {
-            // This message belongs to the current room, add it to state
             setMessages((prev) => {
               const roomMessages = prev[messageRoomId] || [];
-              console.log(
-                `Current messages in room ${messageRoomId}:`,
-                roomMessages,
-              );
 
-              // Avoid duplicate messages
               if (roomMessages.some((m) => m.id === newMessage.id)) {
                 return prev;
               }
 
-              console.log(
-                `Adding new message to room ${messageRoomId}:`,
-                newMessage,
-              );
-
-              // Add the new message
               return {
                 ...prev,
                 [messageRoomId]: [...roomMessages, newMessage],
@@ -438,14 +394,6 @@ export const useChatrooms = (): UseChatroomsReturn => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // // Subscribe to read receipts
-  // useEffect(() => {
-  //   if (walletAddress) {
-  //     const unsubscribe = subscribeToReadReceipts();
-  //     return unsubscribe;
-  //   }
-  // }, [walletAddress]);
 
   return {
     loading,
