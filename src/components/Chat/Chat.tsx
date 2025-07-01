@@ -3,14 +3,14 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { PROFILE_PICTURES } from '@/constant';
-import { Chatroom, Message } from '@/pages/api/chatrooms';
+import { UseChatroomsReturn } from '@/hooks/useChatrooms';
+import { Message } from '@/pages/api/chatrooms';
+import supabaseClient from '@/supabase';
 import { UserProfileMetadata } from '@/types';
 import { generateColorFromString, getAbbrevWalletAddress } from '@/utils';
 
 import Button from '../common/Button/Button';
 import Loader from '../Loader/Loader';
-import supabaseClient from '@/supabase';
-import { UseChatroomsReturn } from '@/hooks/useChatrooms';
 
 function Chat({
   walletAddress,
@@ -65,19 +65,6 @@ function Chat({
     }
   }, [firstRender, messages]);
 
-  const getProfileByWallet = (wallet: string) => {
-    return (
-      userProfilesMap?.[wallet] ?? {
-        nickname: getAbbrevWalletAddress(wallet),
-        profilePictureUrl: PROFILE_PICTURES[0],
-        isOnline: false,
-      }
-    );
-  };
-
-  if (isMobile && !isChatroomsOpen) {
-    return null;
-  }
   // Subscribe to the current chatroom's messages
   useEffect(() => {
     const channel = supabaseClient
@@ -149,6 +136,20 @@ function Chat({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChatroomId]);
+
+  const getProfileByWallet = (wallet: string) => {
+    return (
+      userProfilesMap?.[wallet] ?? {
+        nickname: getAbbrevWalletAddress(wallet),
+        profilePictureUrl: PROFILE_PICTURES[0],
+        isOnline: false,
+      }
+    );
+  };
+
+  if (isMobile && !isChatroomsOpen) {
+    return null;
+  }
 
   return (
     <div className="relative flex flex-col border-t w-full h-full bg-[#040D14]">

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
-import supabaseClient from '@/supabase';
+// import supabaseClient from '@/supabase';
 
 interface UseChatroomsProps {
   walletAddress: string | null;
