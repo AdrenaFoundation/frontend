@@ -3,12 +3,14 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { PROFILE_PICTURES } from '@/constant';
-import { Message } from '@/pages/api/chatrooms';
+import { Chatroom, Message } from '@/pages/api/chatrooms';
 import { UserProfileMetadata } from '@/types';
 import { generateColorFromString, getAbbrevWalletAddress } from '@/utils';
 
 import Button from '../common/Button/Button';
 import Loader from '../Loader/Loader';
+import supabaseClient from '@/supabase';
+import { UseChatroomsReturn } from '@/hooks/useChatrooms';
 
 function Chat({
   walletAddress,
@@ -21,6 +23,11 @@ function Chat({
   isSendingMessage,
   isChatroomsOpen,
   isMobile,
+  currentChatroomId,
+  setMessages,
+  markAsRead,
+  setChatrooms,
+  setTotalUnreadCount,
 
 }: {
   walletAddress: string | null;
@@ -36,6 +43,11 @@ function Chat({
   isSendingMessage: boolean;
   isChatroomsOpen?: boolean;
   isMobile: boolean;
+  currentChatroomId: number;
+  setMessages: UseChatroomsReturn['setMessages']
+  markAsRead: UseChatroomsReturn['markAsRead'];
+  setChatrooms: UseChatroomsReturn['setChatrooms'];
+  setTotalUnreadCount: UseChatroomsReturn['setTotalUnreadCount'];
 }) {
   const [msg, setMsg] = useState('');
 
@@ -66,6 +78,77 @@ function Chat({
   if (isMobile && !isChatroomsOpen) {
     return null;
   }
+  // Subscribe to the current chatroom's messages
+  useEffect(() => {
+    const channel = supabaseClient
+      .channel(`realtime:messages:${currentChatroomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `room_id=eq.${currentChatroomId}`,
+        },
+        (payload: { new: Message }) => {
+          const newMessage = payload.new;
+
+          //@ts-expect-error will fix type
+          setMessages((prev) => {
+            const roomMessages = prev[currentChatroomId] || [];
+            // Avoid duplicate messages
+            //@ts-expect-error will fix type
+            if (roomMessages.some((m) => m.id === newMessage.id)) {
+              return prev;
+            }
+            console.log(
+              `Adding new message to room ${currentChatroomId}:`,
+              newMessage,
+              {
+                roomMessages,
+                prev,
+              },
+            );
+            // Add the new message
+            return {
+              ...prev,
+              [currentChatroomId]: [...roomMessages, newMessage],
+            };
+          });
+
+          if (walletAddress) {
+            markAsRead(currentChatroomId, newMessage.id);
+          } else {
+            //@ts-expect-error will fix type
+            setChatrooms((prev) =>
+              //@ts-expect-error will fix type
+              prev.map((room) =>
+                room.id === currentChatroomId
+                  ? {
+                    ...room,
+                    unread_count: (room.unread_count || 0) + 1,
+                    last_message: newMessage,
+                  }
+                  : room,
+              ),
+            );
+            //@ts-expect-error will fix type
+            setTotalUnreadCount((prev) => prev + 1);
+          }
+        },
+      )
+      .subscribe((status) => {
+        console.log(
+          `Subscription status for room ${currentChatroomId}:`,
+          status,
+        );
+      });
+
+    return () => {
+      supabaseClient.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChatroomId]);
 
   return (
     <div className="relative flex flex-col border-t w-full h-full bg-[#040D14]">
