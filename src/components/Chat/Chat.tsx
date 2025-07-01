@@ -129,6 +129,9 @@ function Chat({
           `Subscription status for room ${currentChatroomId}:`,
           status,
         );
+        if (status !== 'SUBSCRIBED') {
+          console.error('Failed to subscribe to realtime channel:', status);
+        }
       });
 
     return () => {
