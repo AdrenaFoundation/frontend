@@ -17,7 +17,7 @@ import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS, USD_DECIMALS } from '@/constan
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { findATAAddressSync, getJupiterApiQuote, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi, uiToNative } from '@/utils';
+import { findATAAddressSync, getJupiterApiQuote, getTokenAccountBalanceNullable, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
@@ -189,7 +189,12 @@ export default function EditPositionCollateral({
         throw new Error('Connection is not available');
       }
 
-      const ataBalanceBefore = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
+
+      const ataBalanceBefore = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
+
+      if (!ataBalanceBefore) {
+        throw new Error('Failed to fetch ATA balance');
+      }
 
       await (position.side === 'long'
         ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
@@ -202,9 +207,14 @@ export default function EditPositionCollateral({
         });
 
       if (doJupiterSwapOnWithdraw) {
-        const ataBalanceAfter = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
+        const ataBalanceAfter = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
 
-        const diff = new BN(ataBalanceAfter).sub(new BN(ataBalanceBefore));
+        if (!ataBalanceAfter) {
+          console.error('Failed to fetch ATA balance after removal');
+          return;
+        }
+
+        const diff = ataBalanceAfter.sub(ataBalanceBefore);
 
         const notification =
           MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
