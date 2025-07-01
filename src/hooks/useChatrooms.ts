@@ -405,10 +405,11 @@ export const useChatrooms = ({
           }
         },
       )
-      .subscribe((status) => {
+      .subscribe((status, err) => {
         console.log(
           `Subscription status for room ${currentChatroomId}:`,
           status,
+          err,
         );
       });
 
