@@ -135,7 +135,7 @@ function Chat({
       supabaseClient.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChatroomId]);
+  }, [supabaseClient, currentChatroomId]);
 
   const getProfileByWallet = (wallet: string) => {
     return (

@@ -13,8 +13,6 @@ import useLiveCount from '@/hooks/useLiveCount';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserProfileMetadata } from '@/types';
 
-import LiveIcon from '../common/LiveIcon/LiveIcon';
-// import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Modal from '../common/Modal/Modal';
 import ViewProfileModal from '../pages/profile/ViewProfileModal';
 import Chat from './Chat';
@@ -60,8 +58,7 @@ function ChatContainer({
     walletAddress,
   });
 
-  const { connectedCount, connectedUsers, loading: loadingLiveCount } = useLiveCount({
-    roomId: currentChatroomId,
+  const { connectedUsers } = useLiveCount({
     walletAddress,
     refreshInterval: 30000, // refresh every 30 seconds
   });
@@ -97,7 +94,7 @@ function ChatContainer({
       >,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectedUsers, connectedCount, allUserProfilesMetadata]);
+  }, [connectedUsers, allUserProfilesMetadata]);
 
   useEffect(() => {
     // need this for initial animation for messages to work properly
@@ -175,8 +172,6 @@ function ChatContainer({
               totalNotifications={totalNotifications}
               setIsChatroomsOpen={setIsChatroomsOpen}
               isMobile={isMobile}
-              connectedCount={connectedCount}
-              loadingLiveCount={loadingLiveCount}
             />
           ) : null}
 
@@ -244,8 +239,6 @@ function ChatTitle({
   totalNotifications,
   setIsChatroomsOpen,
   isMobile,
-  connectedCount,
-  loadingLiveCount,
 }: {
   isLoading: boolean;
   title: string;
@@ -255,8 +248,6 @@ function ChatTitle({
   totalNotifications: number | null;
   setIsChatroomsOpen: (open: boolean) => void;
   isMobile?: boolean;
-  connectedCount: number;
-  loadingLiveCount: boolean;
 }) {
   return (
     <div
@@ -278,14 +269,14 @@ function ChatTitle({
           {friendRequestWindowOpen ? 'Friend Requests' : `${title}`}{' '}
         </p>
 
-        {!friendRequestWindowOpen ? (
+        {/* {!friendRequestWindowOpen ? (
           <div className="flex flex-row gap-1 font-mono items-center">
             <LiveIcon className="h-[0.6250em] w-[0.6250em]" />{' '}
             <p className="text-sm opacity-50">
               {loadingLiveCount ? null : connectedCount}
             </p>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
 
       <div className="flex flex-row items-center gap-2">
