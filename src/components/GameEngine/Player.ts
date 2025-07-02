@@ -63,6 +63,7 @@ class Player {
   public addInteractiveObjects(objectTiles: ObjectTiles[]): void {
     this.interactiveObjects.push(...objectTiles);
   }
+
   protected createAnimations(): void {
     const { animations } = config;
 
@@ -160,6 +161,10 @@ class Player {
     );
 
     const facingOneObject = this.interactiveObjects.find((objectTiles) => {
+      if (objectTiles.getVisible() === false) {
+        return false; // Skip invisible objects
+      }
+
       return this.isFacingObject(objectTiles);
     });
 
@@ -187,8 +192,29 @@ class Player {
     this.sprite.setPosition(x, y);
   }
 
+  public playerColliders: {
+    collider: Phaser.Physics.Arcade.Collider;
+    object: Phaser.GameObjects.GameObject;
+  }[] = [];
+
   public addCollider(object: Phaser.GameObjects.GameObject): void {
-    this.scene.physics.add.collider(this.sprite, object);
+    this.playerColliders.push({
+      collider: this.scene.physics.add.collider(this.sprite, object),
+      object,
+    });
+  }
+
+  public removeCollider(object: Phaser.GameObjects.GameObject): void {
+    this.playerColliders = this.playerColliders.filter(
+      ({ object: obj, collider }) => {
+        if (obj === object) {
+          collider.destroy();
+          return false; // Remove this collider
+        }
+
+        return true; // Keep this collider
+      },
+    );
   }
 
   public isFacingObject(object: ObjectTiles): boolean {

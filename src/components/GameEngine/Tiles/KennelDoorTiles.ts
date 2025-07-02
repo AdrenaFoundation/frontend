@@ -1,10 +1,10 @@
-import { KennelButtonInfoWindow } from '../KennelButtonInfoWindow';
+import { KennelDoorInfoWindow } from '../Windows/KennelDoorInfoWindow';
 import ObjectTiles from './ObjectTiles';
 
-export default class KennelButtonTiles extends ObjectTiles {
-  private infoWindow: KennelButtonInfoWindow | null = null;
+export default class KennelDoorTiles extends ObjectTiles {
+  protected infoWindow: KennelDoorInfoWindow | null = null;
 
-  private interactionKey: Phaser.Input.Keyboard.Key | null = null;
+  protected interactionKey: Phaser.Input.Keyboard.Key | null = null;
 
   public override handleInteractionOn() {
     if (this.infoWindow) {
@@ -13,7 +13,7 @@ export default class KennelButtonTiles extends ObjectTiles {
 
     // Set info window
     {
-      this.infoWindow = new KennelButtonInfoWindow({
+      this.infoWindow = new KennelDoorInfoWindow({
         scene: this.scene,
         variant: 'full', // or 'slots'
       });

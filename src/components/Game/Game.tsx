@@ -1,140 +1,22 @@
-import { AUTO, Game as PhaserGame, Scene, Types } from 'phaser';
-import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js';
-import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
+import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
-import { useSelector } from '@/store/store';
+// Dynamically import to avoid SSR issues
+const GameContainer = dynamic(() => import('..//GameEngine/GameContainer').then(mod => mod.default), { ssr: false });
 
-import { EventBus } from '../GameEngine/EventBus';
-import { MainScene } from '../GameScenes/MainScene/MainScene';
-import WalletConnection from '../WalletAdapter/WalletConnection';
-
-export interface IRefGame {
-    game: PhaserGame | null;
-    scene: Scene | null;
-}
-
-interface IProps {
-    currentActiveScene?: (scene: Scene) => void;
-    config?: Types.Core.GameConfig;
+export default function Game({
+    className = '',
+}: {
     className?: string;
-}
-
-// Find out more information about the Game Config at:
-// https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
-const DEFAULT_CONFIG: Types.Core.GameConfig = {
-    type: AUTO,
-    parent: 'game-container',
-    backgroundColor: '#0c1119',
-    pixelArt: true,
-    roundPixels: true,
-    scene: [MainScene],
-    plugins: {
-        scene: [
-            {
-                key: 'rexUI',
-                plugin: RexUIPlugin,
-                mapping: 'rexUI',
-            },
-        ],
-    },
-    dom: {
-        createContainer: true,
-    },
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { x: 0, y: 0 },
-            debug: false,
-        },
-    },
-    render: {
-        pixelArt: true,
-        antialias: false,
-    },
-};
-
-export const Game = forwardRef<IRefGame, IProps>(function Game({
-    currentActiveScene,
-    className,
-    config = DEFAULT_CONFIG,
-}, ref) {
-    const game = useRef<PhaserGame | null>(null);
-    const wallet = useSelector((state) => state.walletState.wallet);
-
-    useLayoutEffect(() => {
-        if (game.current === null) {
-            const parent = document.getElementById("game-container");
-            const width = parent?.clientWidth || window.innerWidth;
-            const height = parent?.clientHeight || window.innerHeight;
-
-            game.current = new PhaserGame({
-                ...config,
-                width,
-                height,
-                parent: "game-container",
-            });
-
-            if (typeof ref === 'function') {
-                ref({
-                    game: game.current,
-                    scene: null,
-                });
-            } else if (ref !== null) {
-                ref.current = {
-                    game: game.current,
-                    scene: null,
-                };
-            }
-
-        }
-
-        return () => {
-            if (game.current) {
-                game.current.destroy(true);
-
-                if (game.current !== null) {
-                    game.current = null;
-                }
-            }
-        }
-    }, [config, ref]);
-
-    useEffect(() => {
-        EventBus.on('scene-ready', (scene: Scene) => {
-            if (currentActiveScene && typeof currentActiveScene === 'function') {
-                currentActiveScene(scene);
-            }
-
-            if (typeof ref === 'function') {
-                ref({
-                    game: game.current,
-                    scene,
-                });
-            } else if (ref) {
-                ref.current = {
-                    game: game.current,
-                    scene,
-                };
-            }
-
-        });
-
-        return () => {
-            EventBus.removeListener('scene-ready');
-        };
-    }, [currentActiveScene, ref]);
-
-    if (!wallet) {
-        return (
-            <div className="flex flex-col items-center justify-center h-screen">
-                <WalletConnection />
-            </div>
-        );
-    }
+}) {
+    //
+    // Handle the game logic here
+    //
 
     return (
-        <div id="game-container" className={className}></div>
+        <div className={twMerge("w-full h-full flex flex-col items-center justify-center", className)}>
+            <GameContainer className="max-w-[61em] w-full h-[20em] max-h-full" />
+        </div>
     );
-});
-
-export default Game;
+};

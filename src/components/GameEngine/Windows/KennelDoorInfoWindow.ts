@@ -2,7 +2,7 @@ import { Scene } from 'phaser';
 
 type Variant = 'full' | 'slots';
 
-export class KennelButtonInfoWindow extends Phaser.GameObjects.Container {
+export class KennelDoorInfoWindow extends Phaser.GameObjects.Container {
   private bg: Phaser.GameObjects.Rectangle;
 
   constructor({ scene, variant }: { scene: Scene; variant: Variant }) {

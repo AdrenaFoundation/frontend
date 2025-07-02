@@ -14,6 +14,11 @@ class TilemapService {
   public readonly objects: Phaser.Tilemaps.ObjectLayer | null = null;
   public readonly doors: Phaser.Tilemaps.TilemapLayer | null = null;
 
+  private objectColliders: {
+    tiledObject: Phaser.Types.Tilemaps.TiledObject;
+    body: Phaser.Physics.Arcade.Image;
+  }[] = [];
+
   // Layer used to dynamically place manual objects like items, etc.
   public readonly manual: Phaser.Tilemaps.TilemapLayer | null = null;
 
@@ -225,23 +230,64 @@ class TilemapService {
     return tiles;
   }
 
-  public addColliderWithPlayer(player: Player): void {
+  public addCollidersWithPlayer(player: Player): void {
     if (this.walls) {
       player.addCollider(this.walls);
     }
 
     if (this.objects) {
       this.objects.objects.forEach((obj) => {
-        if (!obj.x || !obj.y || !obj.width || !obj.height) return;
-
-        const body = this.scene.physics.add
-          .staticImage(obj.x + obj.width / 2, obj.y + obj.height / 2, '')
-          .setSize(obj.width, obj.height)
-          .setVisible(false); // hide collision object
-
-        player.addCollider(body);
+        this.addColliderWithPlayer(player, obj);
       });
     }
+  }
+
+  public addColliderWithPlayer(
+    player: Player,
+    tiledObject: Phaser.Types.Tilemaps.TiledObject,
+  ): void {
+    if (
+      !tiledObject.x ||
+      !tiledObject.y ||
+      !tiledObject.width ||
+      !tiledObject.height
+    ) {
+      return;
+    }
+
+    const body = this.scene.physics.add
+      .staticImage(
+        tiledObject.x + tiledObject.width / 2,
+        tiledObject.y + tiledObject.height / 2,
+        '',
+      )
+      .setSize(tiledObject.width, tiledObject.height)
+      .setVisible(false); // hide collision object
+
+    this.objectColliders.push({
+      tiledObject,
+      body: body,
+    });
+
+    player.addCollider(body);
+  }
+
+  public removeColliderWithPlayer(
+    player: Player,
+    tiledObjectToRemove: Phaser.Types.Tilemaps.TiledObject,
+  ): void {
+    this.objectColliders = this.objectColliders.filter(
+      ({ tiledObject, body }) => {
+        if (tiledObject.id === tiledObjectToRemove.id) {
+          body.destroy();
+          player.removeCollider(body);
+
+          return false; // Remove this collider
+        }
+
+        return true;
+      },
+    );
   }
 }
 

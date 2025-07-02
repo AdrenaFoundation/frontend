@@ -61,7 +61,7 @@ export abstract class AScene<
       nickname: 'Orex',
     });
 
-    this.tilemapService.addColliderWithPlayer(this.player);
+    this.tilemapService.addCollidersWithPlayer(this.player);
 
     this.cameras.main.startFollow(this.player.getSprite());
 

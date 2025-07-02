@@ -1,4 +1,4 @@
-import { ItemInfoWindow } from '../ItemInfoWindow';
+import { ItemInfoWindow } from '../Windows/ItemInfoWindow';
 import ItemTiles from './ItemTiles';
 
 class GearTiles extends ItemTiles {
@@ -19,8 +19,8 @@ class GearTiles extends ItemTiles {
     {
       this.infoWindow = new ItemInfoWindow({
         scene: this.scene,
-        name: 'Sword of Devil',
-        effect: '+0.5bps of trading fee',
+        name: this.itemName,
+        effect: this.itemEffect ?? '',
         hint: '[E] to equip',
       });
 
@@ -28,7 +28,7 @@ class GearTiles extends ItemTiles {
 
       const { width, height } = this.infoWindow.getSize();
 
-      this.infoWindow.setPosition(x - width / 2, y - 50 - height / 2);
+      this.infoWindow.setPosition(x - width / 2, y - 70 - height / 2);
 
       this.infoWindow.setVisible(true);
     }

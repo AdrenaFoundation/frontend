@@ -6,6 +6,7 @@ class ObjectTiles {
   public readonly tilemapService: TilemapService;
   public readonly scene: AScene;
   public readonly tiledObject: Phaser.Types.Tilemaps.TiledObject | null;
+  protected visible: boolean = true;
 
   constructor({
     tiles,
@@ -24,6 +25,10 @@ class ObjectTiles {
     this.tiledObject = tiledObject;
   }
 
+  public getVisible(): boolean {
+    return this.visible;
+  }
+
   // i.e 0xff0000
   public changeColor(color: number): void {
     this.tiles.forEach((tile) => {
@@ -32,9 +37,27 @@ class ObjectTiles {
   }
 
   public setVisible(v: boolean): void {
+    if (this.visible === v) {
+      return; // No change needed
+    }
+
+    this.visible = v;
+
     this.tiles.forEach((tile) => {
       tile.setVisible(v);
     });
+
+    const player = this.scene.getPlayer();
+
+    if (!player || !this.tiledObject) {
+      return;
+    }
+
+    if (v === true) {
+      this.tilemapService.addColliderWithPlayer(player, this.tiledObject);
+    } else {
+      this.tilemapService.removeColliderWithPlayer(player, this.tiledObject);
+    }
   }
 
   // Return the world pixel coordinates of the center of the object

@@ -16,45 +16,39 @@ export class ItemInfoWindow extends Phaser.GameObjects.Container {
   }) {
     super(scene);
 
-    const width = 180;
+    const width = 220;
     const padding = 10;
     let currentY = padding;
 
-    const nameLabel = scene.add.text(padding, currentY, 'Name: ', {
+    const nameLabel = scene.add.text(padding, currentY, 'Name', {
       fontSize: '12px',
       color: '#FFFF00',
     });
 
-    const nameValue = scene.add.text(
-      nameLabel.x + nameLabel.width,
-      currentY,
-      name,
-      {
-        fontSize: '12px',
-        color: '#FFFFFF',
-        wordWrap: { width: width - padding * 2 - nameLabel.width },
-      },
-    );
+    currentY += nameLabel.height + 5;
 
-    currentY += Math.max(nameLabel.height, nameValue.height) + 4;
+    const nameValue = scene.add.text(padding, currentY, name, {
+      fontSize: '12px',
+      color: '#FFFFFF',
+      wordWrap: { width: width - padding * 2 },
+    });
 
-    const effectLabel = scene.add.text(padding, currentY, 'Effect: ', {
+    currentY += nameValue.height + 10;
+
+    const effectLabel = scene.add.text(padding, currentY, 'Effect', {
       fontSize: '12px',
       color: '#FFFF00',
     });
 
-    const effectValue = scene.add.text(
-      effectLabel.x + effectLabel.width,
-      currentY,
-      effect,
-      {
-        fontSize: '12px',
-        color: '#FFFFFF',
-        wordWrap: { width: width - padding * 2 - effectLabel.width },
-      },
-    );
+    currentY += effectLabel.height + 5;
 
-    currentY += Math.max(effectLabel.height, effectValue.height) + 6;
+    const effectValue = scene.add.text(padding, currentY, effect, {
+      fontSize: '12px',
+      color: '#FFFFFF',
+      wordWrap: { width: width - padding * 2 },
+    });
+
+    currentY += effectValue.height + 10;
 
     const separator = scene.add
       .rectangle(padding, currentY, width - padding * 2, 1, 0xaaaaaa)
@@ -65,6 +59,7 @@ export class ItemInfoWindow extends Phaser.GameObjects.Container {
     const hintText = scene.add.text(padding, currentY, hint, {
       fontSize: '11px',
       color: '#aaaaaa',
+      wordWrap: { width: width - padding * 2 },
     });
 
     currentY += hintText.height + padding;

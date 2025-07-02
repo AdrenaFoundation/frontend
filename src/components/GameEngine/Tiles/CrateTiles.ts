@@ -1,4 +1,4 @@
-import { CrateInfoWindow } from '../CrateInfoWindow';
+import { CrateInfoWindow } from '../Windows/CrateInfoWindow';
 import ItemTiles from './ItemTiles';
 
 class CrateTiles extends ItemTiles {

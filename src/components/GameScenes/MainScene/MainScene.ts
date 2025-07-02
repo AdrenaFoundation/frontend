@@ -1,11 +1,38 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
 import BedTiles from '@/components/GameEngine/Tiles/BedTiles';
-import CrateTiles from '@/components/GameEngine/Tiles/CrateTiles';
+import GearTiles from '@/components/GameEngine/Tiles/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/Tiles/InventoryTableTiles';
-import KennelButtonTiles from '@/components/GameEngine/Tiles/KennelButtonTiles';
-import ObjectTiles from '@/components/GameEngine/Tiles/ObjectTiles';
+import ItemTiles from '@/components/GameEngine/Tiles/ItemTiles';
+import KennelDoorTiles from '@/components/GameEngine/Tiles/KennelDoorTiles';
+import PetTiles from '@/components/GameEngine/Tiles/PetTiles';
 import PlantTiles from '@/components/GameEngine/Tiles/PlantTiles';
-import UIService from '@/components/GameScenes/MainScene/UIService';
+
+const level = 16;
+
+const unlockedKennel = true;
+const unlockedPets = 10;
+
+// MOCKUP of user inventory, initialized with 18 items
+const inventory = [
+  1, // Inventory slot 1
+  3, // Inventory slot 2
+  6, // Inventory slot 3
+  0, // Inventory slot 4
+  4, // Inventory slot 5
+  0, // Inventory slot 6
+  0, // Equipped Weapon
+  0, // Equipped Torso
+  0, // Equipped Neural Implant
+  9, // Inventory slot 7 - Unlocked at level 14
+  12, // Inventory slot 8 - Unlocked at level 14
+  0, // Inventory slot 9 - Unlocked at level 18
+  16, // Inventory slot 10 - Unlocked at level 18
+  0, // Inventory slot 11 - Unlocked at level 22
+  0, // Inventory slot 12 - Unlocked at level 22
+  0, // TBD
+  0, // TBD
+  0, // TBD
+];
 
 type MainSceneConfig = ASceneConfig & {
   assets: {
@@ -26,7 +53,7 @@ const config: MainSceneConfig = {
     external: {
       tiles:
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-ShC2gB5oCTKeL4G8xql65LilQiITd8.png',
-      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-CZHoZz3Jc3pJe0rEK6r8SnLnHmPZ6o.tmj',
+      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-VoNa4IFpsdaaYmq3Zv2u2rLzkWTlFd.tmj',
       player:
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/player-fB1bF09qB6Jk1WleesORLY4aBdvN56.png',
     },
@@ -34,15 +61,21 @@ const config: MainSceneConfig = {
 };
 
 export class MainScene extends AScene<MainSceneConfig> {
-  protected uiService: UIService;
+  public inventoryTables: InventoryTableTiles[] = [];
+  public pets: PetTiles[] = [];
+  public kennelDoor: KennelDoorTiles | null = null;
+  public bed: BedTiles | null = null;
+  public plant: PlantTiles | null = null;
+
+  public itemsOnTables: {
+    [key: string]: ItemTiles;
+  } = {};
 
   constructor() {
     super({
       name: 'Main',
       config,
     });
-
-    this.uiService = new UIService(this);
   }
 
   protected override handleResize(gameSize: Phaser.Structs.Size): void {
@@ -56,49 +89,126 @@ export class MainScene extends AScene<MainSceneConfig> {
   public override async create() {
     await super.create();
 
-    const inventoryTables =
-      this.getTilemapService().getObjectsByType<InventoryTableTiles>(
-        'table',
-        InventoryTableTiles,
-        true,
-      );
-
-    inventoryTables.forEach((table, i) => {
-      table.addItemOnTable({
-        itemId: (i + 1).toString(),
-        ctor: CrateTiles,
-      });
-    });
+    // inventoryTables.forEach((table, i) => {
+    //   table.addItemOnTable({
+    //     itemId: (i + 1).toString(),
+    //     ctor: GearTiles,
+    //   });
+    // });
 
     // inventoryTables.slice(inventoryTables.length - 2).forEach((table) => {
     //   table.lock();
     // });
 
-    const pets = this.getTilemapService().getObjectsByType('pet', ObjectTiles);
+    // Load the objects
+    {
+      this.inventoryTables =
+        this.getTilemapService().getObjectsByType<InventoryTableTiles>(
+          'table',
+          InventoryTableTiles,
+          true,
+        );
 
-    const buttons = this.getTilemapService().getObjectsByType(
-      'kennel',
-      KennelButtonTiles,
-    );
+      this.pets = this.getTilemapService().getObjectsByType('pet', PetTiles);
 
-    const beds = this.getTilemapService().getObjectsByType('bed', BedTiles);
+      this.kennelDoor = this.getTilemapService().getObjectsByType(
+        'kennel-door',
+        KennelDoorTiles,
+      )[0];
 
-    const plants = this.getTilemapService().getObjectsByType(
-      'plant',
-      PlantTiles,
-    );
+      this.bed = this.getTilemapService().getObjectsByType('bed', BedTiles)[0];
 
-    console.log('inventoryTables', inventoryTables);
-    console.log('pets', pets);
-    console.log('buttons', buttons);
-    console.log('beds', beds);
-    console.log('plants', plants);
+      this.plant = this.getTilemapService().getObjectsByType(
+        'plant',
+        PlantTiles,
+      )[0];
+    }
 
-    this.player?.addInteractiveObjects(inventoryTables);
-    this.player?.addInteractiveObjects(pets);
-    this.player?.addInteractiveObjects(buttons);
-    this.player?.addInteractiveObjects(beds);
-    this.player?.addInteractiveObjects(plants);
+    this.kennelDoor.setVisible(!unlockedKennel);
+
+    // Setup interactions
+    {
+      this.player?.addInteractiveObjects(this.inventoryTables);
+      this.player?.addInteractiveObjects(this.pets);
+      this.player?.addInteractiveObjects([
+        this.kennelDoor,
+        this.bed,
+        this.plant,
+      ]);
+    }
+
+    this.applyInventoryTableUnlocks();
+    this.applyInventory();
+    this.applyPets();
+  }
+
+  protected applyPets() {
+    this.pets.forEach((pet, i) => {
+      if (i < unlockedPets) {
+        pet.unlock();
+      } else {
+        pet.lock();
+      }
+    });
+  }
+
+  protected applyInventoryOnOneTable(itemId: string, tableIndex: number) {
+    // If the item is already on the table, skip it
+    if (
+      this.itemsOnTables[tableIndex] &&
+      this.itemsOnTables[tableIndex].itemId === itemId
+    ) {
+      return;
+    }
+
+    // If the item is different, remove the old one
+    if (this.itemsOnTables[tableIndex]) {
+      this.inventoryTables[tableIndex].removeItemFromTable();
+    }
+
+    if (itemId === '0') {
+      return;
+    }
+
+    this.itemsOnTables[tableIndex] = this.inventoryTables[
+      tableIndex
+    ].addItemOnTable({
+      itemId,
+      ctor: GearTiles,
+    });
+  }
+
+  // Look at the inventory and add items to the tables if needed / replace items
+  protected applyInventory() {
+    // 6 first slots on the first 6 tables
+    inventory
+      .slice(0, 6)
+      .forEach((itemId, i) =>
+        this.applyInventoryOnOneTable(itemId.toString(), i),
+      );
+
+    // 6 next slots on the next 6 tables unlockable by level
+    inventory
+      .slice(10, 16)
+      .forEach((itemId, i) =>
+        this.applyInventoryOnOneTable(itemId.toString(), i + 6),
+      );
+  }
+
+  protected applyInventoryTableUnlocks() {
+    // Unlock inventory slots based on level
+    if (level < 14) {
+      this.inventoryTables[6].lock();
+      this.inventoryTables[7].lock();
+    }
+    if (level < 18) {
+      this.inventoryTables[8].lock();
+      this.inventoryTables[9].lock();
+    }
+    if (level < 22) {
+      this.inventoryTables[10].lock();
+      this.inventoryTables[11].lock();
+    }
   }
 
   protected override setupInteractionControls(): void {}

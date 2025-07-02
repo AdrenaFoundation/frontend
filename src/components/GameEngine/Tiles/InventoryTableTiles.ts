@@ -1,5 +1,5 @@
 import { AScene } from '../AScene';
-import { LockedInfoWindow } from '../LockedInfoWindow';
+import { LockedInfoWindow } from '../Windows/LockedInfoWindow';
 import ItemTiles from './ItemTiles';
 import ObjectTiles from './ObjectTiles';
 
@@ -9,6 +9,12 @@ class InventoryTableTiles extends ObjectTiles {
   private lockedWindow: LockedInfoWindow | null = null;
 
   public override handleInteractionOn() {
+    console.log('handleInteractionOn InventoryTableTiles', this.itemTiles);
+    // If no item, no interaction
+    if (!this.itemTiles) {
+      return;
+    }
+
     if (this.locked) {
       this.lockedWindow?.destroy();
 
@@ -25,7 +31,7 @@ class InventoryTableTiles extends ObjectTiles {
         center.y - 30 - height / 2,
       );
     } else {
-      this.itemTiles?.handleInteractionOn({ position: this.getCenter() });
+      this.itemTiles.handleInteractionOn({ position: this.getCenter() });
     }
   }
 
@@ -63,7 +69,7 @@ class InventoryTableTiles extends ObjectTiles {
       offsetY?: number;
       depth?: number;
     }) => T;
-  }): void {
+  }): ItemTiles {
     if (this.itemTiles) {
       this.itemTiles.destroy();
     }
@@ -80,6 +86,8 @@ class InventoryTableTiles extends ObjectTiles {
     if (this.locked) {
       this.itemTiles.setVisible(false);
     }
+
+    return this.itemTiles;
   }
 
   public removeItemFromTable(): void {

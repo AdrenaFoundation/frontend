@@ -1,4 +1,4 @@
-import { BedInfoWindow } from '../BedInfoWindow';
+import { BedInfoWindow } from '../Windows/BedInfoWindow';
 import ObjectTiles from './ObjectTiles';
 
 export default class BedTiles extends ObjectTiles {
