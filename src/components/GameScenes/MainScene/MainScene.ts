@@ -4,6 +4,7 @@ import GearTiles from '@/components/GameEngine/Tiles/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/Tiles/InventoryTableTiles';
 import ItemTiles from '@/components/GameEngine/Tiles/ItemTiles';
 import KennelDoorTiles from '@/components/GameEngine/Tiles/KennelDoorTiles';
+import PetCageTiles from '@/components/GameEngine/Tiles/PetCageTiles';
 import PetTiles from '@/components/GameEngine/Tiles/PetTiles';
 import PlantTiles from '@/components/GameEngine/Tiles/PlantTiles';
 
@@ -52,8 +53,8 @@ const config: MainSceneConfig = {
   assets: {
     external: {
       tiles:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-ShC2gB5oCTKeL4G8xql65LilQiITd8.png',
-      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-VoNa4IFpsdaaYmq3Zv2u2rLzkWTlFd.tmj',
+        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-NghnvuWirfxTx85cH1iqsCpdABTqFi.png',
+      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-aOlioJMWo44cf7IaTVQpCZU9RPrpxx.tmj',
       player:
         'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/player-fB1bF09qB6Jk1WleesORLY4aBdvN56.png',
     },
@@ -62,7 +63,7 @@ const config: MainSceneConfig = {
 
 export class MainScene extends AScene<MainSceneConfig> {
   public inventoryTables: InventoryTableTiles[] = [];
-  public pets: PetTiles[] = [];
+  public petCages: PetCageTiles[] = [];
   public kennelDoor: KennelDoorTiles | null = null;
   public bed: BedTiles | null = null;
   public plant: PlantTiles | null = null;
@@ -109,7 +110,20 @@ export class MainScene extends AScene<MainSceneConfig> {
           true,
         );
 
-      this.pets = this.getTilemapService().getObjectsByType('pet', PetTiles);
+      this.petCages = this.getTilemapService().getObjectsByType(
+        'pet',
+        PetCageTiles,
+      );
+
+      this.petCages[0].addPetOnCage({
+        itemId: '31',
+        ctor: PetTiles,
+      });
+
+      this.petCages[1].addPetOnCage({
+        itemId: '32',
+        ctor: PetTiles,
+      });
 
       this.kennelDoor = this.getTilemapService().getObjectsByType(
         'kennel-door',
@@ -129,7 +143,7 @@ export class MainScene extends AScene<MainSceneConfig> {
     // Setup interactions
     {
       this.player?.addInteractiveObjects(this.inventoryTables);
-      this.player?.addInteractiveObjects(this.pets);
+      this.player?.addInteractiveObjects(this.petCages);
       this.player?.addInteractiveObjects([
         this.kennelDoor,
         this.bed,
@@ -143,7 +157,7 @@ export class MainScene extends AScene<MainSceneConfig> {
   }
 
   protected applyPets() {
-    this.pets.forEach((pet, i) => {
+    this.petCages.forEach((pet, i) => {
       if (i < unlockedPets) {
         pet.unlock();
       } else {

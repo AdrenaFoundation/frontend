@@ -11,6 +11,7 @@ class TilemapService {
   public readonly floor: Phaser.Tilemaps.TilemapLayer | null = null;
   public readonly walls: Phaser.Tilemaps.TilemapLayer | null = null;
   public readonly uiObjects: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly uiObjectsBehind: Phaser.Tilemaps.TilemapLayer | null = null;
   public readonly objects: Phaser.Tilemaps.ObjectLayer | null = null;
   public readonly doors: Phaser.Tilemaps.TilemapLayer | null = null;
 
@@ -21,6 +22,8 @@ class TilemapService {
 
   // Layer used to dynamically place manual objects like items, etc.
   public readonly manual: Phaser.Tilemaps.TilemapLayer | null = null;
+  public readonly manualBetweenUiObjects: Phaser.Tilemaps.TilemapLayer | null =
+    null;
 
   constructor(scene: AScene) {
     this.scene = scene;
@@ -67,14 +70,30 @@ class TilemapService {
       offsetY,
     );
 
+    this.manualBetweenUiObjects = this.map.createBlankLayer(
+      'manual-between-uiobjects',
+      this.tiles,
+      offsetX,
+      offsetY,
+    );
+
+    this.uiObjectsBehind = this.map.createLayer(
+      'uiobjects-behind',
+      this.tiles,
+      offsetX,
+      offsetY,
+    );
+
     // Set collision for everything in walls layer and objects layer
     this.walls?.setCollisionByExclusion([-1]);
 
     // Set depth for layers
     this.floor?.setDepth(0);
     this.walls?.setDepth(1);
-    this.uiObjects?.setDepth(2);
-    this.manual?.setDepth(3);
+    this.uiObjectsBehind?.setDepth(2);
+    this.manualBetweenUiObjects?.setDepth(2.5);
+    this.uiObjects?.setDepth(3);
+    this.manual?.setDepth(4);
     this.doors?.setDepth(30);
   }
 
