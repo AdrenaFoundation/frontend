@@ -5,14 +5,23 @@ import {
 } from "@dialectlabs/blockchain-sdk-solana";
 import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana';
 import { NotificationsButton } from '@dialectlabs/react-ui';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { useMemo } from 'react';
 
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
+const DAPP_ADDRESS = process.env.NEXT_PUBLIC_DIALECT_APP_ID || '';
 
-const DAPP_ADDRESS = '95dcepmNHXW4VdFeUrXEixzQAj3bxhemqYnHqViKQCD6';
+if (!DAPP_ADDRESS) {
+  console.error('NEXT_PUBLIC_DIALECT_APP_ID is not set');
+}
+
+interface WalletWithSigningMethods {
+  signMessage: (message: Uint8Array) => Promise<Uint8Array>;
+  signTransaction: <T extends Transaction | VersionedTransaction>(transaction: T) => Promise<T>;
+  signAllTransactions: <T extends Transaction | VersionedTransaction>(transactions: T[]) => Promise<T[]>;
+}
 
 export const DialectNotification = ({ adapters }: {
   adapters: PageProps['adapters'];
@@ -26,23 +35,22 @@ export const DialectNotification = ({ adapters }: {
   const customWalletAdapter: DialectSolanaWalletAdapter | null = useMemo(() => {
     if (!adapter || !wallet) return null;
 
+    const walletInstance = adapter as unknown as WalletWithSigningMethods;
+
     return {
       publicKey: new PublicKey(wallet.walletAddress),
-      signMessage: async (message: Uint8Array) => {
-        // @ts-ignore
-        return await adapter.signMessage(message)
+      signMessage: async (message: Uint8Array): Promise<Uint8Array> => {
+        return await walletInstance.signMessage(message);
       },
-      signTransaction: async (transaction: any) => {
-        // @ts-ignore
-        return await adapter.signTransaction(transaction);
+      signTransaction: async <T extends Transaction | VersionedTransaction>(transaction: T): Promise<T> => {
+        return await walletInstance.signTransaction(transaction);
       },
-      signAllTransactions: async (transactions: any[]) => {
-        // @ts-ignore
-        return await adapter.signAllTransactions(transactions);
+      signAllTransactions: async <T extends Transaction | VersionedTransaction>(transactions: T[]): Promise<T[]> => {
+        return await walletInstance.signAllTransactions(transactions);
       },
 
     }
-  }, [adapter, wallet, isConnected]);
+  }, [adapter, wallet]);
 
   if (!isConnected || !wallet || !customWalletAdapter) return null;
 
