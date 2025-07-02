@@ -81,6 +81,7 @@ function ChatContainer({
           PROFILE_PICTURES[
           profile.profilePicture as keyof typeof PROFILE_PICTURES
           ];
+        acc[profile.owner.toBase58()].team = acc[profile.owner.toBase58()]?.team || 0;
         return acc;
       },
       {} as Record<
@@ -116,7 +117,8 @@ function ChatContainer({
     ).length;
 
     const totalUnreadMessages = chatrooms.reduce((acc, room) => {
-      if (userProfilesMap?.[walletAddress].team !== 0 && [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1 ? 2 : 1].includes(room.id)) {
+      if (!userProfilesMap[walletAddress]) return acc;
+      if (userProfilesMap[walletAddress].team !== 0 && [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1 ? 2 : 1].includes(room.id)) {
         return acc + room.unread_count;
       } else {
         return acc

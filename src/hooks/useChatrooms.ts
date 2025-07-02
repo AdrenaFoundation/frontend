@@ -69,7 +69,6 @@ export const useChatrooms = (): UseChatroomsReturn => {
 
   const fetchChatrooms = useCallback(
     async (isRefresh = false): Promise<Chatroom[]> => {
-      console.log('Fetching chatrooms...', walletAddress);
       if (!walletAddress) {
         setError('User public key is required');
         setChatrooms([]);
@@ -377,7 +376,9 @@ export const useChatrooms = (): UseChatroomsReturn => {
         },
       )
       .subscribe((status, err) => {
-        console.log(`Global subscription status:`, status, err);
+        if (status !== 'SUBSCRIBED') {
+          console.error('Failed to subscribe to global chat messages:', err);
+        }
       });
 
     // Store the channel reference

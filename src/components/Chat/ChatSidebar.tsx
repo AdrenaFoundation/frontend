@@ -52,20 +52,33 @@ function ChatSidebar({
     (req) => req.status === 'pending' && req.receiver_pubkey === walletAddress,
   );
 
-  const privateRooms = chatrooms.filter(
-    (room) => room.type === 'private',
-  );
+  const privateRooms = chatrooms.filter((room) => room.type === 'private');
 
-  const communityRooms = chatrooms.filter((room) => room.type === 'community' && [GENERAL_CHAT_ROOM_ID, userProfilesMap?.[walletAddress].team !== 0 ? userProfilesMap?.[walletAddress].team === 1 ? 2 : 1 : null].includes(room.id));
+  const communityRooms = chatrooms.filter((room) => {
+    let displayRoom;
+
+    if (userProfilesMap && userProfilesMap[walletAddress]) {
+      displayRoom = [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1
+        ? 2
+        : 1].includes(room.id)
+    } else {
+      displayRoom = room.id === GENERAL_CHAT_ROOM_ID
+    }
+
+    return displayRoom && room.type === 'community';
+  });
 
   if (isMobile && isChatroomsOpen) {
     return null;
   }
 
   return (
-    <div className={twMerge("flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[12rem] bg-secondary",
-      isMobile && 'w-full'
-    )}>
+    <div
+      className={twMerge(
+        'flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[12rem] bg-secondary',
+        isMobile && 'w-full',
+      )}
+    >
       <ul className="flex flex-col gap-1">
         <li className="text-xs font-mono opacity-30">Community</li>
         {communityRooms.map((room) => {
@@ -124,7 +137,12 @@ function ChatSidebar({
             setFriendRequestWindowOpen(true);
           }}
         >
-          <Image src={addFriendIcon} alt="Add Friend Icon" width={16} height={16} />
+          <Image
+            src={addFriendIcon}
+            alt="Add Friend Icon"
+            width={16}
+            height={16}
+          />
           <p
             className={twMerge(
               'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
@@ -239,7 +257,9 @@ function RoomButton({
             'opacity-100',
           )}
         >
-          {room.type === 'community' ? <span className='opacity-50'># </span> : null}
+          {room.type === 'community' ? (
+            <span className="opacity-50"># </span>
+          ) : null}
           {room.type === 'community' ? `${room.name}` : friendName}
         </p>
       </div>

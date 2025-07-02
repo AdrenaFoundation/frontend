@@ -192,7 +192,8 @@ export default function EditPositionCollateral({
 
       const ataBalanceBefore = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
 
-      if (!ataBalanceBefore) {
+      if (ataBalanceBefore === null) {
+        notification.currentStepErrored('Failed to fetch ATA balance');
         throw new Error('Failed to fetch ATA balance');
       }
 
@@ -207,17 +208,16 @@ export default function EditPositionCollateral({
         });
 
       if (doJupiterSwapOnWithdraw) {
+        const notification = MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
+
         const ataBalanceAfter = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
 
-        if (!ataBalanceAfter) {
-          console.error('Failed to fetch ATA balance after removal');
-          return;
+        if (ataBalanceAfter === null) {
+          notification.currentStepErrored('Failed to fetch ATA balance');
+          throw new Error('Failed to fetch ATA balance');
         }
 
         const diff = ataBalanceAfter.sub(ataBalanceBefore);
-
-        const notification =
-          MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
 
         const quoteResult = await getJupiterApiQuote({
           inputMint: position.collateralToken.mint,
