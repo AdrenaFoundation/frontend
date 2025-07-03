@@ -189,13 +189,7 @@ export default function EditPositionCollateral({
         throw new Error('Connection is not available');
       }
 
-
-      const ataBalanceBefore = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
-
-      if (ataBalanceBefore === null) {
-        notification.currentStepErrored('Failed to fetch ATA balance');
-        throw new Error('Failed to fetch ATA balance');
-      }
+      const ataBalanceBefore = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress) ?? new BN(0);
 
       await (position.side === 'long'
         ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
@@ -213,6 +207,7 @@ export default function EditPositionCollateral({
         const ataBalanceAfter = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
 
         if (ataBalanceAfter === null) {
+          // should not happen since we initialize ata address if it doesn't exist in `removeCollateralLong`/`removeCollateralShort`
           notification.currentStepErrored('Failed to fetch ATA balance');
           throw new Error('Failed to fetch ATA balance');
         }

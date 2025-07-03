@@ -99,7 +99,7 @@ function ChatSidebar({
 
         {privateRooms.length > 0 && (
           <>
-            <li className="text-xs font-mono opacity-30">Private</li>
+            <li className="text-xs font-mono opacity-30">Privat <span className='text-xxs'>(coming soon)</span></li>
             {privateRooms.map((room) => {
               return (
                 <RoomButton
@@ -222,6 +222,7 @@ function RoomButton({
       className={twMerge(
         'group flex items-center gap-2 p-2 py-1 border-transparent hover:bg-third rounded-md transition-color duration-300 cursor-pointer',
         currentChatroomId === room.id && !friendRequestWindowOpen && 'bg-third',
+        room.type === 'private' && 'opacity-30 pointer-events-none'
       )}
       onClick={() => {
         setCurrentChatroom(room.id);

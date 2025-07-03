@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabase from '@/supabaseServer';
 
 export type FriendRequestStatus = 'pending' | 'accepted' | 'rejected';
 
@@ -51,7 +51,7 @@ async function getFriendRequests(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'User public key is required' });
     }
 
-    let query = supabaseClient.from('friend_requests').select('*');
+    let query = supabase.from('friend_requests').select('*');
 
     if (type === 'sent') {
       query = query.eq('sender_pubkey', user_pubkey);
@@ -91,7 +91,7 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
         .json({ error: 'Sender and receiver public keys are required' });
     }
 
-    const { data: existingRequests, error: checkError } = await supabaseClient
+    const { data: existingRequests, error: checkError } = await supabase
       .from('friend_requests')
       .select('*')
       .or(
@@ -115,7 +115,7 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
       status: 'pending',
     };
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
       .from('friend_requests')
       .insert([newFriendRequest])
       .select();
@@ -154,7 +154,7 @@ async function updateFriendRequestStatus(
         .json({ error: 'Status must be either accepted or rejected' });
     }
 
-    const { data: requestData, error: fetchError } = await supabaseClient
+    const { data: requestData, error: fetchError } = await supabase
       .from('friend_requests')
       .select('*')
       .eq('id', id)
@@ -165,7 +165,7 @@ async function updateFriendRequestStatus(
     }
 
     if (status === 'accepted') {
-      const { data: chatroomData, error: chatroomError } = await supabaseClient
+      const { data: chatroomData, error: chatroomError } = await supabase
         .from('chatrooms')
         .insert([{ type: 'private' }])
         .select()
@@ -176,7 +176,7 @@ async function updateFriendRequestStatus(
       }
 
       const { data: participantsData, error: participantsError } =
-        await supabaseClient
+        await supabase
           .from('chat_participants')
           .insert([
             {
@@ -199,7 +199,7 @@ async function updateFriendRequestStatus(
       status: status as FriendRequestStatus,
     };
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
       .from('friend_requests')
       .update(updateData)
       .eq('id', id)
@@ -227,7 +227,7 @@ async function deleteFriendRequest(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Request ID is required' });
     }
 
-    const { error } = await supabaseClient
+    const { error } = await supabase
       .from('friend_requests')
       .delete()
       .eq('id', id);
@@ -246,7 +246,7 @@ async function deleteFriendRequest(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function hasDisabledFriendReq(walletAddress: string): Promise<boolean> {
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabase
     .from('settings')
     .select('wallet_address, preferences')
     .eq('wallet_address', walletAddress)

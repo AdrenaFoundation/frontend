@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseClient from '@/supabaseClient';
 
 export default async function handler(
   req: NextApiRequest,

@@ -4,6 +4,7 @@ import React, { memo, ReactNode, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import collapseIcon from '@/../public/images/collapse-all.svg';
+import arrowIcon from '@/../public/images/Icons/arrow-up-2.svg';
 import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES } from '@/constant';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useChatrooms from '@/hooks/useChatrooms';
@@ -81,7 +82,8 @@ function ChatContainer({
           PROFILE_PICTURES[
           profile.profilePicture as keyof typeof PROFILE_PICTURES
           ];
-        acc[profile.owner.toBase58()].team = acc[profile.owner.toBase58()]?.team || 0;
+        acc[profile.owner.toBase58()].team =
+          acc[profile.owner.toBase58()]?.team || 0;
         return acc;
       },
       {} as Record<
@@ -118,10 +120,16 @@ function ChatContainer({
 
     const totalUnreadMessages = chatrooms.reduce((acc, room) => {
       if (!userProfilesMap[walletAddress]) return acc;
-      if (userProfilesMap[walletAddress].team !== 0 && [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1 ? 2 : 1].includes(room.id)) {
+      if (
+        userProfilesMap[walletAddress].team !== 0 &&
+        [
+          GENERAL_CHAT_ROOM_ID,
+          userProfilesMap[walletAddress].team === 1 ? 2 : 1,
+        ].includes(room.id)
+      ) {
         return acc + room.unread_count;
       } else {
-        return acc
+        return acc;
       }
     }, 0);
 
@@ -242,14 +250,28 @@ function ChatTitle({
         isLoading ? 'cursor-wait opacity-50' : 'cursor-pointer',
       )}
       onClick={() => {
-        if (isMobile) {
-          setIsChatroomsOpen(false);
-        } else {
+        if (!isMobile) {
           setIsChatOpen(!isChatOpen);
         }
       }}
     >
       <div className="flex flex-row items-center gap-2">
+        {isMobile ? (
+          <div
+            className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300"
+            onClick={() => {
+              setIsChatroomsOpen(false);
+            }}
+          >
+            <Image
+              src={arrowIcon}
+              alt="arrow icon"
+              width={14}
+              height={14}
+              className="h-3 w-3 transition-transform duration-300 -rotate-90"
+            />
+          </div>
+        ) : null}
         <p className="text-lg font-boldy capitalize">
           <span className="opacity-50 text-lg"># </span>
           {friendRequestWindowOpen ? 'Friend Requests' : `${title}`}{' '}
@@ -283,7 +305,14 @@ function ChatTitle({
             </p>
           </div>
         ) : null}
-        <div className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300">
+        <div
+          className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300"
+          onClick={() => {
+            if (isMobile) {
+              setIsChatOpen(!isChatOpen);
+            }
+          }}
+        >
           <Image src={collapseIcon} alt="collapse logo" width={6} height={6} />
         </div>
       </div>
