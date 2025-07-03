@@ -6,8 +6,8 @@ export default {
 
   // Player settings
   playerSpeed: 100,
-  playerFrameWidth: 32,
-  playerFrameHeight: 32,
+  playerFrameWidth: 16,
+  playerFrameHeight: 16,
 
   // Interaction settings
   interactionDistance: 50,

@@ -7,12 +7,7 @@ const Game = dynamic(() => import('../../components/Game/Game').then(mod => mod.
 const PlayPage = () => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
-            <Game className="max-w-[61em] w-full h-[20em] max-h-full" />
-
-            <div className='w-full h-[1px] bg-bcolor' />
-
-            <div className='flex flex-grow w-full'>
-            </div>
+            <Game className="max-w-[61em] w-full h-full max-h-full" />
         </div>
     );
 };

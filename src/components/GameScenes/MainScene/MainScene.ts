@@ -1,5 +1,6 @@
 import { AScene, ASceneConfig } from '@/components/GameEngine/AScene';
 import BedTiles from '@/components/GameEngine/Tiles/BedTiles';
+import DeskTiles from '@/components/GameEngine/Tiles/DeskTiles';
 import GearTiles from '@/components/GameEngine/Tiles/GearTiles';
 import InventoryTableTiles from '@/components/GameEngine/Tiles/InventoryTableTiles';
 import ItemTiles from '@/components/GameEngine/Tiles/ItemTiles';
@@ -46,17 +47,17 @@ type MainSceneConfig = ASceneConfig & {
 
 const config: MainSceneConfig = {
   playerFrameWidth: 16,
-  playerFrameHeight: 32,
+  playerFrameHeight: 16,
 
   playerStartingPosition: new Phaser.Math.Vector2(300, 300),
 
   assets: {
     external: {
       tiles:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-NghnvuWirfxTx85cH1iqsCpdABTqFi.png',
-      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-aOlioJMWo44cf7IaTVQpCZU9RPrpxx.tmj',
+        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/tileset-v1.0.0-nmRsGUhiu5CwOR0MKKrVffWOZ8Fgnc.png',
+      map: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/lobby-OFfCYNWHYxjM65DXzOo4eDNAV9ZaU9.tmj',
       player:
-        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/player-fB1bF09qB6Jk1WleesORLY4aBdvN56.png',
+        'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/game/player-TsYBQ0YBEhBWlXzgxhmxZrZI3Nsa7y.png',
     },
   },
 };
@@ -67,6 +68,7 @@ export class MainScene extends AScene<MainSceneConfig> {
   public kennelDoor: KennelDoorTiles | null = null;
   public bed: BedTiles | null = null;
   public plant: PlantTiles | null = null;
+  public desk: DeskTiles | null = null;
 
   public itemsOnTables: {
     [key: string]: ItemTiles;
@@ -115,15 +117,18 @@ export class MainScene extends AScene<MainSceneConfig> {
         PetCageTiles,
       );
 
-      this.petCages[0].addPetOnCage({
-        itemId: '31',
-        ctor: PetTiles,
-      });
+      // TODO: change
+      {
+        this.petCages[0].addPetOnCage({
+          itemId: '31',
+          ctor: PetTiles,
+        });
 
-      this.petCages[1].addPetOnCage({
-        itemId: '32',
-        ctor: PetTiles,
-      });
+        this.petCages[1].addPetOnCage({
+          itemId: '32',
+          ctor: PetTiles,
+        });
+      }
 
       this.kennelDoor = this.getTilemapService().getObjectsByType(
         'kennel-door',
@@ -135,6 +140,11 @@ export class MainScene extends AScene<MainSceneConfig> {
       this.plant = this.getTilemapService().getObjectsByType(
         'plant',
         PlantTiles,
+      )[0];
+
+      this.desk = this.getTilemapService().getObjectsByType(
+        'desk',
+        DeskTiles,
       )[0];
     }
 
@@ -148,6 +158,7 @@ export class MainScene extends AScene<MainSceneConfig> {
         this.kennelDoor,
         this.bed,
         this.plant,
+        this.desk,
       ]);
     }
 

@@ -8,12 +8,14 @@ class Player {
   protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   protected nameTag: Phaser.GameObjects.Text;
 
-  // List of interactive objects the player can interact with
   protected interactiveObjects: ObjectTiles[] = [];
-
   protected facingDirection: 'up' | 'down' | 'left' | 'right' = 'down';
-
   protected facedObject: ObjectTiles | null = null;
+
+  public playerColliders: {
+    collider: Phaser.Physics.Arcade.Collider;
+    object: Phaser.GameObjects.GameObject;
+  }[] = [];
 
   constructor({
     scene,
@@ -34,14 +36,9 @@ class Player {
       1,
     );
     this.sprite.setScale(1);
-
-    // Make the user in between the tiles layers (see TilemapService)
     this.sprite.setDepth(4);
-
     this.sprite.setCollideWorldBounds(true);
-
-    // only bottom part collides
-    this.sprite.setSize(16, 16).setOffset(0, 16);
+    this.sprite.setSize(16, 16);
 
     if (!scene.input?.keyboard) {
       throw new Error('Keyboard input is not available');
@@ -60,15 +57,11 @@ class Player {
       .setVisible(showNickname);
   }
 
-  public addInteractiveObjects(objectTiles: ObjectTiles[]): void {
-    this.interactiveObjects.push(...objectTiles);
-  }
-
   protected createAnimations(): void {
     const { animations } = config;
 
     this.scene.anims.create({
-      key: 'down', // FRONT-facing
+      key: 'down',
       frames: this.scene.anims.generateFrameNumbers('player', {
         start: 3,
         end: 5,
@@ -78,7 +71,7 @@ class Player {
     });
 
     this.scene.anims.create({
-      key: 'up', // BACK-facing
+      key: 'up',
       frames: this.scene.anims.generateFrameNumbers('player', {
         start: 0,
         end: 2,
@@ -109,63 +102,77 @@ class Player {
   }
 
   public update(): void {
-    // Handle player movement and animations
-    {
-      this.sprite.setVelocity(0);
+    this.sprite.setVelocity(0);
 
-      const movingHorizontally =
-        this.cursors.left.isDown || this.cursors.right.isDown;
-      const movingVertically =
-        this.cursors.up.isDown || this.cursors.down.isDown;
+    const movingHorizontally =
+      this.cursors.left.isDown || this.cursors.right.isDown;
+    const movingVertically = this.cursors.up.isDown || this.cursors.down.isDown;
 
-      // --- Horizontal Movement ---
-      if (this.cursors.left.isDown) {
-        this.sprite.setVelocityX(-config.playerSpeed);
-        this.sprite.setFlipX(false); // ← now NO flip = facing left
-        this.sprite.anims.play('right', true); // we still use right frames
-        this.facingDirection = 'left';
-      } else if (this.cursors.right.isDown) {
-        this.sprite.setVelocityX(config.playerSpeed);
-        this.sprite.setFlipX(true); // ← now YES flip = facing right
-        this.sprite.anims.play('right', true);
-        this.facingDirection = 'right';
+    // Horizontal
+    if (this.cursors.left.isDown) {
+      this.sprite.setVelocityX(-config.playerSpeed);
+      this.sprite.setFlipX(false);
+      this.sprite.anims.play('right', true);
+      this.facingDirection = 'left';
+    } else if (this.cursors.right.isDown) {
+      this.sprite.setVelocityX(config.playerSpeed);
+      this.sprite.setFlipX(true);
+      this.sprite.anims.play('right', true);
+      this.facingDirection = 'right';
+    }
+
+    // Vertical
+    if (this.cursors.up.isDown) {
+      this.sprite.setVelocityY(-config.playerSpeed);
+      if (!movingHorizontally) {
+        this.sprite.setFlipX(false);
+        this.sprite.anims.play('up', true);
       }
-
-      // --- Vertical Movement ---
-      if (this.cursors.up.isDown) {
-        this.sprite.setVelocityY(-config.playerSpeed);
-        if (!movingHorizontally) {
-          this.sprite.setFlipX(false);
-          this.sprite.anims.play('up', true);
-        }
-        this.facingDirection = 'up';
-      } else if (this.cursors.down.isDown) {
-        this.sprite.setVelocityY(config.playerSpeed);
-        if (!movingHorizontally) {
-          this.sprite.setFlipX(false);
-          this.sprite.anims.play('down', true);
-        }
-        this.facingDirection = 'down';
+      this.facingDirection = 'up';
+    } else if (this.cursors.down.isDown) {
+      this.sprite.setVelocityY(config.playerSpeed);
+      if (!movingHorizontally) {
+        this.sprite.setFlipX(false);
+        this.sprite.anims.play('down', true);
       }
+      this.facingDirection = 'down';
+    }
 
-      // --- Idle ---
-      if (!movingHorizontally && !movingVertically) {
-        this.sprite.anims.stop();
+    // Idle
+    if (!movingHorizontally && !movingVertically) {
+      this.sprite.anims.stop();
+
+      switch (this.facingDirection) {
+        case 'down':
+          this.sprite.setFlipX(false);
+          this.sprite.setFrame(5);
+          break;
+        case 'up':
+          this.sprite.setFlipX(false);
+          this.sprite.setFrame(2);
+          break;
+        case 'left':
+          this.sprite.setFlipX(false);
+          this.sprite.setFrame(6);
+          break;
+        case 'right':
+          this.sprite.setFlipX(true);
+          this.sprite.setFrame(6);
+          break;
       }
     }
 
-    // Make the name tag follow the player
+    // Name tag follows
     this.nameTag.setPosition(
       this.sprite.x,
       this.sprite.y - this.sprite.height / 2 + 30,
     );
 
+    // Interactions
     const facingOneObject = this.interactiveObjects.find((objectTiles) => {
-      if (objectTiles.getVisible() === false) {
-        return false; // Skip invisible objects
-      }
-
-      return this.isFacingObject(objectTiles);
+      return (
+        objectTiles.getVisible() !== false && this.isFacingObject(objectTiles)
+      );
     });
 
     if (!facingOneObject) {
@@ -180,6 +187,10 @@ class Player {
     }
   }
 
+  public addInteractiveObjects(objectTiles: ObjectTiles[]): void {
+    this.interactiveObjects.push(...objectTiles);
+  }
+
   public getSprite(): Phaser.Physics.Arcade.Sprite {
     return this.sprite;
   }
@@ -191,11 +202,6 @@ class Player {
   public setPosition(x: number, y: number): void {
     this.sprite.setPosition(x, y);
   }
-
-  public playerColliders: {
-    collider: Phaser.Physics.Arcade.Collider;
-    object: Phaser.GameObjects.GameObject;
-  }[] = [];
 
   public addCollider(object: Phaser.GameObjects.GameObject): void {
     this.playerColliders.push({
@@ -209,10 +215,9 @@ class Player {
       ({ object: obj, collider }) => {
         if (obj === object) {
           collider.destroy();
-          return false; // Remove this collider
+          return false;
         }
-
-        return true; // Keep this collider
+        return true;
       },
     );
   }
