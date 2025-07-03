@@ -3376,21 +3376,6 @@ export class AdrenaClient {
         preInstructions,
       });
 
-    const collateralTokenMint = position.collateralToken.mint;
-
-    const ataAddress = findATAAddressSync(position.owner, collateralTokenMint);
-
-    if (!(await isAccountInitialized(this.connection, ataAddress))) {
-      const ix = createAssociatedTokenAccountIdempotentInstruction(
-        position.owner,
-        ataAddress,
-        position.owner,
-        collateralTokenMint,
-      );
-
-      preInstructions.push(ix);
-    }
-
     const oraclePrices: ChaosLabsPricesExtended | null =
       await DataApiClient.getChaosLabsPrices();
 
