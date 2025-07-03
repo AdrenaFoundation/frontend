@@ -3368,7 +3368,6 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
-    console.log('[client]: Checking collateral custody token account');
 
     const receivingAccount =
       await this.checkATAAddressInitializedAndCreatePreInstruction({
