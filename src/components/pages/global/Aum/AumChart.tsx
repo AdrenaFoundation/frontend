@@ -46,6 +46,8 @@ export default function AumChart() {
             return 'poolinfohourly';
           case '6M':
             return 'poolinfodaily';
+          case '1Y':
+            return 'poolinfodaily';
           default:
             return 'poolinfo';
         }
@@ -63,6 +65,8 @@ export default function AumChart() {
             return 93;
           case '6M':
             return 183;
+          case '1Y':
+            return 365;
           default:
             return 1;
         }
@@ -145,11 +149,8 @@ export default function AumChart() {
         { name: 'ALP Price', color: '#fde000', type: 'line', yAxisId: 'right' }
       ]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
-      periods={['1d', '7d', '1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       leftDomain={['dataMin', 'dataMax']}
       rightDomain={['dataMin', 'dataMax']}
