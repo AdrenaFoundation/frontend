@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { FetchedSettingsType } from '@/hooks/useFetchUserSettings';
-import supabase from '@/supabaseServer';
+import supabaseClient from '@/supabaseBackendClient';
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +20,7 @@ export default async function handler(
       });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('settings')
       .select('*')
       .eq('wallet_address', wallet_address)
@@ -47,7 +47,7 @@ export default async function handler(
     }
 
     // Create settings record with upsert (insert if not exists, update if exists)
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('settings')
       .upsert({
         wallet_address,
@@ -76,14 +76,14 @@ export default async function handler(
       });
     }
 
-    const { data: existingUser } = await supabase
+    const { data: existingUser } = await supabaseClient
       .from('settings')
       .select('wallet_address')
       .eq('wallet_address', wallet_address)
       .single();
 
     if (!existingUser) {
-      const { data: newUserData, error: createError } = await supabase
+      const { data: newUserData, error: createError } = await supabaseClient
         .from('settings')
         .insert({
           wallet_address,
@@ -104,7 +104,7 @@ export default async function handler(
       });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('settings')
       .update({ preferences })
       .eq('wallet_address', wallet_address)

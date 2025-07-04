@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
 import { useSelector } from '@/store/store';
-import supabase from '@/supabaseClient';
+import supabaseClient from '@/supabaseFrontendClient';
 
 interface UseChatroomsReturn {
   loading: {
@@ -328,7 +328,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
   useEffect(() => {
     if (hasSubscribed.current) return;
 
-    const channel = supabase
+    const channel = supabaseClient
       .channel('global_chat_messages')
       .on(
         'postgres_changes',
@@ -389,7 +389,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
     return () => {
       console.log('Cleaning up Supabase subscription');
       if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
+        supabaseClient.removeChannel(channelRef.current);
         hasSubscribed.current = false;
       }
     };
