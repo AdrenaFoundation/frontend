@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseClient from '@/supabaseBackendClient';
 
 export type FriendRequestStatus = 'pending' | 'accepted' | 'rejected';
 

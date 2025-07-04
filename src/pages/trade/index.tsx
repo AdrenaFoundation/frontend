@@ -84,7 +84,7 @@ export default function Trade({
   const settings = useSelector((state) => state.settings);
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
-  const positions = usePositions(wallet?.publicKey.toBase58() ?? null);
+  const positions = usePositions(wallet?.publicKey?.toBase58() ?? null);
   const { positionsData } = usePositionsHistory({ walletAddress: wallet?.publicKey.toBase58() ?? null, batchSize: 200, interval: 10_000 });
   const { allPositions } = useAllPositions({ connected });
 

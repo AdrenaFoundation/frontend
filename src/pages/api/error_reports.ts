@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseClient from '@/supabaseBackendClient';
 import { ErrorReportType } from '@/types';
 
 export default async function handler(

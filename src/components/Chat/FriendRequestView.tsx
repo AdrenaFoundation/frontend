@@ -39,9 +39,15 @@ export default function FriendRequestView({
     (req) => req.status === 'pending' && req.receiver_pubkey === walletAddress,
   );
 
-  const acceptedRequests = friendRequests.filter(
-    (req) => req.status === 'accepted' && req.receiver_pubkey === walletAddress,
-  );
+  const acceptedRequests = friendRequests
+    .filter((req) => req.status === 'accepted')
+    .map((req) => ({
+      ...req,
+      sender_pubkey:
+        req.sender_pubkey === walletAddress
+          ? req.receiver_pubkey
+          : req.sender_pubkey,
+    }));
 
   const handleAccept = (requestId: string) => async () => {
     try {
@@ -132,14 +138,21 @@ export default function FriendRequestView({
                   >
                     {getProfileByWallet(request.sender_pubkey).nickname}
                   </p>
-                  {view === 'pending' ? <p className="opacity-50 text-xs">wants to be your friend</p> :
+                  {view === 'pending' ? (
                     <p className="opacity-50 text-xs">
-                      {request.created_at ? new Date(request.created_at).toLocaleDateString([], {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      }) : null}
-                    </p>}
+                      wants to be your friend
+                    </p>
+                  ) : (
+                    <p className="opacity-50 text-xs">
+                      {request.created_at
+                        ? new Date(request.created_at).toLocaleDateString([], {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })
+                        : null}
+                    </p>
+                  )}
                 </div>
               </div>
 
