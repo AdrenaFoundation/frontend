@@ -111,7 +111,7 @@ function ChatSidebar({
           {privateRooms.length > 0 && (
             <>
               <li className="text-xs font-mono opacity-30">
-                Private <span className="text-xxs">(coming soon)</span>
+                Private
               </li>
               {privateRooms.map((room) => {
                 return (
