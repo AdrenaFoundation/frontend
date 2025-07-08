@@ -4,9 +4,9 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
   throw new Error('Missing Supabase environment variables');
 }
 
-const supabaseClient = createClient(
+const supabaseServiceClient = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY,
 );
 
-export default supabaseClient;
+export default supabaseServiceClient;

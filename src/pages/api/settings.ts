@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { FetchedSettingsType } from '@/hooks/useFetchUserSettings';
-import supabaseClient from '@/supabaseBackendClient';
+import supabaseServiceClient from '@/supabaseServiceClient';
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +20,7 @@ export default async function handler(
       });
     }
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabaseServiceClient
       .from('settings')
       .select('*')
       .eq('wallet_address', wallet_address)
@@ -47,7 +47,7 @@ export default async function handler(
     }
 
     // Create settings record with upsert (insert if not exists, update if exists)
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabaseServiceClient
       .from('settings')
       .upsert({
         wallet_address,
@@ -76,21 +76,22 @@ export default async function handler(
       });
     }
 
-    const { data: existingUser } = await supabaseClient
+    const { data: existingUser } = await supabaseServiceClient
       .from('settings')
       .select('wallet_address')
       .eq('wallet_address', wallet_address)
       .single();
 
     if (!existingUser) {
-      const { data: newUserData, error: createError } = await supabaseClient
-        .from('settings')
-        .insert({
-          wallet_address,
-          preferences,
-        })
-        .select()
-        .single();
+      const { data: newUserData, error: createError } =
+        await supabaseServiceClient
+          .from('settings')
+          .insert({
+            wallet_address,
+            preferences,
+          })
+          .select()
+          .single();
 
       if (createError) {
         return res.status(404).json({
@@ -104,7 +105,7 @@ export default async function handler(
       });
     }
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabaseServiceClient
       .from('settings')
       .update({ preferences })
       .eq('wallet_address', wallet_address)

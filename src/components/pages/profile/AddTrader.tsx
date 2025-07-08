@@ -96,7 +96,7 @@ function AddTrader({
   return (
     <div className="mt-1">
       <Button
-        title="Add Trader"
+        title="Add Friend"
         variant="text"
         leftIcon={addFriendIcon}
         size="xs"

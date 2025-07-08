@@ -3,13 +3,16 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
+import { setIsAuthModalOpen } from '@/actions/authActions';
 import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES } from '@/constant';
 import { Chatroom } from '@/pages/api/chatrooms';
 import { FriendRequest } from '@/pages/api/friend_requests';
+import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileMetadata } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import Loader from '../Loader/Loader';
+
 
 function ChatSidebar({
   currentChatroomId,
@@ -44,6 +47,10 @@ function ChatSidebar({
   isChatroomsOpen: boolean;
   setIsChatroomsOpen: (isOpen: boolean) => void;
 }) {
+  const dispatch = useDispatch();
+
+  const { verifiedWalletAddresses } = useSelector((s) => s.auth);
+
   if (!walletAddress) {
     return null;
   }
@@ -58,11 +65,12 @@ function ChatSidebar({
     let displayRoom;
 
     if (userProfilesMap && userProfilesMap[walletAddress]) {
-      displayRoom = [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1
-        ? 2
-        : 1].includes(room.id)
+      displayRoom = [
+        GENERAL_CHAT_ROOM_ID,
+        userProfilesMap[walletAddress].team === 1 ? 2 : 1,
+      ].includes(room.id);
     } else {
-      displayRoom = room.id === GENERAL_CHAT_ROOM_ID
+      displayRoom = room.id === GENERAL_CHAT_ROOM_ID;
     }
 
     return displayRoom && room.type === 'community';
@@ -72,103 +80,111 @@ function ChatSidebar({
     return null;
   }
 
+  const isVerified = verifiedWalletAddresses.includes(walletAddress);
+
   return (
-    <div
-      className={twMerge(
-        'flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[12rem] bg-secondary',
-        isMobile && 'w-full',
-      )}
-    >
-      <ul className="flex flex-col gap-1">
-        <li className="text-xs font-mono opacity-30">Community</li>
-        {communityRooms.map((room) => {
-          return (
-            <RoomButton
-              key={room.id}
-              room={room}
-              currentChatroomId={currentChatroomId}
-              setCurrentChatroom={setCurrentChatroom}
-              friendRequestWindowOpen={friendRequestWindowOpen}
-              setFriendRequestWindowOpen={setFriendRequestWindowOpen}
-              walletAddress={walletAddress}
-              setIsChatroomsOpen={setIsChatroomsOpen}
-              isMobile={isMobile}
-            />
-          );
-        })}
-
-        {privateRooms.length > 0 && (
-          <>
-            <li className="text-xs font-mono opacity-30">Privat <span className='text-xxs'>(coming soon)</span></li>
-            {privateRooms.map((room) => {
-              return (
-                <RoomButton
-                  key={room.id}
-                  room={room}
-                  currentChatroomId={currentChatroomId}
-                  setCurrentChatroom={setCurrentChatroom}
-                  friendRequestWindowOpen={friendRequestWindowOpen}
-                  setFriendRequestWindowOpen={setFriendRequestWindowOpen}
-                  walletAddress={walletAddress}
-                  userProfilesMap={userProfilesMap}
-                  setIsChatroomsOpen={setIsChatroomsOpen}
-                  isMobile={isMobile}
-                />
-              );
-            })}
-          </>
+    <>
+      <div
+        className={twMerge(
+          'flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[12rem] bg-secondary',
+          isMobile && 'w-full',
         )}
+      >
+        <ul className="flex flex-col gap-1">
+          <li className="text-xs font-mono opacity-30">Community</li>
+          {communityRooms.map((room) => {
+            return (
+              <RoomButton
+                key={room.id}
+                room={room}
+                currentChatroomId={currentChatroomId}
+                setCurrentChatroom={setCurrentChatroom}
+                friendRequestWindowOpen={friendRequestWindowOpen}
+                setFriendRequestWindowOpen={setFriendRequestWindowOpen}
+                walletAddress={walletAddress}
+                setIsChatroomsOpen={setIsChatroomsOpen}
+                isMobile={isMobile}
+              />
+            );
+          })}
 
-        {isLoading && (
-          <li className="flex items-start">
-            <Loader width={70} />
-          </li>
-        )}
-      </ul>
-
-      <div>
-        <li
-          className={twMerge(
-            'group flex items-center gap-2 p-2 border-bcolor hover:bg-third rounded-md transition-color duration-300 cursor-pointer',
-            friendRequestWindowOpen && 'bg-third',
+          {privateRooms.length > 0 && (
+            <>
+              <li className="text-xs font-mono opacity-30">
+                Private <span className="text-xxs">(coming soon)</span>
+              </li>
+              {privateRooms.map((room) => {
+                return (
+                  <RoomButton
+                    key={room.id}
+                    room={room}
+                    currentChatroomId={currentChatroomId}
+                    setCurrentChatroom={setCurrentChatroom}
+                    friendRequestWindowOpen={friendRequestWindowOpen}
+                    setFriendRequestWindowOpen={setFriendRequestWindowOpen}
+                    walletAddress={walletAddress}
+                    userProfilesMap={userProfilesMap}
+                    setIsChatroomsOpen={setIsChatroomsOpen}
+                    isMobile={isMobile}
+                    isVerified={isVerified}
+                    openVerificationModal={() => dispatch(setIsAuthModalOpen(true))}
+                  />
+                );
+              })}
+            </>
           )}
-          onClick={() => {
-            // Handle chat room click
-            setFriendRequestWindowOpen(true);
-          }}
-        >
-          <Image
-            src={addFriendIcon}
-            alt="Add Friend Icon"
-            width={16}
-            height={16}
-          />
-          <p
-            className={twMerge(
-              'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
-              friendRequestWindowOpen && 'opacity-100',
-            )}
-          >
-            Friend Requests
-          </p>
 
-          {pendingRequests.length > 0 ? (
-            <div
+          {isLoading && (
+            <li className="flex items-start">
+              <Loader width={70} />
+            </li>
+          )}
+        </ul>
+
+        <div>
+          <li
+            className={twMerge(
+              'group flex items-center gap-2 p-2 border-bcolor hover:bg-third rounded-md transition-color duration-300 cursor-pointer',
+              friendRequestWindowOpen && 'bg-third',
+            )}
+            onClick={() => {
+              // Handle chat room click
+              setFriendRequestWindowOpen(true);
+            }}
+          >
+            <Image
+              src={addFriendIcon}
+              alt="Add Friend Icon"
+              width={16}
+              height={16}
+            />
+            <p
               className={twMerge(
-                'flex items-center justify-center bg-redbright min-w-4 h-4 px-1 rounded-full',
+                'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
+                friendRequestWindowOpen && 'opacity-100',
               )}
             >
-              <p className="text-xxs text-white font-mono">
-                {Intl.NumberFormat('en-US', {
-                  notation: 'compact',
-                  compactDisplay: 'short',
-                }).format(pendingRequests.length)}
-              </p>
-            </div>
-          ) : null}
-        </li>
+              Friend Requests
+            </p>
+
+            {pendingRequests.length > 0 ? (
+              <div
+                className={twMerge(
+                  'flex items-center justify-center bg-redbright min-w-4 h-4 px-1 rounded-full',
+                )}
+              >
+                <p className="text-xxs text-white font-mono">
+                  {Intl.NumberFormat('en-US', {
+                    notation: 'compact',
+                    compactDisplay: 'short',
+                  }).format(pendingRequests.length)}
+                </p>
+              </div>
+            ) : null}
+          </li>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -182,6 +198,8 @@ function RoomButton({
   userProfilesMap,
   setIsChatroomsOpen,
   isMobile,
+  isVerified,
+  openVerificationModal,
 }: {
   room: Chatroom;
   currentChatroomId: number;
@@ -198,6 +216,8 @@ function RoomButton({
   >;
   setIsChatroomsOpen: (isOpen: boolean) => void;
   isMobile: boolean;
+  isVerified?: boolean;
+  openVerificationModal?: () => void;
 }) {
   const friendWalletAddress =
     room.participants?.filter((w) => w !== walletAddress)[0] || '';
@@ -222,9 +242,13 @@ function RoomButton({
       className={twMerge(
         'group flex items-center gap-2 p-2 py-1 border-transparent hover:bg-third rounded-md transition-color duration-300 cursor-pointer',
         currentChatroomId === room.id && !friendRequestWindowOpen && 'bg-third',
-        room.type === 'private' && 'opacity-30 pointer-events-none'
       )}
       onClick={() => {
+        if (room.type === 'private' && !isVerified) {
+          openVerificationModal?.()
+          return;
+        }
+
         setCurrentChatroom(room.id);
         setFriendRequestWindowOpen(false);
         if (isMobile) {

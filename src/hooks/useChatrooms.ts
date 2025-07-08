@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
 import { useSelector } from '@/store/store';
-import supabaseClient from '@/supabaseFrontendClient';
+import supabaseAnonClient from '@/supabaseAnonClient';
 
 interface UseChatroomsReturn {
   loading: {
@@ -37,7 +37,11 @@ interface UseChatroomsReturn {
   setCurrentChatroom: (roomId: number) => void;
 }
 
-export const useChatrooms = (): UseChatroomsReturn => {
+export const useChatrooms = ({
+  setIsChatOpen,
+}: {
+  setIsChatOpen: (isOpen: boolean) => void;
+}): UseChatroomsReturn => {
   const { wallet } = useSelector((state) => state.walletState);
   const walletAddress = wallet?.walletAddress || null;
 
@@ -128,11 +132,25 @@ export const useChatrooms = (): UseChatroomsReturn => {
       try {
         setLoading((prev) => ({ ...prev, messages: true }));
         clearError();
+        const {
+          data: { session },
+        } = await supabaseAnonClient.auth.getSession();
 
         let url = `/api/chatrooms?type=messages&room_id=${roomId}&limit=${limit}`;
+
         if (beforeId) url += `&before_id=${beforeId}`;
 
-        const response = await fetch(url);
+        // fetch messages from the API and if session is available, include it in the request
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(session
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : {}),
+          },
+        });
+
         const data = await response.json();
 
         if (!response.ok) {
@@ -187,7 +205,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
             chatroom_id: currentChatroomId.current,
             text,
             wallet: walletAddress,
-            username: '', // TODO: Replace with actual username if available
+            username: null, // TODO: Replace with actual username if available
           }),
         });
 
@@ -328,7 +346,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
   useEffect(() => {
     if (hasSubscribed.current) return;
 
-    const channel = supabaseClient
+    const channel = supabaseAnonClient
       .channel('global_chat_messages')
       .on(
         'postgres_changes',
@@ -378,6 +396,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
       .subscribe((status, err) => {
         if (status !== 'SUBSCRIBED') {
           console.error('Failed to subscribe to global chat messages:', err);
+          setIsChatOpen(false);
         }
       });
 
@@ -389,7 +408,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
     return () => {
       console.log('Cleaning up Supabase subscription');
       if (channelRef.current) {
-        supabaseClient.removeChannel(channelRef.current);
+        supabaseAnonClient.removeChannel(channelRef.current);
         hasSubscribed.current = false;
       }
     };

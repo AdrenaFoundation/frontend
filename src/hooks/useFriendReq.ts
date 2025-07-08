@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { setIsAuthModalOpen } from '@/actions/authActions';
 import {
   FriendRequest,
   FriendRequestStatus,
 } from '@/pages/api/friend_requests';
+import { useDispatch, useSelector } from '@/store/store';
+import supabaseAnonClient from '@/supabaseAnonClient';
 
 export interface UseFriendReqReturn {
   loading: boolean;
@@ -31,6 +34,9 @@ export const useFriendReq = ({
   const [isDisabled, setIsDisabled] = useState(false);
   const [currentFriendRequest, setCurrentFriendRequest] =
     useState<FriendRequest | null>(null);
+
+  const dispatch = useDispatch();
+  const { verifiedWalletAddresses } = useSelector((state) => state.auth);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -76,16 +82,29 @@ export const useFriendReq = ({
     async (receiverPubkey: string): Promise<void> => {
       if (!walletAddress) {
         setError('User public key is required');
+        return;
+      }
+
+      if (!verifiedWalletAddresses.includes(walletAddress)) {
+        dispatch(setIsAuthModalOpen(true));
+        return;
       }
 
       try {
         setLoading(true);
         clearError();
 
+        const {
+          data: { session },
+        } = await supabaseAnonClient.auth.getSession();
+
         const response = await fetch('/api/friend_requests', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            ...(session
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : {}),
           },
           body: JSON.stringify({
             sender_pubkey: walletAddress,
@@ -110,7 +129,8 @@ export const useFriendReq = ({
         setLoading(false);
       }
     },
-    [walletAddress, receiverWalletAddress, clearError],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [walletAddress, verifiedWalletAddresses, receiverWalletAddress, clearError],
   );
 
   const updateRequestStatus = useCallback(
@@ -119,10 +139,27 @@ export const useFriendReq = ({
         setLoading(true);
         clearError();
 
+        if (!walletAddress) {
+          setError('User public key is required');
+          return;
+        }
+
+        if (!verifiedWalletAddresses.includes(walletAddress)) {
+          dispatch(setIsAuthModalOpen(true));
+          return;
+        }
+
+        const {
+          data: { session },
+        } = await supabaseAnonClient.auth.getSession();
+
         const response = await fetch('/api/friend_requests', {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
+            ...(session
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : {}),
           },
           body: JSON.stringify({
             id: requestId,
@@ -152,7 +189,8 @@ export const useFriendReq = ({
         setLoading(false);
       }
     },
-    [clearError, receiverWalletAddress],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [clearError, walletAddress, verifiedWalletAddresses, receiverWalletAddress],
   );
 
   const acceptFriendRequest = useCallback(
