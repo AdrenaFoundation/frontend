@@ -61,6 +61,7 @@ export const useChatrooms = ({
   >({});
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const currentChatroomId = useRef<number>(0);
+  const walletAddressRef = useRef<string | null>(walletAddress);
 
   // Use a ref to store the channel instance
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -272,51 +273,54 @@ export const useChatrooms = ({
   }, [walletAddress, clearError]);
 
   // Mark messages as read
-  const markAsRead = useCallback(
-    async (roomId: number, messageId: number): Promise<ReadReceipt | null> => {
-      if (!walletAddress) {
-        setError('User public key is required');
-        return null;
+  const markAsRead = async (
+    roomId: number,
+    messageId: number,
+  ): Promise<ReadReceipt | null> => {
+    console.log(
+      `Marking messages as read for room ${roomId} and message ${messageId} by ${walletAddressRef.current}`,
+    );
+    if (!walletAddressRef.current) {
+      setError('User public key is required');
+      return null;
+    }
+
+    try {
+      setLoading((prev) => ({ ...prev, markAsRead: true }));
+      clearError();
+
+      const response = await fetch('/api/chatrooms?type=read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_pubkey: walletAddressRef.current,
+          chatroom_id: roomId,
+          message_id: messageId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to mark messages as read');
       }
 
-      try {
-        setLoading((prev) => ({ ...prev, markAsRead: true }));
-        clearError();
+      setChatrooms((prev) =>
+        prev.map((room) =>
+          room.id === roomId ? { ...room, unread_count: 0 } : room,
+        ),
+      );
 
-        const response = await fetch('/api/chatrooms?type=read', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_pubkey: walletAddress,
-            chatroom_id: roomId,
-            message_id: messageId,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to mark messages as read');
-        }
-
-        setChatrooms((prev) =>
-          prev.map((room) =>
-            room.id === roomId ? { ...room, unread_count: 0 } : room,
-          ),
-        );
-
-        return data.data;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        return null;
-      } finally {
-        setLoading((prev) => ({ ...prev, markAsRead: false }));
-      }
-    },
-    [walletAddress, clearError],
-  );
+      return data.data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      return null;
+    } finally {
+      setLoading((prev) => ({ ...prev, markAsRead: false }));
+    }
+  };
 
   const setCurrentChatroom = async (roomId: number) => {
     currentChatroomId.current = roomId;
@@ -337,6 +341,7 @@ export const useChatrooms = ({
   useEffect(() => {
     if (walletAddress) {
       fetchChatrooms();
+      walletAddressRef.current = walletAddress;
     }
     setCurrentChatroom(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -374,9 +379,7 @@ export const useChatrooms = ({
             });
 
             // Handle read status
-            if (walletAddress) {
-              markAsRead(messageRoomId, newMessage.id);
-            }
+            markAsRead(messageRoomId, newMessage.id);
           } else {
             setChatrooms((prev) =>
               prev.map((room) =>
