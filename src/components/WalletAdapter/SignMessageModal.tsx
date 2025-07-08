@@ -91,9 +91,9 @@ export default function SignMessageModal({
         >
           <div className="flex flex-col gap-2 pb-3">
             <p className="text-sm font-boldy">
-              To start chatting, please verify your wallet address and connect
+              To use this feature, please verify your wallet address and connect
               your wallet. This helps us ensure that you are the owner of the
-              wallet address and allows you to send and receive messages
+              wallet address and allows you to use this feature
               securely.
             </p>
 
