@@ -20,16 +20,18 @@ export function PickTokenModal({
     recommendedToken,
     tokenList,
     pick,
+    isDisplayAllTokens = false,
 }: {
     isPickTokenModalOpen: boolean;
     setIsPickTokenModalOpen: (b: boolean) => void;
     recommendedToken?: Token;
     tokenList: Token[];
     pick: (t: Token) => void;
+    isDisplayAllTokens?: boolean;
 }) {
     const walletTokenBalances = useSelector((state) => state.walletTokenBalances);
     const [tokenSearch, setTokenSearch] = useState<string | null>(null);
-    const [displayAllTokens, setDisplayAllTokens] = useState<boolean>(false);
+    const [displayAllTokens, setDisplayAllTokens] = useState<boolean>(isDisplayAllTokens);
 
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -100,7 +102,7 @@ export function PickTokenModal({
                     </div>
                     : null}
 
-                <div className='w-full flex gap-2'>
+                {!isDisplayAllTokens ? <div className='w-full flex gap-2'>
                     <Button
                         title="Your tokens"
                         className={twMerge("text-xs rounded-lg", !displayAllTokens ? 'border-white/30 text-white/80 border-2' : 'border-transparent text-white/40 border bg-third')}
@@ -118,7 +120,7 @@ export function PickTokenModal({
                         }}
                         variant="outline"
                     />
-                </div>
+                </div> : null}
 
                 <div className={twMerge("flex flex-col w-full items-center mt-2 pr-2.5 max-h-full overflow-y-auto")}>
                     {filteredTokenList.length ? filteredTokenList.map((token, i) => (<div
