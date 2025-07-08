@@ -23,9 +23,9 @@ export default async function handler(
 
       const messageTimestamp = parseInt(timestamp);
       const now = Date.now();
-      const fiveMinutes = 5 * 60 * 1000;
+      const oneMinute = 60 * 1000;
 
-      if (now - messageTimestamp > fiveMinutes) {
+      if (now - messageTimestamp > oneMinute) {
         return res.status(400).json({
           success: false,
           error: 'Signature expired. Please try again.',
