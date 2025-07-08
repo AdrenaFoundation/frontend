@@ -25,8 +25,8 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
-import { DialectNotification } from '../DialectNotification/DialectNotification';
 import Mutagen from '../Mutagen/Mutagen';
+import { NotificationBell } from '../Notifications/NotificationBell';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
@@ -176,7 +176,7 @@ export default function Header({
 
 
       <div className="flex flex-row items-center gap-2 sm:gap-3">
-        <DialectNotification adapters={adapters} />
+        <NotificationBell adapters={adapters} />
 
         <Link href="/buy_alp">
           {tokenPriceALP && aprs ? (
