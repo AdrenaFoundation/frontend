@@ -7,8 +7,8 @@ export function middleware(request: NextRequest) {
     const referer = request.headers.get('referer');
 
     const allowedOrigins = [
-      'https://app.adrena.xyz.com',
-      'https://www.app.adrena.xyz.com',
+      'https://app.adrena.xyz',
+      'https://www.app.adrena.xyz',
       ...(process.env.NODE_ENV === 'development'
         ? ['http://localhost:3000']
         : []),
