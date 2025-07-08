@@ -59,75 +59,77 @@ export default function FriendRequestView({
   return (
     <div className="flex flex-col w-full h-full border-t border-bcolor p-2">
       <ul className="w-full flex flex-col gap-2 h-full">
-        {pendingRequests?.map((request) => (
-          <li
-            key={request.id}
-            className="p-2 flex flex-row justify-between items-center w-full"
-          >
-            <div className="flex flex-row gap-2 items-center">
-              <div className="relative flex-none">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={
-                    getProfileByWallet(request.sender_pubkey)
-                      .profilePictureUrl as string
-                  }
-                  alt="Avatar"
-                  loading="lazy"
-                  className="w-6 h-6 rounded-full flex-none"
-                />
-                {getProfileByWallet(request.sender_pubkey).isOnline ? (
-                  <div className="absolute bottom-0 right-0 bg-green w-[0.4rem] h-[0.4rem] rounded-full" />
-                ) : null}
-              </div>
-
-              <div>
-                <p
-                  className="text-sm font-mono hover:underline cursor-pointer"
-                  style={{
-                    color: generateColorFromString(request.sender_pubkey),
-                  }}
-                  onClick={() => {
-                    if (userProfilesMap?.[request.sender_pubkey]) {
-                      setActiveProfile?.(
-                        userProfilesMap[request.sender_pubkey],
-                      );
+        {pendingRequests && pendingRequests.length > 0 ? (
+          pendingRequests.map((request) => (
+            <li
+              key={request.id}
+              className="p-2 flex flex-row justify-between items-center w-full"
+            >
+              <div className="flex flex-row gap-2 items-center">
+                <div className="relative flex-none">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={
+                      getProfileByWallet(request.sender_pubkey)
+                        .profilePictureUrl as string
                     }
-                  }}
-                >
-                  {getProfileByWallet(request.sender_pubkey).nickname}
-                </p>
+                    alt="Avatar"
+                    loading="lazy"
+                    className="w-6 h-6 rounded-full flex-none"
+                  />
+                  {getProfileByWallet(request.sender_pubkey).isOnline ? (
+                    <div className="absolute bottom-0 right-0 bg-green w-[0.4rem] h-[0.4rem] rounded-full" />
+                  ) : null}
+                </div>
 
-                <p className="opacity-50 text-xs">wants to be your friend</p>
+                <div>
+                  <p
+                    className="text-sm font-mono hover:underline cursor-pointer"
+                    style={{
+                      color: generateColorFromString(request.sender_pubkey),
+                    }}
+                    onClick={() => {
+                      if (userProfilesMap?.[request.sender_pubkey]) {
+                        setActiveProfile?.(
+                          userProfilesMap[request.sender_pubkey],
+                        );
+                      }
+                    }}
+                  >
+                    {getProfileByWallet(request.sender_pubkey).nickname}
+                  </p>
+
+                  <p className="opacity-50 text-xs">wants to be your friend</p>
+                </div>
               </div>
-            </div>
 
-            <div className="mt-1 flex flex-row gap-2 items-center">
-              <Button
-                title="Accept"
-                variant="outline"
-                size="xs"
-                disabled={isFriendReqLoading}
-                className="px-3 rounded-md hover:bg-secondary/30"
-                onClick={handleAccept(request.id)}
-              />
-              <Button
-                title="Reject"
-                variant="lightbg"
-                size="xs"
-                disabled={isFriendReqLoading}
-                className="px-3 rounded-md hover:bg-secondary"
-                onClick={() => rejectFriendRequest(request.id)}
-              />
-            </div>
-          </li>
-        )) ?? (
-            <div className="flex items-center justify-center h-full">
-              <p className="opacity-50 text-sm">
-                No incoming friend requests found
-              </p>
-            </div>
-          )}
+              <div className="mt-1 flex flex-row gap-2 items-center">
+                <Button
+                  title="Accept"
+                  variant="outline"
+                  size="xs"
+                  disabled={isFriendReqLoading}
+                  className="px-3 rounded-md hover:bg-secondary/30"
+                  onClick={handleAccept(request.id)}
+                />
+                <Button
+                  title="Reject"
+                  variant="lightbg"
+                  size="xs"
+                  disabled={isFriendReqLoading}
+                  className="px-3 rounded-md hover:bg-secondary"
+                  onClick={() => rejectFriendRequest(request.id)}
+                />
+              </div>
+            </li>
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="opacity-50 text-sm">
+              No incoming friend requests found
+            </p>
+          </div>
+        )}
       </ul>
     </div>
   );

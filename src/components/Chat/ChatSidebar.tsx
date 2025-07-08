@@ -106,7 +106,7 @@ function ChatSidebar({
     <>
       <div
         className={twMerge(
-          'flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[12rem] bg-secondary',
+          'flex flex-col gap-3 justify-between p-2 border-r border-bcolor w-[14rem] bg-secondary',
           isMobile && 'w-full',
         )}
       >
