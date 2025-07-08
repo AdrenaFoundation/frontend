@@ -18,7 +18,7 @@ export default function authReducer(state = initialState, action: AuthActions) {
   switch (action.type) {
     case 'setIsAuthModalOpen':
       return { ...state, isAuthModalOpen: action.payload };
-    case 'setVerfiedWalletAddresses':
+    case 'setVerifiedWalletAddresses':
       return { ...state, verifiedWalletAddresses: action.payload };
     case 'setIsSignedInAnonymously':
       return { ...state, isSignedInAnonymously: action.payload };

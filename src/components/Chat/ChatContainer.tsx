@@ -13,6 +13,7 @@ import useFriendReq from '@/hooks/useFriendReq';
 import useLiveCount from '@/hooks/useLiveCount';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserProfileMetadata } from '@/types';
+import { getAbbrevWalletAddress } from '@/utils';
 
 // import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Modal from '../common/Modal/Modal';
@@ -69,7 +70,7 @@ function ChatContainer({
 
   const [isChatroomsOpen, setIsChatroomsOpen] = useState(true);
 
-  const [title, setTitle] = useState('General');
+  const [title, setTitle] = useState('Chat');
   const [activeProfile, setActiveProfile] =
     useState<UserProfileMetadata | null>(null);
 
@@ -105,13 +106,16 @@ function ChatContainer({
 
   useEffect(() => {
     if (chatrooms.length > 0) {
-      const name =
-        chatrooms.find((r) => r.id === currentChatroomId)?.type !== 'private'
-          ? chatrooms[currentChatroomId].name
-          : 'Private';
-      setTitle(name ?? 'General');
+      const room =
+        chatrooms.find((r) => r.id === currentChatroomId)
+      const friend = room && room?.participants
+        ? room.participants.filter((p) => p !== walletAddress)[0]
+        : null
+      const newTitle = friend === null ? 'Chat' : userProfilesMap[friend]?.nickname || getAbbrevWalletAddress(friend);
+
+      setTitle(newTitle);
     }
-  }, [chatrooms, currentChatroomId, setCurrentChatroom]);
+  }, [chatrooms, walletAddress, userProfilesMap, currentChatroomId, setCurrentChatroom]);
 
   useEffect(() => {
     if (!walletAddress) return;
@@ -274,8 +278,8 @@ function ChatTitle({
             />
           </div>
         ) : null}
-        <p className="text-lg font-boldy capitalize">
-          <span className="opacity-50 text-lg"># </span>
+        <p className="text-base font-boldy capitalize">
+          <span className="opacity-50 text-base"># </span>
           {friendRequestWindowOpen ? 'Friend Requests' : `${title}`}{' '}
         </p>
 
@@ -365,7 +369,7 @@ function ChatContainerWrapper({
         initial={{ height: '3rem', width: '20rem' }}
         animate={{
           height: isChatOpen ? height : '3rem',
-          width: isChatOpen ? '37.5rem' : '20rem',
+          width: isChatOpen ? '35.5rem' : '20rem',
         }}
         exit={{ height: '3rem', width: '20rem' }}
         transition={{ duration: 0.3 }}

@@ -9,7 +9,7 @@ export type setIsAuthModalOpenAction = {
 };
 
 export type setVerifiedWalletAddressesAction = {
-  type: 'setVerfiedWalletAddresses';
+  type: 'setVerifiedWalletAddresses';
   payload: AuthenticationState['verifiedWalletAddresses'];
 };
 
@@ -34,19 +34,19 @@ export const setVerifiedWalletAddresses =
       if (authError || !user) {
         console.error('Error fetching user:', authError);
         return dispatch({
-          type: 'setVerfiedWalletAddresses',
+          type: 'setVerifiedWalletAddresses',
           payload: [],
         });
       }
 
       dispatch({
-        type: 'setVerfiedWalletAddresses',
+        type: 'setVerifiedWalletAddresses',
         payload: user.app_metadata.verified_wallet_addresses || [],
       });
     } catch (error) {
       console.error('Error setting verified wallet addresses:', error);
       dispatch({
-        type: 'setVerfiedWalletAddresses',
+        type: 'setVerifiedWalletAddresses',
         payload: [],
       });
     }
@@ -65,19 +65,19 @@ export const refreshVerifiedWalletAddresses =
       if (authError || !user) {
         console.error('Error fetching user:', authError);
         return dispatch({
-          type: 'setVerfiedWalletAddresses',
+          type: 'setVerifiedWalletAddresses',
           payload: [],
         });
       }
 
       dispatch({
-        type: 'setVerfiedWalletAddresses',
+        type: 'setVerifiedWalletAddresses',
         payload: user.app_metadata.verified_wallet_addresses,
       });
     } catch (error) {
       console.error('Error refreshing verified wallet addresses:', error);
       dispatch({
-        type: 'setVerfiedWalletAddresses',
+        type: 'setVerifiedWalletAddresses',
         payload: [],
       });
     }

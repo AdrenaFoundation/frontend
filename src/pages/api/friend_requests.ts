@@ -95,7 +95,7 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(500).json({ error: 'No authorization header' });
+      return res.status(401).json({ error: 'No authorization header' });
     }
 
     const accessToken = authHeader.replace('Bearer ', '');
@@ -156,20 +156,20 @@ async function updateFriendRequestStatus(
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(500).json({ error: 'No authorization header' });
+      return res.status(401).json({ error: 'No authorization header' });
     }
 
     const accessToken = authHeader.replace('Bearer ', '');
 
     if (!id || !status) {
       return res
-        .status(500)
+        .status(400)
         .json({ error: 'Request ID and status are required' });
     }
 
     if (!['accepted', 'rejected'].includes(status)) {
       return res
-        .status(500)
+        .status(400)
         .json({ error: 'Status must be either accepted or rejected' });
     }
 

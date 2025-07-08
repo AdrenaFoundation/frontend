@@ -12,6 +12,7 @@ import { WalletAdapterExtended } from '@/types';
 import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
 
+
 export default function SignMessageModal({
   adapters,
 }: {
@@ -41,7 +42,13 @@ export default function SignMessageModal({
     }
 
     try {
-      const message = `Please sign this message to verify your wallet address: ${walletAddress}`;
+      const nonce = crypto.getRandomValues(new Uint32Array(1))[0];
+      const timestamp = Date.now();
+
+      const message = `Please sign this message to verify your wallet address.
+Wallet: ${walletAddress}
+Timestamp: ${timestamp}
+Nonce: ${nonce}`;
 
       const encodedMessage = new TextEncoder().encode(message);
 
@@ -66,6 +73,8 @@ export default function SignMessageModal({
           message,
           signature,
           walletAddress,
+          nonce,
+          timestamp,
         }),
       });
 

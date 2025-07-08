@@ -21,7 +21,7 @@ export interface Message {
   text: string | null;
   timestamp: string;
   wallet: string;
-  username: string | null;
+  username?: string | null;
 }
 
 export interface ReadReceipt {
@@ -284,7 +284,7 @@ async function getUnreadCounts(req: NextApiRequest, res: NextApiResponse) {
 
 async function sendMessage(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { chatroom_id, text, wallet, username } = req.body;
+    const { chatroom_id, text, wallet } = req.body;
 
     if (chatroom_id === null || !text) {
       return res
@@ -309,7 +309,6 @@ async function sendMessage(req: NextApiRequest, res: NextApiResponse) {
           room_id: chatroom_id,
           text,
           wallet,
-          username,
         },
       ])
       .select()

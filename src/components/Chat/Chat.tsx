@@ -97,7 +97,7 @@ function Chat({
                   }
                   alt="Avatar"
                   loading="lazy"
-                  className="w-6 h-6 rounded-full flex-none"
+                  className="w-5 h-5 rounded-full flex-none"
                 />
                 {getProfileByWallet(message.wallet).isOnline ? (
                   <div className="absolute bottom-0 right-0 bg-green w-[0.4rem] h-[0.4rem] rounded-full" />
@@ -108,7 +108,7 @@ function Chat({
                 <div className="flex flex-row gap-1 items-center">
                   <p
                     className={twMerge(
-                      'text-sm font-mono',
+                      'text-xs font-mono',
                       userProfilesMap?.[message.wallet] &&
                       'hover:underline cursor-pointer',
                     )}
@@ -130,7 +130,7 @@ function Chat({
                     })}
                   </p>
                 </div>
-                <p className="text-base opacity-75">{message.text}</p>
+                <p className="text-sm opacity-75">{message.text}</p>
               </div>
             </li>
           ))

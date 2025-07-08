@@ -55,11 +55,31 @@ function ChatSidebar({
     return null;
   }
 
+  const getProfileByWallet = (wallet: string) => {
+    return (
+      userProfilesMap?.[wallet] ?? {
+        nickname: getAbbrevWalletAddress(wallet),
+        profilePictureUrl: PROFILE_PICTURES[0],
+        isOnline: false,
+      }
+    );
+  };
+
   const pendingRequests = friendRequests.filter(
     (req) => req.status === 'pending' && req.receiver_pubkey === walletAddress,
   );
 
-  const privateRooms = chatrooms.filter((room) => room.type === 'private');
+  const privateRooms = chatrooms.filter((room) => room.type === 'private').sort(
+    (a, b) => {
+      const nicknameA = getProfileByWallet(
+        a.participants?.filter((w) => w !== walletAddress)[0] || '',
+      ).nickname.toLowerCase();
+      const nicknameB = getProfileByWallet(
+        b.participants?.filter((w) => w !== walletAddress)[0] || '',
+      ).nickname.toLowerCase();
+      return nicknameA > nicknameB ? 1 : -1;
+    },
+  );
 
   const communityRooms = chatrooms.filter((room) => {
     let displayRoom;
@@ -111,7 +131,7 @@ function ChatSidebar({
           {privateRooms.length > 0 && (
             <>
               <li className="text-xs font-mono opacity-30">
-                Private
+                Friends
               </li>
               {privateRooms.map((room) => {
                 return (

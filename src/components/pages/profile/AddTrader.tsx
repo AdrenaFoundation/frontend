@@ -39,7 +39,7 @@ function AddTrader({
     return (
       <div className="mt-1">
         <Button
-          title="Added"
+          title="Added as friend"
           variant="text"
           size="xs"
           leftIcon={addFriendIcon}
@@ -57,7 +57,7 @@ function AddTrader({
     return (
       <div className="mt-1">
         <Button
-          title="Request Sent"
+          title="Friend Request Sent"
           variant="outline"
           size="xs"
           disabled={true}

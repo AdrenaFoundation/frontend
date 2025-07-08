@@ -206,7 +206,6 @@ export const useChatrooms = ({
             chatroom_id: currentChatroomId.current,
             text,
             wallet: walletAddress,
-            username: null, // TODO: Replace with actual username if available
           }),
         });
 
@@ -277,9 +276,6 @@ export const useChatrooms = ({
     roomId: number,
     messageId: number,
   ): Promise<ReadReceipt | null> => {
-    console.log(
-      `Marking messages as read for room ${roomId} and message ${messageId} by ${walletAddressRef.current}`,
-    );
     if (!walletAddressRef.current) {
       setError('User public key is required');
       return null;

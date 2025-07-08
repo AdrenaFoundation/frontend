@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import nacl from 'tweetnacl';
 
 import supabaseServiceClient from '@/supabaseServiceClient';
+import { isValidPublicKey } from '@/utils';
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,16 +11,39 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     try {
-      const { message, signature, walletAddress } = req.body;
+      const { message, signature, walletAddress, timestamp, nonce } = req.body;
 
-      if (!message || !signature || !walletAddress) {
+      if (!message || !signature || !walletAddress || !timestamp || !nonce) {
         return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      if (!isValidPublicKey(walletAddress)) {
+        return res.status(400).json({ error: 'Invalid wallet address' });
+      }
+
+      const messageTimestamp = parseInt(timestamp);
+      const now = Date.now();
+      const fiveMinutes = 5 * 60 * 1000;
+
+      if (now - messageTimestamp > fiveMinutes) {
+        return res.status(400).json({
+          success: false,
+          error: 'Signature expired. Please try again.',
+        });
+      }
+
+      // Validate nonce exists and is reasonable
+      if (!nonce || nonce === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid nonce',
+        });
       }
 
       const authHeader = req.headers.authorization;
 
       if (!authHeader) {
-        return res.status(500).json({ error: 'No authorization header' });
+        return res.status(401).json({ error: 'No authorization header' });
       }
 
       const token = authHeader.replace('Bearer ', '');
