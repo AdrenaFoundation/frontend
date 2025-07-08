@@ -141,7 +141,7 @@ function Chat({
         )}
       </motion.ul>
 
-      <div className={twMerge("relative flex flex-row gap-1 items-center w-full p-2 pb-14 bg-secondary border-t",
+      <div className={twMerge("relative flex flex-row gap-1 items-center w-full px-2 pb-14",
         !walletAddress && 'opacity-20 cursor-not-allowed pointer-events-none'
       )}>
         <input
@@ -154,12 +154,12 @@ function Chat({
               handleSendMessage();
             }
           }}
-          className="text-sm w-full p-2 mt-2 bg-bcolor border border-white/10 rounded-lg"
+          className="text-sm w-full p-2 bg-bcolor border border-white/10 rounded-lg"
         />
         <Button
           size="sm"
           title="Send"
-          className={twMerge("absolute right-4 font-boldy bg-[#E2464A] text-white mt-2 w-14 h-6 rounded-md",
+          className={twMerge("absolute right-4 font-boldy bg-[#E2464A] text-white w-14 h-6 rounded-md",
             isSendingMessage && 'opacity-50 cursor-not-allowed pointer-events-none'
           )}
           onClick={handleSendMessage}

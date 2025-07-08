@@ -111,9 +111,9 @@ function ChatContainer({
       const friend = room && room?.participants
         ? room.participants.filter((p) => p !== walletAddress)[0]
         : null
-      const newTitle = friend === null ? 'Chat' : userProfilesMap[friend]?.nickname || getAbbrevWalletAddress(friend);
+      const newTitle = friend === null ? room?.name : userProfilesMap[friend]?.nickname || getAbbrevWalletAddress(friend);
 
-      setTitle(newTitle);
+      setTitle(newTitle ?? '');
     }
   }, [chatrooms, walletAddress, userProfilesMap, currentChatroomId, setCurrentChatroom]);
 
@@ -279,8 +279,10 @@ function ChatTitle({
           </div>
         ) : null}
         <p className="text-base font-boldy capitalize">
-          <span className="opacity-50 text-base"># </span>
-          {friendRequestWindowOpen ? 'Friend Requests' : `${title}`}{' '}
+
+          <span className="opacity-50 text-base"># {(!isChatOpen && !isLoading) ? 'Chat:' : null}</span>
+
+          {friendRequestWindowOpen ? 'Friend Requests' : ` ${title}`}{' '}
         </p>
 
         {/* {!friendRequestWindowOpen ? (
