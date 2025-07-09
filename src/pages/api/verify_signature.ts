@@ -21,6 +21,21 @@ export default async function handler(
         return res.status(400).json({ error: 'Invalid wallet address' });
       }
 
+      // Check if this nonce has been used before
+      const { data: existingNonce } = await supabaseServiceClient
+        .from('used_nonces')
+        .select('nonce')
+        .eq('nonce', nonce)
+        .eq('wallet_address', walletAddress)
+        .single();
+
+      if (existingNonce) {
+        return res.status(400).json({
+          success: false,
+          error: 'Nonce has already been used',
+        });
+      }
+
       const messageTimestamp = parseInt(timestamp);
       const now = Date.now();
       const oneMinute = 60 * 1000;
@@ -72,6 +87,11 @@ export default async function handler(
       );
 
       if (isValid) {
+        await supabaseServiceClient.from('used_nonces').insert({
+          nonce,
+          wallet_address: walletAddress,
+        });
+
         const {
           data: { user: userData },
           error: userError,

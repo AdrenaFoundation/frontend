@@ -63,7 +63,7 @@ Nonce: ${nonce}`;
 
       const signature = Buffer.from(signatureBytes).toString('base64');
 
-      await fetch('/api/verify_signature', {
+      const result = await fetch('/api/verify_signature', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,6 +77,13 @@ Nonce: ${nonce}`;
           timestamp,
         }),
       });
+
+      const data = await result.json();
+
+      if (!data.success) {
+        console.error('Signature verification failed:', data?.error);
+        return;
+      }
 
       dispatch(refreshVerifiedWalletAddresses());
 
