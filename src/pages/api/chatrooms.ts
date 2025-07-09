@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseAnonClient from '@/supabaseAnonClient';
+import supabaseServiceClient from '@/supabaseServiceClient';
 
 export type ChatroomType = 'community' | 'private' | 'group' | 'adrena';
 
@@ -20,7 +21,7 @@ export interface Message {
   text: string | null;
   timestamp: string;
   wallet: string;
-  username: string | null;
+  username?: string | null;
 }
 
 export interface ReadReceipt {
@@ -70,19 +71,20 @@ async function getChatrooms(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Get all community chatrooms
-    const { data: communityRooms, error: communityError } = await supabaseClient
-      .from('chatrooms')
-      .select('*')
-      .eq('type', 'community')
-      .order('id', { ascending: true })
-      .limit(Number(limit));
+    const { data: communityRooms, error: communityError } =
+      await supabaseServiceClient
+        .from('chatrooms')
+        .select('*')
+        .eq('type', 'community')
+        .order('id', { ascending: true })
+        .limit(Number(limit));
     // .offset(Number(offset));
 
     if (communityError) {
       return res.status(500).json({ error: communityError.message });
     }
 
-    const { data: userRooms } = await supabaseClient
+    const { data: userRooms } = await supabaseServiceClient
       .from('chat_participants')
       .select(
         `
@@ -112,7 +114,7 @@ async function getChatrooms(req: NextApiRequest, res: NextApiResponse) {
 
     const roomsWithUnreadCounts = await Promise.all(
       allRooms.map(async (room) => {
-        const { data: latestMessage } = await supabaseClient
+        const { data: latestMessage } = await supabaseServiceClient
           .from('messages')
           .select('*')
           .eq('room_id', room.id)
@@ -120,7 +122,7 @@ async function getChatrooms(req: NextApiRequest, res: NextApiResponse) {
           .limit(1)
           .single();
 
-        const { data: readReceipt } = await supabaseClient
+        const { data: readReceipt } = await supabaseServiceClient
           .from('read_receipts')
           .select('*')
           .eq('user_pubkey', user_pubkey)
@@ -132,7 +134,7 @@ async function getChatrooms(req: NextApiRequest, res: NextApiResponse) {
           latestMessage &&
           (!readReceipt || readReceipt.last_read_message_id < latestMessage.id)
         ) {
-          const { count, error: countError } = await supabaseClient
+          const { count, error: countError } = await supabaseServiceClient
             .from('messages')
             .select('*', { count: 'exact', head: true })
             .eq('room_id', room.id)
@@ -169,21 +171,24 @@ async function getMessages(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ error: 'Room ID is required' });
     }
 
-    const query = supabaseClient
+    let query = supabaseAnonClient
       .from('messages')
       .select('*')
       .eq('room_id', room_id)
       .order('id', { ascending: false })
       .limit(Number(limit));
 
-    // [TODO]: Implement pagination logic
-    // if (before_id) {
-    //   query = query.lt('id', before_id);
-    // }
-    // else if (after_id) {
-    //   query = query.gt('id', after_id);
-    //   query = query.order('id', { ascending: true });
-    // }
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+      const accessToken = authHeader.replace('Bearer ', '');
+
+      query = query.setHeader('Authorization', `Bearer ${accessToken}`);
+    } else if (Number(room_id) > 2 && !authHeader) {
+      return res.status(400).json({
+        error: 'Access denied. Please provide a valid authorization token.',
+      });
+    }
 
     const { data, error } = await query;
 
@@ -212,12 +217,12 @@ async function getUnreadCounts(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ error: 'User public key is required' });
     }
 
-    const { data: communityRooms } = await supabaseClient
+    const { data: communityRooms } = await supabaseServiceClient
       .from('chatrooms')
       .select('id')
       .eq('type', 'community');
 
-    const { data: friendRequests } = await supabaseClient
+    const { data: friendRequests } = await supabaseServiceClient
       .from('friend_requests')
       .select('chatroom_id')
       .or(`sender_pubkey.eq.${user_pubkey},receiver_pubkey.eq.${user_pubkey}`)
@@ -231,7 +236,7 @@ async function getUnreadCounts(req: NextApiRequest, res: NextApiResponse) {
       ...privateRoomIds,
     ];
 
-    const { data: readReceipts } = await supabaseClient
+    const { data: readReceipts } = await supabaseServiceClient
       .from('read_receipts')
       .select('*')
       .eq('user_pubkey', user_pubkey)
@@ -247,7 +252,7 @@ async function getUnreadCounts(req: NextApiRequest, res: NextApiResponse) {
       allRoomIds.map(async (roomId) => {
         const lastReadId = receiptsByRoom[roomId]?.last_read_message_id || 0;
 
-        const { count, error } = await supabaseClient
+        const { count, error } = await supabaseServiceClient
           .from('messages')
           .select('*', { count: 'exact', head: true })
           .eq('room_id', roomId)
@@ -279,7 +284,7 @@ async function getUnreadCounts(req: NextApiRequest, res: NextApiResponse) {
 
 async function sendMessage(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { chatroom_id, text, wallet, username } = req.body;
+    const { chatroom_id, text, wallet } = req.body;
 
     if (chatroom_id === null || !text) {
       return res
@@ -287,7 +292,7 @@ async function sendMessage(req: NextApiRequest, res: NextApiResponse) {
         .json({ error: 'Room ID and message text are required' });
     }
 
-    const { data: chatroom, error: chatroomError } = await supabaseClient
+    const { data: chatroom, error: chatroomError } = await supabaseServiceClient
       .from('chatrooms')
       .select('*')
       .eq('id', chatroom_id)
@@ -297,14 +302,13 @@ async function sendMessage(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json({ error: 'Chatroom not found' });
     }
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabaseServiceClient
       .from('messages')
       .insert([
         {
           room_id: chatroom_id,
           text,
           wallet,
-          username,
         },
       ])
       .select()
@@ -334,7 +338,7 @@ async function markAsRead(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    const { data: existingReceipt } = await supabaseClient
+    const { data: existingReceipt } = await supabaseServiceClient
       .from('read_receipts')
       .select('*')
       .eq('user_pubkey', user_pubkey)
@@ -344,7 +348,7 @@ async function markAsRead(req: NextApiRequest, res: NextApiResponse) {
     let result;
     if (existingReceipt) {
       if (existingReceipt.last_read_message_id < message_id) {
-        result = await supabaseClient
+        result = await supabaseServiceClient
           .from('read_receipts')
           .update({
             last_read_message_id: message_id,
@@ -360,7 +364,7 @@ async function markAsRead(req: NextApiRequest, res: NextApiResponse) {
         });
       }
     } else {
-      result = await supabaseClient
+      result = await supabaseServiceClient
         .from('read_receipts')
         .insert([
           {

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseAnonClient from '@/supabaseAnonClient';
+import supabaseServiceClient from '@/supabaseServiceClient';
 
 export type FriendRequestStatus = 'pending' | 'accepted' | 'rejected';
 
@@ -51,7 +52,7 @@ async function getFriendRequests(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'User public key is required' });
     }
 
-    let query = supabaseClient.from('friend_requests').select('*');
+    let query = supabaseServiceClient.from('friend_requests').select('*');
 
     if (type === 'sent') {
       query = query.eq('sender_pubkey', user_pubkey);
@@ -91,13 +92,21 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
         .json({ error: 'Sender and receiver public keys are required' });
     }
 
-    const { data: existingRequests, error: checkError } = await supabaseClient
-      .from('friend_requests')
-      .select('*')
-      .or(
-        `and(sender_pubkey.eq.${sender_pubkey},receiver_pubkey.eq.${receiver_pubkey}),and(sender_pubkey.eq.${receiver_pubkey},receiver_pubkey.eq.${sender_pubkey})`,
-      )
-      .not('status', 'eq', 'rejected');
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No authorization header' });
+    }
+
+    const accessToken = authHeader.replace('Bearer ', '');
+
+    const { data: existingRequests, error: checkError } =
+      await supabaseServiceClient
+        .from('friend_requests')
+        .select('*')
+        .or(
+          `and(sender_pubkey.eq.${sender_pubkey},receiver_pubkey.eq.${receiver_pubkey}),and(sender_pubkey.eq.${receiver_pubkey},receiver_pubkey.eq.${sender_pubkey})`,
+        );
 
     if (checkError) {
       return res.status(500).json({ error: checkError.message });
@@ -115,10 +124,12 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
       status: 'pending',
     };
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabaseAnonClient
       .from('friend_requests')
       .insert([newFriendRequest])
-      .select();
+      .select()
+      .single()
+      .setHeader('Authorization', `Bearer ${accessToken}`);
 
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -126,7 +137,7 @@ async function createFriendRequest(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       message: 'Friend request sent successfully',
-      friend_request: data?.[0],
+      friend_request: data,
     });
   } catch (error) {
     console.error('Error creating friend request:', error);
@@ -142,19 +153,27 @@ async function updateFriendRequestStatus(
   try {
     const { id, status } = req.body;
 
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No authorization header' });
+    }
+
+    const accessToken = authHeader.replace('Bearer ', '');
+
     if (!id || !status) {
       return res
-        .status(500)
+        .status(400)
         .json({ error: 'Request ID and status are required' });
     }
 
     if (!['accepted', 'rejected'].includes(status)) {
       return res
-        .status(500)
+        .status(400)
         .json({ error: 'Status must be either accepted or rejected' });
     }
 
-    const { data: requestData, error: fetchError } = await supabaseClient
+    const { data: requestData, error: fetchError } = await supabaseServiceClient
       .from('friend_requests')
       .select('*')
       .eq('id', id)
@@ -165,18 +184,20 @@ async function updateFriendRequestStatus(
     }
 
     if (status === 'accepted') {
-      const { data: chatroomData, error: chatroomError } = await supabaseClient
-        .from('chatrooms')
-        .insert([{ type: 'private' }])
-        .select()
-        .single();
+      const { data: chatroomData, error: chatroomError } =
+        await supabaseAnonClient
+          .from('chatrooms')
+          .insert([{ type: 'private' }])
+          .select()
+          .single()
+          .setHeader('Authorization', `Bearer ${accessToken}`);
 
       if (chatroomError || !chatroomData) {
         return res.status(500).json({ error: 'Failed to create chatroom' });
       }
 
       const { data: participantsData, error: participantsError } =
-        await supabaseClient
+        await supabaseAnonClient
           .from('chat_participants')
           .insert([
             {
@@ -188,7 +209,8 @@ async function updateFriendRequestStatus(
               chatroom_id: chatroomData.id,
             },
           ])
-          .select();
+          .select()
+          .setHeader('Authorization', `Bearer ${accessToken}`);
 
       if (participantsError || !participantsData) {
         return res.status(500).json({ error: 'Failed to add participants' });
@@ -199,11 +221,12 @@ async function updateFriendRequestStatus(
       status: status as FriendRequestStatus,
     };
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabaseAnonClient
       .from('friend_requests')
       .update(updateData)
       .eq('id', id)
-      .select();
+      .select()
+      .setHeader('Authorization', `Bearer ${accessToken}`);
 
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -227,7 +250,7 @@ async function deleteFriendRequest(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Request ID is required' });
     }
 
-    const { error } = await supabaseClient
+    const { error } = await supabaseServiceClient
       .from('friend_requests')
       .delete()
       .eq('id', id);
@@ -246,7 +269,7 @@ async function deleteFriendRequest(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function hasDisabledFriendReq(walletAddress: string): Promise<boolean> {
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabaseServiceClient
     .from('settings')
     .select('wallet_address, preferences')
     .eq('wallet_address', walletAddress)

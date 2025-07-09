@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseAnonClient from '@/supabaseAnonClient';
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,7 +16,7 @@ export default async function handler(
         favoriteAchievements: null,
       });
     }
-    const { error } = await supabaseClient
+    const { error } = await supabaseAnonClient
       .from('user_favorite_achievements')
       .upsert({
         wallet_address,
@@ -41,7 +41,7 @@ export default async function handler(
       });
     }
 
-    const { error } = await supabaseClient
+    const { error } = await supabaseAnonClient
       .from('user_favorite_achievements')
       .update({ favorite_achievements })
       .eq('wallet_address', wallet_address);
@@ -63,7 +63,7 @@ export default async function handler(
       });
     }
 
-    const { data } = await supabaseClient
+    const { data } = await supabaseAnonClient
       .from('user_favorite_achievements')
       .select('favorite_achievements')
       .eq('wallet_address', wallet_address)

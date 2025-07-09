@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
 import { useSelector } from '@/store/store';
-import supabaseClient from '@/supabase';
+import supabaseAnonClient from '@/supabaseAnonClient';
 
 interface UseChatroomsReturn {
   loading: {
@@ -37,7 +37,11 @@ interface UseChatroomsReturn {
   setCurrentChatroom: (roomId: number) => void;
 }
 
-export const useChatrooms = (): UseChatroomsReturn => {
+export const useChatrooms = ({
+  setIsChatOpen,
+}: {
+  setIsChatOpen: (isOpen: boolean) => void;
+}): UseChatroomsReturn => {
   const { wallet } = useSelector((state) => state.walletState);
   const walletAddress = wallet?.walletAddress || null;
 
@@ -57,6 +61,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
   >({});
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const currentChatroomId = useRef<number>(0);
+  const walletAddressRef = useRef<string | null>(walletAddress);
 
   // Use a ref to store the channel instance
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -69,7 +74,6 @@ export const useChatrooms = (): UseChatroomsReturn => {
 
   const fetchChatrooms = useCallback(
     async (isRefresh = false): Promise<Chatroom[]> => {
-      console.log('Fetching chatrooms...', walletAddress);
       if (!walletAddress) {
         setError('User public key is required');
         setChatrooms([]);
@@ -129,11 +133,25 @@ export const useChatrooms = (): UseChatroomsReturn => {
       try {
         setLoading((prev) => ({ ...prev, messages: true }));
         clearError();
+        const {
+          data: { session },
+        } = await supabaseAnonClient.auth.getSession();
 
         let url = `/api/chatrooms?type=messages&room_id=${roomId}&limit=${limit}`;
+
         if (beforeId) url += `&before_id=${beforeId}`;
 
-        const response = await fetch(url);
+        // fetch messages from the API and if session is available, include it in the request
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(session
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : {}),
+          },
+        });
+
         const data = await response.json();
 
         if (!response.ok) {
@@ -188,7 +206,6 @@ export const useChatrooms = (): UseChatroomsReturn => {
             chatroom_id: currentChatroomId.current,
             text,
             wallet: walletAddress,
-            username: '', // TODO: Replace with actual username if available
           }),
         });
 
@@ -255,51 +272,51 @@ export const useChatrooms = (): UseChatroomsReturn => {
   }, [walletAddress, clearError]);
 
   // Mark messages as read
-  const markAsRead = useCallback(
-    async (roomId: number, messageId: number): Promise<ReadReceipt | null> => {
-      if (!walletAddress) {
-        setError('User public key is required');
-        return null;
+  const markAsRead = async (
+    roomId: number,
+    messageId: number,
+  ): Promise<ReadReceipt | null> => {
+    if (!walletAddressRef.current) {
+      setError('User public key is required');
+      return null;
+    }
+
+    try {
+      setLoading((prev) => ({ ...prev, markAsRead: true }));
+      clearError();
+
+      const response = await fetch('/api/chatrooms?type=read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_pubkey: walletAddressRef.current,
+          chatroom_id: roomId,
+          message_id: messageId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to mark messages as read');
       }
 
-      try {
-        setLoading((prev) => ({ ...prev, markAsRead: true }));
-        clearError();
+      setChatrooms((prev) =>
+        prev.map((room) =>
+          room.id === roomId ? { ...room, unread_count: 0 } : room,
+        ),
+      );
 
-        const response = await fetch('/api/chatrooms?type=read', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_pubkey: walletAddress,
-            chatroom_id: roomId,
-            message_id: messageId,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to mark messages as read');
-        }
-
-        setChatrooms((prev) =>
-          prev.map((room) =>
-            room.id === roomId ? { ...room, unread_count: 0 } : room,
-          ),
-        );
-
-        return data.data;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        return null;
-      } finally {
-        setLoading((prev) => ({ ...prev, markAsRead: false }));
-      }
-    },
-    [walletAddress, clearError],
-  );
+      return data.data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      return null;
+    } finally {
+      setLoading((prev) => ({ ...prev, markAsRead: false }));
+    }
+  };
 
   const setCurrentChatroom = async (roomId: number) => {
     currentChatroomId.current = roomId;
@@ -320,6 +337,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
   useEffect(() => {
     if (walletAddress) {
       fetchChatrooms();
+      walletAddressRef.current = walletAddress;
     }
     setCurrentChatroom(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -329,7 +347,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
   useEffect(() => {
     if (hasSubscribed.current) return;
 
-    const channel = supabaseClient
+    const channel = supabaseAnonClient
       .channel('global_chat_messages')
       .on(
         'postgres_changes',
@@ -357,9 +375,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
             });
 
             // Handle read status
-            if (walletAddress) {
-              markAsRead(messageRoomId, newMessage.id);
-            }
+            markAsRead(messageRoomId, newMessage.id);
           } else {
             setChatrooms((prev) =>
               prev.map((room) =>
@@ -377,7 +393,10 @@ export const useChatrooms = (): UseChatroomsReturn => {
         },
       )
       .subscribe((status, err) => {
-        console.log(`Global subscription status:`, status, err);
+        if (status !== 'SUBSCRIBED') {
+          console.error('Failed to subscribe to global chat messages:', err);
+          setIsChatOpen(false);
+        }
       });
 
     // Store the channel reference
@@ -388,7 +407,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
     return () => {
       console.log('Cleaning up Supabase subscription');
       if (channelRef.current) {
-        supabaseClient.removeChannel(channelRef.current);
+        supabaseAnonClient.removeChannel(channelRef.current);
         hasSubscribed.current = false;
       }
     };

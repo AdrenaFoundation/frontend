@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
+import { checkAndSignInAnonymously, setVerifiedWalletAddresses } from '@/actions/authActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
@@ -216,9 +217,12 @@ function AppComponent({
   useEffect(() => {
     if (!wallet) {
       setConnected(false);
+      console.log('No wallet connected, setting Adrena program to null');
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
+
+    dispatch(setVerifiedWalletAddresses())
 
     setConnected(true);
     window.adrena.client.setAdrenaProgram(
@@ -231,7 +235,13 @@ function AppComponent({
         }),
       ),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
+
+  useEffect(() => {
+    dispatch(checkAndSignInAnonymously());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     window.adrena.mainConnection = activeRpc.connection;
