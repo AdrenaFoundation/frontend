@@ -11,8 +11,33 @@ export function middleware(request: NextRequest) {
       'https://www.app.adrena.xyz',
     ];
 
+    const isValidVercelPreview = (url: string) => {
+      // Vercel preview domains follow this pattern:
+      // https://frontend-{hash}-{team}.vercel.app
+      // or https://your-app-name-{hash}-{team}.vercel.app
+      const vercelPreviewPattern =
+        /^https:\/\/frontend-[a-z0-9]+-[a-z0-9]+\.vercel\.app$/;
+      const customVercelPattern =
+        /^https:\/\/[a-z0-9-]+-[a-z0-9]+-[a-z0-9]+\.vercel\.app$/;
+
+      return vercelPreviewPattern.test(url) || customVercelPattern.test(url);
+    };
+
+    const isOriginAllowed = (origin: string) => {
+      if (allowedOrigins.includes(origin)) {
+        return true;
+      }
+
+      // Allow Vercel preview domains
+      if (isValidVercelPreview(origin)) {
+        return true;
+      }
+
+      return false;
+    };
+
     if (process.env.NODE_ENV === 'production') {
-      if (!origin || !allowedOrigins.includes(origin)) {
+      if (!origin || !isOriginAllowed(origin)) {
         return new NextResponse(
           JSON.stringify({ error: 'Forbidden - Invalid origin' }),
           { status: 403, headers: { 'content-type': 'application/json' } },
@@ -21,7 +46,8 @@ export function middleware(request: NextRequest) {
 
       if (
         !referer ||
-        !allowedOrigins.some((allowed) => referer.startsWith(allowed))
+        (!allowedOrigins.some((allowed) => referer.startsWith(allowed)) &&
+          !isValidVercelPreview(referer))
       ) {
         return new NextResponse(
           JSON.stringify({ error: 'Forbidden - Invalid referer' }),
@@ -32,8 +58,8 @@ export function middleware(request: NextRequest) {
 
     const response = NextResponse.next();
 
-    if (allowedOrigins.includes(origin || '')) {
-      response.headers.set('Access-Control-Allow-Origin', origin || '');
+    if (origin && isOriginAllowed(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
     }
 
     response.headers.set(
