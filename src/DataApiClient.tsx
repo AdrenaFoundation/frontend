@@ -772,7 +772,7 @@ export default class DataApiClient {
     }): Promise<EnrichedPositionApiV2 | null> {
         try {
             const response = await fetch(
-                `${DataApiClient.DATAPI_URL}/v2/position?user_wallet=${walletAddress
+                `${DataApiClient.DATAPI_URL}/v3/position?user_wallet=${walletAddress
                 }&status=liquidate&status=close&limit=${limit}&offset=${offset}`,
             );
 
@@ -811,10 +811,14 @@ export default class DataApiClient {
                         lowestLeverage: data.lowest_leverage,
                         entryCollateralAmount: data.entry_collateral_amount,
                         entryCollateralAmountNative: data.entry_collateral_amount_native,
-                        collateralAmount: data.collateral_amount,
-                        collateralAmountNative: data.collateral_amount_native,
                         increaseCollateralAmount: data.increase_collateral_amount,
                         increaseCollateralAmountNative: data.increase_collateral_amount_native,
+                        decreaseCollateralAmount: data.decrease_collateral_amount,
+                        decreaseCollateralAmountNative: data.decrease_collateral_amount_native,
+                        closeCollateralAmount: data.close_collateral_amount,
+                        closeCollateralAmountNative: data.close_collateral_amount_native,
+                        collateralAmount: data.collateral_amount,
+                        collateralAmountNative: data.collateral_amount_native,
                         exitAmountNative: data.exit_amount_native,
                         closedBySlTp: data.closed_by_sl_tp,
                         volume: data.volume,
@@ -827,14 +831,24 @@ export default class DataApiClient {
                         totalPoints: data.total_points,
                         entrySize: data.entry_size,
                         increaseSize: data.increase_size,
+                        decreaseSize: data.decrease_size,
+                        closeSize: data.close_size,
                         exitSize: data.exit_size,
                         entryPrice: data.entry_price,
                         exitPrice: data.exit_price,
                         entryDate: new Date(data.entry_date),
                         exitDate: data.exit_date ? new Date(data.exit_date) : null,
                         pnl: data.pnl,
+                        decreasePnl: data.decrease_pnl,
+                        closePnl: data.close_pnl,
                         fees: data.fees,
+                        totalDecreaseFees: data.total_decrease_fees,
+                        totalCloseFees: data.total_close_fees,
                         borrowFees: data.borrow_fees,
+                        decreaseBorrowFees: data.decrease_borrow_fees,
+                        closeBorrowFees: data.close_borrow_fees,
+                        decreaseExitFees: data.decrease_exit_fees,
+                        closeExitFees: data.close_exit_fees,
                         exitFees: data.exit_fees,
                         createdAt: new Date(data.created_at),
                         updatedAt: data.updated_at ? new Date(data.updated_at) : null,
@@ -1339,7 +1353,7 @@ export default class DataApiClient {
                 params.append('page_size', pageSize.toString());
             }
 
-            const url = `${DataApiClient.DATAPI_URL}/export/positions?${params.toString()}`;
+            const url = `${DataApiClient.DATAPI_URL}/v2/export/positions?${params.toString()}`;
 
             const response = await fetch(url);
 
@@ -1433,7 +1447,7 @@ export default class DataApiClient {
             params.append('page_size', pageSize.toString());
         }
 
-        const url = `${DataApiClient.DATAPI_URL}/export/positions?${params.toString()}`;
+        const url = `${DataApiClient.DATAPI_URL}/v2/export/positions?${params.toString()}`;
 
         // Open URL directly - browser will handle download if server sends proper headers
         window.open(url, '_blank');

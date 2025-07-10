@@ -13,8 +13,10 @@ interface CollateralTooltipProps {
   entryCollateralAmountNative: number;
   increaseCollateralAmount: number;
   increaseCollateralAmountNative: number;
-  collateralAmount: number;
-  collateralAmountNative: number;
+  decreaseCollateralAmount: number;
+  decreaseCollateralAmountNative: number;
+  closeCollateralAmount: number;
+  closeCollateralAmountNative: number;
   exitAmountNative: number;
   children: ReactElement;
 }
@@ -25,8 +27,10 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
   entryCollateralAmountNative,
   increaseCollateralAmount,
   increaseCollateralAmountNative,
-  collateralAmount,
-  collateralAmountNative,
+  decreaseCollateralAmount,
+  decreaseCollateralAmountNative,
+  closeCollateralAmount,
+  closeCollateralAmountNative,
   exitAmountNative,
   children,
 }) => {
@@ -82,14 +86,14 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
 
       <div>
         <div className="flex justify-between">
-          <span>Total Collateral Amount:</span>
+          <span>Decrease Collateral:</span>
           <span className="ml-4 inline-block">
-            <FormatNumber nb={collateralAmount} format="currency" isDecimalDimmed={false} />
+            <FormatNumber nb={decreaseCollateralAmount} format="currency" isDecimalDimmed={false} />
           </span>
         </div>
         <div className="flex justify-end">
           <span className="ml-4 flex items-center gap-2 text-sm">
-            <FormatNumber nb={collateralAmountNative} isDecimalDimmed={false} precision={token.decimals} />
+            <FormatNumber nb={decreaseCollateralAmountNative} isDecimalDimmed={false} precision={token.decimals} />
             <Image
               className="w-4 h-4 rounded-full"
               src={tokenImage}
@@ -105,7 +109,30 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
 
       <div>
         <div className="flex justify-between">
-          <span>Exit Amount:</span>
+          <span>Close Collateral:</span>
+          <span className="ml-4 inline-block">
+            <FormatNumber nb={closeCollateralAmount} format="currency" isDecimalDimmed={false} />
+          </span>
+        </div>
+        <div className="flex justify-end">
+          <span className="ml-4 flex items-center gap-2 text-sm">
+            <FormatNumber nb={closeCollateralAmountNative} isDecimalDimmed={false} precision={token.decimals} />
+            <Image
+              className="w-4 h-4 rounded-full"
+              src={tokenImage}
+              width={200}
+              height={200}
+              alt={`${token.symbol} logo`}
+            />
+          </span>
+        </div>
+      </div>
+
+      <div className="h-px w-full bg-whiteLabel/10 mt-2 mb-2" />
+
+      <div>
+        <div className="flex justify-between">
+          <span>Total Exit Amount:</span>
           <div className="flex justify-end">
             <span className="ml-4 flex items-center gap-2 text-sm">
               <FormatNumber nb={exitAmountNative} isDecimalDimmed={false} precision={token.decimals} />

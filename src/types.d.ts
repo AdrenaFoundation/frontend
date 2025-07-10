@@ -1491,20 +1491,34 @@ export type PositionApiRawData = {
   exit_price: number;
   entry_size: number;
   increase_size: number;
+  decrease_size: number; // V3 only
+  close_size: number; // V3 only
   exit_size: number;
   pnl: number;
+  decrease_pnl: number; // V3 only
+  close_pnl: number; // V3 only
   entry_leverage: number;
   lowest_leverage: number;
   entry_date: string; // ISO date string
   exit_date: string | null; // ISO date string
   fees: number;
+  total_decrease_fees: number; // V3 only
+  total_close_fees: number; // V3 only
   borrow_fees: number;
+  decrease_borrow_fees: number; // V3 only
+  close_borrow_fees: number; // V3 only
   exit_fees: number;
+  decrease_exit_fees: number; // V3 only
+  close_exit_fees: number; // V3 only
   last_ix: string;
   entry_collateral_amount: number;
   entry_collateral_amount_native: number;
   increase_collateral_amount: number;
   increase_collateral_amount_native: number;
+  decrease_collateral_amount: number; // V3 only
+  decrease_collateral_amount_native: number; // V3 only
+  close_collateral_amount: number; // V3 only
+  close_collateral_amount_native: number; // V3 only
   collateral_amount: number;
   collateral_amount_native: number;
   exit_amount_native: number;
@@ -1540,20 +1554,34 @@ export type EnrichedPositionApi = {
   exitPrice: number;
   entrySize: number;
   increaseSize: number;
+  decreaseSize: number; // V3 only
+  closeSize: number; // V3 only
   exitSize: number;
   pnl: number;
+  decreasePnl: number; // V3 only
+  closePnl: number; // V3 only
   entryLeverage: number;
   lowestLeverage: number;
   entryDate: Date;
   exitDate: Date | null;
   fees: number;
+  totalDecreaseFees: number; // V3 only
+  totalCloseFees: number; // V3 only
   borrowFees: number;
+  decreaseBorrowFees: number; // V3 only
+  closeBorrowFees: number; // V3 only
   exitFees: number;
+  decreaseExitFees: number; // V3 only
+  closeExitFees: number; // V3 only
   lastIx: string;
   entryCollateralAmount: number;
   entryCollateralAmountNative: number;
   increaseCollateralAmount: number;
   increaseCollateralAmountNative: number;
+  decreaseCollateralAmount: number; // V3 only
+  decreaseCollateralAmountNative: number; // V3 only
+  closeCollateralAmount: number; // V3 only
+  closeCollateralAmountNative: number; // V3 only
   collateralAmount: number;
   collateralAmountNative: number;
   exitAmountNative: number;
@@ -1836,6 +1864,7 @@ export type PositionTransaction = {
     takeProfitLimitPrice: number | null;
     collateralAmountNative: number | null;
     newCollateralAmountUsd: number | null;
+    percentage: number | null;
   };
   transactionDate: Date;
 };
@@ -1867,6 +1896,7 @@ export type RawTransactionPositionData = {
     takeProfitLimitPrice?: number | null;
     collateralAmountNative?: number | null;
     newCollateralAmountUsd?: number | null;
+    percentage?: number | null;
   };
   transaction_date: Date;
 };
