@@ -13,7 +13,6 @@ import { getAbbrevWalletAddress } from '@/utils';
 
 import Loader from '../Loader/Loader';
 
-
 function ChatSidebar({
   currentChatroomId,
   chatrooms,
@@ -69,8 +68,9 @@ function ChatSidebar({
     (req) => req.status === 'pending' && req.receiver_pubkey === walletAddress,
   );
 
-  const privateRooms = chatrooms.filter((room) => room.type === 'private').sort(
-    (a, b) => {
+  const privateRooms = chatrooms
+    .filter((room) => room.type === 'private')
+    .sort((a, b) => {
       const nicknameA = getProfileByWallet(
         a.participants?.filter((w) => w !== walletAddress)[0] || '',
       ).nickname.toLowerCase();
@@ -78,8 +78,7 @@ function ChatSidebar({
         b.participants?.filter((w) => w !== walletAddress)[0] || '',
       ).nickname.toLowerCase();
       return nicknameA > nicknameB ? 1 : -1;
-    },
-  );
+    });
 
   const communityRooms = chatrooms.filter((room) => {
     let displayRoom;
@@ -130,9 +129,7 @@ function ChatSidebar({
 
           {privateRooms.length > 0 && (
             <>
-              <li className="text-xs font-mono opacity-30">
-                Friends
-              </li>
+              <li className="text-xs font-mono opacity-30">Friends</li>
               {privateRooms.map((room) => {
                 return (
                   <RoomButton
@@ -147,7 +144,9 @@ function ChatSidebar({
                     setIsChatroomsOpen={setIsChatroomsOpen}
                     isMobile={isMobile}
                     isVerified={isVerified}
-                    openVerificationModal={() => dispatch(setIsAuthModalOpen(true))}
+                    openVerificationModal={() =>
+                      dispatch(setIsAuthModalOpen(true))
+                    }
                   />
                 );
               })}
@@ -188,18 +187,7 @@ function ChatSidebar({
             </p>
 
             {pendingRequests.length > 0 ? (
-              <div
-                className={twMerge(
-                  'flex items-center justify-center bg-redbright min-w-4 h-4 px-1 rounded-full',
-                )}
-              >
-                <p className="text-xxs text-white font-mono">
-                  {Intl.NumberFormat('en-US', {
-                    notation: 'compact',
-                    compactDisplay: 'short',
-                  }).format(pendingRequests.length)}
-                </p>
-              </div>
+              <div className="flex items-center justify-center bg-redbright min-w-1 h-1 rounded-full" />
             ) : null}
           </li>
         </div>
@@ -265,7 +253,7 @@ function RoomButton({
       )}
       onClick={() => {
         if (room.type === 'private' && !isVerified) {
-          openVerificationModal?.()
+          openVerificationModal?.();
           return;
         }
 
@@ -310,19 +298,7 @@ function RoomButton({
       </div>
 
       {room.unread_count > 0 ? (
-        <div
-          className={twMerge(
-            'flex items-center justify-center bg-redbright min-w-4 h-4 px-1 rounded-full',
-            room.unread_count > 999 && 'pr-2',
-          )}
-        >
-          <p className="text-xxs text-white font-mono">
-            {Intl.NumberFormat('en-US', {
-              notation: 'compact',
-              compactDisplay: 'short',
-            }).format(room.unread_count)}
-          </p>
-        </div>
+        <div className="flex items-center justify-center bg-redbright min-w-1 h-1 rounded-full" />
       ) : null}
     </li>
   );
