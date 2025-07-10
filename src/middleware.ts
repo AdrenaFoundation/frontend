@@ -16,12 +16,28 @@ export function middleware(request: NextRequest) {
       // https://frontend-git-{branch-name}-adrena.vercel.app
       const vercelPreviewPattern =
         /^https:\/\/frontend-git-[a-z0-9-]+-adrena\.vercel\.app/;
-      //without https
 
       return vercelPreviewPattern.test(url);
     };
 
-    const isOriginAllowed = (origin: string) => {
+    const isOriginAllowed = (origin: string | null, referer: string | null) => {
+      // If no origin header, check if it's a same-origin request via referer
+      if (!origin) {
+        if (referer) {
+          // Extract origin from referer
+          try {
+            const refererOrigin = new URL(referer).origin;
+            return (
+              allowedOrigins.includes(refererOrigin) ||
+              isValidVercelPreview(refererOrigin)
+            );
+          } catch {
+            return false;
+          }
+        }
+        return false;
+      }
+
       if (allowedOrigins.includes(origin)) {
         return true;
       }
@@ -34,9 +50,9 @@ export function middleware(request: NextRequest) {
     };
 
     if (process.env.NODE_ENV === 'production') {
-      if (!origin || !isOriginAllowed(origin)) {
+      if (!isOriginAllowed(origin, referer)) {
         return new NextResponse(
-          JSON.stringify({ error: 'Forbidden - Invalid origin', origin }),
+          JSON.stringify({ error: 'Forbidden - Invalid origin' }),
           { status: 403, headers: { 'content-type': 'application/json' } },
         );
       }
@@ -55,8 +71,11 @@ export function middleware(request: NextRequest) {
 
     const response = NextResponse.next();
 
-    if (origin && isOriginAllowed(origin)) {
-      response.headers.set('Access-Control-Allow-Origin', origin);
+    if (isOriginAllowed(origin, referer)) {
+      response.headers.set(
+        'Access-Control-Allow-Origin',
+        origin || new URL(referer || '').origin,
+      );
     }
 
     response.headers.set(
