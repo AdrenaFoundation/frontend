@@ -5,9 +5,9 @@ import {
   useSelector as defaultUseSelector,
 } from 'react-redux';
 
-import supabaseAuthReducer from '@/reducers/supabaseAuthReducer';
 import borrowRatesReducer from '@/reducers/borrowRatesReducer';
 import streamingTokenPricesReducer from '@/reducers/streamingTokenPricesReducer';
+import supabaseAuthReducer from '@/reducers/supabaseAuthReducer';
 import tokenPricesReducer from '@/reducers/tokenPricesReducer';
 
 import settingsReducer from '../reducers/settingsReducer';
