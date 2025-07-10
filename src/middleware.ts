@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
       // Vercel preview domains follow this pattern:
       // https://frontend-git-{branch-name}-adrena.vercel.app
       const vercelPreviewPattern =
-        /^https:\/\/frontend-git-[a-z0-9-]+-adrena\.vercel\.app$/;
+        /^https:\/\/frontend-git-[a-z0-9-]+-adrena\.vercel\.app/;
 
       return vercelPreviewPattern.test(url);
     };
