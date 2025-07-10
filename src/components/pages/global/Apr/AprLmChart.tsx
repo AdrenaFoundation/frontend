@@ -12,7 +12,7 @@ export function AprLmChart() {
       [key: string]: string | number;
     }[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('3M');
+  const [period, setPeriod] = useState<string | null>('7d');
   const [selectedPeriod, setSelectedPeriod] = useState<number>(540);
   const periodRef = useRef(period);
   const selectedPeriodRef = useRef(selectedPeriod);

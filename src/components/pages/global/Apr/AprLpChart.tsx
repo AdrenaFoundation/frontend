@@ -21,7 +21,7 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
 
     // custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('1M');
+  const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import {
     Area,
@@ -17,6 +18,7 @@ import { AxisDomain, DataKey } from 'recharts/types/util/types';
 import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
+import downloadIcon from '../../../public/images/download.png';
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
 import PeriodSelector from './PeriodSelector';
@@ -99,7 +101,7 @@ export default function MixedAreaLineChart<T extends string>({
 
     return (
         <div className="flex flex-col h-full w-full max-h-[18em]">
-            <div className="flex mb-3 justify-between items-center">
+            <div className="flex mb-3 justify-between items-start">
                 <div className="flex flex-row gap-3 items-center">
                     <h2 className="">{title}</h2>
 
@@ -121,12 +123,20 @@ export default function MixedAreaLineChart<T extends string>({
                     /> : null}
 
                     {exportToCSV ? (
-                        <button
+                        <div
+                            className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
                             onClick={exportToCSV}
-                            className="text-sm text-txtfade hover:text-white transition-colors cursor-pointer underline"
                         >
-                            Export
-                        </button>
+                            <div className='text-sm tracking-wider'>
+                                Export
+                            </div>
+                            <Image
+                                src={downloadIcon}
+                                width={14}
+                                height={12}
+                                alt="Download icon"
+                            />
+                        </div>
                     ) : null}
                 </div>
 
@@ -268,6 +278,6 @@ export default function MixedAreaLineChart<T extends string>({
                     ))}
                 </ComposedChart>
             </ResponsiveContainer>
-        </div>
+        </div >
     );
 }
