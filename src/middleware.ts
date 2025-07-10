@@ -13,14 +13,10 @@ export function middleware(request: NextRequest) {
 
     const isValidVercelPreview = (url: string) => {
       // Vercel preview domains follow this pattern:
-      // https://frontend-{hash}-{team}.vercel.app
-      // or https://your-app-name-{hash}-{team}.vercel.app
+      // https://frontend-{hash}-adrena.vercel.app
       const vercelPreviewPattern =
-        /^https:\/\/frontend-[a-z0-9]+-[a-z0-9]+\.vercel\.app$/;
-      const customVercelPattern =
-        /^https:\/\/[a-z0-9-]+-[a-z0-9]+-[a-z0-9]+\.vercel\.app$/;
-
-      return vercelPreviewPattern.test(url) || customVercelPattern.test(url);
+        /^https:\/\/frontend-[a-z0-9]+-adrena\.vercel\.app$/;
+      return vercelPreviewPattern.test(url);
     };
 
     const isOriginAllowed = (origin: string) => {
@@ -28,7 +24,6 @@ export function middleware(request: NextRequest) {
         return true;
       }
 
-      // Allow Vercel preview domains
       if (isValidVercelPreview(origin)) {
         return true;
       }
