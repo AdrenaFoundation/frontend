@@ -13,9 +13,10 @@ export function middleware(request: NextRequest) {
 
     const isValidVercelPreview = (url: string) => {
       // Vercel preview domains follow this pattern:
-      // https://frontend-{hash}-adrena.vercel.app
+      // https://frontend-git-{branch-name}-adrena.vercel.app
       const vercelPreviewPattern =
-        /^https:\/\/frontend-[a-z0-9]+-adrena\.vercel\.app$/;
+        /^https:\/\/frontend-git-[a-z0-9-]+-adrena\.vercel\.app$/;
+
       return vercelPreviewPattern.test(url);
     };
 
