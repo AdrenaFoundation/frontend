@@ -1,6 +1,6 @@
 import { Dispatch } from '@reduxjs/toolkit';
 
-import { AuthenticationState } from '@/reducers/authReducer';
+import { AuthenticationState } from '@/reducers/supabaseAuthReducer';
 import supabaseAnonClient from '@/supabaseAnonClient';
 
 export type setIsAuthModalOpenAction = {

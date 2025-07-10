@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
-import { checkAndSignInAnonymously, setVerifiedWalletAddresses } from '@/actions/authActions';
+import { checkAndSignInAnonymously, setVerifiedWalletAddresses } from '@/actions/supabaseAuthActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
