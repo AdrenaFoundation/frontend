@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { setIsAuthModalOpen } from '@/actions/authActions';
+import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import {
   FriendRequest,
   FriendRequestStatus,
@@ -36,7 +36,7 @@ export const useFriendReq = ({
     useState<FriendRequest | null>(null);
 
   const dispatch = useDispatch();
-  const { verifiedWalletAddresses } = useSelector((state) => state.auth);
+  const { verifiedWalletAddresses } = useSelector((s) => s.supabaseAuth);
 
   const clearError = useCallback(() => {
     setError(null);

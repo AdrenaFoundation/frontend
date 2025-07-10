@@ -5,7 +5,7 @@ import {
   useSelector as defaultUseSelector,
 } from 'react-redux';
 
-import authReducer from '@/reducers/authReducer';
+import supabaseAuthReducer from '@/reducers/supabaseAuthReducer';
 import borrowRatesReducer from '@/reducers/borrowRatesReducer';
 import streamingTokenPricesReducer from '@/reducers/streamingTokenPricesReducer';
 import tokenPricesReducer from '@/reducers/tokenPricesReducer';
@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
   walletTokenBalances: walletBalancesReducer,
   borrowRates: borrowRatesReducer,
   settings: settingsReducer,
-  auth: authReducer,
+  supabaseAuth: supabaseAuthReducer,
 });
 
 const store = configureStore({

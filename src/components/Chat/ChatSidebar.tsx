@@ -3,7 +3,7 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
-import { setIsAuthModalOpen } from '@/actions/authActions';
+import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES } from '@/constant';
 import { Chatroom } from '@/pages/api/chatrooms';
 import { FriendRequest } from '@/pages/api/friend_requests';
@@ -49,7 +49,7 @@ function ChatSidebar({
 }) {
   const dispatch = useDispatch();
 
-  const { verifiedWalletAddresses } = useSelector((s) => s.auth);
+  const { verifiedWalletAddresses } = useSelector((s) => s.supabaseAuth);
 
   if (!walletAddress) {
     return null;

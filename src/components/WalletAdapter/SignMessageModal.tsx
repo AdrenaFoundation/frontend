@@ -4,7 +4,7 @@ import React from 'react';
 import {
   refreshVerifiedWalletAddresses,
   setIsAuthModalOpen,
-} from '@/actions/authActions';
+} from '@/actions/supabaseAuthActions';
 import { useDispatch, useSelector } from '@/store/store';
 import supabaseAnonClient from '@/supabaseAnonClient';
 import { WalletAdapterExtended } from '@/types';
@@ -19,7 +19,7 @@ export default function SignMessageModal({
   adapters: WalletAdapterExtended[];
 }) {
   const dispatch = useDispatch();
-  const { isAuthModalOpen } = useSelector((s) => s.auth);
+  const { isAuthModalOpen } = useSelector((s) => s.supabaseAuth);
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletAddress = wallet?.walletAddress;
   const adapterName = wallet?.adapterName;
