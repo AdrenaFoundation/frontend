@@ -16,6 +16,7 @@ export function middleware(request: NextRequest) {
       // https://frontend-git-{branch-name}-adrena.vercel.app
       const vercelPreviewPattern =
         /^https:\/\/frontend-git-[a-z0-9-]+-adrena\.vercel\.app/;
+      //without https
 
       return vercelPreviewPattern.test(url);
     };
@@ -35,7 +36,7 @@ export function middleware(request: NextRequest) {
     if (process.env.NODE_ENV === 'production') {
       if (!origin || !isOriginAllowed(origin)) {
         return new NextResponse(
-          JSON.stringify({ error: 'Forbidden - Invalid origin' }),
+          JSON.stringify({ error: 'Forbidden - Invalid origin', origin }),
           { status: 403, headers: { 'content-type': 'application/json' } },
         );
       }
