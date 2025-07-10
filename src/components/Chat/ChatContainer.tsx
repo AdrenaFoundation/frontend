@@ -106,16 +106,25 @@ function ChatContainer({
 
   useEffect(() => {
     if (chatrooms.length > 0) {
-      const room =
-        chatrooms.find((r) => r.id === currentChatroomId)
-      const friend = room && room?.participants
-        ? room.participants.filter((p) => p !== walletAddress)[0]
-        : null
-      const newTitle = friend === null ? room?.name : userProfilesMap[friend]?.nickname || getAbbrevWalletAddress(friend);
+      const room = chatrooms.find((r) => r.id === currentChatroomId);
+      const friend =
+        room && room?.participants
+          ? room.participants.filter((p) => p !== walletAddress)[0]
+          : null;
+      const newTitle =
+        friend === null
+          ? room?.name
+          : userProfilesMap[friend]?.nickname || getAbbrevWalletAddress(friend);
 
       setTitle(newTitle ?? '');
     }
-  }, [chatrooms, walletAddress, userProfilesMap, currentChatroomId, setCurrentChatroom]);
+  }, [
+    chatrooms,
+    walletAddress,
+    userProfilesMap,
+    currentChatroomId,
+    setCurrentChatroom,
+  ]);
 
   useEffect(() => {
     if (!walletAddress) return;
@@ -126,12 +135,15 @@ function ChatContainer({
 
     const totalUnreadMessages = chatrooms.reduce((acc, room) => {
       if (!userProfilesMap[walletAddress]) return acc;
+
       if (
-        userProfilesMap[walletAddress].team !== 0 &&
-        [
-          GENERAL_CHAT_ROOM_ID,
-          userProfilesMap[walletAddress].team === 1 ? 2 : 1,
-        ].includes(room.id)
+        (room.type === 'community' &&
+          userProfilesMap[walletAddress].team !== 0 &&
+          [
+            GENERAL_CHAT_ROOM_ID,
+            userProfilesMap[walletAddress].team === 1 ? 2 : 1,
+          ].includes(room.id)) ||
+        room.type === 'private'
       ) {
         return acc + room.unread_count;
       } else {
@@ -279,39 +291,18 @@ function ChatTitle({
           </div>
         ) : null}
         <p className="text-base font-boldy capitalize">
-
-          <span className="opacity-50 text-base"># {(!isChatOpen && !isLoading) ? 'Chat:' : null}</span>
-
+          <span className="opacity-50 text-base">
+            # {!isChatOpen && !isLoading ? 'Chat:' : null}
+          </span>
           {friendRequestWindowOpen ? 'Friend Requests' : ` ${title}`}{' '}
         </p>
-
-        {/* {!friendRequestWindowOpen ? (
-          <div className="flex flex-row gap-1 font-mono items-center">
-            <LiveIcon className="h-[0.6250em] w-[0.6250em]" />{' '}
-            <p className="text-sm opacity-50">
-              {loadingLiveCount ? null : connectedCount}
-            </p>
-          </div>
-        ) : null} */}
       </div>
 
       <div className="flex flex-row items-center gap-2">
         {totalNotifications !== null &&
           totalNotifications > 0 &&
           !isChatOpen ? (
-          <div
-            className={twMerge(
-              'flex items-center justify-center bg-redbright min-w-4 h-4 px-1 rounded-full',
-              friendRequestWindowOpen && 'bg-blue',
-            )}
-          >
-            <p className="text-xxs text-white font-mono">
-              {Intl.NumberFormat('en-US', {
-                notation: 'compact',
-                compactDisplay: 'short',
-              }).format(totalNotifications)}
-            </p>
-          </div>
+          <div className="flex items-center justify-center bg-redbright min-w-2 h-2 rounded-full" />
         ) : null}
         <div
           className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300"
