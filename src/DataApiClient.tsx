@@ -803,6 +803,7 @@ export default class DataApiClient {
 
                     return {
                         positionId: data.position_id,
+                        poolId: data.pool_id,
                         userId: data.user_id,
                         side: data.side,
                         status: data.status,

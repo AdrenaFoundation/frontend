@@ -1481,6 +1481,7 @@ export type MutagenLeaderboardData = {
 
 export type PositionApiRawData = {
   position_id: number;
+  pool_id: number;
   user_id: number;
   symbol: string;
   token_account_mint: string;
@@ -1544,6 +1545,7 @@ export type PositionApiRawDataV2 = {
 
 export type EnrichedPositionApi = {
   positionId: number;
+  poolId: number;
   userId: number;
   symbol: string;
   tokenAccountMint: string;
