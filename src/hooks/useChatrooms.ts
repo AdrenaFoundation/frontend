@@ -55,6 +55,8 @@ export const useChatrooms = ({
   });
 
   const [error, setError] = useState<string | null>(null);
+  const isChatOpenRef = useRef(isChatOpen);
+  isChatOpenRef.current = isChatOpen;
 
   const [chatrooms, setChatrooms] = useState<Chatroom[]>([]);
   const [messages, setMessages] = useState<Record<number, Message[]>>({});
@@ -183,8 +185,9 @@ export const useChatrooms = ({
         setFetchedRooms((prev) =>
           prev.includes(roomId) ? prev : [...prev, roomId],
         );
+        const existingMessages = messages[roomId] || [];
 
-        return fetchedMessages;
+        return [...fetchedMessages, ...existingMessages];
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
         return [];
@@ -192,6 +195,7 @@ export const useChatrooms = ({
         setLoading((prev) => ({ ...prev, messages: false }));
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [clearError],
   );
 
@@ -325,15 +329,18 @@ export const useChatrooms = ({
     currentChatroomId.current = roomId;
 
     // Always fetch messages if the room hasn't been fetched before
+    let newMessages = null;
+
     if (
       !fetchedRooms.includes(roomId) ||
       !messages[roomId] ||
       messages[roomId].length === 0
     ) {
-      await fetchMessages(roomId, { reset: true });
+      newMessages = await fetchMessages(roomId, { reset: true });
     }
 
-    const roomMessages = messages[roomId] || [];
+    const roomMessages = newMessages ? newMessages : messages[roomId] || [];
+
     if (roomMessages.length > 0) {
       const latestMessageId = roomMessages[roomMessages.length - 1].id;
       markAsRead(roomId, latestMessageId);
@@ -380,7 +387,10 @@ export const useChatrooms = ({
             };
           });
 
-          if (messageRoomId === currentChatroomId.current && isChatOpen) {
+          if (
+            messageRoomId === currentChatroomId.current &&
+            isChatOpenRef.current
+          ) {
             markAsRead(messageRoomId, newMessage.id);
           } else {
             setChatrooms((prev) =>
