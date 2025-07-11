@@ -38,8 +38,10 @@ interface UseChatroomsReturn {
 }
 
 export const useChatrooms = ({
+  isChatOpen,
   setIsChatOpen,
 }: {
+  isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
 }): UseChatroomsReturn => {
   const { wallet } = useSelector((state) => state.walletState);
@@ -378,7 +380,7 @@ export const useChatrooms = ({
             };
           });
 
-          if (messageRoomId === currentChatroomId.current) {
+          if (messageRoomId === currentChatroomId.current && isChatOpen) {
             markAsRead(messageRoomId, newMessage.id);
           } else {
             setChatrooms((prev) =>
@@ -413,6 +415,17 @@ export const useChatrooms = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (isChatOpen) {
+      const roomMessages = messages[currentChatroomId.current] || [];
+      if (roomMessages.length > 0) {
+        const latestMessageId = roomMessages[roomMessages.length - 1].id;
+        markAsRead(currentChatroomId.current, latestMessageId);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isChatOpen]);
 
   return {
     loading,

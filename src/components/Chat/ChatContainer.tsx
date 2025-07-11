@@ -55,6 +55,7 @@ function ChatContainer({
     loading,
     totalUnreadCount,
   } = useChatrooms({
+    isChatOpen,
     setIsChatOpen,
   });
 
