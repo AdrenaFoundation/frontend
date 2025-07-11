@@ -262,6 +262,17 @@ export const useFriendReq = ({
     if (walletAddress) {
       fetchRequests('all');
     }
+
+    const interval = setInterval(
+      () => {
+        if (walletAddress) {
+          fetchRequests('all');
+        }
+      },
+      30 * 60 * 1000,
+    ); // 30 minutes
+
+    return () => clearInterval(interval);
   }, [walletAddress, fetchRequests]);
 
   return {

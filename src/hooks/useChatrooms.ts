@@ -60,12 +60,11 @@ export const useChatrooms = ({
     Record<number, boolean>
   >({});
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  const [fetchedRooms, setFetchedRooms] = useState<number[]>([]);
   const currentChatroomId = useRef<number>(0);
   const walletAddressRef = useRef<string | null>(walletAddress);
 
-  // Use a ref to store the channel instance
   const channelRef = useRef<RealtimeChannel | null>(null);
-  // Track if we've already subscribed
   const hasSubscribed = useRef(false);
 
   const clearError = useCallback(() => {
@@ -179,6 +178,10 @@ export const useChatrooms = ({
           [roomId]: data.has_more,
         }));
 
+        setFetchedRooms((prev) =>
+          prev.includes(roomId) ? prev : [...prev, roomId],
+        );
+
         return fetchedMessages;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
@@ -215,8 +218,6 @@ export const useChatrooms = ({
           throw new Error(data.error || 'Failed to send message');
         }
 
-        // Optimistic update not needed as we'll use Supabase realtime
-        // or we can handle it manually if needed
         return data.data;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
@@ -321,12 +322,16 @@ export const useChatrooms = ({
   const setCurrentChatroom = async (roomId: number) => {
     currentChatroomId.current = roomId;
 
-    let roomMessages = messages[roomId] || [];
-
-    if (!roomMessages || roomMessages.length === 0) {
-      roomMessages = await fetchMessages(roomId, { reset: true });
+    // Always fetch messages if the room hasn't been fetched before
+    if (
+      !fetchedRooms.includes(roomId) ||
+      !messages[roomId] ||
+      messages[roomId].length === 0
+    ) {
+      await fetchMessages(roomId, { reset: true });
     }
 
+    const roomMessages = messages[roomId] || [];
     if (roomMessages.length > 0) {
       const latestMessageId = roomMessages[roomMessages.length - 1].id;
       markAsRead(roomId, latestMessageId);
@@ -360,21 +365,20 @@ export const useChatrooms = ({
           const newMessage = payload.new;
           const messageRoomId = newMessage.room_id;
 
+          setMessages((prev) => {
+            const roomMessages = prev[messageRoomId] || [];
+
+            if (roomMessages.some((m) => m.id === newMessage.id)) {
+              return prev;
+            }
+
+            return {
+              ...prev,
+              [messageRoomId]: [...roomMessages, newMessage],
+            };
+          });
+
           if (messageRoomId === currentChatroomId.current) {
-            setMessages((prev) => {
-              const roomMessages = prev[messageRoomId] || [];
-
-              if (roomMessages.some((m) => m.id === newMessage.id)) {
-                return prev;
-              }
-
-              return {
-                ...prev,
-                [messageRoomId]: [...roomMessages, newMessage],
-              };
-            });
-
-            // Handle read status
             markAsRead(messageRoomId, newMessage.id);
           } else {
             setChatrooms((prev) =>
@@ -398,14 +402,10 @@ export const useChatrooms = ({
           setIsChatOpen(false);
         }
       });
-
-    // Store the channel reference
     channelRef.current = channel;
-    // Mark as subscribed
     hasSubscribed.current = true;
 
     return () => {
-      console.log('Cleaning up Supabase subscription');
       if (channelRef.current) {
         supabaseAnonClient.removeChannel(channelRef.current);
         hasSubscribed.current = false;
