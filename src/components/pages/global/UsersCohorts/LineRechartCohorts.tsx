@@ -170,9 +170,9 @@ export default function LineRechartCohorts({
     };
 
     checkScreenSize();
-    window.addEventListener('resizeCohortsLineChart', checkScreenSize);
+    window.addEventListener('resize', checkScreenSize);
 
-    return () => window.removeEventListener('resizeCohortsLineChart', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   const formatYAxis = (tickItem: number) => {
