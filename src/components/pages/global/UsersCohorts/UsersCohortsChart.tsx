@@ -128,10 +128,9 @@ export default function UsersCohortsChart() {
       </div>
 
       <div className="flex gap-3 items-center">
-        <div className='text-txtfade text-sm'>by</div>
-        <div className={twMerge('text-sm cursor-pointer hover:opacity-90', type === 'users' ? 'opacity-100' : 'opacity-50')} onClick={() => setType('users')}>user</div>
-        <div className={twMerge('text-sm cursor-pointer hover:opacity-90', type === 'volumes' ? 'opacity-100' : 'opacity-50')} onClick={() => setType('volumes')}>volume</div>
-        <div className={twMerge('text-sm cursor-pointer hover:opacity-90', type === 'trades' ? 'opacity-100' : 'opacity-50')} onClick={() => setType('trades')}>trade</div>
+        <div className={twMerge('text-sm cursor-pointer hover:opacity-90', type === 'users' ? 'opacity-100 underline' : 'opacity-50')} onClick={() => setType('users')}>user</div>
+        <div className={twMerge('text-sm cursor-pointer hover:opacity-90', type === 'volumes' ? 'opacity-100 underline' : 'opacity-50')} onClick={() => setType('volumes')}>volume</div>
+        <div className={twMerge('text-sm cursor-pointer hover:opacity-90', type === 'trades' ? 'opacity-100 underline' : 'opacity-50')} onClick={() => setType('trades')}>trade</div>
       </div>
     </div>
 

@@ -74,35 +74,58 @@ export default function UnlockStakingChart({
   }
 
   return (
-    <div className='flex flex-col w-full h-full items-center relative md:pt-8'>
-      <div className='flex justify-between gap-2 md:gap-0 md:justify-start pl-6 pr-6 pt-3 pb-6 md:pt-0 md:pl-0 md:pr-0 w-full md:w-auto md:flex-col md:absolute md:-top-10 md:right-2 md:pb-0'>
-        <div className='flex gap-2'>
-          <div className='text-sm text-txtfade'>by</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', timingMode === 'days' ? 'opacity-90' : 'opacity-50')} onClick={() => setTimingMode('days')}>Days</div>
-          <div className='text-sm text-txtfade'>{'/'}</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', timingMode === 'weeks' ? 'opacity-90' : 'opacity-50')} onClick={() => setTimingMode('weeks')}>Weeks</div>
-          <div className='text-sm text-txtfade'>{'/'}</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', timingMode === 'months' ? 'opacity-90' : 'opacity-50')} onClick={() => setTimingMode('months')}>Months</div>
+    <div className='flex flex-col w-full h-full'>
+      <div className="mb-3">
+        <div className="flex flex-col gap-2 md:hidden px-4">
+          <div className="flex flex-col gap-2">
+            <div className='flex gap-2 justify-center text-sm'>
+              <span className='text-txtfade mr-1'>by:</span>
+              <div className={twMerge('cursor-pointer', timingMode === 'days' ? 'underline' : '')} onClick={() => setTimingMode('days')}>Days</div>
+              <div className={twMerge('cursor-pointer', timingMode === 'weeks' ? 'underline' : '')} onClick={() => setTimingMode('weeks')}>Weeks</div>
+              <div className={twMerge('cursor-pointer', timingMode === 'months' ? 'underline' : '')} onClick={() => setTimingMode('months')}>Months</div>
+            </div>
+
+            <div className='flex gap-2 justify-center text-sm'>
+              <span className='text-txtfade mr-1'>by:</span>
+              <div className={twMerge('cursor-pointer', infoMode === 'volume' ? 'underline' : '')} onClick={() => setInfoMode('volume')}>Volume</div>
+              <div className={twMerge('cursor-pointer', infoMode === 'count' ? 'underline' : '')} onClick={() => setInfoMode('count')}>Count</div>
+            </div>
+
+            <div className='flex gap-2 justify-center text-sm'>
+              <span className='text-txtfade mr-1'>next:</span>
+              <div className={twMerge('cursor-pointer', periodMode === '7D' ? 'underline' : '')} onClick={() => setPeriodMode('7D')}>7d</div>
+              <div className={twMerge('cursor-pointer', periodMode === '1M' ? 'underline' : '')} onClick={() => setPeriodMode('1M')}>1M</div>
+              <div className={twMerge('cursor-pointer', periodMode === '3M' ? 'underline' : '')} onClick={() => setPeriodMode('3M')}>3M</div>
+              <div className={twMerge('cursor-pointer', periodMode === '6M' ? 'underline' : '')} onClick={() => setPeriodMode('6M')}>6M</div>
+              <div className={twMerge('cursor-pointer', periodMode === 'All Time' ? 'underline' : '')} onClick={() => setPeriodMode('All Time')}>All Time</div>
+            </div>
+          </div>
         </div>
 
-        <div className='flex gap-2'>
-          <div className='text-sm text-txtfade'>by</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', infoMode === 'volume' ? 'opacity-90' : 'opacity-50')} onClick={() => setInfoMode('volume')}>Volume</div>
-          <div className='text-sm text-txtfade'>{'/'}</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', infoMode === 'count' ? 'opacity-90' : 'opacity-50')} onClick={() => setInfoMode('count')}>Count</div>
-        </div>
+        <div className="hidden md:flex flex-col items-center relative pt-8">
+          <div className="absolute -top-10 right-2 flex flex-col gap-2">
+            <div className='flex gap-2 text-sm items-center'>
+              <span className='text-txtfade mr-1'>by:</span>
+              <div className={twMerge('cursor-pointer', timingMode === 'days' ? 'underline' : '')} onClick={() => setTimingMode('days')}>Days</div>
+              <div className={twMerge('cursor-pointer', timingMode === 'weeks' ? 'underline' : '')} onClick={() => setTimingMode('weeks')}>Weeks</div>
+              <div className={twMerge('cursor-pointer', timingMode === 'months' ? 'underline' : '')} onClick={() => setTimingMode('months')}>Months</div>
+            </div>
 
-        <div className='flex gap-2'>
-          <div className='text-sm text-txtfade'>next</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '7D' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('7D')}>7D</div>
-          <div className='text-sm text-txtfade'>{'/'}</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '1M' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('1M')}>1M</div>
-          <div className='text-sm text-txtfade'>{'/'}</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '3M' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('3M')}>3M</div>
-          <div className='text-sm text-txtfade'>{'/'}</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === '6M' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('6M')}>6M</div>
-          <div className='text-sm text-txtfade'>{'/'}</div>
-          <div className={twMerge('text-sm cursor-pointer hover:opacity-100', periodMode === 'All Time' ? 'opacity-90' : 'opacity-50')} onClick={() => setPeriodMode('All Time')}>All Time</div>
+            <div className='flex gap-2 text-sm items-center'>
+              <span className='text-txtfade mr-1'>by:</span>
+              <div className={twMerge('cursor-pointer', infoMode === 'volume' ? 'underline' : '')} onClick={() => setInfoMode('volume')}>Volume</div>
+              <div className={twMerge('cursor-pointer', infoMode === 'count' ? 'underline' : '')} onClick={() => setInfoMode('count')}>Count</div>
+            </div>
+
+            <div className='flex gap-2 text-sm items-center'>
+              <span className='text-txtfade mr-1'>next:</span>
+              <div className={twMerge('cursor-pointer', periodMode === '7D' ? 'underline' : '')} onClick={() => setPeriodMode('7D')}>7d</div>
+              <div className={twMerge('cursor-pointer', periodMode === '1M' ? 'underline' : '')} onClick={() => setPeriodMode('1M')}>1M</div>
+              <div className={twMerge('cursor-pointer', periodMode === '3M' ? 'underline' : '')} onClick={() => setPeriodMode('3M')}>3M</div>
+              <div className={twMerge('cursor-pointer', periodMode === '6M' ? 'underline' : '')} onClick={() => setPeriodMode('6M')}>6M</div>
+              <div className={twMerge('cursor-pointer', periodMode === 'All Time' ? 'underline' : '')} onClick={() => setPeriodMode('All Time')}>All Time</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -132,6 +155,6 @@ export default function UnlockStakingChart({
           <Bar dataKey={infoMode} fill={stakingType === "ALP" ? '#256281' : "#a82e2e"} />
         </BarChart>
       </ResponsiveContainer>
-    </div >
+    </div>
   );
 }
