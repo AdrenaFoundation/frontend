@@ -101,63 +101,127 @@ export default function MixedAreaLineChart<T extends string>({
 
     return (
         <div className="flex flex-col h-full w-full max-h-[18em]">
-            <div className="flex mb-3 justify-between items-start">
-                <div className="flex flex-row gap-3 items-center">
-                    <h2 className="">{title}</h2>
+            <div className="mb-3">
+                <div className="flex flex-col gap-2 sm:hidden">
+                    <div className="flex justify-between items-center">
+                        <div className="flex flex-row gap-3 items-center">
+                            <h2 className="">{title}</h2>
 
-                    {tippyContent ? (
-                        <Tippy content={tippyContent} placement="auto">
-                            <span className="cursor-help text-txtfade">ⓘ</span>
-                        </Tippy>
-                    ) : null}
+                            {tippyContent ? (
+                                <Tippy content={tippyContent} placement="auto">
+                                    <span className="cursor-help text-txtfade">ⓘ</span>
+                                </Tippy>
+                            ) : null}
 
-                    {subValue ? <FormatNumber
-                        nb={subValue}
-                        className="text-sm text-txtfade sm:text-xs"
-                        format="currency"
-                        prefix="("
-                        suffix=")"
-                        suffixClassName='ml-0 text-txtfade'
-                        isDecimalDimmed={false}
-                        precision={title.includes('ALP Price') ? 4 : 0}
-                    /> : null}
-
-                    {exportToCSV ? (
-                        <div
-                            className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
-                            onClick={exportToCSV}
-                        >
-                            <div className='text-sm tracking-wider'>
-                                Export
-                            </div>
-                            <Image
-                                src={downloadIcon}
-                                width={14}
-                                height={12}
-                                alt="Download icon"
-                            />
+                            {subValue ? <FormatNumber
+                                nb={subValue}
+                                className="text-sm text-txtfade sm:text-xs"
+                                format="currency"
+                                prefix="("
+                                suffix=")"
+                                suffixClassName='ml-0 text-txtfade'
+                                isDecimalDimmed={false}
+                                precision={title.includes('ALP Price') ? 4 : 0}
+                            /> : null}
                         </div>
-                    ) : null}
+
+                        {exportToCSV ? (
+                            <div
+                                className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
+                                onClick={exportToCSV}
+                            >
+                                <div className='text-sm tracking-wider'>
+                                    Export
+                                </div>
+                                <Image
+                                    src={downloadIcon}
+                                    width={14}
+                                    height={12}
+                                    alt="Download icon"
+                                />
+                            </div>
+                        ) : null}
+                    </div>
+
+                    <div className="flex flex-col gap-2 items-end">
+                        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+
+                        {lockPeriods && setLockPeriod && (
+                            <div className="flex gap-2 text-sm items-center">
+                                <span className="text-txtfade mr-1">Lock:</span>
+                                {lockPeriods.map((period) => (
+                                    <div
+                                        key={period}
+                                        className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                                            }`}
+                                        onClick={() => setLockPeriod(period)}
+                                    >
+                                        {period}d
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex flex-col gap-2 items-end">
-                    <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+                <div className="hidden sm:flex justify-between items-start">
+                    <div className="flex flex-row gap-3 items-center">
+                        <h2 className="">{title}</h2>
 
-                    {lockPeriods && setLockPeriod && (
-                        <div className="flex gap-2 text-sm items-center">
-                            <span className="text-txtfade mr-1">Lock:</span>
-                            {lockPeriods.map((period) => (
-                                <div
-                                    key={period}
-                                    className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
-                                        }`}
-                                    onClick={() => setLockPeriod(period)}
-                                >
-                                    {period}d
+                        {tippyContent ? (
+                            <Tippy content={tippyContent} placement="auto">
+                                <span className="cursor-help text-txtfade">ⓘ</span>
+                            </Tippy>
+                        ) : null}
+
+                        {subValue ? <FormatNumber
+                            nb={subValue}
+                            className="text-sm text-txtfade sm:text-xs"
+                            format="currency"
+                            prefix="("
+                            suffix=")"
+                            suffixClassName='ml-0 text-txtfade'
+                            isDecimalDimmed={false}
+                            precision={title.includes('ALP Price') ? 4 : 0}
+                        /> : null}
+
+                        {exportToCSV ? (
+                            <div
+                                className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
+                                onClick={exportToCSV}
+                            >
+                                <div className='text-sm tracking-wider'>
+                                    Export
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                <Image
+                                    src={downloadIcon}
+                                    width={14}
+                                    height={12}
+                                    alt="Download icon"
+                                />
+                            </div>
+                        ) : null}
+                    </div>
+
+                    <div className="flex flex-col gap-2 items-end">
+                        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+
+                        {lockPeriods && setLockPeriod && (
+                            <div className="flex gap-2 text-sm items-center">
+                                <span className="text-txtfade mr-1">Lock:</span>
+                                {lockPeriods.map((period) => (
+                                    <div
+                                        key={period}
+                                        className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                                            }`}
+                                        onClick={() => setLockPeriod(period)}
+                                    >
+                                        {period}d
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
