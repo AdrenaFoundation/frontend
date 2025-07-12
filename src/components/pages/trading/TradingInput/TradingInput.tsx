@@ -22,6 +22,7 @@ export default function TradingInput({
   onTokenSelect,
   onChange,
   recommendedToken,
+  isDisplayAllTokens = false,
 }: {
   className?: string;
   inputClassName?: string;
@@ -36,6 +37,7 @@ export default function TradingInput({
   recommendedToken?: Token;
   onTokenSelect?: (t: Token) => void;
   onChange: (v: number | null) => void;
+  isDisplayAllTokens?: boolean;
 }) {
   const decimalConstraint = selectedToken?.decimals ?? 18;
   const [isPickTokenModalOpen, setIsPickTokenModalOpen] = useState(false);
@@ -137,6 +139,7 @@ export default function TradingInput({
         setIsPickTokenModalOpen={setIsPickTokenModalOpen}
         tokenList={tokenList}
         pick={pick}
+        isDisplayAllTokens={isDisplayAllTokens}
       />
     </>
   );

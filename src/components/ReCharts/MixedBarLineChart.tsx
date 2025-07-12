@@ -42,6 +42,7 @@ export default function MixedBarLineChart<T extends string>({
     gmt,
     total,
     events,
+    yAxisBarScale = 'linear',
 }: {
     title: string;
     data: RechartsData[];
@@ -60,6 +61,7 @@ export default function MixedBarLineChart<T extends string>({
     gmt?: number;
     total?: boolean;
     events?: AdrenaEvent[];
+    yAxisBarScale?: 'linear' | 'sqrt';
 }) {
     const [hiddenLabels, setHiddenLabels] = React.useState<
         DataKey<string | number>[]
@@ -140,7 +142,7 @@ export default function MixedBarLineChart<T extends string>({
                         tickLine={true}
                         yAxisId="left"
                         orientation="left"
-                        scale="linear"
+                        scale={yAxisBarScale}
                     />
 
                     {/* Right Y-axis for cumulative total */}

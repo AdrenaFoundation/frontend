@@ -17,7 +17,7 @@ import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS, USD_DECIMALS } from '@/constan
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { findATAAddressSync, getJupiterApiQuote, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi, uiToNative } from '@/utils';
+import { findATAAddressSync, getJupiterApiQuote, getTokenAccountBalanceNullable, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
@@ -189,7 +189,7 @@ export default function EditPositionCollateral({
         throw new Error('Connection is not available');
       }
 
-      const ataBalanceBefore = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
+      const ataBalanceBefore = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress) ?? new BN(0);
 
       await (position.side === 'long'
         ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
@@ -202,12 +202,17 @@ export default function EditPositionCollateral({
         });
 
       if (doJupiterSwapOnWithdraw) {
-        const ataBalanceAfter = (await window.adrena.client.readonlyConnection.getTokenAccountBalance(ataAddress)).value.amount;
+        const notification = MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
 
-        const diff = new BN(ataBalanceAfter).sub(new BN(ataBalanceBefore));
+        const ataBalanceAfter = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
 
-        const notification =
-          MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
+        if (ataBalanceAfter === null) {
+          // should not happen since we initialize ata address if it doesn't exist in `removeCollateralLong`/`removeCollateralShort`
+          notification.currentStepErrored('Failed to fetch ATA balance');
+          throw new Error('Failed to fetch ATA balance');
+        }
+
+        const diff = ataBalanceAfter.sub(ataBalanceBefore);
 
         const quoteResult = await getJupiterApiQuote({
           inputMint: position.collateralToken.mint,

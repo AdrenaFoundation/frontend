@@ -258,6 +258,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       isSmallScreen={isSmallScreen}
       total={true}
       events={ADRENA_EVENTS}
+      yAxisBarScale="sqrt"
     />
   );
 }

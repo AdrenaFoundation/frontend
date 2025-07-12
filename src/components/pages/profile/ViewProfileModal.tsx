@@ -63,6 +63,7 @@ export default function ViewProfileModal({
                 walletPubkey={profile.owner}
                 readonly={true}
                 favoriteAchievements={null}
+                walletAddress={walletAddress}
             />
 
             <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border border-t-transparent">

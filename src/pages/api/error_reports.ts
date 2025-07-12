@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseServiceClient from '@/supabaseServiceClient';
 import { ErrorReportType } from '@/types';
 
 export default async function handler(
@@ -11,7 +11,7 @@ export default async function handler(
   if (req.method === 'GET') {
     const { error_code } = req.query;
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabaseServiceClient
       .from('error_reports')
       .select('*')
       .eq('ref', error_code as string)
@@ -66,7 +66,7 @@ export default async function handler(
       ref: ref ?? '',
     };
 
-    const { error } = await supabaseClient
+    const { error } = await supabaseServiceClient
       .from('error_reports')
       .insert([report])
       .select();

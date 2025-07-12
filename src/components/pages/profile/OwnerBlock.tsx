@@ -53,6 +53,7 @@ export default function OwnerBloc({
   setIsUpdatingMetadata,
   setActiveUpdateTab,
   activeUpdateTab,
+  walletAddress,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
@@ -73,8 +74,9 @@ export default function OwnerBloc({
   setIsUpdatingMetadata?: (updating: boolean) => void;
   setActiveUpdateTab?: (tab: TabType) => void;
   activeUpdateTab?: TabType;
+  walletAddress?: string;
 }) {
-  const snsDomain = useSNSPrimaryDomain()
+  const snsDomain = useSNSPrimaryDomain(walletAddress)
 
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
