@@ -20,6 +20,7 @@ import {
   Token,
 } from '@/types';
 import {
+  formatNumber,
   getJupiterApiQuote,
   getTokenImage,
   getTokenSymbol,
@@ -29,6 +30,7 @@ import {
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
+import { ErrorDisplay } from '../TradingInputs/LongShortTradingInputs/ErrorDisplay';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
 
 // use the counter to handle asynchronous multiple loading
@@ -92,6 +94,7 @@ export default function ClosePosition({
   const [customAmount, setCustomAmount] = useState<number | null>(null);
   const [activePercent, setActivePercent] = useState<number | null>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
   useEffect(() => {
     if (!exitPriceAndFee) return setAmountOut(null);
@@ -146,8 +149,10 @@ export default function ClosePosition({
   const doFullClose = useCallback(async () => {
     if (!markPrice) return;
 
+    const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
+
     const notification =
-      MultiStepNotification.newForRegularTransaction('Close Position').fire();
+      MultiStepNotification.newForRegularTransaction(notificationTitle).fire();
 
     try {
       const priceAndFee = await window.adrena.client.getExitPriceAndFee({
@@ -237,16 +242,26 @@ export default function ClosePosition({
   };
 
   const handleCustomAmount = (v: number | null) => {
+    setHasInteracted(true);
+
     if (v === null || isNaN(v) || v < 0) {
       setCustomAmount(null);
       setActivePercent(null);
-      setErrorMsg(null);
+      setErrorMsg('Please enter a valid amount');
+      return;
+    }
+
+    if (v <= 0) {
+      setCustomAmount(v);
+      setActivePercent(v / position.sizeUsd);
+      setErrorMsg('Size to close must be greater than $0');
       return;
     }
 
     if (v > position.sizeUsd) {
       setCustomAmount(position.sizeUsd);
       setActivePercent(1);
+      setErrorMsg(null);
       return;
     }
 
@@ -254,6 +269,13 @@ export default function ClosePosition({
     const percent = v / position.sizeUsd;
     setActivePercent(percent);
 
+    // Check if remaining position would be below $10 minimum
+    const remainingSize = position.sizeUsd - v;
+    if (percent < 1 && remainingSize < 10) {
+      setErrorMsg('Remaining size must be at least $10 to allow partial close');
+    } else {
+      setErrorMsg(null);
+    }
   };
 
   const rightArrowElement = (
@@ -277,18 +299,21 @@ export default function ClosePosition({
         <div className="flex gap-4 flex-col sm:flex-row">
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
-              <p className="text-sm font-boldy mb-2">Amount</p>
+              <p className="text-sm font-boldy mb-2">
+                {activePercent && activePercent !== 1 ? 'Size to Partially Close' : 'Size to Close'}
+              </p>
 
               <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center justify-between border bg-third rounded-lg p-3">
                   <InputNumber
-                    value={customAmount ?? undefined}
+                    value={customAmount ?? (activePercent === 1 ? calculatePercentage(1) ?? undefined : undefined)}
                     placeholder={
                       position.sizeUsd.toFixed(2)
                     }
                     className="bg-transparent font-mono border-0 !text-xl outline-none w-full"
                     onChange={handleCustomAmount}
                     decimalConstraint={18}
+                    min={0.01}
                   />
 
                   <p className="font-boldy opacity-50 cursor-default">USD</p>
@@ -308,8 +333,27 @@ export default function ClosePosition({
                           'border-white/10 text-opacity-100',
                         )}
                         onClick={() => {
-                          setActivePercent(percent / 100);
-                          setCustomAmount(calculatePercentage(percent / 100));
+                          setHasInteracted(true);
+
+                          const newPercent = percent / 100;
+                          const newAmount = calculatePercentage(newPercent);
+
+                          setActivePercent(newPercent);
+                          setCustomAmount(newAmount);
+
+                          // Validate size is greater than 0
+                          if (newAmount === null || newAmount <= 0) {
+                            setErrorMsg('Size to close must be greater than $0');
+                            return;
+                          }
+
+                          // Check if remaining position would be below $10 minimum
+                          const remainingSize = position.sizeUsd * (1 - newPercent);
+                          if (newPercent < 1 && remainingSize < 10) {
+                            setErrorMsg('Remaining size must be at least $10 to allow partial close');
+                          } else {
+                            setErrorMsg(null);
+                          }
                         }}
                       ></Button>
                     );
@@ -318,9 +362,7 @@ export default function ClosePosition({
               </div>
             </div>
 
-            {errorMsg ? (
-              <p className="mt-2 text-redbright text-xs">{errorMsg}</p>
-            ) : null}
+            {errorMsg ? <ErrorDisplay errorMessage={errorMsg} className="mt-2" /> : null}
 
             <div className="my-3">
               <p className="mb-2 font-boldy text-sm">Receive</p>
@@ -432,7 +474,7 @@ export default function ClosePosition({
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
               <div className="text-white text-sm mb-1 font-boldy">
-                Position to close
+                Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
               </div>
 
               <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
@@ -778,18 +820,26 @@ export default function ClosePosition({
         </div>
       </div>
 
-      <div className="w-full p-4 border-t mt-4">
+      <div className="w-full p-4 border-t">
         <Button
-          className="w-full"
+          className={twMerge(
+            "w-full",
+            (errorMsg !== null ||
+              (customAmount !== null && customAmount <= 0) ||
+              (activePercent !== null && activePercent <= 0) ||
+              (hasInteracted && (customAmount === null || activePercent === null))) && "opacity-50 cursor-not-allowed"
+          )}
           size="lg"
           variant="primary"
           title={
             <span className="text-main text-base font-boldy">
-              {activePercent && activePercent !== 1 ? 'Partially ' : ''}Close
-              Position
+              Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
             </span>
           }
-          disabled={errorMsg !== null}
+          disabled={errorMsg !== null ||
+            (customAmount !== null && customAmount <= 0) ||
+            (activePercent !== null && activePercent <= 0) ||
+            (hasInteracted && (customAmount === null || activePercent === null))}
           onClick={() => handleExecute()}
         />
       </div>

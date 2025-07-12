@@ -1,19 +1,21 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
 import errorImg from '../../../../../../public/images/Icons/error.svg';
 
 interface ErrorDisplayProps {
     errorMessage: string | null;
+    className?: string;
 }
 
-export const ErrorDisplay = ({ errorMessage }: ErrorDisplayProps) => {
+export const ErrorDisplay = ({ errorMessage, className }: ErrorDisplayProps) => {
     if (!errorMessage) return null;
 
     return (
         <AnimatePresence>
             <motion.div
-                className="flex w-full relative overflow-hidden mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-30 rounded-xl"
+                className={twMerge("flex w-full relative overflow-hidden mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-30 rounded-xl", className)}
                 initial={{ opacity: 0, scaleY: 0 }}
                 animate={{ opacity: 1, scaleY: 1 }}
                 exit={{ opacity: 0, scaleY: 0 }}
