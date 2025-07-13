@@ -52,23 +52,25 @@ function CustomRechartsToolTip({
           {/* Have multiple tables */}
           {payloadChunks.map((payload, i) => <table className='w-full table-auto h-10' key={`table-cohort-${i}`}>
             <thead>
-              <th className='text-xs font-boldy'>Name</th>
+              <tr>
+                <th className='text-xs font-boldy'>Name</th>
 
-              <th className='text-xs font-boldy'>
-                {{
-                  users: 'Users',
-                  volumes: 'Volume',
-                  trades: 'Trades',
-                }[type]}
-              </th>
+                <th className='text-xs font-boldy'>
+                  {{
+                    users: 'Users',
+                    volumes: 'Volume',
+                    trades: 'Trades',
+                  }[type]}
+                </th>
 
-              {type === 'users' ? <th className='text-xs font-boldy'>
-                {{
-                  users: 'Retention',
-                  volumes: 'Change',
-                  trades: 'Change',
-                }[type]}
-              </th> : null}
+                {type === 'users' ? <th className='text-xs font-boldy'>
+                  {{
+                    users: 'Retention',
+                    volumes: 'Change',
+                    trades: 'Change',
+                  }[type]}
+                </th> : null}
+              </tr>
             </thead>
 
             <tbody>
