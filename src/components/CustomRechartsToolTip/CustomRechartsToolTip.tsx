@@ -26,6 +26,7 @@ export default function CustomRechartsToolTip({
   labelCustomization,
   events,
   lineDataKeys,
+  precisionMap,
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
@@ -40,6 +41,7 @@ export default function CustomRechartsToolTip({
   labelCustomization?: (label: string) => string;
   events?: AdrenaEvent[];
   lineDataKeys?: string[];
+  precisionMap?: Record<string, number>;
 }) {
   if (active && payload && payload.length) {
     const activeEvents = (events || []).filter(event => event.time === label);
@@ -103,12 +105,15 @@ export default function CustomRechartsToolTip({
               className={twMerge('font-mono', isValueOnly && 'text-lg')}
               style={{ color: item.color }}
             >
-              {format === 'currency'
-                ? formatPriceInfo(Number(item.value), precision, precision)
-                : format === 'percentage'
-                  ? formatPercentage(Number(item.value), precision)
-                  : formatNumber(Number(item.value), precision)}
-
+              {(() => {
+                const key = String(item.dataKey);
+                const itemPrecision = precisionMap?.[key] ?? precision;
+                return format === 'currency'
+                  ? formatPriceInfo(Number(item.value), itemPrecision, itemPrecision)
+                  : format === 'percentage'
+                    ? formatPercentage(Number(item.value), itemPrecision)
+                    : formatNumber(Number(item.value), itemPrecision);
+              })()}
               {suffix}
             </span>
           </div>

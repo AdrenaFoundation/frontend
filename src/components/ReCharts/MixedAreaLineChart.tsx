@@ -88,6 +88,14 @@ export default function MixedAreaLineChart<T extends string>({
     // Determine if we need a right axis
     const hasRightAxis = rightAxisLabels.length > 0;
 
+    const precisionMap = Object.fromEntries(
+        labels.map(label => [
+            label.name,
+            label.name.toLowerCase().includes('alp price') ? 3 :
+                label.name.toLowerCase().includes('aum') ? 0 : 2
+        ])
+    );
+
     return (
         <div className="flex flex-col h-full w-full max-h-[18em]">
             <div className="flex mb-3 justify-between items-center">
@@ -148,6 +156,7 @@ export default function MixedAreaLineChart<T extends string>({
                                 gmt={gmt}
                                 events={events}
                                 lineDataKeys={lineLabels.map(label => label.name)}
+                                precisionMap={precisionMap}
                             />
                         }
                         cursor={false}

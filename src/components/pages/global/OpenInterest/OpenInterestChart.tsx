@@ -212,6 +212,7 @@ export default function OpenInterestChart({
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
       events={ADRENA_EVENTS}
+      precisionTooltip={0}
     />
   );
 }

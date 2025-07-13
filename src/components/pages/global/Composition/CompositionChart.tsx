@@ -172,6 +172,7 @@ export default function CompositionChart() {
       yDomain={['dataMax']}
       setPeriod={setPeriod}
       events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
+      precisionTooltip={0}
     />
   );
 }
