@@ -36,14 +36,6 @@ function ChatContainer({
 
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
 
-  const {
-    friendRequests,
-    loading: isFriendReqLoading,
-    acceptFriendRequest,
-    rejectFriendRequest,
-  } = useFriendReq({
-    walletAddress,
-  });
 
   const {
     chatrooms,
@@ -53,8 +45,21 @@ function ChatContainer({
     currentChatroomId,
     fetchChatrooms,
     loading,
+    totalUnreadCount,
   } = useChatrooms({
+    isChatOpen,
     setIsChatOpen,
+  });
+
+  const {
+    friendRequests,
+    loading: isFriendReqLoading,
+    acceptFriendRequest,
+    rejectFriendRequest,
+  } = useFriendReq({
+    walletAddress,
+    fetchChatrooms,
+    isSubscribeToFriendRequests: true,
   });
 
   const { connectedUsers } = useLiveCount({
@@ -133,16 +138,15 @@ function ChatContainer({
         req.status === 'pending' && req.receiver_pubkey === walletAddress,
     ).length;
 
-    const totalUnreadMessages = chatrooms.reduce((acc, room) => {
-      if (!userProfilesMap[walletAddress]) return acc;
+    const usersTotalUnreadMessages = chatrooms.reduce((acc, room) => {
 
-      if (
-        (room.type === 'community' &&
-          userProfilesMap[walletAddress].team !== 0 &&
-          [
-            GENERAL_CHAT_ROOM_ID,
-            userProfilesMap[walletAddress].team === 1 ? 2 : 1,
-          ].includes(room.id)) ||
+      if ((userProfilesMap[walletAddress] &&
+        room.type === 'community' &&
+        userProfilesMap[walletAddress].team !== 0 &&
+        [
+          GENERAL_CHAT_ROOM_ID,
+          userProfilesMap[walletAddress].team === 1 ? 2 : 1,
+        ].includes(room.id)) ||
         room.type === 'private'
       ) {
         return acc + room.unread_count;
@@ -151,8 +155,8 @@ function ChatContainer({
       }
     }, 0);
 
-    setTotalNotifications(totalPendingRequests + totalUnreadMessages);
-  }, [friendRequests, userProfilesMap, walletAddress, chatrooms]);
+    setTotalNotifications(totalPendingRequests + usersTotalUnreadMessages);
+  }, [friendRequests, userProfilesMap, walletAddress, chatrooms, totalUnreadCount]);
 
   return (
     <>
@@ -359,12 +363,12 @@ function ChatContainerWrapper({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ height: '3rem', width: '20rem' }}
+        initial={{ height: '2.5625rem', width: '20rem' }}
         animate={{
-          height: isChatOpen ? height : '3rem',
+          height: isChatOpen ? height : '2.5625rem',
           width: isChatOpen ? '35.5rem' : '20rem',
         }}
-        exit={{ height: '3rem', width: '20rem' }}
+        exit={{ height: '2.5625rem', width: '20rem' }}
         transition={{ duration: 0.3 }}
         className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-t-lg min-w-[18.75rem] overflow-hidden"
         style={{ userSelect: isDragging ? 'none' : 'auto' }}

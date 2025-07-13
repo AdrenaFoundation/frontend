@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { RealtimeChannel } from '@supabase/supabase-js';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import {
@@ -19,14 +20,19 @@ export interface UseFriendReqReturn {
   rejectFriendRequest: (requestId: string) => Promise<void>;
   deleteFriendRequest: (requestId: string) => Promise<boolean>;
   currentFriendRequest: FriendRequest | null;
+  subscribeToFriendRequests: () => void;
 }
 
 export const useFriendReq = ({
   walletAddress,
   receiverWalletAddress,
+  isSubscribeToFriendRequests = false,
+  fetchChatrooms,
 }: {
   walletAddress: string | null;
   receiverWalletAddress?: string | null;
+  isSubscribeToFriendRequests?: boolean;
+  fetchChatrooms?: () => void;
 }): UseFriendReqReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,9 +44,83 @@ export const useFriendReq = ({
   const dispatch = useDispatch();
   const { verifiedWalletAddresses } = useSelector((s) => s.supabaseAuth);
 
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const hasSubscribed = useRef(false);
+  const walletAddressRef = useRef<string | null>(walletAddress);
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
+
+  const subscribeToFriendRequests = () => {
+    if (hasSubscribed.current) return;
+
+    const channel = supabaseAnonClient
+      .channel('friend_requests_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'friend_requests',
+        },
+        (payload) => {
+          const { eventType, new: newRecord } = payload;
+
+          if (
+            eventType === 'INSERT' &&
+            newRecord &&
+            (newRecord.receiver_pubkey === walletAddressRef.current ||
+              newRecord.sender_pubkey === walletAddressRef.current)
+          ) {
+            const newRequest = newRecord as FriendRequest;
+
+            // Add the new friend request to the list
+            setFriendRequests((prev) => {
+              // Check if request already exists to avoid duplicates
+              const exists = prev.some((req) => req.id === newRequest.id);
+              if (exists) return prev;
+
+              return [newRequest, ...prev];
+            });
+          }
+
+          if (
+            eventType === 'UPDATE' &&
+            newRecord &&
+            (newRecord.receiver_pubkey === walletAddressRef.current ||
+              newRecord.sender_pubkey === walletAddressRef.current)
+          ) {
+            const updatedRequest = newRecord as FriendRequest;
+
+            setFriendRequests((prev) =>
+              prev.map((req) =>
+                req.id === updatedRequest.id ? updatedRequest : req,
+              ),
+            );
+
+            if (
+              currentFriendRequest &&
+              currentFriendRequest.id === updatedRequest.id
+            ) {
+              setCurrentFriendRequest(updatedRequest);
+            }
+
+            fetchChatrooms?.();
+          }
+        },
+      )
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('Successfully subscribed to friend requests changes');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('Error subscribing to friend requests:', err);
+        }
+      });
+
+    channelRef.current = channel;
+    hasSubscribed.current = true;
+  };
 
   const fetchRequests = useCallback(
     async (type?: 'sent' | 'received' | 'all') => {
@@ -261,8 +341,26 @@ export const useFriendReq = ({
   useEffect(() => {
     if (walletAddress) {
       fetchRequests('all');
+      walletAddressRef.current = walletAddress;
     }
-  }, [walletAddress, fetchRequests]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletAddress]);
+
+  // Subscribe to friend request changes in real-time
+  useEffect(() => {
+    if (!isSubscribeToFriendRequests) return;
+
+    subscribeToFriendRequests();
+
+    return () => {
+      if (channelRef.current) {
+        supabaseAnonClient.removeChannel(channelRef.current);
+        channelRef.current = null;
+        hasSubscribed.current = false;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     loading,
@@ -275,6 +373,7 @@ export const useFriendReq = ({
     rejectFriendRequest,
     deleteFriendRequest,
     currentFriendRequest,
+    subscribeToFriendRequests,
   };
 };
 

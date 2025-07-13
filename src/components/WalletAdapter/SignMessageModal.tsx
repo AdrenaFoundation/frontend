@@ -107,15 +107,7 @@ Nonce: ${nonce}`;
         >
           <div className="flex flex-col gap-2 pb-3">
             <p className="text-sm font-boldy">
-              To use this feature, please verify your wallet address and connect
-              your wallet. This helps us ensure that you are the owner of the
-              wallet address and allows you to use this feature
-              securely.
-            </p>
-
-            <p className="text-sm font-boldy">
-              This does not cost anything and is only used to prove ownership of
-              your wallet.
+              Please verify your wallet address by signing a message to prove ownership.
             </p>
           </div>
 
