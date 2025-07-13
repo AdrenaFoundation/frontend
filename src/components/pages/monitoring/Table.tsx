@@ -23,6 +23,8 @@ export default function Table({
   rowHovering = false,
   rowClassName,
   isFirstColumnId = false,
+  page: controlledPage,
+  onPageChange,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -50,12 +52,16 @@ export default function Table({
   rowHovering?: boolean;
   rowClassName?: string;
   isFirstColumnId?: boolean;
+  page?: number;
+  onPageChange?: (page: number) => void;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
   );
 
-  const [page, setPage] = useState<number>(1);
+  const [internalPage, setInternalPage] = useState<number>(1);
+  const page = controlledPage !== undefined ? controlledPage : internalPage;
+
   const [nbPages, setNbPages] = useState<number | null>(null);
   const [pageData, setPageData] = useState<
     (
@@ -96,6 +102,14 @@ export default function Table({
     isBreakpoint,
     nbItemPerPageWhenBreakpoint,
   ]);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, p: number) => {
+    if (onPageChange) {
+      onPageChange(p);
+    } else {
+      setInternalPage(p);
+    }
+  };
 
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
@@ -172,7 +186,7 @@ export default function Table({
             variant="text"
             count={nbPages}
             page={page}
-            onChange={(_, p) => setPage(p)}
+            onChange={handlePageChange}
           />
         </div>
       )}
@@ -194,7 +208,7 @@ export default function Table({
             variant="text"
             count={nbPages}
             page={page}
-            onChange={(_, p) => setPage(p)}
+            onChange={handlePageChange}
           />
         </div>
       )}
