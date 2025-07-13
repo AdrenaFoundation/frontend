@@ -7,7 +7,7 @@ import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { MutagenLeaderboardData } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
+import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 
 import Table from '../monitoring/Table';
 
@@ -429,13 +429,16 @@ export default function MutagenLeaderboard({
                             <div className="flex items-center gap-3">
                                 <span className="font-boldy text-white text-xl truncate sm:flex hidden">{userRow.nickname}</span>
                                 {userRow.title !== null && (
-                                    <span className="text-xs font-boldy text-txtfade sm:flex hidden">
+                                    <span className="text-xs font-boldy text-txtfade md:hidden lg:flex hidden">
                                         &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
                                     </span>
                                 )}
                                 <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
                                 <span className="font-boldy text-white text-xl truncate">Your rank:</span>
                                 <span className="ml-2 text-sm font-boldy text-white bg-[#ff47b5]/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
+                                <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
+                                <span className="font-boldy text-white text-xl truncate sm:flex hidden">Your Mutagen:</span>
+                                <span className="text-xl font-boldy text-mutagen sm:flex hidden">{formatNumber(userRow.totalPoints, 2, 0)}</span>
                             </div>
                         </div>
                     </div>
