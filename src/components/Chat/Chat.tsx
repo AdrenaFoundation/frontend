@@ -21,7 +21,6 @@ function Chat({
   isSendingMessage,
   isChatroomsOpen,
   isMobile,
-
 }: {
   walletAddress: string | null;
   firstRender: boolean;
@@ -97,7 +96,7 @@ function Chat({
                   }
                   alt="Avatar"
                   loading="lazy"
-                  className="w-5 h-5 rounded-full flex-none"
+                  className="w-5 h-5 rounded-full flex-none mt-[0.25rem]"
                 />
                 {getProfileByWallet(message.wallet).isOnline ? (
                   <div className="absolute bottom-0 right-0 bg-green w-[0.4rem] h-[0.4rem] rounded-full" />

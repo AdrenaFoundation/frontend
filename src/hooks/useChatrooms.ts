@@ -65,6 +65,7 @@ export const useChatrooms = ({
   >({});
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const [fetchedRooms, setFetchedRooms] = useState<number[]>([]);
+  const [chatroomId, setChatroomId] = useState<number>(0);
   const currentChatroomId = useRef<number>(0);
   const walletAddressRef = useRef<string | null>(walletAddress);
 
@@ -75,51 +76,39 @@ export const useChatrooms = ({
     setError(null);
   }, []);
 
-  const fetchChatrooms = useCallback(
-    async (isRefresh = false): Promise<Chatroom[]> => {
-      if (!walletAddress) {
-        setError('User public key is required');
-        setChatrooms([]);
-        return [];
+  const fetchChatrooms = useCallback(async (): Promise<Chatroom[]> => {
+    if (!walletAddressRef.current) {
+      setError('User public key is required');
+      setChatrooms([]);
+      return [];
+    }
+
+    try {
+      setLoading((prev) => ({ ...prev, chatrooms: true }));
+      clearError();
+
+      const response = await fetch(
+        `/api/chatrooms?type=chatrooms&user_pubkey=${walletAddressRef.current}`,
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch chatrooms');
       }
 
-      try {
-        setLoading((prev) => ({ ...prev, chatrooms: true }));
-        clearError();
+      const fetchedChatrooms: Chatroom[] = data.chatrooms || [];
 
-        const response = await fetch(
-          `/api/chatrooms?type=chatrooms&user_pubkey=${walletAddress}`,
-        );
-        const data = await response.json();
+      setChatrooms(fetchedChatrooms);
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch chatrooms');
-        }
-
-        const fetchedChatrooms: Chatroom[] = data.chatrooms || [];
-
-        if (isRefresh) {
-          setChatrooms((prev) => {
-            const existingIds = new Set(prev.map((room) => room.id));
-            const newChatrooms = fetchedChatrooms.filter(
-              (room) => !existingIds.has(room.id),
-            );
-            return [...newChatrooms, ...prev];
-          });
-        } else {
-          setChatrooms(fetchedChatrooms);
-        }
-
-        return fetchedChatrooms;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        return [];
-      } finally {
-        setLoading((prev) => ({ ...prev, chatrooms: false }));
-      }
-    },
-    [walletAddress, clearError],
-  );
+      return fetchedChatrooms;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      return [];
+    } finally {
+      setLoading((prev) => ({ ...prev, chatrooms: false }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch messages for a specific chatroom with pagination
   const fetchMessages = useCallback(
@@ -328,7 +317,12 @@ export const useChatrooms = ({
   const setCurrentChatroom = async (roomId: number) => {
     currentChatroomId.current = roomId;
 
-    // Always fetch messages if the room hasn't been fetched before
+    setChatroomId(roomId);
+
+    if (fetchedRooms.includes(roomId)) {
+      return;
+    }
+
     let newMessages = null;
 
     if (
@@ -350,8 +344,8 @@ export const useChatrooms = ({
   // Initial fetch of chatrooms and unread counts
   useEffect(() => {
     if (walletAddress) {
-      fetchChatrooms();
       walletAddressRef.current = walletAddress;
+      fetchChatrooms();
     }
     setCurrentChatroom(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -442,7 +436,7 @@ export const useChatrooms = ({
     error,
     chatrooms,
     messages,
-    currentChatroomId: currentChatroomId.current,
+    currentChatroomId: chatroomId,
     hasMoreMessages,
     totalUnreadCount,
 

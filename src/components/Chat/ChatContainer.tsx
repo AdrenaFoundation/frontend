@@ -36,14 +36,6 @@ function ChatContainer({
 
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
 
-  const {
-    friendRequests,
-    loading: isFriendReqLoading,
-    acceptFriendRequest,
-    rejectFriendRequest,
-  } = useFriendReq({
-    walletAddress,
-  });
 
   const {
     chatrooms,
@@ -57,6 +49,17 @@ function ChatContainer({
   } = useChatrooms({
     isChatOpen,
     setIsChatOpen,
+  });
+
+  const {
+    friendRequests,
+    loading: isFriendReqLoading,
+    acceptFriendRequest,
+    rejectFriendRequest,
+  } = useFriendReq({
+    walletAddress,
+    fetchChatrooms,
+    isSubscribeToFriendRequests: true,
   });
 
   const { connectedUsers } = useLiveCount({
