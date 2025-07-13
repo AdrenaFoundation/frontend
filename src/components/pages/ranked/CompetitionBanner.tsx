@@ -27,8 +27,6 @@ export default function CompetitionBanner({
     jtoRewards,
     bannerClassName,
     jtoPrice,
-    seasonEnded,
-    finalPrizeUSD,
 }: {
     banner: string;
     endDate: Date | null;
@@ -42,8 +40,6 @@ export default function CompetitionBanner({
     jtoRewards: number;
     bannerClassName: string;
     jtoPrice: number | null;
-    seasonEnded?: boolean;
-    finalPrizeUSD?: number;
 }) {
     const { days, hours, minutes, seconds } = useCountDown(
         new Date(),
