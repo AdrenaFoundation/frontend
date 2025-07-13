@@ -9,6 +9,7 @@ import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
 import Competition from './Awakening';
 import Expanse from './Expanse';
 import Factions from './Factions';
+import Interseason3 from './Interseason3';
 
 export default function Ranked({
     userProfile,
@@ -18,7 +19,7 @@ export default function Ranked({
     // Ignore following for inter-season
     //
     const [activeSeason, setActiveSeason] =
-        useState<keyof typeof TRADING_COMPETITION_SEASONS>('factions');
+        useState<keyof typeof TRADING_COMPETITION_SEASONS>('interseason3');
     const [jtoPrice, setJTOPrice] = useState<number | null>(null);
 
     const data = useMemo(
@@ -86,6 +87,9 @@ export default function Ranked({
                         userProfile={userProfile}
                         triggerUserProfileReload={triggerUserProfileReload}
                     />
+                ) : null}
+                {activeSeason === 'interseason3' ? (
+                    <Interseason3 />
                 ) : null}
             </div>
         </div>

@@ -180,28 +180,30 @@ export default function CompetitionBanner({
                             )}
 
                         <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
-                            <div className="flex flex-row gap-1 items-center justify-center">
-                                <Image
-                                    src={window.adrena.client.adxToken.image}
-                                    alt="ADX logo"
-                                    className="w-4 h-4"
-                                />
+                            {adxRewards > 0 ?
+                                <div className="flex flex-row gap-1 items-center justify-center">
+                                    <Image
+                                        src={window.adrena.client.adxToken.image}
+                                        alt="ADX logo"
+                                        className="w-4 h-4"
+                                    />
 
-                                <FormatNumber
-                                    format='number'
-                                    suffix='ADX'
-                                    nb={adxRewards}
-                                    precision={0}
-                                    isAbbreviate={true}
-                                    isAbbreviateIcon={false}
-                                    className="text-md font-boldy text-txtfade"
-                                    suffixClassName='text-base font-boldy text-txtfade'
-                                    isDecimalDimmed={false}
-                                />
-                            </div>
+                                    <FormatNumber
+                                        format='number'
+                                        suffix='ADX'
+                                        nb={adxRewards}
+                                        precision={0}
+                                        isAbbreviate={true}
+                                        isAbbreviateIcon={false}
+                                        className="text-md font-boldy text-txtfade"
+                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        isDecimalDimmed={false}
+                                    />
+
+                                    <div className='flex text-md text-txtfade'>/</div>
+                                </div> : null}
 
                             {jtoRewards ? <>
-                                <div className='flex text-md text-txtfade'>/</div>
 
                                 <div className="flex flex-row gap-1 items-center justify-center">
                                     <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
@@ -257,7 +259,7 @@ export default function CompetitionBanner({
                         className="w-[3em] md:w-[4em]"
                     />
 
-                    {seasonName === 'factions' ? <>
+                    {seasonName === 'factions' || seasonName === 'interseason3' ? <>
                         <p className="tracking-[0.2rem] uppercase">And</p>
 
                         <Image

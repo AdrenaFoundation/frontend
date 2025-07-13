@@ -44,7 +44,7 @@ export default function SeasonNavigator({
                 </div>
             ))}
 
-            {Array.from({ length: 4 }, () => null).map((_, i) => (
+            {Array.from({ length: 3 }, () => null).map((_, i) => (
                 <div
                     className="hidden lg:flex items-center justify-center relative bg-third border rounded-md overflow-hidden border-white/10 opacity-50"
                     key={i}

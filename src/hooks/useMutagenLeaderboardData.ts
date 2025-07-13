@@ -32,9 +32,11 @@ function applyProfile(
 export default function useMutagenLeaderboardData({
   allUserProfilesMetadata,
   refreshInterval = 20_000,
+  seasonName,
 }: {
   allUserProfilesMetadata: UserProfileMetadata[];
   refreshInterval?: number;
+  seasonName?: string;
 }): MutagenLeaderboardData | null {
   const [leaderboardData, setLeaderboardData] =
     useState<MutagenLeaderboardData | null>(null);
@@ -55,7 +57,7 @@ export default function useMutagenLeaderboardData({
     if (!allMetadata) return;
 
     const fetchLeaderboardData = () => {
-      DataApiClient.getMutagenLeaderboard()
+      DataApiClient.getMutagenLeaderboard({ seasonName })
         .then((data) => {
           applyProfile(data, allMetadata);
           setLeaderboardData(data);
