@@ -27,7 +27,6 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import { ErrorDisplay } from '../TradingInputs/LongShortTradingInputs/ErrorDisplay';
@@ -71,6 +70,11 @@ export default function ClosePosition({
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
+  // Prevent unnecessary re-renders
+  const priceSum = useMemo(() => {
+    return (markPrice ?? 0) + (collateralMarkPrice ?? 0);
+  }, [markPrice, collateralMarkPrice]);
+
   const [showFees, setShowFees] = useState(false);
 
   // Pick default redeem token
@@ -97,7 +101,9 @@ export default function ClosePosition({
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!exitPriceAndFee) return setAmountOut(null);
+    if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
+      return setAmountOut(null);
+    }
 
     if (!doJupiterSwap) {
       return setAmountOut(
@@ -112,12 +118,12 @@ export default function ClosePosition({
       swapSlippage: 0, // No slippage for the quote
     }).then((quote) => {
       setAmountOut(nativeToUi(new BN(quote.outAmount), redeemToken.decimals));
-    });
+    })
   }, [
     doJupiterSwap,
-    exitPriceAndFee,
+    exitPriceAndFee?.amountOut,
     position.collateralToken.mint,
-    redeemToken,
+    redeemToken.mint,
   ]);
 
   useEffect(() => {
@@ -142,7 +148,7 @@ export default function ClosePosition({
 
     // Trick here so we reload only when one of the prices changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position, (markPrice ?? 0) + (collateralMarkPrice ?? 0)]);
+  }, [position, priceSum]);
 
   const rowStyle = 'w-full flex justify-between items-center';
 
@@ -278,14 +284,140 @@ export default function ClosePosition({
     }
   };
 
-  const rightArrowElement = (
-    <Image
-      className="ml-2 mr-2 opacity-60"
-      src={arrowRightIcon}
-      height={16}
-      width={16}
-      alt="Arrow"
-    />
+  const rightArrowElement = <span className="text-white/60 ml-2 mr-2" aria-label="remaining value">→</span>;
+
+  const calculatePnLValues = useMemo(() => {
+    if (!position.pnl || !markPrice) return null;
+
+    const totalPnL = position.pnl;
+    const realizedPnL = activePercent ? totalPnL * activePercent : null;
+    const remainingPnL = activePercent ? totalPnL * (1 - activePercent) : null;
+
+    return { totalPnL, realizedPnL, remainingPnL };
+  }, [position.pnl, markPrice, activePercent]);
+
+  const getPnLColorClass = (pnlValue: number | null) => {
+    if (!pnlValue) return '';
+    return pnlValue > 0 ? 'green' : 'redbright';
+  };
+
+  const getPnLPrefix = (pnlValue: number | null) => {
+    return pnlValue && pnlValue > 0 ? '+' : '';
+  };
+
+  const ValueDisplay = ({
+    label,
+    value,
+    showArrow = false,
+    remainingValue = null,
+    isBold = false,
+    isRemainingValueBold = false,
+    format = "currency",
+    precision = 3,
+    suffix = "",
+    prefix = "",
+    className = "text-txtfade text-sm",
+    isDecimalDimmed = true,
+    minimumFractionDigits,
+    remainingValueClassName = ""
+  }: {
+    label: string;
+    value: number | null;
+    showArrow?: boolean;
+    remainingValue?: number | null;
+    isBold?: boolean;
+    isRemainingValueBold?: boolean;
+    format?: "currency" | "number";
+    precision?: number;
+    suffix?: string;
+    prefix?: string;
+    className?: string;
+    isDecimalDimmed?: boolean;
+    minimumFractionDigits?: number;
+    remainingValueClassName?: string;
+  }) => (
+    <div className={rowStyle}>
+      <div className="text-sm text-txtfade">{label}</div>
+
+      <div className="flex flex-row items-center">
+        <FormatNumber
+          nb={value}
+          format={format}
+          precision={precision}
+          suffix={suffix}
+          prefix={prefix}
+          className={`${className} ${isBold ? 'font-bold' : ''}`}
+          isDecimalDimmed={isDecimalDimmed}
+          minimumFractionDigits={minimumFractionDigits}
+        />
+
+        <div style={{ display: showArrow && remainingValue !== null ? 'flex' : 'none' }} className="items-center">
+          {rightArrowElement}
+          <div className="flex flex-col">
+            <div className="flex flex-col items-end text-sm">
+              <FormatNumber
+                nb={remainingValue}
+                format={format}
+                precision={precision}
+                suffix={suffix}
+                prefix={prefix}
+                className={`${isRemainingValueBold ? 'font-bold' : ''} ${remainingValueClassName}`}
+                isDecimalDimmed={isDecimalDimmed}
+                minimumFractionDigits={minimumFractionDigits}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const PnLDisplay = ({
+    label,
+    value,
+    showArrow = false,
+    remainingValue = null,
+    isBold = false
+  }: {
+    label: string;
+    value: number | null;
+    showArrow?: boolean;
+    remainingValue?: number | null;
+    isBold?: boolean;
+  }) => (
+    <div className={rowStyle}>
+      <div className="text-sm">
+        {label}{' '}
+        <span className="text-txtfade">(net)</span>
+      </div>
+
+      <div className="flex flex-row items-center text-sm font-mono">
+        <FormatNumber
+          nb={value}
+          prefix={getPnLPrefix(value)}
+          format="currency"
+          precision={3}
+          className={`text-${getPnLColorClass(value)} ${isBold ? 'font-bold' : ''}`}
+          isDecimalDimmed={false}
+        />
+
+        <div style={{ display: showArrow && remainingValue !== null ? 'flex' : 'none' }} className="items-center">
+          {rightArrowElement}
+          <div className="flex flex-col">
+            <div className="flex flex-col items-end text-sm">
+              <FormatNumber
+                nb={remainingValue}
+                format="currency"
+                precision={3}
+                prefix={getPnLPrefix(remainingValue)}
+                className={`font-bold text-${getPnLColorClass(remainingValue)}`}
+                isDecimalDimmed={false}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -538,202 +670,79 @@ export default function ClosePosition({
               </div>
 
               <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-4">
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Size</div>
-
-                  <div className="flex flex-row items-center">
-                    <FormatNumber
-                      nb={position.sizeUsd}
-                      format="currency"
-                      className="text-txtfade text-sm"
-                    />
-
-                    {activePercent && activePercent !== 1 ? (
-                      <>
-                        {rightArrowElement}
-
-                        <div className="flex flex-col">
-                          <div className="flex flex-col items-end text-sm">
-                            {activePercent ? (
-                              <FormatNumber
-                                nb={position.sizeUsd * (1 - activePercent)}
-                                format="currency"
-                                precision={
-                                  position.token.displayPriceDecimalsPrecision
-                                }
-                                isDecimalDimmed={true}
-                              />
-                            ) : (
-                              '-'
-                            )}
-                          </div>
-                        </div>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
+                <ValueDisplay
+                  label="Size"
+                  value={position.sizeUsd}
+                  format="currency"
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={activePercent ? position.sizeUsd * (1 - activePercent) : null}
+                  precision={position.token.displayPriceDecimalsPrecision}
+                  isDecimalDimmed={true}
+                  remainingValueClassName='text-white text-sm'
+                />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Size native</div>
-
-                  <div className="flex flex-row items-center">
-                    <FormatNumber
-                      nb={
-                        position.side === 'long'
-                          ? position.size
-                          : position.sizeUsd / position.price
-                      }
-                      className="text-txtfade text-sm"
-                      precision={position.token.displayAmountDecimalsPrecision}
-                      suffix={getTokenSymbol(position.token.symbol)}
-                      isDecimalDimmed={true}
-                    />
-
-                    {activePercent && activePercent !== 1 ? (
-                      <>
-                        {rightArrowElement}
-
-                        <div className="flex flex-col">
-                          <div className="flex flex-col items-end text-sm">
-                            {activePercent ? (
-                              <FormatNumber
-                                nb={
-                                  position.side === 'long'
-                                    ? position.size * (1 - activePercent)
-                                    : (position.sizeUsd / position.price) *
-                                    (1 - activePercent)
-                                }
-                                suffix={getTokenSymbol(position.token.symbol)}
-                                precision={
-                                  position.token.displayPriceDecimalsPrecision
-                                }
-                              />
-                            ) : (
-                              '-'
-                            )}
-                          </div>
-                        </div>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
+                <ValueDisplay
+                  label="Size native"
+                  value={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+                  format="number"
+                  precision={position.token.displayAmountDecimalsPrecision}
+                  suffix={getTokenSymbol(position.token.symbol)}
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={activePercent ?
+                    (position.side === 'long'
+                      ? position.size * (1 - activePercent)
+                      : (position.sizeUsd / position.price) * (1 - activePercent)
+                    ) : null
+                  }
+                  isDecimalDimmed={true}
+                  remainingValueClassName='text-white text-sm'
+                />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Initial Leverage</div>
-
-                  <FormatNumber
-                    nb={position.sizeUsd / position.collateralUsd}
-                    prefix="x"
-                    className="text-txtfade text-sm"
-                    minimumFractionDigits={2}
-                  />
-                </div>
+                <ValueDisplay
+                  label="Initial Leverage"
+                  value={position.sizeUsd / position.collateralUsd}
+                  format="number"
+                  prefix="x"
+                  precision={2}
+                  minimumFractionDigits={2}
+                />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Current Leverage</div>
-
-                  <FormatNumber
-                    nb={position.currentLeverage}
-                    prefix="x"
-                    className="text-txtfade text-sm"
-                    minimumFractionDigits={2}
-                  />
-                </div>
+                <ValueDisplay
+                  label="Current Leverage"
+                  value={position.currentLeverage}
+                  format="number"
+                  prefix="x"
+                  precision={2}
+                  minimumFractionDigits={2}
+                />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                <div className={rowStyle}>
-                  <div className="text-sm">
-                    Remaining PnL{' '}
-                    <span className="test-xs text-txtfade">(net)</span>
-                  </div>
-
-                  <div className="flex flex-row items-center text-sm font-mono">
-                    <FormatNumber
-                      nb={position.pnl && markPrice ? position.pnl : null}
-                      prefix={position.pnl && position.pnl > 0 ? '+' : ''}
-                      format="currency"
-                      className={`text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                        }`}
-                      isDecimalDimmed={false}
-                    />
-
-                    {activePercent && activePercent !== 1 ? (
-                      <>
-                        {rightArrowElement}
-
-                        <div className="flex flex-col">
-                          <div className="flex flex-col items-end text-sm">
-                            {activePercent ? (
-                              <FormatNumber
-                                nb={
-                                  position.pnl && markPrice
-                                    ? position.pnl * (1 - activePercent)
-                                    : null
-                                }
-                                format="currency"
-                                precision={
-                                  3
-                                }
-                                prefix={
-                                  position.pnl &&
-                                    position.pnl * (1 - activePercent) > 0
-                                    ? '+'
-                                    : ''
-                                }
-                                className={`font-bold text-${position.pnl && position.pnl * (1 - activePercent) > 0 ? 'green' : 'redbright'}`}
-                                isDecimalDimmed={false}
-                              />
-                            ) : (
-                              '-'
-                            )}
-                          </div>
-                        </div>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-
-                {activePercent && activePercent !== 1 ? (
+                {activePercent && activePercent !== 1 && calculatePnLValues ? (
                   <>
+                    <PnLDisplay
+                      label="Realized PnL"
+                      value={calculatePnLValues.realizedPnL}
+                      isBold={true}
+                    />
+
                     <div className="w-full h-[1px] bg-bcolor my-1" />
-
-                    <div className={rowStyle}>
-                      <div className="text-sm">
-                        Taken PnL{' '}
-                        <span className="text-txtfade">(net)</span>
-                      </div>
-
-                      <div className="flex flex-row items-center text-sm font-mono font-bold">
-                        <FormatNumber
-                          nb={
-                            position.pnl && markPrice
-                              ? position.pnl * activePercent
-                              : null
-                          }
-                          format="currency"
-                          precision={
-                            3
-                          }
-                          prefix={
-                            position.pnl &&
-                              position.pnl * activePercent > 0
-                              ? '+'
-                              : ''
-                          }
-                          className={`font-bold text-${position.pnl && position.pnl * activePercent > 0 ? 'green' : 'redbright'}`}
-                          isDecimalDimmed={false}
-                        />
-                      </div>
-                    </div>
                   </>
                 ) : null}
+
+                <PnLDisplay
+                  label={!activePercent || (activePercent && activePercent !== 1) ? 'Unrealized PnL' : 'Realized PnL'}
+                  value={calculatePnLValues?.totalPnL ?? null}
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={calculatePnLValues?.remainingPnL ?? null}
+                  isBold={Boolean(activePercent && activePercent === 1)}
+                />
               </div>
             </div>
 
