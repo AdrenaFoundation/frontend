@@ -194,8 +194,6 @@ export function AprLmChart() {
       gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
       setPeriod={setPeriod}
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
-      isSmallScreen={isSmallScreen}
-      formatY='percentage'
       formatLeftY='percentage'
       lockPeriod={selectedPeriod}
       setLockPeriod={setSelectedPeriod}
