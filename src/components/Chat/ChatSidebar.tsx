@@ -83,7 +83,11 @@ function ChatSidebar({
   const communityRooms = chatrooms.filter((room) => {
     let displayRoom;
 
-    if (userProfilesMap && userProfilesMap[walletAddress]) {
+    if (
+      userProfilesMap &&
+      userProfilesMap[walletAddress] &&
+      userProfilesMap[walletAddress].team !== 0
+    ) {
       displayRoom = [
         GENERAL_CHAT_ROOM_ID,
         userProfilesMap[walletAddress].team === 1 ? 2 : 1,
@@ -283,8 +287,8 @@ function RoomButton({
           className={twMerge(
             'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
             currentChatroomId === room.id &&
-            !friendRequestWindowOpen &&
-            'opacity-100',
+              !friendRequestWindowOpen &&
+              'opacity-100',
             room.unread_count > 0 && 'font-interBold opacity-100',
           )}
         >
