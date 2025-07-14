@@ -168,6 +168,7 @@ export default function MixedBarLineChart<T extends string>({
                                 gmt={gmt}
                                 events={events}
                                 lineDataKeys={lineLabels.map(label => label.name).concat(cumulativeLabel ? [cumulativeLabel.name] : [])}
+                                precision={0}
                             />
                         }
                         cursor={false}

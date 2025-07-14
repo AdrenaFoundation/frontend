@@ -204,6 +204,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
       events={ADRENA_EVENTS}
+      precisionTooltip={0}
     />
   );
 }

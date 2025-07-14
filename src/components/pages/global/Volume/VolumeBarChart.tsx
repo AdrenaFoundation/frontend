@@ -201,6 +201,7 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       events={ADRENA_EVENTS}
       isSmallScreen={isSmallScreen}
       total={false}
+      yAxisBarScale="sqrt"
     />
   );
 }

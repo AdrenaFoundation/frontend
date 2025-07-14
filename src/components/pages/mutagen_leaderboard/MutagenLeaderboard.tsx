@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -7,7 +7,7 @@ import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { MutagenLeaderboardData } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
+import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 
 import Table from '../monitoring/Table';
 
@@ -362,12 +362,90 @@ export default function MutagenLeaderboard({
         sortDirection,
     ]);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 100;
+    const scrollToUserRowRef = useRef(false);
+
+    // Find the user's row in the sorted leaderboard
+    const userRow = useMemo(() => {
+        if (!sortedTraders || !wallet?.walletAddress) return null;
+        return sortedTraders.find(d => d.userWallet.toBase58() === wallet.walletAddress);
+    }, [sortedTraders, wallet?.walletAddress]);
+
+    // When page changes, scroll to user row if needed
+    React.useEffect(() => {
+        if (scrollToUserRowRef.current && wallet) {
+            setTimeout(() => {
+                const element = document.getElementById(`user-mutagen-${wallet.walletAddress}`);
+                element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                scrollToUserRowRef.current = false;
+            }, 100);
+        }
+    }, [currentPage, wallet]);
+
     if (!data) return null;
 
     return (
         <div
-            className={twMerge('w-full ml-auto mr-auto mt-8 max-w-[60em]', className)}
+            className={twMerge('w-full ml-auto mr-auto mt-2 max-w-[60em]', className)}
         >
+            {userRow ? (
+                <div
+                    className="
+                        relative flex flex-col gap-2 px-4 rounded-2xl
+                        max-w-3xl mx-auto mb-6 mt-6 ml-2 mr-2 md:ml-auto md:mr-auto
+                        bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
+                        border border-mutagen/40
+                        shadow-mutagenBig
+                        animate-fade-in
+                        cursor-pointer
+                        transition hover:border-mutagen/80 hover:shadow-mutagenHoverBig
+                    "
+                    title="Click to scroll to your row"
+                    onClick={() => {
+                        if (!wallet || !sortedTraders) return;
+                        setCurrentPage(
+                            Math.floor(sortedTraders.findIndex(d => d.userWallet.toBase58() === wallet.walletAddress) / itemsPerPage) + 1
+                        );
+                        scrollToUserRowRef.current = true;
+                    }}
+                >
+                    <div className="flex items-center justify-center gap-4">
+                        {userRow.profilePicture !== null ? (
+                            <>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={PROFILE_PICTURES[userRow.profilePicture]}
+                                    alt="Profile"
+                                    className="h-16 w-16 rounded-full object-cover shadow mt-1 mb-1"
+                                    key={`profile-picture-${userRow.nickname}`}
+                                />
+                            </>
+                        ) : (
+                            <div className="h-16 w-16 bg-third rounded-full" />
+                        )}
+                        <div className="flex flex-col min-w-0">
+                            <div className="flex items-center gap-3">
+                                <span className="font-boldy text-white text-xl truncate sm:flex hidden">{userRow.nickname}</span>
+                                {userRow.title !== null && (
+                                    <span className="text-xs font-boldy text-txtfade md:hidden lg:flex hidden">
+                                        &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
+                                    </span>
+                                )}
+                                <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
+                                <span className="font-boldy text-white text-xl truncate">Your rank:</span>
+                                <span className="ml-2 text-sm font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
+                                <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
+                                <span className="font-boldy text-white text-xl truncate sm:flex hidden">Your Mutagen:</span>
+                                <span className="text-xl font-boldy text-mutagen sm:flex hidden">{formatNumber(userRow.totalPoints, 2, 0)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
+
+            <div className="h-[1px] bg-bcolor w-full mt-4 mb-8" />
+
             <Table
                 className="bg-transparent gap-1 border-none p-0"
                 columnTitlesClassName="text-sm opacity-50"
@@ -375,14 +453,16 @@ export default function MutagenLeaderboard({
                 rowHovering={true}
                 pagination={true}
                 paginationClassName="scale-[80%] p-0"
-                nbItemPerPage={100}
+                nbItemPerPage={itemsPerPage}
                 nbItemPerPageWhenBreakpoint={3}
                 breakpoint="0" // No breakpoint
                 rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                 rowTitleWidth="0%"
                 isFirstColumnId
                 data={dataReady}
+                page={currentPage}
+                onPageChange={setCurrentPage}
             />
-        </div>
+        </div >
     );
 }

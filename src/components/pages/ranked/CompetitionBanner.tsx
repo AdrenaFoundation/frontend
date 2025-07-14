@@ -153,13 +153,31 @@ export default function CompetitionBanner({
                     <div className='text-xs font-thin text-txtfade'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
 
                     <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-lg flex-col')}>
-                        {!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
-                            <FormatNumber
+                        {seasonName === 'factions'
+                            ? <FormatNumber
                                 format='currency'
-                                nb={totalPrize}
+                                nb={417564.28}
                                 className="text-5xl font-boldy"
                                 isDecimalDimmed={false}
-                            />}
+                            />
+                            : seasonName === 'expanse' ? <FormatNumber
+                                format='currency'
+                                nb={204396.55}
+                                className="text-5xl font-boldy"
+                                isDecimalDimmed={false}
+                            /> : seasonName === 'awakening' ? <FormatNumber
+                                format='currency'
+                                nb={97166.49}
+                                className="text-5xl font-boldy"
+                                isDecimalDimmed={false}
+                            /> : (!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
+                                <FormatNumber
+                                    format='currency'
+                                    nb={totalPrize}
+                                    className="text-5xl font-boldy"
+                                    isDecimalDimmed={false}
+                                />
+                            )}
 
                         <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
                             <div className="flex flex-row gap-1 items-center justify-center">
