@@ -272,7 +272,7 @@ export default function ClosePosition({
     // Check if remaining position would be below $10 minimum
     const remainingSize = position.sizeUsd - v;
     if (percent < 1 && remainingSize < 10) {
-      setErrorMsg('Remaining size must be at least $10 to allow partial close');
+      setErrorMsg('Remaining size must be at least $10');
     } else {
       setErrorMsg(null);
     }
@@ -350,7 +350,7 @@ export default function ClosePosition({
                           // Check if remaining position would be below $10 minimum
                           const remainingSize = position.sizeUsd * (1 - newPercent);
                           if (newPercent < 1 && remainingSize < 10) {
-                            setErrorMsg('Remaining size must be at least $10 to allow partial close');
+                            setErrorMsg('Remaining size must be at least $10');
                           } else {
                             setErrorMsg(null);
                           }
@@ -561,8 +561,7 @@ export default function ClosePosition({
                                 precision={
                                   position.token.displayPriceDecimalsPrecision
                                 }
-                                className={`text-orange`}
-                                isDecimalDimmed={false}
+                                isDecimalDimmed={true}
                               />
                             ) : (
                               '-'
@@ -610,7 +609,6 @@ export default function ClosePosition({
                                 precision={
                                   position.token.displayPriceDecimalsPrecision
                                 }
-                                className={`text-txtfade`}
                               />
                             ) : (
                               '-'
@@ -652,16 +650,16 @@ export default function ClosePosition({
 
                 <div className={rowStyle}>
                   <div className="text-sm">
-                    PnL{' '}
-                    <span className="test-xs text-txtfade">(after fees)</span>
+                    Remaining PnL{' '}
+                    <span className="test-xs text-txtfade">(net)</span>
                   </div>
 
-                  <div className="flex flex-row items-center text-sm font-mono font-bold">
+                  <div className="flex flex-row items-center text-sm font-mono">
                     <FormatNumber
                       nb={position.pnl && markPrice ? position.pnl : null}
                       prefix={position.pnl && position.pnl > 0 ? '+' : ''}
                       format="currency"
-                      className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                      className={`text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
                         }`}
                       isDecimalDimmed={false}
                     />
@@ -681,7 +679,7 @@ export default function ClosePosition({
                                 }
                                 format="currency"
                                 precision={
-                                  position.token.displayPriceDecimalsPrecision
+                                  3
                                 }
                                 prefix={
                                   position.pnl &&
@@ -701,6 +699,41 @@ export default function ClosePosition({
                     ) : null}
                   </div>
                 </div>
+
+                {activePercent && activePercent !== 1 ? (
+                  <>
+                    <div className="w-full h-[1px] bg-bcolor my-1" />
+
+                    <div className={rowStyle}>
+                      <div className="text-sm">
+                        Taken PnL{' '}
+                        <span className="text-txtfade">(net)</span>
+                      </div>
+
+                      <div className="flex flex-row items-center text-sm font-mono font-bold">
+                        <FormatNumber
+                          nb={
+                            position.pnl && markPrice
+                              ? position.pnl * activePercent
+                              : null
+                          }
+                          format="currency"
+                          precision={
+                            3
+                          }
+                          prefix={
+                            position.pnl &&
+                              position.pnl * activePercent > 0
+                              ? '+'
+                              : ''
+                          }
+                          className={`font-bold text-${position.pnl && position.pnl * activePercent > 0 ? 'green' : 'redbright'}`}
+                          isDecimalDimmed={false}
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : null}
               </div>
             </div>
 
