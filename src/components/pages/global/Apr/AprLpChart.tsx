@@ -21,7 +21,7 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
 
     // custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('1M');
+  const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -59,6 +59,8 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
             return 93;
           case '6M':
             return 183;
+          case '1Y':
+            return 365;
           default:
             return 1;
         }
@@ -76,6 +78,8 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
           case '3M':
             return 'poolinfodaily';
           case '6M':
+            return 'poolinfodaily';
+          case '1Y':
             return 'poolinfodaily';
           default: return 'poolinfo';
         }
@@ -111,7 +115,7 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
           });
         }
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M') {
+        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -157,12 +161,9 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
       labels={[{ name: 'ALP APR', color: '#66b3ff' }]}
       yDomain={[0]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
+      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
       setPeriod={setPeriod}
-      periods={['1d', '7d', '1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
       isAlpPage={isAlpPage}

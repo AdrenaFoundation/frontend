@@ -7,12 +7,14 @@ import FormatNumber from '@/components/Number/FormatNumber';
 
 interface FeesPaidTooltipProps {
   entryFees: number;
-  exitFees: number;
-  borrowFees: number;
+  decreaseExitFees: number;
+  closeExitFees: number;
+  decreaseBorrowFees: number;
+  closeBorrowFees: number;
   children: ReactElement;
 }
 
-const FeesPaidTooltip: React.FC<FeesPaidTooltipProps> = ({ entryFees, exitFees, borrowFees, children }) => {
+const FeesPaidTooltip: React.FC<FeesPaidTooltipProps> = ({ entryFees, decreaseExitFees, closeExitFees, decreaseBorrowFees, closeBorrowFees, children }) => {
   const content = (
     <div className="">
       <div className="flex justify-between">
@@ -21,18 +23,38 @@ const FeesPaidTooltip: React.FC<FeesPaidTooltipProps> = ({ entryFees, exitFees, 
           <FormatNumber nb={entryFees} format="currency" />
         </span>
       </div>
+
+      <div className="h-px w-full bg-whiteLabel/10 mt-2 mb-2" />
+
       <div className="flex justify-between">
-        <span>Exit Fee:</span>
+        <span>Decrease Borrow Fee:</span>
         <span className="ml-4 inline-block">
-          <FormatNumber nb={exitFees} format="currency" />
+          <FormatNumber nb={decreaseBorrowFees} format="currency" />
         </span>
       </div>
       <div className="flex justify-between">
-        <span>Borrow Fee:</span>
+        <span>Decrease Exit Fee:</span>
         <span className="ml-4 inline-block">
-          <FormatNumber nb={borrowFees} format="currency" />
+          <FormatNumber nb={decreaseExitFees} format="currency" />
         </span>
       </div>
+
+      <div className="h-px w-full bg-whiteLabel/10 mt-2 mb-2" />
+
+      <div className="flex justify-between">
+        <span>Close Borrow Fee:</span>
+        <span className="ml-4 inline-block">
+          <FormatNumber nb={closeBorrowFees} format="currency" />
+        </span>
+      </div>
+
+      <div className="flex justify-between">
+        <span>Close Exit Fee:</span>
+        <span className="ml-4 inline-block">
+          <FormatNumber nb={closeExitFees} format="currency" />
+        </span>
+      </div>
+
     </div>
   );
 

@@ -8,15 +8,28 @@ import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
 import { setSettings } from '@/actions/settingsActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
+import InputNumber from '@/components/common/InputNumber/InputNumber';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ALTERNATIVE_SWAP_TOKENS, USD_DECIMALS } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
-import { ClosePositionEvent, ExitPriceAndFee, PositionExtended, Token } from '@/types';
-import { getJupiterApiQuote, getTokenImage, getTokenSymbol, nativeToUi } from '@/utils';
+import {
+  ClosePositionEvent,
+  ExitPriceAndFee,
+  PositionExtended,
+  Token,
+} from '@/types';
+import {
+  formatNumber,
+  getJupiterApiQuote,
+  getTokenImage,
+  getTokenSymbol,
+  nativeToUi,
+} from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
+import { ErrorDisplay } from '../TradingInputs/LongShortTradingInputs/ErrorDisplay';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
 
 // use the counter to handle asynchronous multiple loading
@@ -42,7 +55,9 @@ export default function ClosePosition({
   const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
 
   const [isPickTokenModalOpen, setIsPickTokenModalOpen] = useState(false);
-  const showPopupOnPositionClose = useSelector((state) => state.settings.showPopupOnPositionClose);
+  const showPopupOnPositionClose = useSelector(
+    (state) => state.settings.showPopupOnPositionClose,
+  );
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [redeemToken, setRedeemToken] = useState<Token>(position.token);
 
@@ -55,14 +70,19 @@ export default function ClosePosition({
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
+  // Prevent unnecessary re-renders
+  const priceSum = useMemo(() => {
+    return (markPrice ?? 0) + (collateralMarkPrice ?? 0);
+  }, [markPrice, collateralMarkPrice]);
+
   const [showFees, setShowFees] = useState(false);
 
   // Pick default redeem token
   useEffect(() => {
-    const token = [
-      ...window.adrena.client.tokens,
-      ...ALTERNATIVE_SWAP_TOKENS,
-    ].find((t) => t.symbol === settings.closePositionCollateralSymbol) ?? position.token;
+    const token =
+      [...window.adrena.client.tokens, ...ALTERNATIVE_SWAP_TOKENS].find(
+        (t) => t.symbol === settings.closePositionCollateralSymbol,
+      ) ?? position.token;
 
     setRedeemToken(token);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,15 +95,20 @@ export default function ClosePosition({
   const recommendedToken = position.collateralToken;
 
   const [amountOut, setAmountOut] = useState<number | null>(null);
+  const [customAmount, setCustomAmount] = useState<number | null>(null);
+  const [activePercent, setActivePercent] = useState<number | null>(1);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!exitPriceAndFee) return setAmountOut(null);
+    if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
+      return setAmountOut(null);
+    }
 
     if (!doJupiterSwap) {
-      return setAmountOut(nativeToUi(
-        exitPriceAndFee.amountOut,
-        redeemToken.decimals,
-      ));
+      return setAmountOut(
+        nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals),
+      );
     }
 
     getJupiterApiQuote({
@@ -91,14 +116,10 @@ export default function ClosePosition({
       outputMint: redeemToken.mint,
       amount: exitPriceAndFee.amountOut,
       swapSlippage: 0, // No slippage for the quote
+    }).then((quote) => {
+      setAmountOut(nativeToUi(new BN(quote.outAmount), redeemToken.decimals));
     })
-      .then((quote) => {
-        setAmountOut(nativeToUi(
-          new BN(quote.outAmount),
-          redeemToken.decimals,
-        ));
-      });
-  }, [doJupiterSwap, exitPriceAndFee, position.collateralToken.mint, redeemToken]);
+  }, [doJupiterSwap, exitPriceAndFee, position.collateralToken.mint, redeemToken.decimals, redeemToken.mint]);
 
   useEffect(() => {
     const localLoadingCounter = ++loadingCounter;
@@ -122,15 +143,17 @@ export default function ClosePosition({
 
     // Trick here so we reload only when one of the prices changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position, (markPrice ?? 0) + (collateralMarkPrice ?? 0)]);
+  }, [position, priceSum]);
 
   const rowStyle = 'w-full flex justify-between items-center';
 
   const doFullClose = useCallback(async () => {
     if (!markPrice) return;
 
+    const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
+
     const notification =
-      MultiStepNotification.newForRegularTransaction('Close Position').fire();
+      MultiStepNotification.newForRegularTransaction(notificationTitle).fire();
 
     try {
       const priceAndFee = await window.adrena.client.getExitPriceAndFee({
@@ -155,29 +178,40 @@ export default function ClosePosition({
             .mul(new BN(10_000 - slippageInBps))
             .div(new BN(10_000));
 
-      await (position.side === 'long'
-        ? window.adrena.client.closePositionLong.bind(window.adrena.client)
-        : window.adrena.client.closePositionShort.bind(window.adrena.client))({
-          position,
-          price: priceWithSlippage,
-          expectedCollateralAmountOut: new BN(priceAndFee.amountOut),
-          redeemToken,
-          swapSlippage,
-          notification,
-          getTransactionLogs: (logs) => {
-            if (!logs) return;
+      await (
+        position.side === 'long'
+          ? window.adrena.client.closePositionLong.bind(window.adrena.client)
+          : window.adrena.client.closePositionShort.bind(window.adrena.client)
+      )({
+        position,
+        price: priceWithSlippage,
+        expectedCollateralAmountOut: new BN(priceAndFee.amountOut),
+        redeemToken,
+        swapSlippage,
+        notification,
+        percentage: new BN(
+          activePercent ? activePercent * 100 * 10_000 : 100 * 10_000,
+        ), // 100% by default
+        getTransactionLogs: (logs) => {
+          if (!logs) return;
 
-            const events = logs.events as ClosePositionEvent
+          const events = logs.events as ClosePositionEvent;
 
-            const profit = nativeToUi(events.profitUsd, USD_DECIMALS);
-            const loss = nativeToUi(events.lossUsd, USD_DECIMALS);
-            const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
-            const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
+          const profit = nativeToUi(events.profitUsd, USD_DECIMALS);
+          const loss = nativeToUi(events.lossUsd, USD_DECIMALS);
+          const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
+          const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
 
-            if (showPopupOnPositionClose)
-              setShareClosePosition({ ...position, pnl: (profit - loss), exitFeeUsd, borrowFeeUsd });
-          },
-        });
+          if (showPopupOnPositionClose && (activePercent ? activePercent * 100 === 100 : true)) {
+            setShareClosePosition({
+              ...position,
+              pnl: profit - loss,
+              exitFeeUsd,
+              borrowFeeUsd,
+            });
+          }
+        },
+      });
 
       dispatch(fetchWalletTokenBalances());
       triggerUserProfileReload();
@@ -186,47 +220,374 @@ export default function ClosePosition({
     } catch (error) {
       console.error('error', error);
     }
-  }, [markPrice, position, redeemToken, swapSlippage, dispatch, triggerUserProfileReload, onClose, showPopupOnPositionClose, setShareClosePosition]);
+  }, [
+    markPrice,
+    activePercent,
+    position,
+    redeemToken,
+    swapSlippage,
+    dispatch,
+    triggerUserProfileReload,
+    onClose,
+    showPopupOnPositionClose,
+    setShareClosePosition,
+  ]);
 
   const handleExecute = async () => {
     await doFullClose();
   };
 
+  const calculatePercentage = (percent: number) => {
+    const value = Number(Number(position.sizeUsd * percent).toFixed(2));
+    if (isNaN(value) || value < 0) return null;
+    return value;
+  };
+
+  const handleCustomAmount = (v: number | null) => {
+    setHasInteracted(true);
+
+    if (v === null || isNaN(v) || v < 0) {
+      setCustomAmount(null);
+      setActivePercent(null);
+      setErrorMsg('Please enter a valid amount');
+      return;
+    }
+
+    if (v <= 0) {
+      setCustomAmount(v);
+      setActivePercent(v / position.sizeUsd);
+      setErrorMsg('Size to close must be greater than $0');
+      return;
+    }
+
+    if (v > position.sizeUsd) {
+      setCustomAmount(position.sizeUsd);
+      setActivePercent(1);
+      setErrorMsg(null);
+      return;
+    }
+
+    setCustomAmount(v);
+    const percent = v / position.sizeUsd;
+    setActivePercent(percent);
+
+    const remainingCollateral = position.collateralUsd * (1 - percent);
+    if (percent < 1 && remainingCollateral < 10) {
+      setErrorMsg('Remaining collateral must be at least $10');
+    } else {
+      setErrorMsg(null);
+    }
+  };
+
+  const rightArrowElement = <span className="text-white/60 ml-2 mr-2" aria-label="remaining value">→</span>;
+
+  const calculatePnLValues = useMemo(() => {
+    if (!position.pnl || !markPrice) return null;
+
+    const totalPnL = position.pnl;
+    const realizedPnL = activePercent ? totalPnL * activePercent : null;
+    const remainingPnL = activePercent ? totalPnL * (1 - activePercent) : null;
+
+    return { totalPnL, realizedPnL, remainingPnL };
+  }, [position.pnl, markPrice, activePercent]);
+
+  const getPnLColorClass = (pnlValue: number | null) => {
+    if (!pnlValue) return '';
+    return pnlValue > 0 ? 'green' : 'redbright';
+  };
+
+  const getPnLPrefix = (pnlValue: number | null) => {
+    return pnlValue && pnlValue > 0 ? '+' : '';
+  };
+
+  const ValueDisplay = ({
+    label,
+    value,
+    showArrow = false,
+    remainingValue = null,
+    isBold = false,
+    isRemainingValueBold = false,
+    format = "currency",
+    precision = 3,
+    suffix = "",
+    prefix = "",
+    className = "text-txtfade text-sm",
+    isDecimalDimmed = true,
+    minimumFractionDigits,
+    remainingValueClassName = "",
+    isAbbreviate = false
+  }: {
+    label: string;
+    value: number | null;
+    showArrow?: boolean;
+    remainingValue?: number | null;
+    isBold?: boolean;
+    isRemainingValueBold?: boolean;
+    format?: "currency" | "number";
+    precision?: number;
+    suffix?: string;
+    prefix?: string;
+    className?: string;
+    isDecimalDimmed?: boolean;
+    minimumFractionDigits?: number;
+    remainingValueClassName?: string;
+    isAbbreviate?: boolean;
+  }) => (
+    <div className={rowStyle}>
+      <div className="text-sm text-txtfade">{label}</div>
+
+      <div className="flex flex-row items-center">
+        <FormatNumber
+          nb={value}
+          format={format}
+          precision={precision}
+          suffix={suffix}
+          prefix={prefix}
+          className={`${className} ${isBold ? 'font-bold' : ''}`}
+          isDecimalDimmed={isDecimalDimmed}
+          minimumFractionDigits={minimumFractionDigits}
+          isAbbreviate={isAbbreviate}
+        />
+
+        <div style={{ display: showArrow && remainingValue !== null ? 'flex' : 'none' }} className="items-center">
+          {rightArrowElement}
+          <div className="flex flex-col">
+            <div className="flex flex-col items-end text-sm">
+              <FormatNumber
+                nb={remainingValue}
+                format={format}
+                precision={precision}
+                suffix={suffix}
+                prefix={prefix}
+                className={`${isRemainingValueBold ? 'font-bold' : ''} ${remainingValueClassName}`}
+                isDecimalDimmed={isDecimalDimmed}
+                minimumFractionDigits={minimumFractionDigits}
+                isAbbreviate={isAbbreviate}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const PnLDisplay = ({
+    label,
+    value,
+    showArrow = false,
+    remainingValue = null,
+    isBold = false
+  }: {
+    label: string;
+    value: number | null;
+    showArrow?: boolean;
+    remainingValue?: number | null;
+    isBold?: boolean;
+  }) => (
+    <div className={rowStyle}>
+      <div className="text-sm">
+        {label}{' '}
+        <span className="text-txtfade">(net)</span>
+      </div>
+
+      <div className="flex flex-row items-center text-sm font-mono">
+        <FormatNumber
+          nb={value}
+          prefix={getPnLPrefix(value)}
+          format="currency"
+          precision={3}
+          className={`text-${getPnLColorClass(value)} ${isBold ? 'font-bold' : ''}`}
+          isDecimalDimmed={false}
+        />
+
+        <div style={{ display: showArrow && remainingValue !== null ? 'flex' : 'none' }} className="items-center">
+          {rightArrowElement}
+          <div className="flex flex-col">
+            <div className="flex flex-col items-end text-sm">
+              <FormatNumber
+                nb={remainingValue}
+                format="currency"
+                precision={3}
+                prefix={getPnLPrefix(remainingValue)}
+                className={`font-bold text-${getPnLColorClass(remainingValue)}`}
+                isDecimalDimmed={false}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div
-      className={twMerge('flex flex-col h-full max-h-[70vh] w-full sm:w-[40em]', className)}
+      className={twMerge(
+        'flex flex-col h-full max-h-[70vh] w-full sm:w-[40em]',
+        className,
+      )}
     >
       <div className="px-4 pt-4 pb-2">
-        <div className='flex gap-4 flex-col sm:flex-row'>
-          <div className='flex flex-col w-full sm:w-1/2'>
-            <div className='flex flex-col w-full'>
-              <div className="text-white text-sm mb-1 font-boldy">
-                Close in
-              </div>
+        <div className="flex gap-4 flex-col sm:flex-row">
+          <div className="flex flex-col w-full sm:w-1/2">
+            <div>
+              <p className="text-sm font-boldy mb-2">
+                {activePercent && activePercent !== 1 ? 'Size to Partially Close' : 'Size to Close'}
+              </p>
 
-              <div className='flex items-center gap-2 cursor-pointer mt-2 mb-4 w-full justify-center border pt-2 pb-2' onClick={() => setIsPickTokenModalOpen(true)}>
-                <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
-                  <Image src={chevronDownIcon} alt="chevron down" />
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-row items-center justify-between border bg-third rounded-lg p-3">
+                  <InputNumber
+                    value={customAmount ?? (activePercent === 1 ? calculatePercentage(1) ?? undefined : undefined)}
+                    placeholder={
+                      position.sizeUsd.toFixed(2)
+                    }
+                    className="bg-transparent font-mono border-0 !text-xl outline-none w-full"
+                    onChange={handleCustomAmount}
+                    decimalConstraint={18}
+                    min={0.01}
+                  />
+
+                  <p className="font-boldy opacity-50 cursor-default">USD</p>
                 </div>
 
-                <div className='font-archivo'>{redeemToken.symbol ?? '-'}</div>
+                <div className="flex flex-row gap-3 w-full">
+                  {[25, 50, 75, 100].map((percent, i) => {
+                    return (
+                      <Button
+                        key={i}
+                        title={`${percent}%`}
+                        variant="secondary"
+                        rounded={false}
+                        className={twMerge(
+                          'flex-grow text-xs bg-third border border-bcolor text-opacity-50 hover:text-opacity-100 hover:border-white/10 rounded-lg flex-1 font-mono',
+                          percent / 100 === activePercent &&
+                          'border-white/10 text-opacity-100',
+                        )}
+                        onClick={() => {
+                          setHasInteracted(true);
 
-                <Image
-                  className='h-4 w-4'
-                  src={redeemToken.image}
-                  alt="logo"
-                  width="20"
-                  height="20"
+                          const newPercent = percent / 100;
+                          const newAmount = calculatePercentage(newPercent);
+
+                          setActivePercent(newPercent);
+                          setCustomAmount(newAmount);
+
+                          // Validate size is greater than 0
+                          if (newAmount === null || newAmount <= 0) {
+                            setErrorMsg('Size to close must be greater than $0');
+                            return;
+                          }
+
+                          const remainingCollateral = position.collateralUsd * (1 - newPercent);
+                          if (newPercent < 1 && remainingCollateral < 10) {
+                            setErrorMsg('Remaining collateral must be at least $10');
+                          } else {
+                            setErrorMsg(null);
+                          }
+                        }}
+                      ></Button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {errorMsg ? <ErrorDisplay errorMessage={errorMsg} className="mt-2" /> : null}
+
+            <div className="my-3">
+              <p className="mb-2 font-boldy text-sm">Receive</p>
+              <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-4 py-2.5">
+                <div className="flex flex-col">
+                  <FormatNumber
+                    nb={
+                      activePercent && activePercent !== 1 && amountOut
+                        ? amountOut * activePercent
+                        : amountOut
+                    }
+                    precision={4}
+                    className="text-lg inline-block"
+                    isDecimalDimmed={false}
+                    isAbbreviate={redeemToken.symbol === 'BONK'}
+                  />
+
+                  <FormatNumber
+                    nb={exitPriceAndFee &&
+                      collateralMarkPrice &&
+                      nativeToUi(
+                        exitPriceAndFee.amountOut,
+                        position.collateralToken.decimals,
+                      ) * collateralMarkPrice * (activePercent ?? 1)
+                    }
+                    format="currency"
+                    className="text-txtfade text-sm"
+                    isDecimalDimmed={false}
+                  />
+                </div>
+
+                <div
+                  className="flex items-center gap-2 cursor-pointer justify-center"
+                  onClick={() => setIsPickTokenModalOpen(true)}
+                >
+                  <div
+                    className={twMerge(
+                      'flex h-2 w-2 items-center justify-center shrink-0',
+                    )}
+                  >
+                    <Image src={chevronDownIcon} alt="chevron down" />
+                  </div>
+
+                  <div className="font-archivo">
+                    {redeemToken.symbol ?? '-'}
+                  </div>
+
+                  <Image
+                    className="h-4 w-4"
+                    src={redeemToken.image}
+                    alt="logo"
+                    width="20"
+                    height="20"
+                  />
+                </div>
+
+                <PickTokenModal
+                  key="close-pick-token-modal"
+                  recommendedToken={recommendedToken}
+                  isPickTokenModalOpen={isPickTokenModalOpen}
+                  setIsPickTokenModalOpen={setIsPickTokenModalOpen}
+                  // Adrena tokens + swappable tokens
+                  tokenList={[
+                    ...window.adrena.client.tokens,
+                    ...ALTERNATIVE_SWAP_TOKENS,
+                  ]}
+                  pick={(t: Token) => {
+                    // Persist the selected token in the settings
+                    dispatch(
+                      setSettings({
+                        closePositionCollateralSymbol: t?.symbol ?? '',
+                      }),
+                    );
+
+                    setRedeemToken(t);
+                    setIsPickTokenModalOpen(false);
+                  }}
                 />
               </div>
+            </div>
 
-              {doJupiterSwap && recommendedToken ? <>
-                <Tippy content={"When closing a long position, you receive the same collateral you used to open it. When closing a short position, the collateral is returned in USDC. If you want a different asset, a Jupiter swap is required."}>
+            {doJupiterSwap && recommendedToken ? (
+              <>
+                <Tippy
+                  content={
+                    'When closing a long position, you receive the same collateral you used to open it. When closing a short position, the collateral is returned in USDC. If you want a different asset, a Jupiter swap is required.'
+                  }
+                >
                   <div className="text-xs gap-1 flex w-full items-center justify-center">
-                    <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                    <span className='text-white/30'>auto-swapped to</span>
-                    <span className='text-white/30'>{redeemToken.symbol}</span>
-                    <span className='text-white/30'>via Jupiter</span>
+                    <span className="text-white/30">
+                      {position.collateralToken.symbol}
+                    </span>
+                    <span className="text-white/30">auto-swapped to</span>
+                    <span className="text-white/30">{redeemToken.symbol}</span>
+                    <span className="text-white/30">via Jupiter</span>
                   </div>
                 </Tippy>
 
@@ -236,82 +597,14 @@ export default function ClosePosition({
                   className="mt-4 mb-4"
                   titleClassName="ml-0"
                 />
-              </> : null}
-
-              <PickTokenModal
-                key="close-pick-token-modal"
-                recommendedToken={recommendedToken}
-                isPickTokenModalOpen={isPickTokenModalOpen}
-                setIsPickTokenModalOpen={setIsPickTokenModalOpen}
-                // Adrena tokens + swappable tokens
-                tokenList={[
-                  ...window.adrena.client.tokens,
-                  ...ALTERNATIVE_SWAP_TOKENS,
-                ]}
-                pick={(t: Token) => {
-                  // Persist the selected token in the settings
-                  dispatch(
-                    setSettings({
-                      closePositionCollateralSymbol: t?.symbol ?? '',
-                    }),
-                  );
-
-                  setRedeemToken(t);
-                  setIsPickTokenModalOpen(false);
-                }}
-              />
-            </div>
-
-            <div className='flex flex-col w-full'>
-              <p className="mb-2 font-boldy text-sm">Receive</p>
-
-              <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3 py-2.5">
-                <div className="flex flex-row gap-3 items-center">
-                  <Image
-                    src={redeemToken.image}
-                    width={24}
-                    height={24}
-                    alt="close token image"
-                  />
-
-                  <div className="flex flex-col mr-4 ml-2">
-                    <div>
-                      <FormatNumber
-                        nb={amountOut}
-                        precision={4}
-                        className="text-lg inline-block"
-                        isDecimalDimmed={false}
-                        isAbbreviate={redeemToken.symbol === 'BONK'}
-                      />
-
-                      <span className="text-lg ml-1 font-semibold">
-                        {redeemToken.symbol}
-                      </span>
-                    </div>
-
-                    <FormatNumber
-                      nb={
-                        exitPriceAndFee &&
-                        collateralMarkPrice &&
-                        nativeToUi(
-                          exitPriceAndFee.amountOut,
-                          position.collateralToken.decimals,
-                        ) * collateralMarkPrice
-                      }
-                      format="currency"
-                      className="text-txtfade text-sm"
-                      isDecimalDimmed={false}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+              </>
+            ) : null}
           </div>
 
-          <div className='flex flex-col w-full sm:w-1/2'>
+          <div className="flex flex-col w-full sm:w-1/2">
             <div>
               <div className="text-white text-sm mb-1 font-boldy">
-                Position to close
+                Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
               </div>
 
               <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
@@ -375,78 +668,93 @@ export default function ClosePosition({
               </div>
 
               <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-4">
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Size</div>
-
-                  <FormatNumber
-                    nb={position.sizeUsd}
-                    format="currency"
-                    className="text-txtfade text-sm"
-                  />
-                </div>
-
-                <div className="w-full h-[1px] bg-bcolor my-1" />
-
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Size native</div>
-
-                  <FormatNumber
-                    nb={
-                      position.side === 'long'
-                        ? position.size
-                        : position.sizeUsd / position.price
-                    }
-                    className="text-txtfade text-sm"
-                    precision={position.token.displayAmountDecimalsPrecision}
-                    suffix={getTokenSymbol(position.token.symbol)}
-                    isDecimalDimmed={true}
-                  />
-                </div>
+                <ValueDisplay
+                  label="Size"
+                  value={position.sizeUsd}
+                  format="currency"
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={activePercent ? position.sizeUsd * (1 - activePercent) : null}
+                  precision={position.token.displayPriceDecimalsPrecision}
+                  isDecimalDimmed={true}
+                  remainingValueClassName='text-white text-sm'
+                />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Initial Leverage</div>
-
-                  <FormatNumber
-                    nb={position.sizeUsd / position.collateralUsd}
-                    prefix="x"
-                    className="text-txtfade text-sm"
-                    minimumFractionDigits={2}
-                  />
-                </div>
-
-                <div className="w-full h-[1px] bg-bcolor my-1" />
-
-                <div className={rowStyle}>
-                  <div className="text-sm text-txtfade">Current Leverage</div>
-
-                  <FormatNumber
-                    nb={position.currentLeverage}
-                    prefix="x"
-                    className="text-txtfade text-sm"
-                    minimumFractionDigits={2}
-                  />
-                </div>
+                <ValueDisplay
+                  label="Size native"
+                  value={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+                  format="number"
+                  precision={position.token.displayAmountDecimalsPrecision}
+                  suffix={getTokenSymbol(position.token.symbol)}
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={activePercent ?
+                    (position.side === 'long'
+                      ? position.size * (1 - activePercent)
+                      : (position.sizeUsd / position.price) * (1 - activePercent)
+                    ) : null
+                  }
+                  isDecimalDimmed={true}
+                  remainingValueClassName='text-white text-sm'
+                  isAbbreviate={true}
+                />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                <div className={rowStyle}>
-                  <div className="text-sm">
-                    PnL <span className="test-xs text-txtfade">(after fees)</span>
-                  </div>
+                <ValueDisplay
+                  label="Collateral"
+                  value={position.collateralUsd}
+                  format="currency"
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={activePercent ? position.collateralUsd * (1 - activePercent) : null}
+                  precision={2}
+                  isDecimalDimmed={true}
+                  remainingValueClassName='text-white text-sm'
+                />
 
-                  <div className="text-sm font-mono font-bold">
-                    <FormatNumber
-                      nb={position.pnl && markPrice ? position.pnl : null}
-                      prefix={position.pnl && position.pnl > 0 ? '+' : ''}
-                      format="currency"
-                      className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                        }`}
-                      isDecimalDimmed={false}
+                <div className="w-full h-[1px] bg-bcolor my-1" />
+
+                <ValueDisplay
+                  label="Initial Leverage"
+                  value={position.sizeUsd / position.collateralUsd}
+                  format="number"
+                  prefix="x"
+                  precision={2}
+                  minimumFractionDigits={2}
+                />
+
+                <div className="w-full h-[1px] bg-bcolor my-1" />
+
+                <ValueDisplay
+                  label="Current Leverage"
+                  value={position.currentLeverage}
+                  format="number"
+                  prefix="x"
+                  precision={2}
+                  minimumFractionDigits={2}
+                />
+
+                <div className="w-full h-[1px] bg-bcolor my-1" />
+
+                {activePercent && activePercent !== 1 && calculatePnLValues ? (
+                  <>
+                    <PnLDisplay
+                      label="Realized PnL"
+                      value={calculatePnLValues.realizedPnL}
+                      isBold={true}
                     />
-                  </div>
-                </div>
+
+                    <div className="w-full h-[1px] bg-bcolor my-1" />
+                  </>
+                ) : null}
+
+                <PnLDisplay
+                  label={!activePercent || (activePercent && activePercent !== 1) ? 'Unrealized PnL' : 'Realized PnL'}
+                  value={calculatePnLValues?.totalPnL ?? null}
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={calculatePnLValues?.remainingPnL ?? null}
+                  isBold={Boolean(activePercent && activePercent === 1)}
+                />
               </div>
             </div>
 
@@ -467,13 +775,12 @@ export default function ClosePosition({
                   <div className={rowStyle}>
                     <div className="flex items-center text-sm text-txtfade">
                       Exit Fees
-
                       <Tippy
                         content={
                           <p className="font-medium">
-                            Open fees are 0 bps, while close fees are 16 bps. This
-                            average to 8bps entry and close fees, but allow for opening
-                            exactly the requested position size.
+                            Open fees are 0 bps, while close fees are 16 bps.
+                            This average to 8bps entry and close fees, but allow
+                            for opening exactly the requested position size.
                           </p>
                         }
                         placement="auto"
@@ -488,7 +795,11 @@ export default function ClosePosition({
                       </Tippy>
                     </div>
 
-                    <FormatNumber nb={position.exitFeeUsd} format="currency" className='text-sm' />
+                    <FormatNumber
+                      nb={position.exitFeeUsd}
+                      format="currency"
+                      className="text-sm"
+                    />
                   </div>
 
                   <div className="w-full h-[1px] bg-bcolor my-1" />
@@ -499,9 +810,9 @@ export default function ClosePosition({
                       <Tippy
                         content={
                           <p className="font-medium">
-                            Total of fees accruing continuously while the leveraged
-                            position is open, to pay interest rate on the borrowed
-                            assets from the Liquidity Pool.
+                            Total of fees accruing continuously while the
+                            leveraged position is open, to pay interest rate on
+                            the borrowed assets from the Liquidity Pool.
                           </p>
                         }
                         placement="auto"
@@ -516,7 +827,11 @@ export default function ClosePosition({
                       </Tippy>
                     </div>
 
-                    <FormatNumber nb={position.borrowFeeUsd} format="currency" className='text-sm' />
+                    <FormatNumber
+                      nb={position.borrowFeeUsd}
+                      format="currency"
+                      className="text-sm"
+                    />
                   </div>
 
                   <div className="w-full h-[1px] bg-bcolor my-1" />
@@ -527,7 +842,10 @@ export default function ClosePosition({
                     </div>
 
                     <FormatNumber
-                      nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
+                      nb={
+                        (position.borrowFeeUsd ?? 0) +
+                        (position.exitFeeUsd ?? 0)
+                      }
                       format="currency"
                       className="text-redbright font-bold text-sm"
                       isDecimalDimmed={false}
@@ -540,7 +858,10 @@ export default function ClosePosition({
                     </div>
 
                     <FormatNumber
-                      nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
+                      nb={
+                        (position.borrowFeeUsd ?? 0) +
+                        (position.exitFeeUsd ?? 0)
+                      }
                       format="currency"
                       className="text-redbright font-bold text-sm"
                       isDecimalDimmed={false}
@@ -553,14 +874,26 @@ export default function ClosePosition({
         </div>
       </div>
 
-      <div className="w-full p-4 border-t mt-4">
+      <div className="w-full p-4 border-t">
         <Button
-          className="w-full"
+          className={twMerge(
+            "w-full",
+            (errorMsg !== null ||
+              (customAmount !== null && customAmount <= 0) ||
+              (activePercent !== null && activePercent <= 0) ||
+              (hasInteracted && (customAmount === null || activePercent === null))) && "opacity-50 cursor-not-allowed"
+          )}
           size="lg"
           variant="primary"
           title={
-            <span className="text-main text-base font-boldy">Close Position</span>
+            <span className="text-main text-base font-boldy">
+              Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
+            </span>
           }
+          disabled={errorMsg !== null ||
+            (customAmount !== null && customAmount <= 0) ||
+            (activePercent !== null && activePercent <= 0) ||
+            (hasInteracted && (customAmount === null || activePercent === null))}
           onClick={() => handleExecute()}
         />
       </div>

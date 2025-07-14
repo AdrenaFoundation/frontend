@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import {
     Area,
@@ -17,6 +18,7 @@ import { AxisDomain, DataKey } from 'recharts/types/util/types';
 import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
+import downloadIcon from '../../../public/images/download.png';
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
 import PeriodSelector from './PeriodSelector';
@@ -26,6 +28,7 @@ interface ChartLabel {
     color?: string;
     type?: 'area' | 'line';
     yAxisId?: 'left' | 'right';
+    stackId?: string;
 }
 
 export default function MixedAreaLineChart<T extends string>({
@@ -43,6 +46,10 @@ export default function MixedAreaLineChart<T extends string>({
     formatRightY = 'currency',
     gmt,
     events,
+    lockPeriod,
+    setLockPeriod,
+    lockPeriods,
+    exportToCSV,
 }: {
     title: string;
     data: RechartsData[];
@@ -61,6 +68,10 @@ export default function MixedAreaLineChart<T extends string>({
     formatRightY?: 'percentage' | 'currency' | 'number';
     gmt?: number;
     events?: AdrenaEvent[];
+    lockPeriod?: number;
+    setLockPeriod?: (period: number) => void;
+    lockPeriods?: number[];
+    exportToCSV?: () => void;
 }) {
     const [hiddenLabels, setHiddenLabels] = React.useState<
         DataKey<string | number>[]
@@ -88,31 +99,138 @@ export default function MixedAreaLineChart<T extends string>({
     // Determine if we need a right axis
     const hasRightAxis = rightAxisLabels.length > 0;
 
+    const precisionMap = Object.fromEntries(
+        labels.map(label => [
+            label.name,
+            label.name.toLowerCase().includes('alp price') ? 3 :
+                label.name.toLowerCase().includes('aum') ? 0 : 2
+        ])
+    );
+
     return (
         <div className="flex flex-col h-full w-full max-h-[18em]">
-            <div className="flex mb-3 justify-between items-center">
-                <div className="flex flex-row gap-3 items-center">
-                    <h2 className="">{title}</h2>
+            <div className="mb-3">
+                <div className="flex flex-col gap-2 sm:hidden">
+                    <div className="flex justify-between items-center">
+                        <div className="flex flex-row gap-3 items-center">
+                            <h2 className="">{title}</h2>
 
-                    {tippyContent && (
-                        <Tippy content={tippyContent} placement="auto">
-                            <span className="cursor-help text-txtfade">ⓘ</span>
-                        </Tippy>
-                    )}
+                            {tippyContent ? (
+                                <Tippy content={tippyContent} placement="auto">
+                                    <span className="cursor-help text-txtfade">ⓘ</span>
+                                </Tippy>
+                            ) : null}
 
-                    <FormatNumber
-                        nb={subValue}
-                        className="text-sm text-txtfade sm:text-xs"
-                        format="currency"
-                        prefix="("
-                        suffix=")"
-                        suffixClassName='ml-0 text-txtfade'
-                        isDecimalDimmed={false}
-                        precision={title.includes('ALP Price') ? 4 : 0}
-                    />
+                            {subValue ? <FormatNumber
+                                nb={subValue}
+                                className="text-sm text-txtfade sm:text-xs"
+                                format="currency"
+                                prefix="("
+                                suffix=")"
+                                suffixClassName='ml-0 text-txtfade'
+                                isDecimalDimmed={false}
+                                precision={title.includes('ALP Price') ? 4 : 0}
+                            /> : null}
+                        </div>
+
+                        {exportToCSV ? (
+                            <div
+                                className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
+                                onClick={exportToCSV}
+                            >
+                                <div className='text-sm tracking-wider'>
+                                    Export
+                                </div>
+                                <Image
+                                    src={downloadIcon}
+                                    width={14}
+                                    height={12}
+                                    alt="Download icon"
+                                />
+                            </div>
+                        ) : null}
+                    </div>
+
+                    <div className="flex flex-col gap-2 items-end">
+                        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+
+                        {lockPeriods && setLockPeriod && (
+                            <div className="flex gap-2 text-sm items-center">
+                                <span className="text-txtfade mr-1">Lock:</span>
+                                {lockPeriods.map((period) => (
+                                    <div
+                                        key={period}
+                                        className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                                            }`}
+                                        onClick={() => setLockPeriod(period)}
+                                    >
+                                        {period}d
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+                <div className="hidden sm:flex justify-between items-start">
+                    <div className="flex flex-row gap-3 items-center">
+                        <h2 className="">{title}</h2>
+
+                        {tippyContent ? (
+                            <Tippy content={tippyContent} placement="auto">
+                                <span className="cursor-help text-txtfade">ⓘ</span>
+                            </Tippy>
+                        ) : null}
+
+                        {subValue ? <FormatNumber
+                            nb={subValue}
+                            className="text-sm text-txtfade sm:text-xs"
+                            format="currency"
+                            prefix="("
+                            suffix=")"
+                            suffixClassName='ml-0 text-txtfade'
+                            isDecimalDimmed={false}
+                            precision={title.includes('ALP Price') ? 4 : 0}
+                        /> : null}
+
+                        {exportToCSV ? (
+                            <div
+                                className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
+                                onClick={exportToCSV}
+                            >
+                                <div className='text-sm tracking-wider'>
+                                    Export
+                                </div>
+                                <Image
+                                    src={downloadIcon}
+                                    width={14}
+                                    height={12}
+                                    alt="Download icon"
+                                />
+                            </div>
+                        ) : null}
+                    </div>
+
+                    <div className="flex flex-col gap-2 items-end">
+                        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+
+                        {lockPeriods && setLockPeriod && (
+                            <div className="flex gap-2 text-sm items-center">
+                                <span className="text-txtfade mr-1">Lock:</span>
+                                {lockPeriods.map((period) => (
+                                    <div
+                                        key={period}
+                                        className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                                            }`}
+                                        onClick={() => setLockPeriod(period)}
+                                    >
+                                        {period}d
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <ResponsiveContainer width="100%" height="100%">
@@ -148,6 +266,7 @@ export default function MixedAreaLineChart<T extends string>({
                                 gmt={gmt}
                                 events={events}
                                 lineDataKeys={lineLabels.map(label => label.name)}
+                                precisionMap={precisionMap}
                             />
                         }
                         cursor={false}
@@ -177,7 +296,7 @@ export default function MixedAreaLineChart<T extends string>({
                     ) : null}
 
                     {/* Render area charts */}
-                    {areaLabels.map(({ name, color, yAxisId = 'left' }) => (
+                    {areaLabels.map(({ name, color, yAxisId = 'left', stackId }) => (
                         <Area
                             key={name}
                             type="monotone"
@@ -188,6 +307,7 @@ export default function MixedAreaLineChart<T extends string>({
                             xAxisId="0"
                             connectNulls={true}
                             hide={hiddenLabels.includes(name)}
+                            stackId={stackId}
                         />
                     ))}
 
@@ -231,6 +351,6 @@ export default function MixedAreaLineChart<T extends string>({
                     ))}
                 </ComposedChart>
             </ResponsiveContainer>
-        </div>
+        </div >
     );
 }

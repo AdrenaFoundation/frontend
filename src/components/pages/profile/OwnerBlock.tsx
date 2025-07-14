@@ -53,6 +53,7 @@ export default function OwnerBloc({
   setIsUpdatingMetadata,
   setActiveUpdateTab,
   activeUpdateTab,
+  walletAddress,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
@@ -73,8 +74,9 @@ export default function OwnerBloc({
   setIsUpdatingMetadata?: (updating: boolean) => void;
   setActiveUpdateTab?: (tab: TabType) => void;
   activeUpdateTab?: TabType;
+  walletAddress?: string;
 }) {
-  const snsDomain = useSNSPrimaryDomain()
+  const snsDomain = useSNSPrimaryDomain(walletAddress)
 
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
@@ -285,12 +287,19 @@ export default function OwnerBloc({
 
     return Object.entries(WALLPAPERS).map(([v, path]) => {
       const unlocked = unlockedWallpapers.includes(Number(v));
-
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === Number(v));
       return (
         <Tippy
-          content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === Number(v))?.title ?? ''}"`}
+          content={
+            unlocked
+              ? achievement
+                ? `Unlocked by the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+              : achievement
+                ? `Locked - Unlock by completing the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+          }
           key={`wallpaper-${v}`}
-          disabled={unlocked}
         >
           <div
             className={twMerge(
@@ -366,12 +375,19 @@ export default function OwnerBloc({
 
     return Object.entries(PROFILE_PICTURES).map(([v, path]) => {
       const unlocked = unlockedPfpIndexes.includes(Number(v));
-
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === Number(v));
       return (
         <Tippy
-          content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === Number(v))?.title ?? ''}"`}
+          content={
+            unlocked
+              ? achievement
+                ? `Unlocked by the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+              : achievement
+                ? `Locked - Unlock by completing the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+          }
           key={`pfp-${v}`}
-          disabled={unlocked}
         >
           <div
             className={twMerge(
@@ -470,7 +486,12 @@ export default function OwnerBloc({
 
             return (
               <Tippy
-                content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === Number(i))?.title ?? ''}"`}
+                content={
+                  ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index) &&
+                    ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title
+                    ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
+                    : 'Unlocked by default'
+                }
                 key={`title-${i}`}
               >
                 <div
@@ -480,6 +501,7 @@ export default function OwnerBloc({
                       (index as unknown as ProfilePicture)
                       ? 'border-yellow-400/80'
                       : 'border-transparent grayscale',
+                    'cursor-pointer'
                   )}
                   onClick={() => {
                     // if (!unlocked) return;
@@ -501,10 +523,21 @@ export default function OwnerBloc({
         <div className="w-full h-[1px] bg-bcolor" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-20 cursor-disabled">
           {lockedTitles.map((title) => {
+            const index = Object.values(USER_PROFILE_TITLES).findIndex((t) => t === title);
+            const achievement = ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index);
             return (
-              <div className="h-auto flex z-30 relative ml-auto mr-auto text-base text-txtfade" key={`locked-title-${title}`}>
-                {title}
-              </div>
+              <Tippy
+                content={
+                  achievement && achievement.title
+                    ? `Locked - Unlock by completing the achievement "${achievement.title}"`
+                    : 'Locked by default'
+                }
+                key={`locked-title-${title}`}
+              >
+                <div className="h-auto flex z-30 relative ml-auto mr-auto text-base text-txtfade">
+                  {title}
+                </div>
+              </Tippy>
             );
           })}
         </div>

@@ -194,16 +194,14 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       ]}
       period={period}
       setPeriod={setPeriod}
-      periods={['1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      periods={['1M', '3M', '6M', '1Y']}
       gmt={0}
       domain={[0, 'auto']}
       tippyContent=""
       events={ADRENA_EVENTS}
       isSmallScreen={isSmallScreen}
       total={false}
+      yAxisBarScale="sqrt"
     />
   );
 }

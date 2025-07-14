@@ -4,6 +4,7 @@ import React, { memo, ReactNode, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import collapseIcon from '@/../public/images/collapse-all.svg';
+import arrowIcon from '@/../public/images/Icons/arrow-up-2.svg';
 import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES } from '@/constant';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useChatrooms from '@/hooks/useChatrooms';
@@ -12,6 +13,7 @@ import useFriendReq from '@/hooks/useFriendReq';
 import useLiveCount from '@/hooks/useLiveCount';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserProfileMetadata } from '@/types';
+import { getAbbrevWalletAddress } from '@/utils';
 
 // import LiveIcon from '../common/LiveIcon/LiveIcon';
 import Modal from '../common/Modal/Modal';
@@ -34,14 +36,6 @@ function ChatContainer({
 
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
 
-  const {
-    friendRequests,
-    loading: isFriendReqLoading,
-    acceptFriendRequest,
-    rejectFriendRequest,
-  } = useFriendReq({
-    walletAddress,
-  });
 
   const {
     chatrooms,
@@ -51,7 +45,22 @@ function ChatContainer({
     currentChatroomId,
     fetchChatrooms,
     loading,
-  } = useChatrooms();
+    totalUnreadCount,
+  } = useChatrooms({
+    isChatOpen,
+    setIsChatOpen,
+  });
+
+  const {
+    friendRequests,
+    loading: isFriendReqLoading,
+    acceptFriendRequest,
+    rejectFriendRequest,
+  } = useFriendReq({
+    walletAddress,
+    fetchChatrooms,
+    isSubscribeToFriendRequests: true,
+  });
 
   const { connectedUsers } = useLiveCount({
     walletAddress,
@@ -66,7 +75,7 @@ function ChatContainer({
 
   const [isChatroomsOpen, setIsChatroomsOpen] = useState(true);
 
-  const [title, setTitle] = useState('General');
+  const [title, setTitle] = useState('Chat');
   const [activeProfile, setActiveProfile] =
     useState<UserProfileMetadata | null>(null);
 
@@ -81,6 +90,8 @@ function ChatContainer({
           PROFILE_PICTURES[
           profile.profilePicture as keyof typeof PROFILE_PICTURES
           ];
+        acc[profile.owner.toBase58()].team =
+          acc[profile.owner.toBase58()]?.team || 0;
         return acc;
       },
       {} as Record<
@@ -100,13 +111,25 @@ function ChatContainer({
 
   useEffect(() => {
     if (chatrooms.length > 0) {
-      const name =
-        chatrooms.find((r) => r.id === currentChatroomId)?.type !== 'private'
-          ? chatrooms[currentChatroomId].name
-          : 'Private';
-      setTitle(name ?? 'General');
+      const room = chatrooms.find((r) => r.id === currentChatroomId);
+      const friend =
+        room && room?.participants
+          ? room.participants.filter((p) => p !== walletAddress)[0]
+          : null;
+      const newTitle =
+        friend === null
+          ? room?.name
+          : userProfilesMap[friend]?.nickname || getAbbrevWalletAddress(friend);
+
+      setTitle(newTitle ?? '');
     }
-  }, [chatrooms, currentChatroomId, setCurrentChatroom]);
+  }, [
+    chatrooms,
+    walletAddress,
+    userProfilesMap,
+    currentChatroomId,
+    setCurrentChatroom,
+  ]);
 
   useEffect(() => {
     if (!walletAddress) return;
@@ -115,16 +138,25 @@ function ChatContainer({
         req.status === 'pending' && req.receiver_pubkey === walletAddress,
     ).length;
 
-    const totalUnreadMessages = chatrooms.reduce((acc, room) => {
-      if (userProfilesMap?.[walletAddress].team !== 0 && [GENERAL_CHAT_ROOM_ID, userProfilesMap[walletAddress].team === 1 ? 2 : 1].includes(room.id)) {
+    const usersTotalUnreadMessages = chatrooms.reduce((acc, room) => {
+
+      if ((userProfilesMap[walletAddress] &&
+        room.type === 'community' &&
+        userProfilesMap[walletAddress].team !== 0 &&
+        [
+          GENERAL_CHAT_ROOM_ID,
+          userProfilesMap[walletAddress].team === 1 ? 2 : 1,
+        ].includes(room.id)) ||
+        room.type === 'private'
+      ) {
         return acc + room.unread_count;
       } else {
-        return acc
+        return acc;
       }
     }, 0);
 
-    setTotalNotifications(totalPendingRequests + totalUnreadMessages);
-  }, [friendRequests, userProfilesMap, walletAddress, chatrooms]);
+    setTotalNotifications(totalPendingRequests + usersTotalUnreadMessages);
+  }, [friendRequests, userProfilesMap, walletAddress, chatrooms, totalUnreadCount]);
 
   return (
     <>
@@ -240,48 +272,50 @@ function ChatTitle({
         isLoading ? 'cursor-wait opacity-50' : 'cursor-pointer',
       )}
       onClick={() => {
-        if (isMobile) {
-          setIsChatroomsOpen(false);
-        } else {
+        if (!isMobile) {
           setIsChatOpen(!isChatOpen);
         }
       }}
     >
       <div className="flex flex-row items-center gap-2">
-        <p className="text-lg font-boldy capitalize">
-          <span className="opacity-50 text-lg"># </span>
-          {friendRequestWindowOpen ? 'Friend Requests' : `${title}`}{' '}
-        </p>
-
-        {/* {!friendRequestWindowOpen ? (
-          <div className="flex flex-row gap-1 font-mono items-center">
-            <LiveIcon className="h-[0.6250em] w-[0.6250em]" />{' '}
-            <p className="text-sm opacity-50">
-              {loadingLiveCount ? null : connectedCount}
-            </p>
+        {isMobile ? (
+          <div
+            className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300"
+            onClick={() => {
+              setIsChatroomsOpen(false);
+            }}
+          >
+            <Image
+              src={arrowIcon}
+              alt="arrow icon"
+              width={14}
+              height={14}
+              className="h-3 w-3 transition-transform duration-300 -rotate-90"
+            />
           </div>
-        ) : null} */}
+        ) : null}
+        <p className="text-base font-boldy capitalize">
+          <span className="opacity-50 text-base">
+            # {!isChatOpen && !isLoading ? 'Chat:' : null}
+          </span>
+          {friendRequestWindowOpen ? 'Friend Requests' : ` ${title}`}{' '}
+        </p>
       </div>
 
       <div className="flex flex-row items-center gap-2">
         {totalNotifications !== null &&
           totalNotifications > 0 &&
           !isChatOpen ? (
-          <div
-            className={twMerge(
-              'flex items-center justify-center bg-redbright min-w-4 h-4 px-1 rounded-full',
-              friendRequestWindowOpen && 'bg-blue',
-            )}
-          >
-            <p className="text-xxs text-white font-mono">
-              {Intl.NumberFormat('en-US', {
-                notation: 'compact',
-                compactDisplay: 'short',
-              }).format(totalNotifications)}
-            </p>
-          </div>
+          <div className="flex items-center justify-center bg-redbright min-w-2 h-2 rounded-full" />
         ) : null}
-        <div className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300">
+        <div
+          className="border group-hover:bg-third h-[1.25em] w-[1.25em] rounded-md flex items-center justify-center cursor-pointer transition duration-300"
+          onClick={() => {
+            if (isMobile) {
+              setIsChatOpen(!isChatOpen);
+            }
+          }}
+        >
           <Image src={collapseIcon} alt="collapse logo" width={6} height={6} />
         </div>
       </div>
@@ -329,12 +363,12 @@ function ChatContainerWrapper({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ height: '3rem', width: '20rem' }}
+        initial={{ height: '2.5625rem', width: '20rem' }}
         animate={{
-          height: isChatOpen ? height : '3rem',
-          width: isChatOpen ? '37.5rem' : '20rem',
+          height: isChatOpen ? height : '2.5625rem',
+          width: isChatOpen ? '35.5rem' : '20rem',
         }}
-        exit={{ height: '3rem', width: '20rem' }}
+        exit={{ height: '2.5625rem', width: '20rem' }}
         transition={{ duration: 0.3 }}
         className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-t-lg min-w-[18.75rem] overflow-hidden"
         style={{ userSelect: isDragging ? 'none' : 'auto' }}

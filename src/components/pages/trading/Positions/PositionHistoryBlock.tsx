@@ -171,6 +171,7 @@ const PositionHistoryBlock = ({
               position={positionHistory}
               showAfterFees={showAfterFees}
               setShowAfterFees={setShowAfterFees}
+              isHistory={true}
             />
           }
         />
@@ -202,7 +203,8 @@ const PositionHistoryBlock = ({
                 <VolumeTooltip
                   entrySize={positionHistory.entrySize}
                   increaseSize={positionHistory.increaseSize}
-                  exitSize={positionHistory.exitSize}
+                  decreaseSize={positionHistory.decreaseSize}
+                  closeSize={positionHistory.closeSize}
                 >
                   <FormatNumber
                     nb={positionHistory.volume}
@@ -212,7 +214,7 @@ const PositionHistoryBlock = ({
                   />
                 </VolumeTooltip>
               }
-              valueClassName={POSITION_BLOCK_STYLES.text.white}
+              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.white, "underline-dashed")}
               columnClasses={columnClasses}
             />
 
@@ -267,8 +269,10 @@ const PositionHistoryBlock = ({
               value={
                 <FeesPaidTooltip
                   entryFees={0}
-                  exitFees={positionHistory.exitFees}
-                  borrowFees={positionHistory.borrowFees}
+                  decreaseExitFees={positionHistory.decreaseExitFees}
+                  closeExitFees={positionHistory.closeExitFees}
+                  decreaseBorrowFees={positionHistory.decreaseBorrowFees}
+                  closeBorrowFees={positionHistory.closeBorrowFees}
                 >
                   <FormatNumber
                     nb={totalFees}
@@ -291,8 +295,10 @@ const PositionHistoryBlock = ({
                   entryCollateralAmountNative={positionHistory.entryCollateralAmountNative}
                   increaseCollateralAmount={positionHistory.increaseCollateralAmount}
                   increaseCollateralAmountNative={positionHistory.increaseCollateralAmountNative}
-                  collateralAmount={positionHistory.collateralAmount}
-                  collateralAmountNative={positionHistory.collateralAmountNative}
+                  decreaseCollateralAmount={positionHistory.decreaseCollateralAmount}
+                  decreaseCollateralAmountNative={positionHistory.decreaseCollateralAmountNative}
+                  closeCollateralAmount={positionHistory.closeCollateralAmount}
+                  closeCollateralAmountNative={positionHistory.closeCollateralAmountNative}
                   exitAmountNative={positionHistory.exitAmountNative}
                 >
                   <FormatNumber
@@ -431,6 +437,7 @@ const PositionHistoryBlock = ({
                                   'stopLossLimitPrice': 'Stop Loss',
                                   'takeProfitLimitPrice': 'Take Profit',
                                   'position_pubkey': 'Position Pubkey',
+                                  'percentage': 'Percentage',
                                 };
                                 return keyMap[key] || key;
                               };
@@ -441,9 +448,11 @@ const PositionHistoryBlock = ({
                                     <FormatNumber
                                       nb={value}
                                       format={
-                                        key === 'exitAmountNative'
+                                        key === 'exitAmountNative' || key === 'collateralAmountNative'
                                           ? 'number'
-                                          : 'currency'
+                                          : key === 'percentage'
+                                            ? 'percentage'
+                                            : 'currency'
                                       }
                                       precision={
                                         positionHistory.token.symbol === 'BONK'

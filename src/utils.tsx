@@ -1176,7 +1176,7 @@ export function formatSnapshotTimestamp(
       });
     }
 
-    if (period === '1M' || period === '3M' || period === '6M') {
+    if (period === '1M' || period === '3M' || period === '6M' || period === '1Y') {
       return new Date(time).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'numeric',

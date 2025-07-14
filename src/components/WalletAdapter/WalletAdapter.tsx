@@ -21,6 +21,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import SignMessageModal from './SignMessageModal';
 import WalletSelectionModal from './WalletSelectionModal';
 
 export default function WalletAdapter({
@@ -274,6 +275,7 @@ export default function WalletAdapter({
       )}
 
       <WalletSelectionModal adapters={adapters} />
+      <SignMessageModal adapters={adapters} />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
 import { useSelector } from '@/store/store';
-import supabaseClient from '@/supabase';
+import supabaseAnonClient from '@/supabaseAnonClient';
 
 interface UseChatroomsReturn {
   loading: {
@@ -37,7 +37,13 @@ interface UseChatroomsReturn {
   setCurrentChatroom: (roomId: number) => void;
 }
 
-export const useChatrooms = (): UseChatroomsReturn => {
+export const useChatrooms = ({
+  isChatOpen,
+  setIsChatOpen,
+}: {
+  isChatOpen: boolean;
+  setIsChatOpen: (isOpen: boolean) => void;
+}): UseChatroomsReturn => {
   const { wallet } = useSelector((state) => state.walletState);
   const walletAddress = wallet?.walletAddress || null;
 
@@ -49,6 +55,8 @@ export const useChatrooms = (): UseChatroomsReturn => {
   });
 
   const [error, setError] = useState<string | null>(null);
+  const isChatOpenRef = useRef(isChatOpen);
+  isChatOpenRef.current = isChatOpen;
 
   const [chatrooms, setChatrooms] = useState<Chatroom[]>([]);
   const [messages, setMessages] = useState<Record<number, Message[]>>({});
@@ -56,63 +64,51 @@ export const useChatrooms = (): UseChatroomsReturn => {
     Record<number, boolean>
   >({});
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  const [fetchedRooms, setFetchedRooms] = useState<number[]>([]);
+  const [chatroomId, setChatroomId] = useState<number>(0);
   const currentChatroomId = useRef<number>(0);
+  const walletAddressRef = useRef<string | null>(walletAddress);
 
-  // Use a ref to store the channel instance
   const channelRef = useRef<RealtimeChannel | null>(null);
-  // Track if we've already subscribed
   const hasSubscribed = useRef(false);
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
-  const fetchChatrooms = useCallback(
-    async (isRefresh = false): Promise<Chatroom[]> => {
-      console.log('Fetching chatrooms...', walletAddress);
-      if (!walletAddress) {
-        setError('User public key is required');
-        setChatrooms([]);
-        return [];
+  const fetchChatrooms = useCallback(async (): Promise<Chatroom[]> => {
+    if (!walletAddressRef.current) {
+      setError('User public key is required');
+      setChatrooms([]);
+      return [];
+    }
+
+    try {
+      setLoading((prev) => ({ ...prev, chatrooms: true }));
+      clearError();
+
+      const response = await fetch(
+        `/api/chatrooms?type=chatrooms&user_pubkey=${walletAddressRef.current}`,
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch chatrooms');
       }
 
-      try {
-        setLoading((prev) => ({ ...prev, chatrooms: true }));
-        clearError();
+      const fetchedChatrooms: Chatroom[] = data.chatrooms || [];
 
-        const response = await fetch(
-          `/api/chatrooms?type=chatrooms&user_pubkey=${walletAddress}`,
-        );
-        const data = await response.json();
+      setChatrooms(fetchedChatrooms);
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch chatrooms');
-        }
-
-        const fetchedChatrooms: Chatroom[] = data.chatrooms || [];
-
-        if (isRefresh) {
-          setChatrooms((prev) => {
-            const existingIds = new Set(prev.map((room) => room.id));
-            const newChatrooms = fetchedChatrooms.filter(
-              (room) => !existingIds.has(room.id),
-            );
-            return [...newChatrooms, ...prev];
-          });
-        } else {
-          setChatrooms(fetchedChatrooms);
-        }
-
-        return fetchedChatrooms;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        return [];
-      } finally {
-        setLoading((prev) => ({ ...prev, chatrooms: false }));
-      }
-    },
-    [walletAddress, clearError],
-  );
+      return fetchedChatrooms;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      return [];
+    } finally {
+      setLoading((prev) => ({ ...prev, chatrooms: false }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch messages for a specific chatroom with pagination
   const fetchMessages = useCallback(
@@ -129,11 +125,25 @@ export const useChatrooms = (): UseChatroomsReturn => {
       try {
         setLoading((prev) => ({ ...prev, messages: true }));
         clearError();
+        const {
+          data: { session },
+        } = await supabaseAnonClient.auth.getSession();
 
         let url = `/api/chatrooms?type=messages&room_id=${roomId}&limit=${limit}`;
+
         if (beforeId) url += `&before_id=${beforeId}`;
 
-        const response = await fetch(url);
+        // fetch messages from the API and if session is available, include it in the request
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(session
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : {}),
+          },
+        });
+
         const data = await response.json();
 
         if (!response.ok) {
@@ -161,7 +171,12 @@ export const useChatrooms = (): UseChatroomsReturn => {
           [roomId]: data.has_more,
         }));
 
-        return fetchedMessages;
+        setFetchedRooms((prev) =>
+          prev.includes(roomId) ? prev : [...prev, roomId],
+        );
+        const existingMessages = messages[roomId] || [];
+
+        return [...fetchedMessages, ...existingMessages];
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
         return [];
@@ -169,6 +184,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
         setLoading((prev) => ({ ...prev, messages: false }));
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [clearError],
   );
 
@@ -188,7 +204,6 @@ export const useChatrooms = (): UseChatroomsReturn => {
             chatroom_id: currentChatroomId.current,
             text,
             wallet: walletAddress,
-            username: '', // TODO: Replace with actual username if available
           }),
         });
 
@@ -198,8 +213,6 @@ export const useChatrooms = (): UseChatroomsReturn => {
           throw new Error(data.error || 'Failed to send message');
         }
 
-        // Optimistic update not needed as we'll use Supabase realtime
-        // or we can handle it manually if needed
         return data.data;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
@@ -255,60 +268,81 @@ export const useChatrooms = (): UseChatroomsReturn => {
   }, [walletAddress, clearError]);
 
   // Mark messages as read
-  const markAsRead = useCallback(
-    async (roomId: number, messageId: number): Promise<ReadReceipt | null> => {
-      if (!walletAddress) {
-        setError('User public key is required');
-        return null;
+  const markAsRead = async (
+    roomId: number,
+    messageId: number,
+  ): Promise<ReadReceipt | null> => {
+    if (!walletAddressRef.current) {
+      setError('User public key is required');
+      return null;
+    }
+
+    try {
+      setLoading((prev) => ({ ...prev, markAsRead: true }));
+      clearError();
+
+      const response = await fetch('/api/chatrooms?type=read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_pubkey: walletAddressRef.current,
+          chatroom_id: roomId,
+          message_id: messageId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to mark messages as read');
       }
 
-      try {
-        setLoading((prev) => ({ ...prev, markAsRead: true }));
-        clearError();
+      setChatrooms((prev) =>
+        prev.map((room) =>
+          room.id === roomId ? { ...room, unread_count: 0 } : room,
+        ),
+      );
 
-        const response = await fetch('/api/chatrooms?type=read', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_pubkey: walletAddress,
-            chatroom_id: roomId,
-            message_id: messageId,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to mark messages as read');
-        }
-
-        setChatrooms((prev) =>
-          prev.map((room) =>
-            room.id === roomId ? { ...room, unread_count: 0 } : room,
-          ),
-        );
-
-        return data.data;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        return null;
-      } finally {
-        setLoading((prev) => ({ ...prev, markAsRead: false }));
-      }
-    },
-    [walletAddress, clearError],
-  );
+      return data.data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      return null;
+    } finally {
+      setLoading((prev) => ({ ...prev, markAsRead: false }));
+    }
+  };
 
   const setCurrentChatroom = async (roomId: number) => {
     currentChatroomId.current = roomId;
 
-    let roomMessages = messages[roomId] || [];
+    setChatroomId(roomId);
 
-    if (!roomMessages || roomMessages.length === 0) {
-      roomMessages = await fetchMessages(roomId, { reset: true });
+    if (fetchedRooms.includes(roomId)) {
+      const roomMessages = messages[roomId] || [];
+      const room = chatrooms.find((r) => r.id === roomId);
+
+      if (room && room.unread_count > 0 && roomMessages.length > 0) {
+        const latestMessageId = roomMessages[roomMessages.length - 1].id;
+        if (latestMessageId) {
+          await markAsRead(roomId, latestMessageId);
+        }
+      }
+      return;
     }
+
+    let newMessages = null;
+
+    if (
+      !fetchedRooms.includes(roomId) ||
+      !messages[roomId] ||
+      messages[roomId].length === 0
+    ) {
+      newMessages = await fetchMessages(roomId, { reset: true });
+    }
+
+    const roomMessages = newMessages ? newMessages : messages[roomId] || [];
 
     if (roomMessages.length > 0) {
       const latestMessageId = roomMessages[roomMessages.length - 1].id;
@@ -319,6 +353,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
   // Initial fetch of chatrooms and unread counts
   useEffect(() => {
     if (walletAddress) {
+      walletAddressRef.current = walletAddress;
       fetchChatrooms();
     }
     setCurrentChatroom(0);
@@ -329,7 +364,7 @@ export const useChatrooms = (): UseChatroomsReturn => {
   useEffect(() => {
     if (hasSubscribed.current) return;
 
-    const channel = supabaseClient
+    const channel = supabaseAnonClient
       .channel('global_chat_messages')
       .on(
         'postgres_changes',
@@ -342,24 +377,24 @@ export const useChatrooms = (): UseChatroomsReturn => {
           const newMessage = payload.new;
           const messageRoomId = newMessage.room_id;
 
-          if (messageRoomId === currentChatroomId.current) {
-            setMessages((prev) => {
-              const roomMessages = prev[messageRoomId] || [];
+          setMessages((prev) => {
+            const roomMessages = prev[messageRoomId] || [];
 
-              if (roomMessages.some((m) => m.id === newMessage.id)) {
-                return prev;
-              }
-
-              return {
-                ...prev,
-                [messageRoomId]: [...roomMessages, newMessage],
-              };
-            });
-
-            // Handle read status
-            if (walletAddress) {
-              markAsRead(messageRoomId, newMessage.id);
+            if (roomMessages.some((m) => m.id === newMessage.id)) {
+              return prev;
             }
+
+            return {
+              ...prev,
+              [messageRoomId]: [...roomMessages, newMessage],
+            };
+          });
+
+          if (
+            messageRoomId === currentChatroomId.current &&
+            isChatOpenRef.current
+          ) {
+            markAsRead(messageRoomId, newMessage.id);
           } else {
             setChatrooms((prev) =>
               prev.map((room) =>
@@ -377,30 +412,40 @@ export const useChatrooms = (): UseChatroomsReturn => {
         },
       )
       .subscribe((status, err) => {
-        console.log(`Global subscription status:`, status, err);
+        if (status !== 'SUBSCRIBED') {
+          console.error('Failed to subscribe to global chat messages:', err);
+          setIsChatOpen(false);
+        }
       });
-
-    // Store the channel reference
     channelRef.current = channel;
-    // Mark as subscribed
     hasSubscribed.current = true;
 
     return () => {
-      console.log('Cleaning up Supabase subscription');
       if (channelRef.current) {
-        supabaseClient.removeChannel(channelRef.current);
+        supabaseAnonClient.removeChannel(channelRef.current);
         hasSubscribed.current = false;
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (isChatOpen) {
+      const roomMessages = messages[currentChatroomId.current] || [];
+      if (roomMessages.length > 0) {
+        const latestMessageId = roomMessages[roomMessages.length - 1].id;
+        markAsRead(currentChatroomId.current, latestMessageId);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isChatOpen]);
+
   return {
     loading,
     error,
     chatrooms,
     messages,
-    currentChatroomId: currentChatroomId.current,
+    currentChatroomId: chatroomId,
     hasMoreMessages,
     totalUnreadCount,
 

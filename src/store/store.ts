@@ -1,17 +1,18 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import {
   TypedUseSelectorHook,
   useDispatch as defaultUseDispatch,
   useSelector as defaultUseSelector,
-} from "react-redux";
+} from 'react-redux';
 
-import borrowRatesReducer from "@/reducers/borrowRatesReducer";
-import streamingTokenPricesReducer from "@/reducers/streamingTokenPricesReducer";
-import tokenPricesReducer from "@/reducers/tokenPricesReducer";
+import borrowRatesReducer from '@/reducers/borrowRatesReducer';
+import streamingTokenPricesReducer from '@/reducers/streamingTokenPricesReducer';
+import supabaseAuthReducer from '@/reducers/supabaseAuthReducer';
+import tokenPricesReducer from '@/reducers/tokenPricesReducer';
 
-import settingsReducer from "../reducers/settingsReducer";
-import walletBalancesReducer from "../reducers/walletBalancesReducer";
-import walletReducer from "../reducers/walletReducer";
+import settingsReducer from '../reducers/settingsReducer';
+import walletBalancesReducer from '../reducers/walletBalancesReducer';
+import walletReducer from '../reducers/walletReducer';
 
 const rootReducer = combineReducers({
   walletState: walletReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   walletTokenBalances: walletBalancesReducer,
   borrowRates: borrowRatesReducer,
   settings: settingsReducer,
+  supabaseAuth: supabaseAuthReducer,
 });
 
 const store = configureStore({

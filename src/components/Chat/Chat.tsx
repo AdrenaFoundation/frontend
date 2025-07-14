@@ -21,7 +21,6 @@ function Chat({
   isSendingMessage,
   isChatroomsOpen,
   isMobile,
-
 }: {
   walletAddress: string | null;
   firstRender: boolean;
@@ -76,7 +75,7 @@ function Chat({
         )}
       />
       <motion.ul
-        className="flex flex-col gap-3 overflow-y-auto custom-chat-scrollbar flex-1 p-3"
+        className="flex flex-col gap-3 overflow-y-auto custom-chat-scrollbar overscroll-contain flex-1 p-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
@@ -97,7 +96,7 @@ function Chat({
                   }
                   alt="Avatar"
                   loading="lazy"
-                  className="w-6 h-6 rounded-full flex-none"
+                  className="w-5 h-5 rounded-full flex-none mt-[0.25rem]"
                 />
                 {getProfileByWallet(message.wallet).isOnline ? (
                   <div className="absolute bottom-0 right-0 bg-green w-[0.4rem] h-[0.4rem] rounded-full" />
@@ -108,7 +107,7 @@ function Chat({
                 <div className="flex flex-row gap-1 items-center">
                   <p
                     className={twMerge(
-                      'text-sm font-mono',
+                      'text-xs font-mono',
                       userProfilesMap?.[message.wallet] &&
                       'hover:underline cursor-pointer',
                     )}
@@ -130,7 +129,7 @@ function Chat({
                     })}
                   </p>
                 </div>
-                <p className="text-base opacity-75">{message.text}</p>
+                <p className="text-sm opacity-75">{message.text}</p>
               </div>
             </li>
           ))
@@ -141,7 +140,7 @@ function Chat({
         )}
       </motion.ul>
 
-      <div className={twMerge("relative flex flex-row gap-1 items-center w-full p-2 pb-14 bg-secondary border-t",
+      <div className={twMerge("relative flex flex-row gap-1 items-center w-full px-3 pb-14",
         !walletAddress && 'opacity-20 cursor-not-allowed pointer-events-none'
       )}>
         <input
@@ -154,12 +153,12 @@ function Chat({
               handleSendMessage();
             }
           }}
-          className="text-sm w-full p-2 mt-2 bg-bcolor border border-white/10 rounded-lg"
+          className="text-sm w-full p-2 bg-bcolor border border-white/10 rounded-lg"
         />
         <Button
           size="sm"
           title="Send"
-          className={twMerge("absolute right-4 font-boldy bg-[#E2464A] text-white mt-2 w-14 h-6 rounded-md",
+          className={twMerge("absolute right-5 font-boldy bg-[#E2464A] text-white w-14 h-6 rounded-md",
             isSendingMessage && 'opacity-50 cursor-not-allowed pointer-events-none'
           )}
           onClick={handleSendMessage}
