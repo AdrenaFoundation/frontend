@@ -393,15 +393,14 @@ export default function MutagenLeaderboard({
                 <div
                     className="
                         relative flex flex-col gap-2 px-4 rounded-2xl
-                        bg-gradient-to-br from-[#741e4c]/40 to-[#1a0a1f]/80
-                        border border-[#ff47b5]/40
-                        shadow-[0_0_24px_0_#ff47b5]
                         max-w-3xl mx-auto mb-6 mt-6 ml-2 mr-2 md:ml-auto md:mr-auto
+                        bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
+                        border border-mutagen/40
+                        shadow-mutagenBig
                         animate-fade-in
                         cursor-pointer
-                        transition hover:border-[#ff47b5]/80 hover:shadow-[0_0_32px_0_#ff47b5]
+                        transition hover:border-mutagen/80 hover:shadow-mutagenHoverBig
                     "
-                    style={{ boxShadow: '0 0 24px 0 #ff47dbb3' }}
                     title="Click to scroll to your row"
                     onClick={() => {
                         if (!wallet || !sortedTraders) return;
@@ -411,7 +410,7 @@ export default function MutagenLeaderboard({
                         scrollToUserRowRef.current = true;
                     }}
                 >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center gap-4">
                         {userRow.profilePicture !== null ? (
                             <>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -435,7 +434,7 @@ export default function MutagenLeaderboard({
                                 )}
                                 <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
                                 <span className="font-boldy text-white text-xl truncate">Your rank:</span>
-                                <span className="ml-2 text-sm font-boldy text-white bg-[#ff47b5]/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
+                                <span className="ml-2 text-sm font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
                                 <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
                                 <span className="font-boldy text-white text-xl truncate sm:flex hidden">Your Mutagen:</span>
                                 <span className="text-xl font-boldy text-mutagen sm:flex hidden">{formatNumber(userRow.totalPoints, 2, 0)}</span>

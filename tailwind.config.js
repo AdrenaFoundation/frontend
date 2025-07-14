@@ -26,7 +26,16 @@ module.exports = {
         redSide: '#f56464',
         grayLabel: '#7e7d85',
         whiteLabel: '#e3e6ea',
-        mutagen: '#e47dbb',
+        mutagen: '#ff47b5',
+        mutagenDark: '#741e4c',
+        mutagenBg: '#1a0a1f',
+        mutagenShadow: '#ff47dbb3',
+      },
+      boxShadow: {
+        mutagenBig: '0 0 24px 0 #ff47b5',
+        mutagenHoverBig: '0 0 32px 0 #ff47b5',
+        mutagenSmall: '0 0 12px 0 #ff47b5',
+        mutagenHoverSmall: '0 0 16px 0 #ff47b5',
       },
       fontSize: {
         xxs: '0.6rem', // Extra Extra Small
