@@ -150,9 +150,7 @@ export default function ClosePosition({
   const doFullClose = useCallback(async () => {
     if (!markPrice) return;
 
-    const percentageClosure = activePercent ?? 0;
-
-    const notificationTitle = `Close ${formatNumber(percentageClosure * 100, 2, 0, 2)}% of Position`;
+    const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
 
     const notification =
       MultiStepNotification.newForRegularTransaction(notificationTitle).fire();
@@ -204,13 +202,14 @@ export default function ClosePosition({
           const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
           const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
 
-          if (showPopupOnPositionClose && percentageClosure === 100 * 10_000)
+          if (showPopupOnPositionClose && (activePercent ? activePercent * 100 === 100 : true)) {
             setShareClosePosition({
               ...position,
               pnl: profit - loss,
               exitFeeUsd,
               borrowFeeUsd,
             });
+          }
         },
       });
 
