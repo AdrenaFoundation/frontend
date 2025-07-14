@@ -320,6 +320,15 @@ export const useChatrooms = ({
     setChatroomId(roomId);
 
     if (fetchedRooms.includes(roomId)) {
+      const roomMessages = messages[roomId] || [];
+      const room = chatrooms.find((r) => r.id === roomId);
+
+      if (room && room.unread_count > 0 && roomMessages.length > 0) {
+        const latestMessageId = roomMessages[roomMessages.length - 1].id;
+        if (latestMessageId) {
+          await markAsRead(roomId, latestMessageId);
+        }
+      }
       return;
     }
 
