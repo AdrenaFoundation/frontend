@@ -59,6 +59,8 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             return 'custodyinfodaily';
           case '6M':
             return 'custodyinfodaily';
+          case '1Y':
+            return 'custodyinfodaily';
           default:
             return 'custodyinfo';
         }
@@ -76,6 +78,8 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             return 93;
           case '6M':
             return 183;
+          case '1Y':
+            return 365;
           default:
             return 1;
         }
@@ -204,11 +208,8 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       ]}
       yDomain={[0]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
-      periods={['1d', '7d', '1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
       events={ADRENA_EVENTS}

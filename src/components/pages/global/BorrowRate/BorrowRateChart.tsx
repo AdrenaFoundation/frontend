@@ -55,6 +55,8 @@ export default function BorrowRateChart() {
             return 'custodyinfodaily';
           case '6M':
             return 'custodyinfodaily';
+          case '1Y':
+            return 'custodyinfodaily';
           default:
             return 'custodyinfo';
         }
@@ -72,6 +74,8 @@ export default function BorrowRateChart() {
             return 93;
           case '6M':
             return 183;
+          case '1Y':
+            return 365;
           default:
             return 1;
         }
@@ -168,11 +172,8 @@ export default function BorrowRateChart() {
         })}
       yDomain={[0, 0.01]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' ? 0 : getGMT()}
-      periods={['1d', '7d', '1M', '3M', '6M', {
-        name: '1Y',
-        disabled: true,
-      }]}
+      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       formatY="percentage"
       precision={4}
