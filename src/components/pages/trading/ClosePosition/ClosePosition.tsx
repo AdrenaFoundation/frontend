@@ -119,12 +119,7 @@ export default function ClosePosition({
     }).then((quote) => {
       setAmountOut(nativeToUi(new BN(quote.outAmount), redeemToken.decimals));
     })
-  }, [
-    doJupiterSwap,
-    exitPriceAndFee?.amountOut,
-    position.collateralToken.mint,
-    redeemToken.mint,
-  ]);
+  }, [doJupiterSwap, exitPriceAndFee, position.collateralToken.mint, redeemToken.decimals, redeemToken.mint]);
 
   useEffect(() => {
     const localLoadingCounter = ++loadingCounter;
@@ -155,7 +150,9 @@ export default function ClosePosition({
   const doFullClose = useCallback(async () => {
     if (!markPrice) return;
 
-    const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
+    const percentageClosure = activePercent ?? 0;
+
+    const notificationTitle = `Close ${formatNumber(percentageClosure * 100, 2, 0, 2)}% of Position`;
 
     const notification =
       MultiStepNotification.newForRegularTransaction(notificationTitle).fire();
@@ -207,7 +204,7 @@ export default function ClosePosition({
           const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
           const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
 
-          if (showPopupOnPositionClose)
+          if (showPopupOnPositionClose && percentageClosure === 100 * 10_000)
             setShareClosePosition({
               ...position,
               pnl: profit - loss,
