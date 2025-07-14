@@ -201,14 +201,15 @@ export default function ClosePosition({
           const loss = nativeToUi(events.lossUsd, USD_DECIMALS);
           const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
           const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
-          
-          if (showPopupOnPositionClose && (activePercent ? activePercent * 100 === 100 : false))
+
+          if (showPopupOnPositionClose && (activePercent ? activePercent * 100 === 100 : true)) {
             setShareClosePosition({
               ...position,
               pnl: profit - loss,
               exitFeeUsd,
               borrowFeeUsd,
             });
+          }
         },
       });
 
