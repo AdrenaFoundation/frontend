@@ -275,10 +275,9 @@ export default function ClosePosition({
     const percent = v / position.sizeUsd;
     setActivePercent(percent);
 
-    // Check if remaining position would be below $10 minimum
-    const remainingSize = position.sizeUsd - v;
-    if (percent < 1 && remainingSize < 10) {
-      setErrorMsg('Remaining size must be at least $10');
+    const remainingCollateral = position.collateralUsd * (1 - percent);
+    if (percent < 1 && remainingCollateral < 10) {
+      setErrorMsg('Remaining collateral must be at least $10');
     } else {
       setErrorMsg(null);
     }
@@ -319,7 +318,8 @@ export default function ClosePosition({
     className = "text-txtfade text-sm",
     isDecimalDimmed = true,
     minimumFractionDigits,
-    remainingValueClassName = ""
+    remainingValueClassName = "",
+    isAbbreviate = false
   }: {
     label: string;
     value: number | null;
@@ -335,6 +335,7 @@ export default function ClosePosition({
     isDecimalDimmed?: boolean;
     minimumFractionDigits?: number;
     remainingValueClassName?: string;
+    isAbbreviate?: boolean;
   }) => (
     <div className={rowStyle}>
       <div className="text-sm text-txtfade">{label}</div>
@@ -349,6 +350,7 @@ export default function ClosePosition({
           className={`${className} ${isBold ? 'font-bold' : ''}`}
           isDecimalDimmed={isDecimalDimmed}
           minimumFractionDigits={minimumFractionDigits}
+          isAbbreviate={isAbbreviate}
         />
 
         <div style={{ display: showArrow && remainingValue !== null ? 'flex' : 'none' }} className="items-center">
@@ -364,6 +366,7 @@ export default function ClosePosition({
                 className={`${isRemainingValueBold ? 'font-bold' : ''} ${remainingValueClassName}`}
                 isDecimalDimmed={isDecimalDimmed}
                 minimumFractionDigits={minimumFractionDigits}
+                isAbbreviate={isAbbreviate}
               />
             </div>
           </div>
@@ -479,10 +482,9 @@ export default function ClosePosition({
                             return;
                           }
 
-                          // Check if remaining position would be below $10 minimum
-                          const remainingSize = position.sizeUsd * (1 - newPercent);
-                          if (newPercent < 1 && remainingSize < 10) {
-                            setErrorMsg('Remaining size must be at least $10');
+                          const remainingCollateral = position.collateralUsd * (1 - newPercent);
+                          if (newPercent < 1 && remainingCollateral < 10) {
+                            setErrorMsg('Remaining collateral must be at least $10');
                           } else {
                             setErrorMsg(null);
                           }
@@ -696,6 +698,20 @@ export default function ClosePosition({
                       : (position.sizeUsd / position.price) * (1 - activePercent)
                     ) : null
                   }
+                  isDecimalDimmed={true}
+                  remainingValueClassName='text-white text-sm'
+                  isAbbreviate={true}
+                />
+
+                <div className="w-full h-[1px] bg-bcolor my-1" />
+
+                <ValueDisplay
+                  label="Collateral"
+                  value={position.collateralUsd}
+                  format="currency"
+                  showArrow={Boolean(activePercent && activePercent !== 1)}
+                  remainingValue={activePercent ? position.collateralUsd * (1 - activePercent) : null}
+                  precision={2}
                   isDecimalDimmed={true}
                   remainingValueClassName='text-white text-sm'
                 />
