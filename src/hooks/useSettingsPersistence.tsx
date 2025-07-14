@@ -20,6 +20,7 @@ export default function useSettingsPersistence() {
         'preferred-solana-explorer',
         'max-priority-fee',
         'priority-fee',
+        'disable-friend-req',
         // Persistence for trading actions
         'open-position-collateral-symbol',
         'close-position-collateral-symbol',
@@ -89,6 +90,12 @@ export default function useSettingsPersistence() {
             updatedSettings.withdrawCollateralSymbol = v;
         }
 
+        {
+            const v = preferences?.disableFriendReq ?? cookies['disable-friend-req'];
+            if (v === false || v === true)
+                updatedSettings.disableFriendReq = v;
+        }
+
         dispatch(
             setSettings(updatedSettings),
         );
@@ -106,6 +113,7 @@ export default function useSettingsPersistence() {
                 // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
                 maxPriorityFee: 'max-priority-fee',
                 priorityFeeOption: 'priority-fee',
+                disableFriendReq: 'disable-friend-req',
                 openPositionCollateralSymbol: 'open-position-collateral-symbol',
                 closePositionCollateralSymbol: 'close-position-collateral-symbol',
                 depositCollateralSymbol: 'deposit-collateral-symbol',

@@ -35,6 +35,7 @@ import lockIcon from '../../../../public/images/Icons/lock.svg';
 import personIcon from '../../../../public/images/Icons/person-fill.svg';
 import trophyIcon from '../../../../public/images/Icons/trophy.svg';
 import Achievement from '../achievements/Achievement';
+import AddTrader from './AddTrader';
 
 type TabType = 'profilePicture' | 'wallpaper' | 'title' | 'achievements';
 
@@ -52,6 +53,7 @@ export default function OwnerBloc({
   setIsUpdatingMetadata,
   setActiveUpdateTab,
   activeUpdateTab,
+  walletAddress,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
@@ -72,8 +74,9 @@ export default function OwnerBloc({
   setIsUpdatingMetadata?: (updating: boolean) => void;
   setActiveUpdateTab?: (tab: TabType) => void;
   activeUpdateTab?: TabType;
+  walletAddress?: string;
 }) {
-  const snsDomain = useSNSPrimaryDomain()
+  const snsDomain = useSNSPrimaryDomain(walletAddress)
 
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
@@ -707,11 +710,9 @@ export default function OwnerBloc({
                 </div>
               ) : null}
             </div>
-
           </Tippy>
 
-
-
+          <AddTrader receiverWalletAddress={walletPubkey?.toBase58() ?? null} />
 
           {!readonly && userProfile.version > 1 ? (
             <div className="absolute top-2 right-4 z-20 ">

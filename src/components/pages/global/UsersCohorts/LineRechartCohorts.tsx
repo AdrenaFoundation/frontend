@@ -162,6 +162,18 @@ export default function LineRechartCohorts({
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
   >([]);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const formatYAxis = (tickItem: number) => {
     return formatNumberShort(tickItem, 0);
@@ -190,32 +202,34 @@ export default function LineRechartCohorts({
           cursor={false}
         />
 
-        <Legend
-          onClick={(e) => {
-            setHiddenLabels(() => {
-              if (
-                hiddenLabels.includes(
+        {!isMobile && (
+          <Legend
+            onClick={(e) => {
+              setHiddenLabels(() => {
+                if (
+                  hiddenLabels.includes(
+                    String(e.dataKey).trim() as DataKey<string | number>,
+                  )
+                ) {
+                  return hiddenLabels.filter(
+                    (l) => l !== String(e.dataKey).trim(),
+                  ) as DataKey<string | number>[];
+                }
+
+                return [
+                  ...hiddenLabels,
                   String(e.dataKey).trim() as DataKey<string | number>,
-                )
-              ) {
-                return hiddenLabels.filter(
-                  (l) => l !== String(e.dataKey).trim(),
-                ) as DataKey<string | number>[];
-              }
+                ];
+              });
+            }}
+            wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
+            formatter={(value) => {
+              const originalData = data.find(x => x && value && !!x[value]);
 
-              return [
-                ...hiddenLabels,
-                String(e.dataKey).trim() as DataKey<string | number>,
-              ];
-            });
-          }}
-          wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
-          formatter={(value) => {
-            const originalData = data.find(x => x && value && !!x[value]);
-
-            return originalData?.['time'] ?? value;
-          }}
-        />
+              return originalData?.['time'] ?? value;
+            }}
+          />
+        )}
 
         {labels.map(({ name, color }) => {
           return (

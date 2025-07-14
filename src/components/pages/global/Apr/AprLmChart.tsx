@@ -1,31 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import LineRechart from '@/components/ReCharts/LineRecharts';
+import MixedAreaLineChart from '@/components/ReCharts/MixedAreaLineChart';
 import DataApiClient from '@/DataApiClient';
 import { getGMT } from '@/utils';
 
-interface AprChartProps {
-  isSmallScreen: boolean;
-}
-
-export function AprLmChart({ isSmallScreen }: AprChartProps) {
+export function AprLmChart() {
   const [infos, setInfos] = useState<{
-    formattedData: (
-      | {
-        time: string;
-      }
-      | { [key: string]: number }
-    )[];
-
-    // custodiesColors: string[];
+    formattedData: {
+      time: string;
+      [key: string]: string | number;
+    }[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('3M');
+  const [period, setPeriod] = useState<string | null>('7d');
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(540);
   const periodRef = useRef(period);
+  const selectedPeriodRef = useRef(selectedPeriod);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     periodRef.current = period;
+    selectedPeriodRef.current = selectedPeriod;
 
     getInfo();
 
@@ -41,7 +36,8 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         intervalRef.current = null;
       }
     };
-  }, [period]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [period, selectedPeriod]);
 
   const getInfo = async () => {
     try {
@@ -64,7 +60,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         }
       })();
 
-      const data = await DataApiClient.getChartAprsInfo(dataPeriod);
+      const data = await DataApiClient.getChartAprsInfo(dataPeriod, 'lm', selectedPeriodRef.current);
 
       const timeStamp = data.aprs[0].end_date.map((time: string) => {
         if (periodRef.current === '1d') {
@@ -94,31 +90,84 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         throw new Error('Invalid period');
       });
 
-      const totalAprInfo = [0, 90, 180, 360, 540].reduce((acc, c) => {
-        acc.push({
-          lockedPeriod: `${c}D TOTAL`,
-          values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.total_apr ?? [],
-        });
+      // Get data for the selected period only
+      const selectedData = data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === selectedPeriodRef.current);
 
-        return acc;
-      }, [] as { lockedPeriod: string; values: number[] }[]);
+      if (!selectedData) {
+        console.error('No data found for selected period:', selectedPeriodRef.current);
+        return;
+      }
 
-      const formatted = timeStamp.map((time: string, i: number) => ({
-        time,
+      const formatted = timeStamp.map((time: string, i: number) => {
+        const adxApr = selectedData.locked_adx_apr[i] || 0;
+        const usdcApr = selectedData.locked_usdc_apr[i] || 0;
 
-        ...totalAprInfo.reduce((acc, { lockedPeriod, values }) => {
-          acc[lockedPeriod] = values[i];
+        return {
+          time,
+          'ADX APR': adxApr,
+          'USDC APR': usdcApr,
+        };
+      });
 
-          return acc;
-        }, {} as { [key: string]: number }),
+      // Remove first value if period is 1Y (it's the first value of the platform, values are too big to display in the chart)
+      const filteredFormatted = periodRef.current === '1Y' ? formatted.slice(1) : formatted;
+
+      // Calculate average of total APR values
+      const usdcAprValues = filteredFormatted.map(item => item['USDC APR']);
+      const adxAprValues = filteredFormatted.map(item => item['ADX APR']);
+      const averageAprUsdc = usdcAprValues.reduce((sum, value) => sum + value, 0) / usdcAprValues.length;
+      const averageAprAdx = adxAprValues.reduce((sum, value) => sum + value, 0) / adxAprValues.length;
+
+      // Add average line to each data point
+      const formattedWithAverage = filteredFormatted.map(item => ({
+        ...item,
+        'Average APR USDC': averageAprUsdc,
+        'Average APR ADX': averageAprAdx,
       }));
 
       setInfos({
-        formattedData: formatted,
+        formattedData: formattedWithAverage
       });
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const exportToCSV = () => {
+    if (!infos?.formattedData) return;
+
+    const csvData = infos.formattedData.map((row) => ({
+      time: row.time,
+      adxApr: row['ADX APR'],
+      usdcApr: row['USDC APR'],
+      averageAdxApr: row['Average APR ADX'],
+      averageUsdcApr: row['Average APR USDC'],
+    }));
+
+    const headers = ['Time', 'ADX APR (%)', 'USDC APR (%)', 'Average ADX APR (%)', 'Average USDC APR (%)'];
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => [
+        `"${row.time}"`, // Wrap time in quotes to handle commas
+        row.adxApr,
+        row.usdcApr,
+        row.averageAdxApr,
+        row.averageUsdcApr
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+
+    // Create filename with period and lock period info
+    const filename = `staked-adx-apr-${selectedPeriod}d-${period}-${new Date().toISOString().split('T')[0]}.csv`;
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (!infos) {
@@ -129,33 +178,29 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
     );
   }
 
-  return (
-    <LineRechart
-      title="STAKED ADX APR"
-      data={infos.formattedData}
-      labels={[
-        ...Object.keys(infos.formattedData[0])
-          .filter((key) => key !== 'time')
-          .map((x) => ({
-            name: x,
-            color: (() => {
-              if (x.includes('90')) return '#99cc99'; // Light green
-              if (x.includes('180')) return '#ffd966'; // Light yellow
-              if (x.includes('360')) return '#ff9999'; // Light red
-              if (x.includes('540')) return '#ccccff'; // Light purple
-              if (x.includes('0')) return '#66b3ff'; // Light blue
+  const labels = [
+    { name: 'USDC APR', color: '#2563eb', type: 'area' as const, stackId: 'stack1' },
+    { name: 'ADX APR', color: '#a92e2e', type: 'area' as const, stackId: 'stack1' },
+    { name: 'Average APR USDC', color: '#00d9ff', type: 'line' as const },
+    { name: 'Average APR ADX', color: '#ff1493', type: 'line' as const },
+  ];
 
-              return '#ccccff'; // Light purple as a fallback
-            })(),
-          })),
-      ]}
-      yDomain={[0]}
+  return (
+    <MixedAreaLineChart
+      title={`STAKED ADX APR`}
+      data={infos.formattedData}
+      labels={labels}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
       setPeriod={setPeriod}
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
+      formatLeftY='percentage'
+      lockPeriod={selectedPeriod}
+      setLockPeriod={setSelectedPeriod}
+      lockPeriods={[0, 90, 180, 360, 540]}
+      exportToCSV={exportToCSV}
     />
   );
 }
