@@ -422,7 +422,7 @@ export const TRADING_COMPETITION_SEASONS = {
     title: 'Summer Event',
     subTitle: 'Interseason',
     startDate: new Date('2025-07-04T23:59:59.999Z'),
-    endDate: new Date('2025-08-22T23:59:59.999Z'),
+    endDate: new Date('2025-09-05T23:59:59.999Z'),
     gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
     primaryColor: '#247CFA',
     adxRewards: 0,
