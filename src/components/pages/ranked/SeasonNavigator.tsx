@@ -31,7 +31,7 @@ export default function SeasonNavigator({
                     key={season}
                     onClick={() => setActiveSeason(season)}
                 >
-                    <p className="relative z-20 font-archivoblack tracking-widest text-md uppercase text-nowrap">
+                    <p className={twMerge("relative z-20 font-archivoblack tracking-widest uppercase text-nowrap xl:text-sm 2xl:text-xl", season === 'interseason3' ? 'lg:text-sm ' : '')}>
                         {TRADING_COMPETITION_SEASONS[season].title}
                     </p>
 
