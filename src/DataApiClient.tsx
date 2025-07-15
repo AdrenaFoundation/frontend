@@ -702,10 +702,16 @@ export default class DataApiClient {
         }
     }
 
-    public static async getMutagenLeaderboard(): Promise<MutagenLeaderboardData | null> {
+    public static async getMutagenLeaderboard({
+        seasonName,
+        rankFilter,
+    }: {
+        seasonName?: string;
+        rankFilter?: string;
+    }): Promise<MutagenLeaderboardData | null> {
         try {
             const response = await fetch(
-                `${DataApiClient.DATAPI_URL}/mutagen-leaderboard`
+                `${DataApiClient.DATAPI_URL}/mutagen-leaderboard${seasonName ? `?season=${seasonName}` : ''}${rankFilter ? `&rank_filter=${rankFilter}` : ''}`
             );
 
             if (!response.ok) {

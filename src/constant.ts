@@ -416,6 +416,21 @@ export const TRADING_COMPETITION_SEASONS = {
     description: [``] as string[],
     bannerClassName: 'h-[32em] pt-20',
   },
+
+  interseason3: {
+    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/summerEvent/summer-event.jpg',
+    title: 'Summer Event',
+    subTitle: 'Interseason',
+    startDate: new Date('2025-07-04T23:59:59.999Z'),
+    endDate: new Date('2025-09-05T23:59:59.999Z'),
+    gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
+    primaryColor: '#247CFA',
+    adxRewards: 0,
+    jtoRewards: 21200,
+    bonkRewards: 3160000000,
+    description: [`Welcome to the Summer Event!`] as string[],
+    bannerClassName: 'h-[32em] pt-20',
+  },
 } as const;
 
 export const QUESTS = {
