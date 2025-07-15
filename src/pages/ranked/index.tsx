@@ -78,7 +78,7 @@ export default function Ranked({
                 jtoPrice={jtoPrice}
             />
 
-            <div className=" sm:px-8 max-w-[2200px] mx-auto w-full mt-10">
+            <div className="sm:px-8 mx-auto w-full mt-10">
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
                 {activeSeason === 'factions' ? (
@@ -89,7 +89,7 @@ export default function Ranked({
                     />
                 ) : null}
                 {activeSeason === 'interseason3' ? (
-                    <Interseason3 />
+                    <Interseason3 jtoPrice={jtoPrice} />
                 ) : null}
             </div>
         </div>

@@ -170,14 +170,21 @@ export default function CompetitionBanner({
                                 nb={97166.49}
                                 className="text-5xl font-boldy"
                                 isDecimalDimmed={false}
-                            /> : (!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
+                            /> : seasonName === 'interseason3' ?
                                 <FormatNumber
                                     format='currency'
                                     nb={totalPrize}
-                                    className="text-5xl font-boldy"
+                                    className="text-3xl sm:text-4xl md:text-5xl font-boldy"
                                     isDecimalDimmed={false}
                                 />
-                            )}
+                                : (!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
+                                    <FormatNumber
+                                        format='currency'
+                                        nb={totalPrize}
+                                        className="text-5xl font-boldy"
+                                        isDecimalDimmed={false}
+                                    />
+                                )}
 
                         <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
                             {adxRewards > 0 ?
