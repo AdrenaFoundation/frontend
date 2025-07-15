@@ -109,197 +109,183 @@ export default function MutagenLeaderboardInterseason3({
     const breakpoint2 = useBetterMediaQuery('(min-width: 950px)');
     const breakpoint1 = useBetterMediaQuery('(min-width: 1100px)');
 
-    const mobileMutagenCardLayout = useMemo(() => {
+    // Reusable helper functions
+    const handleCardClick = useCallback(() => {
+        if (!wallet || !sortedTraders) return;
+        setCurrentPage(
+            Math.floor(sortedTraders.findIndex(d => d.userWallet.toBase58() === wallet.walletAddress) / itemsPerPage) + 1
+        );
+        scrollToUserRowRef.current = true;
+    }, [wallet, sortedTraders]);
+
+    const renderProfilePicture = useCallback((size: 'sm' | 'lg') => {
         if (!userRow) return null;
+
+        const sizeClasses = {
+            sm: 'h-16 w-16',
+            lg: 'h-20 w-20'
+        };
+
+        if (userRow.profilePicture !== null) {
+            return (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                    src={PROFILE_PICTURES[userRow.profilePicture]}
+                    alt="Profile"
+                    className={`${sizeClasses[size]} rounded-full object-cover shadow`}
+                    key={`profile-picture-${userRow.nickname}`}
+                />
+            );
+        }
+
+        return <div className={`${sizeClasses[size]} bg-third rounded-full`} />;
+    }, [userRow]);
+
+    const renderProgressMessage = useCallback((isMobile: boolean = false) => {
+        if (!userRow || !sortedTraders) return null;
+
+        const messageClass = "text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]";
+
+        if (userRow.rank === 1) {
+            return (
+                <span className={messageClass}>
+                    You are the champion!
+                </span>
+            );
+        }
+
+        const personAbove = sortedTraders.find(d => d.rank === userRow.rank - 1);
+        const mutagensNeeded = personAbove
+            ? personAbove.pointsTrading - userRow.pointsTrading
+            : 0.001 - userRow.pointsTrading;
+
+        const actionText = isMobile ? 'to climb!' : 'to claim next rank!';
+
+        return (
+            <span className={messageClass}>
+                Get {formatNumber(Math.max(0, mutagensNeeded), 3, 0)} Mutagen {actionText}
+            </span>
+        );
+    }, [userRow, sortedTraders]);
+
+    const renderCardContainer = useCallback((children: React.ReactNode, isMobile: boolean = false) => {
+        if (!userRow) return null;
+
+        const marginTop = isMobile ? 'mt-6' : 'mt-2';
 
         return (
             <div
-                className="
-                        relative flex flex-col gap-2 px-4 rounded-2xl
-                        max-w-3xl mx-auto mb-6 mt-6 ml-2 mr-2 md:ml-auto md:mr-auto
-                        bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
-                        border border-mutagen/40
-                        shadow-mutagenBig
-                        animate-fade-in
-                        cursor-pointer
-                        transition hover:border-mutagen/80 hover:shadow-mutagenHoverBig
-                    "
+                className={twMerge(`
+                    relative flex flex-col gap-2 px-4 rounded-2xl
+                    max-w-3xl mx-auto mb-6 ${marginTop} ml-2 mr-2 md:ml-auto md:mr-auto
+                    bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
+                    border border-mutagen/40
+                    shadow-mutagenBig
+                    animate-fade-in
+                    cursor-pointer
+                    transition hover:border-mutagen/80 hover:shadow-mutagenHoverBig
+                `)}
                 title="Click to scroll to your row"
-                onClick={() => {
-                    if (!wallet || !sortedTraders) return;
-                    setCurrentPage(
-                        Math.floor(sortedTraders.findIndex(d => d.userWallet.toBase58() === wallet.walletAddress) / itemsPerPage) + 1
-                    );
-                    scrollToUserRowRef.current = true;
-                }}
+                onClick={handleCardClick}
             >
-                <div className="flex flex-col items-center justify-center ">
-                    {userRow.profilePicture !== null ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={PROFILE_PICTURES[userRow.profilePicture]}
-                            alt="Profile"
-                            className="h-20 w-20 rounded-full object-cover shadow"
-                        />
-                    ) : (
-                        <div className="h-20 w-20 bg-third rounded-full" />
-                    )}
-
-                    <div className="flex flex-col items-center">
-                        <span className="font-boldy text-white text-xl sm:text-2xl truncate text-center">
-                            {userRow.nickname}
-                        </span>
-
-                        {userRow.title !== null && (
-                            <span className="text-sm font-boldy text-txtfade opacity-70 truncate text-center">
-                                &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
-                            </span>
-                        )}
-                    </div>
-
-                    <div className="flex items-center gap-1 mt-2">
-                        <span className="font-boldy text-white text-sm">Rank:</span>
-                        <span className="text-base font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">
-                            #{userRow.rank}
-                        </span>
-                    </div>
-
-                    <div className="flex items-center gap-1 mt-2">
-                        <span className="font-boldy text-white text-sm">Mutagen (Trading):</span>
-                        <span className="text-sm font-boldy text-mutagen">
-                            {formatNumber(userRow.pointsTrading, 2, 0)}
-                        </span>
-                    </div>
-
-                    <div className="flex items-center gap-1 mt-2">
-                        <span className="font-boldy text-white text-sm">Rewards:</span>
-                        <span className={totalRewardUsd > 0 ? "text-green" : "text-white"}>
-                            {formatPriceInfo(totalRewardUsd, 0, 0)}
-                        </span>
-                    </div>
-
-                    <div className="text-center mb-2">
-                        {userRow.rank !== 1 ? (
-                            (() => {
-                                const personAbove = sortedTraders?.find(d => d.rank === userRow.rank - 1);
-                                const mutagensNeeded = personAbove
-                                    ? personAbove.pointsTrading - userRow.pointsTrading
-                                    : 0.001 - userRow.pointsTrading;
-
-                                return (
-                                    <span className="text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]">
-                                        Get {formatNumber(Math.max(0, mutagensNeeded), 3, 0)} Mutagen to climb!
-                                    </span>
-                                );
-                            })()
-                        ) : (
-                            <span className="text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]">
-                                You are the champion!
-                            </span>
-                        )}
-                    </div>
-                </div>
+                {children}
             </div>
         );
-    }, [userRow, wallet, sortedTraders, totalRewardUsd]);
+    }, [userRow, handleCardClick]);
+
+    const mobileMutagenCardLayout = useMemo(() => {
+        if (!userRow) return null;
+
+        return renderCardContainer(
+            <div className="flex flex-col items-center justify-center">
+                {renderProfilePicture('lg')}
+
+                <div className="flex flex-col items-center">
+                    <span className="font-boldy text-white text-xl sm:text-2xl truncate text-center">
+                        {userRow.nickname}
+                    </span>
+
+                    {userRow.title !== null && (
+                        <span className="text-sm font-boldy text-txtfade opacity-70 truncate text-center">
+                            &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
+                        </span>
+                    )}
+                </div>
+
+                <div className="flex items-center gap-1 mt-2">
+                    <span className="font-boldy text-white text-sm">Rank:</span>
+                    <span className="text-base font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">
+                        #{userRow.rank}
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-1 mt-2">
+                    <span className="font-boldy text-white text-sm">Mutagen (Trading):</span>
+                    <span className="text-sm font-boldy text-mutagen">
+                        {formatNumber(userRow.pointsTrading, 2, 0)}
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-1 mt-2">
+                    <span className="font-boldy text-white text-sm">Rewards:</span>
+                    <span className={totalRewardUsd > 0 ? "text-green" : "text-white"}>
+                        {formatPriceInfo(totalRewardUsd, 0, 0)}
+                    </span>
+                </div>
+
+                <div className="text-center mb-2">
+                    {renderProgressMessage(true)}
+                </div>
+            </div>,
+            true
+        );
+    }, [userRow, totalRewardUsd, renderCardContainer, renderProfilePicture, renderProgressMessage]);
 
     const desktopMutagenCardLayout = useMemo(() => {
         if (!userRow) return null;
 
-        return (
-            <div
-                className="
-                        relative flex flex-col gap-2 px-4 rounded-2xl
-                        max-w-3xl mx-auto mb-6 mt-2 ml-2 mr-2 md:ml-auto md:mr-auto
-                        bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
-                        border border-mutagen/40
-                        shadow-mutagenBig
-                        animate-fade-in
-                        cursor-pointer
-                        transition hover:border-mutagen/80 hover:shadow-mutagenHoverBig
-                    "
-                title="Click to scroll to your row"
-                onClick={() => {
-                    if (!wallet || !sortedTraders) return;
-                    setCurrentPage(
-                        Math.floor(sortedTraders.findIndex(d => d.userWallet.toBase58() === wallet.walletAddress) / itemsPerPage) + 1
-                    );
-                    scrollToUserRowRef.current = true;
-                }}
-            >
-                <div className="flex flex-col gap-2 mt-2">
-                    <div className="flex flex-row items-center w-full">
-                        <div className="flex flex-row items-center gap-3 flex-1 flex justify-center">
-                            {userRow.profilePicture !== null ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
-                                    src={PROFILE_PICTURES[userRow.profilePicture]}
-                                    alt="Profile"
-                                    className="h-16 w-16 rounded-full object-cover shadow"
-                                    key={`profile-picture-${userRow.nickname}`}
-                                />
-                            ) : (
-                                <div className="h-16 w-16 bg-third rounded-full" />
+        return renderCardContainer(
+            <div className="flex flex-col gap-2 mt-2">
+                <div className="flex flex-row items-center w-full">
+                    <div className="flex flex-row items-center gap-3 flex-1 flex justify-center">
+                        {renderProfilePicture('sm')}
+                        <div className="flex flex-col items-start text-left">
+                            <span className="font-boldy text-white text-lg sm:text-xl truncate">{userRow.nickname}</span>
+                            {userRow.title !== null && (
+                                <span className="text-xs font-boldy text-txtfade opacity-70 truncate">
+                                    &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
+                                </span>
                             )}
-                            <div className="flex flex-col items-start text-left">
-                                <span className="font-boldy text-white text-lg sm:text-xl truncate">{userRow.nickname}</span>
-                                {userRow.title !== null && (
-                                    <span className="text-xs font-boldy text-txtfade opacity-70 truncate">
-                                        &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
-                                    </span>
-                                )}
-                            </div>
-                            <span className="text-base font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
                         </div>
-                    </div>
-                    <div className="flex w-full flex-row items-center gap-8 justify-center mt-2 mb-2">
-                        <div className="flex items-center gap-2">
-                            <span className="font-boldy text-white text-sm">Mutagen (Trading):</span>
-                            <span className="text-sm font-boldy text-mutagen">{formatNumber(userRow.pointsTrading, 2, 0)}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <span className="text-txtfade">|</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-boldy text-white text-sm">Rewards:</span>
-                            <span className="text-sm font-boldy">
-                                {(() => {
-                                    const rewards = calculateRewards(userRow.rank);
-                                    const totalRewardUsd = calculateRewardValue(rewards.jtoRewards, rewards.bonkRewards);
-                                    return <span className={totalRewardUsd > 0 ? "text-green" : "text-white"}>{formatPriceInfo(totalRewardUsd, 0, 0)}</span>;
-                                })()}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <span className="text-txtfade">|</span>
-                        </div>
-                        <div className="flex">
-                            {
-                                userRow.rank !== 1 ? (
-                                    (() => {
-                                        const personAbove = sortedTraders?.find(d => d.rank === userRow.rank - 1);
-                                        const mutagensNeeded = personAbove
-                                            ? personAbove.pointsTrading - userRow.pointsTrading
-                                            : 0.001 - userRow.pointsTrading;
-
-                                        return (
-                                            <span className="text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]">
-                                                Get {formatNumber(Math.max(0, mutagensNeeded), 3, 0)} Mutagen to claim next rank!
-                                            </span>
-                                        );
-                                    })()
-                                ) : (
-                                    <span className="text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]">
-                                        You are the champion!
-                                    </span>
-                                )
-                            }
-                        </div>
+                        <span className="text-base font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
                     </div>
                 </div>
-            </div >
+                <div className="flex w-full flex-row items-center gap-8 justify-center mt-2 mb-2">
+                    <div className="flex items-center gap-2">
+                        <span className="font-boldy text-white text-sm">Mutagen (Trading):</span>
+                        <span className="text-sm font-boldy text-mutagen">{formatNumber(userRow.pointsTrading, 2, 0)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <span className="text-txtfade">|</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="font-boldy text-white text-sm">Rewards:</span>
+                        <span className="text-sm font-boldy">
+                            <span className={totalRewardUsd > 0 ? "text-green" : "text-white"}>
+                                {formatPriceInfo(totalRewardUsd, 0, 0)}
+                            </span>
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <span className="text-txtfade">|</span>
+                    </div>
+                    <div className="flex">
+                        {renderProgressMessage(false)}
+                    </div>
+                </div>
+            </div>
         );
-    }, [userRow, wallet, sortedTraders, calculateRewardValue]);
+    }, [userRow, totalRewardUsd, renderCardContainer, renderProfilePicture, renderProgressMessage]);
 
     // Find the user's row in the sorted leaderboard
     useEffect(() => {

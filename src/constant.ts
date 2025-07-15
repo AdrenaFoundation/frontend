@@ -418,7 +418,7 @@ export const TRADING_COMPETITION_SEASONS = {
   },
 
   interseason3: {
-    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/factions-banner-OKwsUEBqusOest7hhIPaKsklmSlNdh.jpg',
+    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/summerEvent/summer-event.jpg',
     title: 'Summer Event',
     subTitle: 'Interseason',
     startDate: new Date('2025-07-04T23:59:59.999Z'),

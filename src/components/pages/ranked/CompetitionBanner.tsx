@@ -65,11 +65,18 @@ export default function CompetitionBanner({
                             key={title}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            {seasonName === 'interseason3' ? <div
+                                className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
+                                style={{
+                                    backgroundImage: `url(${banner})`,
+                                    backgroundOrigin: 'border-box',
+                                    backgroundPosition: 'center 20%'
+                                }}
+                            /> : <img
                                 src={banner}
                                 alt="competition banner"
                                 className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
-                            />
+                            />}
                         </motion.span>
                     </AnimatePresence>
                     <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
