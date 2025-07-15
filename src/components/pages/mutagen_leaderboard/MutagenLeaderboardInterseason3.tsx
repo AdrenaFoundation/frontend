@@ -159,11 +159,13 @@ export default function MutagenLeaderboardInterseason3({
             ? personAbove.pointsTrading - userRow.pointsTrading
             : 0.001 - userRow.pointsTrading;
 
-        const actionText = isMobile ? 'to climb!' : 'to claim next rank!';
+        const actionText = isMobile ? 'to climb!' : 'to climb the ladder!';
 
         return (
             <span className={messageClass}>
-                Get {formatNumber(Math.max(0, mutagensNeeded), 3, 0)} Mutagen {actionText}
+                {mutagensNeeded > 0 ?
+                    `Generate ${formatNumber(Math.max(0, mutagensNeeded), 3, 0)} Mutagen ${actionText}`
+                    : `Start trading to generate Mutagen!`}
             </span>
         );
     }, [userRow, sortedTraders]);

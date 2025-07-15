@@ -31,7 +31,6 @@ export default function Interseason3({
             <div className="flex flex-col gap-2 items-center justify-center text-center px-4 mx-auto max-w-[100em]">
                 <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full">
                     For this Summer Event, the rule is simple: Top 25 traders will share the prize pool of 21,200 JTO and 3,160,000,000 BONK.
-
                 </span>
                 <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full">
                     Ready, Set, Trade!
