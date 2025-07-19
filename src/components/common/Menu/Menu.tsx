@@ -121,7 +121,7 @@ export default function Menu({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.1 }}
-            className="absolute top-0 left-0 w-full h-full bg-main/75 z-30"
+            className="absolute top-0 left-0 w-full h-full bg-main/85 z-30"
           />
         ) : null}
       </AnimatePresence>
