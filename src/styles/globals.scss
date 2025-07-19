@@ -137,19 +137,19 @@
 
   h1 {
     @apply text-4xl;
-    @apply font-special;
+    @apply font-interSemibold;
     text-transform: uppercase;
   }
 
   h2 {
     @apply text-2xl;
-    @apply font-special;
+    @apply font-interSemibold;
     text-transform: uppercase;
   }
 
   h3 {
     @apply text-xl;
-    @apply font-special;
+    @apply font-interSemibold;
     text-transform: uppercase;
   }
 
@@ -871,4 +871,20 @@ blockquote {
   background-size: 300% 100%;
   animation: shimmer 6s linear infinite;
   filter: brightness(0.9) saturate(1.5);
+}
+
+.animate-loader {
+  animation: loaderBackground 1.5s infinite linear;
+}
+
+@keyframes loaderBackground {
+  0% {
+    background-color: rgb(24, 34, 45);
+  }
+  50% {
+    background-color: rgb(31, 45, 59);
+  }
+  100% {
+    background-color: rgb(24, 34, 45);
+  }
 }

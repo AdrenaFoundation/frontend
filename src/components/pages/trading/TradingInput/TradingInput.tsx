@@ -23,6 +23,7 @@ export default function TradingInput({
   onChange,
   recommendedToken,
   isDisplayAllTokens = false,
+  inputContainerClassName,
 }: {
   className?: string;
   inputClassName?: string;
@@ -38,23 +39,27 @@ export default function TradingInput({
   onTokenSelect?: (t: Token) => void;
   onChange: (v: number | null) => void;
   isDisplayAllTokens?: boolean;
+  inputContainerClassName?: string;
 }) {
   const decimalConstraint = selectedToken?.decimals ?? 18;
   const [isPickTokenModalOpen, setIsPickTokenModalOpen] = useState(false);
 
-  const pick = useCallback((token: Token) => {
-    onTokenSelect?.(token);
+  const pick = useCallback(
+    (token: Token) => {
+      onTokenSelect?.(token);
 
-    // if the prev value has more decimals than the new token, we need to adjust the value
-    const newTokenDecimals = token.decimals ?? 18;
-    const decimals = value?.toString().split('.')[1]?.length;
+      // if the prev value has more decimals than the new token, we need to adjust the value
+      const newTokenDecimals = token.decimals ?? 18;
+      const decimals = value?.toString().split('.')[1]?.length;
 
-    if (Number(decimals) > Number(newTokenDecimals)) {
-      onChange(Number(value?.toFixed(newTokenDecimals)));
-    }
+      if (Number(decimals) > Number(newTokenDecimals)) {
+        onChange(Number(value?.toFixed(newTokenDecimals)));
+      }
 
-    setIsPickTokenModalOpen(false);
-  }, [onChange, onTokenSelect, value]);
+      setIsPickTokenModalOpen(false);
+    },
+    [onChange, onTokenSelect, value],
+  );
 
   return (
     <>
@@ -63,13 +68,14 @@ export default function TradingInput({
           className={twMerge(
             'rounded-lg flex w-full border h-12',
             inputClassName,
+            inputContainerClassName,
           )}
           style={
             disabled
               ? {
-                backgroundSize: '10px 10px',
-                cursor: 'not-allowed',
-              }
+                  backgroundSize: '10px 10px',
+                  cursor: 'not-allowed',
+                }
               : {}
           }
         >
@@ -108,27 +114,39 @@ export default function TradingInput({
           </div>
 
           <div className="flex flex-row gap-3 items-center w-[15em] justify-end pr-4">
-            {selectedToken ? <div
-              className={twMerge(
-                'flex items-center gap-2',
-                tokenList.length ? 'cursor-pointer' : '',
-              )}
-              onClick={() => tokenList.length && setIsPickTokenModalOpen(true)}
-            >
-              {tokenList.length ? <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
-                <Image src={chevronDownIcon} alt="chevron down" />
-              </div> : null}
+            {selectedToken ? (
+              <div
+                className={twMerge(
+                  'flex items-center gap-2',
+                  tokenList.length ? 'cursor-pointer' : '',
+                )}
+                onClick={() =>
+                  tokenList.length && setIsPickTokenModalOpen(true)
+                }
+              >
+                {tokenList.length ? (
+                  <div
+                    className={twMerge(
+                      'flex h-2 w-2 items-center justify-center shrink-0',
+                    )}
+                  >
+                    <Image src={chevronDownIcon} alt="chevron down" />
+                  </div>
+                ) : null}
 
-              <div className='font-archivo text-base'>{selectedToken.symbol ?? '-'}</div>
+                <div className="font-archivo text-base">
+                  {selectedToken.symbol ?? '-'}
+                </div>
 
-              <Image
-                className='h-4 w-4'
-                src={selectedToken?.image}
-                alt="logo"
-                width="20"
-                height="20"
-              />
-            </div> : null}
+                <Image
+                  className="h-4 w-4"
+                  src={selectedToken?.image}
+                  alt="logo"
+                  width="20"
+                  height="20"
+                />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

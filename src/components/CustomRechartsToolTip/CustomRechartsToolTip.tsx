@@ -47,7 +47,7 @@ export default function CustomRechartsToolTip({
     const activeEvents = (events || []).filter(event => event.time === label);
 
     return (
-      <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
+      <div className="bg-third p-3 border border-white/20 rounded-lg min-w-[12em]">
         {label && <p className="text-lg mb-2 font-mono">{labelPrefix}{labelCustomization ? labelCustomization(label) : label} {typeof gmt !== 'undefined' ? `${gmt < 0 ? `GMT${gmt}` : gmt > 0 ? `GMT+${gmt}` : "UTC"}` : null} {labelSuffix}</p>}
 
         {total ? <div

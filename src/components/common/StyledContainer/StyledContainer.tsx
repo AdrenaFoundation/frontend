@@ -51,7 +51,7 @@ export default function StyledContainer({
           />
         ) : null}
 
-        <div className='flex flex-col'>
+        <div className="flex flex-col">
           <h1 className={titleClassName}>{title}</h1>
 
           <h5 className={twMerge('opacity-50', subTitleClassName)}>

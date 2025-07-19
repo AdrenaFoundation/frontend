@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -15,6 +16,7 @@ import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
+import logOutIcon from '../../../public/images/Icons/log-out.svg';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -123,39 +125,79 @@ export default function WalletAdapter({
       {connected && userProfile !== null ? (
         <Menu
           trigger={
-            <Button
-              className={twMerge(
-                className,
-                'gap-2 pl-2 pr-3 text-xs w-[15em] border border-white/20',
-                isIconOnly && 'p-0 h-8 w-8',
-              )}
-              style={!isBreak ? {
-                backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPositionY: 'center',
-              } : {}}
-              title={
-                !isIconOnly
-                  ? userProfile
-                    ? getAbbrevNickname(userProfile.nickname)
-                    : getAbbrevWalletAddress(wallet.walletAddress)
-                  : null
+            <div
+              className={
+                'flex flex-row items-center border border-bcolor rounded-full sm:rounded-lg'
               }
-              leftIcon={
-                connectedAdapter?.iconOverride ?? connectedAdapter?.icon
-              }
-              leftIconClassName="hidden sm:block w-4 h-4"
-              variant="lightbg"
-              onClick={() => {
-                setMenuIsOpen(!menuIsOpen);
-              }}
-            />
+            >
+              <Button
+                className={twMerge(
+                  className,
+                  'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-full sm:rounded-none sm:rounded-l-lg border-r gap-2 text-sm h-auto bg-transparent',
+                  isIconOnly && 'p-0 h-8 w-8',
+                )}
+                style={
+                  !isBreak
+                    ? {
+                        backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
+                        backgroundSize: 'cover',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPositionY: 'center',
+                      }
+                    : {}
+                }
+                title={
+                  !isIconOnly
+                    ? userProfile
+                      ? getAbbrevNickname(userProfile.nickname)
+                      : getAbbrevWalletAddress(wallet.walletAddress)
+                    : null
+                }
+                leftIcon={
+                  userProfile
+                    ? PROFILE_PICTURES[userProfile.profilePicture]
+                    : (connectedAdapter?.iconOverride ?? connectedAdapter?.icon)
+                }
+                leftIconClassName={twMerge(
+                  'hidden sm:block w-4 h-4 rounded-full border border-white/20',
+                  !userProfile && 'border-0',
+                )}
+                variant="lightbg"
+                onClick={() => {
+                  if (isMobile) {
+                    setMenuIsOpen(!menuIsOpen);
+                    return;
+                  }
+
+                  router.push('/profile');
+                }}
+              />
+
+              <div
+                className="hidden sm:block p-1 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
+                onClick={() => {
+                  setMenuIsOpen(!menuIsOpen);
+
+                  if (!connected || !connectedAdapter) return;
+
+                  dispatch(disconnectWalletAction(connectedAdapter));
+                }}
+              >
+                <Image
+                  src={logOutIcon}
+                  alt="Disconnect Icon"
+                  className="w-3 h-3"
+                  width={14}
+                  height={14}
+                />
+              </div>
+            </div>
           }
-          openMenuClassName="w-[150px] right-0 border border-white/10 shadow-xl"
+          disabled={!isMobile}
+          openMenuClassName="w-[14rem] right-0 border border-white/10 shadow-xl bg-secondary"
         >
-          <MenuItems>
-            {isMobile ? (
+          {isMobile ? (
+            <MenuItems>
               <>
                 <MenuItem
                   onClick={() => {
@@ -189,26 +231,24 @@ export default function WalletAdapter({
                 <MenuSeparator />
 
                 <MenuItem
-                  href='https://docs.adrena.xyz/'
-                  target='_blank'
+                  href="https://docs.adrena.xyz/"
+                  target="_blank"
                   linkClassName="py-2"
                 >
                   Learn
                 </MenuItem>
 
-
                 <MenuSeparator />
 
                 <MenuItem
-                  href='https://dao.adrena.xyz/'
-                  target='_blank'
+                  href="https://dao.adrena.xyz/"
+                  target="_blank"
                   linkClassName="py-2"
                 >
                   Vote
                 </MenuItem>
 
                 <MenuSeparator />
-
 
                 <MenuItem
                   className="py-2"
@@ -239,26 +279,14 @@ export default function WalletAdapter({
                 </MenuItem>
                 <MenuSeparator />
               </>
-            ) : null}
-            <MenuItem
-              onClick={() => {
-                setMenuIsOpen(!menuIsOpen);
-
-                if (!connected || !connectedAdapter) return;
-
-                dispatch(disconnectWalletAction(connectedAdapter));
-              }}
-              className="py-2"
-            >
-              Disconnect
-            </MenuItem>
-          </MenuItems>
+            </MenuItems>
+          ) : null}
         </Menu>
       ) : (
         <Button
           className={twMerge(
             className,
-            'gap-1 pl-2 pr-3 text-xs w-[15em] border border-white/20',
+            'gap-1 p-1 h-auto px-3 pr-4 text-xs border border-bcolor bg-transparent hover:bg-third rounded-lg',
             isIconOnly && 'p-0 h-8 w-8',
           )}
           title={!isIconOnly ? 'Connect wallet' : null}

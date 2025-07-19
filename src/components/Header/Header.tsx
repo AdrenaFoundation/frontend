@@ -19,6 +19,7 @@ import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import competitionIcon from '../../../public/images/competition.svg';
+import searchIcon from '../../../public/images/Icons/search.svg';
 import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -47,6 +48,7 @@ export default function Header({
   setCustomRpcUrl,
   setFavoriteRpc,
   adapters,
+  setIsSearchUserProfilesOpen,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: LinksType[];
@@ -68,6 +70,7 @@ export default function Header({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   adapters: WalletAdapterExtended[];
+  setIsSearchUserProfilesOpen: (isOpen: boolean) => void;
 }) {
   const pathname = usePathname();
   const { aprs } = useAPR();
@@ -97,7 +100,7 @@ export default function Header({
               window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
             )}
             alt="logo"
-            width={100}
+            width={80}
             height={25}
           />
 
@@ -249,21 +252,48 @@ export default function Header({
           )}
         </Link>
 
-        <PriorityFeeSetting />
-
-        <Settings
-          activeRpc={activeRpc}
-          rpcInfos={rpcInfos}
-          autoRpcMode={autoRpcMode}
-          customRpcUrl={customRpcUrl}
-          customRpcLatency={customRpcLatency}
-          favoriteRpc={favoriteRpc}
-          setAutoRpcMode={setAutoRpcMode}
-          setCustomRpcUrl={setCustomRpcUrl}
-          setFavoriteRpc={setFavoriteRpc}
-        />
-
         <Mutagen />
+
+        <div className="flex flex-row items-center border border-bcolor rounded-lg">
+          <div
+            className="border-r p-1.5 px-2 hover:bg-third transition-colors cursor-pointer rounded-l-lg"
+            onClick={() => {
+              setIsSearchUserProfilesOpen(true);
+            }}
+          >
+            <Image
+              src={searchIcon}
+              alt="Search Icon"
+              className="w-3 h-3"
+              width={12}
+              height={12}
+            />
+          </div>
+
+          <PriorityFeeSetting />
+
+          <Settings
+            activeRpc={activeRpc}
+            rpcInfos={rpcInfos}
+            autoRpcMode={autoRpcMode}
+            customRpcUrl={customRpcUrl}
+            customRpcLatency={customRpcLatency}
+            favoriteRpc={favoriteRpc}
+            setAutoRpcMode={setAutoRpcMode}
+            setCustomRpcUrl={setCustomRpcUrl}
+            setFavoriteRpc={setFavoriteRpc}
+          />
+
+          {/* <div className="relative p-1 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg">
+            <Image
+              src={helpIcon}
+              alt="Help Icon"
+              className="w-[0.875rem] h-[0.875rem]"
+              width={14}
+              height={14}
+            />
+          </div> */}
+        </div>
 
         <WalletAdapter userProfile={userProfile} adapters={adapters} />
 

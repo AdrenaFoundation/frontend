@@ -1,11 +1,13 @@
 import { BN } from '@coral-xyz/anchor';
 import { Transaction } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import resizeIcon from '@/../public/images/Icons/resize.svg';
 import { setSettings } from '@/actions/settingsActions';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -21,7 +23,9 @@ import { ChartPreferences } from '@/components/pages/trading/TradingChart/types'
 import { useMarks } from '@/components/pages/trading/TradingChart/useMarks';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
-import ViewTabs, { ViewType } from '@/components/pages/trading/ViewTabs/ViewTabs';
+import ViewTabs, {
+  ViewType,
+} from '@/components/pages/trading/ViewTabs/ViewTabs';
 import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS } from '@/constant';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -85,7 +89,11 @@ export default function Trade({
 
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey?.toBase58() ?? null);
-  const { positionsData } = usePositionsHistory({ walletAddress: wallet?.publicKey.toBase58() ?? null, batchSize: 200, interval: 10_000 });
+  const { positionsData } = usePositionsHistory({
+    walletAddress: wallet?.publicKey.toBase58() ?? null,
+    batchSize: 200,
+    interval: 10_000,
+  });
   const { allPositions } = useAllPositions({ connected });
 
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
@@ -97,19 +105,24 @@ export default function Trade({
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
-  const [cookies] = useCookies(['showBreakEvenLine', 'toggleSizeUsdInChart',
-    'showAllActivePositionsLiquidationLines', 'showAllActivePositions', 'showPositionHistory', 'updateTPSLByDrag', 'showHighLow'
+  const [cookies] = useCookies([
+    'showBreakEvenLine',
+    'toggleSizeUsdInChart',
+    'showAllActivePositionsLiquidationLines',
+    'showAllActivePositions',
+    'showPositionHistory',
+    'updateTPSLByDrag',
+    'showHighLow',
   ]);
 
-  const [chartPreferences, setChartPreferences] = useState<ChartPreferences>(
-    {
-      showAllActivePositionsLiquidationLines: cookies?.showAllActivePositionsLiquidationLines === true,
-      showAllActivePositions: cookies?.showAllActivePositions === true,
-      showPositionHistory: cookies?.showPositionHistory === true,
-      updateTPSLByDrag: cookies?.updateTPSLByDrag === true,
-      showHighLow: true,
-    }
-  );
+  const [chartPreferences, setChartPreferences] = useState<ChartPreferences>({
+    showAllActivePositionsLiquidationLines:
+      cookies?.showAllActivePositionsLiquidationLines === true,
+    showAllActivePositions: cookies?.showAllActivePositions === true,
+    showPositionHistory: cookies?.showPositionHistory === true,
+    updateTPSLByDrag: cookies?.updateTPSLByDrag === true,
+    showHighLow: true,
+  });
 
   const { getMarksCallback } = useMarks({
     positionsHistory: positionsData?.positions ?? [],
@@ -263,7 +276,9 @@ export default function Trade({
       !tokenA ||
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
     ) {
-      const settingsPick: Token | undefined = tokenACandidate.find((t) => t.symbol === settings.openPositionCollateralSymbol);
+      const settingsPick: Token | undefined = tokenACandidate.find(
+        (t) => t.symbol === settings.openPositionCollateralSymbol,
+      );
 
       if (settingsPick) {
         setTokenA(settingsPick);
@@ -371,23 +386,23 @@ export default function Trade({
           positionsGroup.map((p) =>
             p.side === 'long'
               ? window.adrena.client.buildClosePositionLongIx({
-                position: p,
-                price: uiToNative(
-                  tokenPrices[getTokenSymbol(p.token.symbol)]!,
-                  PRICE_DECIMALS,
-                )
-                  .mul(new BN(10_000 - slippageInBps))
-                  .div(new BN(10_000)),
-              })
+                  position: p,
+                  price: uiToNative(
+                    tokenPrices[getTokenSymbol(p.token.symbol)]!,
+                    PRICE_DECIMALS,
+                  )
+                    .mul(new BN(10_000 - slippageInBps))
+                    .div(new BN(10_000)),
+                })
               : window.adrena.client.buildClosePositionShortIx({
-                position: p,
-                price: uiToNative(
-                  tokenPrices[p.token.symbol]!,
-                  PRICE_DECIMALS,
-                )
-                  .mul(new BN(10_000))
-                  .div(new BN(10_000 - slippageInBps)),
-              }),
+                  position: p,
+                  price: uiToNative(
+                    tokenPrices[p.token.symbol]!,
+                    PRICE_DECIMALS,
+                  )
+                    .mul(new BN(10_000))
+                    .div(new BN(10_000 - slippageInBps)),
+                }),
           ),
         );
 
@@ -408,22 +423,25 @@ export default function Trade({
     }
   }, [positions, tokenPrices]);
 
-  const allActivePositions = tokenB ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint)) : null
-
-  const totalStats = positions && positions.length > 0
-    ? positions.reduce(
-      (acc, position) => {
-        const price = tokenPrices[getTokenSymbol(position.token.symbol)];
-        if (!price || position.pnl == null) {
-          return acc;
-        }
-        acc.totalPnL += position.pnl;
-        acc.totalCollateral += position.collateralUsd;
-        return acc;
-      },
-      { totalPnL: 0, totalCollateral: 0 }
-    )
+  const allActivePositions = tokenB
+    ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint))
     : null;
+
+  const totalStats =
+    positions && positions.length > 0
+      ? positions.reduce(
+          (acc, position) => {
+            const price = tokenPrices[getTokenSymbol(position.token.symbol)];
+            if (!price || position.pnl == null) {
+              return acc;
+            }
+            acc.totalPnL += position.pnl;
+            acc.totalCollateral += position.collateralUsd;
+            return acc;
+          },
+          { totalPnL: 0, totalCollateral: 0 },
+        )
+      : null;
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full sm:p-4 pb-[200px] sm:pb-4">
@@ -466,33 +484,18 @@ export default function Trade({
           </div>
 
           <div className="flex flex-col border-t border-white/10">
-            <ChartControlsDesktop
-              chartPreferences={chartPreferences}
-              setChartPreferences={setChartPreferences}
-              showBreakEvenLine={showBreakEvenLine}
-              setShowBreakEvenLine={setShowBreakEvenLine}
-              toggleSizeUsdInChart={toggleSizeUsdInChart}
-              setToggleSizeUsdInChart={setToggleSizeUsdInChart}
-              isResizing={isResizing}
-              setIsResizing={setIsResizing}
-              isBigScreen={!!isBigScreen}
-            />
+            <div className="flex flex-row items-center gap-0">
+              <ChartControlsDesktop
+                chartPreferences={chartPreferences}
+                setChartPreferences={setChartPreferences}
+                showBreakEvenLine={showBreakEvenLine}
+                setShowBreakEvenLine={setShowBreakEvenLine}
+                toggleSizeUsdInChart={toggleSizeUsdInChart}
+                setToggleSizeUsdInChart={setToggleSizeUsdInChart}
+              />
 
-            <ChartControlsMobile
-              chartPreferences={chartPreferences}
-              setChartPreferences={setChartPreferences}
-              showBreakEvenLine={showBreakEvenLine}
-              setShowBreakEvenLine={setShowBreakEvenLine}
-              toggleSizeUsdInChart={toggleSizeUsdInChart}
-              setToggleSizeUsdInChart={setToggleSizeUsdInChart}
-              isResizing={isResizing}
-              setIsResizing={setIsResizing}
-            />
-
-            {/* Chart Resize Handle - appears right below chart when resize mode is active */}
-            {!!isBigScreen && isResizing && (
               <div
-                className="h-6 w-full flex items-center justify-center cursor-ns-resize hover:bg-white/5 border-t border-white/10"
+                className="hidden md:block p-1 mr-3 border opacity-50 border-bcolor hover:bg-third hover:opacity-100 transition-all duration-300 rounded-md cursor-ns-resize"
                 onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.preventDefault();
                   const startY = e.clientY;
@@ -501,7 +504,10 @@ export default function Trade({
                   const handleMouseMove = (moveEvent: MouseEvent) => {
                     moveEvent.preventDefault();
                     const deltaY = moveEvent.clientY - startY;
-                    const newHeight = Math.max(200, Math.min(1200, initialHeight + deltaY));
+                    const newHeight = Math.max(
+                      200,
+                      Math.min(1200, initialHeight + deltaY),
+                    );
                     setChartHeight(newHeight);
                   };
 
@@ -515,10 +521,26 @@ export default function Trade({
                   document.addEventListener('mouseup', handleMouseUp);
                 }}
               >
-                <div className="w-12 h-1 bg-white/20 rounded-full hover:bg-white/40 transition-colors" />
-                <span className="ml-2 text-xs text-white/60">Drag to resize chart</span>
+                <Image
+                  src={resizeIcon}
+                  alt="Resize Chart"
+                  width={14}
+                  height={14}
+                  className="-rotate-45"
+                />
               </div>
-            )}
+            </div>
+
+            <ChartControlsMobile
+              chartPreferences={chartPreferences}
+              setChartPreferences={setChartPreferences}
+              showBreakEvenLine={showBreakEvenLine}
+              setShowBreakEvenLine={setShowBreakEvenLine}
+              toggleSizeUsdInChart={toggleSizeUsdInChart}
+              setToggleSizeUsdInChart={setToggleSizeUsdInChart}
+              isResizing={isResizing}
+              setIsResizing={setIsResizing}
+            />
           </div>
         </div>
 
@@ -543,7 +565,7 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top'
+                    exportButtonPosition="top"
                     key={`history-${wallet?.publicKey.toBase58() || 'none'}`}
                   />
                 </div>
@@ -593,7 +615,7 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition='top'
+                    exportButtonPosition="top"
                     key={`history-${wallet?.publicKey.toBase58() || 'none'}`}
                   />
                 </div>
@@ -654,10 +676,14 @@ export default function Trade({
       </div>
 
       {!!isBigScreen && (
-        <div className={twMerge(
-          "hidden sm:flex ml-4",
-          isExtraWideScreen ? "w-[20%] min-w-[350px]" : "w-[25%] min-w-[320px]"
-        )}>
+        <div
+          className={twMerge(
+            'hidden sm:flex ml-4',
+            isExtraWideScreen
+              ? 'w-[20%] min-w-[350px]'
+              : 'w-[25%] min-w-[320px]',
+          )}
+        >
           <TradeComp
             className="w-full"
             selectedAction={selectedAction}
@@ -731,9 +757,10 @@ export default function Trade({
           <AnimatePresence>
             {activePositionModal && (
               <Modal
-                title={`${activePositionModal.charAt(0).toUpperCase() +
+                title={`${
+                  activePositionModal.charAt(0).toUpperCase() +
                   activePositionModal.slice(1)
-                  } Position`}
+                } Position`}
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto"
               >

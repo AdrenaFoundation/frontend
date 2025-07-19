@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
 import copyIcon from '@/../../public/images/copy.svg';
+import editIcon from '@/../../public/images/Icons/edit.svg';
 import snsBadgeIcon from '@/../../public/images/sns-badge.svg';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
@@ -76,7 +77,7 @@ export default function OwnerBloc({
   activeUpdateTab?: TabType;
   walletAddress?: string;
 }) {
-  const snsDomain = useSNSPrimaryDomain(walletAddress)
+  const snsDomain = useSNSPrimaryDomain(walletAddress);
 
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
@@ -153,9 +154,10 @@ export default function OwnerBloc({
   ]);
 
   const updateProfile = useCallback(async () => {
-    const onlyUpdateAchievements = updatingMetadata.wallpaper === userProfile.wallpaper &&
+    const onlyUpdateAchievements =
+      updatingMetadata.wallpaper === userProfile.wallpaper &&
       updatingMetadata.profilePicture === userProfile.profilePicture &&
-      updatingMetadata.title === userProfile.title
+      updatingMetadata.title === userProfile.title;
 
     const currentFavoriteAchievements = favoriteAchievements;
 
@@ -166,13 +168,14 @@ export default function OwnerBloc({
         walletPubkey.toBase58(),
         updatingMetadata.favoriteAchievements ?? [],
       );
-
     } else {
-      const isNewChanges = currentAchievements.some(
-        (achievement) =>
-          !updatingMetadata.favoriteAchievements?.includes(achievement.index),
-      ) || (currentFavoriteAchievements.length !== (updatingMetadata.favoriteAchievements?.length ?? 0))
-
+      const isNewChanges =
+        currentAchievements.some(
+          (achievement) =>
+            !updatingMetadata.favoriteAchievements?.includes(achievement.index),
+        ) ||
+        currentFavoriteAchievements.length !==
+        (updatingMetadata.favoriteAchievements?.length ?? 0);
 
       if (isNewChanges) {
         updateFavoriteAchievements?.(
@@ -572,10 +575,11 @@ export default function OwnerBloc({
     <>
       <div
         className={twMerge(
-          'items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#211a1a99]/50 rounded-tl-xl rounded-tr-xl min-h-[10em] sm:min-h-auto',
+          'items-center justify-center flex flex-col sm:flex-row relative backdrop-blur-lg bg-[#050F19]/40  rounded-tl-xl rounded-tr-xl min-h-[11em] sm:min-h-auto',
           className,
         )}
       >
+        <div className="absolute w-full h-full bg-gradient-to-b from-transparent to-main" />
         <Tippy
           content={
             profilePictureUnlockedByAchievement ? (
@@ -636,7 +640,7 @@ export default function OwnerBloc({
           <div className="flex flex-row items-center gap-3">
             {walletPubkey ? (
               <Tippy content={'Wallet address'}>
-                <div className="z-20 flex gap-1">
+                <div className="z-20 flex items-center gap-1">
                   <Image
                     onClick={async () => {
                       try {
@@ -673,33 +677,38 @@ export default function OwnerBloc({
             {snsDomain ? (
               <Tippy
                 content="Registered Domain through Solana Name Service (SNS)"
-                className='!text-xs !font-boldy'
+                className="!text-xs !font-boldy"
                 placement="top"
               >
-                <div className='flex flex-row gap-1 items-center sm:pr-4'>
-                  <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
-                  <p className='text-xs font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]'>{snsDomain}.sol</p>
-                </div></Tippy>
+                <div className="flex flex-row gap-1 items-center sm:pr-4">
+                  <Image
+                    src={snsBadgeIcon}
+                    alt="SNS badge"
+                    className="w-3 h-3"
+                  />
+                  <p className="text-xs font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
+                    {snsDomain}.sol
+                  </p>
+                </div>
+              </Tippy>
             ) : null}
           </div>
 
           <div className="flex mt-1">
-
-            <div className="flex flex-row items-end gap-1 font-archivoblack uppercase text-3xl relative">
+            <div className="flex flex-row items-center gap-1 font-mono text-3xl relative">
               {userProfile.nickname}
 
               {canUpdateNickname && userProfile.version > 1 ? (
-                <div
+                <Image
                   onClick={() => {
                     setNicknameUpdating(true);
                   }}
-                  className="text-xs opacity-70 cursor-pointer hover:opacity-100 mb-2"
-                >
-                  Edit
-                </div>
+                  src={editIcon}
+                  alt="Edit nickname"
+                  className="w-4 h-4 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300"
+                />
               ) : null}
             </div>
-
           </div>
 
           <Tippy
@@ -719,17 +728,16 @@ export default function OwnerBloc({
             }
             disabled={typeof titleUnlockedByAchievement === 'undefined'}
           >
-
-            <div className="flex gap-x-2 items-end relative bottom-1">
+            <div className="flex gap-x-1 items-end relative bottom-1">
               <span className="text-lg font-cursive relative top-1">
                 &quot;
               </span>
-              <span className="text-sm font-archivoblack">{title}</span>
+              <span className="text-sm font-boldy">{title}</span>
               <span className="text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100">
                 &quot;
               </span>
 
-              {canUpdateNickname && userProfile.version > 1 ? (
+              {/* {canUpdateNickname && userProfile.version > 1 ? (
                 <div
                   className="text-xs opacity-70 cursor-pointer hover:opacity-100 relative"
                   onClick={() => {
@@ -739,24 +747,22 @@ export default function OwnerBloc({
                 >
                   Edit
                 </div>
-              ) : null}
+              ) : null} */}
             </div>
           </Tippy>
 
           <AddTrader receiverWalletAddress={walletPubkey?.toBase58() ?? null} />
 
           {!readonly && userProfile.version > 1 ? (
-            <div className="absolute top-2 right-4 z-20 ">
-              <div
-                className="text-xs opacity-70 cursor-pointer flex hover:opacity-100"
-                onClick={() => {
-                  setIsUpdatingMetadata?.(true);
-                  setActiveUpdateTab?.('wallpaper');
-                }}
-              >
-                Edit wallpaper
-              </div>
-            </div>
+            <Image
+              src={editIcon}
+              alt="Edit wallpaper"
+              className="absolute top-2 right-4 z-20  w-4 h-4 opacity-70 cursor-pointer flex hover:opacity-100"
+              onClick={() => {
+                setIsUpdatingMetadata?.(true);
+                setActiveUpdateTab?.('wallpaper');
+              }}
+            />
           ) : null}
         </div>
       </div>

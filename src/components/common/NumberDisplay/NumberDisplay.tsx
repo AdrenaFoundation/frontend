@@ -50,25 +50,36 @@ export default function NumberDisplay({
   return (
     <StyledContainer
       title={
-        tippyInfo ? <Tippy
-          content={
-            <p className="font-medium">
-              {tippyInfo}
-            </p>
-          }
-          placement="auto"
-        >
-          <div className={twMerge("text-xs sm:text-sm text-txtfade font-boldy border-b border-dashed border-white/20 cursor-help", titleClassName)}>
-            {title}
-          </div>
-        </Tippy> : title
+        tippyInfo ? (
+          <Tippy
+            content={<p className="font-medium">{tippyInfo}</p>}
+            placement="auto"
+          >
+            <div
+              className={twMerge(
+                'text-xs sm:text-sm text-txtfade font-boldy border-b border-dashed border-white/20 cursor-help',
+                titleClassName,
+              )}
+            >
+              {title}
+            </div>
+          </Tippy>
+        ) : (
+          title
+        )
       }
-      className={twMerge("flex items-center flex-1 min-h-[2em] bg-transparent ", className)}
-      bodyClassName='gap-0'
-      headerClassName={twMerge("text-center justify-center", headerClassName)}
-      titleClassName={twMerge("text-xs sm:text-sm text-txtfade font-boldy", titleClassName)}
+      className={twMerge(
+        'flex items-center flex-1 min-h-[2em] bg-transparent ',
+        className,
+      )}
+      bodyClassName="gap-0"
+      headerClassName={twMerge('text-center justify-center', headerClassName)}
+      titleClassName={twMerge(
+        'text-xs sm:text-sm text-txtfade font-boldy',
+        titleClassName,
+      )}
       subTitle={subtitle}
-      subTitleClassName='text-xs text-txtfade'
+      subTitleClassName="text-xs text-txtfade"
     >
       <FormatNumber
         nb={nb}
@@ -79,10 +90,13 @@ export default function NumberDisplay({
         precision={precision}
         isDecimalDimmed={isDecimalDimmed}
         placeholder={placeholder}
-        className={twMerge("text-xl", bodyClassName)}
+        className={twMerge('text-xl', bodyClassName)}
         format={format}
         suffix={suffix}
-        suffixClassName={twMerge('text-sm font-boldy text-txtfade', bodySuffixClassName)}
+        suffixClassName={twMerge(
+          'text-sm font-boldy text-txtfade',
+          bodySuffixClassName,
+        )}
       />
 
       {footer}
