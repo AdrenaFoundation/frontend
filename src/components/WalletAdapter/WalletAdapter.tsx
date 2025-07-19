@@ -139,11 +139,11 @@ export default function WalletAdapter({
                 style={
                   !isBreak
                     ? {
-                        backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPositionY: 'center',
-                      }
+                      backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPositionY: 'center',
+                    }
                     : {}
                 }
                 title={
@@ -174,7 +174,7 @@ export default function WalletAdapter({
               />
 
               <div
-                className="hidden sm:block p-1 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
+                className="hidden sm:block p-1.5 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
                 onClick={() => {
                   setMenuIsOpen(!menuIsOpen);
 
@@ -278,6 +278,17 @@ export default function WalletAdapter({
                   Leaderboard
                 </MenuItem>
                 <MenuSeparator />
+                <MenuItem
+                  className="sm:hidden py-2"
+                  onClick={() => {
+                    if (!connected || !connectedAdapter) return;
+
+                    dispatch(disconnectWalletAction(connectedAdapter));
+                  }}
+                >
+                  Disconnect
+                </MenuItem>
+
               </>
             </MenuItems>
           ) : null}
