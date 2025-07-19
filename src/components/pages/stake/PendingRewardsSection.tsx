@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -45,8 +44,6 @@ export default function PendingRewardsSection({
     const { stakingAccount } = useStakingAccount(
         isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
     );
-
-    const isMobile = useBetterMediaQuery('(max-width: 570px)');
 
     return (
         <div className="px-5">
