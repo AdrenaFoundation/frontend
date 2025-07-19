@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import Image from 'next/image';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 

@@ -34,6 +34,7 @@ module.exports = (phase, { defaultConfig }) => {
         {
           protocol: 'https',
           hostname: 'iyd8atls7janm7g4.public.blob.vercel-storage.com',
+          pathname: '/**',
         },
         {
           protocol: 'https',
