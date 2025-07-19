@@ -11,19 +11,11 @@ import Achievement from '../achievements/Achievement';
 export default function FavAchievements({
   userProfile,
   favoriteAchievements,
-  setIsUpdatingMetadata,
-  setActiveUpdateTab,
   isFavoriteLoading,
 }: {
   userProfile: UserProfileExtended;
   favoriteAchievements: number[] | null;
   isFavoriteLoading: boolean;
-  setIsUpdatingMetadata?: React.Dispatch<React.SetStateAction<boolean>>;
-  setActiveUpdateTab?: React.Dispatch<
-    React.SetStateAction<
-      'profilePicture' | 'wallpaper' | 'title' | 'achievements'
-    >
-  >;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const achievements = ACHIEVEMENTS.filter((a) =>
@@ -34,7 +26,7 @@ export default function FavAchievements({
     <>
       <div>
         <div className="flex flex-row justify-between items-center px-4 pt-2">
-          <p className="font-boldy text-lg mb-3">
+          <p className="font-interSemibold text-lg mb-3">
             Achievements{' '}
             <span className="opacity-50 ml-1">
               {
@@ -46,17 +38,6 @@ export default function FavAchievements({
               / {ACHIEVEMENTS.length}
             </span>
           </p>
-          {setIsUpdatingMetadata && setActiveUpdateTab && (
-            <p
-              className="text-xs opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-              onClick={() => {
-                setIsUpdatingMetadata(true);
-                setActiveUpdateTab('achievements');
-              }}
-            >
-              Edit
-            </p>
-          )}
         </div>
         <div
           className="relative flex flex-row justify-center items-center gap-6 px-4 overflow-hidden cursor-pointer"
