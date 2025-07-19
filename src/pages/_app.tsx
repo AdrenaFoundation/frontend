@@ -12,7 +12,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
-import { checkAndSignInAnonymously, setVerifiedWalletAddresses } from '@/actions/supabaseAuthActions';
+import {
+  checkAndSignInAnonymously,
+  setVerifiedWalletAddresses,
+} from '@/actions/supabaseAuthActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
@@ -28,9 +31,7 @@ import useWallet from '@/hooks/useWallet';
 import useWalletAdapters from '@/hooks/useWalletAdapters';
 import useWatchBorrowRates from '@/hooks/useWatchBorrowRates';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
-import initializeApp, {
-  createReadOnlyAdrenaProgram,
-} from '@/initializeApp';
+import initializeApp, { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { VestExtended } from '@/types';
 
@@ -80,16 +81,9 @@ export default function App(props: AppProps) {
   // - when the client-side app boots..
   //   - and the RPC has been picked by usePRC hook.
   // No need to use an Effect as long as we guard with the correct conditions.
-  if (
-    CONFIG !== null &&
-    initStatus === 'not-started' &&
-    activeRpc !== null
-  ) {
+  if (CONFIG !== null && initStatus === 'not-started' && activeRpc !== null) {
     setInitStatus('starting');
-    initializeApp(
-      CONFIG,
-      activeRpc.connection,
-    ).then(() => {
+    initializeApp(CONFIG, activeRpc.connection).then(() => {
       setInitStatus('done');
     });
   }
@@ -161,7 +155,9 @@ function AppComponent({
   const adapters = useWalletAdapters();
   const wallet = useWallet(adapters);
   const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
-  const { userProfile, triggerUserProfileReload } = useUserProfile(walletAddress ?? null);
+  const { userProfile, triggerUserProfileReload } = useUserProfile(
+    walletAddress ?? null,
+  );
 
   useSettingsPersistence();
   useWatchTokenPrices();
@@ -173,12 +169,12 @@ function AppComponent({
     dispatch(fetchWalletTokenBalances());
   }, [walletAddress, dispatch]);
 
-  const [cookies, setCookie] = useCookies([
-    'terms-and-conditions-acceptance',
-  ]);
+  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance']);
 
   const [userVest, setUserVest] = useState<VestExtended | null | false>(null);
-  const [userDelegatedVest, setUserDelegatedVest] = useState<VestExtended | null | false>(null);
+  const [userDelegatedVest, setUserDelegatedVest] = useState<
+    VestExtended | null | false
+  >(null);
 
   const getUserVesting = useCallback(async () => {
     try {
@@ -222,7 +218,7 @@ function AppComponent({
       return;
     }
 
-    dispatch(setVerifiedWalletAddresses())
+    dispatch(setVerifiedWalletAddresses());
 
     setConnected(true);
     window.adrena.client.setAdrenaProgram(
@@ -265,10 +261,17 @@ function AppComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRpc.name]);
 
-  const [isUserProfileMigrationV1Tov2Open, setIsUserProfileMigrationV1ToV2Open] = useState<boolean>(false);
+  const [
+    isUserProfileMigrationV1Tov2Open,
+    setIsUserProfileMigrationV1ToV2Open,
+  ] = useState<boolean>(false);
 
   useEffect(() => {
-    if (userProfile && userProfile.version < 2 && !isTermsAndConditionModalOpen) {
+    if (
+      userProfile &&
+      userProfile.version < 2 &&
+      !isTermsAndConditionModalOpen
+    ) {
       setIsUserProfileMigrationV1ToV2Open(true);
     } else {
       setIsUserProfileMigrationV1ToV2Open(false);
@@ -283,7 +286,6 @@ function AppComponent({
       </Head>
 
       <RootLayout
-        wallet={wallet}
         userVest={userVest}
         userDelegatedVest={userDelegatedVest}
         userProfile={userProfile}
@@ -323,9 +325,14 @@ function AppComponent({
         {
           // Handle user profile creation
           isUserProfileMigrationV1Tov2Open && userProfile ? (
-            <MigrateUserProfileV1Tov2Modal userProfile={userProfile} triggerUserProfileReload={triggerUserProfileReload} walletPubkey={wallet?.publicKey} close={() => {
-              setIsUserProfileMigrationV1ToV2Open(false);
-            }} />
+            <MigrateUserProfileV1Tov2Modal
+              userProfile={userProfile}
+              triggerUserProfileReload={triggerUserProfileReload}
+              walletPubkey={wallet?.publicKey}
+              close={() => {
+                setIsUserProfileMigrationV1ToV2Open(false);
+              }}
+            />
           ) : null
         }
 

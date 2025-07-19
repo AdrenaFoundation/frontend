@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -46,58 +45,58 @@ export default function PendingRewardsSection({
         isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
     );
 
-    const isMobile = useBetterMediaQuery('(max-width: 570px)');
-
     return (
         <div className="px-5">
-            <div className={twMerge("flex mb-2 items-center w-full", isMobile ? 'flex-col' : '')}>
-                <h3 className="text-lg font-semibold">Pending Rewards</h3>
-                <Tippy
-                    content={
-                        <div className="p-2">
-                            {isALP ? (
-                                <>
-                                    <p className="text-sm mb-1">
-                                        ADX and USDC rewards automatically accrue at the end of
-                                        every staking round.
-                                    </p>
-                                    <p className="text-sm">
-                                        Locked ALP can be retrieved once the locking period is
-                                        over, or by doing an early exit.
-                                    </p>
-                                </>
-                            ) : (
-                                <>
-                                    <p className="text-sm mb-1">
-                                        ADX rewards automatically accrue at the end of every
-                                        staking round.
-                                    </p>
-                                    <p className="text-sm">
-                                        Liquid staked ADX can be unstaked at any time. Locked
-                                        ADX can be retrieved once the locking period is over, or
-                                        by performing an early exit.
-                                    </p>
-                                </>
-                            )}
-                        </div>
-                    }
-                    placement="auto"
-                >
-                    <Image
-                        src={infoIcon}
-                        width={16}
-                        height={16}
-                        alt="info icon"
-                        className="inline-block ml-2 cursor-pointer txt op center"
-                    />
-                </Tippy>
+            <div className={twMerge("flex flex-col sm:flex-row mb-2 items-center justify-between w-full")}>
+                <div className='flex items-center gap-1'>
+                    <h3 className="text-lg font-semibold">Pending Rewards</h3>
+                    <Tippy
+                        content={
+                            <div className="p-2">
+                                {isALP ? (
+                                    <>
+                                        <p className="text-sm mb-1">
+                                            ADX and USDC rewards automatically accrue at the end of
+                                            every staking round.
+                                        </p>
+                                        <p className="text-sm">
+                                            Locked ALP can be retrieved once the locking period is
+                                            over, or by doing an early exit.
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-sm mb-1">
+                                            ADX rewards automatically accrue at the end of every
+                                            staking round.
+                                        </p>
+                                        <p className="text-sm">
+                                            Liquid staked ADX can be unstaked at any time. Locked
+                                            ADX can be retrieved once the locking period is over, or
+                                            by performing an early exit.
+                                        </p>
+                                    </>
+                                )}
+                            </div>
+                        }
+                        placement="auto"
+                    >
+                        <Image
+                            src={infoIcon}
+                            width={16}
+                            height={16}
+                            alt="info icon"
+                            className="inline-block ml-2 cursor-pointer txt op center"
+                        />
+                    </Tippy>
+                </div>
 
-                <div className={twMerge('flex gap-4', isMobile ? 'mt-2 w-full' : 'ml-auto')}>
+                <div className={twMerge('flex flex-col sm:flex-row gap-4 my-2 sm:my-0 w-full sm:w-auto flex-none')}>
                     <Button
                         variant="primary"
                         size="sm"
                         title={isClaimingAndBuyAdxRewards ? 'Claiming & buying ADX...' : 'Claim & Buy ADX'}
-                        className={twMerge("px-5", isMobile ? 'w-1/2' : 'w-[13em] min-w-[13em]')}
+                        className={twMerge("px-5 w-full sm:w-auto")}
                         onClick={onClaimAndBuyAdx}
                         disabled={
                             userPendingUsdcRewards +
@@ -111,7 +110,7 @@ export default function PendingRewardsSection({
                         variant="primary"
                         size="sm"
                         title={isClaimingRewards ? 'Claiming...' : 'Claim'}
-                        className={twMerge("px-5", isMobile ? 'w-1/2' : 'w-[9em]')}
+                        className={twMerge("px-5 w-full sm:w-auto")}
                         onClick={onClaim}
                         disabled={
                             userPendingUsdcRewards +
@@ -127,9 +126,9 @@ export default function PendingRewardsSection({
             <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">
                 {/* Pending rewards block */}
                 <div className="flex-grow"></div>
-                <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg h-[90px]">
-                    <div className="flex flex-col space-y-1 flex-grow">
-                        <div className="flex justify-between">
+                <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg">
+                    <div className="flex flex-col gap-3 sm:gap-1 flex-grow">
+                        <div className="flex flex-col sm:flex-row justify-between">
                             <span className="text-txtfade">
                                 Your share of {isALP ? '70%' : '20%'} platform&apos;s
                                 revenue:
@@ -145,7 +144,7 @@ export default function PendingRewardsSection({
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="flex flex-col sm:flex-row justify-between">
                             <span className="text-txtfade">
                                 LM rewards
                                 <span className="text-txtfade ">
@@ -226,7 +225,7 @@ export default function PendingRewardsSection({
             </div>
 
             {/* Bottom line */}
-            <div className="flex flex-col gap-2 text-sm px-3">
+            <div className="flex flex-col gap-2 text-sm ">
                 <div className="flex items-center justify-between mt-2">
                     <span className="text-txtfade flex items-center">
                         <Tippy

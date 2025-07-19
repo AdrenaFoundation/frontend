@@ -25,7 +25,7 @@ export default function TabSelect<T extends string | number>({
   titleClassName?: string;
 }) {
   const [activeTab, setActiveTab] = useState<null | number>(
-    selected !== undefined ? initialSelectedIndex ?? 0 : null,
+    selected !== undefined ? (initialSelectedIndex ?? 0) : null,
   );
 
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
@@ -50,11 +50,12 @@ export default function TabSelect<T extends string | number>({
             className,
             activeTab !== null && index === activeTab
               ? activeColor
-                ? `opacity-100 border-b-[0.3em] ${activeColor}`
-                : 'opacity-100 border-b-[0.3em] border-highlight'
+                ? `opacity-100 border-b-[0.2em] ${activeColor}`
+                : 'opacity-100 border-b-[0.2em] border-highlight'
               : 'opacity-50 border-b-[1px]',
             disabled && 'opacity-25 cursor-not-allowed',
-            tabs[index].icon && 'flex flex-row gap-1 items-center justify-center ',
+            tabs[index].icon &&
+              'flex flex-row gap-1 items-center justify-center ',
           )}
           ref={refs[index]}
           key={title}

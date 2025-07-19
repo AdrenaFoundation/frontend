@@ -130,7 +130,7 @@ export default function Profile({
       />
 
       <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
-        <div className="z-20 w-full min-h-full flex flex-col rounded-xl">
+        <div className="z-20 w-full min-h-full flex flex-col rounded-xl backdrop-blur-md border-2 border-white/10 shadow-lg">
           {userProfile === false ? (
             <div className="flex w-full justify-center items-center bg-main">
               <ProfileCreation
@@ -156,12 +156,10 @@ export default function Profile({
                 setActiveUpdateTab={setActiveUpdateTab}
               />
 
-              <div className="bg-main flex flex-col gap-2 pt-2 rounded-bl-xl rounded-br-xl border-t">
+              <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border-t">
                 <FavAchievements
                   userProfile={userProfile}
                   favoriteAchievements={favoriteAchievements}
-                  setIsUpdatingMetadata={setIsUpdatingMetadata}
-                  setActiveUpdateTab={setActiveUpdateTab}
                   isFavoriteLoading={isFavoriteLoading}
                 />
 
