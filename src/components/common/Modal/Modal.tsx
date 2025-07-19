@@ -98,7 +98,7 @@ export default function Modal({
         }}
       >
         <div
-          className="absolute w-full h-full bg-main/75 z-[101] shadow-lg"
+          className="absolute w-full h-full bg-main/85 z-[101] shadow-lg"
           onClick={() => close()}
         />
 
