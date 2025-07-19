@@ -209,7 +209,7 @@ export default function Mutagen({
   if (isMobile) {
     return (
       <AnimatePresence>
-        <div className='gap-x-1 sm:gap-x-2 flex items-center justify-center rounded-full pl-2 sm:pl-4 pr-1 sm:pr-3 pt-1
+        <div className='gap-x-1 sm:gap-x-2 flex items-center justify-center rounded-full p-1 px-2 pl-3 sm:p-2 sm:px-4
                         bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
                         border border-mutagen/40
                         shadow-mutagenSmall
