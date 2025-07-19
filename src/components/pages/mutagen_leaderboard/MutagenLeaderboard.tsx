@@ -94,17 +94,14 @@ export default function MutagenLeaderboard({
                     key={d.nickname}
                 >
                     {d.profilePicture !== null ? (
-                        <>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={PROFILE_PICTURES[d.profilePicture]}
-                                width={30}
-                                height={30}
-                                alt="rank"
-                                className="h-8 w-8 rounded-full opacity-80"
-                                key={d.nickname}
-                            />
-                        </>
+                        <Image
+                            src={PROFILE_PICTURES[d.profilePicture]}
+                            width={30}
+                            height={30}
+                            alt="rank"
+                            className="h-8 w-8 rounded-full opacity-80"
+                            key={d.nickname}
+                        />
                     ) : (
                         <div className="h-8 w-8 bg-third rounded-full" />
                     )}

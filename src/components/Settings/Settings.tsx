@@ -1,5 +1,5 @@
-import { Switch } from '@mui/material';
 import { Connection } from '@solana/web3.js';
+import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -16,6 +16,7 @@ import solanaExplorerIcon from '../../../public/images/sol.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Modal from '../common/Modal/Modal';
+import Switch from '../common/Switch/Switch';
 import RPCSetting from './RPCSetting';
 
 export default function Settings({
@@ -88,11 +89,11 @@ export default function Settings({
         setFavoriteRpc={setFavoriteRpc}
       />
 
-      <div className="w-full h-[1px] bg-bcolor my-5" />
+      <div className="w-full h-[1px] bg-bcolor my-3" />
 
-      <h2>Explorer</h2>
-      <div className="flex flex-col gap-2 mt-2">
-        <p className="opacity-50">Select solana explorer</p>
+      <h4 className="font-interSemibold">Explorer</h4>
+      <div className="flex flex-col gap-2 mt-1">
+        <p className="text-sm opacity-50">Select solana explorer</p>
         <div className="flex flex-col gap-1">
           {SOLANA_EXPLORERS.map((exp) => (
             <Button
@@ -105,9 +106,9 @@ export default function Settings({
               }}
               leftIcon={EXPLORERS[exp].img}
               className={twMerge(
-                'justify-start transition duration-300',
+                'justify-start transition duration-300 rounded-lg px-2 py-4 border border-bcolor hover:bg-third bg-third hover:opacity-100 hover:grayscale-0',
                 exp !== settings.preferredSolanaExplorer &&
-                'grayscale border-transparent hover:bg-transparent opacity-50',
+                  'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
               )}
               iconClassName="w-[20px] h-[20px]"
               variant="outline"
@@ -118,131 +119,75 @@ export default function Settings({
         </div>
       </div>
 
-      <div className="w-full h-[1px] bg-bcolor my-5" />
+      <div className="w-full h-[1px] bg-bcolor my-3" />
 
-      <h2>preferences</h2>
-      <div className="flex flex-row mt-2 justify-between">
-        <p className="opacity-50 w-full">Disable chat</p>
-        <Switch
-          checked={settings.disableChat}
-          onChange={(event) => {
-            dispatch(
-              setSettings({
-                disableChat: event.target.checked,
-              }),
-            );
+      <h4 className="font-interSemibold">Preferences</h4>
+      <div className="flex flex-col gap-1 mt-1">
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-sm font-boldy opacity-50 w-full">Disable chat</p>
+          <Switch
+            checked={settings.disableChat}
+            onChange={() => {
+              dispatch(
+                setSettings({
+                  disableChat: !settings.disableChat,
+                }),
+              );
+            }}
+            size="small"
+          />
+        </div>
 
-          }}
-          size="small"
-          sx={{
-            transform: 'scale(0.7)',
-            '& .MuiSwitch-switchBase': {
-              color: '#ccc',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked': {
-              color: '#1a1a1a',
-            },
-            '& .MuiSwitch-track': {
-              backgroundColor: '#555',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-              backgroundColor: '#10e1a3',
-            },
-          }}
-        />
-      </div>
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-sm font-boldy opacity-50 w-full">
+            Disable Friend Requests
+          </p>
+          <Switch
+            checked={settings.disableFriendReq}
+            onChange={() => {
+              dispatch(
+                setSettings({
+                  disableFriendReq: !settings.disableFriendReq,
+                }),
+              );
+            }}
+            size="small"
+          />
+        </div>
 
-      <div className="flex flex-row mt-2 justify-between">
-        <p className="opacity-50 w-full">Disable Friend Requests</p>
-        <Switch
-          checked={settings.disableFriendReq}
-          onChange={(event) => {
-            dispatch(
-              setSettings({
-                disableFriendReq: event.target.checked,
-              }),
-            );
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-sm font-boldy opacity-50 w-full">
+            Show fees in PnL
+          </p>
+          <Switch
+            checked={settings.showFeesInPnl}
+            onChange={() => {
+              dispatch(
+                setSettings({
+                  showFeesInPnl: !settings.showFeesInPnl,
+                }),
+              );
+            }}
+            size="small"
+          />
+        </div>
 
-          }}
-          size="small"
-          sx={{
-            transform: 'scale(0.7)',
-            '& .MuiSwitch-switchBase': {
-              color: '#ccc',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked': {
-              color: '#1a1a1a',
-            },
-            '& .MuiSwitch-track': {
-              backgroundColor: '#555',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-              backgroundColor: '#10e1a3',
-            },
-          }}
-        />
-      </div>
-
-      <div className="flex flex-row justify-between">
-        <p className="opacity-50 w-full">Show fees in PnL</p>
-        <Switch
-          checked={settings.showFeesInPnl}
-          onChange={(event) => {
-            dispatch(
-              setSettings({
-                showFeesInPnl: event.target.checked,
-              }),
-            );
-
-          }}
-          size="small"
-          sx={{
-            transform: 'scale(0.7)',
-            '& .MuiSwitch-switchBase': {
-              color: '#ccc',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked': {
-              color: '#1a1a1a',
-            },
-            '& .MuiSwitch-track': {
-              backgroundColor: '#555',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-              backgroundColor: '#10e1a3',
-            },
-          }}
-        />
-      </div>
-
-      <div className="flex flex-row justify-between">
-        <p className="opacity-50 w-full">Display popup when position closes</p>
-        <Switch
-          checked={settings.showPopupOnPositionClose}
-          onChange={(event) => {
-            dispatch(
-              setSettings({
-                showPopupOnPositionClose: event.target.checked,
-              }),
-            );
-
-          }}
-          size="small"
-          sx={{
-            transform: 'scale(0.7)',
-            '& .MuiSwitch-switchBase': {
-              color: '#ccc',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked': {
-              color: '#1a1a1a',
-            },
-            '& .MuiSwitch-track': {
-              backgroundColor: '#555',
-            },
-            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-              backgroundColor: '#10e1a3',
-            },
-          }}
-        />
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-sm font-boldy opacity-50 w-full">
+            Display popup when position closes
+          </p>
+          <Switch
+            checked={settings.showPopupOnPositionClose}
+            onChange={() => {
+              dispatch(
+                setSettings({
+                  showPopupOnPositionClose: !settings.showPopupOnPositionClose,
+                }),
+              );
+            }}
+            size="small"
+          />
+        </div>
       </div>
     </>
   );
@@ -260,12 +205,15 @@ export default function Settings({
   return (
     <Menu
       trigger={
-        <Button
-          variant={isGenesis ? 'text' : 'lightbg'}
-          leftIcon={settingsIcon}
-          className={'w-7 h-7 p-0'}
-          iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
-        />
+        <div className="p-1 px-2 hover:bg-third transition-colors cursor-pointer">
+          <Image
+            src={settingsIcon}
+            alt="Settings Icon"
+            width={14}
+            height={14}
+            className="w-[0.875rem] h-[0.875rem]"
+          />
+        </div>
       }
       openMenuClassName={twMerge(
         'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300',

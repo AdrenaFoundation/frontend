@@ -1,10 +1,12 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import infoIcon from '@/../public/images/Icons/info.svg';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -35,8 +37,15 @@ import { PositionInfoSection } from './LongShortTradingInputs/PositionInfoSectio
 import { ShortWarning } from './LongShortTradingInputs/ShortWarning';
 import { SwapSlippageSection } from './LongShortTradingInputs/SwapSlippageSection';
 import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
-import { PositionInfoState, TradingInputsProps, TradingInputState } from './LongShortTradingInputs/types';
-import { calculateLimitOrderLimitPrice, calculateLimitOrderTriggerPrice } from './LongShortTradingInputs/utils';
+import {
+  PositionInfoState,
+  TradingInputsProps,
+  TradingInputState,
+} from './LongShortTradingInputs/types';
+import {
+  calculateLimitOrderLimitPrice,
+  calculateLimitOrderTriggerPrice,
+} from './LongShortTradingInputs/utils';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -88,16 +97,24 @@ export default function LongShortTradingInputs({
   });
 
   const usdcMint = window.adrena.client.getUsdcToken().mint;
-  const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
+  const usdcCustody =
+    usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
 
-  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(side === 'long' ? positionInfo.custody : usdcCustody);
+  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(
+    side === 'long' ? positionInfo.custody : usdcCustody,
+  );
 
   // Check of maximum shorts across traders
-  const availableLiquidityShort = (positionInfo.custody && (positionInfo.custody.maxCumulativeShortPositionSizeUsd - (positionInfo.custody.oiShortUsd ?? 0))) ?? 0;
+  const availableLiquidityShort =
+    (positionInfo.custody &&
+      positionInfo.custody.maxCumulativeShortPositionSizeUsd -
+        (positionInfo.custody.oiShortUsd ?? 0)) ??
+    0;
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
-  const tokenPriceBTrade: number | undefined | null = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
+  const tokenPriceBTrade: number | undefined | null =
+    tokenPrices?.[getTokenSymbol(tokenB.symbol)];
 
   const [buttonTitle, setButtonTitle] = useState<string>('');
 
@@ -107,14 +124,20 @@ export default function LongShortTradingInputs({
   const [isTPSL, setIsTPSL] = useState(false);
 
   const referrer = useMemo(async () => {
-    if (query.referral === null || typeof query.referral === 'undefined' || query.referral === '' || typeof query.referral !== 'string') {
+    if (
+      query.referral === null ||
+      typeof query.referral === 'undefined' ||
+      query.referral === '' ||
+      typeof query.referral !== 'string'
+    ) {
       return null;
     }
 
     const referrerNickname = query.referral;
 
     // Look for a user profile with that nickname
-    const p = await window.adrena.client.loadUserProfileByNickname(referrerNickname);
+    const p =
+      await window.adrena.client.loadUserProfileByNickname(referrerNickname);
 
     return p;
   }, [query.referral]);
@@ -125,28 +148,53 @@ export default function LongShortTradingInputs({
       return;
     }
 
-    const currentSizeUsdNative = uiToNative(openedPosition.sizeUsd, USD_DECIMALS);
-    const newSizeUsdNative = uiToNative(positionInfo.newPositionInfo.sizeUsd, USD_DECIMALS);
-    const currentCollateralUsdNative = uiToNative(openedPosition.collateralUsd, USD_DECIMALS);
-    const newCollateralUsdNative = uiToNative(positionInfo.newPositionInfo.collateralUsd, USD_DECIMALS);
+    const currentSizeUsdNative = uiToNative(
+      openedPosition.sizeUsd,
+      USD_DECIMALS,
+    );
+    const newSizeUsdNative = uiToNative(
+      positionInfo.newPositionInfo.sizeUsd,
+      USD_DECIMALS,
+    );
+    const currentCollateralUsdNative = uiToNative(
+      openedPosition.collateralUsd,
+      USD_DECIMALS,
+    );
+    const newCollateralUsdNative = uiToNative(
+      positionInfo.newPositionInfo.collateralUsd,
+      USD_DECIMALS,
+    );
 
     // 4 (BPS -> 10000) + 2 (percentage -> 100)
-    const currentLeverage: BN = currentSizeUsdNative.mul(new BN(10 ** (4 + 2))).div(currentCollateralUsdNative);
+    const currentLeverage: BN = currentSizeUsdNative
+      .mul(new BN(10 ** (4 + 2)))
+      .div(currentCollateralUsdNative);
 
     const newOverallLeverage: BN = (() => {
       const totalSizeUsdNative = currentSizeUsdNative.add(newSizeUsdNative);
-      const totalCollateralUsdNative = currentCollateralUsdNative.add(newCollateralUsdNative);
+      const totalCollateralUsdNative = currentCollateralUsdNative.add(
+        newCollateralUsdNative,
+      );
 
-      return totalSizeUsdNative.mul(new BN(10 ** (4 + 2))).div(totalCollateralUsdNative);
+      return totalSizeUsdNative
+        .mul(new BN(10 ** (4 + 2)))
+        .div(totalCollateralUsdNative);
     })();
 
     const isLeverageIncreased = newOverallLeverage.gt(currentLeverage);
 
     const weightedAverageEntryPrice: BN = (() => {
-      const currentEntryPriceNative = uiToNative(openedPosition.price, PRICE_DECIMALS);
-      const newEntryPriceNative = uiToNative(positionInfo.newPositionInfo.entryPrice, PRICE_DECIMALS);
+      const currentEntryPriceNative = uiToNative(
+        openedPosition.price,
+        PRICE_DECIMALS,
+      );
+      const newEntryPriceNative = uiToNative(
+        positionInfo.newPositionInfo.entryPrice,
+        PRICE_DECIMALS,
+      );
 
-      const numerator = currentSizeUsdNative.mul(currentEntryPriceNative)
+      const numerator = currentSizeUsdNative
+        .mul(currentEntryPriceNative)
         .add(newSizeUsdNative.mul(newEntryPriceNative));
 
       const denominator = currentSizeUsdNative.add(newSizeUsdNative);
@@ -160,10 +208,19 @@ export default function LongShortTradingInputs({
         borrowFeeUsd: openedPosition.borrowFeeUsd,
         nativeObject: {
           price: weightedAverageEntryPrice,
-          liquidationFeeUsd: openedPosition.nativeObject.liquidationFeeUsd.add(uiToNative(positionInfo.newPositionInfo.liquidationFeeUsd, USD_DECIMALS)),
+          liquidationFeeUsd: openedPosition.nativeObject.liquidationFeeUsd.add(
+            uiToNative(
+              positionInfo.newPositionInfo.liquidationFeeUsd,
+              USD_DECIMALS,
+            ),
+          ),
           sizeUsd: openedPosition.nativeObject.sizeUsd.add(newSizeUsdNative),
-          collateralUsd: openedPosition.nativeObject.collateralUsd.add(newCollateralUsdNative),
-          lockedAmount: openedPosition.nativeObject.lockedAmount?.add(uiToNative(positionInfo.newPositionInfo.size, tokenB.decimals)),
+          collateralUsd: openedPosition.nativeObject.collateralUsd.add(
+            newCollateralUsdNative,
+          ),
+          lockedAmount: openedPosition.nativeObject.lockedAmount?.add(
+            uiToNative(positionInfo.newPositionInfo.size, tokenB.decimals),
+          ),
         },
         side: openedPosition.side,
         custody: openedPosition.custody,
@@ -177,8 +234,11 @@ export default function LongShortTradingInputs({
     setPositionInfo((prev) => ({
       ...prev,
       increasePositionInfo: {
-        currentLeverage: nativeToUi(currentLeverage, (4 + 2)),
-        weightedAverageEntryPrice: nativeToUi(weightedAverageEntryPrice, PRICE_DECIMALS),
+        currentLeverage: nativeToUi(currentLeverage, 4 + 2),
+        weightedAverageEntryPrice: nativeToUi(
+          weightedAverageEntryPrice,
+          PRICE_DECIMALS,
+        ),
         isLeverageIncreased,
         estimatedLiquidationPrice,
         newSizeUsd: nativeToUi(newSizeUsdNative, USD_DECIMALS),
@@ -189,12 +249,11 @@ export default function LongShortTradingInputs({
 
   useEffect(() => {
     if (openedPosition) {
-
       setStopLossInput(
         openedPosition.stopLossIsSet &&
           openedPosition.stopLossLimitPrice &&
           openedPosition.stopLossLimitPrice > 0
-          ? openedPosition.stopLossLimitPrice ?? null
+          ? (openedPosition.stopLossLimitPrice ?? null)
           : null,
       );
 
@@ -202,7 +261,7 @@ export default function LongShortTradingInputs({
         openedPosition.takeProfitIsSet &&
           openedPosition.takeProfitLimitPrice &&
           openedPosition.takeProfitLimitPrice > 0
-          ? openedPosition.takeProfitLimitPrice ?? null
+          ? (openedPosition.takeProfitLimitPrice ?? null)
           : null,
       );
     }
@@ -211,7 +270,7 @@ export default function LongShortTradingInputs({
   }, [!!openedPosition, isTPSL]);
 
   useEffect(() => {
-    calculateIncreasePositionInfo()
+    calculateIncreasePositionInfo();
   }, [calculateIncreasePositionInfo]);
 
   const handleAddLimitOrder = async (): Promise<void> => {
@@ -220,8 +279,15 @@ export default function LongShortTradingInputs({
       return;
     }
 
-    if (!tokenA || !tokenB || !inputState.inputA || !inputState.inputB || !inputState.leverage ||
-      inputState.inputA === null || inputState.limitOrderTriggerPrice === null) {
+    if (
+      !tokenA ||
+      !tokenB ||
+      !inputState.inputA ||
+      !inputState.inputB ||
+      !inputState.leverage ||
+      inputState.inputA === null ||
+      inputState.limitOrderTriggerPrice === null
+    ) {
       return addNotification({
         type: 'info',
         title: 'Cannot open position',
@@ -250,12 +316,15 @@ export default function LongShortTradingInputs({
     try {
       await window.adrena.client.addLimitOrder({
         triggerPrice: inputState.limitOrderTriggerPrice,
-        limitPrice: inputState.limitOrderSlippage === null ? null : calculateLimitOrderLimitPrice({
-          limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
-          tokenDecimals: tokenB.displayPriceDecimalsPrecision,
-          percent: inputState.limitOrderSlippage,
-          side,
-        }),
+        limitPrice:
+          inputState.limitOrderSlippage === null
+            ? null
+            : calculateLimitOrderLimitPrice({
+                limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
+                tokenDecimals: tokenB.displayPriceDecimalsPrecision,
+                percent: inputState.limitOrderSlippage,
+                side,
+              }),
         side,
         collateralAmount: uiToNative(inputState.inputA, tokenA.decimals),
         leverage: uiLeverageToNative(inputState.leverage),
@@ -291,7 +360,13 @@ export default function LongShortTradingInputs({
       return;
     }
 
-    if (!tokenA || !tokenB || !inputState.inputA || !inputState.inputB || !inputState.leverage) {
+    if (
+      !tokenA ||
+      !tokenB ||
+      !inputState.inputA ||
+      !inputState.inputB ||
+      !inputState.leverage
+    ) {
       return addNotification({
         type: 'info',
         title: 'Cannot open position',
@@ -326,7 +401,9 @@ export default function LongShortTradingInputs({
 
     const tradeTokenSymbol = getTokenSymbol(tokenB.symbol);
 
-    const entryPrice = oraclePrices?.prices.find(x => x.symbol === `${tradeTokenSymbol}USD`)?.price ?? null;
+    const entryPrice =
+      oraclePrices?.prices.find((x) => x.symbol === `${tradeTokenSymbol}USD`)
+        ?.price ?? null;
 
     if (!entryPrice) {
       throw new Error('Cannot find entry price for ' + tradeTokenSymbol);
@@ -339,48 +416,58 @@ export default function LongShortTradingInputs({
       let stopLossLimitPrice = undefined;
       let takeProfitLimitPrice = undefined;
 
-      if (isTPSL && validateTPSLInputs({
-        takeProfitInput,
-        stopLossInput,
-        markPrice: tokenPriceBTrade,
-        position: { ...positionInfo.newPositionInfo, side } as unknown as PositionExtended,
-      })) {
+      if (
+        isTPSL &&
+        validateTPSLInputs({
+          takeProfitInput,
+          stopLossInput,
+          markPrice: tokenPriceBTrade,
+          position: {
+            ...positionInfo.newPositionInfo,
+            side,
+          } as unknown as PositionExtended,
+        })
+      ) {
         // null means we cancel it, otherwise we set it
-        stopLossLimitPrice = stopLossInput ? new BN(stopLossInput * 10 ** PRICE_DECIMALS) : null;
-        takeProfitLimitPrice = takeProfitInput ? new BN(takeProfitInput * 10 ** PRICE_DECIMALS) : null;
+        stopLossLimitPrice = stopLossInput
+          ? new BN(stopLossInput * 10 ** PRICE_DECIMALS)
+          : null;
+        takeProfitLimitPrice = takeProfitInput
+          ? new BN(takeProfitInput * 10 ** PRICE_DECIMALS)
+          : null;
       } else {
         // alert('Invalid TPSL inputs');
       }
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        })
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        }));
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          }));
 
       dispatch(fetchWalletTokenBalances());
       setInputState((prev) => ({
@@ -469,10 +556,17 @@ export default function LongShortTradingInputs({
 
     (async () => {
       try {
-        let infos: Awaited<ReturnType<typeof window.adrena.client.getOpenPositionWithConditionalSwapInfos>> | null = null;
+        let infos: Awaited<
+          ReturnType<
+            typeof window.adrena.client.getOpenPositionWithConditionalSwapInfos
+          >
+        > | null = null;
 
         if (side === 'long') {
-          let collateralAmount: BN = uiToNative(inputState.inputA ?? 0, tokenA.decimals);
+          let collateralAmount: BN = uiToNative(
+            inputState.inputA ?? 0,
+            tokenA.decimals,
+          );
 
           // Need to do a swap, get the quote
           if (tokenA.symbol !== tokenB.symbol) {
@@ -485,22 +579,27 @@ export default function LongShortTradingInputs({
 
             // Apply the slippage so we never fail for not enough collateral in the openPosition
             // Can still fail due to jupiter swap failing, but that's expected
-            collateralAmount = applySlippage(new BN(quoteResult.outAmount), -0.3);
+            collateralAmount = applySlippage(
+              new BN(quoteResult.outAmount),
+              -0.3,
+            );
           }
 
-          infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
-            {
+          infos =
+            await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
               tokenA: tokenB,
               tokenB,
               collateralAmount,
               leverage: uiLeverageToNative(inputState.leverage),
               side,
               tokenPrices,
-            },
-          );
+            });
         } else {
           // Short
-          let collateralAmount: BN = uiToNative(inputState.inputA ?? 0, tokenA.decimals);
+          let collateralAmount: BN = uiToNative(
+            inputState.inputA ?? 0,
+            tokenA.decimals,
+          );
 
           const usdcToken = window.adrena.client.getUsdcToken();
 
@@ -509,23 +608,25 @@ export default function LongShortTradingInputs({
             const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
               inputMint: tokenA.mint.toBase58(),
               outputMint: usdcToken.mint.toBase58(),
-              amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals).toNumber(),
+              amount: uiToNative(
+                inputState.inputA ?? 0,
+                tokenA.decimals,
+              ).toNumber(),
               slippageBps: 50, // 0.5%
             });
 
             collateralAmount = new BN(quoteResult.outAmount);
           }
 
-          infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
-            {
+          infos =
+            await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
               tokenA: usdcToken,
               tokenB,
               collateralAmount,
               leverage: uiLeverageToNative(inputState.leverage),
               side,
               tokenPrices,
-            },
-          );
+            });
         }
 
         if (!infos) {
@@ -541,7 +642,9 @@ export default function LongShortTradingInputs({
           ...prev,
           newPositionInfo: {
             ...infos,
-            highSwapFees: infos.swapFeeUsd !== null && infos.swapFeeUsd * 100 / infos.collateralUsd > 1,
+            highSwapFees:
+              infos.swapFeeUsd !== null &&
+              (infos.swapFeeUsd * 100) / infos.collateralUsd > 1,
           },
         }));
       } catch (err) {
@@ -573,7 +676,12 @@ export default function LongShortTradingInputs({
   // When price change, or position infos arrived recalculate displayed infos
   useEffect(() => {
     // Price cannot be calculated if input is empty or not a number
-    if (inputState.inputA === null || isNaN(inputState.inputA) || !tokenA || !tokenB) {
+    if (
+      inputState.inputA === null ||
+      isNaN(inputState.inputA) ||
+      !tokenA ||
+      !tokenB
+    ) {
       setPositionInfo((prev) => ({
         ...prev,
         priceA: null,
@@ -616,7 +724,7 @@ export default function LongShortTradingInputs({
     tokenA,
     tokenB,
     tokenPriceBTrade,
-    tokenPrices
+    tokenPrices,
   ]);
 
   useEffect(() => {
@@ -629,7 +737,7 @@ export default function LongShortTradingInputs({
 
   useEffect(() => {
     // Reset error message and insufficient amount when inputs change
-    setPositionInfo(prev => ({
+    setPositionInfo((prev) => ({
       ...prev,
       errorMessage: null,
       insufficientAmount: false,
@@ -643,7 +751,7 @@ export default function LongShortTradingInputs({
 
     // Check insufficient amount immediately
     if (!walletTokenABalance || inputState.inputA > walletTokenABalance) {
-      setPositionInfo(prev => ({
+      setPositionInfo((prev) => ({
         ...prev,
         insufficientAmount: true,
         errorMessage: null,
@@ -655,7 +763,7 @@ export default function LongShortTradingInputs({
     if (tokenAPrice) {
       const collateralValue = inputState.inputA * tokenAPrice;
       if (collateralValue < 9.5) {
-        setPositionInfo(prev => ({
+        setPositionInfo((prev) => ({
           ...prev,
           errorMessage: 'Collateral value must be at least $10',
         }));
@@ -678,20 +786,26 @@ export default function LongShortTradingInputs({
       }));
     }
 
-    const projectedSize = openedPosition ? (inputState.inputB - (openedPosition.sizeUsd / tokenPriceBTrade)) : inputState.inputB;
+    const projectedSize = openedPosition
+      ? inputState.inputB - openedPosition.sizeUsd / tokenPriceBTrade
+      : inputState.inputB;
 
     // In the case of an increase, this is different from the fullProjectedSizeUsd
     const projectedSizeUsd = projectedSize * tokenPriceBTrade;
 
     const fullProjectedSizeUsd = inputState.inputB * tokenPriceBTrade;
 
-    if (side === "long" && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
+    if (side === 'long' && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
       return setPositionInfo((prev) => ({
         ...prev,
         errorMessage: `Position Exceeds Max Size`,
       }));
 
-    if (side === "short" && usdcCustody && fullProjectedSizeUsd > usdcCustody.maxPositionLockedUsd)
+    if (
+      side === 'short' &&
+      usdcCustody &&
+      fullProjectedSizeUsd > usdcCustody.maxPositionLockedUsd
+    )
       return setPositionInfo((prev) => ({
         ...prev,
         errorMessage: `Position Exceeds Max Size`,
@@ -734,16 +848,16 @@ export default function LongShortTradingInputs({
     tokenPriceBTrade,
     tokenPrices,
     side,
-    availableLiquidityShort
+    availableLiquidityShort,
   ]);
 
   // Instead, use the original approach where size is calculated from position info
   useEffect(() => {
     if (inputState.inputA === null || !tokenA || !tokenB) {
-      setInputState(prev => ({
+      setInputState((prev) => ({
         ...prev,
         inputB: null,
-        priceB: null
+        priceB: null,
       }));
       return;
     }
@@ -757,17 +871,17 @@ export default function LongShortTradingInputs({
         sizeUsd += openedPosition.sizeUsd;
       }
 
-      setInputState(prev => ({
+      setInputState((prev) => ({
         ...prev,
-        priceB: sizeUsd
+        priceB: sizeUsd,
       }));
 
       // Calculate size in token amount
       if (tokenPriceBTrade) {
         const size = sizeUsd / tokenPriceBTrade;
-        setInputState(prev => ({
+        setInputState((prev) => ({
           ...prev,
-          inputB: Number(size.toFixed(tokenB.decimals))
+          inputB: Number(size.toFixed(tokenB.decimals)),
         }));
       }
     }
@@ -777,7 +891,7 @@ export default function LongShortTradingInputs({
     tokenB,
     tokenPriceBTrade,
     positionInfo.newPositionInfo,
-    openedPosition
+    openedPosition,
   ]);
 
   const handleInputAChange = (v: number | null) => {
@@ -858,30 +972,42 @@ export default function LongShortTradingInputs({
           priceA={positionInfo.priceA}
           onTokenASelect={setTokenA}
           onInputAChange={handleInputAChange}
-          onLeverageChange={(v: number) => setInputState((prev) => ({
-            ...prev,
-            leverage: v,
-          }))}
+          onLeverageChange={(v: number) =>
+            setInputState((prev) => ({
+              ...prev,
+              leverage: v,
+            }))
+          }
           onMax={handleMax}
           recommendedToken={recommendedToken}
         />
 
-        {doJupiterSwap && recommendedToken ? <>
-          <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position."}>
-            <div className="text-xs gap-1 flex mt-3 pb-1 w-full items-center">
-              <span className='text-white/30'>{tokenA.symbol}</span>
-              <span className='text-white/30'>auto-swapped to</span>
-              <span className='text-white/30'>{recommendedToken.symbol}</span>
-              <span className='text-white/30'>via Jupiter</span>
-            </div>
-          </Tippy>
+        {doJupiterSwap && recommendedToken ? (
+          <>
+            <Tippy
+              content={
+                'For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position.'
+              }
+            >
+              <div className="text-xs gap-1 flex mt-3 pb-1 w-full items-center opacity-30">
+                <Image src={infoIcon} alt="Info" width={12} height={12} />
+                <span className="font-xs font-semibold">{tokenA.symbol}</span>
+                <span className="font-xs font-semibold">auto-swapped to</span>
+                <span className="font-xs font-semibold">
+                  {recommendedToken.symbol}
+                </span>
+                <span className="font-xs font-semibold">via Jupiter</span>
+              </div>
+            </Tippy>
 
-          <SwapSlippageSection
-            swapSlippage={swapSlippage}
-            setSwapSlippage={setSwapSlippage}
-            className='mt-2'
-          />
-        </> : null}
+            <SwapSlippageSection
+              swapSlippage={swapSlippage}
+              setSwapSlippage={setSwapSlippage}
+              className="mt-2"
+              titleClassName="font-interMedium"
+            />
+          </>
+        ) : null}
 
         <TPSLModeSelector
           positionInfo={positionInfo}
@@ -908,8 +1034,18 @@ export default function LongShortTradingInputs({
             tokenPriceBTrade={tokenPriceBTrade}
             limitOrderTriggerPrice={inputState.limitOrderTriggerPrice}
             limitOrderSlippage={inputState.limitOrderSlippage}
-            onTriggerPriceChange={(price) => setInputState(prev => ({ ...prev, limitOrderTriggerPrice: price }))}
-            onSlippageChange={(slippage) => setInputState(prev => ({ ...prev, limitOrderSlippage: slippage }))}
+            onTriggerPriceChange={(price) =>
+              setInputState((prev) => ({
+                ...prev,
+                limitOrderTriggerPrice: price,
+              }))
+            }
+            onSlippageChange={(slippage) =>
+              setInputState((prev) => ({
+                ...prev,
+                limitOrderSlippage: slippage,
+              }))
+            }
             errorMessage={positionInfo.errorMessage}
             insufficientAmount={positionInfo.insufficientAmount}
             tokenA={tokenA}
@@ -962,7 +1098,7 @@ export default function LongShortTradingInputs({
             ) : null}
           </>
         )}
-      </div >
+      </div>
     </>
   );
 }

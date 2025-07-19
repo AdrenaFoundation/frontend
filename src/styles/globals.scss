@@ -142,19 +142,19 @@
 
   h1 {
     @apply text-4xl;
-    @apply font-special;
+    @apply font-interSemibold;
     text-transform: uppercase;
   }
 
   h2 {
     @apply text-2xl;
-    @apply font-special;
+    @apply font-interSemibold;
     text-transform: uppercase;
   }
 
   h3 {
     @apply text-xl;
-    @apply font-special;
+    @apply font-interSemibold;
     text-transform: uppercase;
   }
 
@@ -925,5 +925,21 @@ blockquote {
       font-family: interMedium;
       src: url('/fonts/Inter_18pt-Medium.ttf');
     }
+  }
+}
+
+.animate-loader {
+  animation: loaderBackground 1.5s infinite linear;
+}
+
+@keyframes loaderBackground {
+  0% {
+    background-color: rgb(24, 34, 45);
+  }
+  50% {
+    background-color: rgb(31, 45, 59);
+  }
+  100% {
+    background-color: rgb(24, 34, 45);
   }
 }

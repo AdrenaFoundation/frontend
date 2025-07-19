@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -23,14 +24,10 @@ import StakingLockedTokens from '@/components/pages/monitoring/Data/StakingLocke
 import StakingRewardsWaitingToBeClaimed from '@/components/pages/monitoring/Data/StakingRewardsWaitingToBeClaimed';
 import StakingRewardVaults from '@/components/pages/monitoring/Data/StakingRewardVaults';
 import VolumeBreakdownPerToken from '@/components/pages/monitoring/Data/VolumeBreakdownPerToken';
-import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
-import useVestRegistry from '@/hooks/useVestRegistry';
-import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
 
@@ -43,16 +40,15 @@ export default function DetailedMonitoring({
   custodies,
   poolInfo,
   connected,
-  view
+  view,
 }: PageProps & {
   poolInfo: PoolInfo | null;
   view: string;
 }) {
   const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
 
-  const tokenPrices = useSelector((s) => s.tokenPrices);
   const cortex = useCortex();
-  const vestRegistry = useVestRegistry();
+
   const {
     stakingAccount: alpStakingAccount,
     triggerReload: triggerAlpStakingAccountReload,
@@ -68,22 +64,20 @@ export default function DetailedMonitoring({
   const adxStakingRewardsAccumulated = useStakingAccountRewardsAccumulated(
     window.adrena.client.lmTokenMint,
   );
-  const adxTotalSupply = useADXTotalSupply();
-  const alpTotalSupply = useALPTotalSupply();
 
-  if (
-    view != 'full' ||
-    !mainPool ||
-    !custodies ||
-    !tokenPrices ||
-    !cortex ||
-    !vestRegistry ||
-    adxTotalSupply === null ||
-    alpTotalSupply === null ||
-    !alpStakingAccount ||
-    !adxStakingAccount
-  )
-    return <></>;
+  // if (
+  //   view != 'full' ||
+  //   !mainPool ||
+  //   !custodies ||
+  //   !tokenPrices ||
+  //   !cortex ||
+  //   !vestRegistry ||
+  //   adxTotalSupply === null ||
+  //   alpTotalSupply === null ||
+  //   !alpStakingAccount ||
+  //   !adxStakingAccount
+  // )
+  //   return <></>;
 
   //
   // I know the following is not the best naming convention, but it allow tweaking the styles easily
@@ -154,141 +148,571 @@ export default function DetailedMonitoring({
       </Menu>
 
       <div className="flex flex-col gap-3 p-5 pt-3">
-        <div
-          className={twMerge(
-            'gap-3',
-            selectedTab === 'All'
-              ? 'grid sm:grid-cols-2 lg:grid-cols-4'
-              : 'flex flex-row',
-          )}
-        >
-          {selectedTab === 'All' || selectedTab === 'Pool' ? (
-            <AUM connected={connected} />
-          ) : null}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className={twMerge(
+              'gap-3',
+              selectedTab === 'All'
+                ? 'grid sm:grid-cols-2 lg:grid-cols-4'
+                : 'flex flex-row',
+            )}
+          >
+            {selectedTab === 'All' || selectedTab === 'Pool' ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="w-full"
+              >
+                <AUM connected={connected} />
+              </motion.div>
+            ) : null}
 
-          {selectedTab === 'All' || selectedTab === 'Staking' ? (
-            <NumberDisplay
-              title="LOCKED STAKED ADX"
-              nb={nativeToUi(
-                adxStakingAccount.nbLockedTokens,
-                adxStakingAccount.stakedTokenDecimals,
+            {selectedTab === 'All' || selectedTab === 'Staking' ? (
+              <AnimatePresence mode="wait">
+                {adxStakingAccount ? (
+                  <motion.div
+                    key="adx-staking-data"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full"
+                  >
+                    <NumberDisplay
+                      title="LOCKED STAKED ADX"
+                      nb={nativeToUi(
+                        adxStakingAccount.nbLockedTokens,
+                        adxStakingAccount.stakedTokenDecimals,
+                      )}
+                      precision={0}
+                      suffix=" ADX"
+                      className="bg-[#050D14]"
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="adx-staking-loader"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#050D14] h-[5.4375rem] animate-loader rounded-lg"
+                  />
+                )}
+              </AnimatePresence>
+            ) : null}
+
+            {selectedTab === 'All' || selectedTab === 'Fees' ? (
+              <AnimatePresence mode="wait">
+                {mainPool ? (
+                  <motion.div
+                    key="fees-data"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full"
+                  >
+                    <NumberDisplay
+                      title="ALL TIME FEES"
+                      nb={mainPool.totalFeeCollected}
+                      format="currency"
+                      precision={0}
+                      className="bg-[#050D14]"
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="fees-loader"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#050D14] h-[5.4375rem] animate-loader rounded-lg"
+                  />
+                )}
+              </AnimatePresence>
+            ) : null}
+          </motion.div>
+        </AnimatePresence>
+
+        {selectedTab === 'All' ||
+        (selectedTab === 'Trading' && view === 'full') ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="flex flex-col lg:flex-row gap-3"
+          >
+            <AnimatePresence mode="wait">
+              {mainPool ? (
+                <motion.div
+                  key="positions-now-data"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex-1"
+                >
+                  <PositionsNow
+                    titleClassName={titleClassName}
+                    mainPool={mainPool}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="positions-now-loader"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#050D14] h-32 animate-loader rounded-lg flex-1"
+                />
               )}
-              precision={0}
-              suffix=' ADX'
-              className='bg-[#050D14]'
-            />
-          ) : null}
+            </AnimatePresence>
 
-          {selectedTab === 'All' || selectedTab === 'Fees' ? (
-            <NumberDisplay
-              title="ALL TIME FEES"
-              nb={mainPool.totalFeeCollected}
-              format="currency"
-              precision={0}
-              className='bg-[#050D14]'
-            />
-          ) : null}
-        </div>
-
-        {selectedTab === 'All' || selectedTab === 'Trading' && view === 'full' ? (
-          <div className="flex flex-col lg:flex-row gap-3">
-            <PositionsNow
-              titleClassName={titleClassName}
-              mainPool={mainPool}
-            />
-
-            <PositionsAllTime
-              titleClassName={titleClassName}
-              mainPool={mainPool}
-            />
-          </div>
+            <AnimatePresence mode="wait">
+              {mainPool ? (
+                <motion.div
+                  key="positions-alltime-data"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="flex-1"
+                >
+                  <PositionsAllTime
+                    titleClassName={titleClassName}
+                    mainPool={mainPool}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="positions-alltime-loader"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#050D14] h-32 animate-loader rounded-lg flex-1"
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Staking' && view === 'full' ? (
-          <>
-            <div className="flex flex-col lg:flex-row gap-3">
-              <StakingRewardVaults
-                titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
-                adxStakingAccount={adxStakingAccount}
-                alpStakingRewardsAccumulated={alpStakingRewardsAccumulated}
-                adxStakingRewardsAccumulated={adxStakingRewardsAccumulated}
-              />
+        {selectedTab === 'All' ||
+        (selectedTab === 'Staking' && view === 'full') ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="flex flex-col gap-3"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col lg:flex-row gap-3"
+            >
+              <AnimatePresence mode="wait">
+                {alpStakingAccount && adxStakingAccount ? (
+                  <motion.div
+                    key="staking-rewards-data"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex-1"
+                  >
+                    <StakingRewardVaults
+                      titleClassName={titleClassName}
+                      alpStakingAccount={alpStakingAccount}
+                      adxStakingAccount={adxStakingAccount}
+                      alpStakingRewardsAccumulated={
+                        alpStakingRewardsAccumulated
+                      }
+                      adxStakingRewardsAccumulated={
+                        adxStakingRewardsAccumulated
+                      }
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="staking-rewards-loader"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                  />
+                )}
+              </AnimatePresence>
 
-              <StakingRewardsWaitingToBeClaimed
-                titleClassName={titleClassName}
-                adxStakingAccount={adxStakingAccount}
-              />
-            </div>
+              <AnimatePresence mode="wait">
+                {adxStakingAccount ? (
+                  <motion.div
+                    key="staking-waiting-data"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="flex-1"
+                  >
+                    <StakingRewardsWaitingToBeClaimed
+                      titleClassName={titleClassName}
+                      adxStakingAccount={adxStakingAccount}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="staking-waiting-loader"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                  />
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-            <div className="flex flex-col lg:flex-row gap-3">
-              <CurrentStakingRoundTime
-                titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
-                adxStakingAccount={adxStakingAccount}
-                triggerAlpStakingAccountReload={triggerAlpStakingAccountReload}
-                triggerAdxStakingAccountReload={triggerAdxStakingAccountReload}
-              />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="flex flex-col lg:flex-row gap-3"
+            >
+              <AnimatePresence mode="wait">
+                {alpStakingAccount && adxStakingAccount ? (
+                  <motion.div
+                    key="staking-round-data"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex-1"
+                  >
+                    <CurrentStakingRoundTime
+                      titleClassName={titleClassName}
+                      alpStakingAccount={alpStakingAccount}
+                      adxStakingAccount={adxStakingAccount}
+                      triggerAlpStakingAccountReload={
+                        triggerAlpStakingAccountReload
+                      }
+                      triggerAdxStakingAccountReload={
+                        triggerAdxStakingAccountReload
+                      }
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="staking-round-loader"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                  />
+                )}
+              </AnimatePresence>
 
-              <StakingLockedTokens
-                titleClassName={titleClassName}
-                alpStakingAccount={alpStakingAccount}
-                adxStakingAccount={adxStakingAccount}
-              />
-            </div>
-          </>
+              <AnimatePresence mode="wait">
+                {alpStakingAccount && adxStakingAccount ? (
+                  <motion.div
+                    key="staking-locked-data"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="flex-1"
+                  >
+                    <StakingLockedTokens
+                      titleClassName={titleClassName}
+                      alpStakingAccount={alpStakingAccount}
+                      adxStakingAccount={adxStakingAccount}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="staking-locked-loader"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                  />
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Trading' && view === 'full' ? (
-          <PositionsNowBreakdown
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+        {selectedTab === 'All' ||
+        (selectedTab === 'Trading' && view === 'full') ? (
+          <AnimatePresence mode="wait">
+            {custodies ? (
+              <motion.div
+                key="positions-breakdown-data"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+              >
+                <PositionsNowBreakdown
+                  titleClassName={titleClassName}
+                  custodies={custodies}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="positions-breakdown-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+              />
+            )}
+          </AnimatePresence>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
-          <VolumeBreakdownPerToken
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+        {selectedTab === 'All' ||
+        (selectedTab === 'Pool' && view === 'full') ? (
+          <AnimatePresence mode="wait">
+            {custodies ? (
+              <motion.div
+                key="volume-breakdown-data"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: 0.4 }}
+              >
+                <VolumeBreakdownPerToken
+                  titleClassName={titleClassName}
+                  custodies={custodies}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="volume-breakdown-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+              />
+            )}
+          </AnimatePresence>
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'Fees' ? (
-          <AllTimeFeesBreakdownPerToken
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+          <AnimatePresence mode="wait">
+            {custodies ? (
+              <motion.div
+                key="fees-breakdown-data"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: 0.5 }}
+              >
+                <AllTimeFeesBreakdownPerToken
+                  titleClassName={titleClassName}
+                  custodies={custodies}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="fees-breakdown-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+              />
+            )}
+          </AnimatePresence>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
-          <AUMBreakdown
-            titleClassName={titleClassName}
-            custodies={custodies}
-          />
+        {selectedTab === 'All' ||
+        (selectedTab === 'Pool' && view === 'full') ? (
+          <AnimatePresence mode="wait">
+            {custodies ? (
+              <motion.div
+                key="aum-breakdown-data"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
+              >
+                <AUMBreakdown
+                  titleClassName={titleClassName}
+                  custodies={custodies}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="aum-breakdown-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+              />
+            )}
+          </AnimatePresence>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Pool' && view === 'full' ? (
-          <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
+        {selectedTab === 'All' ||
+        (selectedTab === 'Pool' && view === 'full') ? (
+          <AnimatePresence mode="wait">
+            {poolInfo ? (
+              <motion.div
+                key="pool-ratios-data"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: 0.7 }}
+              >
+                <PoolRatios
+                  titleClassName={titleClassName}
+                  poolInfo={poolInfo}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="pool-ratios-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+              />
+            )}
+          </AnimatePresence>
         ) : null}
 
-        {selectedTab === 'All' || selectedTab === 'Accounts' && view === 'full' ? (
-          <>
-            <AdrenaAccounts
-              titleClassName={titleClassName}
-              cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
-            />
-            <OracleAccounts
-              titleClassName={titleClassName}
-              custodies={custodies}
-            />
-            <MintAccounts titleClassName={titleClassName} custodies={custodies} />
-            <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
-          </>
+        {selectedTab === 'All' ||
+        (selectedTab === 'Accounts' && view === 'full') ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.8 }}
+            className="space-y-3"
+          >
+            <AnimatePresence mode="wait">
+              {cortex && mainPool && custodies ? (
+                <motion.div
+                  key="adrena-accounts-data"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AdrenaAccounts
+                    titleClassName={titleClassName}
+                    cortex={cortex}
+                    mainPool={mainPool}
+                    custodies={custodies}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="adrena-accounts-loader"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                />
+              )}
+            </AnimatePresence>
 
+            <AnimatePresence mode="wait">
+              {custodies ? (
+                <motion.div
+                  key="oracle-accounts-data"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <OracleAccounts
+                    titleClassName={titleClassName}
+                    custodies={custodies}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="oracle-accounts-loader"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                />
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="wait">
+              {custodies ? (
+                <motion.div
+                  key="mint-accounts-data"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <MintAccounts
+                    titleClassName={titleClassName}
+                    custodies={custodies}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="mint-accounts-loader"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                />
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="wait">
+              {cortex ? (
+                <motion.div
+                  key="governance-accounts-data"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <GovernanceAccounts
+                    titleClassName={titleClassName}
+                    cortex={cortex}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="governance-accounts-loader"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
         ) : null}
       </div>
-    </div >
+    </div>
   );
 }

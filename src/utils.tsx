@@ -19,7 +19,8 @@ import { BigNumber } from 'bignumber.js';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
 import { Adrena } from '@/target/adrena';
@@ -419,34 +420,54 @@ export function addNotification({
   duration?: 'fast' | 'regular' | 'long';
   position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 }) {
-  const content = message ? (
-    <div className="flex flex-col">
-      <div className="border-b border-white/10 pb-2 text-sm font-medium font-mono">
-        {title}
-      </div>
-      <div className="mt-4 text-sm font-mono">{message}</div>
-    </div>
-  ) : (
-    <p className="text-sm font-mono font-medium">{title}</p>
-  );
+  // const content = message ? (
+  //   <div className="flex flex-col">
+  //     <div className="border-b border-white/10 pb-2 text-sm font-medium font-mono">
+  //       {title}
+  //     </div>
+  //     <div className="mt-4 text-sm font-mono">{message}</div>
+  //   </div>
+  // ) : (
+  //   <p className="text-sm font-mono font-medium p-2">{title}</p>
+  // );
 
-  toast[type](content, {
-    position: position,
-    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: false,
-    theme: 'colored',
-    icon: false,
-    style: {
-      background: {
-        success: 'var(--color-green-500)',
-        error: 'var(--color-red-500)',
-        info: '#162a3d',
-      }[type],
-    },
-  });
+  // toast[type](content, {
+  //   position: position,
+  //   autoClose: { fast: 100_000, regular: 200_000, long: 1000_000 }[duration] ?? 5_000,
+  //   hideProgressBar: true,
+  //   closeOnClick: true,
+  //   pauseOnHover: true,
+  //   draggable: false,
+  //   theme: 'colored',
+  //   icon: false,
+  //   style: {
+  //     background: {
+  //       success: 'var(--color-green-500)',
+  //       error: 'var(--color-red-500)',
+  //       info: '#162a3d',
+  //     }[type],
+  //   },
+  // });
+
+  toast[type](title,
+    {
+      classNames: {
+        toast: '!bg-third !border-white/10',
+        title: '!font-archivo',
+        description: 'description',
+        actionButton: 'action-button',
+        cancelButton: 'cancel-button',
+        closeButton: 'close-button',
+      },
+      description: message,
+      duration: {
+        fast: 1000
+        , regular: 2000, long: 5000,
+      }[duration] ?? 5000,
+      position: position,
+    }
+  )
+
 }
 
 export function addSuccessTxNotification({

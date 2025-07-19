@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -9,10 +10,9 @@ import { PriorityFeeOption } from '@/types';
 import { DEFAULT_MAX_PRIORITY_FEE, formatNumber } from '@/utils';
 
 import prioFeeSettingsIcon from '../../../public/images/Icons/fuel-pump-fill.svg';
-import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Modal from '../common/Modal/Modal';
-import DisplayInfo from '../DisplayInfo/DisplayInfo';
+import { Radio } from '../pages/monitoring/FilterSidebar/FilterSidebar';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function PriorityFeeSetting({
@@ -26,26 +26,23 @@ export default function PriorityFeeSetting({
   const priorityFeeAmounts = usePriorityFee();
 
   const maxPriorityFee = useSelector((state) => state.settings.maxPriorityFee);
-  const priorityFeeOption = useSelector((state) => state.settings.priorityFeeOption);
+  const priorityFeeOption = useSelector(
+    (state) => state.settings.priorityFeeOption,
+  );
 
   const currentPriorityFeeValue =
     priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
 
   const content = (
-    <div className="flex flex-col mb-3">
-      <h2 className="flex">Priority Fees</h2>
+    <div className="flex flex-col">
+      <h4 className="font-interSemibold">Priority Fees</h4>
 
-      <DisplayInfo
-        className="mt-2 mb-2"
-        body={
-          <div>
-            Speed up your transactions with Dynamic Priority Fees following the
-            market rate.
-          </div>
-        }
-      />
+      <p className="opacity-50 text-sm mt-0">
+        Speed up your transactions with Dynamic Priority Fees following the
+        market rate.
+      </p>
 
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-2 w-full mt-4">
         {[
           {
             title: 'medium',
@@ -57,54 +54,53 @@ export default function PriorityFeeSetting({
             title: 'ultra',
           },
         ].map(({ title }) => (
-          <div className="flex w-1/3 flex-col items-center" key={title}>
-            <Button
-              onClick={() => {
-                dispatch(
-                  setSettings({
-                    priorityFeeOption: title as PriorityFeeOption,
-                  }),
-                );
-              }}
-              variant={title === priorityFeeOption ? 'outline' : 'text'}
-              className="w-20"
-              title={title}
-            />
-          </div>
+          <Radio
+            label={title}
+            checked={priorityFeeOption === title}
+            className="w-full"
+            onClick={() => {
+              dispatch(
+                setSettings({
+                  priorityFeeOption: title as PriorityFeeOption,
+                }),
+              );
+            }}
+            key={title}
+          />
         ))}
       </div>
 
       <div
         className={twMerge(
-          'flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs',
+          'flex gap-1 items-center mt-4 font-interSemibold text-xs',
         )}
       >
-        Now @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
         <InfoAnnotation
-          className="w-3 h-3"
+          className="w-3 h-3 ml-0"
           text={
             'The Medium/High/Ultra options are based on the 35th/50th/90th percentile of the current market rate. Accurate values are fetched right before each transaction.'
           }
         />
+        Now @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
       </div>
 
       <div className="mt-2">
-        <div className="w-full flex flex-col border p-2 bg-third">
+        <div className="w-full flex flex-col border items-center justify-center p-2 bg-third rounded-lg">
           <div className="flex w-full">
-            <div className="w-1/2 items-center justify-center flex text-xs font-boldy">
+            <div className="w-1/2 items-center flex text-xs font-interSemibold">
               TX Size
             </div>
-            <div className="w-1/2 items-center justify-center flex text-xs font-boldy">
+            <div className="w-1/2 items-center flex text-xs font-interSemibold">
               Extra Fee
             </div>
           </div>
 
           <div className="flex flex-col w-full mt-1">
             <div className="flex w-full text-xs">
-              <div className="w-1/2 items-center justify-center flex text-txtfade">
+              <div className="w-1/2 items-center flex opacity-50">
                 Small (200,000 cu)
               </div>
-              <div className="w-1/2 items-center justify-center flex text-txtfade">
+              <div className="w-1/2 items-center flex opacity-50">
                 {formatNumber(
                   (200000 * currentPriorityFeeValue) / 1000000 / 1000000000,
                   SOL_DECIMALS,
@@ -114,10 +110,10 @@ export default function PriorityFeeSetting({
             </div>
 
             <div className="flex w-full text-xs">
-              <div className="w-1/2 items-center justify-center flex text-txtfade">
+              <div className="w-1/2 items-center flex opacity-50">
                 Average (400,000 cu)
               </div>
-              <div className="w-1/2 items-center justify-center flex text-txtfade">
+              <div className="w-1/2 items-center flex opacity-50">
                 {formatNumber(
                   (400000 * currentPriorityFeeValue) / 1000000 / 1000000000,
                   SOL_DECIMALS,
@@ -127,10 +123,10 @@ export default function PriorityFeeSetting({
             </div>
 
             <div className="flex w-full text-xs">
-              <div className="w-1/2 items-center justify-center flex text-txtfade">
+              <div className="w-1/2 items-center flex opacity-50">
                 Big (700,000 cu)
               </div>
-              <div className="w-1/2 items-center justify-center flex text-txtfade">
+              <div className="w-1/2 items-center flex opacity-50">
                 {formatNumber(
                   (700000 * currentPriorityFeeValue) / 1000000 / 1000000000,
                   SOL_DECIMALS,
@@ -145,24 +141,24 @@ export default function PriorityFeeSetting({
       <div className="mt-4">
         <div
           className={twMerge(
-            'flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs',
+            'flex items-center gap-1 mb-1 text-xs font-interSemibold',
           )}
         >
-          Max Priority Fee per TX (SOL)
           <InfoAnnotation
-            className="w-3 h-3"
+            className="w-3 h-3 ml-0"
             text={
               'Maximum amount of SOL to be spent on priority fees per transaction, this ensure you never go over your limit.'
             }
           />
+          Max Priority Fee per TX (SOL)
         </div>
 
-        <div className="mt-1 relative rounded-md shadow-sm">
+        <div className="mt-1 relative rounded-lg shadow-sm">
           <input
             type="number"
             name="maxPriorityFee"
             id="maxPriorityFee"
-            className="focus:ring-primary focus:border-primary block w-full pl-2 pr-12 sm:text-sm border-gray-300 rounded-md bg-third"
+            className="font-mono block w-full p-3 pr-12 sm:text-sm border border-white/20 rounded-lg bg-inputcolor"
             placeholder={DEFAULT_MAX_PRIORITY_FEE.toString()}
             step="0.000000001"
             min="0.000000001"
@@ -179,7 +175,9 @@ export default function PriorityFeeSetting({
             <label htmlFor="currency" className="sr-only">
               Currency
             </label>
-            <span className="text-gray-500 sm:text-sm mr-2">SOL</span>
+            <span className="opacity-50 sm:text-sm mr-3 font-interSemibold">
+              SOL
+            </span>
           </div>
         </div>
       </div>
@@ -200,13 +198,17 @@ export default function PriorityFeeSetting({
   return (
     <Menu
       trigger={
-        <Button
-          variant={'lightbg'}
-          leftIcon={prioFeeSettingsIcon}
-          className={'w-7 h-7 p-0'}
-          iconClassName="w-3 h-3 opacity-75 hover:opacity-100"
-        />
+        <div className="p-1.5 px-2 hover:bg-third transition-colors cursor-pointer">
+          <Image
+            src={prioFeeSettingsIcon}
+            alt="Priority Fee Settings"
+            width={12}
+            height={12}
+            className="w-2.5 h-2.5"
+          />
+        </div>
       }
+      className="border-r"
       openMenuClassName={twMerge(
         'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
       )}
