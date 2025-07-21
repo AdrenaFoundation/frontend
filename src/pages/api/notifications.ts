@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import supabaseClient from '@/supabase';
+import supabaseAnonClient from '@/supabaseAnonClient';
 import { AdrenaNotificationData } from '@/types';
 
 export default async function handler(
@@ -22,7 +22,7 @@ export default async function handler(
     }
 
     try {
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabaseAnonClient
         .from('notifications')
         .select('*')
         .eq('owner_pubkey', wallet_address)
@@ -64,7 +64,7 @@ export default async function handler(
     }
 
     try {
-      const query = supabaseClient
+      const query = supabaseAnonClient
         .from('notifications')
         .update({
           is_read: true,

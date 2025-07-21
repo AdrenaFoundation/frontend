@@ -1,7 +1,7 @@
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import supabaseClient from '@/supabase';
+import supabaseAnonClient from '@/supabaseAnonClient';
 import { AdrenaNotificationData } from '@/types';
 
 interface UseNotificationsReturn {
@@ -89,10 +89,10 @@ export const useNotifications = (
 
   useEffect(() => {
     if (channel) {
-      supabaseClient.removeChannel(channel);
+      supabaseAnonClient.removeChannel(channel);
     }
 
-    const newChannel = supabaseClient
+    const newChannel = supabaseAnonClient
       .channel(`notifications:${walletAddressRef.current}`)
       .on(
         'postgres_changes',
@@ -129,7 +129,7 @@ export const useNotifications = (
       // )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
-          console.log('Subscribed to notifications channel:', newChannel);
+          console.log('Subscribed to notifications channel');
         }
       });
 
@@ -137,7 +137,7 @@ export const useNotifications = (
 
     return () => {
       if (newChannel) {
-        supabaseClient.removeChannel(newChannel);
+        supabaseAnonClient.removeChannel(newChannel);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -217,7 +217,7 @@ export const useNotifications = (
   useEffect(() => {
     return () => {
       if (channel) {
-        supabaseClient.removeChannel(channel);
+        supabaseAnonClient.removeChannel(channel);
       }
     };
   }, [channel]);
