@@ -1,10 +1,8 @@
 import '@dialectlabs/react-ui/index.css';
 
-import {
-  DialectSolanaWalletAdapter,
-} from "@dialectlabs/blockchain-sdk-solana";
+import { DialectSolanaWalletAdapter } from '@dialectlabs/blockchain-sdk-solana';
 import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana';
-import { NotificationsButton } from '@dialectlabs/react-ui';
+import { Notifications } from '@dialectlabs/react-ui';
 import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { useMemo } from 'react';
 
@@ -19,11 +17,17 @@ if (!DAPP_ADDRESS) {
 
 interface WalletWithSigningMethods {
   signMessage: (message: Uint8Array) => Promise<Uint8Array>;
-  signTransaction: <T extends Transaction | VersionedTransaction>(transaction: T) => Promise<T>;
-  signAllTransactions: <T extends Transaction | VersionedTransaction>(transactions: T[]) => Promise<T[]>;
+  signTransaction: <T extends Transaction | VersionedTransaction>(
+    transaction: T,
+  ) => Promise<T>;
+  signAllTransactions: <T extends Transaction | VersionedTransaction>(
+    transactions: T[],
+  ) => Promise<T[]>;
 }
 
-export const DialectNotification = ({ adapters }: {
+export const DialectNotification = ({
+  adapters,
+}: {
   adapters: PageProps['adapters'];
 }) => {
   const wallet = useSelector((state) => state.walletState.wallet);
@@ -42,14 +46,17 @@ export const DialectNotification = ({ adapters }: {
       signMessage: async (message: Uint8Array): Promise<Uint8Array> => {
         return await walletInstance.signMessage(message);
       },
-      signTransaction: async <T extends Transaction | VersionedTransaction>(transaction: T): Promise<T> => {
+      signTransaction: async <T extends Transaction | VersionedTransaction>(
+        transaction: T,
+      ): Promise<T> => {
         return await walletInstance.signTransaction(transaction);
       },
-      signAllTransactions: async <T extends Transaction | VersionedTransaction>(transactions: T[]): Promise<T[]> => {
+      signAllTransactions: async <T extends Transaction | VersionedTransaction>(
+        transactions: T[],
+      ): Promise<T[]> => {
         return await walletInstance.signAllTransactions(transactions);
       },
-
-    }
+    };
   }, [adapter, wallet]);
 
   if (!isConnected || !wallet || !customWalletAdapter) return null;
@@ -57,10 +64,10 @@ export const DialectNotification = ({ adapters }: {
   return (
     <DialectSolanaSdk
       dappAddress={DAPP_ADDRESS}
-      config={{ environment: 'production', }}
+      config={{ environment: 'production' }}
       customWalletAdapter={customWalletAdapter}
     >
-      <NotificationsButton theme={'dark'} />
+      <Notifications />
     </DialectSolanaSdk>
   );
 };

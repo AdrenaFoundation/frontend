@@ -3,29 +3,25 @@ import { AdrenaNotificationData } from '@/types';
 import { NotificationsList } from './NotificationsList';
 
 export const AdrenaNotification = ({
-    notifications,
-    setNotifications
+  notifications,
+  isLoading,
+  onMarkAsRead,
+  loadMore,
+  hasMore,
 }: {
-    notifications: AdrenaNotificationData[];
-    setNotifications: React.Dispatch<React.SetStateAction<AdrenaNotificationData[]>>;
+  notifications: AdrenaNotificationData[];
+  isLoading: boolean;
+  onMarkAsRead?: (signature: string) => void;
+  loadMore: () => Promise<void>;
+  hasMore: boolean;
 }) => {
-    const isLoading = false; // TODO: Replace with real loading state when integrating API
-
-    const handleMarkAsRead = (signature: string) => {
-        setNotifications(prev =>
-            prev.map(notification =>
-                notification.transaction_signature === signature
-                    ? { ...notification, is_read: true, read_at: new Date().toISOString() }
-                    : notification
-            )
-        );
-    };
-
-    return (
-        <NotificationsList
-            notifications={notifications}
-            isLoading={isLoading}
-            onMarkAsRead={handleMarkAsRead}
-        />
-    );
+  return (
+    <NotificationsList
+      notifications={notifications}
+      isLoading={isLoading}
+      onMarkAsRead={onMarkAsRead}
+      loadMore={loadMore}
+      hasMore={hasMore}
+    />
+  );
 };
