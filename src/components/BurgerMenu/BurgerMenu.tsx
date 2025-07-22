@@ -109,7 +109,7 @@ export default function BurgerMenu({
 
   return (
     <div className="z-30">
-      <div className="py-3 p-4 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
+      <div className="py-3 p-3 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
         <div className="flex flex-row gap-3 items-center">
           <Link href="/trade">
             <Image src={adxLogo} alt="logo" width={28} height={28} className='w-6 h-6' />

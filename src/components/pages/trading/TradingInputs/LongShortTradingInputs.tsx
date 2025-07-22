@@ -1047,7 +1047,7 @@ export default function LongShortTradingInputs({
           stopLossInput={stopLossInput}
           setStopLossInput={setStopLossInput}
           side={side}
-          isTPSL={isTPSL}
+          isTPSL={isTPSL && !inputState.isLimitOrder}
           setIsTPSL={setIsTPSL}
           isConnected={!!wallet}
           openedPosition={openedPosition}
