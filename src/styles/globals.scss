@@ -878,14 +878,6 @@ blockquote {
   filter: brightness(0.9) saturate(1.5);
 }
 
-// .dialect {
-//   --dt-bg-primary: #ff00ff; /* make sure your css is imported after the dialect styles */
-//   --dt-bg-secondary: #ff00ff !important; /* You might want to add !important tag to avoid css import ordering issue */
-//   --dt-bg-tertiary: var(
-//     --my-cool-background
-//   ); /* You can reference you css variable to avoid copy/paste and handle light/dark theme for example */
-// }
-
 .dialect {
   --dt-accent-brand: var(--color-green-500) !important;
   --dt-accent-error: var(--color-redbright) !important;
