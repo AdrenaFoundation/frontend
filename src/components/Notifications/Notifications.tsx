@@ -45,7 +45,7 @@ export const Notifications = ({
         className={twMerge(
           'min-h-[300px]',
           selectedTab !== 'Adrena' &&
-            'h-full border border-bcolor rounded-lg overflow-hidden pb-4',
+          'h-full border border-bcolor rounded-lg overflow-hidden pb-4',
         )}
       >
         {selectedTab === 'Adrena' ? (

@@ -107,26 +107,26 @@ export const useNotifications = (
           setNotifications((prev) => [newNotification, ...prev]);
         },
       )
-      // .on(
-      //   'postgres_changes',
-      //   {
-      //     event: 'UPDATE',
-      //     schema: 'public',
-      //     table: 'notifications',
-      //   },
-      //   (payload) => {
-      //     if (payload.new.owner_pubkey !== walletAddressRef.current) return;
-      //     const updatedNotification = payload.new as AdrenaNotificationData;
-      //     setNotifications((prev) =>
-      //       prev.map((notification) =>
-      //         notification.transaction_signature ===
-      //         updatedNotification.transaction_signature
-      //           ? updatedNotification
-      //           : notification,
-      //       ),
-      //     );
-      //   },
-      // )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notifications',
+        },
+        (payload) => {
+          if (payload.new.owner_pubkey !== walletAddressRef.current) return;
+          const updatedNotification = payload.new as AdrenaNotificationData;
+          setNotifications((prev) =>
+            prev.map((notification) =>
+              notification.transaction_signature ===
+              updatedNotification.transaction_signature
+                ? updatedNotification
+                : notification,
+            ),
+          );
+        },
+      )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           console.log('Subscribed to notifications channel');
@@ -159,59 +159,53 @@ export const useNotifications = (
 
   const onMarkAsRead = useCallback(async (transactionSignature?: string) => {
     if (!walletAddressRef.current) return;
-    console.error('Mark as read not implemented yet', transactionSignature);
 
-    // try {
-    //   const response = await fetch('/api/notifications', {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       wallet_address: walletAddressRef.current,
-    //       transaction_signature: transactionSignature,
-    //     }),
-    //   });
+    try {
+      const response = await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wallet_address: walletAddressRef.current,
+          transaction_signature: transactionSignature,
+        }),
+      });
 
-    //   if (!response.ok) {
-    //     throw new Error(`HTTP error! status: ${response.status}`);
-    //   }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    //   const data = await response.json();
+      const data = await response.json();
 
-    //   if (!data.success) {
-    //     throw new Error(data.error || 'Failed to mark as read');
-    //   }
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to mark as read');
+      }
 
-    //   // Update local state
-    //   if (transactionSignature) {
-    //     // Mark specific notification as read
-    //     setNotifications((prev) =>
-    //       prev.map((notification) =>
-    //         notification.transaction_signature === transactionSignature
-    //           ? {
-    //               ...notification,
-    //               is_read: true,
-    //               read_at: new Date().toISOString(),
-    //             }
-    //           : notification,
-    //       ),
-    //     );
-    //   } else {
-    //     // Mark all notifications as read
-    //     const now = new Date().toISOString();
-    //     setNotifications((prev) =>
-    //       prev.map((notification) => ({
-    //         ...notification,
-    //         is_read: true,
-    //         read_at: now,
-    //       })),
-    //     );
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to mark notification as read:', error);
-    //   // You might want to show a toast notification here
-    // }
+      if (transactionSignature) {
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.transaction_signature === transactionSignature
+              ? {
+                  ...notification,
+                  is_read: true,
+                }
+              : notification,
+          ),
+        );
+      } else {
+        const now = new Date().toISOString();
+        setNotifications((prev) =>
+          prev.map((notification) => ({
+            ...notification,
+            is_read: true,
+            read_at: now,
+          })),
+        );
+      }
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
   }, []);
 
   useEffect(() => {

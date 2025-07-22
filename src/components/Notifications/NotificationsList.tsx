@@ -27,7 +27,7 @@ export const NotificationsList = ({
 
     if (
       target.scrollTop + target.clientHeight >=
-        target.scrollHeight - threshold &&
+      target.scrollHeight - threshold &&
       !isLoading &&
       hasMore
     ) {

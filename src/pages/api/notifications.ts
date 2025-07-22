@@ -68,7 +68,6 @@ export default async function handler(
         .from('notifications')
         .update({
           is_read: true,
-          read_at: new Date().toISOString(),
         })
         .eq('owner_pubkey', wallet_address)
         .eq('transaction_signature', transaction_signature);
