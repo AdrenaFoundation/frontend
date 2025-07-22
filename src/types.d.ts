@@ -1903,3 +1903,32 @@ export type RawTransactionPositionData = {
   };
   transaction_date: Date;
 };
+
+export type AdrenaNotificationData = {
+  transaction_signature: string;
+  owner_pubkey: string;
+  notification_type:
+    | 'position_opened'
+    | 'position_closed'
+    | 'position_liquidated';
+  notification_message: string;
+  transaction_slot: number | null;
+  processed_at: number;
+  created_at: string;
+  size_usd_decimal: number | null;
+  price_decimal: number | null;
+  collateral_amount_usd_decimal: number | null;
+  leverage_decimal: number | null;
+  profit_usd_decimal: number | null;
+  loss_usd_decimal: number | null;
+  borrow_fee_usd_decimal: number | null;
+  exit_fee_usd_decimal: number | null;
+  side: 'Long' | 'Short';
+  market: string;
+  position_id: number;
+  custody_mint: string;
+  total_fees_decimal: number | null;
+  is_automated_order: boolean;
+  is_read?: boolean;
+  read_at?: string;
+};
