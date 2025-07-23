@@ -18,6 +18,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { findATAAddressSync, getJupiterApiQuote, getTokenAccountBalanceNullable, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi, uiToNative } from '@/utils';
+import { JupiterSwapError } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
@@ -87,7 +88,6 @@ export default function EditPositionCollateral({
 
   const [belowMinLeverage, setBelowMinLeverage] = useState(false);
   const [aboveMaxLeverage, setAboveMaxLeverage] = useState(false);
-
   // Pick default redeem/deposit token
   useEffect(() => {
     const tokens = [
@@ -136,17 +136,7 @@ export default function EditPositionCollateral({
     return selectedAction === 'deposit' ? 'Deposit' : `Withdraw`;
   })();
 
-  useEffect(() => {
-    if (input === null) return setNewPositionNetValue(null);
 
-    if (selectedAction === 'withdraw') {
-      return setNewPositionNetValue(positionNetValue - input);
-    }
-
-    if (!collateralPrice) return setNewPositionNetValue(null);
-
-    setNewPositionNetValue(positionNetValue + input * collateralPrice);
-  }, [collateralPrice, input, positionNetValue, selectedAction]);
 
   useEffect(() => {
     if (!updatedInfos) {
@@ -174,8 +164,8 @@ export default function EditPositionCollateral({
     setAboveMaxLeverage(false);
   }, [maxInitialLeverage, position.custody, updatedInfos]);
 
-  const doRemoveCollateral = async () => {
-    if (!input) return;
+  const doRemoveCollateral = async (): Promise<boolean> => {
+    if (!input) return false;
 
     const notification =
       MultiStepNotification.newForRegularTransaction(
@@ -231,7 +221,7 @@ export default function EditPositionCollateral({
 
         if (swapInstructions === null) {
           notification.currentStepErrored('Failed to get swap instructions');
-          return;
+          return false;
         }
 
         const transaction = new Transaction();
@@ -265,35 +255,66 @@ export default function EditPositionCollateral({
 
       dispatch(fetchWalletTokenBalances());
       triggerUserProfileReload();
+      return true;
     } catch (error) {
       console.log('error', error);
+      return false;
     }
   };
 
-  const doAddCollateral = async () => {
-    if (!input) return;
+  const doAddCollateral = async (useCollateralToken = false): Promise<boolean> => {
+    if (!input) return false;
 
     const notification =
       MultiStepNotification.newForRegularTransaction('Add Collateral').fire();
 
     try {
+      const tokenToUse = useCollateralToken ? position.collateralToken : depositToken;
+
+      const addedCollateral = useCollateralToken
+        ? (() => {
+          if (!depositCollateralAmountPostSwap) {
+            throw new Error('Jupiter quote not available. Please wait for the quote to load.');
+          }
+
+          return uiToNative(depositCollateralAmountPostSwap, position.collateralToken.decimals);
+        })()
+        : uiToNative(input, tokenToUse.decimals);
+
       await window.adrena.client.addCollateralToPosition({
         position,
-        depositToken,
-        addedCollateral: uiToNative(
-          input,
-          depositToken.decimals,
-        ),
+        depositToken: tokenToUse,
+        addedCollateral,
         notification,
         swapSlippage,
+        useCollateralToken,
       });
 
       dispatch(fetchWalletTokenBalances());
       triggerUserProfileReload();
+      return true;
     } catch (error) {
-      console.log('error', error);
+      if (error instanceof JupiterSwapError) {
+        if (notification) {
+          notification.setErrorActions([
+            {
+              title: 'Retry',
+              onClick: () => {
+                notification.close(0);
+                doAddCollateral(useCollateralToken);
+              },
+              variant: 'primary'
+            }
+          ]);
+          notification.currentStepErrored(error.errorString);
+        }
+        return false;
+      }
+      return false;
     }
   };
+
+
 
   useEffect(() => {
     if (!input || !collateralPrice) {
@@ -307,12 +328,19 @@ export default function EditPositionCollateral({
       const liquidationPrice = await (selectedAction === 'deposit'
         ? window.adrena.client.getPositionLiquidationPrice({
           position,
-          addCollateral: uiToNative(
-            input,
-            position.side === 'long'
-              ? position.token.decimals
-              : position.collateralToken.decimals,
-          ),
+          addCollateral: (() => {
+            // Use the same logic as the actual transaction
+            if (doJupiterSwapOnDeposit) {
+              // If there's a swap, we need to use the swapped amount with collateral token decimals
+              if (!depositCollateralAmountPostSwap) {
+                return new BN(0); // Can't calculate yet
+              }
+              return uiToNative(depositCollateralAmountPostSwap, position.collateralToken.decimals);
+            } else {
+              // No swap, use input with deposit token decimals (matches actual transaction)
+              return uiToNative(input, depositToken.decimals);
+            }
+          })(),
           removeCollateral: new BN(0),
         })
         : window.adrena.client.getPositionLiquidationPrice({
@@ -423,8 +451,9 @@ export default function EditPositionCollateral({
       updatedCollateralAmount = updatedCollateralUsd / collateralPrice;
     }
 
-    const updatedCurrentLeverage =
-      position.sizeUsd / (updatedCollateralUsd + position.pnl);
+    // Calculate leverage the same way as on-chain validation
+    // On-chain validation uses: sizeUsd / collateralUsd (without PnL)
+    const updatedCurrentLeverage = position.sizeUsd / updatedCollateralUsd;
 
     if (updatedCurrentLeverage < 1.1) {
       setBelowMinLeverage(true);
@@ -457,6 +486,31 @@ export default function EditPositionCollateral({
     depositCollateralAmountPostSwap,
   ]);
 
+  // Calculate new Net Value based on the updated collateral calculation
+  useEffect(() => {
+    if (input === null) return setNewPositionNetValue(null);
+
+    if (selectedAction === 'withdraw') {
+      return setNewPositionNetValue(positionNetValue - input);
+    }
+
+    if (!collateralPrice) return setNewPositionNetValue(null);
+
+    // For deposits, calculate the new collateral USD value correctly
+    // Use the same logic as the leverage calculation
+    const depositAmount = doJupiterSwapOnDeposit ? depositCollateralAmountPostSwap : input;
+
+    if (depositAmount === null) {
+      return setNewPositionNetValue(null);
+    }
+
+    const updatedCollateralAmount = position.collateralUsd / collateralPrice + depositAmount;
+    const updatedCollateralUsd = updatedCollateralAmount * collateralPrice;
+    const newCollateralAdded = updatedCollateralUsd - position.collateralUsd;
+
+    setNewPositionNetValue(positionNetValue + newCollateralAdded);
+  }, [collateralPrice, input, positionNetValue, selectedAction, doJupiterSwapOnDeposit, depositCollateralAmountPostSwap, position.collateralUsd]);
+
   const calculateCollateralPercentage = (percentage: number) =>
     Number(Number((positionNetValue * Number(percentage)) / 100).toFixed(2));
 
@@ -465,13 +519,20 @@ export default function EditPositionCollateral({
 
     // AddCollateral or RemoveCollateral
     try {
+      let success = false;
       if (selectedAction === 'deposit') {
-        await doAddCollateral();
+        success = await doAddCollateral();
       } else {
-        await doRemoveCollateral();
+        success = await doRemoveCollateral();
       }
-    } finally {
-      onClose();
+
+      // Only close the modal if the transaction was successful
+      if (success) {
+        onClose();
+      }
+    } catch (error) {
+      // Don't close the modal on error, let the user see the error and retry
+      console.error('Transaction failed:', error);
     }
   };
 
@@ -545,6 +606,8 @@ export default function EditPositionCollateral({
                     </div>
                   </div>
                 )}
+
+
 
                 <div className="flex flex-col border rounded-lg bg-third">
                   <TradingInput
@@ -831,7 +894,7 @@ export default function EditPositionCollateral({
                               precision={
                                 position.token.displayPriceDecimalsPrecision
                               }
-                              className={`text-orange`}
+                              className={`text-orange text-sm`}
                               isDecimalDimmed={false}
                             />
                           ) : (
@@ -927,6 +990,7 @@ export default function EditPositionCollateral({
                           <FormatNumber
                             nb={updatedInfos?.collateralUsd}
                             format="currency"
+                            className='text-sm'
                             minimumFractionDigits={2}
                           />
                         </div>
@@ -997,8 +1061,8 @@ export default function EditPositionCollateral({
                               className={
                                 maxInitialLeverage &&
                                   updatedInfos.currentLeverage > maxInitialLeverage
-                                  ? 'text-redbright'
-                                  : ''
+                                  ? 'text-sm text-redbright'
+                                  : 'text-sm'
                               }
                               minimumFractionDigits={2}
                             />

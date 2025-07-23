@@ -24,8 +24,10 @@ import {
   getJupiterApiQuote,
   getTokenImage,
   getTokenSymbol,
+  isPartialClose,
   nativeToUi,
 } from '@/utils';
+import { JupiterSwapError } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
@@ -100,6 +102,11 @@ export default function ClosePosition({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
+  // Add state for Jupiter swap error handling
+
+
+
+
   useEffect(() => {
     if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
       return setAmountOut(null);
@@ -147,7 +154,7 @@ export default function ClosePosition({
 
   const rowStyle = 'w-full flex justify-between items-center';
 
-  const doFullClose = useCallback(async () => {
+  const doFullClose = useCallback(async (useCollateralToken = false) => {
     if (!markPrice) return;
 
     const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
@@ -161,9 +168,10 @@ export default function ClosePosition({
       });
 
       if (!priceAndFee) {
-        return notification.currentStepErrored(
+        notification.currentStepErrored(
           'Cannot calculate position closing price',
         );
+        return;
       }
 
       // 1%
@@ -178,6 +186,18 @@ export default function ClosePosition({
             .mul(new BN(10_000 - slippageInBps))
             .div(new BN(10_000));
 
+      // Use collateral token if specified, otherwise use redeemToken
+      const tokenToUse = useCollateralToken ? position.collateralToken : redeemToken;
+
+      // compute integer bps (1…9999 for partials, or 10000 for full/zero)
+      const bps = isPartialClose(activePercent)
+        ? Math.floor((activePercent ?? 1) * 10_000)
+        : 10_000;
+
+      const scaledAmountOut = priceAndFee.amountOut
+        .mul(new BN(bps))
+        .div(new BN(10_000));
+
       await (
         position.side === 'long'
           ? window.adrena.client.closePositionLong.bind(window.adrena.client)
@@ -185,8 +205,8 @@ export default function ClosePosition({
       )({
         position,
         price: priceWithSlippage,
-        expectedCollateralAmountOut: new BN(priceAndFee.amountOut),
-        redeemToken,
+        expectedCollateralAmountOut: scaledAmountOut,
+        redeemToken: tokenToUse,
         swapSlippage,
         notification,
         percentage: new BN(
@@ -218,7 +238,36 @@ export default function ClosePosition({
 
       onClose();
     } catch (error) {
-      console.error('error', error);
+      if (error instanceof JupiterSwapError) {
+        if (notification) {
+          notification.setErrorActions([
+            {
+              title: 'Retry',
+              onClick: () => {
+                notification.close(0);
+                doFullClose(useCollateralToken);
+              },
+              variant: 'primary'
+            },
+            {
+              title: `Close in ${position.collateralToken.symbol}`,
+              onClick: () => {
+                notification.close(0);
+                doFullClose(true);
+              },
+              variant: 'outline'
+            }
+          ]);
+          notification.currentStepErrored(error.errorString);
+        }
+        return;
+      }
+
+      if (notification) {
+        notification.currentStepErrored(
+          error instanceof Error ? error.message : 'Transaction failed'
+        );
+      }
     }
   }, [
     markPrice,
@@ -232,6 +281,8 @@ export default function ClosePosition({
     showPopupOnPositionClose,
     setShareClosePosition,
   ]);
+
+
 
   const handleExecute = async () => {
     await doFullClose();
@@ -875,27 +926,29 @@ export default function ClosePosition({
       </div>
 
       <div className="w-full p-4 border-t">
-        <Button
-          className={twMerge(
-            "w-full",
-            (errorMsg !== null ||
+        <div className="flex gap-2 mt-2">
+          <Button
+            className={twMerge(
+              "w-full",
+              (errorMsg !== null ||
+                (customAmount !== null && customAmount <= 0) ||
+                (activePercent !== null && activePercent <= 0) ||
+                (hasInteracted && (customAmount === null || activePercent === null))) && "opacity-50 cursor-not-allowed"
+            )}
+            size="lg"
+            variant="primary"
+            title={
+              <span className="text-main text-base font-boldy">
+                {`Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
+              </span>
+            }
+            disabled={errorMsg !== null ||
               (customAmount !== null && customAmount <= 0) ||
               (activePercent !== null && activePercent <= 0) ||
-              (hasInteracted && (customAmount === null || activePercent === null))) && "opacity-50 cursor-not-allowed"
-          )}
-          size="lg"
-          variant="primary"
-          title={
-            <span className="text-main text-base font-boldy">
-              Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
-            </span>
-          }
-          disabled={errorMsg !== null ||
-            (customAmount !== null && customAmount <= 0) ||
-            (activePercent !== null && activePercent <= 0) ||
-            (hasInteracted && (customAmount === null || activePercent === null))}
-          onClick={() => handleExecute()}
-        />
+              (hasInteracted && (customAmount === null || activePercent === null))}
+            onClick={() => handleExecute()}
+          />
+        </div>
       </div>
     </div>
   );

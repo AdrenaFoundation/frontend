@@ -35,6 +35,12 @@ export type NotificationStep = {
 
 export type NotificationSteps = NotificationStep[];
 
+export type NotificationAction = {
+  title: string;
+  onClick: () => void;
+  variant?: 'primary' | 'outline' | 'secondary';
+};
+
 export default class MultiStepNotification {
   // Reference the notification once in toast system
   protected toastId: Id | null = null;
@@ -48,6 +54,8 @@ export default class MultiStepNotification {
   protected isSendingErrorReport = false;
 
   protected txHash: string | null = null;
+
+  protected errorActions: NotificationAction[] = [];
 
   protected constructor(
     protected title: string,
@@ -104,6 +112,10 @@ export default class MultiStepNotification {
 
   public setTxHash(txHash: string): void {
     this.txHash = txHash;
+  }
+
+  public setErrorActions(actions: NotificationAction[]): void {
+    this.errorActions = actions;
   }
 
   public currentStepSucceeded(): void {
@@ -358,7 +370,7 @@ export default class MultiStepNotification {
                           step.state === NotificationStepState.inProgress &&
                           'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
                           step.state === NotificationStepState.error &&
-                          'text-red-500',
+                          'text-redbright',
                           step.state === NotificationStepState.succeeded &&
                           'text-green',
                           step.state === NotificationStepState.waiting &&
@@ -411,7 +423,7 @@ export default class MultiStepNotification {
 
                       <p
                         className={twMerge(
-                          'text-sm font-boldy text-red w-full h-full',
+                          'text-sm font-boldy text-redbright w-full h-full',
                           errorMessage.length >= 70 && 'text-xs',
                         )}
                       >
@@ -419,14 +431,27 @@ export default class MultiStepNotification {
                       </p>
                     </div>
 
-                    <div className="flex flex-row gap-2 items-center">
-                      <Button
-                        title="Get help"
-                        className="w-full text-xs border border-[#1A2938]"
-                        onClick={() => this.sendErrorReport()}
-                        disabled={this.isSendingErrorReport}
-                        variant="outline"
-                      />
+                    <div className="flex flex-col gap-2 items-center">
+                      {this.errorActions.length > 0 ? (
+                        this.errorActions.map((action, index) => (
+                          <Button
+                            key={index}
+                            title={action.title}
+                            className="w-full text-xs"
+                            onClick={action.onClick}
+                            variant={action.variant || 'outline'}
+                          />
+                        ))
+                      ) : (
+                        // Show default "Get help" button
+                        <Button
+                          title="Get help"
+                          className="w-full text-xs border border-[#1A2938]"
+                          onClick={() => this.sendErrorReport()}
+                          disabled={this.isSendingErrorReport}
+                          variant="outline"
+                        />
+                      )}
 
                       {this.error instanceof AdrenaTransactionError &&
                         this.error.txHash ? (
