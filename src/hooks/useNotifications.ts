@@ -1,6 +1,7 @@
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useSelector } from '@/store/store';
 import supabaseAnonClient from '@/supabaseAnonClient';
 import { AdrenaNotificationData } from '@/types';
 
@@ -31,6 +32,10 @@ export const useNotifications = (
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
   const walletAddressRef = useRef(walletAddress);
 
+  const { verifiedWalletAddresses } = useSelector(
+    (state) => state.supabaseAuth,
+  );
+
   const fetchNotifications = useCallback(
     async (reset: boolean = false, currentOffset: number = 0) => {
       if (!walletAddress) return;
@@ -39,8 +44,22 @@ export const useNotifications = (
         setLoading(true);
         setError(null);
 
+        // Get Supabase session for access token
+        const {
+          data: { session },
+        } = await supabaseAnonClient.auth.getSession();
+
         const response = await fetch(
           `/api/notifications?wallet_address=${walletAddress}&limit=${limit}&offset=${currentOffset}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(session
+                ? { Authorization: `Bearer ${session.access_token}` }
+                : {}),
+            },
+          },
         );
 
         if (!response.ok) {
@@ -78,14 +97,18 @@ export const useNotifications = (
 
   // Initial fetch
   useEffect(() => {
-    if (walletAddress) {
+    if (walletAddress && verifiedWalletAddresses.includes(walletAddress)) {
       fetchNotifications(true, 0);
+    } else {
+      setNotifications([]);
+      setOffset(0);
+      setHasMore(true);
     }
 
     walletAddressRef.current = walletAddress;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress]);
+  }, [walletAddress, verifiedWalletAddresses]);
 
   useEffect(() => {
     if (channel) {
@@ -161,10 +184,17 @@ export const useNotifications = (
     if (!walletAddressRef.current) return;
 
     try {
+      const {
+        data: { session },
+      } = await supabaseAnonClient.auth.getSession();
+
       const response = await fetch('/api/notifications', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          ...(session
+            ? { Authorization: `Bearer ${session.access_token}` }
+            : {}),
         },
         body: JSON.stringify({
           wallet_address: walletAddressRef.current,

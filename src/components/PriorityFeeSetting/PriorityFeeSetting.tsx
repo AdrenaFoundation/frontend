@@ -208,7 +208,7 @@ export default function PriorityFeeSetting({
           />
         </div>
       }
-      className="border-r"
+      className="border-r border-[#414E5E]"
       openMenuClassName={twMerge(
         'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
       )}

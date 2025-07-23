@@ -1,6 +1,8 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+type OptionType<T> = T | { title: T; activeColor?: string; disabled?: boolean };
+
 export default function SelectOptions<T>({
   title,
   selected,
@@ -9,9 +11,12 @@ export default function SelectOptions<T>({
 }: {
   title?: string;
   selected: T;
-  options: T[];
+  options: OptionType<T>[];
   onClick: (option: T) => void;
 }) {
+  const isObject = (option: OptionType<T>): option is { title: T } =>
+    typeof option === 'object' && option !== null && 'title' in option;
+
   return (
     <div className="flex gap-4 w-full items-center justify-evenly border py-1 px-2 rounded-lg">
       {title && (
@@ -23,12 +28,20 @@ export default function SelectOptions<T>({
         <div
           className={twMerge(
             'text-sm font-boldy cursor-pointer opacity-50 hover:opacity-100 transition duration-300',
-            selected === option && 'opacity-100',
+            selected === (isObject(option) ? option.title : (option as T)) && 'opacity-100',
+            isObject(option) && option.activeColor,
+            isObject(option) && option.disabled && 'opacity-30 cursor-not-allowed hover:opacity-30'
           )}
-          onClick={() => onClick(option)}
+          onClick={() => {
+            if (isObject(option) && option.disabled) return;
+
+            onClick(
+              isObject(option) ? option.title : (option as T)
+            );
+          }}
           key={index}
         >
-          {String(option)}
+          {String(isObject(option) ? option.title : (option as T))}
         </div>
       ))}
     </div>

@@ -2,22 +2,32 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import { useOnClickOutside } from '@/hooks/onClickOutside';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useNotifications } from '@/hooks/useNotifications';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
 import Modal from '../common/Modal/Modal';
 import { Notifications } from './Notifications';
 
 export const NotificationBell = ({
+  isMobile,
+  setIsNotificationModalOpen,
+  isNotificationModalOpen,
   adapters,
 }: {
   adapters: PageProps['adapters'];
+  isMobile?: boolean;
+  isNotificationModalOpen?: boolean;
+  setIsNotificationModalOpen?: (isOpen: boolean) => void;
 }) => {
+  const dispatch = useDispatch();
+  const { verifiedWalletAddresses } = useSelector(
+    (state) => state.supabaseAuth,
+  );
+
   const wallet = useSelector((state) => state.walletState.wallet);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const {
@@ -28,7 +38,7 @@ export const NotificationBell = ({
     loadMore,
     isLoading,
   } = useNotifications(wallet?.walletAddress ?? null);
-  const isMobile = useBetterMediaQuery('(max-width: 955px)');
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -40,8 +50,15 @@ export const NotificationBell = ({
   });
 
   const handleClick = () => {
+    if (!wallet?.walletAddress) return;
+
+    if (!verifiedWalletAddresses.includes(wallet.walletAddress)) {
+      dispatch(setIsAuthModalOpen(true));
+      return;
+    }
+
     if (isMobile) {
-      setIsModalOpen(true);
+      setIsNotificationModalOpen?.(true);
     } else {
       // Desktop: toggle pinned state
       setIsPinned(!isPinned);
@@ -49,33 +66,21 @@ export const NotificationBell = ({
     }
   };
 
-  const handleMouseEnter = () => {
-    if (!isMobile && !isPinned) {
-      setIsOpen(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (!isMobile && !isPinned) {
-      setIsOpen(false);
-    }
-  };
-
   const bellIcon = (
     <div
       onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       className={twMerge(
-        'relative p-2 rounded-lg hover:bg-third transition-colors duration-300 group cursor-pointer z-10',
+        'relative group z-10 border-r border-[#414E5E] p-1 px-1.5 hover:bg-third transition-colors cursor-pointer rounded-l-md',
         (isPinned || isOpen) && 'bg-third', // Visual feedback when open or pinned
+        !wallet?.walletAddress && 'cursor-not-allowed opacity-50',
+        isMobile && 'border border-[#414E5E] p-2 rounded-full',
       )}
       aria-label="Open notifications"
     >
       {/* Bell Icon */}
       <svg
-        width="16"
-        height="16"
+        width="14"
+        height="14"
         viewBox="0 0 24 24"
         fill="none"
         stroke="white"
@@ -94,7 +99,9 @@ export const NotificationBell = ({
       {/* Notification Dot */}
       {unreadCount > 0 && (
         <div
-          className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full z-20"
+          className={twMerge("absolute top-1 right-1 w-1.5 h-1.5 rounded-full z-20",
+            isMobile && 'top-0 right-0',
+          )}
           style={{
             backgroundColor: '#ef4444', // Force red color
             animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -106,14 +113,15 @@ export const NotificationBell = ({
 
   if (isMobile) {
     return (
-      <AnimatePresence>
+      <>
         {bellIcon}
 
-        {isModalOpen && (
+        {isNotificationModalOpen && (
           <Modal
             title="Notifications"
-            close={() => setIsModalOpen(false)}
+            close={() => setIsNotificationModalOpen?.(false)}
             className="w-full p-4"
+            disableFade
           >
             <Notifications
               notifications={notifications}
@@ -125,8 +133,9 @@ export const NotificationBell = ({
             />
           </Modal>
         )}
-      </AnimatePresence>
+      </>
     );
+
   }
 
   return (
