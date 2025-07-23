@@ -136,8 +136,6 @@ export default function EditPositionCollateral({
     return selectedAction === 'deposit' ? 'Deposit' : `Withdraw`;
   })();
 
-
-
   useEffect(() => {
     if (!updatedInfos) {
       setBelowMinLeverage(false);
@@ -313,8 +311,6 @@ export default function EditPositionCollateral({
       return false;
     }
   };
-
-
 
   useEffect(() => {
     if (!input || !collateralPrice) {

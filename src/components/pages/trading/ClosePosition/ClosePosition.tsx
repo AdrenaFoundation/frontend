@@ -102,11 +102,6 @@ export default function ClosePosition({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
-  // Add state for Jupiter swap error handling
-
-
-
-
   useEffect(() => {
     if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
       return setAmountOut(null);
@@ -281,8 +276,6 @@ export default function ClosePosition({
     showPopupOnPositionClose,
     setShareClosePosition,
   ]);
-
-
 
   const handleExecute = async () => {
     await doFullClose();
