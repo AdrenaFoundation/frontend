@@ -1821,12 +1821,10 @@ export class AdrenaClient {
     position,
     price,
     percentage = new BN(100 * 10000), // BPS 100%
-    redeemToken,
   }: {
     position: PositionExtended;
     price: BN;
     percentage?: BN;
-    redeemToken?: Token;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1860,15 +1858,10 @@ export class AdrenaClient {
       collateralCustody.mint,
     );
 
-    // Use redeemToken mint if provided, otherwise use position's collateral token
-    const receivingMint = redeemToken
-      ? redeemToken.mint
-      : collateralCustody.mint;
-
     const [receivingAccount, userProfileAccount] = await Promise.all([
       this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
-        mint: receivingMint,
+        mint: collateralCustody.mint,
         preInstructions,
       }),
       this.loadUserProfile({ user: position.owner }),
