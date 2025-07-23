@@ -21,7 +21,6 @@ import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
-import SearchUserProfiles from '@/components/SearchUserProfiles/SearchUserProfiles';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
@@ -75,8 +74,8 @@ export default function RootLayout({
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const disableChat = useSelector((state) => state.settings.disableChat);
-  const [isSearchUserProfilesOpen, setIsSearchUserProfilesOpen] =
-    useState(false);
+  // const [isSearchUserProfilesOpen, setIsSearchUserProfilesOpen] =
+  //   useState(false);
 
   const [pages, setPages] = useState<LinksType[]>([
     { name: 'Trade', link: '/trade', icon: tradeIcon },
@@ -173,7 +172,6 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          setIsSearchUserProfilesOpen={setIsSearchUserProfilesOpen}
           adapters={adapters}
         />
       ) : (
@@ -212,12 +210,10 @@ export default function RootLayout({
       <ToastContainer />
       <Toaster />
 
-      <SearchUserProfiles
+      {/* <SearchUserProfiles
         isOpen={isSearchUserProfilesOpen}
-        onClose={function (): void {
-          setIsSearchUserProfilesOpen(false);
-        }}
-      />
+        onClose={() => setIsSearchUserProfilesOpen(false)}
+      /> */}
 
       {disableChat === true ? null : (
         <ChatContainer

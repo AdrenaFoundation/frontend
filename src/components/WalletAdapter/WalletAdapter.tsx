@@ -34,6 +34,8 @@ export default function WalletAdapter({
   isMobile = false,
   setIsPriorityFeeModalOpen,
   setIsSettingsModalOpen,
+  setIsChatOpen,
+  disableChat = false,
 }: {
   className?: string;
   userProfile: UserProfileExtended | null | false;
@@ -42,10 +44,11 @@ export default function WalletAdapter({
   isMobile?: boolean;
   setIsSettingsModalOpen?: (isOpen: boolean) => void;
   setIsPriorityFeeModalOpen?: (isOpen: boolean) => void;
+  setIsChatOpen?: (isOpen: boolean) => void;
+  disableChat?: boolean;
 }) {
   const dispatch = useDispatch();
   const router = useRouter();
-
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
@@ -127,13 +130,13 @@ export default function WalletAdapter({
           trigger={
             <div
               className={
-                'flex flex-row items-center border border-bcolor rounded-full sm:rounded-lg'
+                'flex flex-row items-center border border-[#414E5E] rounded-full sm:rounded-lg'
               }
             >
               <Button
                 className={twMerge(
                   className,
-                  'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-full sm:rounded-none sm:rounded-l-lg border-r gap-2 text-sm h-auto bg-transparent',
+                  'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-full sm:rounded-none sm:rounded-l-lg border-r border-r-[#414E5E] gap-2 text-sm h-auto bg-transparent',
                   isIconOnly && 'p-0 h-8 w-8',
                 )}
                 style={
@@ -207,6 +210,20 @@ export default function WalletAdapter({
                 >
                   Profile
                 </MenuItem>
+
+                {!disableChat ? (
+                  <>
+                    <MenuSeparator />
+                    <MenuItem
+                      onClick={() => {
+                        setIsChatOpen?.(true);
+                      }}
+                      className="py-2"
+                    >
+                      Chat
+                    </MenuItem>
+                  </>
+                ) : null}
 
                 <MenuSeparator />
 
@@ -288,7 +305,6 @@ export default function WalletAdapter({
                 >
                   Disconnect
                 </MenuItem>
-
               </>
             </MenuItems>
           ) : null}
@@ -297,8 +313,8 @@ export default function WalletAdapter({
         <Button
           className={twMerge(
             className,
-            'gap-1 p-1 h-auto px-3 pr-4 text-xs border border-bcolor bg-transparent hover:bg-third rounded-lg',
-            isIconOnly && 'p-0 h-8 w-8',
+            'gap-1 p-1 h-auto px-3 pr-4 text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-lg',
+            isIconOnly && 'p-0 h-8 w-8 rounded-full',
           )}
           title={!isIconOnly ? 'Connect wallet' : null}
           leftIcon={walletIcon}
