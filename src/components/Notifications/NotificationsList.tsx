@@ -1,5 +1,6 @@
-import { AdrenaNotificationData } from '@/types';
 import { useEffect, useRef } from 'react';
+
+import { AdrenaNotificationData } from '@/types';
 
 import { NotificationItem } from './NotificationItem';
 

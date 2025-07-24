@@ -140,7 +140,7 @@ export default function UpgradeLockedStake({
 
       <div className="w-full bg-bcolor h-[1px]" />
 
-      <div className="flex flex-col gap-5 justify-between w-full px-5 pl-6 pr-6">
+      <div className="flex flex-col gap-5 justify-between w-full pl-6 pr-6">
         <div className="mt-4">
           <div className="flex flex-row items-center justify-between mb-1">
             <h5 className="font-interSemibold"> Additional Amount</h5>
@@ -215,30 +215,32 @@ export default function UpgradeLockedStake({
         </div>
       </div>
 
-      <div className="text-sm opacity-30 ml-5 mt-4">Benefits</div>
+      <div className='px-6'>
+        <div className="text-sm opacity-30 mt-4">Benefits</div>
 
-      <div className="w-full justify-between items-center flex mt-2 flex-wrap">
-        <div className="flex flex-col items-center w-[5em] min-w-[5em] grow justify-center">
-          <div className="font-mono text-2xl">{lockPeriod}</div>
-          <div className="text-txtfade text-xs">days</div>
-        </div>
-
-        <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
-          <div className="font-mono text-2xl">{multipliers.usdc}x</div>
-          <div className="text-txtfade text-xs">USDC yield</div>
-        </div>
-
-        <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
-          <div className="font-mono text-2xl">{multipliers.adx}x</div>
-          <div className="text-txtfade text-xs">ADX yield</div>
-        </div>
-
-        {lockedStake.tokenSymbol === 'ADX' && multipliers.votes ? (
-          <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
-            <div className="font-mono text-2xl">{multipliers.votes}x</div>
-            <div className="text-txtfade text-xs">Voting power</div>
+        <div className="w-full justify-between items-center flex mt-2 flex-wrap">
+          <div className="flex flex-col items-center justify-center">
+            <div className="font-mono text-2xl">{lockPeriod}</div>
+            <div className="text-txtfade text-xs">days</div>
           </div>
-        ) : null}
+
+          <div className="flex flex-col items-center justify-center">
+            <div className="font-mono text-2xl">{multipliers.usdc}x</div>
+            <div className="text-txtfade text-xs">USDC yield</div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center">
+            <div className="font-mono text-2xl">{multipliers.adx}x</div>
+            <div className="text-txtfade text-xs">ADX yield</div>
+          </div>
+
+          {lockedStake.tokenSymbol === 'ADX' && multipliers.votes ? (
+            <div className="flex flex-col items-center justify-center">
+              <div className="font-mono text-2xl">{multipliers.votes}x</div>
+              <div className="text-txtfade text-xs">Voting power</div>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="pb-4 pl-4 pr-4 mb-4">
