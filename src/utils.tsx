@@ -576,10 +576,275 @@ export class JupiterSwapError extends AdrenaTransactionError {
   }
 }
 
+// Helper function to parse instruction error arrays
+function parseInstructionErrorArray(err: unknown): {
+  instructionIndex: number;
+  errorDetails: unknown;
+  customCode: number | null;
+} | null {
+  // Check if it's an InstructionError array like [3, {Custom: 1}]
+  if (Array.isArray(err) && err.length === 2) {
+    const [instructionIndex, errorDetails] = err;
+    if (typeof instructionIndex === 'number' && typeof errorDetails === 'object') {
+      return {
+        instructionIndex,
+        errorDetails,
+        customCode: (errorDetails as { Custom?: number })?.Custom ?? null
+      };
+    }
+  }
+  return null;
+}
+
+// Helper function to parse instruction errors from string
+function parseInstructionErrorFromString(errString: string): {
+  instructionIndex: number;
+  customCode: number;
+} | null {
+  // Try multiple patterns to match different InstructionError formats
+  const patterns = [
+    /"InstructionError":\s*\[([0-9]+),\s*\{[^}]*"Custom":\s*([0-9]+)[^}]*\}\]/,
+    /InstructionError.*?\[([0-9]+).*?Custom.*?([0-9]+)/,
+    /"InstructionError":\s*\[([0-9]+),\s*"Custom":\s*([0-9]+)\]/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = errString.match(pattern);
+    if (match?.length) {
+      return {
+        instructionIndex: parseInt(match[1], 10),
+        customCode: parseInt(match[2], 10)
+      };
+    }
+  }
+  return null;
+}
+
+// Helper function to parse program failure from logs
+function parseProgramFailureFromLogsHelper(errorLogs?: string[]): {
+  programId: string;
+  errorMessage: string | null;
+  isJupiter: boolean;
+  isAdrena: boolean;
+} | null {
+  if (!errorLogs || errorLogs.length === 0) return null;
+
+  // Look for the last program that failed
+  for (let i = errorLogs.length - 1; i >= 0; i--) {
+    const log = errorLogs[i];
+
+    // Pattern: "Program <program_id> failed: <error>" or "Program <program_id> failed"
+    const failedMatch = log.match(/Program ([A-Za-z0-9]+) failed(?:: (.+))?/);
+    if (failedMatch) {
+      const programId = failedMatch[1];
+      const errorMessage = failedMatch[2];
+
+      return {
+        programId,
+        errorMessage,
+        isJupiter: programId.startsWith('JUP'),
+        isAdrena: programId === '13gDzEXCdocbj8iAiqrScGo47NiSuYENGsRqi3SEAwet'
+      };
+    }
+  }
+
+  return null;
+}
+
+// Helper function to check for Jupiter-related logs
+function hasJupiterLogsHelper(errorLogs?: string[]): boolean {
+  const logsString = errorLogs?.join(' ') || '';
+  return logsString.includes('Jupiter') || logsString.includes('insufficient funds');
+}
+
+// Helper function to handle instruction error arrays
+function handleInstructionErrorArray(
+  instructionErrorArray: {
+    instructionIndex: number;
+    errorDetails: unknown;
+    customCode: number | null;
+  },
+  errorLogs?: string[]
+): string | null {
+  console.log('Detected InstructionError array:', instructionErrorArray);
+
+  const hasJupiterLogsInError = errorLogs?.some(log => log.includes('Jupiter') && log.includes('insufficient funds'));
+
+  // Handle specific instruction errors based on index and custom code
+  if (instructionErrorArray.customCode === 1) {
+    // Custom: 1 is often "insufficient funds" in Jupiter swaps
+    if (instructionErrorArray.instructionIndex >= 3 || hasJupiterLogsInError) {
+      // Jupiter instructions are typically at index 3+ or we have Jupiter logs
+      console.log('Detected Jupiter swap execution error from simulation');
+      return 'JUPITER_SWAP_EXECUTION_ERROR';
+    }
+    return 'Insufficient funds to complete this transaction. Please check your wallet balance.';
+  }
+
+  if (instructionErrorArray.customCode === 2) {
+    return 'Invalid instruction data. Please try again.';
+  }
+
+  if (instructionErrorArray.customCode === 3) {
+    return 'Account validation failed. Please check your inputs.';
+  }
+
+  return `Instruction ${instructionErrorArray.instructionIndex} failed with error code ${instructionErrorArray.customCode}.`;
+}
+
+// Helper function to handle Adrena program errors
+function handleAdrenaProgramError(
+  parseProgramFailureFromLogs: {
+    programId: string;
+    errorMessage: string | null;
+    isJupiter: boolean;
+    isAdrena: boolean;
+  },
+  adrenaProgram: Program<Adrena>
+): string | null {
+  if (!parseProgramFailureFromLogs.isAdrena) return null;
+
+  console.log('Detected Adrena program failure - not a Jupiter error');
+
+  // Extract the human-readable error message from the logs
+  if (parseProgramFailureFromLogs.errorMessage) {
+    // Try to extract the actual error message from the program error
+    const customErrorMatch = parseProgramFailureFromLogs.errorMessage.match(/custom program error: 0x([0-9a-f]+)/i);
+    if (customErrorMatch) {
+      const errorCode = parseInt(customErrorMatch[1], 16);
+
+      // Use the IDL to get the proper error message
+      try {
+        const idlError = adrenaProgram.idl.errors?.find(err => err.code === errorCode);
+        if (idlError?.msg) {
+          return idlError.msg;
+        }
+      } catch (e) {
+        console.warn('Failed to get error message from IDL:', e);
+      }
+
+      // Fallback to generic error message if IDL lookup fails
+      return `Program error: ${parseProgramFailureFromLogs.errorMessage}`;
+    }
+
+    // If we can't parse the custom error, return the original error message
+    return parseProgramFailureFromLogs.errorMessage;
+  }
+
+  return null;
+}
+
+// Helper function to check for simulation-specific errors
+function checkSimulationErrors(errString: string): string | null {
+  // Only treat as simulation failure if the error message starts with "Simulation failed:"
+  // This prevents catching AdrenaTransactionError messages that contain "Simulation failed" as part of the error
+  if (errString.includes('"Simulation failed:') || errString.includes('Simulation failed:')) {
+    return 'Transaction simulation failed. Please check your inputs and try again.';
+  }
+
+  if (errString.includes('"Transaction simulation failed') || errString.includes('Transaction simulation failed')) {
+    return 'Transaction simulation failed. Please check your inputs and try again.';
+  }
+
+  return null;
+}
+
+// Helper function to check for Solana system errors
+function checkSolanaSystemErrors(errString: string): string | null {
+  const systemErrors = [
+    { pattern: 'InsufficientFundsForRent', message: 'Not enough SOL to pay for transaction fees and rent. Please add more SOL to your wallet.' },
+    { pattern: 'InsufficientFunds', message: 'Insufficient funds to complete this transaction. Please check your wallet balance.' },
+    { pattern: 'AccountInUse', message: 'Account is already in use. Please try again.' },
+    { pattern: 'AccountNotAssigned', message: 'Account not assigned to this program.' },
+    { pattern: 'AccountAlreadyInitialized', message: 'Account is already initialized.' },
+    { pattern: 'AccountNotInitialized', message: 'Account is not initialized.' },
+    { pattern: 'AccountLoadedTwice', message: 'Account loaded twice in transaction.' },
+    { pattern: 'AccountDataSizeChanged', message: 'Account data size changed during transaction.' },
+    { pattern: 'AccountDataTooSmall', message: 'Account data too small for instruction.' },
+    { pattern: 'AccountDataTooLarge', message: 'Account data too large for instruction.' },
+    { pattern: 'AccountBorrowFailed', message: 'Account borrow failed.' },
+    { pattern: 'AccountBorrowOutstanding', message: 'Account borrow outstanding.' },
+    { pattern: 'AccountNotRentExempt', message: 'Account is not rent exempt.' },
+    { pattern: 'AccountDiscriminatorMismatch', message: 'Account discriminator mismatch.' },
+    { pattern: 'AccountDiscriminatorNotFound', message: 'Account discriminator not found.' },
+    { pattern: 'AccountDiscriminatorAlreadySet', message: 'Account discriminator already set.' },
+    { pattern: 'AccountDidNotSerialize', message: 'Account did not serialize.' },
+    { pattern: 'AccountDidNotDeserialize', message: 'Account did not deserialize.' },
+    { pattern: 'AccountNotEnoughKeys', message: 'Not enough keys provided for instruction.' },
+    { pattern: 'AccountNotEnoughSigners', message: 'Not enough signers provided for instruction.' },
+    { pattern: 'AccountNotEnoughWritableSigners', message: 'Not enough writable signers provided for instruction.' },
+    { pattern: 'AccountNotEnoughWritableAccounts', message: 'Not enough writable accounts provided for instruction.' },
+  ];
+
+  for (const { pattern, message } of systemErrors) {
+    if (errString.includes(pattern)) {
+      return message;
+    }
+  }
+
+  return null;
+}
+
+// Helper function to check for SPL Token errors
+function checkSPLTokenErrors(errString: string): string | null {
+  const tokenErrors = [
+    { pattern: 'TokenInsufficientFunds', message: 'Insufficient token balance for this transaction.' },
+    { pattern: 'TokenNotRentExempt', message: 'Token account is not rent exempt.' },
+    { pattern: 'TokenInvalidMint', message: 'Invalid token mint.' },
+    { pattern: 'TokenInvalidOwner', message: 'Invalid token owner.' },
+    { pattern: 'TokenInvalidAccountData', message: 'Invalid token account data.' },
+    { pattern: 'TokenInvalidInstruction', message: 'Invalid token instruction.' },
+    { pattern: 'TokenInvalidState', message: 'Invalid token state.' },
+    { pattern: 'TokenInvalidDelegate', message: 'Invalid token delegate.' },
+    { pattern: 'TokenInvalidAuthority', message: 'Invalid token authority.' },
+    { pattern: 'TokenInvalidAmount', message: 'Invalid token amount.' },
+  ];
+
+  for (const { pattern, message } of tokenErrors) {
+    if (errString.includes(pattern)) {
+      return message;
+    }
+  }
+
+  return null;
+}
+
+// Helper function to extract error codes and names
+function extractErrorCodesAndNames(err: unknown, errString: string): {
+  errCodeHex: number | null;
+  errCodeDecimals: number | null;
+  errName: string | null;
+  errMessage: string | null;
+} {
+  const errCodeHex = (() => {
+    const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
+    return match?.length ? parseInt(match[1], 16) : null;
+  })();
+
+  const errCodeDecimals = (() => {
+    const match = errString.match(/"Custom": ([0-9]+)/);
+    return match?.length ? parseInt(match[1], 10) : null;
+  })();
+
+  const errName = (() => {
+    const match = errString.match(/Error Code: ([a-zA-Z]+)/);
+    const match2 = errString.match(/"([a-zA-Z]+)"\n[ ]+]/);
+    if (match?.length) return match[1];
+    return match2?.length ? match2[1] : null;
+  })();
+
+  const errMessage = (() => {
+    const match = errString.match(/Error Message: ([a-zA-Z '\.]+)"/);
+    return match?.length ? match[1] : null;
+  })();
+
+  return { errCodeHex, errCodeDecimals, errName, errMessage };
+}
+
 export function parseTransactionError(
   adrenaProgram: Program<Adrena>,
   err: unknown,
-  simulationLogs?: string[],
+  errorLogs?: string[],
 ) {
   //
   // Check for Adrena Program Errors
@@ -600,135 +865,39 @@ export function parseTransactionError(
 
   console.log('parseTransactionError input:', err);
   console.log('parseTransactionError stringified:', safeJSONStringify(err));
-  if (simulationLogs) {
-    console.log('parseTransactionError logs:', simulationLogs);
+  if (errorLogs) {
+    console.log('parseTransactionError logs:', errorLogs);
   }
 
   const errStr: string | null = (() => {
     const errString = safeJSONStringify(err);
 
-    // Check for specific error patterns first
+    // This will enable automatic retry
     if (errString === '"BlockhashNotFound"') {
-      return 'Transaction expired. Please try again.';
+      return 'BlockhashNotFound';
     }
 
     // Handle InstructionError arrays (common in simulation errors)
-    const instructionErrorArray = (() => {
-      // Check if it's an InstructionError array like [3, {Custom: 1}]
-      if (Array.isArray(err) && err.length === 2) {
-        const [instructionIndex, errorDetails] = err;
-        if (typeof instructionIndex === 'number' && typeof errorDetails === 'object') {
-          return {
-            instructionIndex,
-            errorDetails,
-            customCode: (errorDetails as { Custom?: number })?.Custom
-          };
-        }
-      }
-      return null;
-    })();
-
+    const instructionErrorArray = parseInstructionErrorArray(err);
     if (instructionErrorArray) {
-      console.log('Detected InstructionError array:', instructionErrorArray);
-
-      // Check logs for more context about the error
-      const hasJupiterLogs = simulationLogs?.some(log =>
-        log.includes('JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4') ||
-        log.includes('Jupiter') ||
-        log.includes('insufficient funds')
-      );
-
-      // Handle specific instruction errors based on index and custom code
-      if (instructionErrorArray.customCode === 1) {
-        // Custom: 1 is often "insufficient funds" in Jupiter swaps
-        if (instructionErrorArray.instructionIndex >= 3 || hasJupiterLogs) {
-          // Jupiter instructions are typically at index 3+ or we have Jupiter logs
-          console.log('Detected Jupiter swap execution error from simulation');
-          return 'JUPITER_SWAP_EXECUTION_ERROR';
-        }
-        return 'Insufficient funds to complete this transaction. Please check your wallet balance.';
-      }
-
-      if (instructionErrorArray.customCode === 2) {
-        return 'Invalid instruction data. Please try again.';
-      }
-
-      if (instructionErrorArray.customCode === 3) {
-        return 'Account validation failed. Please check your inputs.';
-      }
-
-      return `Instruction ${instructionErrorArray.instructionIndex} failed with error code ${instructionErrorArray.customCode}.`;
+      return handleInstructionErrorArray(instructionErrorArray, errorLogs);
     }
 
     // Check for Jupiter swap execution errors
-    const instructionError = (() => {
-      // Try multiple patterns to match different InstructionError formats
-      const patterns = [
-        /"InstructionError":\s*\[([0-9]+),\s*\{[^}]*"Custom":\s*([0-9]+)[^}]*\}\]/,
-        /InstructionError.*?\[([0-9]+).*?Custom.*?([0-9]+)/,
-        /"InstructionError":\s*\[([0-9]+),\s*"Custom":\s*([0-9]+)\]/,
-      ];
-
-      for (const pattern of patterns) {
-        const match = errString.match(pattern);
-        if (match?.length) {
-          return {
-            instructionIndex: parseInt(match[1], 10),
-            customCode: parseInt(match[2], 10)
-          };
-        }
-      }
-      return null;
-    })();
+    const instructionError = parseInstructionErrorFromString(errString);
 
     // Parse logs to understand which program actually failed (only if logs are available)
-    const parseProgramFailureFromLogs = (() => {
-      if (!simulationLogs || simulationLogs.length === 0) return null;
-
-      // Look for the last program that failed
-      for (let i = simulationLogs.length - 1; i >= 0; i--) {
-        const log = simulationLogs[i];
-
-        // Pattern: "Program <program_id> failed: <error>" or "Program <program_id> failed"
-        const failedMatch = log.match(/Program ([A-Za-z0-9]+) failed(?:: (.+))?/);
-        if (failedMatch) {
-          const programId = failedMatch[1];
-          const errorMessage = failedMatch[2];
-
-          return {
-            programId,
-            errorMessage,
-            isJupiter: programId === 'JUP2jxvXaqu7NQY1GmNF4m1vodw12LVXYxbFL2uJvfo' ||
-              programId === 'JUP3c2Uh3WA4Ng34tw6kPd2G4C5BB21Xo36Je1s32Ph' ||
-              programId === 'JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB' ||
-              programId === 'JUP5iHxQKrwqdztzX4MM9DmyXJ6Ew6jUFH5qJixTP97W' ||
-              programId === 'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4' ||
-              programId === 'JUP7i9efXqo6UonTohY4pU6aCipJv6p6c2CuTaVabF3L',
-            isAdrena: programId === '13gDzEXCdocbj8iAiqrScGo47NiSuYENGsRqi3SEAwet'
-          };
-        }
-      }
-
-      return null;
-    })();
+    const parseProgramFailureFromLogs = parseProgramFailureFromLogsHelper(errorLogs);
 
     // Check if there are Jupiter-related logs (for context, not necessarily the failure)
-    const hasJupiterLogs = (() => {
-      const logsString = simulationLogs?.join(' ') || '';
-      return errString.includes('JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4') ||
-        errString.includes('Jupiter') ||
-        errString.includes('insufficient funds') ||
-        logsString.includes('JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4') ||
-        logsString.includes('Jupiter') ||
-        logsString.includes('insufficient funds');
-    })();
+    const hasJupiterLogs = hasJupiterLogsHelper(errorLogs);
 
     console.log('Program failure analysis:', {
       instructionError,
       parseProgramFailureFromLogs,
       hasJupiterLogs,
       errString,
-      logsString: simulationLogs?.join(' ')
+      logsString: errorLogs?.join(' ')
     });
 
     // Determine if this is a Jupiter swap error based on which program actually failed
@@ -737,32 +906,8 @@ export function parseTransactionError(
         console.log('Detected Jupiter program failure');
         return 'JUPITER_SWAP_EXECUTION_ERROR';
       } else if (parseProgramFailureFromLogs.isAdrena) {
-        console.log('Detected Adrena program failure - not a Jupiter error');
-        // This is an Adrena program error, not a Jupiter error
-        // Extract the human-readable error message from the logs
-        if (parseProgramFailureFromLogs.errorMessage) {
-          // Try to extract the actual error message from the program error
-          const customErrorMatch = parseProgramFailureFromLogs.errorMessage.match(/custom program error: 0x([0-9a-f]+)/i);
-          if (customErrorMatch) {
-            const errorCode = parseInt(customErrorMatch[1], 16);
-
-            // Use the IDL to get the proper error message
-            try {
-              const idlError = adrenaProgram.idl.errors?.find(err => err.code === errorCode);
-              if (idlError?.msg) {
-                return idlError.msg;
-              }
-            } catch (e) {
-              console.warn('Failed to get error message from IDL:', e);
-            }
-
-            // Fallback to generic error message if IDL lookup fails
-            return `Program error: ${parseProgramFailureFromLogs.errorMessage}`;
-          }
-
-          // If we can't parse the custom error, return the original error message
-          return parseProgramFailureFromLogs.errorMessage;
-        }
+        const adrenaError = handleAdrenaProgramError(parseProgramFailureFromLogs, adrenaProgram);
+        if (adrenaError) return adrenaError;
         // Let it fall through to normal error handling
       }
     } else if (instructionError && hasJupiterLogs) {
@@ -775,127 +920,15 @@ export function parseTransactionError(
     }
 
     // Check for simulation-specific errors
-    // Only treat as simulation failure if the error message starts with "Simulation failed:"
-    // This prevents catching AdrenaTransactionError messages that contain "Simulation failed" as part of the error
-    if (errString.includes('"Simulation failed:') || errString.includes('Simulation failed:')) {
-      return 'Transaction simulation failed. Please check your inputs and try again.';
-    }
-
-    if (errString.includes('"Transaction simulation failed') || errString.includes('Transaction simulation failed')) {
-      return 'Transaction simulation failed. Please check your inputs and try again.';
-    }
+    const simulationError = checkSimulationErrors(errString);
+    if (simulationError) return simulationError;
 
     // Check for specific Solana system errors
-    if (errString.includes('InsufficientFundsForRent')) {
-      return 'Not enough SOL to pay for transaction fees and rent. Please add more SOL to your wallet.';
-    }
-
-    if (errString.includes('InsufficientFunds')) {
-      return 'Insufficient funds to complete this transaction. Please check your wallet balance.';
-    }
-
-    if (errString.includes('AccountInUse')) {
-      return 'Account is already in use. Please try again.';
-    }
-
-    if (errString.includes('AccountNotAssigned')) {
-      return 'Account not assigned to this program.';
-    }
-
-    if (errString.includes('AccountAlreadyInitialized')) {
-      return 'Account is already initialized.';
-    }
-
-    if (errString.includes('AccountNotInitialized')) {
-      return 'Account is not initialized.';
-    }
-
-    if (errString.includes('AccountLoadedTwice')) {
-      return 'Account loaded twice in transaction.';
-    }
-
-    if (errString.includes('AccountDataSizeChanged')) {
-      return 'Account data size changed during transaction.';
-    }
-
-    if (errString.includes('AccountDataTooSmall')) {
-      return 'Account data too small for instruction.';
-    }
-
-    if (errString.includes('AccountDataTooLarge')) {
-      return 'Account data too large for instruction.';
-    }
-
-    if (errString.includes('AccountBorrowFailed')) {
-      return 'Account borrow failed.';
-    }
-
-    if (errString.includes('AccountBorrowOutstanding')) {
-      return 'Account borrow outstanding.';
-    }
-
-    if (errString.includes('AccountNotRentExempt')) {
-      return 'Account is not rent exempt.';
-    }
-
-    if (errString.includes('AccountDiscriminatorMismatch')) {
-      return 'Account discriminator mismatch.';
-    }
-
-    if (errString.includes('AccountDiscriminatorNotFound')) {
-      return 'Account discriminator not found.';
-    }
-
-    if (errString.includes('AccountDiscriminatorAlreadySet')) {
-      return 'Account discriminator already set.';
-    }
-
-    if (errString.includes('AccountDidNotSerialize')) {
-      return 'Account did not serialize.';
-    }
-
-    if (errString.includes('AccountDidNotDeserialize')) {
-      return 'Account did not deserialize.';
-    }
-
-    if (errString.includes('AccountNotEnoughKeys')) {
-      return 'Not enough keys provided for instruction.';
-    }
-
-    if (errString.includes('AccountNotEnoughSigners')) {
-      return 'Not enough signers provided for instruction.';
-    }
-
-    if (errString.includes('AccountNotEnoughWritableSigners')) {
-      return 'Not enough writable signers provided for instruction.';
-    }
-
-    if (errString.includes('AccountNotEnoughWritableAccounts')) {
-      return 'Not enough writable accounts provided for instruction.';
-    }
+    const solanaError = checkSolanaSystemErrors(errString);
+    if (solanaError) return solanaError;
 
     // Check for Adrena program specific errors
-    const errCodeHex = (() => {
-      const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
-      return match?.length ? parseInt(match[1], 16) : null;
-    })();
-
-    const errCodeDecimals = (() => {
-      const match = errString.match(/"Custom": ([0-9]+)/);
-      return match?.length ? parseInt(match[1], 10) : null;
-    })();
-
-    const errName = (() => {
-      const match = errString.match(/Error Code: ([a-zA-Z]+)/);
-      const match2 = errString.match(/"([a-zA-Z]+)"\n[ ]+]/);
-      if (match?.length) return match[1];
-      return match2?.length ? match2[1] : null;
-    })();
-
-    const errMessage = (() => {
-      const match = errString.match(/Error Message: ([a-zA-Z '\.]+)"/);
-      return match?.length ? match[1] : null;
-    })();
+    const { errCodeHex, errCodeDecimals, errName, errMessage } = extractErrorCodesAndNames(err, errString);
 
     // Try to find Adrena program error
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
@@ -908,45 +941,8 @@ export function parseTransactionError(
     if (idlError?.msg) return idlError?.msg;
 
     // Check for common SPL Token errors
-    if (errString.includes('TokenInsufficientFunds')) {
-      return 'Insufficient token balance for this transaction.';
-    }
-
-    if (errString.includes('TokenNotRentExempt')) {
-      return 'Token account is not rent exempt.';
-    }
-
-    if (errString.includes('TokenInvalidMint')) {
-      return 'Invalid token mint.';
-    }
-
-    if (errString.includes('TokenInvalidOwner')) {
-      return 'Invalid token owner.';
-    }
-
-    if (errString.includes('TokenInvalidAccountData')) {
-      return 'Invalid token account data.';
-    }
-
-    if (errString.includes('TokenInvalidInstruction')) {
-      return 'Invalid token instruction.';
-    }
-
-    if (errString.includes('TokenInvalidState')) {
-      return 'Invalid token state.';
-    }
-
-    if (errString.includes('TokenInvalidDelegate')) {
-      return 'Invalid token delegate.';
-    }
-
-    if (errString.includes('TokenInvalidAuthority')) {
-      return 'Invalid token authority.';
-    }
-
-    if (errString.includes('TokenInvalidAmount')) {
-      return 'Invalid token amount.';
-    }
+    const splTokenError = checkSPLTokenErrors(errString);
+    if (splTokenError) return splTokenError;
 
     // Fallback to more specific error messages
     if (errName && errMessage) {
@@ -979,7 +975,7 @@ export function parseTransactionError(
   }
 
   // Transaction failed in preflight, there is no TxHash
-  return new AdrenaTransactionError(null, errStr);
+  return new AdrenaTransactionError(null, errStr || 'Transaction failed');
 }
 
 export function tryPubkey(p: string): PublicKey | null {
@@ -1671,19 +1667,22 @@ export async function getJupiterApiQuote({
   outputMint: PublicKey;
   amount: BN | number;
   swapSlippage: number;
-}): Promise<QuoteResponse> {
-  const ret = await window.adrena.jupiterApiClient.quoteGet({
-    inputMint: inputMint.toBase58(),
-    outputMint: outputMint.toBase58(),
-    amount: typeof amount === 'number' ? amount : amount.toNumber(),
-    slippageBps: swapSlippage * 100,
-    swapMode: 'ExactIn',
-    maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
-  });
+}): Promise<QuoteResponse | null> {
+  try {
+    const ret = await window.adrena.jupiterApiClient.quoteGet({
+      inputMint: inputMint.toBase58(),
+      outputMint: outputMint.toBase58(),
+      amount: typeof amount === 'number' ? amount : amount.toNumber(),
+      slippageBps: swapSlippage * 100,
+      swapMode: 'ExactIn',
+      maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+    });
 
-  console.log('JupiterQuote', ret);
-
-  return ret;
+    console.log('JupiterQuote', ret);
+    return ret;
+  } catch {
+    return null;
+  }
 }
 
 export function isPartialClose(activePercent: number | null) {

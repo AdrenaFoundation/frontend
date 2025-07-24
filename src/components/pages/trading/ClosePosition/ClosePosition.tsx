@@ -1,7 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
@@ -20,6 +20,7 @@ import {
   Token,
 } from '@/types';
 import {
+  AdrenaTransactionError,
   formatNumber,
   getJupiterApiQuote,
   getTokenImage,
@@ -30,13 +31,10 @@ import {
 import { JupiterSwapError } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
+import warningIcon from '../../../../../public/images/Icons/warning.png';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import { ErrorDisplay } from '../TradingInputs/LongShortTradingInputs/ErrorDisplay';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
-
-// use the counter to handle asynchronous multiple loading
-// always ignore outdated information
-let loadingCounter = 0;
 
 export default function ClosePosition({
   className,
@@ -101,42 +99,112 @@ export default function ClosePosition({
   const [activePercent, setActivePercent] = useState<number | null>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+  const [isCalculating, setIsCalculating] = useState<boolean>(true);
+  const [jupiterError, setJupiterError] = useState<boolean>(false);
+
+  // Ref to track current request for race condition handling
+  const currentRequestRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
-      return setAmountOut(null);
+    // Cancel previous request if it exists
+    if (currentRequestRef.current) {
+      currentRequestRef.current.abort();
     }
+    const abortController = new AbortController();
+    currentRequestRef.current = abortController;
 
-    if (!doJupiterSwap) {
-      return setAmountOut(
-        nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals),
-      );
-    }
+    (async () => {
+      // If we don't need Jupiter swap, calculate amount directly
+      if (!doJupiterSwap) {
+        // Clear Jupiter error when switching to native token
+        if (jupiterError) {
+          setJupiterError(false);
+          // Only clear error if it's specifically a Jupiter error
+          if (errorMsg === 'Cannot find jupiter route') {
+            setErrorMsg(null);
+          }
+        }
+        setIsCalculating(false);
 
-    getJupiterApiQuote({
-      inputMint: position.collateralToken.mint,
-      outputMint: redeemToken.mint,
-      amount: exitPriceAndFee.amountOut,
-      swapSlippage: 0, // No slippage for the quote
-    }).then((quote) => {
+        if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
+          return setAmountOut(null);
+        }
+        return setAmountOut(
+          nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals),
+        );
+      }
+
+      // For Jupiter swap, if we don't have exitPriceAndFee yet, just clear the amount
+      if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
+        setAmountOut(null);
+        return;
+      }
+
+      // Don't attempt Jupiter quote if there are validation errors
+      if (errorMsg && errorMsg !== 'Cannot find jupiter route') {
+        setAmountOut(null);
+        setIsCalculating(false);
+        return;
+      }
+
+      setIsCalculating(true);
+
+      const quote = await getJupiterApiQuote({
+        inputMint: position.collateralToken.mint,
+        outputMint: redeemToken.mint,
+        amount: exitPriceAndFee.amountOut,
+        swapSlippage: 0, // No slippage for the quote
+      });
+
+      if (abortController.signal.aborted) return;
+
+      if (!quote) {
+        setAmountOut(null);
+        setErrorMsg('Cannot find jupiter route');
+        setJupiterError(true);
+        setIsCalculating(false);
+        return;
+      }
       setAmountOut(nativeToUi(new BN(quote.outAmount), redeemToken.decimals));
-    })
-  }, [doJupiterSwap, exitPriceAndFee, position.collateralToken.mint, redeemToken.decimals, redeemToken.mint]);
+      // Only clear error if it's a Jupiter error
+      if (jupiterError) {
+        setErrorMsg(null);
+      }
+      setJupiterError(false);
+      setIsCalculating(false);
+    })().catch((e) => {
+      if (abortController.signal.aborted) return;
+      console.log(e);
+      setIsCalculating(false);
+    });
+  }, [doJupiterSwap, exitPriceAndFee, position.collateralToken.mint, redeemToken.decimals, redeemToken.mint, redeemToken.symbol, position.collateralToken.symbol, activePercent, errorMsg, jupiterError]);
+
+  // Re-run validation when activePercent changes to maintain validation errors
+  useEffect(() => {
+    if (activePercent !== null && activePercent !== 1) {
+      const remainingCollateral = position.collateralUsd * (1 - activePercent);
+      if (remainingCollateral < 10) {
+        setErrorMsg('Remaining collateral must be at least $10');
+      } else {
+        setErrorMsg(null);
+      }
+    }
+  }, [activePercent, position.collateralUsd]);
 
   useEffect(() => {
-    const localLoadingCounter = ++loadingCounter;
+    // Cancel previous request if it exists
+    if (currentRequestRef.current) {
+      currentRequestRef.current.abort();
+    }
+    const abortController = new AbortController();
+    currentRequestRef.current = abortController;
 
     (async () => {
       const exitPriceAndFee = await window.adrena.client.getExitPriceAndFee({
         position,
       });
 
-      // Verify that information is not outdated
-      // If loaderCounter doesn't match it means
-      // an other request has been casted due to input change
-      if (localLoadingCounter !== loadingCounter) {
-        return;
-      }
+      if (abortController.signal.aborted) return;
 
       setExitPriceAndFee(exitPriceAndFee);
     })().catch(() => {
@@ -260,7 +328,8 @@ export default function ClosePosition({
 
       if (notification) {
         notification.currentStepErrored(
-          error instanceof Error ? error.message : 'Transaction failed'
+          error instanceof AdrenaTransactionError ? error.errorString :
+            error instanceof Error ? error.message : 'Transaction failed'
         );
       }
     }
@@ -618,7 +687,41 @@ export default function ClosePosition({
               </div>
             </div>
 
-            {doJupiterSwap && recommendedToken ? (
+            {/* Jupiter route failure warning */}
+            {doJupiterSwap && errorMsg === 'Cannot find jupiter route' ? (
+              <div className="flex flex-col text-sm">
+                <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
+                  <Image
+                    className="opacity-100 absolute left-3 top-auto bottom-auto"
+                    src={warningIcon}
+                    height={20}
+                    width={20}
+                    alt="Warning icon"
+                  />
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      Cannot find Jupiter route for {position.collateralToken.symbol} → {redeemToken.symbol}.
+                    </div>
+                    <div className="text-xs text-orange/80">
+                      You can close in {position.collateralToken.symbol} instead.
+                    </div>
+                    <Button
+                      title={`Use ${position.collateralToken.symbol}`}
+                      variant="outline"
+                      className="bg-third"
+                      onClick={() => {
+                        dispatch(
+                          setSettings({
+                            closePositionCollateralSymbol: position.collateralToken.symbol,
+                          }),
+                        );
+                        setRedeemToken(position.collateralToken);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : doJupiterSwap && recommendedToken ? (
               <>
                 <Tippy
                   content={
@@ -925,20 +1028,22 @@ export default function ClosePosition({
               "w-full",
               (errorMsg !== null ||
                 (customAmount !== null && customAmount <= 0) ||
-                (activePercent !== null && activePercent <= 0) ||
-                (hasInteracted && (customAmount === null || activePercent === null))) && "opacity-50 cursor-not-allowed"
+                (activePercent !== null && activePercent < 0.01) ||
+                (hasInteracted && (customAmount === null || activePercent === null)) ||
+                isCalculating) && "opacity-50 cursor-not-allowed"
             )}
             size="lg"
             variant="primary"
             title={
               <span className="text-main text-base font-boldy">
-                {`Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
+                {(activePercent !== null && activePercent < 0.01) ? 'Cannot close less than 1%' : `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
               </span>
             }
             disabled={errorMsg !== null ||
               (customAmount !== null && customAmount <= 0) ||
-              (activePercent !== null && activePercent <= 0) ||
-              (hasInteracted && (customAmount === null || activePercent === null))}
+              (activePercent !== null && activePercent < 0.01) ||
+              (hasInteracted && (customAmount === null || activePercent === null)) ||
+              isCalculating}
             onClick={() => handleExecute()}
           />
         </div>

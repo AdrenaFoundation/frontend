@@ -1330,6 +1330,11 @@ export class AdrenaClient {
           swapSlippage,
         });
 
+        if (!quoteResult) {
+          notification.currentStepErrored('Cannot find jupiter route');
+          return null;
+        }
+
         // Apply the slippage so we never fail for not enough collateral in the addLiquidity
         // Can still fail due to jupiter swap failing, but that's expected
         amountIn = applySlippage(new BN(quoteResult.outAmount), -swapSlippage);
@@ -2454,7 +2459,13 @@ export class AdrenaClient {
           swapSlippage,
         });
 
-        console.log('quoteResult', quoteResult);
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            collateralMint.toBase58(),
+            usdcToken.mint.toBase58(),
+            'Cannot find jupiter route',
+          );
+        }
 
         // Apply the slippage so we never fail for not enough collateral in the openPosition
         // Can still fail due to jupiter swap failing, but that's expected
@@ -2825,6 +2836,14 @@ export class AdrenaClient {
           swapSlippage,
         });
 
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            collateralMint.toBase58(),
+            mint.toBase58(),
+            'Cannot find jupiter route',
+          );
+        }
+
         // Apply the slippage so we never fail for not enough collateral in the openPosition
         // Can still fail due to jupiter swap failing, but that's expected
         collateralAmount = applySlippage(
@@ -2945,6 +2964,14 @@ export class AdrenaClient {
           amount: addedCollateral,
           swapSlippage,
         });
+
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            tokenToUse.mint.toBase58(),
+            position.collateralToken.mint.toBase58(),
+            'Cannot find jupiter route',
+          );
+        }
 
         // Apply the slippage so we never fail for not enough collateral in the depositCollateral
         // Can still fail due to jupiter swap failing, but that's expected
@@ -4708,6 +4735,11 @@ export class AdrenaClient {
           amount: collateralAmount.toNumber(),
           swapSlippage,
         });
+
+        if (!quoteResult) {
+          notification?.currentStepErrored('Cannot find jupiter route');
+          return null;
+        }
 
         // Apply the slippage so we never fail for not enough collateral in the openPosition
         // Can still fail due to jupiter swap failing, but that's expected

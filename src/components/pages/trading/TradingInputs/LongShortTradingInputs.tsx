@@ -2,7 +2,7 @@ import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -38,9 +38,7 @@ import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
 import { PositionInfoState, TradingInputsProps, TradingInputState } from './LongShortTradingInputs/types';
 import { calculateLimitOrderLimitPrice, calculateLimitOrderTriggerPrice } from './LongShortTradingInputs/utils';
 
-// use the counter to handle asynchronous multiple loading
-// always ignore outdated information
-let loadingCounter = 0;
+
 
 export default function LongShortTradingInputs({
   side,
@@ -86,6 +84,9 @@ export default function LongShortTradingInputs({
     priceA: null,
     priceB: null,
   });
+
+  // Track the current request to prevent race conditions
+  const currentRequestRef = useRef<AbortController | null>(null);
 
   const usdcMint = window.adrena.client.getUsdcToken().mint;
   const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
@@ -465,7 +466,12 @@ export default function LongShortTradingInputs({
       return;
     }
 
-    const localLoadingCounter = ++loadingCounter;
+    if (currentRequestRef.current) {
+      currentRequestRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    currentRequestRef.current = abortController;
 
     (async () => {
       try {
@@ -482,6 +488,18 @@ export default function LongShortTradingInputs({
               amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals),
               swapSlippage: 0.3,
             });
+
+            if (!quoteResult) {
+              // Check if this request was cancelled
+              if (abortController.signal.aborted) return;
+
+              setPositionInfo((prev) => ({
+                ...prev,
+                errorMessage: 'Cannot find jupiter route',
+                isInfoLoading: false,
+              }));
+              return;
+            }
 
             // Apply the slippage so we never fail for not enough collateral in the openPosition
             // Can still fail due to jupiter swap failing, but that's expected
@@ -506,12 +524,24 @@ export default function LongShortTradingInputs({
 
           // Need to do a swap, get the quote
           if (tokenA.symbol !== usdcToken.symbol) {
-            const quoteResult = await window.adrena.jupiterApiClient.quoteGet({
-              inputMint: tokenA.mint.toBase58(),
-              outputMint: usdcToken.mint.toBase58(),
-              amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals).toNumber(),
-              slippageBps: 50, // 0.5%
+            const quoteResult = await getJupiterApiQuote({
+              inputMint: tokenA.mint,
+              outputMint: usdcToken.mint,
+              amount: uiToNative(inputState.inputA ?? 0, tokenA.decimals),
+              swapSlippage: 0.5,
             });
+
+            if (!quoteResult) {
+              // Check if this request was cancelled
+              if (abortController.signal.aborted) return;
+
+              setPositionInfo((prev) => ({
+                ...prev,
+                errorMessage: 'Cannot find jupiter route',
+                isInfoLoading: false,
+              }));
+              return;
+            }
 
             collateralAmount = new BN(quoteResult.outAmount);
           }
@@ -532,10 +562,8 @@ export default function LongShortTradingInputs({
           return;
         }
 
-        // Verify that information is not outdated
-        // If loaderCounter doesn't match it means
-        // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) return;
+        // Check if this request was cancelled
+        if (abortController.signal.aborted) return;
 
         setPositionInfo((prev) => ({
           ...prev,
@@ -545,6 +573,9 @@ export default function LongShortTradingInputs({
           },
         }));
       } catch (err) {
+        // Check if this request was cancelled
+        if (abortController.signal.aborted) return;
+
         if (err instanceof AdrenaTransactionError) {
           setPositionInfo((prev) => ({
             ...prev,
@@ -628,10 +659,9 @@ export default function LongShortTradingInputs({
   }, [tokenB.symbol]);
 
   useEffect(() => {
-    // Reset error message and insufficient amount when inputs change
+    // Reset insufficient amount when inputs change
     setPositionInfo(prev => ({
       ...prev,
-      errorMessage: null,
       insufficientAmount: false,
     }));
 
@@ -718,10 +748,13 @@ export default function LongShortTradingInputs({
         }));
     }
 
-    return setPositionInfo((prev) => ({
-      ...prev,
-      errorMessage: null,
-    }));
+    // Only clear error message if we have valid position info
+    if (positionInfo.newPositionInfo) {
+      return setPositionInfo((prev) => ({
+        ...prev,
+        errorMessage: null,
+      }));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputState.isLimitOrder,
