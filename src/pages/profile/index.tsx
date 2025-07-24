@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
@@ -20,7 +21,6 @@ import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { selectWalletAddress } from '@/selectors/wallet';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
-import { twMerge } from 'tailwind-merge';
 
 export default function Profile({
   connected,
