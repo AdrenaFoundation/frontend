@@ -21,17 +21,13 @@ export default async function handler(
       });
     }
 
-    const authHeader = req.headers.authorization;
-    let query = supabaseAnonClient
+    const query = supabaseAnonClient
       .from('notifications')
       .select('*')
       .eq('owner_pubkey', wallet_address)
+      .eq('is_automated_order', true)
       .order('created_at', { ascending: false })
       .range(Number(offset), Number(offset) + Number(limit) - 1);
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const accessToken = authHeader.replace('Bearer ', '');
-      query = query.setHeader('Authorization', `Bearer ${accessToken}`);
-    }
 
     try {
       const { data, error } = await query;
@@ -70,19 +66,13 @@ export default async function handler(
       });
     }
 
-    // Get access token from Authorization header
-    const authHeader = req.headers.authorization;
-    let query = supabaseAnonClient
+    const query = supabaseAnonClient
       .from('notifications')
       .update({
         is_read: true,
       })
       .eq('owner_pubkey', wallet_address)
       .eq('transaction_signature', transaction_signature);
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const accessToken = authHeader.replace('Bearer ', '');
-      query = query.setHeader('Authorization', `Bearer ${accessToken}`);
-    }
 
     try {
       const { error } = await query;

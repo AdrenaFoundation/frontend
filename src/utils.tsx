@@ -398,6 +398,7 @@ export const DEFAULT_SETTINGS = {
   depositCollateralSymbol: '',
   withdrawCollateralSymbol: '',
   disableFriendReq: false,
+  enableDialectNotifications: false,
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {

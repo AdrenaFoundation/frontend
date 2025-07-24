@@ -20,6 +20,10 @@ interface UseNotificationsReturn {
 export const useNotifications = (
   walletAddress: string | null,
 ): UseNotificationsReturn => {
+  const enableDialectNotifications = useSelector(
+    (state) => state.settings.enableDialectNotifications,
+  );
+
   const limit = 50; // Default limit
 
   const [notifications, setNotifications] = useState<AdrenaNotificationData[]>(
@@ -32,10 +36,6 @@ export const useNotifications = (
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
   const walletAddressRef = useRef(walletAddress);
 
-  const { verifiedWalletAddresses } = useSelector(
-    (state) => state.supabaseAuth,
-  );
-
   const fetchNotifications = useCallback(
     async (reset: boolean = false, currentOffset: number = 0) => {
       if (!walletAddress) return;
@@ -44,20 +44,12 @@ export const useNotifications = (
         setLoading(true);
         setError(null);
 
-        // Get Supabase session for access token
-        const {
-          data: { session },
-        } = await supabaseAnonClient.auth.getSession();
-
         const response = await fetch(
           `/api/notifications?wallet_address=${walletAddress}&limit=${limit}&offset=${currentOffset}`,
           {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              ...(session
-                ? { Authorization: `Bearer ${session.access_token}` }
-                : {}),
             },
           },
         );
@@ -97,7 +89,7 @@ export const useNotifications = (
 
   // Initial fetch
   useEffect(() => {
-    if (walletAddress && verifiedWalletAddresses.includes(walletAddress)) {
+    if (walletAddress && !enableDialectNotifications) {
       fetchNotifications(true, 0);
     } else {
       setNotifications([]);
@@ -108,9 +100,11 @@ export const useNotifications = (
     walletAddressRef.current = walletAddress;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress, verifiedWalletAddresses]);
+  }, [walletAddress]);
 
   useEffect(() => {
+    if (enableDialectNotifications) return;
+
     if (channel) {
       supabaseAnonClient.removeChannel(channel);
     }
@@ -184,17 +178,10 @@ export const useNotifications = (
     if (!walletAddressRef.current) return;
 
     try {
-      const {
-        data: { session },
-      } = await supabaseAnonClient.auth.getSession();
-
       const response = await fetch('/api/notifications', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          ...(session
-            ? { Authorization: `Bearer ${session.access_token}` }
-            : {}),
         },
         body: JSON.stringify({
           wallet_address: walletAddressRef.current,

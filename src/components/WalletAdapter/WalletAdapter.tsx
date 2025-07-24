@@ -136,7 +136,7 @@ export default function WalletAdapter({
               <Button
                 className={twMerge(
                   className,
-                  'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-full sm:rounded-none sm:rounded-l-lg border-r border-r-[#414E5E] gap-2 text-sm h-auto bg-transparent',
+                  'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-full sm:rounded-none sm:rounded-l-lg border-r border-r-[#414E5E] gap-2 text-xs h-auto bg-transparent',
                   isIconOnly && 'p-0 h-8 w-8',
                 )}
                 style={

@@ -24,6 +24,7 @@ export default function ChartToggleButton({
 
   return (
     <div className={twMerge(baseClasses, className)} onClick={onClick}>
+      <p className={textClasses}>{children}</p>
       <Switch
         checked={isActive}
         onChange={() => {
@@ -31,7 +32,6 @@ export default function ChartToggleButton({
         }}
         size="small"
       />
-      <p className={textClasses}>{children}</p>
     </div>
   );
 }
