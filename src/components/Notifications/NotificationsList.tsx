@@ -1,4 +1,5 @@
 import { AdrenaNotificationData } from '@/types';
+import { useEffect, useRef } from 'react';
 
 import { NotificationItem } from './NotificationItem';
 
@@ -21,6 +22,10 @@ export const NotificationsList = ({
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 
+  const notificationRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const markedAsReadArr = useRef<string[]>([]);
+
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     const threshold = 100; // Load more when 100px from bottom
@@ -33,7 +38,32 @@ export const NotificationsList = ({
     ) {
       loadMore();
     }
+
+    // Mark visible unread notifications as read (only once per notification)
+    if (onMarkAsRead) {
+      sortedNotifications.forEach((notification, idx) => {
+        if (notification.is_read || markedAsReadArr.current.includes(notification.transaction_signature)) return;
+        const ref = notificationRefs.current[idx];
+        if (!ref) return;
+        const rect = ref.getBoundingClientRect();
+        const parentRect = target.getBoundingClientRect();
+        // Check if at least half of the notification is visible in the scroll area
+        const isVisible =
+          rect.top < parentRect.bottom &&
+          rect.bottom > parentRect.top &&
+          rect.bottom - Math.max(rect.top, parentRect.top) > (rect.height / 2);
+        if (isVisible) {
+          markedAsReadArr.current.push(notification.transaction_signature);
+          onMarkAsRead(notification.transaction_signature);
+        }
+      });
+    }
   };
+
+  useEffect(() => {
+    markedAsReadArr.current = [];
+  }, [notifications]);
+
 
   if (isLoading) {
     return (
@@ -54,20 +84,8 @@ export const NotificationsList = ({
     );
   }
 
-  const handleWindowClick = () => {
-    // Mark all currently visible unread notifications as read
-    const unreadVisibleNotifications = sortedNotifications.filter(
-      (n) => !n.is_read,
-    );
-    if (unreadVisibleNotifications.length > 0 && onMarkAsRead) {
-      unreadVisibleNotifications.forEach((notification) => {
-        onMarkAsRead(notification.transaction_signature);
-      });
-    }
-  };
-
   return (
-    <div className="space-y-4" onClick={handleWindowClick}>
+    <div className="space-y-4">
       {/* Notifications List */}
       <div
         className="space-y-2 max-h-80 overflow-y-auto overscroll-contain custom-chat-scrollbar"
@@ -96,12 +114,18 @@ export const NotificationsList = ({
           </div>
         ) : (
           <>
-            {sortedNotifications.map((notification) => (
-              <NotificationItem
+            {sortedNotifications.map((notification, idx) => (
+              <div
                 key={notification.transaction_signature}
-                notification={notification}
-                onMarkAsRead={onMarkAsRead}
-              />
+                ref={(el) => {
+                  notificationRefs.current[idx] = el;
+                }}
+              >
+                <NotificationItem
+                  notification={notification}
+                  onMarkAsRead={onMarkAsRead}
+                />
+              </div>
             ))}
 
             {/* Load More Indicator */}
