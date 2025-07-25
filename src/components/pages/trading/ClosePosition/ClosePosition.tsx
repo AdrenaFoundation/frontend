@@ -21,6 +21,7 @@ import {
 } from '@/types';
 import {
   AdrenaTransactionError,
+  applySlippage,
   formatNumber,
   getJupiterApiQuote,
   getTokenImage,
@@ -148,7 +149,7 @@ export default function ClosePosition({
           inputMint: position.collateralToken.mint,
           outputMint: redeemToken.mint,
           amount: exitPriceAndFee.amountOut,
-          swapSlippage: 0,
+          swapSlippage,
         });
 
         if (!jupiterQuote) {
@@ -157,7 +158,9 @@ export default function ClosePosition({
           setIsCalculating(false);
           return;
         }
-        setAmountOut(nativeToUi(new BN(jupiterQuote.outAmount), redeemToken.decimals));
+        // Apply slippage to get the actual amount the user will receive
+        const amountWithSlippage = applySlippage(new BN(jupiterQuote.outAmount), -swapSlippage);
+        setAmountOut(nativeToUi(amountWithSlippage, redeemToken.decimals));
       } else {
         setIsCalculatingNative(true);
         setAmountOut(nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals));
@@ -177,7 +180,7 @@ export default function ClosePosition({
   useEffect(() => {
     runCalculation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position, doJupiterSwap, redeemToken, activePercent]);
+  }, [position, doJupiterSwap, redeemToken, activePercent, swapSlippage]);
 
   useEffect(() => {
     if (isCalculating) return;
