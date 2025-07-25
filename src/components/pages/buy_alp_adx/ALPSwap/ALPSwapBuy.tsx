@@ -131,7 +131,7 @@ export default function ALPSwapBuy({
                 let amountUsd = uiToNative(collateralInput, collateralToken.decimals);
 
                 // Use jupiter swap quote to know the USD value of the amount the user wants to deposit
-                // Good enough to estimate the ALP amount 
+                // Good enough to estimate the ALP amount
                 if (doJupiterSwap) {
                     const quoteResult = await getJupiterApiQuote({
                         inputMint: collateralToken.mint,
@@ -139,6 +139,11 @@ export default function ALPSwapBuy({
                         amount: amountUsd,
                         swapSlippage,
                     });
+
+                    if (!quoteResult) {
+                        setErrorMessage('Failed to get Jupiter quote');
+                        return;
+                    }
 
                     amountUsd = new BN(quoteResult.outAmount);
                 }
