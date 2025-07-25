@@ -32,6 +32,7 @@ import { ExecutionModeSelector } from './LongShortTradingInputs/ExecutionModeSel
 import { FeesSection } from './LongShortTradingInputs/FeesSection';
 import { InputSection } from './LongShortTradingInputs/InputSection';
 import { LimitOrderContent } from './LongShortTradingInputs/LimitOrderContent';
+import LimitOrderWarning from './LongShortTradingInputs/LimitOrderWarning';
 import { MarketOrderContent } from './LongShortTradingInputs/MarketOrderContent';
 import { PositionInfoSection } from './LongShortTradingInputs/PositionInfoSection';
 import { ShortWarning } from './LongShortTradingInputs/ShortWarning';
@@ -1158,6 +1159,7 @@ export default function LongShortTradingInputs({
             ) : null}
           </>
         )}
+        {inputState.isLimitOrder ? <LimitOrderWarning /> : null}
       </div>
     </>
   );
