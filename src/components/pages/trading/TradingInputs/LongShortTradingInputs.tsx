@@ -952,7 +952,7 @@ export default function LongShortTradingInputs({
       addNotification({
         type: 'info',
         title: 'Limit Order Mode',
-        message: 'TPSL is not available in Limit Order mode.',
+        message: 'SL/TP is not available in Limit Order mode.',
       });
     }
 
@@ -991,8 +991,8 @@ export default function LongShortTradingInputs({
 
       addNotification({
         type: 'info',
-        title: 'TPSL Mode',
-        message: 'TPSL is not available in Limit Order mode.',
+        title: 'SL/TP Mode',
+        message: 'SL/TP is not available in Limit Order mode.',
       });
     }
 
