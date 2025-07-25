@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import { AdrenaNotificationData, TokenSymbol } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { getTokenImage, getTokenSymbol, getTxExplorer } from '@/utils';
 
 // Emoji by size (same as Discord)
 function getSizeEmoji(size: number): string {
@@ -37,7 +37,7 @@ function getNotificationColors(type: string): { bg: string; border: string; acce
         case 'position_closed':
             return { bg: 'bg-orange/10', border: 'border-orange/30', accent: 'text-orange' };
         case 'position_liquidated':
-            return { bg: 'bg-red/10', border: 'border-red/30', accent: 'text-red' };
+            return { bg: 'bg-red/10', border: 'border-red/30', accent: 'text-redbright' };
         case 'position_increased':
             return { bg: 'bg-blue/10', border: 'border-blue/30', accent: 'text-blue' };
         default:
@@ -74,7 +74,6 @@ export const NotificationItem = ({
 
     const colors = getNotificationColors(notification.notification_type);
     const title = getNotificationTitle(notification.notification_type, Number(notification.size_usd_decimal || 0));
-    const sizeEmoji = getSizeEmoji(Number(notification.size_usd_decimal || 0));
     const token = getTokenByMarketSymbol(notification.market);
 
     // Calculate P&L
@@ -130,12 +129,6 @@ export const NotificationItem = ({
                         </p>
                     </div>
                 </div>
-
-                {notification.is_automated_order && (
-                    <span className="px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 rounded border border-purple-500/30">
-                        AUTO
-                    </span>
-                )}
             </div>
 
             {/* Main Stats Grid */}
@@ -162,7 +155,6 @@ export const NotificationItem = ({
                         className="font-mono font-medium text-sm mr-1"
                         minimumFractionDigits={2}
                     />
-                    {sizeEmoji}
                 </div>
 
                 <div>
@@ -250,7 +242,7 @@ export const NotificationItem = ({
             <div className="pt-2 border-t border-white/10">
                 <p className="text-gray-400 text-xs mb-1">Transaction</p>
                 <a
-                    href={`https://solscan.io/tx/${notification.transaction_signature}`}
+                    href={getTxExplorer(notification.transaction_signature)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-mono text-xs text-blue-400 hover:text-blue-300 transition-colors"

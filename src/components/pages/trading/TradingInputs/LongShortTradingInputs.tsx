@@ -945,6 +945,17 @@ export default function LongShortTradingInputs({
   };
 
   const handleModeChange = (isLimit: boolean) => {
+    if (isLimit && isTPSL) {
+      setIsTPSL(false);
+      setStopLossInput(null);
+      setTakeProfitInput(null);
+      addNotification({
+        type: 'info',
+        title: 'Limit Order Mode',
+        message: 'TPSL is not available in Limit Order mode.',
+      });
+    }
+
     setIsTPSL(isLimit ? false : isTPSL);
     setStopLossInput(isLimit ? null : stopLossInput);
     setTakeProfitInput(isLimit ? null : takeProfitInput);
@@ -967,6 +978,25 @@ export default function LongShortTradingInputs({
         }),
       }));
     }
+  };
+
+  const handleTPSLToggle = (v: boolean) => {
+    if (v && inputState.isLimitOrder) {
+      setInputState((prev) => ({
+        ...prev,
+        isLimitOrder: false,
+        limitOrderTriggerPrice: null,
+        limitOrderSlippage: null,
+      }));
+
+      addNotification({
+        type: 'info',
+        title: 'TPSL Mode',
+        message: 'TPSL is not available in Limit Order mode.',
+      });
+    }
+
+    setIsTPSL(v);
   };
 
   // TODO: Adapt when having custodies backed by USDC
@@ -1048,7 +1078,7 @@ export default function LongShortTradingInputs({
           setStopLossInput={setStopLossInput}
           side={side}
           isTPSL={isTPSL && !inputState.isLimitOrder}
-          setIsTPSL={setIsTPSL}
+          setIsTPSL={handleTPSLToggle}
           isConnected={!!wallet}
           openedPosition={openedPosition}
         />

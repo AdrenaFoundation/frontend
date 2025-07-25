@@ -72,7 +72,7 @@ export default function PriorityFeeSetting({
 
       <div
         className={twMerge(
-          'flex gap-1 items-center mt-4 font-interSemibold text-xs',
+          'flex gap-1 items-center mt-6 font-interSemibold text-xs',
         )}
       >
         <InfoAnnotation
@@ -138,7 +138,7 @@ export default function PriorityFeeSetting({
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-6">
         <div
           className={twMerge(
             'flex items-center gap-1 mb-1 text-xs font-interSemibold',
