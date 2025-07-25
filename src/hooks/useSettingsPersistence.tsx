@@ -96,6 +96,13 @@ export default function useSettingsPersistence() {
                 updatedSettings.disableFriendReq = v;
         }
 
+        {
+            // we don't want to override enableDialectNotifications with cookies
+            const v = preferences?.enableDialectNotifications ? preferences.enableDialectNotifications : false
+            if (v === false || v === true)
+                updatedSettings.enableDialectNotifications = v;
+        }
+
         dispatch(
             setSettings(updatedSettings),
         );

@@ -26,6 +26,7 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import Mutagen from '../Mutagen/Mutagen';
+import { NotificationBell } from '../Notifications/NotificationBell';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
@@ -97,7 +98,7 @@ export default function Header({
               window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
             )}
             alt="logo"
-            width={100}
+            width={80}
             height={25}
           />
 
@@ -172,7 +173,10 @@ export default function Header({
         />
       </div>
 
+
+
       <div className="flex flex-row items-center gap-2 sm:gap-3">
+
         <Link href="/buy_alp">
           {tokenPriceALP && aprs ? (
             <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
@@ -249,21 +253,25 @@ export default function Header({
           )}
         </Link>
 
-        <PriorityFeeSetting />
-
-        <Settings
-          activeRpc={activeRpc}
-          rpcInfos={rpcInfos}
-          autoRpcMode={autoRpcMode}
-          customRpcUrl={customRpcUrl}
-          customRpcLatency={customRpcLatency}
-          favoriteRpc={favoriteRpc}
-          setAutoRpcMode={setAutoRpcMode}
-          setCustomRpcUrl={setCustomRpcUrl}
-          setFavoriteRpc={setFavoriteRpc}
-        />
-
         <Mutagen />
+
+        <div className="flex flex-row items-center border border-[#414E5E] rounded-lg">
+          <NotificationBell adapters={adapters} />
+
+          <PriorityFeeSetting />
+
+          <Settings
+            activeRpc={activeRpc}
+            rpcInfos={rpcInfos}
+            autoRpcMode={autoRpcMode}
+            customRpcUrl={customRpcUrl}
+            customRpcLatency={customRpcLatency}
+            favoriteRpc={favoriteRpc}
+            setAutoRpcMode={setAutoRpcMode}
+            setCustomRpcUrl={setCustomRpcUrl}
+            setFavoriteRpc={setFavoriteRpc}
+          />
+        </div>
 
         <WalletAdapter userProfile={userProfile} adapters={adapters} />
 
@@ -291,6 +299,6 @@ export default function Header({
           </Menu>
         ) : null}
       </div>
-    </div>
+    </div >
   );
 }

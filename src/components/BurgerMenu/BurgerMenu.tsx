@@ -18,7 +18,6 @@ import { formatPriceInfo } from '@/utils';
 
 import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
-import chatIcon from '../../../public/images/chat-text.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import competitionIcon from '../../../public/images/competition.svg';
 import githubLogo from '../../../public/images/github.svg';
@@ -30,6 +29,7 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import Mutagen from '../Mutagen/Mutagen';
+import { NotificationBell } from '../Notifications';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
@@ -88,6 +88,7 @@ export default function BurgerMenu({
 
   const [isPriorityFeeModalOpen, setIsPriorityFeeModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -97,7 +98,6 @@ export default function BurgerMenu({
   }, [tokenPrices]);
 
   const clusterSwitchEnabled = false;
-
 
   useEffect(() => {
     if (isOpen) {
@@ -109,10 +109,16 @@ export default function BurgerMenu({
 
   return (
     <div className="z-30">
-      <div className="py-3 p-4 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
+      <div className="py-3 p-3 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
         <div className="flex flex-row gap-3 items-center">
           <Link href="/trade">
-            <Image src={adxLogo} alt="logo" width={28} height={28} className='w-6 h-6' />
+            <Image
+              src={adxLogo}
+              alt="logo"
+              width={28}
+              height={28}
+              className="w-6 h-6"
+            />
           </Link>
 
           <div className="flex flex-row items-center gap-2">
@@ -131,8 +137,10 @@ export default function BurgerMenu({
                     <div className="text-xxs font-mono">
                       {formatPriceInfo(
                         alpPrice,
-                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
-                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.alpToken
+                          .displayPriceDecimalsPrecision,
+                        window.adrena.client.alpToken
+                          .displayPriceDecimalsPrecision,
                       )}
                     </div>
 
@@ -169,8 +177,10 @@ export default function BurgerMenu({
                     <div className="text-xxs font-mono">
                       {formatPriceInfo(
                         adxPrice,
-                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
-                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.adxToken
+                          .displayPriceDecimalsPrecision,
+                        window.adrena.client.adxToken
+                          .displayPriceDecimalsPrecision,
                       )}
                     </div>
 
@@ -196,18 +206,6 @@ export default function BurgerMenu({
 
         <div className="flex flex-row gap-2 sm:gap-3 items-center">
           <Mutagen isMobile />
-          {disableChat === true ? (
-            null
-          ) : (
-            <Button
-              className="gap-1 text-xs p-0 h-8 w-8 border border-white/20"
-              leftIcon={chatIcon}
-              alt="chat icon"
-              leftIconClassName="w-[0.875rem] h-[0.875rem]"
-              variant="lightbg"
-              onClick={() => setIsChatOpen(!isChatOpen)}
-            />
-          )}
 
           <AnimatePresence>
             {isPriorityFeeModalOpen ? (
@@ -236,6 +234,14 @@ export default function BurgerMenu({
             ) : null}
           </AnimatePresence>
 
+
+          {<NotificationBell
+            setIsNotificationModalOpen={setIsNotificationModalOpen}
+            isNotificationModalOpen={isNotificationModalOpen}
+            adapters={adapters}
+            isMobile
+          />}
+
           <WalletAdapter
             className="w-full"
             userProfile={userProfile}
@@ -243,6 +249,8 @@ export default function BurgerMenu({
             adapters={adapters}
             setIsPriorityFeeModalOpen={setIsPriorityFeeModalOpen}
             setIsSettingsModalOpen={setIsSettingsModalOpen}
+            setIsChatOpen={() => setIsChatOpen(!isChatOpen)}
+            disableChat={disableChat}
             isMobile
           />
         </div>

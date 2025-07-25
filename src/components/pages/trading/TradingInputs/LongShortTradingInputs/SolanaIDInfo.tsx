@@ -26,7 +26,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
         </div>
 
         <div className='text-center text-sm'>
-          As a Tier {solanaID.solidUser.tierGroup} user, you will receive +{SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].mutagen} free mutagens on your first trade.
+          As a {solanaID.solidUser.tierGroup} user, you will receive +{SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].mutagen} free mutagens on your first trade.
         </div>
 
         <div className='text-center text-sm'>

@@ -41,31 +41,30 @@ export default function RPCSettings({
 
   return (
     <div>
-      <div className="flex mb-3">
+      <div className="flex mb-1">
         {window.adrena.cluster === 'devnet' ? (
           <h2 className="text-blue-500 pr-1">Devnet</h2>
         ) : null}
-        <h2 className="flex">RPC endpoints</h2>
+        <h4 className="font-interSemibold">RPC endpoints</h4>
       </div>
 
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-row gap-1 items-center">
-          <p className="font-medium">Automatic switch</p>
           <InfoAnnotation
             text={
               <p>
                 Automatically selects the best RPC endpoint based on latency
               </p>
             }
-            className="w-3"
+            className="w-3 ml-0"
           />
+          <p className="text-sm font-boldy">Automatic switch</p>
         </div>
 
         <Switch
           checked={autoRpcMode}
           onChange={() => {
             setAutoRpcMode(!autoRpcMode);
-
             addNotification({
               title: `Automatic switch ${autoRpcMode ? 'disabled' : 'enabled'}`,
               duration: 'fast',
@@ -77,8 +76,8 @@ export default function RPCSettings({
       <div className="w-full h-[1px] bg-bcolor my-3" />
 
       <div className="w-full flex mb-2">
-        <div className="text-xs text-gray-500">Preferred</div>
-        <div className="text-xs text-gray-500 ml-auto">Latency</div>
+        <div className="text-sm opacity-30">Preferred</div>
+        <div className="text-sm opacity-30 ml-auto">Latency</div>
       </div>
 
       <ul
@@ -101,8 +100,8 @@ export default function RPCSettings({
                 setFavoriteRpc(rpc.name);
               }}
             >
-              <div className="flex flex-row gap-2 items-center">
-                <div className="w-10 flex items-center justify-center">
+              <div className="flex flex-row gap-0 items-center">
+                <div className="flex items-center justify-center">
                   <input
                     type="radio"
                     checked={rpc.name === favoriteRpc}
@@ -115,7 +114,7 @@ export default function RPCSettings({
 
                 <p
                   className={twMerge(
-                    'text-sm font-medium opacity-50 transition-opacity duration-300 hover:opacity-100',
+                    'text-sm font-interMedium opacity-50 transition-opacity duration-300 hover:opacity-100 ml-2',
                     rpc.name === favoriteRpc && 'opacity-100',
                   )}
                 >
@@ -123,7 +122,7 @@ export default function RPCSettings({
                 </p>
 
                 {activeRpc.name === rpc.name ? (
-                  <p className="opacity-50">active</p>
+                  <p className="text-xs opacity-50 ml-2">active</p>
                 ) : null}
               </div>
 
@@ -145,7 +144,7 @@ export default function RPCSettings({
                   </p>
                 </div>
               ) : (
-                <div className="text-gray-600 mr-4 text-sm">-</div>
+                <div className="opacity-50 mr-4 text-sm">-</div>
               )}
             </div>
 
@@ -153,7 +152,7 @@ export default function RPCSettings({
               <div className="flex flex-row gap-2 items-center w-full mt-2">
                 <div
                   className={twMerge(
-                    'relative w-full  bg-black border border-bcolor rounded-lg overflow-hidden transition duration-300',
+                    'relative w-full  border border-white/20 rounded-lg bg-inputcolor overflow-hidden transition duration-300',
                   )}
                 >
                   <input
@@ -163,7 +162,7 @@ export default function RPCSettings({
                       setEditCustomRpcUrl(e.target.value);
                     }}
                     className={twMerge(
-                      'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm bg-black transition duration-300',
+                      'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm font-mono rounded-lg bg-inputcolor transition duration-300',
                     )}
                     placeholder="Custom RPC URL"
                   />
@@ -177,7 +176,7 @@ export default function RPCSettings({
                       setCustomRpcUrl(editCustomRpcUrl);
                     }}
                     className={twMerge(
-                      'text-xs absolute right-2 top-[8px] p-1 px-2 rounded-md',
+                      'text-xs absolute right-2 top-[7px] p-1 px-2 rounded-md',
                     )}
                   />
                 </div>

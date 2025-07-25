@@ -54,7 +54,10 @@ export default function TradeComp({
   const [isWhitelistedSwapper, setIsWhitelistedSwapper] = useState(false);
 
   useEffect(() => {
-    if (window.adrena.client.mainPool.whitelistedSwapper.toBase58() == wallet?.publicKey?.toBase58()) {
+    if (
+      window.adrena.client.mainPool.whitelistedSwapper.toBase58() ==
+      wallet?.publicKey?.toBase58()
+    ) {
       setIsWhitelistedSwapper(true);
     }
   }, [wallet]);
@@ -62,7 +65,7 @@ export default function TradeComp({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full sm:bg-main/90 flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg',
+        'sm:flex w-full sm:bg-main flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg',
         isBigScreen ? 'mt-0 w-[30em]' : 'mt-4',
         className,
       )}
@@ -86,7 +89,6 @@ export default function TradeComp({
             {selectedAction === 'long' || selectedAction === 'short' ? (
               <LongShortTradingInputs
                 side={selectedAction}
-
                 // Adrena tokens + swappable tokens
                 allowedTokenA={[
                   ...window.adrena.client.tokens,
@@ -132,33 +134,35 @@ export default function TradeComp({
                   />
                 )}
 
-                {isWhitelistedSwapper ? <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
-                  <span
-                    className={twMerge(
-                      'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                      isJupSwap ? 'opacity-100' : '',
-                    )}
-                    onClick={() => {
-                      setIsJupSwap(true);
-                    }}
-                  >
-                    JUP
-                  </span>
+                {isWhitelistedSwapper ? (
+                  <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
+                    <span
+                      className={twMerge(
+                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        isJupSwap ? 'opacity-100' : '',
+                      )}
+                      onClick={() => {
+                        setIsJupSwap(true);
+                      }}
+                    >
+                      JUP
+                    </span>
 
-                  <span className="opacity-20 text-2xl">/</span>
+                    <span className="opacity-20 text-2xl">/</span>
 
-                  <span
-                    className={twMerge(
-                      'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                      !isJupSwap ? 'opacity-100' : '',
-                    )}
-                    onClick={() => {
-                      setIsJupSwap(false);
-                    }}
-                  >
-                    Adrena
-                  </span>
-                </div> : null}
+                    <span
+                      className={twMerge(
+                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        !isJupSwap ? 'opacity-100' : '',
+                      )}
+                      onClick={() => {
+                        setIsJupSwap(false);
+                      }}
+                    >
+                      Adrena
+                    </span>
+                  </div>
+                ) : null}
               </>
             )}
           </>
