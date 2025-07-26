@@ -100,6 +100,7 @@ import {
   getTokenSymbol,
   isAccountInitialized,
   jupInstructionToTransactionInstruction,
+  JupiterSwapError,
   nativeToUi,
   parseTransactionError,
   PercentilePriorityFeeList,
@@ -1329,6 +1330,11 @@ export class AdrenaClient {
           swapSlippage,
         });
 
+        if (!quoteResult) {
+          notification.currentStepErrored('Cannot find jupiter route');
+          return null;
+        }
+
         // Apply the slippage so we never fail for not enough collateral in the addLiquidity
         // Can still fail due to jupiter swap failing, but that's expected
         amountIn = applySlippage(new BN(quoteResult.outAmount), -swapSlippage);
@@ -1985,18 +1991,13 @@ export class AdrenaClient {
     }
 
     const additionalAddressLookupTables: PublicKey[] = [];
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
 
     console.log('Close position:', {
       price: price.toString(),
       percentage: percentage.toString(),
     });
-    const builder = await this.buildClosePositionLongIx({
-      position,
-      price,
-      percentage,
-    });
-
-    const transaction = await builder.transaction();
 
     const doJupiterSwap =
       position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
@@ -2010,6 +2011,13 @@ export class AdrenaClient {
           swapSlippage,
         });
 
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            position.collateralToken.mint.toBase58(),
+            redeemToken.mint.toBase58(),
+          );
+        }
+
         const swapInstructions =
           await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
@@ -2019,10 +2027,13 @@ export class AdrenaClient {
           });
 
         if (swapInstructions === null) {
-          return null;
+          throw new JupiterSwapError(
+            position.collateralToken.mint.toBase58(),
+            redeemToken.mint.toBase58(),
+          );
         }
 
-        transaction.add(
+        postInstructions.push(
           ...(swapInstructions.setupInstructions || []).map(
             jupInstructionToTransactionInstruction,
           ),
@@ -2044,10 +2055,21 @@ export class AdrenaClient {
           ),
         );
       }
-    } catch {
-      notification?.currentStepErrored('Failed to find Jupiter route');
-      return null;
+    } catch (error) {
+      // Handle the error directly in ClosePosition.tsx
+      throw error;
     }
+
+    const builder = await this.buildClosePositionLongIx({
+      position,
+      price,
+      percentage,
+    });
+
+    const transaction = await builder
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -2087,14 +2109,8 @@ export class AdrenaClient {
     }
 
     const additionalAddressLookupTables: PublicKey[] = [];
-
-    const builder = await this.buildClosePositionShortIx({
-      position,
-      price,
-      percentage,
-    });
-
-    const transaction = await builder.transaction();
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
 
     const doJupiterSwap =
       position.collateralToken.mint.toBase58() !== redeemToken.mint.toBase58();
@@ -2108,6 +2124,13 @@ export class AdrenaClient {
           swapSlippage,
         });
 
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            position.collateralToken.mint.toBase58(),
+            redeemToken.mint.toBase58(),
+          );
+        }
+
         const swapInstructions =
           await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
@@ -2117,10 +2140,13 @@ export class AdrenaClient {
           });
 
         if (swapInstructions === null) {
-          return null;
+          throw new JupiterSwapError(
+            position.collateralToken.mint.toBase58(),
+            redeemToken.mint.toBase58(),
+          );
         }
 
-        transaction.add(
+        postInstructions.push(
           ...(swapInstructions.setupInstructions || []).map(
             jupInstructionToTransactionInstruction,
           ),
@@ -2142,10 +2168,21 @@ export class AdrenaClient {
           ),
         );
       }
-    } catch {
-      notification?.currentStepErrored('Failed to find Jupiter route');
-      return null;
+    } catch (error) {
+      // Handle the error directly in ClosePosition.tsx
+      throw error;
     }
+
+    const builder = await this.buildClosePositionShortIx({
+      position,
+      price,
+      percentage,
+    });
+
+    const transaction = await builder
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -2422,7 +2459,13 @@ export class AdrenaClient {
           swapSlippage,
         });
 
-        console.log('quoteResult', quoteResult);
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            collateralMint.toBase58(),
+            usdcToken.mint.toBase58(),
+            'Cannot find jupiter route',
+          );
+        }
 
         // Apply the slippage so we never fail for not enough collateral in the openPosition
         // Can still fail due to jupiter swap failing, but that's expected
@@ -2440,8 +2483,10 @@ export class AdrenaClient {
           });
 
         if (swapInstructions === null) {
-          notification.currentStepErrored('Failed to get swap instructions');
-          return;
+          throw new JupiterSwapError(
+            collateralMint.toBase58(),
+            usdcToken.mint.toBase58(),
+          );
         }
 
         preInstructions.push(
@@ -2466,9 +2511,15 @@ export class AdrenaClient {
           ),
         );
       }
-    } catch {
-      notification?.currentStepErrored('Failed to find Jupiter route');
-      return null;
+    } catch (error) {
+      if (error instanceof JupiterSwapError) {
+        throw error;
+      }
+      throw new JupiterSwapError(
+        collateralMint.toBase58(),
+        usdcToken.mint.toBase58(),
+        error,
+      );
     }
 
     const openPositionWithSwapIx = await (
@@ -2785,6 +2836,14 @@ export class AdrenaClient {
           swapSlippage,
         });
 
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            collateralMint.toBase58(),
+            mint.toBase58(),
+            'Cannot find jupiter route',
+          );
+        }
+
         // Apply the slippage so we never fail for not enough collateral in the openPosition
         // Can still fail due to jupiter swap failing, but that's expected
         collateralAmount = applySlippage(
@@ -2801,8 +2860,10 @@ export class AdrenaClient {
           });
 
         if (swapInstructions === null) {
-          notification.currentStepErrored('Failed to get swap instructions');
-          return;
+          throw new JupiterSwapError(
+            collateralMint.toBase58(),
+            mint.toBase58(),
+          );
         }
 
         preInstructions.push(
@@ -2827,9 +2888,15 @@ export class AdrenaClient {
           ),
         );
       }
-    } catch {
-      notification?.currentStepErrored('Failed to find Jupiter route');
-      return null;
+    } catch (error) {
+      if (error instanceof JupiterSwapError) {
+        throw error;
+      }
+      throw new JupiterSwapError(
+        collateralMint.toBase58(),
+        mint.toBase58(),
+        error,
+      );
     }
 
     const openPositionWithSwapIx = await (
@@ -2864,13 +2931,15 @@ export class AdrenaClient {
     depositToken,
     swapSlippage,
     notification,
+    useCollateralToken = false,
   }: {
     position: PositionExtended;
     addedCollateral: BN;
     depositToken: Token;
     swapSlippage: number;
     notification: MultiStepNotification;
-  }) {
+    useCollateralToken?: boolean;
+  }): Promise<string | null> {
     if (!this.connection) {
       throw new Error('not connected');
     }
@@ -2879,17 +2948,30 @@ export class AdrenaClient {
     const postInstructions: TransactionInstruction[] = [];
     const additionalAddressLookupTables: PublicKey[] = [];
 
+    // Use collateral token if specified, otherwise check if swap is needed
+    const tokenToUse = useCollateralToken
+      ? position.collateralToken
+      : depositToken;
     const doJupiterSwap =
+      !useCollateralToken &&
       position.collateralToken.symbol !== depositToken.symbol;
 
     try {
       if (doJupiterSwap) {
         const quoteResult = await getJupiterApiQuote({
-          inputMint: depositToken.mint,
+          inputMint: tokenToUse.mint,
           outputMint: position.collateralToken.mint,
           amount: addedCollateral,
           swapSlippage,
         });
+
+        if (!quoteResult) {
+          throw new JupiterSwapError(
+            tokenToUse.mint.toBase58(),
+            position.collateralToken.mint.toBase58(),
+            'Cannot find jupiter route',
+          );
+        }
 
         // Apply the slippage so we never fail for not enough collateral in the depositCollateral
         // Can still fail due to jupiter swap failing, but that's expected
@@ -2912,8 +2994,10 @@ export class AdrenaClient {
           });
 
         if (swapInstructions === null) {
-          notification.currentStepErrored('Failed to get swap instructions');
-          return;
+          throw new JupiterSwapError(
+            depositToken.mint.toBase58(),
+            position.collateralToken.mint.toBase58(),
+          );
         }
 
         preInstructions.push(
@@ -2938,9 +3022,9 @@ export class AdrenaClient {
           ),
         );
       }
-    } catch {
-      notification?.currentStepErrored('Failed to find Jupiter route');
-      return null;
+    } catch (error) {
+      // Handle the error directly in EditPositionCollateral.tsx
+      throw error;
     }
 
     const builder = await (
@@ -4652,6 +4736,11 @@ export class AdrenaClient {
           swapSlippage,
         });
 
+        if (!quoteResult) {
+          notification?.currentStepErrored('Cannot find jupiter route');
+          return null;
+        }
+
         // Apply the slippage so we never fail for not enough collateral in the openPosition
         // Can still fail due to jupiter swap failing, but that's expected
         collateralAmount = applySlippage(
@@ -6361,7 +6450,22 @@ export class AdrenaClient {
           const adrenaError = parseTransactionError(
             this.readonlyAdrenaProgram,
             result.value.err,
+            result.value.logs || undefined,
           );
+
+          // Add simulation context to the error
+          if (adrenaError instanceof JupiterSwapError) {
+            // Don't wrap JupiterSwapError - let it pass through as is
+            throw adrenaError;
+          }
+
+          if (adrenaError instanceof AdrenaTransactionError) {
+            const simulationError = new AdrenaTransactionError(
+              adrenaError.txHash,
+              `Simulation failed: ${adrenaError.errorString}`,
+            );
+            throw simulationError;
+          }
 
           throw adrenaError;
         }
@@ -6653,17 +6757,21 @@ export class AdrenaClient {
 
       // check for simulation error
       if (simulationResult.err) {
-        throw new Error(
-          `Transaction simulation failed: ${JSON.stringify(
-            simulationResult.err,
-          )}`,
-        );
+        // Create a custom error that includes the logs for better error parsing
+        const simulationError = {
+          err: simulationResult.err,
+          logs: simulationResult.logs,
+          message: `Transaction simulation failed: ${JSON.stringify(simulationResult.err)}`,
+        };
+        throw simulationError;
       }
 
       computeUnitUsed = simulationResult.unitsConsumed;
       console.log('computeUnitUsed', computeUnitUsed);
     } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+      // Extract logs if this is a simulation error
+      const logs = (err as { logs?: string[] })?.logs;
+      const adrenaError = parseTransactionError(this.adrenaProgram, err, logs);
 
       notification?.currentStepErrored(adrenaError);
       throw adrenaError;
@@ -6808,6 +6916,12 @@ export class AdrenaClient {
         }
       }
     } catch (err) {
+      // Handle Jupiter swap errors specially when doJupiterSwap is true
+      if (doJupiterSwap && err instanceof JupiterSwapError) {
+        notification?.currentStepErrored(err);
+        throw err;
+      }
+
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
       notification?.currentStepErrored(adrenaError);
