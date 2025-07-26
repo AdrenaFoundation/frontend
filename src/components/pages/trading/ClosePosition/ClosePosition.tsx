@@ -1,7 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
@@ -20,21 +20,22 @@ import {
   Token,
 } from '@/types';
 import {
+  AdrenaTransactionError,
+  applySlippage,
   formatNumber,
   getJupiterApiQuote,
   getTokenImage,
   getTokenSymbol,
+  isPartialClose,
   nativeToUi,
 } from '@/utils';
+import { JupiterSwapError } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
+import warningIcon from '../../../../../public/images/Icons/warning.png';
 import { PickTokenModal } from '../TradingInput/PickTokenModal';
 import { ErrorDisplay } from '../TradingInputs/LongShortTradingInputs/ErrorDisplay';
 import { SwapSlippageSection } from '../TradingInputs/LongShortTradingInputs/SwapSlippageSection';
-
-// use the counter to handle asynchronous multiple loading
-// always ignore outdated information
-let loadingCounter = 0;
 
 export default function ClosePosition({
   className,
@@ -70,11 +71,6 @@ export default function ClosePosition({
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
-  // Prevent unnecessary re-renders
-  const priceSum = useMemo(() => {
-    return (markPrice ?? 0) + (collateralMarkPrice ?? 0);
-  }, [markPrice, collateralMarkPrice]);
-
   const [showFees, setShowFees] = useState(false);
 
   // Pick default redeem token
@@ -90,7 +86,7 @@ export default function ClosePosition({
 
   const doJupiterSwap = useMemo(() => {
     return redeemToken.symbol !== position.collateralToken.symbol;
-  }, [position.collateralToken.symbol, redeemToken.symbol]);
+  }, [redeemToken, position.collateralToken]);
 
   const recommendedToken = position.collateralToken;
 
@@ -98,56 +94,111 @@ export default function ClosePosition({
   const [customAmount, setCustomAmount] = useState<number | null>(null);
   const [activePercent, setActivePercent] = useState<number | null>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+  const [isCalculating, setIsCalculating] = useState<boolean>(true);
+  const [isCalculatingJupiter, setIsCalculatingJupiter] = useState<boolean>(false);
+  const [isCalculatingNative, setIsCalculatingNative] = useState<boolean>(false);
+  const [lastCalculationTime, setLastCalculationTime] = useState<number>(Date.now());
 
-  useEffect(() => {
-    if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
-      return setAmountOut(null);
+  // Ref to track current request for race condition handling
+  const currentRequestRef = useRef<AbortController | null>(null);
+
+  const runCalculation = async () => {
+    // Cancel previous request if it exists
+    if (currentRequestRef.current) {
+      currentRequestRef.current.abort();
     }
+    const abortController = new AbortController();
+    currentRequestRef.current = abortController;
 
-    if (!doJupiterSwap) {
-      return setAmountOut(
-        nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals),
-      );
-    }
+    setIsCalculating(true);
 
-    getJupiterApiQuote({
-      inputMint: position.collateralToken.mint,
-      outputMint: redeemToken.mint,
-      amount: exitPriceAndFee.amountOut,
-      swapSlippage: 0, // No slippage for the quote
-    }).then((quote) => {
-      setAmountOut(nativeToUi(new BN(quote.outAmount), redeemToken.decimals));
-    })
-  }, [doJupiterSwap, exitPriceAndFee, position.collateralToken.mint, redeemToken.decimals, redeemToken.mint]);
+    try {
+      // Fetch exitPriceAndFee first
+      const exitPriceAndFee = await window.adrena.client.getExitPriceAndFee({ position });
 
-  useEffect(() => {
-    const localLoadingCounter = ++loadingCounter;
-
-    (async () => {
-      const exitPriceAndFee = await window.adrena.client.getExitPriceAndFee({
-        position,
-      });
-
-      // Verify that information is not outdated
-      // If loaderCounter doesn't match it means
-      // an other request has been casted due to input change
-      if (localLoadingCounter !== loadingCounter) {
+      if (abortController.signal.aborted) {
         return;
       }
 
-      setExitPriceAndFee(exitPriceAndFee);
-    })().catch(() => {
-      /* ignore error */
-    });
+      if (!exitPriceAndFee || !exitPriceAndFee.amountOut) {
+        setAmountOut(null);
+        setExitPriceAndFee(null);
+        setIsCalculating(false);
+        return;
+      }
 
-    // Trick here so we reload only when one of the prices changes
+      // Store the exitPriceAndFee for UI display
+      setExitPriceAndFee(exitPriceAndFee);
+
+      if (abortController.signal.aborted) return;
+
+      const remainingCollateral = position.collateralUsd * (1 - (activePercent ?? 1));
+      const shouldSkipJupiter = isPartialClose(activePercent) && remainingCollateral < 10;
+
+      // Check remaining collateral validation for all cases
+      if (shouldSkipJupiter) {
+        setAmountOut(null);
+        setErrorMsg('Remaining collateral must be at least $10');
+        setIsCalculating(false);
+        return;
+      }
+
+      if (doJupiterSwap) {
+        setIsCalculatingJupiter(true);
+        const jupiterQuote = await getJupiterApiQuote({
+          inputMint: position.collateralToken.mint,
+          outputMint: redeemToken.mint,
+          amount: exitPriceAndFee.amountOut,
+          swapSlippage,
+        });
+
+        if (!jupiterQuote) {
+          setAmountOut(null);
+          setErrorMsg('Cannot find jupiter route');
+          setIsCalculating(false);
+          return;
+        }
+        // Apply slippage to get the actual amount the user will receive
+        const amountWithSlippage = applySlippage(new BN(jupiterQuote.outAmount), -swapSlippage);
+        setAmountOut(nativeToUi(amountWithSlippage, redeemToken.decimals));
+      } else {
+        setIsCalculatingNative(true);
+        setAmountOut(nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals));
+      }
+
+      setErrorMsg(null);
+      setIsCalculating(false);
+      setIsCalculatingJupiter(false);
+      setIsCalculatingNative(false);
+      setLastCalculationTime(Date.now());
+    } catch {
+      if (abortController.signal.aborted) return;
+      setIsCalculating(false);
+    }
+  };
+
+  useEffect(() => {
+    runCalculation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position, priceSum]);
+  }, [position, doJupiterSwap, redeemToken, activePercent, swapSlippage]);
+
+  useEffect(() => {
+    if (isCalculating) return;
+
+    const intervalId = setInterval(() => {
+      const timeSinceLastCalculation = Date.now() - lastCalculationTime;
+      if (errorMsg !== 'Remaining collateral must be at least $10' && timeSinceLastCalculation >= 5000) {
+        runCalculation();
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCalculating]);
 
   const rowStyle = 'w-full flex justify-between items-center';
 
-  const doFullClose = useCallback(async () => {
+  const doFullClose = useCallback(async (useCollateralToken = false) => {
     if (!markPrice) return;
 
     const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
@@ -161,9 +212,10 @@ export default function ClosePosition({
       });
 
       if (!priceAndFee) {
-        return notification.currentStepErrored(
+        notification.currentStepErrored(
           'Cannot calculate position closing price',
         );
+        return;
       }
 
       // 1%
@@ -178,6 +230,18 @@ export default function ClosePosition({
             .mul(new BN(10_000 - slippageInBps))
             .div(new BN(10_000));
 
+      // Use collateral token if specified, otherwise use redeemToken
+      const tokenToUse = useCollateralToken ? position.collateralToken : redeemToken;
+
+      // compute integer bps (1…9999 for partials, or 10000 for full/zero)
+      const bps = isPartialClose(activePercent)
+        ? Math.floor((activePercent ?? 1) * 10_000)
+        : 10_000;
+
+      const scaledAmountOut = priceAndFee.amountOut
+        .mul(new BN(bps))
+        .div(new BN(10_000));
+
       await (
         position.side === 'long'
           ? window.adrena.client.closePositionLong.bind(window.adrena.client)
@@ -185,8 +249,8 @@ export default function ClosePosition({
       )({
         position,
         price: priceWithSlippage,
-        expectedCollateralAmountOut: new BN(priceAndFee.amountOut),
-        redeemToken,
+        expectedCollateralAmountOut: scaledAmountOut,
+        redeemToken: tokenToUse,
         swapSlippage,
         notification,
         percentage: new BN(
@@ -218,7 +282,37 @@ export default function ClosePosition({
 
       onClose();
     } catch (error) {
-      console.error('error', error);
+      if (error instanceof JupiterSwapError) {
+        if (notification) {
+          notification.setErrorActions([
+            {
+              title: 'Retry',
+              onClick: () => {
+                notification.close(0);
+                doFullClose(useCollateralToken);
+              },
+              variant: 'primary'
+            },
+            {
+              title: `Close in ${position.collateralToken.symbol}`,
+              onClick: () => {
+                notification.close(0);
+                doFullClose(true);
+              },
+              variant: 'outline'
+            }
+          ]);
+          notification.currentStepErrored(error.errorString);
+        }
+        return;
+      }
+
+      if (notification) {
+        notification.currentStepErrored(
+          error instanceof AdrenaTransactionError ? error.errorString :
+            error instanceof Error ? error.message : 'Transaction failed'
+        );
+      }
     }
   }, [
     markPrice,
@@ -244,8 +338,6 @@ export default function ClosePosition({
   };
 
   const handleCustomAmount = (v: number | null) => {
-    setHasInteracted(true);
-
     if (v === null || isNaN(v) || v < 0) {
       setCustomAmount(null);
       setActivePercent(null);
@@ -464,8 +556,6 @@ export default function ClosePosition({
                           'border-white/10 text-opacity-100',
                         )}
                         onClick={() => {
-                          setHasInteracted(true);
-
                           const newPercent = percent / 100;
                           const newAmount = calculatePercentage(newPercent);
 
@@ -495,7 +585,17 @@ export default function ClosePosition({
             {errorMsg ? <ErrorDisplay errorMessage={errorMsg} className="mt-2" /> : null}
 
             <div className="my-3">
-              <p className="mb-2 font-boldy text-sm">Receive</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="font-boldy text-sm">Receive</p>
+                {isCalculating ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-txtfade">
+                      {isCalculatingNative ? 'Calculating...' : isCalculatingJupiter ? 'Calculating Jupiter route...' :
+                        null}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
               <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-4 py-2.5">
                 <div className="flex flex-col">
                   <FormatNumber
@@ -569,12 +669,53 @@ export default function ClosePosition({
 
                     setRedeemToken(t);
                     setIsPickTokenModalOpen(false);
+
+                    // Clear current values during switch
+                    setAmountOut(null);
+                    setExitPriceAndFee(null);
+                    setErrorMsg(null);
+
+
                   }}
                 />
               </div>
             </div>
 
-            {doJupiterSwap && recommendedToken ? (
+            {/* Jupiter route failure warning */}
+            {doJupiterSwap && errorMsg === 'Cannot find jupiter route' ? (
+              <div className="flex flex-col text-sm">
+                <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
+                  <Image
+                    className="opacity-100 absolute left-3 top-auto bottom-auto"
+                    src={warningIcon}
+                    height={20}
+                    width={20}
+                    alt="Warning icon"
+                  />
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      Cannot find Jupiter route for {position.collateralToken.symbol} → {redeemToken.symbol}.
+                    </div>
+                    <div className="text-xs text-orange/80">
+                      You can close in {position.collateralToken.symbol} instead.
+                    </div>
+                    <Button
+                      title={`Use ${position.collateralToken.symbol}`}
+                      variant="outline"
+                      className="bg-third"
+                      onClick={() => {
+                        dispatch(
+                          setSettings({
+                            closePositionCollateralSymbol: position.collateralToken.symbol,
+                          }),
+                        );
+                        setRedeemToken(position.collateralToken);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : doJupiterSwap && recommendedToken ? (
               <>
                 <Tippy
                   content={
@@ -875,27 +1016,27 @@ export default function ClosePosition({
       </div>
 
       <div className="w-full p-4 border-t">
-        <Button
-          className={twMerge(
-            "w-full",
-            (errorMsg !== null ||
+        <div className="flex gap-2 mt-2">
+          <Button
+            className={twMerge(
+              "w-full",
+              (errorMsg !== null ||
+                (customAmount !== null && customAmount <= 0) ||
+                (activePercent !== null && activePercent < 0.01)) && "opacity-50 cursor-not-allowed"
+            )}
+            size="lg"
+            variant="primary"
+            title={
+              <span className="text-main text-base font-boldy">
+                {(activePercent !== null && activePercent < 0.01) ? 'Cannot close less than 1%' : `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
+              </span>
+            }
+            disabled={errorMsg !== null ||
               (customAmount !== null && customAmount <= 0) ||
-              (activePercent !== null && activePercent <= 0) ||
-              (hasInteracted && (customAmount === null || activePercent === null))) && "opacity-50 cursor-not-allowed"
-          )}
-          size="lg"
-          variant="primary"
-          title={
-            <span className="text-main text-base font-boldy">
-              Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
-            </span>
-          }
-          disabled={errorMsg !== null ||
-            (customAmount !== null && customAmount <= 0) ||
-            (activePercent !== null && activePercent <= 0) ||
-            (hasInteracted && (customAmount === null || activePercent === null))}
-          onClick={() => handleExecute()}
-        />
+              (activePercent === null || activePercent < 0.01)}
+            onClick={() => handleExecute()}
+          />
+        </div>
       </div>
     </div>
   );
