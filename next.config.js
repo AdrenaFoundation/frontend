@@ -61,6 +61,11 @@ module.exports = (phase, { defaultConfig }) => {
           hostname: 'metadata.drift.foundation',
           pathname: '/drift.png',
         },
+        {
+          protocol: 'https',
+          hostname: 'shdw-drive.genesysgo.net',
+          pathname: '/7G7ayDnjFoLcEUVkxQ2Jd4qquAHp5LiSBii7t81Y2E23/**',
+        },
       ],
     },
 

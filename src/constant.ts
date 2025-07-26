@@ -1848,4 +1848,17 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     image: 'https://www.sns.id/token/image.png',
     additionalSwapToken: true,
   },
+  {
+    mint: new PublicKey('CRTx1JouZhzSU6XytsE42UQraoGqiHgxabocVfARTy2s'),
+    symbol: 'CRT',
+    color: '#F98635',
+    name: 'Carrot',
+    decimals: 9,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://shdw-drive.genesysgo.net/7G7ayDnjFoLcEUVkxQ2Jd4qquAHp5LiSBii7t81Y2E23/carrot.png',
+    additionalSwapToken: true,
+  },
 ];
