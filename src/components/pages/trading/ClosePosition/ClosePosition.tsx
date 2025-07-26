@@ -1022,8 +1022,7 @@ export default function ClosePosition({
               "w-full",
               (errorMsg !== null ||
                 (customAmount !== null && customAmount <= 0) ||
-                (activePercent !== null && activePercent < 0.01) ||
-                isCalculating) && "opacity-50 cursor-not-allowed"
+                (activePercent !== null && activePercent < 0.01)) && "opacity-50 cursor-not-allowed"
             )}
             size="lg"
             variant="primary"
@@ -1034,8 +1033,7 @@ export default function ClosePosition({
             }
             disabled={errorMsg !== null ||
               (customAmount !== null && customAmount <= 0) ||
-              (activePercent === null || activePercent < 0.01) ||
-              isCalculating}
+              (activePercent === null || activePercent < 0.01)}
             onClick={() => handleExecute()}
           />
         </div>
