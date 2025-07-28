@@ -173,10 +173,7 @@ export default function Header({
         />
       </div>
 
-
-
       <div className="flex flex-row items-center gap-2 sm:gap-3">
-
         <Link href="/buy_alp">
           {tokenPriceALP && aprs ? (
             <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
@@ -299,6 +296,6 @@ export default function Header({
           </Menu>
         ) : null}
       </div>
-    </div >
+    </div>
   );
 }

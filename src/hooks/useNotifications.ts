@@ -15,6 +15,7 @@ interface UseNotificationsReturn {
   loadMore: () => Promise<void>;
   unreadCount: number;
   onMarkAsRead: (transactionSignature?: string) => Promise<void>;
+  isDialectSubscriber: boolean;
 }
 
 export const useNotifications = (
@@ -22,6 +23,10 @@ export const useNotifications = (
 ): UseNotificationsReturn => {
   const enableDialectNotifications = useSelector(
     (state) => state.settings.enableDialectNotifications,
+  );
+
+  const enableAdrenaNotifications = useSelector(
+    (state) => state.settings.enableAdrenaNotifications,
   );
 
   const limit = 50; // Default limit
@@ -34,6 +39,7 @@ export const useNotifications = (
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
+  const [isDialectSubscriber, setIsDialectSubscriber] = useState(false);
   const walletAddressRef = useRef(walletAddress);
 
   const fetchNotifications = useCallback(
@@ -59,6 +65,8 @@ export const useNotifications = (
         }
 
         const data = await response.json();
+
+        setIsDialectSubscriber(!!data.isSubscriber);
 
         if (data.error) {
           console.error('Error fetching notifications:', data.error);
@@ -89,7 +97,11 @@ export const useNotifications = (
 
   // Initial fetch
   useEffect(() => {
-    if (walletAddress && !enableDialectNotifications) {
+    if (
+      walletAddress &&
+      !enableDialectNotifications &&
+      enableAdrenaNotifications
+    ) {
       fetchNotifications(true, 0);
     } else {
       setNotifications([]);
@@ -100,10 +112,10 @@ export const useNotifications = (
     walletAddressRef.current = walletAddress;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress]);
+  }, [walletAddress, enableDialectNotifications, enableAdrenaNotifications]);
 
   useEffect(() => {
-    if (enableDialectNotifications) return;
+    if (enableDialectNotifications || !enableAdrenaNotifications) return;
 
     if (channel) {
       supabaseAnonClient.removeChannel(channel);
@@ -243,5 +255,6 @@ export const useNotifications = (
     loadMore,
     unreadCount,
     onMarkAsRead,
+    isDialectSubscriber,
   };
 };

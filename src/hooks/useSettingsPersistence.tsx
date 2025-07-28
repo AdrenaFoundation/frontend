@@ -26,6 +26,7 @@ export default function useSettingsPersistence() {
         'close-position-collateral-symbol',
         'deposit-collateral-symbol',
         'withdraw-collateral-symbol',
+        'enable-adrena-notifications',
     ]);
 
     const settings = useSelector((state) => state.settings);
@@ -103,6 +104,13 @@ export default function useSettingsPersistence() {
                 updatedSettings.enableDialectNotifications = v;
         }
 
+
+        {
+            const v = preferences?.enableAdrenaNotifications ?? cookies['enable-adrena-notifications'];
+            if (v === false || v === true)
+                updatedSettings.enableAdrenaNotifications = v;
+        }
+
         dispatch(
             setSettings(updatedSettings),
         );
@@ -125,6 +133,7 @@ export default function useSettingsPersistence() {
                 closePositionCollateralSymbol: 'close-position-collateral-symbol',
                 depositCollateralSymbol: 'deposit-collateral-symbol',
                 withdrawCollateralSymbol: 'withdraw-collateral-symbol',
+                enableAdrenaNotifications: 'enable-adrena-notifications',
             } as Record<keyof SettingsState, keyof typeof cookies>)[key as keyof SettingsState], value);
         });
 

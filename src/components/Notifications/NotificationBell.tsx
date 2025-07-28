@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import notificationIcon from '@/../public/images/Icons/bell-fill.svg';
 import { useOnClickOutside } from '@/hooks/onClickOutside';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useSelector } from '@/store/store';
@@ -32,6 +34,7 @@ export const NotificationBell = ({
     hasMore,
     loadMore,
     isLoading,
+    isDialectSubscriber
   } = useNotifications(wallet?.walletAddress ?? null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -68,24 +71,18 @@ export const NotificationBell = ({
       aria-label="Open notifications"
     >
       {/* Bell Icon */}
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="#fff"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-      </svg>
+      <Image
+        src={notificationIcon}
+        alt="Notification Bell"
+        width={12}
+        height={12}
+        className='w-3 h-3'
+      />
 
       {/* Notification Dot */}
       {unreadCount > 0 && (
         <div
-          className={twMerge("absolute top-1 right-1 w-1.5 h-1.5 rounded-full z-20",
+          className={twMerge("absolute top-1 right-1.5 w-1.5 h-1.5 rounded-full z-20",
             isMobile && 'top-0 right-0',
           )}
           style={{
@@ -116,6 +113,7 @@ export const NotificationBell = ({
               adapters={adapters}
               loadMore={loadMore}
               hasMore={hasMore}
+              isDialectSubscriber={isDialectSubscriber}
             />
           </Modal>
         )}
@@ -136,7 +134,7 @@ export const NotificationBell = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-[400px] bg-secondary rounded-lg overflow-hidden shadow-lg border z-50"
+            className="absolute right-0 mt-2 w-[25rem] bg-secondary rounded-lg overflow-hidden shadow-lg border z-50"
             onMouseEnter={() => !isPinned && setIsOpen(true)}
             onMouseLeave={() => !isPinned && setIsOpen(false)}
           >
@@ -147,6 +145,7 @@ export const NotificationBell = ({
               loadMore={loadMore}
               adapters={adapters}
               hasMore={hasMore}
+              isDialectSubscriber={isDialectSubscriber}
             />
           </motion.div>
         )}

@@ -188,6 +188,23 @@ export default function Settings({
             size="small"
           />
         </div>
+
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-sm font-boldy opacity-50 w-full">
+            Enable Adrena Notifications
+          </p>
+          <Switch
+            checked={settings.enableAdrenaNotifications}
+            onChange={() => {
+              dispatch(
+                setSettings({
+                  enableAdrenaNotifications: !settings.enableAdrenaNotifications,
+                }),
+              );
+            }}
+            size="small"
+          />
+        </div>
       </div>
     </>
   );
@@ -216,7 +233,7 @@ export default function Settings({
         </div>
       }
       openMenuClassName={twMerge(
-        'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300',
+        'rounded-lg w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300',
         isGenesis ? 'sm:right-0 right-[-175px]' : 'right-0',
       )}
       disableOnClickInside={true}

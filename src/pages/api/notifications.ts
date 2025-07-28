@@ -3,10 +3,14 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import supabaseAnonClient from '@/supabaseAnonClient';
 import { AdrenaNotificationData } from '@/types';
 
+const DIALECT_API_KEY = process.env.DIALECT_API_KEY;
+const DIALECT_APP_ID = process.env.DIALECT_APP_ID;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{
     notifications?: AdrenaNotificationData[] | null;
+    isSubscriber?: boolean;
     success?: boolean;
     error?: string;
   }>,
@@ -17,8 +21,35 @@ export default async function handler(
     if (!wallet_address) {
       return res.status(400).json({
         notifications: null,
+        isSubscriber: false,
         error: 'Wallet address is required',
       });
+    }
+
+    try {
+      const resp = await fetch(
+        `https://alerts-api.dial.to/v2/${DIALECT_APP_ID}/subscribers`,
+        {
+          method: 'GET',
+          headers: {
+            'x-dialect-api-key': DIALECT_API_KEY || '',
+          },
+        },
+      );
+      const { subscribers } = await resp.json();
+
+      const isSubscriber =
+        Array.isArray(subscribers) &&
+        subscribers.some(
+          (s: { walletAddress: string }) => s.walletAddress === wallet_address,
+        );
+
+      if (isSubscriber) {
+        return res.status(200).json({ notifications: [], isSubscriber: true });
+      }
+    } catch (e) {
+      // If Dialect API fails, treat as not a subscriber
+      console.error('Error checking Dialect subscription:', e);
     }
 
     const query = supabaseAnonClient
@@ -35,17 +66,20 @@ export default async function handler(
       if (error) {
         return res.status(500).json({
           notifications: null,
+          isSubscriber: false,
           error: error.message,
         });
       }
 
       return res.status(200).json({
         notifications: data || [],
+        isSubscriber: false,
       });
     } catch (error) {
       console.error('Error fetching notifications:', error);
       return res.status(500).json({
         notifications: null,
+        isSubscriber: false,
         error: 'Internal server error',
       });
     }

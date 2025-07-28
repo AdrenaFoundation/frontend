@@ -15,6 +15,7 @@ export type SettingsState = {
   withdrawCollateralSymbol: string;
   disableFriendReq: boolean;
   enableDialectNotifications: boolean;
+  enableAdrenaNotifications: boolean;
 };
 
 // freeze the initial state object to make sure it can be re-used through

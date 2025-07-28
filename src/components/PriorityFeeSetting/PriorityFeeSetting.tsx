@@ -175,7 +175,7 @@ export default function PriorityFeeSetting({
             <label htmlFor="currency" className="sr-only">
               Currency
             </label>
-            <span className="opacity-50 sm:text-sm mr-3 font-interSemibold">
+            <span className="opacity-50 sm:text-sm mr-3 font-boldy">
               SOL
             </span>
           </div>
@@ -210,7 +210,7 @@ export default function PriorityFeeSetting({
       }
       className="border-r border-[#414E5E]"
       openMenuClassName={twMerge(
-        'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
+        'rounded-lg w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
       )}
       disableOnClickInside={true}
       isDim={true}

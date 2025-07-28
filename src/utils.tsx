@@ -399,6 +399,7 @@ export const DEFAULT_SETTINGS = {
   withdrawCollateralSymbol: '',
   disableFriendReq: false,
   enableDialectNotifications: false,
+  enableAdrenaNotifications: true,
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {
