@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import dialectLogo from '@/../public/images/dialect-logo-2.svg';
 import arrowIcon from '@/../public/images/Icons/arrow-up-2.svg';
+import infoIcon from '@/../public/images/Icons/info.svg';
 import { setSettings } from '@/actions/settingsActions';
 import { useDispatch, useSelector } from '@/store/store';
 import { AdrenaNotificationData, PageProps } from '@/types';
@@ -30,6 +31,9 @@ export const Notifications = ({
   hasMore: boolean;
   isDialectSubscriber: boolean;
 }) => {
+  const walletAddress = useSelector(
+    (state) => state.walletState.wallet?.walletAddress,
+  );
   const dispatch = useDispatch();
   const enableDialectNotifications = useSelector(
     (state) => state.settings.enableDialectNotifications,
@@ -38,8 +42,11 @@ export const Notifications = ({
     (state) => state.settings.enableAdrenaNotifications,
   );
 
+  const key = 'dialect-auth-token-' + (walletAddress ?? '');
+  const isAuthenticated = Boolean(localStorage.getItem(key));
+
   const [selectedTab, setSelectedTab] = useState<'Adrena' | 'Dialect'>(
-    (enableDialectNotifications || isDialectSubscriber) ? 'Dialect' : 'Adrena',
+    enableDialectNotifications || isDialectSubscriber ? 'Dialect' : 'Adrena',
   );
 
   useEffect(() => {
@@ -172,6 +179,15 @@ export const Notifications = ({
               }}
             />
           </motion.div>
+        ) : null}
+
+        {isDialectSubscriber && !isAuthenticated ? (
+          <div className='flex flex-row items-start gap-1 p-3 border-b border-bcolor'>
+            <Image src={infoIcon} alt="Info Icon" className="w-3 h-3 opacity-30 translate-y-1" />
+            <p className="text-sm opacity-50 font-boldy">
+              Your session has expired. Please sign message again to view your Dialect notifications.
+            </p>
+          </div>
         ) : null}
 
         {!enableAdrenaNotifications && selectedTab === 'Adrena' ? null : (
