@@ -21,6 +21,9 @@ import {
     uiToNative,
 } from '@/utils';
 
+// TODO: Handle multiple pools
+const HARDCODED_MAIN_POOL = new PublicKey('4bQRutgDJs6vuh6ZcWaPVXiQaBzbHketjbCDjL4oRN34');
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<
@@ -90,6 +93,8 @@ export default async function handler(
                 minLpAmountOut: new BN(0),
                 owner: new PublicKey(account),
                 mint: token.mint,
+                // TODO: Handle multiple pools
+                poolKey: HARDCODED_MAIN_POOL,
             });
 
             const tx = await ix.transaction();

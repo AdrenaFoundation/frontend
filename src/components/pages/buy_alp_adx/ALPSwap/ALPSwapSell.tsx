@@ -23,9 +23,11 @@ let loadingCounterMainData = 0;
 export default function ALPSwapSell({
     className,
     connected,
+    poolKey,
 }: {
     className?: string;
     connected: boolean;
+    poolKey: PublicKey;
 }) {
     const usdcToken = window.adrena.client.getUsdcToken();
     const dispatch = useDispatch();
@@ -35,7 +37,7 @@ export default function ALPSwapSell({
     const [collateralToken, setCollateralToken] = useState<Token>(usdcToken);
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
-    const collateralTokenCustody = useMemo(() => window.adrena.client.getCustodyByMint(collateralToken.mint), [collateralToken.mint]);
+    const collateralTokenCustody = useMemo(() => window.adrena.client.getCustodyByMint(collateralToken.mint, poolKey), [collateralToken.mint, poolKey]);
     const collateralTokenCustodyLiquidity = useDynamicCustodyAvailableLiquidity(collateralTokenCustody);
     const collateralTokenCustodyLiquidityUsd = useMemo(() => {
         const tokenPrice = tokenPrices[collateralToken.symbol];
@@ -75,10 +77,10 @@ export default function ALPSwapSell({
                 owner: new PublicKey(wallet.walletAddress),
                 lpAmountIn: uiToNative(alpInput, window.adrena.client.alpToken.decimals),
                 mint: collateralToken.mint,
-
                 // TODO: Apply proper slippage
                 minAmountOut: new BN(0),
                 notification,
+                poolKey,
             });
 
             dispatch(fetchWalletTokenBalances());
@@ -111,6 +113,7 @@ export default function ALPSwapSell({
                 .getRemoveLiquidityAmountAndFee({
                     lpAmountIn: uiToNative(alpInput, window.adrena.client.alpToken.decimals),
                     token: collateralToken,
+                    poolKey,
                 });
 
             setIsMainDataLoading(false);
@@ -140,7 +143,7 @@ export default function ALPSwapSell({
             // we set this error message because we do not get error message from anchor simulate
             setErrorMessage('Pool ratio reached for this token');
         }
-    }, [alpInput, collateralToken]);
+    }, [alpInput, collateralToken, poolKey]);
 
     // Trigger calculations
     useEffect(() => {

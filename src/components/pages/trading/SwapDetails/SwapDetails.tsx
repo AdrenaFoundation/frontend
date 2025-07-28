@@ -1,3 +1,5 @@
+import { PublicKey } from '@solana/web3.js';
+
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatPriceInfo } from '@/utils';
@@ -5,9 +7,11 @@ import { formatPriceInfo } from '@/utils';
 export default function SwapDetails({
   tokenA,
   tokenB,
+  poolKey,
 }: {
   tokenA: Token;
   tokenB: Token;
+  poolKey: PublicKey;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -33,7 +37,7 @@ export default function SwapDetails({
         <span className="font-mono">
           {tokenPrices && priceB
             ? formatPriceInfo(
-              window.adrena.client.getCustodyByMint(tokenB.mint).liquidity *
+              window.adrena.client.getCustodyByMint(tokenB.mint, poolKey).liquidity *
               priceB,
             )
             : '-'}

@@ -1,5 +1,5 @@
 {
-  "version": "1.3.2",
+  "version": "1.3.7",
   "name": "adrena",
   "instructions": [
     {
@@ -646,6 +646,52 @@
       ]
     },
     {
+      "name": "migratePoolAndCustodiesFromV1ToV2",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "managerFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "claimVest",
       "accounts": [
         {
@@ -867,7 +913,7 @@
           ]
         },
         {
-          "name": "systemProgram",
+          "name": "managerFeeRecipient",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -875,7 +921,7 @@
           ]
         },
         {
-          "name": "tokenProgram",
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -883,7 +929,7 @@
           ]
         },
         {
-          "name": "mplTokenMetadataProgram",
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -891,7 +937,7 @@
           ]
         },
         {
-          "name": "adrenaProgram",
+          "name": "mplTokenMetadataProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -899,11 +945,19 @@
           ]
         },
         {
-          "name": "rent",
+          "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
             "#12"
+          ]
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#13"
           ]
         }
       ],
@@ -1173,8 +1227,92 @@
             "defined": "AddCustodyParams"
           }
         }
+      ]
+    },
+    {
+      "name": "addSyntheticCustody",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "oracle",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#9"
+          ]
+        }
       ],
-      "returns": "u8"
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "AddSyntheticCustodyParams"
+          }
+        }
+      ]
     },
     {
       "name": "removeCustody",
@@ -1578,7 +1716,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#9"
@@ -1747,233 +1885,6 @@
           "name": "params",
           "type": {
             "defined": "AddLiquidityParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "genesisOtcOut",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "daoReceivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "custodyUsdc",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "custodyUsdcTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "genesisLock",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "genesisOtcIn",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "fundingAccountOne",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "fundingAccountTwo",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "fundingAccountThree",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "custodyOne",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "custodyOneTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "custodyTwo",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "custodyTwoTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custodyThree",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "custodyThreeTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "genesisLock",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "GenesisOtcInParams"
           }
         }
       ]
@@ -2165,7 +2076,7 @@
           ]
         },
         {
-          "name": "oracle",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2173,11 +2084,19 @@
           ]
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
+          "name": "oracle",
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#11"
+          ]
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#12"
           ]
         },
         {
@@ -2185,7 +2104,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -2193,7 +2112,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -2201,7 +2120,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         }
       ],
@@ -2293,7 +2212,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#9"
@@ -2394,7 +2313,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#6"
@@ -2409,7 +2328,7 @@
           ]
         },
         {
-          "name": "principalCustody",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2417,7 +2336,7 @@
           ]
         },
         {
-          "name": "principalCustodyTokenAccount",
+          "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2425,15 +2344,15 @@
           ]
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
+          "name": "principalCustody",
+          "isMut": true,
           "isSigner": false,
           "docs": [
             "#10"
           ]
         },
         {
-          "name": "cortex",
+          "name": "principalCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2441,15 +2360,15 @@
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
+          "name": "transferAuthority",
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#12"
           ]
         },
         {
-          "name": "position",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2457,11 +2376,27 @@
           ]
         },
         {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#16"
           ]
         },
         {
@@ -2469,7 +2404,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#17"
           ]
         },
         {
@@ -2477,7 +2412,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#18"
           ]
         }
       ],
@@ -2535,7 +2470,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#6"
@@ -2708,14 +2643,14 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
           ]
         },
         {
-          "name": "custodyTokenAccount",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2723,11 +2658,19 @@
           ]
         },
         {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -2735,7 +2678,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         }
       ],
@@ -2809,7 +2752,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
@@ -2918,7 +2861,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
@@ -3019,7 +2962,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
@@ -3136,18 +3079,26 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#9"
           ]
         },
         {
-          "name": "custodyTokenAccount",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
             "#10"
+          ]
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
           ]
         },
         {
@@ -3156,7 +3107,7 @@
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -3165,7 +3116,7 @@
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -3173,7 +3124,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -3181,7 +3132,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         }
       ],
@@ -3263,7 +3214,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#9"
@@ -3397,11 +3348,19 @@
           ]
         },
         {
-          "name": "custodyTokenAccount",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
             "#9"
+          ]
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
           ]
         },
         {
@@ -3410,7 +3369,7 @@
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -3419,7 +3378,7 @@
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -3427,7 +3386,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -3435,18 +3394,11 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "LiquidateLongParams"
-          }
-        }
-      ]
+      "args": []
     },
     {
       "name": "liquidateShort",
@@ -3566,14 +3518,7 @@
           ]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "LiquidateShortParams"
-          }
-        }
-      ]
+      "args": []
     },
     {
       "name": "updatePoolAum",
@@ -4038,7 +3983,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#4"
@@ -6832,11 +6777,19 @@
       "name": "getPoolInfoSnapshot",
       "accounts": [
         {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#1"
+            "#2"
           ]
         },
         {
@@ -6844,7 +6797,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#2"
+            "#3"
           ]
         },
         {
@@ -6852,7 +6805,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#3"
+            "#4"
           ]
         },
         {
@@ -6860,7 +6813,23 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
+          ]
+        },
+        {
+          "name": "poolInfoSnapshot",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
           ]
         }
       ],
@@ -6871,10 +6840,7 @@
             "defined": "GetPoolInfoSnapshotParams"
           }
         }
-      ],
-      "returns": {
-        "defined": "PoolInfoSnapshot"
-      }
+      ]
     },
     {
       "name": "mintLmTokensFromBucket",
@@ -7016,7 +6982,7 @@
           ]
         },
         {
-          "name": "custodyTokenAccount",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -7024,7 +6990,7 @@
           ]
         },
         {
-          "name": "oracle",
+          "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -7032,7 +6998,7 @@
           ]
         },
         {
-          "name": "systemProgram",
+          "name": "oracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -7040,7 +7006,7 @@
           ]
         },
         {
-          "name": "tokenProgram",
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -7048,11 +7014,19 @@
           ]
         },
         {
-          "name": "adrenaProgram",
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
             "#14"
+          ]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#15"
           ]
         }
       ],
@@ -7206,7 +7180,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#10"
@@ -8165,14 +8139,14 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#5"
           ]
         },
         {
-          "name": "custodyTokenAccount",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -8180,11 +8154,19 @@
           ]
         },
         {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -8192,7 +8174,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -8200,7 +8182,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -8208,7 +8190,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -8216,7 +8198,7 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -8224,7 +8206,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -8232,7 +8214,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -8240,7 +8222,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         }
       ],
@@ -8290,7 +8272,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#5"
@@ -8496,7 +8478,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#14"
@@ -8511,11 +8493,19 @@
           ]
         },
         {
+          "name": "managerFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        },
+        {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#17"
           ]
         },
         {
@@ -8523,7 +8513,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#18"
           ]
         },
         {
@@ -8531,7 +8521,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#18"
+            "#19"
           ]
         },
         {
@@ -8539,18 +8529,11 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#19"
+            "#20"
           ]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "DistributeFeesParams"
-          }
-        }
-      ]
+      "args": []
     },
     {
       "name": "claimReferralFee",
@@ -8922,7 +8905,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#6"
@@ -8979,14 +8962,7 @@
           ]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "ResolvePositionBorrowFeesParams"
-          }
-        }
-      ]
+      "args": []
     },
     {
       "name": "syncUserVotingPower",
@@ -9258,6 +9234,35 @@
           }
         }
       ]
+    },
+    {
+      "name": "autonomMarketOpening",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "AutonomMarketOpeningParams"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -9388,7 +9393,7 @@
       }
     },
     {
-      "name": "Custody",
+      "name": "CustodyV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -9501,6 +9506,174 @@
             "name": "shortPositions",
             "type": {
               "defined": "PositionsAccounting"
+            }
+          },
+          {
+            "name": "borrowRateState",
+            "type": {
+              "defined": "BorrowRateState"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Custody",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "tokenAccountBump",
+            "type": "u8"
+          },
+          {
+            "name": "allowTrade",
+            "type": "u8"
+          },
+          {
+            "name": "allowSwap",
+            "type": "u8"
+          },
+          {
+            "name": "decimals",
+            "type": "u8"
+          },
+          {
+            "name": "isStable",
+            "type": "u8"
+          },
+          {
+            "name": "isSynthetic",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "tradeOracle",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "oracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "tradeOracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                22
+              ]
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "Fees"
+            }
+          },
+          {
+            "name": "borrowRate",
+            "type": {
+              "defined": "BorrowRateParams"
+            }
+          },
+          {
+            "name": "collectedFees",
+            "type": {
+              "defined": "FeesStats"
+            }
+          },
+          {
+            "name": "volumeStats",
+            "type": {
+              "defined": "VolumeStats"
+            }
+          },
+          {
+            "name": "tradeStats",
+            "type": {
+              "defined": "TradeStats"
+            }
+          },
+          {
+            "name": "assets",
+            "type": {
+              "defined": "Assets"
+            }
+          },
+          {
+            "name": "longPositions",
+            "type": {
+              "defined": "PositionsAccounting"
+            }
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "shortPositions",
+            "type": {
+              "defined": "PositionsAccounting"
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": "PricingParams"
+            }
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
             }
           },
           {
@@ -9649,7 +9822,7 @@
       }
     },
     {
-      "name": "Oracle",
+      "name": "OracleV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -9685,7 +9858,137 @@
       }
     },
     {
-      "name": "Pool",
+      "name": "OraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Oracle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "registeredPricesCount",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "prices",
+            "type": {
+              "array": [
+                {
+                  "defined": "OraclePrice"
+                },
+                20
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -9788,6 +10091,303 @@
           {
             "name": "aumSoftCapUsd",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolInfoSnapshot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "currentTime",
+            "type": "i64"
+          },
+          {
+            "name": "aumUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lpTokenPrice",
+            "type": "u64"
+          },
+          {
+            "name": "custodiesInfoSnapshot",
+            "type": {
+              "array": [
+                {
+                  "defined": "CustodyInfoSnapshot"
+                },
+                8
+              ]
+            }
+          },
+          {
+            "name": "syntheticCustodiesInfoSnapshot",
+            "type": {
+              "array": [
+                {
+                  "defined": "SyntheticCustodyInfoSnapshot"
+                },
+                32
+              ]
+            }
+          },
+          {
+            "name": "lpCirculatingSupply",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                120
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "lpTokenBump",
+            "type": "u8"
+          },
+          {
+            "name": "nbStableCustody",
+            "type": "u8"
+          },
+          {
+            "name": "initialized",
+            "type": "u8"
+          },
+          {
+            "name": "allowTrade",
+            "type": "u8"
+          },
+          {
+            "name": "allowSwap",
+            "type": "u8"
+          },
+          {
+            "name": "liquidityState",
+            "type": "u8"
+          },
+          {
+            "name": "registeredCustodyCount",
+            "type": "u8"
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "oracleProvider",
+            "type": "u8"
+          },
+          {
+            "name": "registeredSyntheticCustodyCount",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "marketOpenTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseEventTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseAffectedFeeds",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                110
+              ]
+            }
+          },
+          {
+            "name": "lpFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "lmFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "referrerFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "managerFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "managerFeeRecipient",
+            "type": "publicKey"
+          },
+          {
+            "name": "managerFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lmFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "protocolFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProtocolFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLmFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeManagerFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLpFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "referrersFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lpTokenPriceUsd",
+            "type": "u64"
+          },
+          {
+            "name": "whitelistedSwapper",
+            "type": "publicKey"
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "lastAumAndLpTokenPriceUsdUpdate",
+            "type": "i64"
+          },
+          {
+            "name": "uniqueLimitOrderIdCounter",
+            "type": "u64"
+          },
+          {
+            "name": "aumUsd",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "inceptionTime",
+            "type": "i64"
+          },
+          {
+            "name": "aumSoftCapUsd",
+            "type": "u64"
+          },
+          {
+            "name": "custodies",
+            "type": {
+              "array": [
+                "publicKey",
+                8
+              ]
+            }
+          },
+          {
+            "name": "ratios",
+            "type": {
+              "array": [
+                {
+                  "defined": "TokenRatios"
+                },
+                8
+              ]
+            }
+          },
+          {
+            "name": "syntheticCustodies",
+            "type": {
+              "array": [
+                "publicKey",
+                32
+              ]
+            }
           }
         ]
       }
@@ -10525,12 +11125,9 @@
           {
             "name": "ratios",
             "type": {
-              "array": [
-                {
-                  "defined": "TokenRatios"
-                },
-                8
-              ]
+              "vec": {
+                "defined": "TokenRatios"
+              }
             }
           },
           {
@@ -10544,6 +11141,76 @@
             "type": {
               "defined": "LimitedString"
             }
+          },
+          {
+            "name": "oracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "tradeOracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddSyntheticCustodyParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pricing",
+            "type": {
+              "defined": "PricingParams"
+            }
+          },
+          {
+            "name": "allowSwap",
+            "type": "bool"
+          },
+          {
+            "name": "allowTrade",
+            "type": "bool"
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "Fees"
+            }
+          },
+          {
+            "name": "borrowRate",
+            "type": {
+              "defined": "BorrowRateParams"
+            }
+          },
+          {
+            "name": "tradeOracle",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "tradeOracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           }
         ]
       }
@@ -10556,12 +11223,9 @@
           {
             "name": "ratios",
             "type": {
-              "array": [
-                {
-                  "defined": "TokenRatios"
-                },
-                8
-              ]
+              "vec": {
+                "defined": "TokenRatios"
+              }
             }
           }
         ]
@@ -10633,12 +11297,9 @@
           {
             "name": "ratios",
             "type": {
-              "array": [
-                {
-                  "defined": "TokenRatios"
-                },
-                8
-              ]
+              "vec": {
+                "defined": "TokenRatios"
+              }
             }
           }
         ]
@@ -10688,7 +11349,7 @@
             }
           },
           {
-            "name": "chaosLabsFeedId",
+            "name": "feedId",
             "type": "u8"
           }
         ]
@@ -10734,6 +11395,30 @@
           {
             "name": "lpTokenUri",
             "type": "string"
+          },
+          {
+            "name": "oracleProvider",
+            "type": "u8"
+          },
+          {
+            "name": "lpFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "lmFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "referrerFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "managerFeeShareBps",
+            "type": "u16"
           }
         ]
       }
@@ -10760,26 +11445,6 @@
             "type": {
               "defined": "ReservedSpots"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "GenesisOtcInParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "custodyOneAmount",
-            "type": "u64"
-          },
-          {
-            "name": "custodyTwoAmount",
-            "type": "u64"
-          },
-          {
-            "name": "custodyThreeAmount",
-            "type": "u64"
           }
         ]
       }
@@ -10885,6 +11550,20 @@
       }
     },
     {
+      "name": "AutonomMarketOpeningParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "openingData",
+            "type": {
+              "defined": "AutonomMarketOpeningData"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "AddLiquidityParams",
       "type": {
         "kind": "struct",
@@ -10901,7 +11580,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -10925,7 +11604,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -10944,14 +11623,6 @@
           {
             "name": "minAmountOut",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -10964,14 +11635,6 @@
           {
             "name": "collateral",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -10989,7 +11652,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11046,14 +11709,6 @@
           {
             "name": "id",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11066,14 +11721,6 @@
           {
             "name": "id",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11150,10 +11797,10 @@
             }
           },
           {
-            "name": "oraclePrices",
+            "name": "previousCloseMarketOraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           },
@@ -11176,32 +11823,16 @@
             }
           },
           {
-            "name": "oraclePrices",
+            "name": "previousCloseMarketOraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           },
           {
             "name": "percentage",
             "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "DistributeFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11227,7 +11858,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11255,39 +11886,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "LiquidateLongParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "LiquidateShortParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11310,14 +11909,6 @@
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11338,14 +11929,6 @@
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11366,14 +11949,6 @@
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11391,7 +11966,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11411,23 +11986,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "ResolvePositionBorrowFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11549,7 +12108,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11687,7 +12246,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11703,7 +12262,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11731,7 +12290,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11747,7 +12306,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11771,7 +12330,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11787,7 +12346,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11803,7 +12362,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11826,14 +12385,6 @@
           {
             "name": "side",
             "type": "u8"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11847,129 +12398,9 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "CustodyInfoSnapshot",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "assetsValueUsd",
-            "type": "u64"
-          },
-          {
-            "name": "owned",
-            "type": "u64"
-          },
-          {
-            "name": "locked",
-            "type": "u64"
-          },
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "priceConfidence",
-            "type": "u64"
-          },
-          {
-            "name": "tradePrice",
-            "type": "u64"
-          },
-          {
-            "name": "tradePriceConfidence",
-            "type": "u64"
-          },
-          {
-            "name": "shortPnl",
-            "type": "i64"
-          },
-          {
-            "name": "longPnl",
-            "type": "i64"
-          },
-          {
-            "name": "openInterestLongUsd",
-            "type": "u64"
-          },
-          {
-            "name": "openInterestShortUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeProfitUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeLossUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeSwapFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeLiquidityFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeClosePositionFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeLiquidationFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeBorrowFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeTradingVolumeUsd",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "PoolInfoSnapshot",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "currentTime",
-            "type": "u64"
-          },
-          {
-            "name": "aumUsd",
-            "type": "u64"
-          },
-          {
-            "name": "lpTokenPrice",
-            "type": "u64"
-          },
-          {
-            "name": "custodiesInfoSnapshot",
-            "type": {
-              "vec": {
-                "defined": "CustodyInfoSnapshot"
-              }
-            }
-          },
-          {
-            "name": "lpCirculatingSupply",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeReferrerFeeUsd",
-            "type": "u64"
           }
         ]
       }
@@ -11983,7 +12414,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -12003,7 +12434,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -12023,7 +12454,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -12031,7 +12462,44 @@
       }
     },
     {
-      "name": "ChaosLabsBatchPrices",
+      "name": "AutonomMarketOpeningData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feeds",
+            "type": "bytes"
+          },
+          {
+            "name": "marketCloseAffectedFeeds",
+            "type": "bytes"
+          },
+          {
+            "name": "marketOpenTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "signature",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "recoveryId",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BatchPrices",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12242,6 +12710,324 @@
       }
     },
     {
+      "name": "PricingParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maxInitialLeverage",
+            "type": "u32"
+          },
+          {
+            "name": "maxLeverage",
+            "type": "u32"
+          },
+          {
+            "name": "maxPositionLockedUsd",
+            "type": "u64"
+          },
+          {
+            "name": "maxCumulativeShortPositionSizeUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swapIn",
+            "type": "u16"
+          },
+          {
+            "name": "swapOut",
+            "type": "u16"
+          },
+          {
+            "name": "stableSwapIn",
+            "type": "u16"
+          },
+          {
+            "name": "stableSwapOut",
+            "type": "u16"
+          },
+          {
+            "name": "addLiquidity",
+            "type": "u16"
+          },
+          {
+            "name": "removeLiquidity",
+            "type": "u16"
+          },
+          {
+            "name": "closePosition",
+            "type": "u16"
+          },
+          {
+            "name": "liquidation",
+            "type": "u16"
+          },
+          {
+            "name": "feeMax",
+            "type": "u16"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BorrowRateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maxHourlyBorrowInterestRate",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VolumeStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swapUsd",
+            "type": "u64"
+          },
+          {
+            "name": "addLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "removeLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "openPositionUsd",
+            "type": "u64"
+          },
+          {
+            "name": "closePositionUsd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TradeStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "profitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lossUsd",
+            "type": "u64"
+          },
+          {
+            "name": "oiLongUsd",
+            "type": "u64"
+          },
+          {
+            "name": "oiShortUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeesStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swapUsd",
+            "type": "u64"
+          },
+          {
+            "name": "addLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "removeLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "closePositionUsd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationUsd",
+            "type": "u64"
+          },
+          {
+            "name": "borrowUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Assets",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "owned",
+            "type": "u64"
+          },
+          {
+            "name": "locked",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StableLockedAmountStat",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "custody",
+            "type": "publicKey"
+          },
+          {
+            "name": "lockedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PositionsAccounting",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "openPositions",
+            "type": "u64"
+          },
+          {
+            "name": "sizeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "borrowSizeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lockedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "weightedPrice",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "totalQuantity",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "cumulativeInterestUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          },
+          {
+            "name": "cumulativeInterestSnapshot",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "exitFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "stableLockedAmount",
+            "type": {
+              "array": [
+                {
+                  "defined": "StableLockedAmountStat"
+                },
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BorrowRateState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "currentRate",
+            "type": "u64"
+          },
+          {
+            "name": "lastUpdate",
+            "type": "i64"
+          },
+          {
+            "name": "cumulativeInterest",
+            "type": {
+              "defined": "U128Split"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "Fees",
       "type": {
         "kind": "struct",
@@ -12426,6 +13212,10 @@
           {
             "name": "maxCumulativeShortPositionSizeUsd",
             "type": "u64"
+          },
+          {
+            "name": "maxCumulativeLongPositionSizeUsd",
+            "type": "u64"
           }
         ]
       }
@@ -12502,13 +13292,8 @@
             "type": "u64"
           },
           {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                8
-              ]
-            }
+            "name": "collateralUsd",
+            "type": "u64"
           },
           {
             "name": "cumulativeInterestSnapshot",
@@ -12521,13 +13306,24 @@
             "type": "u64"
           },
           {
-            "name": "stableLockedAmount",
+            "name": "padding2",
             "type": {
               "array": [
-                {
-                  "defined": "StableLockedAmountStat"
-                },
-                2
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "stableLockedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                8
               ]
             }
           }
@@ -12626,43 +13422,154 @@
       }
     },
     {
-      "name": "OraclePrice",
+      "name": "CustodyInfoSnapshot",
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "assetsValueUsd",
+            "type": "u64"
+          },
+          {
+            "name": "owned",
+            "type": "u64"
+          },
+          {
+            "name": "locked",
+            "type": "u64"
+          },
           {
             "name": "price",
             "type": "u64"
           },
           {
-            "name": "confidence",
+            "name": "tradePrice",
             "type": "u64"
           },
           {
-            "name": "timestamp",
+            "name": "shortPnl",
             "type": "i64"
           },
           {
-            "name": "exponent",
-            "type": "i32"
+            "name": "longPnl",
+            "type": "i64"
           },
           {
-            "name": "chaosLabsFeedId",
-            "type": "u8"
+            "name": "openInterestLongUsd",
+            "type": "u64"
           },
           {
-            "name": "padding",
+            "name": "openInterestShortUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProfitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLossUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeSwapFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidityFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeClosePositionFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidationFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeBorrowFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeTradingVolumeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
             "type": {
               "array": [
-                "u8",
-                3
+                "u64",
+                4
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SyntheticCustodyInfoSnapshot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tradePrice",
+            "type": "u64"
           },
           {
-            "name": "name",
+            "name": "shortPnl",
+            "type": "i64"
+          },
+          {
+            "name": "longPnl",
+            "type": "i64"
+          },
+          {
+            "name": "openInterestLongUsd",
+            "type": "u64"
+          },
+          {
+            "name": "openInterestShortUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProfitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLossUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeSwapFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidityFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeClosePositionFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidationFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeBorrowFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeTradingVolumeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
             "type": {
-              "defined": "LimitedString"
+              "array": [
+                "u64",
+                4
+              ]
             }
           }
         ]
@@ -13031,6 +13938,34 @@
       }
     },
     {
+      "name": "CustodyVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
+          }
+        ]
+      }
+    },
+    {
       "name": "PoolLiquidityState",
       "type": {
         "kind": "enum",
@@ -13043,6 +13978,34 @@
           },
           {
             "name": "Active"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleProvider",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ChaosLabs"
+          },
+          {
+            "name": "Autonom"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
           }
         ]
       }
@@ -14184,6 +15147,46 @@
       "code": 6085,
       "name": "InvalidOracleSignature",
       "msg": "Invalid oracle signature"
+    },
+    {
+      "code": 6086,
+      "name": "CustodyBelowMinimum",
+      "msg": "Custody amount is below minimum required"
+    },
+    {
+      "code": 6087,
+      "name": "InvalidMarketOpeningData",
+      "msg": "Invalid market opening data"
+    },
+    {
+      "code": 6088,
+      "name": "MarketIsClosed",
+      "msg": "Market is closed"
+    },
+    {
+      "code": 6089,
+      "name": "InvalidFeeDistribution",
+      "msg": "Invalid fee distribution"
+    },
+    {
+      "code": 6090,
+      "name": "InvalidFeedId",
+      "msg": "Invalid feed id"
+    },
+    {
+      "code": 6091,
+      "name": "MaxCumulativeLongPositionSizeLimit",
+      "msg": "The long limit for this asset has been reached"
+    },
+    {
+      "code": 6092,
+      "name": "MarketStockSpecialEvent",
+      "msg": "The stock is affected by a special event"
+    },
+    {
+      "code": 6093,
+      "name": "NoOracleEmptySlotFound",
+      "msg": "No empty slot found for new oracle price"
     }
   ],
   "metadata": {

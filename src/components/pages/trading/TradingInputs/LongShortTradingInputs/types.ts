@@ -1,4 +1,5 @@
 import { Wallet } from '@coral-xyz/anchor';
+import { PublicKey } from '@solana/web3.js';
 
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 
@@ -12,6 +13,7 @@ export interface TradingInputsProps {
   position: PositionExtended | null;
   wallet: Wallet | null;
   connected: boolean;
+  poolKey: PublicKey;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   onLimitOrderAdded: () => void;

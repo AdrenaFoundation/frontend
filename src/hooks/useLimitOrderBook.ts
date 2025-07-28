@@ -7,8 +7,10 @@ const REFRESH_INTERVAL = 30000; // 30 seconds
 
 export const useLimitOrderBook = ({
   walletAddress,
+  poolKey,
 }: {
   walletAddress: string | null;
+  poolKey: PublicKey;
 }) => {
   const [limitOrderBook, setLimitOrderBook] =
     useState<LimitOrderBookExtended | null>(null);
@@ -23,6 +25,7 @@ export const useLimitOrderBook = ({
 
     try {
       const limitOrderBook = await window.adrena.client.loadLimitOrderBook({
+        poolKey,
         wallet: new PublicKey(walletAddress),
       });
 
@@ -32,7 +35,7 @@ export const useLimitOrderBook = ({
     } finally {
       // setIsLoading(false);
     }
-  }, [walletAddress]);
+  }, [poolKey, walletAddress]);
 
   useEffect(() => {
     // setIsLoading(true);

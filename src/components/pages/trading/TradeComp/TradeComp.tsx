@@ -1,5 +1,5 @@
 import { Wallet } from '@coral-xyz/anchor';
-import { Connection } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -14,6 +14,7 @@ import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
 
 export default function TradeComp({
   selectedAction,
+  poolKey,
   setSelectedAction,
   tokenA,
   tokenB,
@@ -31,6 +32,7 @@ export default function TradeComp({
   setActivePositionModal,
 }: {
   selectedAction: Action;
+  poolKey: PublicKey;
   setSelectedAction: (title: Action) => void;
   tokenA: Token | null;
   tokenB: Token | null;
@@ -85,6 +87,7 @@ export default function TradeComp({
           <>
             {selectedAction === 'long' || selectedAction === 'short' ? (
               <LongShortTradingInputs
+                poolKey={poolKey}
                 side={selectedAction}
 
                 // Adrena tokens + swappable tokens
@@ -129,6 +132,7 @@ export default function TradeComp({
                     setTokenB={setTokenB}
                     wallet={wallet}
                     connected={connected}
+                    poolKey={poolKey}
                   />
                 )}
 

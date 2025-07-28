@@ -345,6 +345,7 @@ export type LimitOrderBookExtended = {
   limitOrders: LimitOrder[];
   escrowedLamports: number;
   pubkey: PublicKey;
+  poolKey: PublicKey;
 };
 
 export type GreaterThanOrEqual = 'gte';

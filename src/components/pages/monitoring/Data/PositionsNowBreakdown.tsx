@@ -1,3 +1,4 @@
+import { BN } from '@coral-xyz/anchor';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
@@ -78,9 +79,7 @@ export default function PositionsNowBreakdown({
 
                     <NumberDisplay
                       nb={nativeToUi(
-                        // Works because we have only one stable
-                        custody.nativeObject.shortPositions
-                          .stableLockedAmount[0].lockedAmount,
+                        new BN(custody.nativeObject.shortPositions.stableLockedAmount.toString()),
                         USD_DECIMALS,
                       )}
                       precision={0}

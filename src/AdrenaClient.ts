@@ -464,6 +464,7 @@ export class AdrenaClient {
       initialized: limitOrderBook.initialized,
       registeredLimitOrderCount: limitOrderBook.registeredLimitOrderCount,
       owner: limitOrderBook.owner,
+      poolKey,
       limitOrders:
         limitOrderBook.limitOrders.length > 0
           ? limitOrderBook.limitOrders
@@ -1519,7 +1520,7 @@ export class AdrenaClient {
     });
   }
 
-  async buildOpenOrIncreasePositionWithSwapLong({
+  async buildOpenOrIncreasePositionLong({
     owner,
     mint,
     price,
@@ -1562,21 +1563,11 @@ export class AdrenaClient {
     // Think and use proper slippage, for now use 0.3%
     const priceWithSlippage = applySlippage(price, 0.3);
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
     return this.adrenaProgram.methods
       .openOrIncreasePositionWithSwapLong({
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
       })
       .accountsStrict({
         owner,
@@ -1595,10 +1586,12 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
         pool: poolKey,
+        collateralCustody: receivingCustody,
+        collateralCustodyTokenAccount: receivingCustodyTokenAccount,
       });
   }
 
-  async buildOpenOrIncreasePositionWithSwapShort({
+  async buildOpenOrIncreasePositionShort({
     owner,
     mint,
     price,
@@ -1656,21 +1649,11 @@ export class AdrenaClient {
     // Think and use proper slippage, for now use 0.3%
     const priceWithSlippage = applySlippage(price, -0.3);
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
     return this.adrenaProgram.methods
       .openOrIncreasePositionWithSwapShort({
         price: priceWithSlippage,
         collateral: collateralAmount,
         leverage,
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
       })
       .accountsStrict({
         owner,
@@ -1726,20 +1709,10 @@ export class AdrenaClient {
     const dispensingCustodyTokenAccount =
       this.findCustodyTokenAccountAddress(mintB);
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
     return this.adrenaProgram.methods
       .swap({
         amountIn,
         minAmountOut,
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
       })
       .accountsStrict({
         caller: owner,
@@ -1772,12 +1745,12 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const custody = this.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody),
+    const collateralCustody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.collateralCustody),
     );
 
-    if (!custody) {
-      throw new Error('Cannot find custody related to position');
+    if (!collateralCustody) {
+      throw new Error('Cannot find collateralCustody related to position');
     }
 
     console.log('Close position:', {
@@ -1788,14 +1761,14 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
+    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
+      collateralCustody.mint,
     );
 
     const [receivingAccount, userProfileAccount] = await Promise.all([
       this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
-        mint: custody.mint,
+        mint: collateralCustody.mint,
         preInstructions,
       }),
       this.loadUserProfile({
@@ -1808,20 +1781,11 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
-    const tx = await this.adrenaProgram.methods
+    const tx = this.adrenaProgram.methods
       .closePositionLong({
         price,
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
         percentage,
+        previousCloseMarketOraclePrices: null,
       })
       .accountsStrict({
         owner: position.owner,
@@ -1830,7 +1794,7 @@ export class AdrenaClient {
         pool: position.nativeObject.pool,
         position: position.pubkey,
         custody: position.custody,
-        custodyTokenAccount,
+        collateralCustodyTokenAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
         oracle: AdrenaClient.oraclePda,
         cortex: AdrenaClient.cortexPda,
@@ -1840,6 +1804,7 @@ export class AdrenaClient {
         referrerProfile: userProfileAccount
           ? userProfileAccount.referrerProfile
           : null,
+        collateralCustody: position.collateralCustody,
       })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions);
@@ -1897,20 +1862,11 @@ export class AdrenaClient {
       this.loadUserProfile({ user: position.owner }),
     ]);
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
     const tx = await this.adrenaProgram.methods
       .closePositionShort({
         price,
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
         percentage,
+        previousCloseMarketOraclePrices: null,
       })
       .accountsStrict({
         owner: position.owner,
@@ -2553,7 +2509,7 @@ export class AdrenaClient {
     }
 
     const openPositionWithSwapIx = await (
-      await this.buildOpenOrIncreasePositionWithSwapShort({
+      await this.buildOpenOrIncreasePositionShort({
         owner,
         mint,
         price,
@@ -2619,7 +2575,7 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
-    const info = await this.getOpenPositionWithSwapAmountAndFees({
+    const info = await this.getOpenPositionAmountAndFees({
       mint: tokenB.mint,
       collateralMint: tokenA.mint,
       collateralAmount,
@@ -2935,8 +2891,8 @@ export class AdrenaClient {
       );
     }
 
-    const openPositionWithSwapIx = await (
-      await this.buildOpenOrIncreasePositionWithSwapLong({
+    const openPositionIx = await (
+      await this.buildOpenOrIncreasePositionLong({
         owner,
         mint,
         price,
@@ -2948,11 +2904,7 @@ export class AdrenaClient {
     ).instruction();
 
     const transaction = new Transaction();
-    transaction.add(
-      ...preInstructions,
-      openPositionWithSwapIx,
-      ...postInstructions,
-    );
+    transaction.add(...preInstructions, openPositionIx, ...postInstructions);
 
     return this.signAndExecuteTxAlternative({
       transaction,
@@ -3373,33 +3325,26 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const custody = this.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody),
+    const collateralCustody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.collateralCustody),
     );
 
-    if (!custody) {
-      throw new Error('Cannot find custody related to position');
+    if (!collateralCustody) {
+      throw new Error('Cannot find collateralCustody related to position');
     }
 
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
+    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
+      collateralCustody.mint,
     );
 
-    const fundingAccount = findATAAddressSync(position.owner, custody.mint);
-
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
+    const fundingAccount = findATAAddressSync(
+      position.owner,
+      collateralCustody.mint,
+    );
 
     return this.adrenaProgram.methods
       .addCollateralLong({
         collateral: collateralAmount,
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
       })
       .accountsStrict({
         owner: position.owner,
@@ -3409,10 +3354,11 @@ export class AdrenaClient {
         position: position.pubkey,
         custody: position.custody,
         oracle: AdrenaClient.oraclePda,
-        custodyTokenAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
         cortex: AdrenaClient.cortexPda,
         adrenaProgram: this.adrenaProgram.programId,
+        collateralCustody: position.collateralCustody,
+        collateralCustodyTokenAccount,
       });
   }
 
@@ -3790,9 +3736,6 @@ export class AdrenaClient {
     const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
     const position =
       await this.readonlyAdrenaProgram.account.position.fetch(targetPosition);
 
@@ -3801,15 +3744,7 @@ export class AdrenaClient {
     });
 
     const transaction = await this.adrenaProgram.methods
-      .resolvePositionBorrowFees({
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
-      })
+      .resolvePositionBorrowFees()
       .accountsStrict({
         signer: caller,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
@@ -4923,19 +4858,8 @@ export class AdrenaClient {
       poolKey,
     );
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
     return this.adrenaProgram.methods
-      .distributeFees({
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
-      })
+      .distributeFees()
       .accountsStrict({
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         oracle: AdrenaClient.oraclePda,
@@ -4956,105 +4880,12 @@ export class AdrenaClient {
         referrerRewardTokenVault: this.getReferrerRewardTokenVault(),
         stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
         stakingRewardTokenCustodyTokenAccount,
+        managerFeeRecipient:
+          this.getPoolFromKey(poolKey).nativeObject.managerFeeRecipient,
       })
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts(poolKey))
       .instruction();
   }
-
-  /* public async addGenesisLiquidity({
-    amountIn,
-    minLpAmountOut,
-    notification,
-  }: {
-    amountIn: number;
-    minLpAmountOut: BN;
-    notification?: MultiStepNotification;
-  }) {
-    if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
-    }
-    const usdc = this.getTokenBySymbol('USDC');
-
-    if (!usdc) {
-      throw new Error('USDC not found');
-    }
-
-    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
-      .publicKey;
-    const fundingAccount = findATAAddressSync(owner, usdc.mint);
-    const transferAuthority = AdrenaClient.transferAuthorityAddress;
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lpUserStaking = this.getUserStakingPda(owner, lpStaking);
-    const cortex = AdrenaClient.cortexPda;
-    const pool = this.mainPool.pubkey;
-    const lpStakingStakedTokenVault =
-      this.getStakingStakedTokenVaultPda(lpStaking);
-    const custody = this.getCustodyByMint(usdc.mint);
-    const custodyOracle = custody.nativeObject.oracle;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
-    const lmTokenMint = this.lmTokenMint;
-    const lpTokenMint = this.lpTokenMint;
-    const governanceTokenMint = this.governanceTokenMint;
-    const governanceRealm = this.governanceRealm;
-    const governanceRealmConfig = this.governanceRealmConfig;
-    const governanceGoverningTokenHolding =
-      this.governanceGoverningTokenHolding;
-    const governanceGoverningTokenOwnerRecord =
-      this.getGovernanceGoverningTokenOwnerRecordPda(owner);
-    const userStakingAccount =
-      await this.adrenaProgram.account.userStaking.fetchNullable(lpUserStaking);
-
-    if (!userStakingAccount) {
-      throw new Error('user staking account not found');
-    }
-
-    const governanceProgram = this.config.governanceProgram;
-    const systemProgram = SystemProgram.programId;
-    const tokenProgram = TOKEN_PROGRAM_ID;
-    const adrenaProgram = this.adrenaProgram.programId;
-    const genesisLock = this.getGenesisLockPda();
-    const custodyAddress = custody.pubkey;
-
-    const transaction = await this.adrenaProgram.methods
-      .addGenesisLiquidity({
-        minLpAmountOut,
-        amountIn: uiToNative(amountIn, this.alpToken.decimals),
-      })
-      .accountsStrict({
-        owner,
-        fundingAccount,
-        transferAuthority,
-        lpUserStaking,
-        lpStaking,
-        cortex,
-        pool,
-        lpStakingStakedTokenVault,
-        custody: custodyAddress,
-        custodyOracle,
-        custodyTokenAccount,
-        lmTokenMint,
-        lpTokenMint,
-        governanceTokenMint,
-        governanceRealm,
-        governanceRealmConfig,
-        governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord,
-        governanceProgram,
-        systemProgram,
-        tokenProgram,
-        adrenaProgram,
-        genesisLock,
-      })
-      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
-      .transaction();
-
-    return this.signAndExecuteTxAlternative({
-      transaction,
-      notification,
-    });
-  } */
 
   public buildCancelStopLossIx({
     position,
@@ -5268,7 +5099,7 @@ export class AdrenaClient {
     );
   }
 
-  public async getOpenPositionWithSwapAmountAndFees({
+  public async getOpenPositionAmountAndFees({
     mint,
     collateralMint,
     collateralAmount,
@@ -5302,9 +5133,6 @@ export class AdrenaClient {
       poolKey,
     );
 
-    const oraclePrices: ChaosLabsPricesExtended | null =
-      await DataApiClient.getChaosLabsPrices();
-
     // Anchor is bugging when calling a view, that is making CPI calls inside
     // Need to do it manually, so we can get the correct amounts
     const instruction = await this.adrenaProgram.methods
@@ -5312,13 +5140,6 @@ export class AdrenaClient {
         collateralAmount,
         leverage,
         side: side === 'long' ? 1 : 2,
-        oraclePrices: oraclePrices
-          ? {
-              prices: oraclePrices.prices,
-              signature: oraclePrices.signatureByteArray,
-              recoveryId: oraclePrices.recoveryId,
-            }
-          : null,
       })
       .accountsStrict({
         oracle: AdrenaClient.oraclePda,
