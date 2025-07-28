@@ -191,10 +191,10 @@ export default function Settings({
 
         <div className="flex flex-row justify-between items-center">
           <p className="text-sm font-boldy opacity-50 w-full">
-            Enable Adrena Notifications
+            Disable in-app notifications
           </p>
           <Switch
-            checked={settings.enableAdrenaNotifications}
+            checked={!settings.enableAdrenaNotifications}
             onChange={() => {
               dispatch(
                 setSettings({

@@ -39,16 +39,16 @@ export const Notifications = ({
   );
 
   const [selectedTab, setSelectedTab] = useState<'Adrena' | 'Dialect'>(
-    enableDialectNotifications ? 'Dialect' : 'Adrena',
+    (enableDialectNotifications || isDialectSubscriber) ? 'Dialect' : 'Adrena',
   );
 
   useEffect(() => {
-    if (enableDialectNotifications) {
+    if (isDialectSubscriber || enableDialectNotifications) {
       setSelectedTab('Dialect');
     } else {
       setSelectedTab('Adrena');
     }
-  }, [enableDialectNotifications]);
+  }, [isDialectSubscriber, enableDialectNotifications]);
 
   return (
     <div
@@ -158,7 +158,7 @@ export const Notifications = ({
             key={'enable-adrena-notifications'}
             className="flex flex-row  items-center justify-between w-full rounded-xl border border-white/10 bg-main mb-3 p-3"
           >
-            <p className="text-sm font-boldy">Enable Adrena notifications</p>
+            <p className="text-sm font-boldy">Enable in-app notifications</p>
             <Button
               title="Enable"
               size="sm"
