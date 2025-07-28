@@ -248,6 +248,7 @@ export default function ALPSwapBuy({
       <TradingInput
         className="text-xs rounded-full"
         inputClassName="bg-inputcolor"
+        inputContainerClassName="border border-white/20 h-14"
         value={collateralInput}
         selectedToken={collateralToken ?? undefined}
         tokenList={[
