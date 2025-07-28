@@ -48,11 +48,6 @@ const contentIfNoMutagens = (
         <div key={index} className="bg-[#0f1114] p-4 rounded-lg border border-[#1f2124] hover:border-[#2f3134] transition-colors">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold">{source.title}</h3>
-            {source.comingSoon && (
-              <span className="text-xs text-[#ff47b5] border border-[#ff47b5]/30 px-2 py-0.5 rounded-full shadow-[0_0_8px_-3px_#ff47b5]">
-                {source.comingSoonText}
-              </span>
-            )}
           </div>
           <p className="text-xs text-txtfade mt-1">{source.description}</p>
         </div>
@@ -161,6 +156,7 @@ const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
           'interseason1': 'Inter-season 1',
           'interseason2': 'Inter-season 2',
           'expanse': 'Season 1: Expanse',
+          'interseason3': 'Summer Event',
         }[season.seasonName] ?? season.seasonName}</h4>
 
         <p className='gap-1 flex items-center'>
@@ -213,14 +209,23 @@ export default function Mutagen({
   if (isMobile) {
     return (
       <AnimatePresence>
-        <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer' onClick={() => setIsModalOpen(true)}>
-          <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
+        <div className='gap-x-1 sm:gap-x-2 flex items-center justify-center rounded-full pl-2 sm:pl-4 pr-1 sm:pr-3 pt-1
+                        bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
+                        border border-mutagen/40
+                        shadow-mutagenSmall
+                        animate-fade-in
+                        cursor-pointer
+                        transition hover:border-mutagen/80 hover:shadow-mutagenHoverSmall duration-300'
+          onClick={() => setIsModalOpen(true)}
+          title="Click to scroll to your row"
+        >
+          <div className='text-xxs sm:text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
           <Image
             src={needle}
             alt={'needle'}
             width="30"
             height="30"
-            className={'w-4 h-4 grayscale'}
+            className={'w-3 h-3 sm:w-4 sm:h-4 grayscale'}
           />
         </div>
 
@@ -243,7 +248,13 @@ export default function Mutagen({
       <Menu
         openMenuTriggerType="hover"
         trigger={
-          <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1 bg-[#741e4c] border border-[#ff47b5]/30 hover:border-[#ff47b5]/50 shadow-[0_0_10px_-3px_#ff47b5] transition-all duration-300 hover:shadow-[0_0_15px_-3px_#ff47b5] cursor-pointer'>
+          <div className='gap-x-2 flex items-center justify-center rounded-full pl-4 pr-3 pt-1 pb-1
+                        bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
+                        border border-mutagen/40
+                        shadow-mutagenSmall
+                        animate-fade-in
+                        cursor-pointer
+                        transition hover:border-mutagen/80 hover:shadow-mutagenHoverSmall duration-300'>
             <div className='text-xs font-mono'>{userMutagens?.totalTotalPoints ? (formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2) === '0.00' ? '<0.01' : formatNumber(userMutagens?.totalTotalPoints, 2, 2, 2)) : '-'}</div>
             <Image
               src={needle}

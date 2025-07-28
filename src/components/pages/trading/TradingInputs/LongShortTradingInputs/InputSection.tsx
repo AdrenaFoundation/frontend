@@ -13,6 +13,7 @@ interface InputSectionProps {
     inputA: number | null;
     leverage: number;
     priceA: number | null;
+    recommendedToken?: Token;
     onTokenASelect: (token: Token) => void;
     onInputAChange: (value: number | null) => void;
     onLeverageChange: (value: number) => void;
@@ -30,6 +31,7 @@ export const InputSection = ({
     onInputAChange,
     onLeverageChange,
     onMax,
+    recommendedToken,
 }: InputSectionProps) => {
     const handlePercentageClick = (percentage: number) => {
         const balance = walletTokenBalances?.[tokenA.symbol] ?? 0;
@@ -41,7 +43,8 @@ export const InputSection = ({
     return (
         <>
             <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
-                <h5 className="ml-4">Collateral</h5>
+                <h5>Provide</h5>
+
                 <WalletBalance
                     tokenA={tokenA}
                     walletTokenBalances={walletTokenBalances}
@@ -55,13 +58,10 @@ export const InputSection = ({
                     <TradingInput
                         className="text-sm rounded-full"
                         inputClassName="border-0 tr-rounded-lg bg-inputcolor"
-                        tokenListClassName="border-none bg-inputcolor"
-                        menuClassName="shadow-none"
-                        menuOpenBorderClassName="rounded-tr-lg"
                         value={inputA}
                         subText={
                             priceA ? (
-                                <div className="text-sm text-txtfade font-mono">
+                                <div className="text-xs text-txtfade font-mono">
                                     {priceA > 500000000
                                         ? `> ${formatPriceInfo(500000000)}`
                                         : formatPriceInfo(priceA)}
@@ -72,11 +72,12 @@ export const InputSection = ({
                         tokenList={allowedTokenA}
                         onTokenSelect={onTokenASelect}
                         onChange={onInputAChange}
+                        recommendedToken={recommendedToken}
                     />
 
                     <LeverageSlider
                         value={leverage}
-                        className="w-full font-mono border-t select-none"
+                        className="w-full font-mono select-none"
                         onChange={onLeverageChange}
                     />
                 </div>

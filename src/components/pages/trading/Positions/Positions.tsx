@@ -84,7 +84,6 @@ export default function Positions({
               onClose={() => {
                 setPositionToClose(null);
               }}
-              tokenImage={positionToClose.token.image}
               setShareClosePosition={setShareClosePosition}
             />
           </Modal>

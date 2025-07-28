@@ -60,7 +60,7 @@ export default function Index() {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-2 items-center justify-center text-center mt-8 px-4 max-w-[60em] mx-auto">
+            <div className="flex flex-col gap-2 items-center justify-center text-center mt-4 px-4 max-w-[60em] mx-auto">
                 <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90">
                     The ALL-TIME leaderboard tracks total Mutagen earned since launch.
                 </span>
@@ -69,10 +69,7 @@ export default function Index() {
                 </span>
             </div>
 
-            <div className="h-[1px] bg-bcolor w-full mt-8 mb-16" />
-
             {leaderboardData ? <MutagenLeaderboard
-                className="pb-8"
                 data={leaderboardData}
                 onClickUserProfile={async (wallet: PublicKey) => {
                     const p = await window.adrena.client.loadUserProfile({ user: wallet });

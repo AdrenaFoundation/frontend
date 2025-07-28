@@ -1,23 +1,22 @@
+import Tippy from '@tippyjs/react';
 import Head from 'next/head';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
 import { useSelector } from '@/store/store';
-import { Token } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { PositionExtended, Token } from '@/types';
+import { getTokenImage, getTokenSymbol, getTokenSymbolFromChartFormat } from '@/utils';
 
 import TradingChartHeaderStats from './TradingChartHeaderStats';
 
-export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
-  return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
-}
-
 export default function TradingChartHeader({
+  allActivePositions,
   className,
   tokenList,
   selected,
   onChange,
 }: {
+  allActivePositions: PositionExtended[] | null;
   className?: string;
   tokenList: Token[];
   selected: Token;
@@ -26,6 +25,9 @@ export default function TradingChartHeader({
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
+
+  const numberLong = allActivePositions?.filter((p) => p.side === 'long').length;
+  const numberShort = allActivePositions?.filter((p) => p.side === 'short').length;
 
   return (
     <>
@@ -67,8 +69,74 @@ export default function TradingChartHeader({
             }}
             align="left"
           />
+          {/* Long/Short positions */}
+          {numberLong && numberShort ? (
+            <div className="flex sm:hidden gap-0.5">
+              <Tippy content="Long positions" className="flex flex-col items-center">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">{numberLong}</span>
+              </Tippy>
+              <Tippy content="Short positions" className="flex flex-col items-center">
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">{numberShort}</span>
+              </Tippy>
+            </div>
+          ) : null}
         </div>
-        <TradingChartHeaderStats selected={selected} />
+
+        {/*
+            <div className='flex flex-row sm:flex-col xl:flex-row xl:gap-2 items-center'>
+               <div className="flex items-center text-white">
+                <Tippy
+                  content={
+                    <div>
+                      <p className='text-sm mb-1 font-boldy opacity-50'>
+                        Show position history for all active positions.
+                      </p>
+                      <ul>
+                        <li className='text-xxs md:text-xs font-mono'>L / S = Long / Short</li>
+                        <li className='flex flex-row gap-1 text-xxs md:text-xs items-center font-mono'>
+                          <div className='w-2 h-2 rounded-full bg-green flex-none' /> / <div className='w-2 h-2 rounded-full bg-red flex-none' /> = PnL
+                        </li>
+                        <li className='flex flex-row gap-1 text-xxs md:text-xs items-center font-mono'>
+                          <div className='w-2 h-2 rounded-full bg-blue flex-none' /> = your position
+                        </li>
+                        <li className='text-xxs md:text-xs font-mono'>size of mark = size of position</li>
+                      </ul>
+                    </div>
+                  }>
+                  <p className="opacity-50 text-xxs underline-dashed cursor-help">
+                    Show pos.
+                  </p>
+                </Tippy>
+                <Switch
+                  checked={chartPreferences.showAllActivePositions}
+                  onChange={() => {
+                    setChartPreferences({
+                      ...chartPreferences,
+                      showAllActivePositions: !chartPreferences.showAllActivePositions,
+                      showPositionHistory: false, // Disable position history when toggling active positions
+                    });
+                  }}
+                  size="small"
+                  sx={{
+                    transform: 'scale(0.7)',
+                    '& .MuiSwitch-switchBase': {
+                      color: '#ccc',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: '#1a1a1a',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: '#555',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: '#10e1a3',
+                    },
+                  }}
+                />
+               </div>
+             </div> */}
+
+        <TradingChartHeaderStats selected={selected} numberLong={numberLong} numberShort={numberShort} />
         {/* <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
           <FormatNumber
             nb={selectedTokenPrice}
@@ -145,7 +213,7 @@ export default function TradingChartHeader({
             </div>
           </div>
         </div> */}
-      </div>
+      </div >
     </>
   );
 }

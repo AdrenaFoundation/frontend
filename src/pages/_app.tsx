@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
+import { checkAndSignInAnonymously, setVerifiedWalletAddresses } from '@/actions/supabaseAuthActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
@@ -54,8 +55,6 @@ function Loader(): JSX.Element {
 // initialized once, doesn't move afterwards.
 // actually twice, once on the server to `null` & once on the client.
 const CONFIG = initConfig();
-export const PYTH_CONNECTION =
-  CONFIG && new Connection(CONFIG.pythnetRpc.url, 'processed');
 
 // Load cluster from URL then load the config and initialize the app.
 // When everything is ready load the main component
@@ -83,7 +82,6 @@ export default function App(props: AppProps) {
   // No need to use an Effect as long as we guard with the correct conditions.
   if (
     CONFIG !== null &&
-    PYTH_CONNECTION !== null &&
     initStatus === 'not-started' &&
     activeRpc !== null
   ) {
@@ -91,7 +89,6 @@ export default function App(props: AppProps) {
     initializeApp(
       CONFIG,
       activeRpc.connection,
-      PYTH_CONNECTION,
     ).then(() => {
       setInitStatus('done');
     });
@@ -220,9 +217,12 @@ function AppComponent({
   useEffect(() => {
     if (!wallet) {
       setConnected(false);
+      console.log('No wallet connected, setting Adrena program to null');
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
+
+    dispatch(setVerifiedWalletAddresses())
 
     setConnected(true);
     window.adrena.client.setAdrenaProgram(
@@ -235,7 +235,13 @@ function AppComponent({
         }),
       ),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
+
+  useEffect(() => {
+    dispatch(checkAndSignInAnonymously());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     window.adrena.mainConnection = activeRpc.connection;

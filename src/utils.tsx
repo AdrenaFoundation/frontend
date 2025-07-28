@@ -1,4 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
+import { QuoteResponse } from '@jup-ag/api';
 import { sha256 } from '@noble/hashes/sha256';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -33,6 +34,7 @@ import {
   SOLANA_EXPLORERS_OPTIONS,
 } from './constant';
 import { WalletStakingAccounts } from './hooks/useWalletStakingAccounts';
+import { SettingsState } from './reducers/settingsReducer';
 import {
   ImageRef,
   LimitedString,
@@ -78,26 +80,40 @@ export function getNextSaturdayUTC(): Date {
   const daysUntilSaturday = (6 - dayOfWeek + 7) % 7 || 7; // Calculate days to next Saturday
 
   // Get next Saturday at 00:00:00 UTC
-  const nextSaturday = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + daysUntilSaturday,
-    0, 0, 0, 0
-  ));
+  const nextSaturday = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + daysUntilSaturday,
+      0,
+      0,
+      0,
+      0,
+    ),
+  );
 
   return nextSaturday;
 }
 
 export function chunkArray<T>(array: T[], size: number): T[][] {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
-    array.slice(i * size, i * size + size)
+    array.slice(i * size, i * size + size),
   );
 }
 
 export function getNextUTCDate() {
   const now = new Date();
 
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
+  return new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + 1,
+      0,
+      0,
+      0,
+    ),
+  );
 }
 
 export function formatNumAbbreviated(num: number, precision = 2): string {
@@ -129,7 +145,7 @@ export function findATAAddressSync(
 // Transfer 12/25 into 25 December
 export function formatToWeekOf(dateString: string, weeksOffset = 0): string {
   // Parse the date string (MM/DD format) as UTC in the current year
-  const [month, day] = dateString.split("/").map(Number);
+  const [month, day] = dateString.split('/').map(Number);
   const currentYear = new Date().getFullYear();
 
   // Create the initial date
@@ -140,7 +156,10 @@ export function formatToWeekOf(dateString: string, weeksOffset = 0): string {
 
   // Format the updated date
   const dayOfMonth = date.getUTCDate();
-  const monthName = date.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
+  const monthName = date.toLocaleString('default', {
+    month: 'long',
+    timeZone: 'UTC',
+  });
 
   return `${dayOfMonth} ${monthName}`;
 }
@@ -150,12 +169,16 @@ export function getLastMondayUTC(): Date {
   const dayOfWeek = now.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
   const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Days since the last Monday
 
-  const lastMonday = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() - diffToMonday, // Go back to last Monday
-    0, 0, 0
-  ));
+  const lastMonday = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - diffToMonday, // Go back to last Monday
+      0,
+      0,
+      0,
+    ),
+  );
 
   return lastMonday;
 }
@@ -165,12 +188,16 @@ export function getLastSundayUTC(): Date {
   const dayOfWeek = now.getUTCDay(); // 0 = Sunday
   const diffToSunday = dayOfWeek === 0 ? 0 : dayOfWeek; // Days since the last Sunday
 
-  const lastSunday = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() - diffToSunday, // Go back to last Sunday
-    23, 59, 59 // Set time to 23:59:59
-  ));
+  const lastSunday = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - diffToSunday, // Go back to last Sunday
+      23,
+      59,
+      59, // Set time to 23:59:59
+    ),
+  );
 
   return lastSunday;
 }
@@ -182,18 +209,17 @@ export function formatNumber(
   precisionIfPriceDecimalsBelow = 6,
 ): string {
   // If price is below decimals precision, display up to 6 decimals (override by minimumFractionDigits)
-  if (Math.abs(nb) < 10 ** -precision) precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
+  if (Math.abs(nb) < 10 ** -precision)
+    precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
 
   if (precision < minimumFractionDigits) {
     precision = minimumFractionDigits;
   }
 
-  return Number(nb.toFixed(precision)).toLocaleString(
-    'en-US'
-    , {
-      minimumFractionDigits,
-      maximumFractionDigits: precision,
-    });
+  return Number(nb.toFixed(precision)).toLocaleString('en-US', {
+    minimumFractionDigits,
+    maximumFractionDigits: precision,
+  });
 }
 
 export function formatPriceInfo(
@@ -232,7 +258,15 @@ export function formatPriceInfo(
   )}`;
 }
 
-export function formatGraphCurrency({ tickItem, maxDecimals = 0, maxDecimalsIfToken = 4 }: { tickItem: number, maxDecimals?: number, maxDecimalsIfToken?: number }): string {
+export function formatGraphCurrency({
+  tickItem,
+  maxDecimals = 0,
+  maxDecimalsIfToken = 4,
+}: {
+  tickItem: number;
+  maxDecimals?: number;
+  maxDecimalsIfToken?: number;
+}): string {
   if (tickItem === 0) return '$0';
 
   const absValue = Math.abs(tickItem);
@@ -241,15 +275,23 @@ export function formatGraphCurrency({ tickItem, maxDecimals = 0, maxDecimalsIfTo
   let num;
   if (absValue > 999_999_999) {
     const billions = absValue / 1_000_000_000;
-    num = (billions % 1 === 0 ? Math.floor(billions) : billions.toFixed(2)) + 'B';
+    num =
+      (billions % 1 === 0 ? Math.floor(billions) : billions.toFixed(2)) + 'B';
   } else if (absValue > 999_999) {
     const millions = absValue / 1_000_000;
-    num = (millions % 1 === 0 ? Math.floor(millions) : millions.toFixed(2)) + 'M';
+    num =
+      (millions % 1 === 0 ? Math.floor(millions) : millions.toFixed(2)) + 'M';
   } else if (absValue > 999) {
     const thousands = absValue / 1_000;
-    num = (thousands % 1 === 0 ? Math.floor(thousands) : thousands.toFixed(maxDecimals)) + 'K';
+    num =
+      (thousands % 1 === 0
+        ? Math.floor(thousands)
+        : thousands.toFixed(maxDecimals)) + 'K';
   } else if (absValue < 100) {
-    num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(maxDecimalsIfToken);
+    num =
+      absValue % 1 === 0
+        ? Math.floor(absValue)
+        : absValue.toFixed(maxDecimalsIfToken);
   } else if (absValue <= 999) {
     num = absValue % 1 === 0 ? Math.floor(absValue) : absValue.toFixed(2);
   } else {
@@ -344,6 +386,20 @@ export const DEFAULT_PRIORITY_FEE_OPTION = 'high';
 // in SOL
 export const DEFAULT_MAX_PRIORITY_FEE = 0.0001;
 
+export const DEFAULT_SETTINGS = {
+  disableChat: false,
+  showFeesInPnl: true,
+  showPopupOnPositionClose: true,
+  preferredSolanaExplorer: 'Solana Explorer',
+  priorityFeeOption: DEFAULT_PRIORITY_FEE_OPTION,
+  maxPriorityFee: DEFAULT_MAX_PRIORITY_FEE,
+  openPositionCollateralSymbol: '',
+  closePositionCollateralSymbol: '',
+  depositCollateralSymbol: '',
+  withdrawCollateralSymbol: '',
+  disableFriendReq: false,
+} as SettingsState;
+
 export const PercentilePriorityFeeList = {
   medium: 3000,
   high: 5000,
@@ -355,11 +411,13 @@ export function addNotification({
   message,
   type = 'info',
   duration = 'regular',
+  position = 'bottom-left',
 }: {
   title: string;
   type?: 'success' | 'error' | 'info';
   message?: ReactNode;
   duration?: 'fast' | 'regular' | 'long';
+  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 }) {
   const content = message ? (
     <div className="flex flex-col">
@@ -373,7 +431,7 @@ export function addNotification({
   );
 
   toast[type](content, {
-    position: 'bottom-left',
+    position: position,
     autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
     hideProgressBar: true,
     closeOnClick: true,
@@ -506,9 +564,287 @@ export class AdrenaTransactionError {
   }
 }
 
+// Custom error for Jupiter swap failures that can trigger retry/use native UI
+export class JupiterSwapError extends AdrenaTransactionError {
+  constructor(
+    public readonly inputMint: string,
+    public readonly outputMint: string,
+    public readonly originalError?: unknown,
+  ) {
+    const errorMessage = 'Jupiter swap failed during execution. You can use the native collateral token instead.';
+    super(null, errorMessage);
+  }
+}
+
+// Helper function to parse instruction error arrays
+function parseInstructionErrorArray(err: unknown): {
+  instructionIndex: number;
+  errorDetails: unknown;
+  customCode: number | null;
+} | null {
+  // Check if it's an InstructionError array like [3, {Custom: 1}]
+  if (Array.isArray(err) && err.length === 2) {
+    const [instructionIndex, errorDetails] = err;
+    if (typeof instructionIndex === 'number' && typeof errorDetails === 'object') {
+      return {
+        instructionIndex,
+        errorDetails,
+        customCode: (errorDetails as { Custom?: number })?.Custom ?? null
+      };
+    }
+  }
+  return null;
+}
+
+// Helper function to parse instruction errors from string
+function parseInstructionErrorFromString(errString: string): {
+  instructionIndex: number;
+  customCode: number;
+} | null {
+  // Try multiple patterns to match different InstructionError formats
+  const patterns = [
+    /"InstructionError":\s*\[([0-9]+),\s*\{[^}]*"Custom":\s*([0-9]+)[^}]*\}\]/,
+    /InstructionError.*?\[([0-9]+).*?Custom.*?([0-9]+)/,
+    /"InstructionError":\s*\[([0-9]+),\s*"Custom":\s*([0-9]+)\]/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = errString.match(pattern);
+    if (match?.length) {
+      return {
+        instructionIndex: parseInt(match[1], 10),
+        customCode: parseInt(match[2], 10)
+      };
+    }
+  }
+  return null;
+}
+
+// Helper function to parse program failure from logs
+function parseProgramFailureFromLogsHelper(errorLogs?: string[]): {
+  programId: string;
+  errorMessage: string | null;
+  isJupiter: boolean;
+  isAdrena: boolean;
+} | null {
+  if (!errorLogs || errorLogs.length === 0) return null;
+
+  // Look for the last program that failed
+  for (let i = errorLogs.length - 1; i >= 0; i--) {
+    const log = errorLogs[i];
+
+    // Pattern: "Program <program_id> failed: <error>" or "Program <program_id> failed"
+    const failedMatch = log.match(/Program ([A-Za-z0-9]+) failed(?:: (.+))?/);
+    if (failedMatch) {
+      const programId = failedMatch[1];
+      const errorMessage = failedMatch[2];
+
+      return {
+        programId,
+        errorMessage,
+        isJupiter: programId.startsWith('JUP'),
+        isAdrena: programId === '13gDzEXCdocbj8iAiqrScGo47NiSuYENGsRqi3SEAwet'
+      };
+    }
+  }
+
+  return null;
+}
+
+// Helper function to check for Jupiter-related logs
+function hasJupiterLogsHelper(errorLogs?: string[]): boolean {
+  const logsString = errorLogs?.join(' ') || '';
+  return logsString.includes('Jupiter') || logsString.includes('insufficient funds');
+}
+
+// Helper function to handle instruction error arrays
+function handleInstructionErrorArray(
+  instructionErrorArray: {
+    instructionIndex: number;
+    errorDetails: unknown;
+    customCode: number | null;
+  },
+  errorLogs?: string[]
+): string | null {
+  console.log('Detected InstructionError array:', instructionErrorArray);
+
+  const hasJupiterLogsInError = errorLogs?.some(log => log.includes('Jupiter') && log.includes('insufficient funds'));
+
+  // Handle specific instruction errors based on index and custom code
+  if (instructionErrorArray.customCode === 1) {
+    // Custom: 1 is often "insufficient funds" in Jupiter swaps
+    if (instructionErrorArray.instructionIndex >= 3 || hasJupiterLogsInError) {
+      // Jupiter instructions are typically at index 3+ or we have Jupiter logs
+      console.log('Detected Jupiter swap execution error from simulation');
+      return 'JUPITER_SWAP_EXECUTION_ERROR';
+    }
+    return 'Insufficient funds to complete this transaction. Please check your wallet balance.';
+  }
+
+  if (instructionErrorArray.customCode === 2) {
+    return 'Invalid instruction data. Please try again.';
+  }
+
+  if (instructionErrorArray.customCode === 3) {
+    return 'Account validation failed. Please check your inputs.';
+  }
+
+  return `Instruction ${instructionErrorArray.instructionIndex} failed with error code ${instructionErrorArray.customCode}.`;
+}
+
+// Helper function to handle Adrena program errors
+function handleAdrenaProgramError(
+  parseProgramFailureFromLogs: {
+    programId: string;
+    errorMessage: string | null;
+    isJupiter: boolean;
+    isAdrena: boolean;
+  },
+  adrenaProgram: Program<Adrena>
+): string | null {
+  if (!parseProgramFailureFromLogs.isAdrena) return null;
+
+  console.log('Detected Adrena program failure - not a Jupiter error');
+
+  // Extract the human-readable error message from the logs
+  if (parseProgramFailureFromLogs.errorMessage) {
+    // Try to extract the actual error message from the program error
+    const customErrorMatch = parseProgramFailureFromLogs.errorMessage.match(/custom program error: 0x([0-9a-f]+)/i);
+    if (customErrorMatch) {
+      const errorCode = parseInt(customErrorMatch[1], 16);
+
+      // Use the IDL to get the proper error message
+      try {
+        const idlError = adrenaProgram.idl.errors?.find(err => err.code === errorCode);
+        if (idlError?.msg) {
+          return idlError.msg;
+        }
+      } catch (e) {
+        console.warn('Failed to get error message from IDL:', e);
+      }
+
+      // Fallback to generic error message if IDL lookup fails
+      return `Program error: ${parseProgramFailureFromLogs.errorMessage}`;
+    }
+
+    // If we can't parse the custom error, return the original error message
+    return parseProgramFailureFromLogs.errorMessage;
+  }
+
+  return null;
+}
+
+// Helper function to check for simulation-specific errors
+function checkSimulationErrors(errString: string): string | null {
+  // Only treat as simulation failure if the error message starts with "Simulation failed:"
+  // This prevents catching AdrenaTransactionError messages that contain "Simulation failed" as part of the error
+  if (errString.includes('"Simulation failed:') || errString.includes('Simulation failed:')) {
+    return 'Transaction simulation failed. Please check your inputs and try again.';
+  }
+
+  if (errString.includes('"Transaction simulation failed') || errString.includes('Transaction simulation failed')) {
+    return 'Transaction simulation failed. Please check your inputs and try again.';
+  }
+
+  return null;
+}
+
+// Helper function to check for Solana system errors
+function checkSolanaSystemErrors(errString: string): string | null {
+  const systemErrors = [
+    { pattern: 'InsufficientFundsForRent', message: 'Not enough SOL to pay for transaction fees and rent. Please add more SOL to your wallet.' },
+    { pattern: 'InsufficientFunds', message: 'Insufficient funds to complete this transaction. Please check your wallet balance.' },
+    { pattern: 'AccountInUse', message: 'Account is already in use. Please try again.' },
+    { pattern: 'AccountNotAssigned', message: 'Account not assigned to this program.' },
+    { pattern: 'AccountAlreadyInitialized', message: 'Account is already initialized.' },
+    { pattern: 'AccountNotInitialized', message: 'Account is not initialized.' },
+    { pattern: 'AccountLoadedTwice', message: 'Account loaded twice in transaction.' },
+    { pattern: 'AccountDataSizeChanged', message: 'Account data size changed during transaction.' },
+    { pattern: 'AccountDataTooSmall', message: 'Account data too small for instruction.' },
+    { pattern: 'AccountDataTooLarge', message: 'Account data too large for instruction.' },
+    { pattern: 'AccountBorrowFailed', message: 'Account borrow failed.' },
+    { pattern: 'AccountBorrowOutstanding', message: 'Account borrow outstanding.' },
+    { pattern: 'AccountNotRentExempt', message: 'Account is not rent exempt.' },
+    { pattern: 'AccountDiscriminatorMismatch', message: 'Account discriminator mismatch.' },
+    { pattern: 'AccountDiscriminatorNotFound', message: 'Account discriminator not found.' },
+    { pattern: 'AccountDiscriminatorAlreadySet', message: 'Account discriminator already set.' },
+    { pattern: 'AccountDidNotSerialize', message: 'Account did not serialize.' },
+    { pattern: 'AccountDidNotDeserialize', message: 'Account did not deserialize.' },
+    { pattern: 'AccountNotEnoughKeys', message: 'Not enough keys provided for instruction.' },
+    { pattern: 'AccountNotEnoughSigners', message: 'Not enough signers provided for instruction.' },
+    { pattern: 'AccountNotEnoughWritableSigners', message: 'Not enough writable signers provided for instruction.' },
+    { pattern: 'AccountNotEnoughWritableAccounts', message: 'Not enough writable accounts provided for instruction.' },
+  ];
+
+  for (const { pattern, message } of systemErrors) {
+    if (errString.includes(pattern)) {
+      return message;
+    }
+  }
+
+  return null;
+}
+
+// Helper function to check for SPL Token errors
+function checkSPLTokenErrors(errString: string): string | null {
+  const tokenErrors = [
+    { pattern: 'TokenInsufficientFunds', message: 'Insufficient token balance for this transaction.' },
+    { pattern: 'TokenNotRentExempt', message: 'Token account is not rent exempt.' },
+    { pattern: 'TokenInvalidMint', message: 'Invalid token mint.' },
+    { pattern: 'TokenInvalidOwner', message: 'Invalid token owner.' },
+    { pattern: 'TokenInvalidAccountData', message: 'Invalid token account data.' },
+    { pattern: 'TokenInvalidInstruction', message: 'Invalid token instruction.' },
+    { pattern: 'TokenInvalidState', message: 'Invalid token state.' },
+    { pattern: 'TokenInvalidDelegate', message: 'Invalid token delegate.' },
+    { pattern: 'TokenInvalidAuthority', message: 'Invalid token authority.' },
+    { pattern: 'TokenInvalidAmount', message: 'Invalid token amount.' },
+  ];
+
+  for (const { pattern, message } of tokenErrors) {
+    if (errString.includes(pattern)) {
+      return message;
+    }
+  }
+
+  return null;
+}
+
+// Helper function to extract error codes and names
+function extractErrorCodesAndNames(err: unknown, errString: string): {
+  errCodeHex: number | null;
+  errCodeDecimals: number | null;
+  errName: string | null;
+  errMessage: string | null;
+} {
+  const errCodeHex = (() => {
+    const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
+    return match?.length ? parseInt(match[1], 16) : null;
+  })();
+
+  const errCodeDecimals = (() => {
+    const match = errString.match(/"Custom": ([0-9]+)/);
+    return match?.length ? parseInt(match[1], 10) : null;
+  })();
+
+  const errName = (() => {
+    const match = errString.match(/Error Code: ([a-zA-Z]+)/);
+    const match2 = errString.match(/"([a-zA-Z]+)"\n[ ]+]/);
+    if (match?.length) return match[1];
+    return match2?.length ? match2[1] : null;
+  })();
+
+  const errMessage = (() => {
+    const match = errString.match(/Error Message: ([a-zA-Z '\.]+)"/);
+    return match?.length ? match[1] : null;
+  })();
+
+  return { errCodeHex, errCodeDecimals, errName, errMessage };
+}
+
 export function parseTransactionError(
   adrenaProgram: Program<Adrena>,
   err: unknown,
+  errorLogs?: string[],
 ) {
   //
   // Check for Adrena Program Errors
@@ -523,66 +859,123 @@ export function parseTransactionError(
     return err;
   }
 
+  if (err instanceof JupiterSwapError) {
+    return err;
+  }
+
+  console.log('parseTransactionError input:', err);
+  console.log('parseTransactionError stringified:', safeJSONStringify(err));
+  if (errorLogs) {
+    console.log('parseTransactionError logs:', errorLogs);
+  }
+
   const errStr: string | null = (() => {
-    const errCodeHex = (() => {
-      const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
+    const errString = safeJSONStringify(err);
 
-      return match?.length ? parseInt(match[1], 16) : null;
-    })();
-
-    const errCodeDecimals = (() => {
-      const match = safeJSONStringify(err).match(/"Custom": ([0-9]+)/);
-
-      return match?.length ? parseInt(match[1], 10) : null;
-    })();
-
-    const errName = (() => {
-      const match = safeJSONStringify(err).match(/Error Code: ([a-zA-Z]+)/);
-      const match2 = safeJSONStringify(err).match(/"([a-zA-Z]+)"\n[ ]+]/);
-
-      if (match?.length) return match[1];
-
-      return match2?.length ? match2[1] : null;
-    })();
-
-    const errMessage = (() => {
-      const match = safeJSONStringify(err).match(
-        /Error Message: ([a-zA-Z '\.]+)"/,
-      );
-
-      return match?.length ? match[1] : null;
-    })();
-
-    if (safeJSONStringify(err) === '"BlockhashNotFound"') {
+    // This will enable automatic retry
+    if (errString === '"BlockhashNotFound"') {
       return 'BlockhashNotFound';
     }
 
-    // Not enough SOL to pay for the transaction
-    if (safeJSONStringify(err).includes('InsufficientFundsForRent')) {
-      return 'Not enough SOL to pay for transaction fees and rent';
+    // Handle InstructionError arrays (common in simulation errors)
+    const instructionErrorArray = parseInstructionErrorArray(err);
+    if (instructionErrorArray) {
+      return handleInstructionErrorArray(instructionErrorArray, errorLogs);
     }
 
+    // Check for Jupiter swap execution errors
+    const instructionError = parseInstructionErrorFromString(errString);
+
+    // Parse logs to understand which program actually failed (only if logs are available)
+    const parseProgramFailureFromLogs = parseProgramFailureFromLogsHelper(errorLogs);
+
+    // Check if there are Jupiter-related logs (for context, not necessarily the failure)
+    const hasJupiterLogs = hasJupiterLogsHelper(errorLogs);
+
+    console.log('Program failure analysis:', {
+      instructionError,
+      parseProgramFailureFromLogs,
+      hasJupiterLogs,
+      errString,
+      logsString: errorLogs?.join(' ')
+    });
+
+    // Determine if this is a Jupiter swap error based on which program actually failed
+    if (parseProgramFailureFromLogs) {
+      if (parseProgramFailureFromLogs.isJupiter) {
+        console.log('Detected Jupiter program failure');
+        return 'JUPITER_SWAP_EXECUTION_ERROR';
+      } else if (parseProgramFailureFromLogs.isAdrena) {
+        const adrenaError = handleAdrenaProgramError(parseProgramFailureFromLogs, adrenaProgram);
+        if (adrenaError) return adrenaError;
+        // Let it fall through to normal error handling
+      }
+    } else if (instructionError && hasJupiterLogs) {
+      // Fallback: If we don't have logs but have instruction error and Jupiter logs,
+      // and it's a Jupiter-specific error code (1 = insufficient funds), treat as Jupiter error
+      if (instructionError.customCode === 1) {
+        console.log('Detected Jupiter swap error (fallback - no logs available)');
+        return 'JUPITER_SWAP_EXECUTION_ERROR';
+      }
+    }
+
+    // Check for simulation-specific errors
+    const simulationError = checkSimulationErrors(errString);
+    if (simulationError) return simulationError;
+
+    // Check for specific Solana system errors
+    const solanaError = checkSolanaSystemErrors(errString);
+    if (solanaError) return solanaError;
+
+    // Check for Adrena program specific errors
+    const { errCodeHex, errCodeDecimals, errName, errMessage } = extractErrorCodesAndNames(err, errString);
+
+    // Try to find Adrena program error
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
       if (errName !== null && errName === name) return true;
       if (errCodeHex !== null && errCodeHex === code) return true;
       if (errCodeDecimals !== null && errCodeDecimals === code) return true;
-
       return false;
     });
 
     if (idlError?.msg) return idlError?.msg;
 
-    if (errName && errMessage) return `${errName}: ${errMessage}`;
-    if (errName) return `Error name: ${errName}`;
-    if (errCodeHex) return `Error code: ${errCodeHex}`;
-    if (errCodeDecimals === 1) return `Insufficient SOL`;
-    if (errCodeDecimals) return `Error code: ${errCodeDecimals}`;
+    // Check for common SPL Token errors
+    const splTokenError = checkSPLTokenErrors(errString);
+    if (splTokenError) return splTokenError;
 
-    return 'Unknown error';
+    // Fallback to more specific error messages
+    if (errName && errMessage) {
+      return `${errName}: ${errMessage}`;
+    }
+
+    if (errName) {
+      return `Error: ${errName}`;
+    }
+
+    if (errCodeHex) {
+      return `Program error: ${errCodeHex}`;
+    }
+
+    if (errCodeDecimals) {
+      return `Program error: ${errCodeDecimals}`;
+    }
+
+    // Last resort - provide a helpful generic message
+    return 'Transaction failed. Please check your inputs and try again.';
   })();
 
+  // Special handling for Jupiter swap execution errors
+  if (errStr === 'JUPITER_SWAP_EXECUTION_ERROR') {
+    return new JupiterSwapError(
+      'unknown', // We don't have the mints in this context
+      'unknown',
+      err,
+    );
+  }
+
   // Transaction failed in preflight, there is no TxHash
-  return new AdrenaTransactionError(null, errStr);
+  return new AdrenaTransactionError(null, errStr || 'Transaction failed');
 }
 
 export function tryPubkey(p: string): PublicKey | null {
@@ -679,6 +1072,15 @@ export function getAbbrevWalletAddress(address: string, length: number = 6) {
   return `${address.slice(0, length)}...${address.slice(address.length - length)}`;
 }
 
+export const generateColorFromString = (str: string): string => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = hash % 360;
+  return `hsl(${hue}, 70%, 60%)`;
+};
+
 export function formatMilliseconds(milliseconds: number): string {
   const seconds = Math.floor((milliseconds / 1000) % 60);
   milliseconds -= seconds * 1000;
@@ -719,7 +1121,7 @@ export function formatMilliseconds(milliseconds: number): string {
 }
 
 // Handle specific case of jitoSOL and WBTC
-export function getTokenImage(token: Token): ImageRef {
+export function getTokenImage(token: Token): ImageRef | string {
   if (token.symbol === 'JITOSOL') return solLogo;
   if (token.symbol === 'WBTC') return btcLogo;
 
@@ -765,6 +1167,76 @@ export function getAlpLockedStakes(
     (stakingAccounts?.ALP?.lockedStakes as LockedStakeExtended[]) ?? [],
     'ALP',
   );
+}
+
+// Generate fake ALP staking data for testing the change from locked to liquid ALP
+export function generateFakeAlpStakingData(
+  totalAmount: number = 88000,
+): LockedStakeExtended[] {
+  const now = Math.floor(Date.now() / 1000); // Current time in seconds
+
+  // Duration in seconds for different lock periods
+  const durations = {
+    '90d': 90 * 24 * 60 * 60,
+    '180d': 180 * 24 * 60 * 60,
+    '360d': 360 * 24 * 60 * 60,
+    '540d': 540 * 24 * 60 * 60,
+  };
+
+  // Distribution based on logs - approximately:
+  // 540 days: ~87,500 ALP (major portion)
+  // 360 days: ~16,000 ALP
+  // 180 days: ~150,000 ALP
+  // 90 days: ~2,500 ALP
+
+  const stakes: LockedStakeExtended[] = [];
+
+  // Create example stakes for each duration
+  const createStake = (
+    amount: number,
+    durationKey: keyof typeof durations,
+    indexOffset: number = 0,
+  ): LockedStakeExtended => {
+    const durationSeconds = durations[durationKey];
+    return {
+      amount: new BN(amount * 1000000), // Convert to native units with 6 decimals
+      stakeTime: new BN(now - 30 * 24 * 60 * 60), // Started 30 days ago
+      claimTime: new BN(0), // Not claimed
+      endTime: new BN(now + durationSeconds), // Ends after the lock duration
+      lockDuration: new BN(durationSeconds),
+      rewardMultiplier: 0,
+      lmRewardMultiplier: 0,
+      voteMultiplier: 0,
+      qualifiedForRewardsInResolvedRoundCount: 0,
+      amountWithRewardMultiplier: new BN(0),
+      amountWithLmRewardMultiplier: new BN(0),
+      resolved: 0,
+      padding2: [0, 0, 0, 0, 0, 0, 0],
+      id: new BN(indexOffset + 1),
+      earlyExit: 0,
+      padding3: [0, 0, 0, 0, 0, 0, 0],
+      earlyExitFee: new BN(0),
+      isGenesis: 0,
+      padding4: [0, 0, 0, 0, 0, 0, 0],
+      genesisClaimTime: new BN(0),
+      index: indexOffset,
+      tokenSymbol: 'ALP',
+    };
+  };
+
+  // Distribution matching what we saw in logs
+  if (totalAmount >= 80000) {
+    // For large amounts, create multiple stakes with different durations
+    stakes.push(createStake(Math.round(totalAmount * 0.34), '540d', 0)); // 34% in 540 days
+    stakes.push(createStake(Math.round(totalAmount * 0.06), '360d', 1)); // 6% in 360 days
+    stakes.push(createStake(Math.round(totalAmount * 0.58), '180d', 2)); // 58% in 180 days
+    stakes.push(createStake(Math.round(totalAmount * 0.02), '90d', 3)); // 2% in 90 days
+  } else {
+    // For smaller amounts, just create one stake with 540 days
+    stakes.push(createStake(totalAmount, '540d', 0));
+  }
+
+  return stakes;
 }
 
 // i.e percentage = -2 (for -2%)
@@ -829,7 +1301,7 @@ export const verifyRpcConnection = async (rpc: string) => {
 };
 
 export function getGMT(): number {
-  return new Date().getTimezoneOffset() / 60 * -1;
+  return (new Date().getTimezoneOffset() / 60) * -1;
 }
 
 export const verifyIfValidUrl = (url: string) => {
@@ -927,35 +1399,29 @@ export const getCustodyByMint = async (mint: string) => {
 export const getDaysBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-}
+};
 
 export const getHoursBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
-  return Math.floor(
-    (diffTime %
-      (1000 * 60 * 60 * 24)) /
-    (1000 * 60 * 60),
-  );
-}
+  return Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+};
 
 export const getMinutesBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
-  return Math.floor(
-    (diffTime % (1000 * 60 * 60)) / (1000 * 60),
-  );
-}
+  return Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+};
 
 export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor((diffTime % (1000 * 60)) / 1000);
-}
+};
 
 export function getFullTimeDifference(date1: Date, date2: Date) {
   return {
     days: getDaysBetweenDates(date1, date2),
     hours: getHoursBetweenDates(date1, date2),
     minutes: getMinutesBetweenDates(date1, date2),
-    seconds: getSecondsBetweenDates(date1, date2)
+    seconds: getSecondsBetweenDates(date1, date2),
   };
 }
 
@@ -1020,10 +1486,15 @@ export const isValidPublicKey = (key: string) => {
 };
 
 export const calculateWeeksPassed = (startDate: Date): number => {
-  return Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
+  return Math.floor(
+    (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
+  );
 };
 
-export function formatSnapshotTimestamp(snapshot_timestamp: string[], period: string | null) {
+export function formatSnapshotTimestamp(
+  snapshot_timestamp: string[],
+  period: string | null,
+) {
   return snapshot_timestamp.map((time: string) => {
     if (period === '1d') {
       return new Date(time).toLocaleTimeString('en-US', {
@@ -1040,7 +1511,7 @@ export function formatSnapshotTimestamp(snapshot_timestamp: string[], period: st
       });
     }
 
-    if (period === '1M' || period === '3M' || period === '6M') {
+    if (period === '1M' || period === '3M' || period === '6M' || period === '1Y') {
       return new Date(time).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'numeric',
@@ -1053,16 +1524,21 @@ export function formatSnapshotTimestamp(snapshot_timestamp: string[], period: st
 }
 
 // Validation function
-export const validateTPSLInputs = ({ takeProfitInput,
+export const validateTPSLInputs = ({
+  takeProfitInput,
   setTakeProfitError,
-  stopLossInput, setStopLossError, markPrice, position }: {
-    takeProfitInput: number | null,
-    setTakeProfitError?: (value: boolean) => void,
-    stopLossInput: number | null,
-    setStopLossError?: (value: boolean) => void,
-    markPrice: number | null, position: PositionExtended
-  }) => {
-
+  stopLossInput,
+  setStopLossError,
+  markPrice,
+  position,
+}: {
+  takeProfitInput: number | null;
+  setTakeProfitError?: (value: boolean) => void;
+  stopLossInput: number | null;
+  setStopLossError?: (value: boolean) => void;
+  markPrice: number | null;
+  position: PositionExtended;
+}) => {
   let isValid = true;
 
   // Validate Stop Loss
@@ -1146,13 +1622,71 @@ export function hexStringToByteArray(hexString: string): number[] {
 
   // Convert hex string to byte array
   const byteArray: number[] = [];
+
   for (let i = 0; i < cleanHex.length; i += 2) {
     const byte = parseInt(cleanHex.slice(i, i + 2), 16);
+
     if (isNaN(byte)) {
       throw new Error('Invalid hex string');
     }
+
     byteArray.push(byte);
   }
 
   return byteArray;
+}
+
+export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
+  return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
+}
+
+// Small structure used to ease usage of top accounts
+export function jupInstructionToTransactionInstruction(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ix: any,
+): TransactionInstruction {
+  return new TransactionInstruction({
+    programId: new PublicKey(ix.programId),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    keys: ix.accounts.map((acc: any) => ({
+      pubkey: new PublicKey(acc.pubkey),
+      isSigner: acc.isSigner,
+      isWritable: acc.isWritable,
+    })),
+    data: Buffer.from(ix.data, 'base64'),
+  });
+}
+
+export async function getJupiterApiQuote({
+  inputMint,
+  outputMint,
+  amount,
+  swapSlippage,
+}: {
+  inputMint: PublicKey;
+  outputMint: PublicKey;
+  amount: BN | number;
+  swapSlippage: number;
+}): Promise<QuoteResponse | null> {
+  try {
+    const ret = await window.adrena.jupiterApiClient.quoteGet({
+      inputMint: inputMint.toBase58(),
+      outputMint: outputMint.toBase58(),
+      amount: typeof amount === 'number' ? amount : amount.toNumber(),
+      slippageBps: swapSlippage * 100,
+      swapMode: 'ExactIn',
+      maxAccounts: 20, // Limit the amount of accounts to avoid exceeding max instruction size
+    });
+
+    console.log('JupiterQuote', ret);
+    return ret;
+  } catch {
+    return null;
+  }
+}
+
+export function isPartialClose(activePercent: number | null) {
+  return typeof activePercent === 'number'
+    && activePercent > 0
+    && activePercent < 1;
 }

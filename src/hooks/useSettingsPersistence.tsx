@@ -7,8 +7,11 @@ import { SettingsState } from "@/reducers/settingsReducer";
 import { useDispatch, useSelector } from "@/store/store";
 import { PercentilePriorityFeeList } from "@/utils";
 
+import useFetchUserSettings from "./useFetchUserSettings";
+
 // Loads Settings from cookies and saves them to cookies
 export default function useSettingsPersistence() {
+    const { preferences, updatePreferences } = useFetchUserSettings();
     const dispatch = useDispatch();
     const [cookies, setCookie] = useCookies([
         'disable-chat',
@@ -17,6 +20,12 @@ export default function useSettingsPersistence() {
         'preferred-solana-explorer',
         'max-priority-fee',
         'priority-fee',
+        'disable-friend-req',
+        // Persistence for trading actions
+        'open-position-collateral-symbol',
+        'close-position-collateral-symbol',
+        'deposit-collateral-symbol',
+        'withdraw-collateral-symbol',
     ]);
 
     const settings = useSelector((state) => state.settings);
@@ -26,46 +35,72 @@ export default function useSettingsPersistence() {
         const updatedSettings: Partial<SettingsState> = {};
 
         {
-            const v = cookies['disable-chat'];
+            const v = preferences?.disableChat ?? cookies['disable-chat'];
             if (v === false || v === true)
                 updatedSettings.disableChat = v;
         }
 
         {
-            const v = cookies['show-fees-in-pnl'];
+            const v = preferences?.showFeesInPnl ?? cookies['show-fees-in-pnl'];
             if (v === false || v === true)
                 updatedSettings.showFeesInPnl = v;
         }
 
         {
-            const v = cookies['show-popup-on-position-close'];
+            const v = preferences?.showPopupOnPositionClose ?? cookies['show-popup-on-position-close'];
             if (v === false || v === true)
                 updatedSettings.showPopupOnPositionClose = v;
         }
 
         {
-            const v = cookies['preferred-solana-explorer'];
+            const v = preferences?.preferredSolanaExplorer ?? cookies['preferred-solana-explorer'];
             if (Object.keys(SOLANA_EXPLORERS_OPTIONS).includes(v))
                 updatedSettings.preferredSolanaExplorer = v;
         }
 
         {
-            const v = cookies['priority-fee'];
+            const v = preferences?.priorityFeeOption ?? cookies['priority-fee'];
             if (Object.keys(PercentilePriorityFeeList).includes(v))
                 updatedSettings.priorityFeeOption = v;
         }
 
         {
-            const v = cookies['max-priority-fee'];
+            const v = preferences?.maxPriorityFee ?? cookies['max-priority-fee'];
             if (typeof v !== 'undefined' && !isNaN(v))
                 updatedSettings.maxPriorityFee = v;
+        }
+
+        {
+            const v = preferences?.openPositionCollateralSymbol ?? cookies['open-position-collateral-symbol'];
+            updatedSettings.openPositionCollateralSymbol = v;
+        }
+
+        {
+            const v = preferences?.closePositionCollateralSymbol ?? cookies['close-position-collateral-symbol'];
+            updatedSettings.closePositionCollateralSymbol = v;
+        }
+
+        {
+            const v = preferences?.depositCollateralSymbol ?? cookies['deposit-collateral-symbol'];
+            updatedSettings.depositCollateralSymbol = v;
+        }
+
+        {
+            const v = preferences?.withdrawCollateralSymbol ?? cookies['withdraw-collateral-symbol'];
+            updatedSettings.withdrawCollateralSymbol = v;
+        }
+
+        {
+            const v = preferences?.disableFriendReq ?? cookies['disable-friend-req'];
+            if (v === false || v === true)
+                updatedSettings.disableFriendReq = v;
         }
 
         dispatch(
             setSettings(updatedSettings),
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [!!cookies, !!dispatch]);
+    }, [!!cookies, !!dispatch, preferences]);
 
     // When selector change, save in cookie
     useEffect(() => {
@@ -78,6 +113,11 @@ export default function useSettingsPersistence() {
                 // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
                 maxPriorityFee: 'max-priority-fee',
                 priorityFeeOption: 'priority-fee',
+                disableFriendReq: 'disable-friend-req',
+                openPositionCollateralSymbol: 'open-position-collateral-symbol',
+                closePositionCollateralSymbol: 'close-position-collateral-symbol',
+                depositCollateralSymbol: 'deposit-collateral-symbol',
+                withdrawCollateralSymbol: 'withdraw-collateral-symbol',
             } as Record<keyof SettingsState, keyof typeof cookies>)[key as keyof SettingsState], value);
         });
 
@@ -86,4 +126,9 @@ export default function useSettingsPersistence() {
         window.adrena.client.setPriorityFeeOption(settings.priorityFeeOption);
         window.adrena.client.setMaxPriorityFee(settings.maxPriorityFee);
     }, [setCookie, settings]);
+
+    useEffect(() => {
+        updatePreferences(settings);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [settings]);
 }

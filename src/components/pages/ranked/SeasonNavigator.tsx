@@ -31,20 +31,27 @@ export default function SeasonNavigator({
                     key={season}
                     onClick={() => setActiveSeason(season)}
                 >
-                    <p className="relative z-20 font-archivoblack tracking-widest text-md uppercase text-nowrap">
+                    <p className={twMerge("relative z-20 font-archivoblack tracking-widest uppercase text-nowrap xl:text-sm 2xl:text-xl", season === 'interseason3' ? 'lg:text-sm ' : '')}>
                         {TRADING_COMPETITION_SEASONS[season].title}
                     </p>
 
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    {season === 'interseason3' ? <div
+                        className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
+                        style={{
+                            backgroundImage: `url(${TRADING_COMPETITION_SEASONS[season].img})`,
+                            backgroundOrigin: 'border-box',
+                            backgroundPosition: 'center 20%'
+                        }}
+                    /> : <img
                         src={TRADING_COMPETITION_SEASONS[season].img}
                         alt="competition banner"
                         className="absolute top-0 left-0 w-full h-full object-cover opacity-70"
-                    />
+                    />}
                 </div>
             ))}
 
-            {Array.from({ length: 4 }, () => null).map((_, i) => (
+            {Array.from({ length: 3 }, () => null).map((_, i) => (
                 <div
                     className="hidden lg:flex items-center justify-center relative bg-third border rounded-md overflow-hidden border-white/10 opacity-50"
                     key={i}

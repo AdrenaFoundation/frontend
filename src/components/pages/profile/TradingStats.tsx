@@ -5,6 +5,7 @@ import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { useSelector } from '@/store/store';
 import { EnrichedTraderInfo } from '@/types';
 import { formatSecondsToTimeDifference } from '@/utils';
 
@@ -12,14 +13,14 @@ export default function TradingStats({
   traderInfo,
   className,
   livePositionsNb,
-  showFeesInPnl,
 }: {
   traderInfo: EnrichedTraderInfo | null;
   className?: string;
   livePositionsNb: number | null;
-  showFeesInPnl?: boolean;
 }) {
-  const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl);
+  const settings = useSelector((state) => state.settings);
+
+  const [showAfterFees, setShowAfterFees] = useState(settings.showFeesInPnl);
 
   const totalProfitLoss = useMemo(() => {
     return (traderInfo?.totalPnl ?? 0) +

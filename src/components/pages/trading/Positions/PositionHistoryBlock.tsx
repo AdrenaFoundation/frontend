@@ -1,19 +1,23 @@
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
+import arrowDown2Svg from '@/../public/images/Icons/arrow-down-2.svg';
+import arrowUp2Svg from '@/../public/images/Icons/arrow-up-2.svg';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
+import DataApiClient from '@/DataApiClient';
 import { useSelector } from '@/store/store';
-import { EnrichedPositionApi, PositionExtended } from '@/types';
-import { formatTimeDifference, getFullTimeDifference, getTxExplorer } from '@/utils';
+import { EnrichedPositionApi, PositionExtended, PositionTransaction } from '@/types';
+import { formatDate2Digits, formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getTxExplorer } from '@/utils';
 
+import CollateralTooltip from './CollateralTootltip';
 import FeesPaidTooltip from './FeesPaidTooltip';
 import MutagenTooltip from './MutagenTooltip';
 import { PnL } from './PositionBlockComponents/PnL';
@@ -36,6 +40,8 @@ const PositionHistoryBlock = ({
   showShareButton?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [events, setEvents] = useState<PositionTransaction[]>([]);
   const showFeesInPnl = useSelector((state) => state.settings.showFeesInPnl);
   const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl);
 
@@ -63,6 +69,68 @@ const PositionHistoryBlock = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const handleExpandToggle = useCallback(async () => {
+    if (!isExpanded && events.length === 0) {
+      try {
+        const positionTransactions = await DataApiClient.getPositionTransactions({ positionId: positionHistory.positionId });
+        setEvents(positionTransactions || []);
+      } catch (error) {
+        console.error('Error fetching position transactions:', error);
+      }
+    }
+    setIsExpanded(!isExpanded);
+  }, [isExpanded, events.length, positionHistory.positionId]);
+
+  const getEventTypeLabel = (method: string) => {
+    switch (method.toLowerCase()) {
+      case 'openpositionlong':
+      case 'openpositionshort':
+        return 'Open Position';
+      case 'addcollaterallong':
+      case 'addcollateralshort':
+        return 'Add Collateral';
+      case 'removecollaterallong':
+      case 'removecollateralshort':
+        return 'Remove Collateral';
+      case 'increasepositionlong':
+      case 'increasepositionshort':
+        return 'Increase Position';
+      case 'closepositionlong':
+      case 'closepositionshort':
+        return 'Close Position';
+      case 'liquidatelong':
+      case 'liquidateshort':
+        return 'Liquidate Position';
+      default:
+        return method;
+    }
+  };
+
+  const getEventTypeColor = (method: string) => {
+    switch (method.toLowerCase()) {
+      case 'openpositionlong':
+      case 'openpositionshort':
+        return POSITION_BLOCK_STYLES.text.white;
+      case 'addcollaterallong':
+      case 'addcollateralshort':
+        return POSITION_BLOCK_STYLES.text.blue;
+      case 'removecollaterallong':
+      case 'removecollateralshort':
+        return POSITION_BLOCK_STYLES.text.orange;
+      case 'increasepositionlong':
+      case 'increasepositionshort':
+        return POSITION_BLOCK_STYLES.text.blue;
+      case 'closepositionlong':
+      case 'closepositionshort':
+        return POSITION_BLOCK_STYLES.text.blue;
+      case 'liquidatelong':
+      case 'liquidateshort':
+        return POSITION_BLOCK_STYLES.text.orange;
+      default:
+        return POSITION_BLOCK_STYLES.text.gray;
+    }
+  };
 
   const pnlValue = showAfterFees
     ? positionHistory.pnl
@@ -103,6 +171,7 @@ const PositionHistoryBlock = ({
               position={positionHistory}
               showAfterFees={showAfterFees}
               setShowAfterFees={setShowAfterFees}
+              isHistory={true}
             />
           }
         />
@@ -113,7 +182,7 @@ const PositionHistoryBlock = ({
             isMini && "grid grid-cols-2 gap-2",
             isMedium && "grid grid-cols-4 gap-2",
             isCompact && "grid gap-2",
-            isBig && "justify-between gap-2",
+            isBig && "grid grid-cols-8 gap-2",
             isBiggest && "justify-between gap-2"
           )}>
             <ValueColumn
@@ -134,7 +203,8 @@ const PositionHistoryBlock = ({
                 <VolumeTooltip
                   entrySize={positionHistory.entrySize}
                   increaseSize={positionHistory.increaseSize}
-                  exitSize={positionHistory.exitSize}
+                  decreaseSize={positionHistory.decreaseSize}
+                  closeSize={positionHistory.closeSize}
                 >
                   <FormatNumber
                     nb={positionHistory.volume}
@@ -144,7 +214,7 @@ const PositionHistoryBlock = ({
                   />
                 </VolumeTooltip>
               }
-              valueClassName={POSITION_BLOCK_STYLES.text.white}
+              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.white, "underline-dashed")}
               columnClasses={columnClasses}
             />
 
@@ -199,8 +269,10 @@ const PositionHistoryBlock = ({
               value={
                 <FeesPaidTooltip
                   entryFees={0}
-                  exitFees={positionHistory.exitFees}
-                  borrowFees={positionHistory.borrowFees}
+                  decreaseExitFees={positionHistory.decreaseExitFees}
+                  closeExitFees={positionHistory.closeExitFees}
+                  decreaseBorrowFees={positionHistory.decreaseBorrowFees}
+                  closeBorrowFees={positionHistory.closeBorrowFees}
                 >
                   <FormatNumber
                     nb={totalFees}
@@ -209,6 +281,33 @@ const PositionHistoryBlock = ({
                     isDecimalDimmed={false}
                   />
                 </FeesPaidTooltip>
+              }
+              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.red, "underline-dashed")}
+              columnClasses={columnClasses}
+            />
+
+            <ValueColumn
+              label="Collateral"
+              value={
+                <CollateralTooltip
+                  token={positionHistory.token}
+                  entryCollateralAmount={positionHistory.entryCollateralAmount}
+                  entryCollateralAmountNative={positionHistory.entryCollateralAmountNative}
+                  increaseCollateralAmount={positionHistory.increaseCollateralAmount}
+                  increaseCollateralAmountNative={positionHistory.increaseCollateralAmountNative}
+                  decreaseCollateralAmount={positionHistory.decreaseCollateralAmount}
+                  decreaseCollateralAmountNative={positionHistory.decreaseCollateralAmountNative}
+                  closeCollateralAmount={positionHistory.closeCollateralAmount}
+                  closeCollateralAmountNative={positionHistory.closeCollateralAmountNative}
+                  exitAmountNative={positionHistory.exitAmountNative}
+                >
+                  <FormatNumber
+                    nb={positionHistory.collateralAmount}
+                    format="currency"
+                    className={POSITION_BLOCK_STYLES.text.white}
+                    isDecimalDimmed={false}
+                  />
+                </CollateralTooltip>
               }
               valueClassName={twMerge(POSITION_BLOCK_STYLES.text.red, "underline-dashed")}
               columnClasses={columnClasses}
@@ -239,38 +338,161 @@ const PositionHistoryBlock = ({
             {showShareButton && (
               <div className={twMerge(
                 "flex flex-col justify-center items-center",
-                isMini && "col-span-1 col-start-2 row-start-4 mt-1 w-1/2 justify-self-end",
-                isMedium && "col-span-1 col-start-4 row-start-2 w-full",
-                isCompact && "col-span-1 col-start-4 row-start-2 w-full",
-                isBig && "flex-row justify-center items-center",
-                isBiggest && "flex-row justify-center items-center"
+                isMini && "col-span-1 col-start-2 row-start-5 mt-1 w-full justify-self-end",
+                isMedium && "col-span-1 col-start-4 row-start-3 w-full",
+                isCompact && "col-span-1 col-start-4 row-start-3 w-full",
+                isBig && "col-span-1 col-start-8 row-start-2 mt-1 w-full justify-self-end",
+                isBiggest && "flex-row justify-center items-center gap-2"
               )}>
                 <div className="lg:flex hidden flex-col justify-center items-center w-full">
-                  <Button
-                    leftIcon={shareIcon}
-                    variant='secondary'
-                    className={twMerge(POSITION_BLOCK_STYLES.button.filled)}
-                    onClick={() => {
-                      setIsOpen(true);
-                    }}
-                  />
+                  <div className="flex items-center gap-1 w-full">
+                    <Button
+                      leftIcon={shareIcon}
+                      variant='secondary'
+                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "flex-1")}
+                      onClick={() => {
+                        setIsOpen(true);
+                      }}
+                    />
+
+                    <Button
+                      variant='secondary'
+                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "text-white flex-1")}
+                      leftIcon={isExpanded ? arrowUp2Svg : arrowDown2Svg}
+                      rounded={false}
+                      onClick={handleExpandToggle}
+                    />
+                  </div>
                 </div>
                 <div className="lg:hidden flex flex-col justify-center items-center w-full">
-                  <Button
-                    size="xs"
-                    className={twMerge(POSITION_BLOCK_STYLES.button.filled)}
-                    leftIcon={shareIcon}
-                    rounded={false}
-                    onClick={() => {
-                      setIsOpen(true);
-                    }}
-                  />
+                  <div className="flex items-center gap-1 w-full">
+                    <Button
+                      size="xs"
+                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "flex-1")}
+                      leftIcon={shareIcon}
+                      rounded={false}
+                      onClick={() => {
+                        setIsOpen(true);
+                      }}
+                    />
+
+                    <Button
+                      size="xs"
+                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "text-white flex-1")}
+                      leftIcon={isExpanded ? arrowUp2Svg : arrowDown2Svg}
+                      rounded={false}
+                      onClick={handleExpandToggle}
+                    />
+                  </div>
                 </div>
               </div>
             )}
           </div>
         </div>
-      </div>
+
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden flex w-full"
+            >
+              {events.length > 0 ? (
+                <div className="space-y-2 w-full">
+                  {events.map((transaction: PositionTransaction) => (
+                    <div key={transaction.transactionId} className="w-full rounded border border-white/[0.03]">
+                      <div className="flex flex-col lg:flex-row gap-3 lg:gap-0 items-center justify-between px-3 py-2.5">
+                        <div className="flex items-center gap-1">
+                          <span className={getEventTypeColor(transaction.method)}>
+                            {getEventTypeLabel(transaction.method)}
+                          </span>
+                          <Link href={getTxExplorer(transaction.signature)} target="_blank">
+                            <Image src={externalLinkLogo} alt="View transaction" width={12} height={12} />
+                          </Link>
+                        </div>
+                        <div className='ml-2 text-xxs opacity-50'>
+                          {formatDate2Digits(transaction.transactionDate)}
+                        </div>
+                        <div className="text-xs text-white flex items-center gap-4 flex-1 justify-center flex-wrap">
+                          {transaction.additionalInfos ? (
+                            Object.entries(transaction.additionalInfos).filter(([key, value]) => value !== null && key !== 'positionPubkey' && key !== 'positionId').map(([key, value]) => {
+                              const formatKey = (key: string) => {
+                                const keyMap: Record<string, string> = {
+                                  'size': 'Size',
+                                  'price': 'Price',
+                                  'leverage': 'Leverage',
+                                  'pnl': 'PnL',
+                                  'collateralAmountUsd': 'Collateral',
+                                  'addAmountUsd': 'Added',
+                                  'removeAmountUsd': 'Removed',
+                                  'fees': 'Fees',
+                                  'exitFees': 'Exit Fees',
+                                  'borrowFees': 'Borrow Fees',
+                                  'exitAmountNative': 'Native Exit Amount',
+                                  'newCollateralAmountUsd': 'New Collateral',
+                                  'collateralAmount': 'Collateral',
+                                  'collateralAmountNative': 'Native Collateral',
+                                  'stopLossLimitPrice': 'Stop Loss',
+                                  'takeProfitLimitPrice': 'Take Profit',
+                                  'position_pubkey': 'Position Pubkey',
+                                  'percentage': 'Percentage',
+                                };
+                                return keyMap[key] || key;
+                              };
+
+                              const formatValue = (value: string | number | null) => {
+                                if (typeof value === 'number') {
+                                  return (
+                                    <FormatNumber
+                                      nb={value}
+                                      format={
+                                        key === 'exitAmountNative' || key === 'collateralAmountNative'
+                                          ? 'number'
+                                          : key === 'percentage'
+                                            ? 'percentage'
+                                            : 'currency'
+                                      }
+                                      precision={
+                                        positionHistory.token.symbol === 'BONK'
+                                          ? 8
+                                          : 2
+                                      }
+                                      className="text-xs text-white"
+                                      isDecimalDimmed={false}
+                                    />
+                                  );
+                                }
+                                if (key === 'position_pubkey') {
+                                  return getAbbrevWalletAddress(value as string);
+                                }
+                                return value;
+                              };
+
+                              return (
+                                <span key={key} className='text-xxs opacity-50'>
+                                  {formatKey(key)}: {formatValue(value)}
+                                </span>
+                              )
+                            })
+                          ) :
+                            null
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-white/50">
+                  No transactions found for this position
+                </div>
+              )}
+            </motion.div >
+          )}
+        </AnimatePresence >
+      </div >
 
       <AnimatePresence>
         {isOpen && (

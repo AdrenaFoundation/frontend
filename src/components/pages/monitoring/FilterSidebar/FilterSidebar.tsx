@@ -49,7 +49,7 @@ export default function FilterSidebar({
         | React.Dispatch<React.SetStateAction<string>>
         | React.Dispatch<React.SetStateAction<string[] | null>>;
         activeOption: string[] | string | null;
-        optionItems: { label: string; icon?: ImageRef }[];
+        optionItems: { label: string; icon?: ImageRef | string }[];
         disabled?: boolean;
     }[];
     sortOptions?: {
@@ -347,7 +347,7 @@ interface CheckboxProps {
     label: string;
     checked: boolean;
     onClick: React.Dispatch<React.SetStateAction<string[] | null>>;
-    img?: ImageRef;
+    img?: ImageRef | string;
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
@@ -404,7 +404,7 @@ interface RadioProps {
     label: string;
     checked: boolean;
     onClick: React.Dispatch<React.SetStateAction<string>>;
-    img?: ImageRef;
+    img?: ImageRef | string;
 }
 
 const Radio: React.FC<RadioProps> = ({

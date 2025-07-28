@@ -4,8 +4,13 @@ import BN from 'bn.js';
 import {
     ChaosLabsPricesExtended,
     ChaosLabsPricesResponse,
+    ClaimHistoryApi,
+    ClaimHistoryBySymbolExtended,
+    ClaimHistoryExtended,
+    ClaimHistoryExtendedApi,
     CustodyInfoResponse,
     EnrichedPositionApi,
+    EnrichedPositionApiV2,
     EnrichedTraderInfo,
     FactionsLeaderboardsData,
     FactionsLeaderboardsRawAPI,
@@ -14,10 +19,12 @@ import {
     MutagenLeaderboardRawAPI,
     PoolInfoResponse,
     PositionActivityRawAPi,
-    PositionApiRawData,
+    PositionApiRawDataV2,
     PositionStatsRawApi,
+    PositionTransaction,
     PreSeasonLeaderboardReturnTypeAPI,
     RankedRewards,
+    RawTransactionPositionData,
     SeasonLeaderboardsData,
     SeasonLeaderboardsRawAPI,
     Token,
@@ -32,7 +39,6 @@ import {
     UserSeasonProgressReturnType
 } from './types';
 import { hexStringToByteArray } from './utils';
-
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
@@ -149,7 +155,7 @@ export default class DataApiClient {
         return result.data;
     }
 
-    public static async getChartAprsInfo(nbDays: number): Promise<{
+    public static async getChartAprsInfo(nbDays: number, stakingType?: 'lm' | 'lp', lockPeriod?: number): Promise<{
         aprs: {
             annualized_rate_adx: number[];
             annualized_rate_adx_normalized_usd: number[];
@@ -172,7 +178,7 @@ export default class DataApiClient {
                 startDate.setDate(startDate.getDate() - nbDays);
 
                 return startDate.toISOString();
-            })()}&end_date=${new Date().toISOString()}`,
+            })()}&end_date=${new Date().toISOString()}${stakingType ? `&staking_type=${stakingType}` : ''}${lockPeriod ? `&lock_period=${lockPeriod}` : ''}`,
         ).then((res) => res.json());
 
         return result.data;
@@ -606,6 +612,7 @@ export default class DataApiClient {
                             increaseCount: positionActivity.increase_count,
                             totalFees: positionActivity.total_fees,
                             totalExitFees: positionActivity.total_exit_fees,
+                            winrate: positionActivity.winrate,
                         }),
                     ),
                 }),
@@ -695,10 +702,16 @@ export default class DataApiClient {
         }
     }
 
-    public static async getMutagenLeaderboard(): Promise<MutagenLeaderboardData | null> {
+    public static async getMutagenLeaderboard({
+        seasonName,
+        rankFilter,
+    }: {
+        seasonName?: string;
+        rankFilter?: string;
+    }): Promise<MutagenLeaderboardData | null> {
         try {
             const response = await fetch(
-                `${DataApiClient.DATAPI_URL}/mutagen-leaderboard`
+                `${DataApiClient.DATAPI_URL}/mutagen-leaderboard${seasonName ? `?season=${seasonName}` : ''}${rankFilter ? `&rank_filter=${rankFilter}` : ''}`
             );
 
             if (!response.ok) {
@@ -755,29 +768,34 @@ export default class DataApiClient {
     public static async getPositions({
         walletAddress,
         tokens,
+        limit = 1000,
+        offset = 0
     }: {
         walletAddress: string;
         tokens: Token[];
-    }): Promise<EnrichedPositionApi[]> {
+        limit?: number;
+        offset?: number;
+    }): Promise<EnrichedPositionApiV2 | null> {
         try {
             const response = await fetch(
-                `${DataApiClient.DATAPI_URL}/position?user_wallet=${walletAddress
-                }&status=liquidate&status=close`,
+                `${DataApiClient.DATAPI_URL}/v3/position?user_wallet=${walletAddress
+                }&status=liquidate&status=close&limit=${limit}&offset=${offset}`,
             );
 
             if (!response.ok) {
                 console.log('API response was not ok');
-                return [];
+                return null;
             }
 
             const apiBody = await response.json();
 
-            const apiData: PositionApiRawData[] | undefined = apiBody.data;
+            const apiData: PositionApiRawDataV2 | undefined = apiBody.data;
 
-            if (typeof apiData === 'undefined' || (apiData && apiData.length === 0))
-                return [];
+            if (typeof apiData === 'undefined' || (apiData && apiData.positions && apiData.positions.length === 0))
+                return null;
 
-            return apiData
+            const positions = apiData
+                .positions
                 .map((data) => {
                     const token = tokens.find(
                         (t) =>
@@ -791,6 +809,7 @@ export default class DataApiClient {
 
                     return {
                         positionId: data.position_id,
+                        poolId: data.pool_id,
                         userId: data.user_id,
                         side: data.side,
                         status: data.status,
@@ -798,7 +817,16 @@ export default class DataApiClient {
                         entryLeverage: data.entry_leverage,
                         lowestLeverage: data.lowest_leverage,
                         entryCollateralAmount: data.entry_collateral_amount,
+                        entryCollateralAmountNative: data.entry_collateral_amount_native,
+                        increaseCollateralAmount: data.increase_collateral_amount,
+                        increaseCollateralAmountNative: data.increase_collateral_amount_native,
+                        decreaseCollateralAmount: data.decrease_collateral_amount,
+                        decreaseCollateralAmountNative: data.decrease_collateral_amount_native,
+                        closeCollateralAmount: data.close_collateral_amount,
+                        closeCollateralAmountNative: data.close_collateral_amount_native,
                         collateralAmount: data.collateral_amount,
+                        collateralAmountNative: data.collateral_amount_native,
+                        exitAmountNative: data.exit_amount_native,
                         closedBySlTp: data.closed_by_sl_tp,
                         volume: data.volume,
                         duration: data.duration,
@@ -810,14 +838,24 @@ export default class DataApiClient {
                         totalPoints: data.total_points,
                         entrySize: data.entry_size,
                         increaseSize: data.increase_size,
+                        decreaseSize: data.decrease_size,
+                        closeSize: data.close_size,
                         exitSize: data.exit_size,
                         entryPrice: data.entry_price,
                         exitPrice: data.exit_price,
                         entryDate: new Date(data.entry_date),
                         exitDate: data.exit_date ? new Date(data.exit_date) : null,
                         pnl: data.pnl,
+                        decreasePnl: data.decrease_pnl,
+                        closePnl: data.close_pnl,
                         fees: data.fees,
+                        totalDecreaseFees: data.total_decrease_fees,
+                        totalCloseFees: data.total_close_fees,
                         borrowFees: data.borrow_fees,
+                        decreaseBorrowFees: data.decrease_borrow_fees,
+                        closeBorrowFees: data.close_borrow_fees,
+                        decreaseExitFees: data.decrease_exit_fees,
+                        closeExitFees: data.close_exit_fees,
                         exitFees: data.exit_fees,
                         createdAt: new Date(data.created_at),
                         updatedAt: data.updated_at ? new Date(data.updated_at) : null,
@@ -829,9 +867,16 @@ export default class DataApiClient {
                     } as EnrichedPositionApi;
                 })
                 .filter((data) => data !== null) as EnrichedPositionApi[];
+
+            return {
+                totalCount: apiData.total_count,
+                offset: apiData.offset,
+                limit: apiData.limit,
+                positions: positions,
+            } as EnrichedPositionApiV2;
         } catch (e) {
             console.error('Error fetching positions:', e);
-            return [];
+            return null;
         }
     }
 
@@ -1062,6 +1107,140 @@ export default class DataApiClient {
         }
     }
 
+    public static async fetchClaimsHistory({
+        walletAddress,
+        offset,
+        limit,
+        symbol,
+    }: {
+        walletAddress: string;
+        offset: number;
+        limit: number;
+        symbol?: 'ADX' | 'ALP';
+    }): Promise<ClaimHistoryExtendedApi | null> {
+        if (!walletAddress) return null;
+
+        const url = `${DataApiClient.DATAPI_URL}/v2/claim?user_wallet=${walletAddress}&offset=${offset}&limit=${limit}&sort=DESC${symbol ? `&symbol=${symbol}` : ''}`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.log('API response was not ok');
+            return null;
+        }
+
+        const apiBody = await response.json();
+
+        const apiData: ClaimHistoryApi | undefined = apiBody.data;
+
+        if (typeof apiData === 'undefined') {
+            console.log('apiData is undefined');
+            return null;
+        }
+
+        // Check if symbols is defined and is an array
+        if (!apiData.symbols || !Array.isArray(apiData.symbols)) {
+            return {
+                startDate: new Date(apiData.start_date || new Date()),
+                endDate: new Date(apiData.end_date || new Date()),
+                limit: apiData.limit || limit,
+                offset: apiData.offset || offset,
+                symbols: [],
+                allTimeUsdcClaimed: 0,
+                allTimeAdxClaimed: 0,
+                allTimeAdxGenesisClaimed: 0,
+                allTimeCountClaims: 0,
+            };
+        }
+
+        // Total claims count for logging
+        const totalClaimsCount = apiData.symbols.reduce(
+            (acc, s) => acc + (s.claims?.length || 0), 0
+        );
+
+        // If we requested data past the end, log it
+        if (offset > 0 && totalClaimsCount === 0) {
+            console.log(`DataApiClient: No claims found at offset ${offset}. You may have reached the end of available data.`);
+        }
+
+        const enrichedClaimsWithSymbol: ClaimHistoryBySymbolExtended[] =
+            apiData.symbols.map((s) => {
+                // Check if claims is defined and is an array
+                const claims = (s.claims && Array.isArray(s.claims))
+                    ? s.claims
+                        .map((claim) => {
+                            // Additional null checking
+                            if (!claim) return null;
+
+                            const symbol =
+                                claim.mint === window.adrena.client.lmTokenMint.toBase58()
+                                    ? 'ADX'
+                                    : 'ALP';
+
+                            return {
+                                claim_id: claim.claim_id,
+                                rewards_adx: claim.rewards_adx,
+                                rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
+                                rewards_usdc: claim.rewards_usdc,
+                                signature: claim.signature,
+                                transaction_date: new Date(claim.transaction_date),
+                                created_at: new Date(claim.created_at),
+                                stake_mint: claim.mint,
+                                symbol: symbol,
+                                source: claim.source,
+                                adx_price_at_claim: claim.adx_price_at_claim,
+                            } as ClaimHistoryExtended;
+                        })
+                        .filter((claim) => claim !== null)
+                    : []; // Empty array if s.claims is undefined or not an array
+
+                return {
+                    symbol: s.symbol,
+                    allTimeRewardsAdx: s.all_time_rewards_adx || 0,
+                    allTimeRewardsUsdc: s.all_time_rewards_usdc || 0,
+                    allTimeRewardsAdxGenesis: s.all_time_rewards_adx_genesis || 0,
+                    allTimeCountClaims: s.all_time_count_claims || 0,
+                    claims: claims,
+                } as ClaimHistoryBySymbolExtended;
+            });
+
+        return {
+            startDate: new Date(apiData.start_date),
+            endDate: new Date(apiData.end_date),
+            limit: apiData.limit,
+            offset: apiData.offset,
+            symbols: enrichedClaimsWithSymbol,
+            allTimeUsdcClaimed: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeRewardsUsdc ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeRewardsUsdc,
+                    0,
+                ),
+            allTimeAdxClaimed: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeRewardsAdx ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeRewardsAdx,
+                    0,
+                ),
+            allTimeAdxGenesisClaimed: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeRewardsAdxGenesis ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeRewardsAdxGenesis,
+                    0,
+                ),
+            allTimeCountClaims: symbol
+                ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
+                    ?.allTimeCountClaims ?? 0)
+                : enrichedClaimsWithSymbol.reduce(
+                    (acc, curr) => acc + curr.allTimeCountClaims,
+                    0,
+                )
+        };
+    }
+
     public static async getChaosLabsPrices(): Promise<ChaosLabsPricesExtended | null> {
         try {
             const response = await fetch(
@@ -1084,9 +1263,11 @@ export default class DataApiClient {
                 latestDate: apiData.latest_date,
                 latestTimestamp: apiData.latest_timestamp,
                 prices: apiData.prices.map((price) => ({
+                    symbol: price.symbol,
                     feedId: price.feed_id,
                     price: new BN(price.price),
                     timestamp: new BN(price.timestamp),
+                    exponent: price.exponent,
                 })),
                 signature: apiData.signature,
                 signatureByteArray: hexStringToByteArray(apiData.signature),
@@ -1097,4 +1278,347 @@ export default class DataApiClient {
             return null;
         }
     }
+
+    public static async getPositionTransactions({
+        positionId,
+    }: {
+        positionId: number;
+    }): Promise<PositionTransaction[] | null> {
+        try {
+            const url = `${DataApiClient.DATAPI_URL}/transaction-position?position_id=${positionId}`;
+
+            const result = await fetch(url).then((res) => res.json());
+
+            if (!result.success || !result.data) {
+                return null;
+            }
+
+            const transactions: PositionTransaction[] = result.data.map((item: RawTransactionPositionData) => ({
+                transactionId: item.transaction_id,
+                rawTransactionId: item.raw_transaction_id,
+                userId: item.user_id,
+                positionId: item.position_id,
+                signature: item.signature,
+                method: item.method,
+                transactionDate: new Date(item.transaction_date),
+                additionalInfos: item.additional_infos || {}
+            }));
+
+            return transactions;
+        } catch (error) {
+            console.error('Error fetching position transactions:', error);
+            return null;
+        }
+    }
+
+    // Used for server-side export
+    // Handles pagination and serve file as blob to the client
+    public static async exportPositions({
+        userWallet,
+        year,
+        entryDate,
+        exitDate,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        entryDate?: Date;
+        exitDate?: Date;
+        page?: number;
+        pageSize?: number;
+    }): Promise<{
+        csvData: string;
+        metadata: {
+            totalPositions: number;
+            exportCount: number;
+            isTruncated: boolean;
+            totalPages: number;
+            currentPage: number;
+            pageSize: number;
+        };
+    } | null> {
+        try {
+            const params = new URLSearchParams();
+            params.append('user_wallet', userWallet);
+
+            if (year) {
+                params.append('year', year.toString());
+            } else {
+                if (entryDate) {
+                    params.append('entry_date', entryDate.toISOString());
+                }
+                if (exitDate) {
+                    params.append('exit_date', exitDate.toISOString());
+                }
+            }
+
+            if (page) {
+                params.append('page', page.toString());
+            }
+            if (pageSize) {
+                params.append('page_size', pageSize.toString());
+            }
+
+            const url = `${DataApiClient.DATAPI_URL}/v2/export/positions?${params.toString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.error('Export positions failed:', response.statusText);
+                return null;
+            }
+
+            const csvData = await response.text();
+
+            // Extract metadata from response headers
+            const totalPositionsHeader = response.headers.get('X-Total-Positions');
+            const exportCountHeader = response.headers.get('X-Export-Count');
+
+            let metadata;
+
+            if (totalPositionsHeader && exportCountHeader) {
+                // Server sent proper headers
+                metadata = {
+                    totalPositions: parseInt(totalPositionsHeader),
+                    exportCount: parseInt(exportCountHeader),
+                    isTruncated: response.headers.get('X-Is-Truncated') === 'true',
+                    totalPages: parseInt(response.headers.get('X-Total-Pages') || '1'),
+                    currentPage: parseInt(response.headers.get('X-Current-Page') || '1'),
+                    pageSize: parseInt(response.headers.get('X-Page-Size') || '0'),
+                };
+            } else {
+                // Headers missing - fallback to parsing CSV
+                console.log('X-* headers missing, parsing CSV content...');
+                const lines = csvData.split('\n').filter(line => line.trim().length > 0);
+                const dataRows = lines.length > 1 ? lines.length - 1 : 0; // Subtract header row
+
+                metadata = {
+                    totalPositions: dataRows,
+                    exportCount: dataRows,
+                    isTruncated: false, // Can't determine without headers
+                    totalPages: 1, // Assume single page when headers missing
+                    currentPage: 1,
+                    pageSize: dataRows,
+                };
+            }
+
+            return {
+                csvData,
+                metadata,
+            };
+        } catch (error) {
+            console.error('Error exporting positions:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Direct download approach - opens export URL directly in browser
+     * Most efficient for large files as browser handles download directly
+     */
+    public static triggerDirectExportDownloadPositions({
+        userWallet,
+        year,
+        entryDate,
+        exitDate,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        entryDate?: Date;
+        exitDate?: Date;
+        page?: number;
+        pageSize?: number;
+    }): void {
+        const params = new URLSearchParams();
+        params.append('user_wallet', userWallet);
+        params.append('download', 'true'); // Signal server to send download headers
+
+        if (year) {
+            params.append('year', year.toString());
+        } else {
+            if (entryDate) {
+                params.append('entry_date', entryDate.toISOString());
+            }
+            if (exitDate) {
+                params.append('exit_date', exitDate.toISOString());
+            }
+        }
+
+        if (page) {
+            params.append('page', page.toString());
+        }
+        if (pageSize) {
+            params.append('page_size', pageSize.toString());
+        }
+
+        const url = `${DataApiClient.DATAPI_URL}/v2/export/positions?${params.toString()}`;
+
+        // Open URL directly - browser will handle download if server sends proper headers
+        window.open(url, '_blank');
+    }
+
+    /**
+     * Direct download approach for claims - opens export URL directly in browser
+     * Most efficient for large files as browser handles download directly
+     */
+    public static triggerDirectExportDownloadClaims({
+        userWallet,
+        year,
+        startDate,
+        endDate,
+        symbol,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        startDate?: Date;
+        endDate?: Date;
+        symbol?: 'ADX' | 'ALP';
+        page?: number;
+        pageSize?: number;
+    }): void {
+        const params = new URLSearchParams();
+        params.append('user_wallet', userWallet);
+        params.append('download', 'true'); // Signal server to send download headers
+
+        if (year) {
+            params.append('year', year.toString());
+        } else {
+            if (startDate) {
+                params.append('start_date', startDate.toISOString());
+            }
+            if (endDate) {
+                params.append('end_date', endDate.toISOString());
+            }
+        }
+
+        if (symbol) {
+            params.append('symbol', symbol);
+        }
+
+        if (page) {
+            params.append('page', page.toString());
+        }
+        if (pageSize) {
+            params.append('page_size', pageSize.toString());
+        }
+
+        const url = `${DataApiClient.DATAPI_URL}/export/claims?${params.toString()}`;
+
+        // Open URL directly - browser will handle download if server sends proper headers
+        window.open(url, '_blank');
+    }
+
+    // Used for server-side export
+    // Handles pagination and serve file as blob to the client
+    public static async exportClaims({
+        userWallet,
+        year,
+        startDate,
+        endDate,
+        symbol,
+        page,
+        pageSize,
+    }: {
+        userWallet: string;
+        year?: number;
+        startDate?: Date;
+        endDate?: Date;
+        symbol?: 'ADX' | 'ALP';
+        page?: number;
+        pageSize?: number;
+    }): Promise<{
+        csvData: string;
+        metadata: {
+            totalClaims: number;
+            exportCount: number;
+            isTruncated: boolean;
+            totalPages: number;
+            currentPage: number;
+            pageSize: number;
+        };
+    } | null> {
+        try {
+            const params = new URLSearchParams();
+            params.append('user_wallet', userWallet);
+
+            if (year) {
+                params.append('year', year.toString());
+            } else {
+                if (startDate) {
+                    params.append('start_date', startDate.toISOString());
+                }
+                if (endDate) {
+                    params.append('end_date', endDate.toISOString());
+                }
+            }
+
+            if (symbol) {
+                params.append('symbol', symbol);
+            }
+
+            if (page) {
+                params.append('page', page.toString());
+            }
+            if (pageSize) {
+                params.append('page_size', pageSize.toString());
+            }
+
+            const url = `${DataApiClient.DATAPI_URL}/export/claims?${params.toString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.error('Export claims failed:', response.statusText);
+                return null;
+            }
+
+            const csvData = await response.text();
+
+            // Extract metadata from response headers
+            const totalClaimsHeader = response.headers.get('X-Total-Claims');
+            const exportCountHeader = response.headers.get('X-Export-Count');
+
+            let metadata;
+
+            if (totalClaimsHeader && exportCountHeader) {
+                // Server sent proper headers
+                metadata = {
+                    totalClaims: parseInt(totalClaimsHeader),
+                    exportCount: parseInt(exportCountHeader),
+                    isTruncated: response.headers.get('X-Is-Truncated') === 'true',
+                    totalPages: parseInt(response.headers.get('X-Total-Pages') || '1'),
+                    currentPage: parseInt(response.headers.get('X-Current-Page') || '1'),
+                    pageSize: parseInt(response.headers.get('X-Page-Size') || '0'),
+                };
+            } else {
+                // Headers missing - fallback to parsing CSV
+                console.log('X-* headers missing, parsing CSV content...');
+                const lines = csvData.split('\n').filter(line => line.trim().length > 0);
+                const dataRows = lines.length > 1 ? lines.length - 1 : 0; // Subtract header row
+
+                metadata = {
+                    totalClaims: dataRows,
+                    exportCount: dataRows,
+                    isTruncated: false, // Can't determine without headers
+                    totalPages: 1, // Assume single page when headers missing
+                    currentPage: 1,
+                    pageSize: dataRows,
+                };
+            }
+
+            return {
+                csvData,
+                metadata,
+            };
+        } catch (error) {
+            console.error('Error exporting claims:', error);
+            return null;
+        }
+    }
+
 }

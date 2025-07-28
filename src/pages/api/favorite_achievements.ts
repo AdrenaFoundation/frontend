@@ -1,5 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+import supabaseAnonClient from '@/supabaseAnonClient';
 
 export default async function handler(
   req: NextApiRequest,
@@ -7,11 +8,6 @@ export default async function handler(
     favoriteAchievements: string[] | null;
   }>,
 ) {
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
-  );
-
   if (req.method === 'POST') {
     const { wallet_address, favorite_achievements } = req.body;
 
@@ -20,10 +16,12 @@ export default async function handler(
         favoriteAchievements: null,
       });
     }
-    const { error } = await supabase.from('user_favorite_achievements').upsert({
-      wallet_address,
-      favorite_achievements,
-    });
+    const { error } = await supabaseAnonClient
+      .from('user_favorite_achievements')
+      .upsert({
+        wallet_address,
+        favorite_achievements,
+      });
 
     if (error) {
       return res.status(500).json({
@@ -43,7 +41,7 @@ export default async function handler(
       });
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseAnonClient
       .from('user_favorite_achievements')
       .update({ favorite_achievements })
       .eq('wallet_address', wallet_address);
@@ -65,7 +63,7 @@ export default async function handler(
       });
     }
 
-    const { data } = await supabase
+    const { data } = await supabaseAnonClient
       .from('user_favorite_achievements')
       .select('favorite_achievements')
       .eq('wallet_address', wallet_address)

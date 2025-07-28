@@ -7,6 +7,7 @@ import {
   AdxLockPeriod,
   AlpLockPeriod,
   SupportedCluster,
+  Token,
 } from './types';
 
 export const RATE_DECIMALS = 9;
@@ -413,6 +414,21 @@ export const TRADING_COMPETITION_SEASONS = {
     jtoRewards: 25000,
     bonkRewards: 4200000000,
     description: [``] as string[],
+    bannerClassName: 'h-[32em] pt-20',
+  },
+
+  interseason3: {
+    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/summerEvent/summer-event.jpg',
+    title: 'Summer Event',
+    subTitle: 'Interseason',
+    startDate: new Date('2025-07-04T23:59:59.999Z'),
+    endDate: new Date('2025-09-05T23:59:59.999Z'),
+    gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
+    primaryColor: '#247CFA',
+    adxRewards: 0,
+    jtoRewards: 21200,
+    bonkRewards: 3160000000,
+    description: [`Welcome to the Summer Event!`] as string[],
     bannerClassName: 'h-[32em] pt-20',
   },
 } as const;
@@ -1410,16 +1426,6 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
   },
   {
     index: 61,
-    title: 'Hello, World!',
-    description: 'Set a continent in your profile',
-    story: 'This is my home. This is my continent',
-    image:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/62-hello-world-d8diwnYRh0ySOuXOSKB1vp2QODP91k.jpg',
-    points: 5,
-    category: 'bronze',
-  },
-  {
-    index: 62,
     title: 'King of the Hill',
     description: 'Rank top 1 during season 2',
     story: 'As the king, your dominance is undisputed. All hail the new king',
@@ -1432,7 +1438,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'platinum',
   },
   {
-    index: 63,
+    index: 62,
     title: 'Pressing the attack',
     description: 'Rank top 1 on a week during season 2',
     story: 'They followed your lead. And your lead was carnage',
@@ -1444,7 +1450,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'silver',
   },
   {
-    index: 64,
+    index: 63,
     title: 'Calife à la place du calife',
     description: 'Rank top 5 during season 2',
     story: 'So close you can smell the throne. Just one more step...',
@@ -1455,7 +1461,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'gold',
   },
   {
-    index: 65,
+    index: 64,
     title: 'High Five!',
     description: 'Rank top 5 on a week during season 2',
     story: 'You are a remarkable member of your team',
@@ -1466,7 +1472,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'bronze',
   },
   {
-    index: 66,
+    index: 65,
     title: 'Breaking Bags',
     description: "Pillage 30% of the enemy's team rewards",
     story:
@@ -1478,7 +1484,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'gold',
   },
   {
-    index: 67,
+    index: 66,
     title: 'Sabotage',
     description:
       'Open 5 trades with the other faction assets with max size 4.4M on JitoSol asset or >240k on BONK',
@@ -1492,7 +1498,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'silver',
   },
   {
-    index: 68,
+    index: 67,
     title: 'Traitor!',
     description: 'Trade with the enemy faction asset only',
     story:
@@ -1505,7 +1511,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'bronze',
   },
   {
-    index: 69,
+    index: 68,
     title: 'Back-to-Back',
     description: 'Win against the enemy faction two times in a row.',
     story:
@@ -1517,7 +1523,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'silver',
   },
   {
-    index: 70,
+    index: 69,
     title: "Stop! He's already dead",
     description: 'Win against the enemy faction five times in a row.',
     story:
@@ -1530,7 +1536,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'gold',
   },
   {
-    index: 71,
+    index: 70,
     title: 'Your Worst Day... So Far',
     description: 'Lose against the enemy faction two times in a row',
     story:
@@ -1542,7 +1548,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'bronze',
   },
   {
-    index: 72,
+    index: 71,
     title: 'You Died',
     description: 'Lose against the enemy faction five times in a row',
     story: "Five defeats later… it's still not game over. Git gud.",
@@ -1553,7 +1559,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'silver',
   },
   {
-    index: 73,
+    index: 72,
     title: "Show 'em",
     description: 'Kill the weekly boss',
     story: "You're a boss killer. Time to show them who's boss",
@@ -1565,7 +1571,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'silver',
   },
   {
-    index: 74,
+    index: 73,
     title: 'Just a Scratch',
     description: 'Generate 100 mutagens during season 2',
     story: 'You called it a scratch. The boss called in sick.',
@@ -1576,7 +1582,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'gold',
   },
   {
-    index: 75,
+    index: 74,
     title: 'It’s Super Effective!',
     description: 'Generate 500 mutagens during season 2',
     story:
@@ -1588,7 +1594,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'platinum',
   },
   {
-    index: 76,
+    index: 75,
     title: 'The Painmaker',
     description: 'Generate 1000 mutagens during season 2',
     story:
@@ -1602,7 +1608,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'diamond',
   },
   {
-    index: 77,
+    index: 76,
     title: 'Colonel Sanders of Solana',
     description:
       'Complete the officer steps for a week. Your leadership is commendable',
@@ -1614,7 +1620,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     category: 'silver',
   },
   {
-    index: 78,
+    index: 77,
     title: 'Nice Guy',
     description: 'Complete the officer steps for the entire of season 2.',
     story:
@@ -1667,3 +1673,192 @@ export const ALL_CHAT_ROOMS = {
     group: 'information',
   },
 } as const;
+
+export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
+  // {
+  //   mint: new PublicKey('4yCLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj'),
+  //   symbol: 'ALP',
+  //   color: '#130AAA',
+  //   name: 'Adrena Liquidity Pool Token',
+  //   decimals: 6,
+  //   displayAmountDecimalsPrecision: 2,
+  //   displayPriceDecimalsPrecision: 2,
+  //   isStable: false,
+  //   image: 'https://arweave.net/fRrkJvBTj9ZMa3j1sy5HMEvBNVIP0MDfonXXyKfbSW4',
+  //   additionalSwapToken: true,
+  // },
+  // {
+  //   mint: new PublicKey('AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw'),
+  //   symbol: 'ADX',
+  //   color: '#130AAA',
+  //   name: 'Adrena Governance Token',
+  //   decimals: 6,
+  //   displayAmountDecimalsPrecision: 2,
+  //   displayPriceDecimalsPrecision: 2,
+  //   isStable: false,
+  //   image: 'https://arweave.net/8HohRjBW7P5uMUR0Cz9eHxLfOO2PcnLzciyvhhgNkck',
+  //   additionalSwapToken: true,
+  // },
+  {
+    mint: new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'),
+    symbol: 'USDT',
+    color: '#26A17B',
+    name: 'USDT',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: true,
+    image:
+      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL'),
+    symbol: 'JTO',
+    color: '#26A17B',
+    name: 'Jito',
+    decimals: 9,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://metadata.jito.network/token/jto/image',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('KMNo3nJsBXfcpJTVhZcXLW7RmTwTt4GVFE7suUBo9sS'),
+    symbol: 'KMNO',
+    color: '#130AAA',
+    name: 'Kamino Finance',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://cdn.kamino.finance/kamino.svg',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('vSoLxydx6akxyMD9XEcPvGYNGq6Nn66oqVb3UkGkei7'),
+    symbol: 'vSOL',
+    color: '#130AAA',
+    name: 'The Vault',
+    decimals: 9,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://gateway.irys.xyz/DTBps6awrJWectiBhMubYke4TBnE9kkVqyCVP4MB4irB',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3'),
+    symbol: 'PYTH',
+    color: '#26A17B',
+    name: 'Pyth Network',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://pyth.network/token.svg',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4'),
+    symbol: 'JLP',
+    color: '#26A17B',
+    name: 'Jupiter Perps',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://static.jup.ag/jlp/icon.png',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN'),
+    symbol: 'TRUMP',
+    color: '#26A17B',
+    name: 'TRUMP',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://arweave.net/VQrPjACwnQRmxdKBTqNwPiyo65x7LAT773t8Kd7YBzw',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump'),
+    symbol: 'FARTCOIN',
+    color: '#26A17B',
+    name: 'FARTCOIN',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://ipfs.io/ipfs/QmQr3Fz4h1etNsF7oLGMRHiCzhB5y9a7GjyodnF7zLHK1g',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('DriFtupJYLTosbwoN8koMbEYSx54aFAVLddWsbksjwg7'),
+    symbol: 'DRIFT',
+    color: '#26A17B',
+    name: 'DRIFT',
+    decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://metadata.drift.foundation/drift.png',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So'),
+    symbol: 'mSOL',
+    color: '#26A17B',
+    name: 'Marinade staked SOL',
+    decimals: 9,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So/logo.png',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs'),
+    symbol: 'WETH',
+    color: '#26A17B',
+    name: 'Wrapped Ether (Wormhole)',
+    decimals: 8,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('SNS8DJbHc34nKySHVhLGMUUE72ho6igvJaxtq9T3cX3'),
+    symbol: 'SNS',
+    color: '#26A17B',
+    name: 'Solana Name Service',
+    decimals: 5,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image: 'https://www.sns.id/token/image.png',
+    additionalSwapToken: true,
+  },
+  {
+    mint: new PublicKey('CRTx1JouZhzSU6XytsE42UQraoGqiHgxabocVfARTy2s'),
+    symbol: 'CRT',
+    color: '#F98635',
+    name: 'Carrot',
+    decimals: 9,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://shdw-drive.genesysgo.net/7G7ayDnjFoLcEUVkxQ2Jd4qquAHp5LiSBii7t81Y2E23/carrot.png',
+    additionalSwapToken: true,
+  },
+];

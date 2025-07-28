@@ -26,6 +26,7 @@ export default function CompetitionBanner({
     bonkRewards,
     jtoRewards,
     bannerClassName,
+    jtoPrice,
 }: {
     banner: string;
     endDate: Date | null;
@@ -38,6 +39,7 @@ export default function CompetitionBanner({
     bonkRewards: number;
     jtoRewards: number;
     bannerClassName: string;
+    jtoPrice: number | null;
 }) {
     const { days, hours, minutes, seconds } = useCountDown(
         new Date(),
@@ -47,8 +49,8 @@ export default function CompetitionBanner({
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
     const totalPrize = useMemo(() => {
-        return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (tokenPrices.JTO ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0);
-    }, [adxRewards, bonkRewards, jtoRewards, tokenPrices.ADX, tokenPrices.BONK, tokenPrices.JTO]);
+        return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (jtoPrice ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0);
+    }, [adxRewards, bonkRewards, jtoRewards, tokenPrices.ADX, tokenPrices.BONK, jtoPrice]);
 
     return (
         <div className="relative">
@@ -63,11 +65,18 @@ export default function CompetitionBanner({
                             key={title}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            {seasonName === 'interseason3' ? <div
+                                className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
+                                style={{
+                                    backgroundImage: `url(${banner})`,
+                                    backgroundOrigin: 'border-box',
+                                    backgroundPosition: 'center 20%'
+                                }}
+                            /> : <img
                                 src={banner}
                                 alt="competition banner"
                                 className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
-                            />
+                            />}
                         </motion.span>
                     </AnimatePresence>
                     <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
@@ -151,37 +160,64 @@ export default function CompetitionBanner({
                     <div className='text-xs font-thin text-txtfade'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
 
                     <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-lg flex-col')}>
-                        {!tokenPrices.ADX || !tokenPrices.JTO || !tokenPrices.BONK ? '-' :
-                            <FormatNumber
+                        {seasonName === 'factions'
+                            ? <FormatNumber
                                 format='currency'
-                                nb={totalPrize}
+                                nb={417564.28}
                                 className="text-5xl font-boldy"
                                 isDecimalDimmed={false}
-                            />}
-
-                        <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
-                            <div className="flex flex-row gap-1 items-center justify-center">
-                                <Image
-                                    src={window.adrena.client.adxToken.image}
-                                    alt="ADX logo"
-                                    className="w-4 h-4"
-                                />
-
+                            />
+                            : seasonName === 'expanse' ? <FormatNumber
+                                format='currency'
+                                nb={204396.55}
+                                className="text-5xl font-boldy"
+                                isDecimalDimmed={false}
+                            /> : seasonName === 'awakening' ? <FormatNumber
+                                format='currency'
+                                nb={97166.49}
+                                className="text-5xl font-boldy"
+                                isDecimalDimmed={false}
+                            /> : seasonName === 'interseason3' ?
                                 <FormatNumber
-                                    format='number'
-                                    suffix='ADX'
-                                    nb={adxRewards}
-                                    precision={0}
-                                    isAbbreviate={true}
-                                    isAbbreviateIcon={false}
-                                    className="text-md font-boldy text-txtfade"
-                                    suffixClassName='text-base font-boldy text-txtfade'
+                                    format='currency'
+                                    nb={totalPrize}
+                                    className="text-3xl sm:text-4xl md:text-5xl font-boldy"
                                     isDecimalDimmed={false}
                                 />
-                            </div>
+                                : (!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
+                                    <FormatNumber
+                                        format='currency'
+                                        nb={totalPrize}
+                                        className="text-5xl font-boldy"
+                                        isDecimalDimmed={false}
+                                    />
+                                )}
+
+                        <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
+                            {adxRewards > 0 ?
+                                <div className="flex flex-row gap-1 items-center justify-center">
+                                    <Image
+                                        src={window.adrena.client.adxToken.image}
+                                        alt="ADX logo"
+                                        className="w-4 h-4"
+                                    />
+
+                                    <FormatNumber
+                                        format='number'
+                                        suffix='ADX'
+                                        nb={adxRewards}
+                                        precision={0}
+                                        isAbbreviate={true}
+                                        isAbbreviateIcon={false}
+                                        className="text-md font-boldy text-txtfade"
+                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        isDecimalDimmed={false}
+                                    />
+
+                                    <div className='flex text-md text-txtfade'>/</div>
+                                </div> : null}
 
                             {jtoRewards ? <>
-                                <div className='flex text-md text-txtfade'>/</div>
 
                                 <div className="flex flex-row gap-1 items-center justify-center">
                                     <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
@@ -237,7 +273,7 @@ export default function CompetitionBanner({
                         className="w-[3em] md:w-[4em]"
                     />
 
-                    {seasonName === 'factions' ? <>
+                    {seasonName === 'factions' || seasonName === 'interseason3' ? <>
                         <p className="tracking-[0.2rem] uppercase">And</p>
 
                         <Image

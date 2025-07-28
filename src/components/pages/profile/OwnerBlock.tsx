@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
 import copyIcon from '@/../../public/images/copy.svg';
+import snsBadgeIcon from '@/../../public/images/sns-badge.svg';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
@@ -18,6 +19,7 @@ import {
   USER_PROFILE_TITLES,
   WALLPAPERS,
 } from '@/constant';
+import useSNSPrimaryDomain from '@/hooks/useSNSPrimaryDomain';
 import {
   AchievementInfoExtended,
   ProfilePicture,
@@ -33,6 +35,7 @@ import lockIcon from '../../../../public/images/Icons/lock.svg';
 import personIcon from '../../../../public/images/Icons/person-fill.svg';
 import trophyIcon from '../../../../public/images/Icons/trophy.svg';
 import Achievement from '../achievements/Achievement';
+import AddTrader from './AddTrader';
 
 type TabType = 'profilePicture' | 'wallpaper' | 'title' | 'achievements';
 
@@ -50,6 +53,7 @@ export default function OwnerBloc({
   setIsUpdatingMetadata,
   setActiveUpdateTab,
   activeUpdateTab,
+  walletAddress,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
@@ -70,7 +74,10 @@ export default function OwnerBloc({
   setIsUpdatingMetadata?: (updating: boolean) => void;
   setActiveUpdateTab?: (tab: TabType) => void;
   activeUpdateTab?: TabType;
+  walletAddress?: string;
 }) {
+  const snsDomain = useSNSPrimaryDomain(walletAddress)
+
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
     Record<string, boolean>
   >({});
@@ -280,12 +287,19 @@ export default function OwnerBloc({
 
     return Object.entries(WALLPAPERS).map(([v, path]) => {
       const unlocked = unlockedWallpapers.includes(Number(v));
-
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === Number(v));
       return (
         <Tippy
-          content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === Number(v))?.title ?? ''}"`}
+          content={
+            unlocked
+              ? achievement
+                ? `Unlocked by the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+              : achievement
+                ? `Locked - Unlock by completing the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+          }
           key={`wallpaper-${v}`}
-          disabled={unlocked}
         >
           <div
             className={twMerge(
@@ -361,12 +375,19 @@ export default function OwnerBloc({
 
     return Object.entries(PROFILE_PICTURES).map(([v, path]) => {
       const unlocked = unlockedPfpIndexes.includes(Number(v));
-
+      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === Number(v));
       return (
         <Tippy
-          content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === Number(v))?.title ?? ''}"`}
+          content={
+            unlocked
+              ? achievement
+                ? `Unlocked by the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+              : achievement
+                ? `Locked - Unlock by completing the achievement "${achievement.title}"`
+                : 'Unlocked by default'
+          }
           key={`pfp-${v}`}
-          disabled={unlocked}
         >
           <div
             className={twMerge(
@@ -465,7 +486,12 @@ export default function OwnerBloc({
 
             return (
               <Tippy
-                content={`Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === Number(i))?.title ?? ''}"`}
+                content={
+                  ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index) &&
+                    ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title
+                    ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
+                    : 'Unlocked by default'
+                }
                 key={`title-${i}`}
               >
                 <div
@@ -475,6 +501,7 @@ export default function OwnerBloc({
                       (index as unknown as ProfilePicture)
                       ? 'border-yellow-400/80'
                       : 'border-transparent grayscale',
+                    'cursor-pointer'
                   )}
                   onClick={() => {
                     // if (!unlocked) return;
@@ -496,10 +523,21 @@ export default function OwnerBloc({
         <div className="w-full h-[1px] bg-bcolor" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-20 cursor-disabled">
           {lockedTitles.map((title) => {
+            const index = Object.values(USER_PROFILE_TITLES).findIndex((t) => t === title);
+            const achievement = ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index);
             return (
-              <div className="h-auto flex z-30 relative ml-auto mr-auto text-base text-txtfade" key={`locked-title-${title}`}>
-                {title}
-              </div>
+              <Tippy
+                content={
+                  achievement && achievement.title
+                    ? `Locked - Unlock by completing the achievement "${achievement.title}"`
+                    : 'Locked by default'
+                }
+                key={`locked-title-${title}`}
+              >
+                <div className="h-auto flex z-30 relative ml-auto mr-auto text-base text-txtfade">
+                  {title}
+                </div>
+              </Tippy>
             );
           })}
         </div>
@@ -595,7 +633,7 @@ export default function OwnerBloc({
         </Tippy>
 
         <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
-          <div className="flex">
+          <div className="flex flex-row items-center gap-3">
             {walletPubkey ? (
               <Tippy content={'Wallet address'}>
                 <div className="z-20 flex gap-1">
@@ -631,25 +669,37 @@ export default function OwnerBloc({
                 </div>
               </Tippy>
             ) : null}
+
+            {snsDomain ? (
+              <Tippy
+                content="Registered Domain through Solana Name Service (SNS)"
+                className='!text-xs !font-boldy'
+                placement="top"
+              >
+                <div className='flex flex-row gap-1 items-center sm:pr-4'>
+                  <Image src={snsBadgeIcon} alt="SNS badge" className="w-3 h-3" />
+                  <p className='text-xs font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]'>{snsDomain}.sol</p>
+                </div></Tippy>
+            ) : null}
           </div>
 
           <div className="flex mt-1">
-            <div className="flex items-end">
-              <div className="font-archivoblack uppercase text-3xl relative">
-                {userProfile.nickname}
-              </div>
+
+            <div className="flex flex-row items-end gap-1 font-archivoblack uppercase text-3xl relative">
+              {userProfile.nickname}
 
               {canUpdateNickname && userProfile.version > 1 ? (
                 <div
                   onClick={() => {
                     setNicknameUpdating(true);
                   }}
-                  className="text-xs opacity-70 relative bottom-1 left-2 cursor-pointer hover:opacity-100"
+                  className="text-xs opacity-70 cursor-pointer hover:opacity-100 mb-2"
                 >
                   Edit
                 </div>
               ) : null}
             </div>
+
           </div>
 
           <Tippy
@@ -669,6 +719,7 @@ export default function OwnerBloc({
             }
             disabled={typeof titleUnlockedByAchievement === 'undefined'}
           >
+
             <div className="flex gap-x-2 items-end relative bottom-1">
               <span className="text-lg font-cursive relative top-1">
                 &quot;
@@ -691,6 +742,8 @@ export default function OwnerBloc({
               ) : null}
             </div>
           </Tippy>
+
+          <AddTrader receiverWalletAddress={walletPubkey?.toBase58() ?? null} />
 
           {!readonly && userProfile.version > 1 ? (
             <div className="absolute top-2 right-4 z-20 ">

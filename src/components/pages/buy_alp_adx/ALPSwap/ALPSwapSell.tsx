@@ -1,6 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -9,10 +10,12 @@ import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 let loadingCounterMainData = 0;
@@ -24,19 +27,31 @@ export default function ALPSwapSell({
     className?: string;
     connected: boolean;
 }) {
+    const usdcToken = window.adrena.client.getUsdcToken();
     const dispatch = useDispatch();
     const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-    const tokenPrices = useSelector((s) => s.tokenPrices);
     const wallet = useSelector((s) => s.walletState.wallet);
     const [collateralInput, setCollateralInput] = useState<number | null>(null);
-    const [collateralToken, setCollateralToken] = useState<Token>(window.adrena.client.tokens[2]);
+    const [collateralToken, setCollateralToken] = useState<Token>(usdcToken);
+    const tokenPrices = useSelector((s) => s.tokenPrices);
+
+    const collateralTokenCustody = useMemo(() => window.adrena.client.getCustodyByMint(collateralToken.mint), [collateralToken.mint]);
+    const collateralTokenCustodyLiquidity = useDynamicCustodyAvailableLiquidity(collateralTokenCustody);
+    const collateralTokenCustodyLiquidityUsd = useMemo(() => {
+        const tokenPrice = tokenPrices[collateralToken.symbol];
+        if (!collateralTokenCustodyLiquidity || !tokenPrice) {
+            return null;
+        }
+
+        return collateralTokenCustodyLiquidity * tokenPrice;
+    }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity]);
+
     const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
     const [collateralInputUsd, setCollateralInputUsd] = useState<number | null>(null);
     const [isMainDataLoading, setIsMainDataLoading] = useState(false);
     const [alpInput, setAlpInput] = useState<number | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [fee, setFee] = useState<number | null>(null);
-    const [feeUsd, setFeeUsd] = useState<number | null>(null);
 
     const executeSellAlp = useCallback(async () => {
         if (!connected) {
@@ -80,7 +95,6 @@ export default function ALPSwapSell({
 
         setErrorMessage(null);
         setFee(null);
-        setFeeUsd(null);
 
         // Cannot calculate
         if (alpInput === null || alpInput === 0) {
@@ -98,15 +112,6 @@ export default function ALPSwapSell({
                     lpAmountIn: uiToNative(alpInput, window.adrena.client.alpToken.decimals),
                     token: collateralToken,
                 });
-
-            console.log('>>>> Amount and fee', {
-                amount: amountAndFee?.amount.toString(),
-                fee: amountAndFee?.fee.toString(),
-                collateralTokenDecimals: nativeToUi(amountAndFee?.fee ?? new BN(0), collateralToken.decimals),
-            }, {
-                lpAmount: uiToNative(alpInput, window.adrena.client.alpToken.decimals),
-                token: collateralToken.symbol,
-            })
 
             setIsMainDataLoading(false);
 
@@ -137,31 +142,6 @@ export default function ALPSwapSell({
         }
     }, [alpInput, collateralToken]);
 
-    // Keep price up tp date
-    useEffect(() => {
-        setCollateralPrice(tokenPrices[collateralToken.symbol]);
-    }, [collateralToken, collateralInput, tokenPrices]);
-
-    // Keep collateral input usd value up to date
-    useEffect(() => {
-        if (collateralToken !== null && collateralPrice !== null && collateralInput !== null) {
-            setCollateralInputUsd(collateralPrice * collateralInput);
-        } else {
-            setCollateralInputUsd(null);
-        }
-    }, [collateralInput, collateralPrice, collateralToken]);
-
-    // Keep fee usd value up to date
-    useEffect(() => {
-        if (fee !== null && collateralPrice !== null) {
-            setFeeUsd(fee * collateralPrice);
-            return;
-        }
-
-        setFeeUsd(null);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fee, tokenPrices && collateralPrice]);
-
     // Trigger calculations
     useEffect(() => {
         estimateRemoveLiquidityAndFee();
@@ -182,14 +162,11 @@ export default function ALPSwapSell({
 
                     <RefreshButton />
                 </div> : null}
-
             </div>
+
             <TradingInput
-                className="text-sm rounded-full"
+                className="text-xs rounded-full"
                 inputClassName='bg-third'
-                tokenListClassName='rounded-tr-lg rounded-br-lg bg-third'
-                menuClassName="shadow-none justify-end mr-2"
-                menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
                 value={alpInput}
                 selectedToken={window.adrena.client.alpToken}
                 tokenList={[window.adrena.client.alpToken]}
@@ -202,19 +179,38 @@ export default function ALPSwapSell({
                 }}
             />
 
+            <div className="ml-auto items-center flex mr-2 mt-1">
+                <span className="text-txtfade mr-1">available pool {collateralToken.symbol} liquidity:</span>
+                <FormatNumber
+                    nb={collateralTokenCustodyLiquidityUsd}
+                    format="currency"
+                    precision={0}
+                    className="text-txtfade text-xs"
+                />
+                <InfoAnnotation
+                    className="inline-flex"
+                    text={
+                        <div className="flex flex-col gap-2 text-sm">
+                            <div>Available {collateralToken.symbol} depends on pool ratios and what&nbsp;s currently borrowed by traders.</div>
+                            <div>If {collateralToken.symbol} is fully utilized, wait for traders to close positions.</div>
+                            <div>If you try to redeem more than available, consider DCA or another pair — the pool will rebalance automatically.</div>
+                            <div>Need help? Reach out on Discord.</div>
+                        </div>
+                    }
+                />
+            </div>
 
             <h5 className="text-white mt-4 mb-2">Receive</h5>
+
             <TradingInput
-                className="text-sm rounded-full"
+                className="text-xs rounded-full"
                 inputClassName='bg-inputcolor'
-                tokenListClassName='rounded-tr-lg rounded-br-lg bg-inputcolor'
-                menuClassName="shadow-none"
-                menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
                 value={collateralInput}
                 selectedToken={collateralToken ?? undefined}
                 loading={isMainDataLoading}
                 disabled={true}
                 tokenList={window.adrena.client.tokens}
+                recommendedToken={usdcToken}
                 subText={
                     collateralPrice !== null && collateralToken ? (
                         <span className="text-txtfade">
@@ -229,51 +225,54 @@ export default function ALPSwapSell({
                     setCollateralInput(null);
                     setCollateralInputUsd(null);
                     setFee(null);
-                    setFeeUsd(null);
                     setCollateralPrice(null);
                     setCollateralToken(t);
                 }}
                 onChange={() => {
                     // Is disabled
                 }}
+                isDisplayAllTokens
             />
 
-            <h5 className="text-white mt-4 mb-2">Sell Info</h5>
+            <h5 className="text-white mt-4 mb-1">Fees</h5>
 
             <div
                 className={twMerge(
-                    'flex flex-col bg-third border rounded-lg pt-2 pr-2 pl-2 gap-1',
+                    'flex flex-col border bg-[#040D14] rounded-lg gap-0',
                     className,
                 )}
             >
                 <div className="flex justify-between items-center h-12 p-4">
-                    <div className="flex items-center">
-                        <div className="text-sm text-txtfade">Fees</div>
+                    <div className="flex gap-2 items-center">
+                        <Image
+                            src={collateralToken?.image}
+                            className="w-4 h-4"
+                            alt="token logo"
+                        />
+                        <p className="text-base font-boldy">
+                            {collateralToken?.symbol}
+                        </p>
                     </div>
 
-                    {fee !== null ? <div className='flex flex-col justify-end pr-4'>
-                        <div className='flex gap-1 items-center'>
-                            <FormatNumber
-                                nb={fee}
-                                isDecimalDimmed={false}
-                                className='text-base'
-                                format="number"
-                            />
-                            <div className='text-base'>{collateralToken.symbol}</div>
-                        </div>
+                    {fee !== null ? (
+                        <div className="flex flex-col">
+                            <div className="flex gap-1 items-center">
+                                <FormatNumber
+                                    nb={fee}
+                                    isDecimalDimmed={false}
+                                    className="text-base font-mono"
+                                    format="number"
+                                />
 
-                        <div>
-                            <FormatNumber
-                                nb={feeUsd}
-                                isDecimalDimmed={false}
-                                className='text-xs text-txtfade'
-                                format="currency"
-                            />
+                                <div className="text-base font-mono">
+                                    {collateralToken?.symbol}
+                                </div>
+                            </div>
                         </div>
-                    </div> : <div className="w-[9em] h-6 bg-gray-800 rounded-xl" />}
+                    ) : (
+                        <div className="w-[9em] h-6 bg-gray-800 rounded-xl" />
+                    )}
                 </div>
-
-                <div className='w-full h-[1px] bg-gray-800' />
             </div>
 
             {errorMessage ? (

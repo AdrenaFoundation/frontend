@@ -217,7 +217,7 @@ export default function AllPositionsChart({
 
   return (
     <div className='flex flex-col w-0 flex-1 h-full items-center'>
-      <div className='min-h-[9em] h-auto w-full max-w-[60em] shrink-0 flex items-center justify-center pb-2'>
+      <div className='min-h-[9em] h-[20.3125rem] lg:h-[15.33rem] xl:h-[10.03625rem] w-full max-w-[60em] shrink-0 flex items-center justify-center pb-2 '>
         {selectedPositionObject !== null ?
           <PositionBlock
             key={selectedPositionObject.pubkey.toBase58()}

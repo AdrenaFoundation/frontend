@@ -32,9 +32,18 @@ function applyProfile(
 export default function useMutagenLeaderboardData({
   allUserProfilesMetadata,
   refreshInterval = 20_000,
+  seasonName,
+  rankFilter,
 }: {
   allUserProfilesMetadata: UserProfileMetadata[];
   refreshInterval?: number;
+  seasonName?: string;
+  rankFilter?:
+    | 'total_points'
+    | 'points_trading'
+    | 'points_mutations'
+    | 'points_streaks'
+    | 'points_quests';
 }): MutagenLeaderboardData | null {
   const [leaderboardData, setLeaderboardData] =
     useState<MutagenLeaderboardData | null>(null);
@@ -55,7 +64,7 @@ export default function useMutagenLeaderboardData({
     if (!allMetadata) return;
 
     const fetchLeaderboardData = () => {
-      DataApiClient.getMutagenLeaderboard()
+      DataApiClient.getMutagenLeaderboard({ seasonName, rankFilter })
         .then((data) => {
           applyProfile(data, allMetadata);
           setLeaderboardData(data);
@@ -70,7 +79,7 @@ export default function useMutagenLeaderboardData({
     const interval = setInterval(fetchLeaderboardData, refreshInterval);
 
     return () => clearInterval(interval);
-  }, [allMetadata, refreshInterval]);
+  }, [allMetadata, refreshInterval, seasonName, rankFilter]);
 
   return leaderboardData;
 }

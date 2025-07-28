@@ -1,44 +1,61 @@
 import React from 'react';
 
-interface PaginationProps {
+export interface PaginationProps {
   currentPage: number;
-  totalItems: number;
+  totalPages: number;
   itemsPerPage: number;
+  totalItems: number;
   onPageChange: (page: number) => void;
+  isLoading?: boolean;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
-  totalItems,
-  itemsPerPage,
+  totalPages,
   onPageChange,
+  isLoading = false,
+  itemsPerPage,
+  totalItems,
 }) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  if (totalPages <= 1) return null;
   const itemsSeen = Math.min(currentPage * itemsPerPage, totalItems);
 
-  if (totalPages <= 1) return null;
+  const handlePrevious = () => {
+    if (currentPage > 1 && !isLoading) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages && !isLoading) {
+      onPageChange(currentPage + 1);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center space-x-2">
-      <span className="text-sm text-txtfade opacity-0">{`(${itemsSeen}/${totalItems})`}</span>
       <div className="flex items-center space-x-2">
         <button
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50 "
-        >
-          &lt;
-        </button>
-        <span className="text-sm text-txtfade">{`${currentPage} / ${totalPages}`}</span>
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          onClick={handlePrevious}
+          disabled={currentPage === 1 || isLoading}
           className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50"
         >
-          &gt;
+          {isLoading && currentPage > 1 ? "..." : "<"}
+        </button>
+        <span className="text-sm text-txtfade">
+          {`${currentPage} / ${totalPages}`}
+        </span>
+        <button
+          onClick={handleNext}
+          disabled={currentPage === totalPages || isLoading}
+          className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50"
+        >
+          {isLoading && currentPage < totalPages ? "..." : ">"}
         </button>
       </div>
-      <span className="text-sm text-txtfade opacity-50">{`(${itemsSeen}/${totalItems})`}</span>
+      {itemsSeen && totalItems ? (
+        <span className="text-sm text-txtfade opacity-50">{`(${itemsSeen}/${totalItems})`}</span>
+      ) : null}
     </div>
   );
 };

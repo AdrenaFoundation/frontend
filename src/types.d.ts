@@ -4,6 +4,7 @@ import {
   IdlEvents,
   IdlTypes,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
+import { SwapApi } from '@jup-ag/api';
 import { Adapter } from '@solana/wallet-adapter-base';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
@@ -20,6 +21,29 @@ import {
   WALLPAPERS,
 } from './constant';
 import type { WalletAdapterName } from './hooks/useWalletAdapters';
+
+export type LogEntry = {
+  type: 'log' | 'warn' | 'error';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  message: any[];
+  timestamp: string;
+};
+
+export type ErrorReportType = {
+  id: number;
+  created_at: string;
+  wallet_address: string;
+  error_message: string;
+  console_log: LogEntry[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  recent_post_data?: any;
+  url: string;
+  action: string;
+  step: string;
+  timestamp: string;
+  ref: string;
+  txHash?: string;
+};
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -46,9 +70,9 @@ export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
   mainConnection: Connection;
-  pythConnection: Connection;
   cluster: SupportedCluster;
   settings: Settings;
+  jupiterApiClient: SwapApi;
 };
 
 // Rive doesn't expose the type
@@ -157,6 +181,7 @@ export type PositionExtended = {
   profitUsd?: number | null;
   lossUsd?: number | null;
   borrowFeeUsd?: number | null;
+  paidInterestUsd: number;
   liquidationPrice?: number | null;
   sizeUsd: number;
   size: number; // The size in tokens
@@ -223,10 +248,12 @@ export interface Token {
   displayAmountDecimalsPrecision: number;
   displayPriceDecimalsPrecision: number;
   isStable: boolean;
-  image: ImageRef;
+  image: ImageRef | string;
   custody?: PublicKey;
   coingeckoId?: string;
-  pythPriceUpdateV2?: PublicKey;
+
+  // When this is a token dedicated only for swaps, meant to improve UX for traders
+  additionalSwapToken?: boolean;
 }
 
 export type UserProfileMetadata = {
@@ -521,7 +548,17 @@ export type ClaimHistoryApi = {
   start_date: string; // ISO date-time string
   end_date: string; // ISO date-time string
   limit: number;
-  claims: ClaimApi[];
+  offset: number;
+  symbols: [
+    {
+      symbol: string;
+      all_time_rewards_adx: number;
+      all_time_rewards_usdc: number;
+      all_time_rewards_adx_genesis: number;
+      all_time_count_claims: number;
+      claims: ClaimApi[];
+    },
+  ];
 };
 
 export type ClaimHistoryExtended = {
@@ -536,6 +573,27 @@ export type ClaimHistoryExtended = {
   symbol: string;
   transaction_date: Date;
   adx_price_at_claim: number;
+};
+
+export type ClaimHistoryBySymbolExtended = {
+  symbol: string;
+  allTimeRewardsAdx: number;
+  allTimeRewardsUsdc: number;
+  allTimeRewardsAdxGenesis: number;
+  allTimeCountClaims: number;
+  claims: ClaimHistoryExtended[];
+};
+
+export type ClaimHistoryExtendedApi = {
+  startDate: Date;
+  endDate: Date;
+  limit: number;
+  offset: number;
+  symbols: ClaimHistoryBySymbolExtended[];
+  allTimeUsdcClaimed: number;
+  allTimeAdxClaimed: number;
+  allTimeAdxGenesisClaimed: number;
+  allTimeCountClaims: number;
 };
 
 type AchievementsBase = {
@@ -1050,6 +1108,7 @@ export interface PositionActivityRawAPi {
   increase_count: number;
   total_fees: number;
   total_exit_fees: number;
+  winrate: number;
 }
 
 export type PositionStatsRawApi = {
@@ -1099,6 +1158,7 @@ export type GetPositionStatsReturnType<
         increaseCount: number;
         totalFees: number;
         totalExitFees: number;
+        winrate: number;
       }[];
     }
   : object);
@@ -1422,6 +1482,7 @@ export type MutagenLeaderboardData = {
 
 export type PositionApiRawData = {
   position_id: number;
+  pool_id: number;
   user_id: number;
   symbol: string;
   token_account_mint: string;
@@ -1432,18 +1493,37 @@ export type PositionApiRawData = {
   exit_price: number;
   entry_size: number;
   increase_size: number;
+  decrease_size: number; // V3 only
+  close_size: number; // V3 only
   exit_size: number;
   pnl: number;
+  decrease_pnl: number; // V3 only
+  close_pnl: number; // V3 only
   entry_leverage: number;
   lowest_leverage: number;
   entry_date: string; // ISO date string
   exit_date: string | null; // ISO date string
   fees: number;
+  total_decrease_fees: number; // V3 only
+  total_close_fees: number; // V3 only
   borrow_fees: number;
+  decrease_borrow_fees: number; // V3 only
+  close_borrow_fees: number; // V3 only
   exit_fees: number;
+  decrease_exit_fees: number; // V3 only
+  close_exit_fees: number; // V3 only
   last_ix: string;
   entry_collateral_amount: number;
+  entry_collateral_amount_native: number;
+  increase_collateral_amount: number;
+  increase_collateral_amount_native: number;
+  decrease_collateral_amount: number; // V3 only
+  decrease_collateral_amount_native: number; // V3 only
+  close_collateral_amount: number; // V3 only
+  close_collateral_amount_native: number; // V3 only
   collateral_amount: number;
+  collateral_amount_native: number;
+  exit_amount_native: number;
   closed_by_sl_tp: boolean;
   volume: number;
   duration: number;
@@ -1457,8 +1537,16 @@ export type PositionApiRawData = {
   updated_at: string | null; // ISO date string
 };
 
+export type PositionApiRawDataV2 = {
+  offset: number;
+  limit: number;
+  total_count: number;
+  positions: PositionApiRawData[];
+};
+
 export type EnrichedPositionApi = {
   positionId: number;
+  poolId: number;
   userId: number;
   symbol: string;
   tokenAccountMint: string;
@@ -1469,18 +1557,37 @@ export type EnrichedPositionApi = {
   exitPrice: number;
   entrySize: number;
   increaseSize: number;
+  decreaseSize: number; // V3 only
+  closeSize: number; // V3 only
   exitSize: number;
   pnl: number;
+  decreasePnl: number; // V3 only
+  closePnl: number; // V3 only
   entryLeverage: number;
   lowestLeverage: number;
   entryDate: Date;
   exitDate: Date | null;
   fees: number;
+  totalDecreaseFees: number; // V3 only
+  totalCloseFees: number; // V3 only
   borrowFees: number;
+  decreaseBorrowFees: number; // V3 only
+  closeBorrowFees: number; // V3 only
   exitFees: number;
+  decreaseExitFees: number; // V3 only
+  closeExitFees: number; // V3 only
   lastIx: string;
   entryCollateralAmount: number;
+  entryCollateralAmountNative: number;
+  increaseCollateralAmount: number;
+  increaseCollateralAmountNative: number;
+  decreaseCollateralAmount: number; // V3 only
+  decreaseCollateralAmountNative: number; // V3 only
+  closeCollateralAmount: number; // V3 only
+  closeCollateralAmountNative: number; // V3 only
   collateralAmount: number;
+  collateralAmountNative: number;
+  exitAmountNative: number;
   closedBySlTp: boolean;
   volume: number;
   duration: number;
@@ -1493,6 +1600,13 @@ export type EnrichedPositionApi = {
   token: Token;
   createdAt: Date;
   updatedAt: Date | null;
+};
+
+export type EnrichedPositionApiV2 = {
+  totalCount: number;
+  offset: number;
+  limit: number;
+  positions: EnrichedPositionApi[];
 };
 
 export type TraderProfilesRawData = {
@@ -1715,13 +1829,77 @@ export type ChaosLabsPricesExtended = {
   latestDate: Date;
   latestTimestamp: number;
   prices: {
-    // symbol: string;
+    symbol: string;
     feedId: number;
     price: BN;
     timestamp: BN;
-    // exponent: number;
+    exponent: number;
   }[];
   signature: string;
   signatureByteArray: number[];
   recoveryId: number;
+};
+
+export type PositionTransaction = {
+  transactionId: number;
+  rawTransactionId: number;
+  userId: number;
+  positionId: number;
+  signature: string;
+  method: string;
+  additionalInfos: {
+    pnl: number | null;
+    fees: number | null;
+    size: number | null;
+    price: number | null;
+    exitFees: number | null;
+    leverage: number | null;
+    referrer: string | null;
+    borrowFees: number | null;
+    positionId: number | null;
+    addAmountUsd: number | null;
+    positionPubkey: string | null;
+    removeAmountUsd: number | null;
+    collateralAmount: number | null;
+    exitAmountNative: number | null;
+    stopLossLimitPrice: number | null;
+    collateralAmountUsd: number | null;
+    takeProfitLimitPrice: number | null;
+    collateralAmountNative: number | null;
+    newCollateralAmountUsd: number | null;
+    percentage: number | null;
+  };
+  transactionDate: Date;
+};
+
+export type RawTransactionPositionData = {
+  transaction_id: number;
+  raw_transaction_id: number;
+  user_id: number;
+  position_id: number;
+  signature: string;
+  method: string;
+  additional_infos?: {
+    pnl?: number | null;
+    fees?: number | null;
+    size?: number | null;
+    price?: number | null;
+    exitFees?: number | null;
+    leverage?: number | null;
+    referrer?: string | null;
+    borrowFees?: number | null;
+    positionId?: number | null;
+    addAmountUsd?: number | null;
+    position_pubkey?: string | null;
+    removeAmountUsd?: number | null;
+    collateralAmount?: number | null;
+    exitAmountNative?: number | null;
+    stopLossLimitPrice?: number | null;
+    collateralAmountUsd?: number | null;
+    takeProfitLimitPrice?: number | null;
+    collateralAmountNative?: number | null;
+    newCollateralAmountUsd?: number | null;
+    percentage?: number | null;
+  };
+  transaction_date: Date;
 };

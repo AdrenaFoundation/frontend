@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Token } from '@/types';
 
-import { ResolutionString } from '../../../../../public/charting_library/charting_library';
+import {
+  IDatafeedChartApi,
+  ResolutionString,
+} from '../../../../../public/charting_library/charting_library';
 import {
   DEFAULT_RESOLUTION,
   DEFAULT_TIMEZONE,
@@ -14,7 +17,10 @@ import { ChartLoadRef, ChartState, Widget } from './types';
 // Script loading promise to ensure we only load TV script once
 let tvScriptLoadingPromise: Promise<unknown>;
 
-export function useChartState(token: Token): ChartState & {
+export function useChartState(
+  token: Token,
+  getMarksCallback: IDatafeedChartApi['getMarks'],
+): ChartState & {
   onLoadScriptRef: ChartLoadRef;
   reloadWidget: () => void;
   updateSymbol: (token: Token, resolution: string) => void;
@@ -25,6 +31,7 @@ export function useChartState(token: Token): ChartState & {
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadingCounter, setLoadingCounter] = useState<number>(0);
+  const isReadyRef = useRef<boolean | null>(widgetReady);
 
   // Retrieve saved settings or use defaults
   const savedResolution =
@@ -41,13 +48,19 @@ export function useChartState(token: Token): ChartState & {
   };
 
   useEffect(() => {
+    isReadyRef.current = widgetReady;
+  }, [widgetReady]);
+
+  useEffect(() => {
     function createWidget() {
       const newWidget = createTradingViewWidget({
         token,
         savedResolution,
         savedTimezone,
+        isReadyRef,
         setWidgetReady,
         setIsLoading,
+        getMarksCallback,
       });
 
       if (newWidget) {
