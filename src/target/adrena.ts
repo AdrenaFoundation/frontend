@@ -9457,61 +9457,61 @@ export type Adrena = {
           {
             "name": "pricing",
             "type": {
-              "defined": "PricingParams"
+              "defined": "LegacyPricingParams"
             }
           },
           {
             "name": "fees",
             "type": {
-              "defined": "Fees"
+              "defined": "LegacyFees"
             }
           },
           {
             "name": "borrowRate",
             "type": {
-              "defined": "BorrowRateParams"
+              "defined": "LegacyBorrowRateParams"
             }
           },
           {
             "name": "collectedFees",
             "type": {
-              "defined": "FeesStats"
+              "defined": "LegacyFeesStats"
             }
           },
           {
             "name": "volumeStats",
             "type": {
-              "defined": "VolumeStats"
+              "defined": "LegacyVolumeStats"
             }
           },
           {
             "name": "tradeStats",
             "type": {
-              "defined": "TradeStats"
+              "defined": "LegacyTradeStats"
             }
           },
           {
             "name": "assets",
             "type": {
-              "defined": "Assets"
+              "defined": "LegacyAssets"
             }
           },
           {
             "name": "longPositions",
             "type": {
-              "defined": "PositionsAccounting"
+              "defined": "LegacyPositionsAccounting"
             }
           },
           {
             "name": "shortPositions",
             "type": {
-              "defined": "PositionsAccounting"
+              "defined": "LegacyPositionsAccounting"
             }
           },
           {
             "name": "borrowRateState",
             "type": {
-              "defined": "BorrowRateState"
+              "defined": "LegacyBorrowRateState"
             }
           }
         ]
@@ -9848,53 +9848,10 @@ export type Adrena = {
             "type": {
               "array": [
                 {
-                  "defined": "OraclePrice"
+                  "defined": "LegacyOraclePrice"
                 },
                 20
               ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "oraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "confidence",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "exponent",
-            "type": "i32"
-          },
-          {
-            "name": "feedId",
-            "type": "u8"
-          },
-          {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "defined": "LimitedString"
             }
           }
         ]
@@ -9939,49 +9896,6 @@ export type Adrena = {
                 },
                 20
               ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "oraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "confidence",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "exponent",
-            "type": "i32"
-          },
-          {
-            "name": "feedId",
-            "type": "u8"
-          },
-          {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "defined": "LimitedString"
             }
           }
         ]
@@ -12710,7 +12624,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "PricingParams",
+      "name": "LegacyPricingParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12734,7 +12648,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "Fees",
+      "name": "LegacyFees",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12791,7 +12705,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "BorrowRateParams",
+      "name": "LegacyBorrowRateParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12803,7 +12717,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "VolumeStats",
+      "name": "LegacyVolumeStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12835,7 +12749,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "TradeStats",
+      "name": "LegacyTradeStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12859,7 +12773,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "FeesStats",
+      "name": "LegacyFeesStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12891,7 +12805,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "Assets",
+      "name": "LegacyAssets",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12911,7 +12825,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "StableLockedAmountStat",
+      "name": "LegacyStableLockedAmountStat",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12936,7 +12850,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "PositionsAccounting",
+      "name": "LegacyPositionsAccounting",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12996,7 +12910,7 @@ export type Adrena = {
             "type": {
               "array": [
                 {
-                  "defined": "StableLockedAmountStat"
+                  "defined": "LegacyStableLockedAmountStat"
                 },
                 2
               ]
@@ -13006,7 +12920,7 @@ export type Adrena = {
       }
     },
     {
-      "name": "BorrowRateState",
+      "name": "LegacyBorrowRateState",
       "type": {
         "kind": "struct",
         "fields": [
@@ -13416,6 +13330,92 @@ export type Adrena = {
                 "u8",
                 4
               ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyOraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
             }
           }
         ]
@@ -24634,61 +24634,61 @@ export const IDL: Adrena = {
           {
             "name": "pricing",
             "type": {
-              "defined": "PricingParams"
+              "defined": "LegacyPricingParams"
             }
           },
           {
             "name": "fees",
             "type": {
-              "defined": "Fees"
+              "defined": "LegacyFees"
             }
           },
           {
             "name": "borrowRate",
             "type": {
-              "defined": "BorrowRateParams"
+              "defined": "LegacyBorrowRateParams"
             }
           },
           {
             "name": "collectedFees",
             "type": {
-              "defined": "FeesStats"
+              "defined": "LegacyFeesStats"
             }
           },
           {
             "name": "volumeStats",
             "type": {
-              "defined": "VolumeStats"
+              "defined": "LegacyVolumeStats"
             }
           },
           {
             "name": "tradeStats",
             "type": {
-              "defined": "TradeStats"
+              "defined": "LegacyTradeStats"
             }
           },
           {
             "name": "assets",
             "type": {
-              "defined": "Assets"
+              "defined": "LegacyAssets"
             }
           },
           {
             "name": "longPositions",
             "type": {
-              "defined": "PositionsAccounting"
+              "defined": "LegacyPositionsAccounting"
             }
           },
           {
             "name": "shortPositions",
             "type": {
-              "defined": "PositionsAccounting"
+              "defined": "LegacyPositionsAccounting"
             }
           },
           {
             "name": "borrowRateState",
             "type": {
-              "defined": "BorrowRateState"
+              "defined": "LegacyBorrowRateState"
             }
           }
         ]
@@ -25025,53 +25025,10 @@ export const IDL: Adrena = {
             "type": {
               "array": [
                 {
-                  "defined": "OraclePrice"
+                  "defined": "LegacyOraclePrice"
                 },
                 20
               ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "oraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "confidence",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "exponent",
-            "type": "i32"
-          },
-          {
-            "name": "feedId",
-            "type": "u8"
-          },
-          {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "defined": "LimitedString"
             }
           }
         ]
@@ -25116,49 +25073,6 @@ export const IDL: Adrena = {
                 },
                 20
               ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "oraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "confidence",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "exponent",
-            "type": "i32"
-          },
-          {
-            "name": "feedId",
-            "type": "u8"
-          },
-          {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "defined": "LimitedString"
             }
           }
         ]
@@ -27887,7 +27801,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "PricingParams",
+      "name": "LegacyPricingParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -27911,7 +27825,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "Fees",
+      "name": "LegacyFees",
       "type": {
         "kind": "struct",
         "fields": [
@@ -27968,7 +27882,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "BorrowRateParams",
+      "name": "LegacyBorrowRateParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -27980,7 +27894,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "VolumeStats",
+      "name": "LegacyVolumeStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -28012,7 +27926,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "TradeStats",
+      "name": "LegacyTradeStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -28036,7 +27950,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "FeesStats",
+      "name": "LegacyFeesStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -28068,7 +27982,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "Assets",
+      "name": "LegacyAssets",
       "type": {
         "kind": "struct",
         "fields": [
@@ -28088,7 +28002,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "StableLockedAmountStat",
+      "name": "LegacyStableLockedAmountStat",
       "type": {
         "kind": "struct",
         "fields": [
@@ -28113,7 +28027,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "PositionsAccounting",
+      "name": "LegacyPositionsAccounting",
       "type": {
         "kind": "struct",
         "fields": [
@@ -28173,7 +28087,7 @@ export const IDL: Adrena = {
             "type": {
               "array": [
                 {
-                  "defined": "StableLockedAmountStat"
+                  "defined": "LegacyStableLockedAmountStat"
                 },
                 2
               ]
@@ -28183,7 +28097,7 @@ export const IDL: Adrena = {
       }
     },
     {
-      "name": "BorrowRateState",
+      "name": "LegacyBorrowRateState",
       "type": {
         "kind": "struct",
         "fields": [
@@ -28593,6 +28507,92 @@ export const IDL: Adrena = {
                 "u8",
                 4
               ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyOraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
             }
           }
         ]

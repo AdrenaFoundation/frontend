@@ -9457,61 +9457,61 @@
           {
             "name": "pricing",
             "type": {
-              "defined": "PricingParams"
+              "defined": "LegacyPricingParams"
             }
           },
           {
             "name": "fees",
             "type": {
-              "defined": "Fees"
+              "defined": "LegacyFees"
             }
           },
           {
             "name": "borrowRate",
             "type": {
-              "defined": "BorrowRateParams"
+              "defined": "LegacyBorrowRateParams"
             }
           },
           {
             "name": "collectedFees",
             "type": {
-              "defined": "FeesStats"
+              "defined": "LegacyFeesStats"
             }
           },
           {
             "name": "volumeStats",
             "type": {
-              "defined": "VolumeStats"
+              "defined": "LegacyVolumeStats"
             }
           },
           {
             "name": "tradeStats",
             "type": {
-              "defined": "TradeStats"
+              "defined": "LegacyTradeStats"
             }
           },
           {
             "name": "assets",
             "type": {
-              "defined": "Assets"
+              "defined": "LegacyAssets"
             }
           },
           {
             "name": "longPositions",
             "type": {
-              "defined": "PositionsAccounting"
+              "defined": "LegacyPositionsAccounting"
             }
           },
           {
             "name": "shortPositions",
             "type": {
-              "defined": "PositionsAccounting"
+              "defined": "LegacyPositionsAccounting"
             }
           },
           {
             "name": "borrowRateState",
             "type": {
-              "defined": "BorrowRateState"
+              "defined": "LegacyBorrowRateState"
             }
           }
         ]
@@ -9848,53 +9848,10 @@
             "type": {
               "array": [
                 {
-                  "defined": "OraclePrice"
+                  "defined": "LegacyOraclePrice"
                 },
                 20
               ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "OraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "confidence",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "exponent",
-            "type": "i32"
-          },
-          {
-            "name": "feedId",
-            "type": "u8"
-          },
-          {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "defined": "LimitedString"
             }
           }
         ]
@@ -9939,49 +9896,6 @@
                 },
                 20
               ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "OraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "confidence",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          },
-          {
-            "name": "exponent",
-            "type": "i32"
-          },
-          {
-            "name": "feedId",
-            "type": "u8"
-          },
-          {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                3
-              ]
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "defined": "LimitedString"
             }
           }
         ]
@@ -12710,7 +12624,7 @@
       }
     },
     {
-      "name": "PricingParams",
+      "name": "LegacyPricingParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12734,7 +12648,7 @@
       }
     },
     {
-      "name": "Fees",
+      "name": "LegacyFees",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12791,7 +12705,7 @@
       }
     },
     {
-      "name": "BorrowRateParams",
+      "name": "LegacyBorrowRateParams",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12803,7 +12717,7 @@
       }
     },
     {
-      "name": "VolumeStats",
+      "name": "LegacyVolumeStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12835,7 +12749,7 @@
       }
     },
     {
-      "name": "TradeStats",
+      "name": "LegacyTradeStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12859,7 +12773,7 @@
       }
     },
     {
-      "name": "FeesStats",
+      "name": "LegacyFeesStats",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12891,7 +12805,7 @@
       }
     },
     {
-      "name": "Assets",
+      "name": "LegacyAssets",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12911,7 +12825,7 @@
       }
     },
     {
-      "name": "StableLockedAmountStat",
+      "name": "LegacyStableLockedAmountStat",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12936,7 +12850,7 @@
       }
     },
     {
-      "name": "PositionsAccounting",
+      "name": "LegacyPositionsAccounting",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12996,7 +12910,7 @@
             "type": {
               "array": [
                 {
-                  "defined": "StableLockedAmountStat"
+                  "defined": "LegacyStableLockedAmountStat"
                 },
                 2
               ]
@@ -13006,7 +12920,7 @@
       }
     },
     {
-      "name": "BorrowRateState",
+      "name": "LegacyBorrowRateState",
       "type": {
         "kind": "struct",
         "fields": [
@@ -13416,6 +13330,92 @@
                 "u8",
                 4
               ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyOraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
             }
           }
         ]
