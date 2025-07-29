@@ -25,6 +25,8 @@ export default function BasicMonitoring({
   isSmallScreen: boolean;
   view: string;
 }) {
+  const [allTimeTraders, setAllTimeTraders] = React.useState<number | null>(null);
+
   const [aprs, setAprs] = React.useState<{
     lp: number;
     lm: number;
@@ -47,6 +49,13 @@ export default function BasicMonitoring({
         // Ignore
       });
 
+    DataApiClient.getAllTimeTradersCount().then((count) => {
+      setAllTimeTraders(count);
+    })
+      .catch(() => {
+        // Ignore
+      });
+
     const interval = setInterval(() => {
       DataApiClient.getRolling7DGlobalApr().then(
         ({
@@ -61,6 +70,12 @@ export default function BasicMonitoring({
         .catch(() => {
           // Ignore
         });
+
+      DataApiClient.getAllTimeTradersCount().then((count) => {
+        setAllTimeTraders(count);
+      }).catch(() => {
+        // Ignore
+      });
     }, 60000);
 
     return () => clearInterval(interval);
@@ -121,7 +136,7 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[12em]'
+              className='border-0 min-w-[10em]'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.85em] sm:text-[0.85em]'
@@ -134,11 +149,22 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[12em]'
+              className='border-0 min-w-[10em]'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.85em] sm:text-[0.85em]'
               tippyInfo='Average yield for 540d staked ADX in the last 7 days'
+            />
+
+            <NumberDisplay
+              title="Traders"
+              nb={allTimeTraders ?? null}
+              format="number"
+              precision={0}
+              className='border-0 min-w-[8em]'
+              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+              headerClassName='pb-2'
+              titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
           </div>
         </StyledContainer>

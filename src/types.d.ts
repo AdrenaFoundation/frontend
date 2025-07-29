@@ -316,6 +316,7 @@ export type Vest = Accounts['vest'];
 export type GenesisLock = Accounts['genesisLock'];
 export type UserProfile = Accounts['userProfile'];
 export type UserProfileV1 = Accounts['userProfileV1'];
+
 export type LimitOrderBook = Accounts['limitOrderBook'];
 
 export type LockedStake = UserStaking['lockedStakes'][0];
