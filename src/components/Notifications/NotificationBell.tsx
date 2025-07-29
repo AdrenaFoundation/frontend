@@ -10,6 +10,7 @@ import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
 import Modal from '../common/Modal/Modal';
+import { DialectNotification } from './DialectNotification';
 import { Notifications } from './Notifications';
 
 export const NotificationBell = ({
@@ -93,6 +94,12 @@ export const NotificationBell = ({
       )}
     </div>
   );
+
+  if (isDialectSubscriber) {
+    return (
+      <DialectNotification isMobile={isMobile} isDialectSubscriber={isDialectSubscriber} adapters={adapters} />
+    )
+  }
 
   if (isMobile) {
     return (

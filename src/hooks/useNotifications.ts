@@ -45,6 +45,7 @@ export const useNotifications = (
   const fetchNotifications = useCallback(
     async (reset: boolean = false, currentOffset: number = 0) => {
       if (!walletAddress) return;
+      setIsDialectSubscriber(false);
 
       try {
         setLoading(true);
@@ -104,6 +105,7 @@ export const useNotifications = (
     ) {
       fetchNotifications(true, 0);
     } else {
+      setIsDialectSubscriber(false);
       setNotifications([]);
       setOffset(0);
       setHasMore(true);

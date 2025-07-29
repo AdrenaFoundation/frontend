@@ -925,6 +925,11 @@ blockquote {
       font-family: interMedium;
       src: url('/fonts/Inter_18pt-Medium.ttf');
     }
+
+    @media (max-width: 768px) {
+      top: 4rem !important;
+      min-height: 500px;
+    }
   }
 }
 
