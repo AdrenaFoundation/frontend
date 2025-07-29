@@ -28,6 +28,9 @@ import {
 
 import { adrenaClient } from './utils';
 
+// TODO: Handle multiple pools
+const HARDCODED_MAIN_POOL = new PublicKey('4bQRutgDJs6vuh6ZcWaPVXiQaBzbHketjbCDjL4oRN34');
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<ActionGetResponse | ActionPostResponse>,
@@ -125,7 +128,7 @@ export default async function handler(
 
         try {
             const openPositionWithSwapAmountAndFees =
-                await client.getOpenPositionWithSwapAmountAndFees({
+                await client.getOpenPositionAmountAndFees({
                     side: side as 'long' | 'short',
                     collateralMint: tokenA.mint,
                     mint: tokenB.mint,
@@ -134,6 +137,7 @@ export default async function handler(
                         tokenA.decimals,
                     ),
                     leverage: uiLeverageToNative(Number(leverage)),
+                    poolKey: HARDCODED_MAIN_POOL,
                 });
 
             await client.checkATAAddressInitializedAndCreatePreInstruction({
@@ -148,7 +152,7 @@ export default async function handler(
 
             const ix =
                 side === 'long'
-                    ? await client.buildOpenOrIncreasePositionWithSwapLong({
+                    ? await client.buildOpenOrIncreasePositionLong({
                         owner: new PublicKey(account),
                         collateralMint: tokenA.mint,
                         mint: tokenB.mint,
@@ -158,8 +162,9 @@ export default async function handler(
                             tokenA.decimals,
                         ),
                         leverage: uiLeverageToNative(Number(leverage)),
+                        poolKey: HARDCODED_MAIN_POOL,
                     })
-                    : await client.buildOpenOrIncreasePositionWithSwapShort({
+                    : await client.buildOpenOrIncreasePositionShort({
                         owner: new PublicKey(account),
                         collateralMint: tokenA.mint,
                         mint: tokenB.mint,
@@ -169,6 +174,7 @@ export default async function handler(
                             tokenA.decimals,
                         ),
                         leverage: uiLeverageToNative(Number(leverage)),
+                        poolKey: HARDCODED_MAIN_POOL,
                     });
 
             const tx = await ix.transaction();

@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import { memo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,12 +12,14 @@ export function LimitOrderBlocks({
     connected,
     className,
     limitOrders,
+    poolKey,
     // isLoading,
     reload,
 }: {
     connected: boolean;
     className?: string;
     limitOrders: LimitOrder[];
+    poolKey: PublicKey;
     // isLoading: boolean;
     reload: () => void;
 }) {
@@ -65,6 +68,7 @@ export function LimitOrderBlocks({
                             id: order.id,
                             collateralCustody: order.collateralCustody,
                             notification,
+                            poolKey,
                         }).then(() => {
                             reload();
                         });

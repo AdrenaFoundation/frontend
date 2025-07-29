@@ -1,4 +1,5 @@
-import React from 'react';
+import { PublicKey } from '@solana/web3.js';
+import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { LimitOrderBookExtended } from '@/types';
@@ -16,6 +17,8 @@ export default function LimitOrder({
     limitOrderBook: LimitOrderBookExtended | null;
     reload: () => void;
 }) {
+    const poolKey = useMemo(() => limitOrderBook ? limitOrderBook.poolKey : new PublicKey(''), [limitOrderBook]);
+
     return (
         <div
             className={twMerge(
@@ -28,6 +31,7 @@ export default function LimitOrder({
                 limitOrders={limitOrderBook ? limitOrderBook?.limitOrders : []}
                 // isLoading={isLoading}
                 reload={reload}
+                poolKey={poolKey}
             />
         </div>
     );

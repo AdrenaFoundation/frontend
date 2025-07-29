@@ -1,8 +1,10 @@
+import { PublicKey } from '@solana/web3.js';
+
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 
-export default function AUM({ connected }: { connected: boolean }) {
-  const aumUsd = useAssetsUnderManagement();
+export default function AUM({ connected, poolKey }: { connected: boolean; poolKey: PublicKey }) {
+  const aumUsd = useAssetsUnderManagement({ poolKey });
 
   return (
     <NumberDisplay

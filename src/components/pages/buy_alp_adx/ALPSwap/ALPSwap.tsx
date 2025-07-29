@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
@@ -14,9 +15,11 @@ import ALPSwapSell from './ALPSwapSell';
 export default function ALPSwap({
   className,
   connected,
+  poolKey,
 }: {
   className?: string;
   connected: boolean;
+  poolKey: PublicKey;
 }) {
   const [cookie, setCookie] = useCookies(['alp_new_update_info']);
   const [isInfoShown, setIsInfoShown] = useState(
@@ -48,9 +51,9 @@ export default function ALPSwap({
       />
 
       {selectedAction === 'mint' ? (
-        <ALPSwapBuy connected={connected} />
+        <ALPSwapBuy connected={connected} poolKey={poolKey} />
       ) : (
-        <ALPSwapSell connected={connected} />
+        <ALPSwapSell connected={connected} poolKey={poolKey} />
       )}
 
       {!connected ? (

@@ -30,9 +30,11 @@ let loadingCounterMainData = 0;
 export default function ALPSwapBuy({
     className,
     connected,
+    poolKey,
 }: {
     className?: string;
     connected: boolean;
+    poolKey: PublicKey;
 }) {
     const dispatch = useDispatch();
     const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -80,6 +82,7 @@ export default function ALPSwapBuy({
                 minLpAmountOut: new BN(0),
                 notification,
                 swapSlippage,
+                poolKey,
             });
 
             dispatch(fetchWalletTokenBalances());
@@ -157,6 +160,7 @@ export default function ALPSwapBuy({
                     await window.adrena.client.getAddLiquidityAmountAndFee({
                         amountIn: amountUsd,
                         token: usdcToken,
+                        poolKey,
                     });
             } else {
                 amountAndFee =
@@ -166,6 +170,7 @@ export default function ALPSwapBuy({
                             collateralToken.decimals,
                         ),
                         token: collateralToken,
+                        poolKey,
                     });
             }
 

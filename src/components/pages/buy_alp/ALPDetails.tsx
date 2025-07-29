@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -10,9 +11,9 @@ import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
 import { AprLpChart } from '../global/Apr/AprLpChart';
 
-export default function ALPDetails({ className }: { className?: string }) {
+export default function ALPDetails({ className, poolKey }: { className?: string; poolKey: PublicKey }) {
   const { aprs } = useAPR();
-  const aumUsd = useAssetsUnderManagement();
+  const aumUsd = useAssetsUnderManagement({ poolKey });
 
   const alpApr = aprs?.lp ?? null;
 

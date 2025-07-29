@@ -38,6 +38,7 @@ export default function SwapTradingInputs({
   allowedTokenB,
   wallet,
   connected,
+  poolKey,
   setTokenA,
   setTokenB,
 }: {
@@ -48,6 +49,7 @@ export default function SwapTradingInputs({
   allowedTokenB: Token[];
   wallet: Wallet | null;
   connected: boolean;
+  poolKey: PublicKey;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
 }) {
@@ -203,7 +205,7 @@ export default function SwapTradingInputs({
   ]);
 
   const custodyTokenB =
-    window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
+    window.adrena.client.getCustodyByMint(tokenB.mint, poolKey) ?? null;
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!dispatch || !connected || !wallet) {
@@ -230,6 +232,7 @@ export default function SwapTradingInputs({
         mintA: tokenA.mint,
         mintB: tokenB.mint,
         notification,
+        poolKey,
       });
 
       dispatch(fetchWalletTokenBalances());

@@ -16,12 +16,16 @@ import {
 } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
+interface SortConfig {
+  size: 'asc' | 'desc';
+  duration: 'asc' | 'desc';
+  lastClicked: 'size' | 'duration';
+}
 import ClaimHistorySection from './ClaimHistorySection';
 import LiquidStakeSection from './LiquidStakeSection';
 import LockedStakesSection from './LockedStakesSection';
 import PendingRewardsSection from './PendingRewardsSection';
 import TokenInfoHeader from './TokenInfoHeader';
-import { SortConfig } from './types';
 
 export default function StakeOverview({
   token,

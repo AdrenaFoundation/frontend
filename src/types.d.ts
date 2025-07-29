@@ -306,8 +306,6 @@ type Accounts = IdlAccounts<Adrena>;
 export type Cortex = Accounts['cortex'];
 export type VestRegistry = Accounts['vestRegistry'];
 export type Custody = Accounts['custody'];
-export type Multisig = Accounts['multisig'];
-export type Perpetuals = Accounts['perpetuals'];
 export type Pool = Accounts['pool'];
 export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
@@ -345,6 +343,7 @@ export type LimitOrderBookExtended = {
   limitOrders: LimitOrder[];
   escrowedLamports: number;
   pubkey: PublicKey;
+  poolKey: PublicKey;
 };
 
 export type GreaterThanOrEqual = 'gte';

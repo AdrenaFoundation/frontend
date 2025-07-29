@@ -22,7 +22,7 @@ import { useMarks } from '@/components/pages/trading/TradingChart/useMarks';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingChartMini from '@/components/pages/trading/TradingChartMini/TradingChartMini';
 import ViewTabs, { ViewType } from '@/components/pages/trading/ViewTabs/ViewTabs';
-import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS } from '@/constant';
+import { ALTERNATIVE_SWAP_TOKENS, MAIN_POOL_HARDCODED, PRICE_DECIMALS } from '@/constant';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
@@ -70,6 +70,9 @@ function pickDefaultToken(positions: PositionExtended[] | null): Token {
 
   return tokenWithMaxSize;
 }
+
+// TODO: Adapt and handle multiple pools
+const poolKey = MAIN_POOL_HARDCODED;
 
 export default function Trade({
   wallet,
@@ -140,6 +143,7 @@ export default function Trade({
 
   const { limitOrderBook, reload } = useLimitOrderBook({
     walletAddress: wallet?.publicKey.toBase58() ?? null,
+    poolKey,
   });
 
   const minChartHeight = 200; // Minimum height
@@ -324,6 +328,7 @@ export default function Trade({
           window.adrena.client.buildCancelLimitOrderIx({
             id: lo.id,
             collateralCustody: lo.collateralCustody,
+            poolKey,
           }),
         ),
       );
@@ -624,6 +629,7 @@ export default function Trade({
 
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
+                poolKey={poolKey}
                 selectedAction={selectedAction}
                 setSelectedAction={setSelectedAction}
                 tokenA={tokenA}
@@ -659,6 +665,7 @@ export default function Trade({
           isExtraWideScreen ? "w-[20%] min-w-[350px]" : "w-[25%] min-w-[320px]"
         )}>
           <TradeComp
+            poolKey={poolKey}
             className="w-full"
             selectedAction={selectedAction}
             setSelectedAction={setSelectedAction}
@@ -741,6 +748,7 @@ export default function Trade({
                 <div className="bg-bcolor w-full h-[1px] my-3" />
                 <div className="flex w-full px-4">
                   <TradeComp
+                    poolKey={poolKey}
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
                     tokenA={tokenA}

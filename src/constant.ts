@@ -1862,3 +1862,7 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     additionalSwapToken: true,
   },
 ];
+
+export const MAIN_POOL_HARDCODED = new PublicKey(
+  '4bQRutgDJs6vuh6ZcWaPVXiQaBzbHketjbCDjL4oRN34',
+);

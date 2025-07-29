@@ -1,445 +1,7 @@
 {
-  "version": "1.3.2",
+  "version": "1.3.7",
   "name": "adrena",
   "instructions": [
-    {
-      "name": "initOneCore",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "InitOneParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "initTwoLmTokenMetadata",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "lmTokenMintMetadata",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "mplTokenMetadataProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initThreeGovernance",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "governanceTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "governanceRealm",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6",
-            "A realm represent one project within the governance program"
-          ]
-        },
-        {
-          "name": "governanceProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initFourVesting",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "vestRegistry",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "addVest",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "vestRegistry",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "vest",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#17"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "AddVestParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
     {
       "name": "setVestDelegate",
       "accounts": [
@@ -500,71 +62,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "migrateVestFromV1ToV2",
-      "accounts": [
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1",
-            "The caller of this instruction"
-          ]
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2",
-            "Wallet related to the vest"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#3",
-            "Account paying for the reallocation"
-          ]
-        },
-        {
-          "name": "vest",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        }
-      ],
-      "args": []
     },
     {
       "name": "migrateUserProfileFromV1ToV2",
@@ -808,708 +305,6 @@
       "returns": "u64"
     },
     {
-      "name": "addPoolPartOne",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "lpTokenMintMetadata",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "mplTokenMetadataProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "AddPoolPartOneParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
-    {
-      "name": "addPoolPartTwo",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "genesisLock",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "AddPoolPartTwoParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
-    {
-      "name": "removePool",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        }
-      ],
-      "args": [],
-      "returns": "u8"
-    },
-    {
-      "name": "addCustody",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "custodyTokenMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "AddCustodyParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
-    {
-      "name": "removeCustody",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "RemoveCustodyParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
-    {
-      "name": "setCustodyConfig",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetCustodyConfigParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
-    {
-      "name": "setCustodyAllowSwap",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetCustodyAllowSwapParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "setCustodyAllowTrade",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetCustodyAllowTradeParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "setPoolAllowSwap",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetPoolAllowSwapParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "setPoolAllowTrade",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetPoolAllowTradeParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "setPoolAumSoftCapUsd",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetPoolAumSoftCapUsdParams"
-          }
-        }
-      ]
-    },
-    {
       "name": "swap",
       "accounts": [
         {
@@ -1578,7 +373,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#9"
@@ -1752,233 +547,6 @@
       ]
     },
     {
-      "name": "genesisOtcOut",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "daoReceivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "custodyUsdc",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "custodyUsdcTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "genesisLock",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "genesisOtcIn",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "fundingAccountOne",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "fundingAccountTwo",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "fundingAccountThree",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "custodyOne",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "custodyOneTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "custodyTwo",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "custodyTwoTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "custodyThree",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "custodyThreeTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "genesisLock",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "GenesisOtcInParams"
-          }
-        }
-      ]
-    },
-    {
       "name": "removeLiquidity",
       "accounts": [
         {
@@ -2088,268 +656,6 @@
       ]
     },
     {
-      "name": "openPositionLong",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#1 Must be signer or not depending",
-            "if the caller is the transfer_authority (internal call for limit order) or the owner",
-            ""
-          ]
-        },
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "OpenPositionLongParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "openPositionShort",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#1 Must be signer or not depending",
-            "if the caller is the transfer_authority (internal call for limit order) or the owner",
-            ""
-          ]
-        },
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "collateralCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "collateralCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "OpenPositionShortParams"
-          }
-        }
-      ]
-    },
-    {
       "name": "openOrIncreasePositionWithSwapLong",
       "accounts": [
         {
@@ -2394,7 +700,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#6"
@@ -2409,7 +715,7 @@
           ]
         },
         {
-          "name": "principalCustody",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2417,7 +723,7 @@
           ]
         },
         {
-          "name": "principalCustodyTokenAccount",
+          "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2425,15 +731,15 @@
           ]
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
+          "name": "principalCustody",
+          "isMut": true,
           "isSigner": false,
           "docs": [
             "#10"
           ]
         },
         {
-          "name": "cortex",
+          "name": "principalCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2441,15 +747,15 @@
           ]
         },
         {
-          "name": "pool",
-          "isMut": true,
+          "name": "transferAuthority",
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#12"
           ]
         },
         {
-          "name": "position",
+          "name": "cortex",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2457,11 +763,27 @@
           ]
         },
         {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#14"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#15"
+          ]
+        },
+        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#16"
           ]
         },
         {
@@ -2469,7 +791,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#17"
           ]
         },
         {
@@ -2477,7 +799,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#18"
           ]
         }
       ],
@@ -2535,7 +857,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#6"
@@ -2708,14 +1030,14 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
           ]
         },
         {
-          "name": "custodyTokenAccount",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2723,11 +1045,19 @@
           ]
         },
         {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#10"
+          ]
+        },
+        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -2735,7 +1065,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         }
       ],
@@ -2809,7 +1139,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
@@ -2918,7 +1248,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
@@ -3019,7 +1349,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#8"
@@ -3136,18 +1466,26 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#9"
           ]
         },
         {
-          "name": "custodyTokenAccount",
+          "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
           "docs": [
             "#10"
+          ]
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#11"
           ]
         },
         {
@@ -3156,7 +1494,7 @@
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -3165,7 +1503,7 @@
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -3173,7 +1511,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -3181,7 +1519,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         }
       ],
@@ -3263,7 +1601,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#9"
@@ -3328,306 +1666,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "liquidateLong",
-      "accounts": [
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "referrerProfile",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "LiquidateLongParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "liquidateShort",
-      "accounts": [
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "collateralCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "collateralCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "referrerProfile",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "LiquidateShortParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "updatePoolAum",
-      "accounts": [
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "UpdatePoolAumParams"
-          }
-        }
-      ],
-      "returns": "u128"
     },
     {
       "name": "getAddLiquidityAmountAndFee",
@@ -3798,218 +1836,6 @@
       }
     },
     {
-      "name": "disableTokensFreezeCapabilities",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "genesisStakePatch",
-      "accounts": [
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "rewardTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "lmTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "stakingLmRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "userStaking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "genesisLock",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "getOpenPositionWithSwapAmountAndFees",
       "accounts": [
         {
@@ -4038,7 +1864,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#4"
@@ -4270,68 +2096,6 @@
         }
       ],
       "returns": "u64"
-    },
-    {
-      "name": "getLiquidationState",
-      "accounts": [
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "collateralCustody",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "GetLiquidationStateParams"
-          }
-        }
-      ],
-      "returns": "u8"
     },
     {
       "name": "getSwapAmountAndFees",
@@ -4790,471 +2554,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "deleteUserProfile",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "user",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initStakingOne",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "stakingStakedTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingStakedTokenMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "InitStakingOneParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
-    {
-      "name": "initStakingTwo",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        }
-      ],
-      "args": [],
-      "returns": "u8"
-    },
-    {
-      "name": "initStakingThree",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "stakingLmRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        }
-      ],
-      "args": [],
-      "returns": "u8"
-    },
-    {
-      "name": "initStakingFour",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "stakingStakedTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "stakingLmRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "stakingStakedTokenMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        }
-      ],
-      "args": [],
-      "returns": "u8"
     },
     {
       "name": "addLiquidStake",
@@ -6430,105 +3729,6 @@
       ]
     },
     {
-      "name": "finalizeGenesisLockCampaign",
-      "accounts": [
-        {
-          "name": "caller",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "genesisLock",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "setPoolLiquidityState",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetPoolLiquidityStateParams"
-          }
-        }
-      ]
-    },
-    {
       "name": "finalizeLockedStake",
       "accounts": [
         {
@@ -6827,589 +4027,6 @@
         }
       ],
       "returns": "u64"
-    },
-    {
-      "name": "getPoolInfoSnapshot",
-      "accounts": [
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "lpTokenMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "GetPoolInfoSnapshotParams"
-          }
-        }
-      ],
-      "returns": {
-        "defined": "PoolInfoSnapshot"
-      }
-    },
-    {
-      "name": "mintLmTokensFromBucket",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "MintLmTokensFromBucketParams"
-          }
-        }
-      ],
-      "returns": "u8"
-    },
-    {
-      "name": "increasePositionLong",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#1 Must be signer or not depending",
-            "if the caller is the transfer_authority (internal call for limit order) or the owner",
-            ""
-          ]
-        },
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "IncreasePositionLongParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "patchCustodyLockedAmount",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "usdcCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "bonkCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "wbtcCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "jitoCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increasePositionShort",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#1 Must be signer or not depending",
-            "if the caller is the transfer_authority (internal call for limit order) or the owner",
-            ""
-          ]
-        },
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "collateralCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "collateralCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "IncreasePositionShortParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "setStakingLmEmissionPotentiometers",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetStakingLmEmissionPotentiometersParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "setAdmin",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetAdminParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "setProtocolFeeRecipient",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "protocolFeeRecipient",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "setCustodyMaxCumulativeShortPositionSizeUsd",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "SetCustodyMaxCumulativeShortPositionSizeUsdParams"
-          }
-        }
-      ]
     },
     {
       "name": "setTakeProfitLong",
@@ -7716,154 +4333,6 @@
       "args": []
     },
     {
-      "name": "patchStakingRound",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "stakingRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "stakingLmRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "setPoolWhitelistedSwapper",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "whitelistedSwapper",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "initLimitOrderBook",
       "accounts": [
         {
@@ -8129,264 +4598,6 @@
       ]
     },
     {
-      "name": "executeLimitOrderLong",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "caller",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "collateralEscrow",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "ExecuteLimitOrderLongParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "executeLimitOrderShort",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "caller",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "collateralEscrow",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "collateralCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "collateralCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "limitOrderBook",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#13"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#15"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "ExecuteLimitOrderShortParams"
-          }
-        }
-      ]
-    },
-    {
       "name": "distributeFees",
       "accounts": [
         {
@@ -8496,7 +4707,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#14"
@@ -8511,11 +4722,19 @@
           ]
         },
         {
+          "name": "managerFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#16"
+          ]
+        },
+        {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#17"
           ]
         },
         {
@@ -8523,7 +4742,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#18"
           ]
         },
         {
@@ -8531,7 +4750,7 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#18"
+            "#19"
           ]
         },
         {
@@ -8539,18 +4758,11 @@
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#19"
+            "#20"
           ]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "DistributeFeesParams"
-          }
-        }
-      ]
+      "args": []
     },
     {
       "name": "claimReferralFee",
@@ -8623,261 +4835,6 @@
       "args": []
     },
     {
-      "name": "initReferrerRewardTokenVault",
-      "accounts": [
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1",
-            "Anyone"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "referrerRewardTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "feeRedistributionMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "grantOrRemoveAchievement",
-      "accounts": [
-        {
-          "name": "whitelistedCaller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "user",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "userProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "GrantOrRemoveAchievementParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "initOracle",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "InitOracleParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "patchCustodiesOracles",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "usdcCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "bonkCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "wbtcCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "jitoCustody",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "resolvePositionBorrowFees",
       "accounts": [
         {
@@ -8922,7 +4879,7 @@
         },
         {
           "name": "oracle",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": [
             "#6"
@@ -8979,285 +4936,7 @@
           ]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "ResolvePositionBorrowFeesParams"
-          }
-        }
-      ]
-    },
-    {
-      "name": "syncUserVotingPower",
-      "accounts": [
-        {
-          "name": "caller",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "userStaking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "governanceTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "governanceRealm",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10",
-            "A realm represent one project within the governance program"
-          ]
-        },
-        {
-          "name": "governanceRealmConfig",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "governanceGoverningTokenHolding",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#12",
-            "Token account owned by governance program holding user's locked tokens"
-          ]
-        },
-        {
-          "name": "governanceGoverningTokenOwnerRecord",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#13",
-            "Account owned by governance storing user information"
-          ]
-        },
-        {
-          "name": "vestRegistry",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#14"
-          ]
-        },
-        {
-          "name": "vest",
-          "isMut": false,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "#15"
-          ]
-        },
-        {
-          "name": "governanceProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#16"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#17"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#18"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#19"
-          ]
-        }
-      ],
       "args": []
-    },
-    {
-      "name": "mintStakedLmTokensFromBucket",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true,
-          "docs": [
-            "#1"
-          ]
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "#2"
-          ]
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
-          "name": "stakingStakedTokenVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#4"
-          ]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#5"
-          ]
-        },
-        {
-          "name": "userStaking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#6"
-          ]
-        },
-        {
-          "name": "staking",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#7"
-          ]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#8"
-          ]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#9"
-          ]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#10"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#11"
-          ]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "#12"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "MintStakedLmTokensFromBucketParams"
-          }
-        }
-      ]
     }
   ],
   "accounts": [
@@ -9388,7 +5067,7 @@
       }
     },
     {
-      "name": "Custody",
+      "name": "CustodyV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -9452,7 +5131,142 @@
           {
             "name": "pricing",
             "type": {
-              "defined": "PricingParams"
+              "defined": "LegacyPricingParams"
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "LegacyFees"
+            }
+          },
+          {
+            "name": "borrowRate",
+            "type": {
+              "defined": "LegacyBorrowRateParams"
+            }
+          },
+          {
+            "name": "collectedFees",
+            "type": {
+              "defined": "LegacyFeesStats"
+            }
+          },
+          {
+            "name": "volumeStats",
+            "type": {
+              "defined": "LegacyVolumeStats"
+            }
+          },
+          {
+            "name": "tradeStats",
+            "type": {
+              "defined": "LegacyTradeStats"
+            }
+          },
+          {
+            "name": "assets",
+            "type": {
+              "defined": "LegacyAssets"
+            }
+          },
+          {
+            "name": "longPositions",
+            "type": {
+              "defined": "LegacyPositionsAccounting"
+            }
+          },
+          {
+            "name": "shortPositions",
+            "type": {
+              "defined": "LegacyPositionsAccounting"
+            }
+          },
+          {
+            "name": "borrowRateState",
+            "type": {
+              "defined": "LegacyBorrowRateState"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Custody",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "tokenAccountBump",
+            "type": "u8"
+          },
+          {
+            "name": "allowTrade",
+            "type": "u8"
+          },
+          {
+            "name": "allowSwap",
+            "type": "u8"
+          },
+          {
+            "name": "decimals",
+            "type": "u8"
+          },
+          {
+            "name": "isStable",
+            "type": "u8"
+          },
+          {
+            "name": "isSynthetic",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "tradeOracle",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "oracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "tradeOracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                22
+              ]
             }
           },
           {
@@ -9498,9 +5312,42 @@
             }
           },
           {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
             "name": "shortPositions",
             "type": {
               "defined": "PositionsAccounting"
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": "PricingParams"
+            }
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
             }
           },
           {
@@ -9649,7 +5496,7 @@
       }
     },
     {
-      "name": "Oracle",
+      "name": "OracleV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -9675,6 +5522,50 @@
             "type": {
               "array": [
                 {
+                  "defined": "LegacyOraclePrice"
+                },
+                20
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Oracle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "registeredPricesCount",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "prices",
+            "type": {
+              "array": [
+                {
                   "defined": "OraclePrice"
                 },
                 20
@@ -9685,7 +5576,7 @@
       }
     },
     {
-      "name": "Pool",
+      "name": "PoolV1",
       "type": {
         "kind": "struct",
         "fields": [
@@ -9788,6 +5679,303 @@
           {
             "name": "aumSoftCapUsd",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolInfoSnapshot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "currentTime",
+            "type": "i64"
+          },
+          {
+            "name": "aumUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lpTokenPrice",
+            "type": "u64"
+          },
+          {
+            "name": "custodiesInfoSnapshot",
+            "type": {
+              "array": [
+                {
+                  "defined": "CustodyInfoSnapshot"
+                },
+                8
+              ]
+            }
+          },
+          {
+            "name": "syntheticCustodiesInfoSnapshot",
+            "type": {
+              "array": [
+                {
+                  "defined": "SyntheticCustodyInfoSnapshot"
+                },
+                32
+              ]
+            }
+          },
+          {
+            "name": "lpCirculatingSupply",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                120
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "lpTokenBump",
+            "type": "u8"
+          },
+          {
+            "name": "nbStableCustody",
+            "type": "u8"
+          },
+          {
+            "name": "initialized",
+            "type": "u8"
+          },
+          {
+            "name": "allowTrade",
+            "type": "u8"
+          },
+          {
+            "name": "allowSwap",
+            "type": "u8"
+          },
+          {
+            "name": "liquidityState",
+            "type": "u8"
+          },
+          {
+            "name": "registeredCustodyCount",
+            "type": "u8"
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "oracleProvider",
+            "type": "u8"
+          },
+          {
+            "name": "registeredSyntheticCustodyCount",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "marketOpenTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseEventTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseAffectedFeeds",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                110
+              ]
+            }
+          },
+          {
+            "name": "lpFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "lmFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "referrerFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "managerFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "managerFeeRecipient",
+            "type": "publicKey"
+          },
+          {
+            "name": "managerFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lmFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "protocolFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProtocolFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLmFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeManagerFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLpFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "referrersFeeDebtUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeReferrerFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lpTokenPriceUsd",
+            "type": "u64"
+          },
+          {
+            "name": "whitelistedSwapper",
+            "type": "publicKey"
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "lastAumAndLpTokenPriceUsdUpdate",
+            "type": "i64"
+          },
+          {
+            "name": "uniqueLimitOrderIdCounter",
+            "type": "u64"
+          },
+          {
+            "name": "aumUsd",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "inceptionTime",
+            "type": "i64"
+          },
+          {
+            "name": "aumSoftCapUsd",
+            "type": "u64"
+          },
+          {
+            "name": "custodies",
+            "type": {
+              "array": [
+                "publicKey",
+                8
+              ]
+            }
+          },
+          {
+            "name": "ratios",
+            "type": {
+              "array": [
+                {
+                  "defined": "TokenRatios"
+                },
+                8
+              ]
+            }
+          },
+          {
+            "name": "syntheticCustodies",
+            "type": {
+              "array": [
+                "publicKey",
+                32
+              ]
+            }
           }
         ]
       }
@@ -10525,12 +6713,9 @@
           {
             "name": "ratios",
             "type": {
-              "array": [
-                {
-                  "defined": "TokenRatios"
-                },
-                8
-              ]
+              "vec": {
+                "defined": "TokenRatios"
+              }
             }
           },
           {
@@ -10544,6 +6729,76 @@
             "type": {
               "defined": "LimitedString"
             }
+          },
+          {
+            "name": "oracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "tradeOracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddSyntheticCustodyParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pricing",
+            "type": {
+              "defined": "PricingParams"
+            }
+          },
+          {
+            "name": "allowSwap",
+            "type": "bool"
+          },
+          {
+            "name": "allowTrade",
+            "type": "bool"
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "Fees"
+            }
+          },
+          {
+            "name": "borrowRate",
+            "type": {
+              "defined": "BorrowRateParams"
+            }
+          },
+          {
+            "name": "tradeOracle",
+            "type": {
+              "defined": "LimitedString"
+            }
+          },
+          {
+            "name": "tradeOracleFeedId",
+            "type": "u8"
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           }
         ]
       }
@@ -10556,12 +6811,9 @@
           {
             "name": "ratios",
             "type": {
-              "array": [
-                {
-                  "defined": "TokenRatios"
-                },
-                8
-              ]
+              "vec": {
+                "defined": "TokenRatios"
+              }
             }
           }
         ]
@@ -10633,12 +6885,9 @@
           {
             "name": "ratios",
             "type": {
-              "array": [
-                {
-                  "defined": "TokenRatios"
-                },
-                8
-              ]
+              "vec": {
+                "defined": "TokenRatios"
+              }
             }
           }
         ]
@@ -10688,7 +6937,7 @@
             }
           },
           {
-            "name": "chaosLabsFeedId",
+            "name": "feedId",
             "type": "u8"
           }
         ]
@@ -10734,6 +6983,30 @@
           {
             "name": "lpTokenUri",
             "type": "string"
+          },
+          {
+            "name": "oracleProvider",
+            "type": "u8"
+          },
+          {
+            "name": "lpFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "lmFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "referrerFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "managerFeeShareBps",
+            "type": "u16"
           }
         ]
       }
@@ -10760,26 +7033,6 @@
             "type": {
               "defined": "ReservedSpots"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "GenesisOtcInParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "custodyOneAmount",
-            "type": "u64"
-          },
-          {
-            "name": "custodyTwoAmount",
-            "type": "u64"
-          },
-          {
-            "name": "custodyThreeAmount",
-            "type": "u64"
           }
         ]
       }
@@ -10885,6 +7138,20 @@
       }
     },
     {
+      "name": "AutonomMarketOpeningParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "openingData",
+            "type": {
+              "defined": "AutonomMarketOpeningData"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "AddLiquidityParams",
       "type": {
         "kind": "struct",
@@ -10901,7 +7168,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -10925,7 +7192,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -10944,14 +7211,6 @@
           {
             "name": "minAmountOut",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -10964,14 +7223,6 @@
           {
             "name": "collateral",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -10989,7 +7240,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11046,14 +7297,6 @@
           {
             "name": "id",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11066,14 +7309,6 @@
           {
             "name": "id",
             "type": "u64"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11150,10 +7385,10 @@
             }
           },
           {
-            "name": "oraclePrices",
+            "name": "previousCloseMarketOraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           },
@@ -11176,32 +7411,16 @@
             }
           },
           {
-            "name": "oraclePrices",
+            "name": "previousCloseMarketOraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           },
           {
             "name": "percentage",
             "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "DistributeFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11227,7 +7446,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11255,39 +7474,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "LiquidateLongParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "LiquidateShortParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11310,14 +7497,6 @@
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11338,14 +7517,6 @@
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11366,14 +7537,6 @@
           {
             "name": "leverage",
             "type": "u32"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11391,7 +7554,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11411,23 +7574,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "ResolvePositionBorrowFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11549,7 +7696,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11687,7 +7834,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11703,7 +7850,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11731,7 +7878,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11747,7 +7894,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11771,7 +7918,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11787,7 +7934,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11803,7 +7950,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -11826,14 +7973,6 @@
           {
             "name": "side",
             "type": "u8"
-          },
-          {
-            "name": "oraclePrices",
-            "type": {
-              "option": {
-                "defined": "ChaosLabsBatchPrices"
-              }
-            }
           }
         ]
       }
@@ -11847,129 +7986,9 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "CustodyInfoSnapshot",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "assetsValueUsd",
-            "type": "u64"
-          },
-          {
-            "name": "owned",
-            "type": "u64"
-          },
-          {
-            "name": "locked",
-            "type": "u64"
-          },
-          {
-            "name": "price",
-            "type": "u64"
-          },
-          {
-            "name": "priceConfidence",
-            "type": "u64"
-          },
-          {
-            "name": "tradePrice",
-            "type": "u64"
-          },
-          {
-            "name": "tradePriceConfidence",
-            "type": "u64"
-          },
-          {
-            "name": "shortPnl",
-            "type": "i64"
-          },
-          {
-            "name": "longPnl",
-            "type": "i64"
-          },
-          {
-            "name": "openInterestLongUsd",
-            "type": "u64"
-          },
-          {
-            "name": "openInterestShortUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeProfitUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeLossUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeSwapFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeLiquidityFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeClosePositionFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeLiquidationFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeBorrowFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeTradingVolumeUsd",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "PoolInfoSnapshot",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "currentTime",
-            "type": "u64"
-          },
-          {
-            "name": "aumUsd",
-            "type": "u64"
-          },
-          {
-            "name": "lpTokenPrice",
-            "type": "u64"
-          },
-          {
-            "name": "custodiesInfoSnapshot",
-            "type": {
-              "vec": {
-                "defined": "CustodyInfoSnapshot"
-              }
-            }
-          },
-          {
-            "name": "lpCirculatingSupply",
-            "type": "u64"
-          },
-          {
-            "name": "cumulativeReferrerFeeUsd",
-            "type": "u64"
           }
         ]
       }
@@ -11983,7 +8002,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -12003,7 +8022,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -12023,7 +8042,7 @@
             "name": "oraclePrices",
             "type": {
               "option": {
-                "defined": "ChaosLabsBatchPrices"
+                "defined": "BatchPrices"
               }
             }
           }
@@ -12031,7 +8050,44 @@
       }
     },
     {
-      "name": "ChaosLabsBatchPrices",
+      "name": "AutonomMarketOpeningData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feeds",
+            "type": "bytes"
+          },
+          {
+            "name": "marketCloseAffectedFeeds",
+            "type": "bytes"
+          },
+          {
+            "name": "marketOpenTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "marketCloseTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "signature",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "recoveryId",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BatchPrices",
       "type": {
         "kind": "struct",
         "fields": [
@@ -12242,6 +8298,324 @@
       }
     },
     {
+      "name": "LegacyPricingParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maxInitialLeverage",
+            "type": "u32"
+          },
+          {
+            "name": "maxLeverage",
+            "type": "u32"
+          },
+          {
+            "name": "maxPositionLockedUsd",
+            "type": "u64"
+          },
+          {
+            "name": "maxCumulativeShortPositionSizeUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyFees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swapIn",
+            "type": "u16"
+          },
+          {
+            "name": "swapOut",
+            "type": "u16"
+          },
+          {
+            "name": "stableSwapIn",
+            "type": "u16"
+          },
+          {
+            "name": "stableSwapOut",
+            "type": "u16"
+          },
+          {
+            "name": "addLiquidity",
+            "type": "u16"
+          },
+          {
+            "name": "removeLiquidity",
+            "type": "u16"
+          },
+          {
+            "name": "closePosition",
+            "type": "u16"
+          },
+          {
+            "name": "liquidation",
+            "type": "u16"
+          },
+          {
+            "name": "feeMax",
+            "type": "u16"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyBorrowRateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maxHourlyBorrowInterestRate",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyVolumeStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swapUsd",
+            "type": "u64"
+          },
+          {
+            "name": "addLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "removeLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "openPositionUsd",
+            "type": "u64"
+          },
+          {
+            "name": "closePositionUsd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyTradeStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "profitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lossUsd",
+            "type": "u64"
+          },
+          {
+            "name": "oiLongUsd",
+            "type": "u64"
+          },
+          {
+            "name": "oiShortUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyFeesStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swapUsd",
+            "type": "u64"
+          },
+          {
+            "name": "addLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "removeLiquidityUsd",
+            "type": "u64"
+          },
+          {
+            "name": "closePositionUsd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationUsd",
+            "type": "u64"
+          },
+          {
+            "name": "borrowUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyAssets",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "owned",
+            "type": "u64"
+          },
+          {
+            "name": "locked",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyStableLockedAmountStat",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "custody",
+            "type": "publicKey"
+          },
+          {
+            "name": "lockedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyPositionsAccounting",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "openPositions",
+            "type": "u64"
+          },
+          {
+            "name": "sizeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "borrowSizeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lockedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "weightedPrice",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "totalQuantity",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "cumulativeInterestUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          },
+          {
+            "name": "cumulativeInterestSnapshot",
+            "type": {
+              "defined": "U128Split"
+            }
+          },
+          {
+            "name": "exitFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "stableLockedAmount",
+            "type": {
+              "array": [
+                {
+                  "defined": "LegacyStableLockedAmountStat"
+                },
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegacyBorrowRateState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "currentRate",
+            "type": "u64"
+          },
+          {
+            "name": "lastUpdate",
+            "type": "i64"
+          },
+          {
+            "name": "cumulativeInterest",
+            "type": {
+              "defined": "U128Split"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "Fees",
       "type": {
         "kind": "struct",
@@ -12426,6 +8800,10 @@
           {
             "name": "maxCumulativeShortPositionSizeUsd",
             "type": "u64"
+          },
+          {
+            "name": "maxCumulativeLongPositionSizeUsd",
+            "type": "u64"
           }
         ]
       }
@@ -12502,13 +8880,8 @@
             "type": "u64"
           },
           {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                8
-              ]
-            }
+            "name": "collateralUsd",
+            "type": "u64"
           },
           {
             "name": "cumulativeInterestSnapshot",
@@ -12521,13 +8894,24 @@
             "type": "u64"
           },
           {
-            "name": "stableLockedAmount",
+            "name": "padding2",
             "type": {
               "array": [
-                {
-                  "defined": "StableLockedAmountStat"
-                },
-                2
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "stableLockedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u8",
+                8
               ]
             }
           }
@@ -12626,6 +9010,49 @@
       }
     },
     {
+      "name": "LegacyOraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "confidence",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          },
+          {
+            "name": "feedId",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "OraclePrice",
       "type": {
         "kind": "struct",
@@ -12647,7 +9074,7 @@
             "type": "i32"
           },
           {
-            "name": "chaosLabsFeedId",
+            "name": "feedId",
             "type": "u8"
           },
           {
@@ -12663,6 +9090,160 @@
             "name": "name",
             "type": {
               "defined": "LimitedString"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CustodyInfoSnapshot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "assetsValueUsd",
+            "type": "u64"
+          },
+          {
+            "name": "owned",
+            "type": "u64"
+          },
+          {
+            "name": "locked",
+            "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "tradePrice",
+            "type": "u64"
+          },
+          {
+            "name": "shortPnl",
+            "type": "i64"
+          },
+          {
+            "name": "longPnl",
+            "type": "i64"
+          },
+          {
+            "name": "openInterestLongUsd",
+            "type": "u64"
+          },
+          {
+            "name": "openInterestShortUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProfitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLossUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeSwapFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidityFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeClosePositionFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidationFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeBorrowFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeTradingVolumeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u64",
+                4
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SyntheticCustodyInfoSnapshot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tradePrice",
+            "type": "u64"
+          },
+          {
+            "name": "shortPnl",
+            "type": "i64"
+          },
+          {
+            "name": "longPnl",
+            "type": "i64"
+          },
+          {
+            "name": "openInterestLongUsd",
+            "type": "u64"
+          },
+          {
+            "name": "openInterestShortUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProfitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLossUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeSwapFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidityFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeClosePositionFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidationFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeBorrowFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeTradingVolumeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u64",
+                4
+              ]
             }
           }
         ]
@@ -13031,6 +9612,34 @@
       }
     },
     {
+      "name": "CustodyVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
+          }
+        ]
+      }
+    },
+    {
       "name": "PoolLiquidityState",
       "type": {
         "kind": "enum",
@@ -13043,6 +9652,34 @@
           },
           {
             "name": "Active"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleProvider",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ChaosLabs"
+          },
+          {
+            "name": "Autonom"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolVersion",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1"
+          },
+          {
+            "name": "V2"
           }
         ]
       }
@@ -14184,6 +10821,46 @@
       "code": 6085,
       "name": "InvalidOracleSignature",
       "msg": "Invalid oracle signature"
+    },
+    {
+      "code": 6086,
+      "name": "CustodyBelowMinimum",
+      "msg": "Custody amount is below minimum required"
+    },
+    {
+      "code": 6087,
+      "name": "InvalidMarketOpeningData",
+      "msg": "Invalid market opening data"
+    },
+    {
+      "code": 6088,
+      "name": "MarketIsClosed",
+      "msg": "Market is closed"
+    },
+    {
+      "code": 6089,
+      "name": "InvalidFeeDistribution",
+      "msg": "Invalid fee distribution"
+    },
+    {
+      "code": 6090,
+      "name": "InvalidFeedId",
+      "msg": "Invalid feed id"
+    },
+    {
+      "code": 6091,
+      "name": "MaxCumulativeLongPositionSizeLimit",
+      "msg": "The long limit for this asset has been reached"
+    },
+    {
+      "code": 6092,
+      "name": "MarketStockSpecialEvent",
+      "msg": "The stock is affected by a special event"
+    },
+    {
+      "code": 6093,
+      "name": "NoOracleEmptySlotFound",
+      "msg": "No empty slot found for new oracle price"
     }
   ],
   "metadata": {

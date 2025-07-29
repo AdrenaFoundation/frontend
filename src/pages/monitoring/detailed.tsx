@@ -23,6 +23,7 @@ import StakingLockedTokens from '@/components/pages/monitoring/Data/StakingLocke
 import StakingRewardsWaitingToBeClaimed from '@/components/pages/monitoring/Data/StakingRewardsWaitingToBeClaimed';
 import StakingRewardVaults from '@/components/pages/monitoring/Data/StakingRewardVaults';
 import VolumeBreakdownPerToken from '@/components/pages/monitoring/Data/VolumeBreakdownPerToken';
+import { MAIN_POOL_HARDCODED } from '@/constant';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
@@ -35,6 +36,9 @@ import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import arrowDownIcon from '../../../public/images/Icons/arrow-down.svg';
+
+// TODO: Handle multiple pools
+const poolKey = MAIN_POOL_HARDCODED;
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
@@ -163,7 +167,7 @@ export default function DetailedMonitoring({
           )}
         >
           {selectedTab === 'All' || selectedTab === 'Pool' ? (
-            <AUM connected={connected} />
+            <AUM poolKey={poolKey} connected={connected} />
           ) : null}
 
           {selectedTab === 'All' || selectedTab === 'Staking' ? (

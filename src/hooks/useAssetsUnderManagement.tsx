@@ -1,10 +1,15 @@
+import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { nativeToUi } from '@/utils';
 
-export default function useAssetsUnderManagement(): number | null {
+export default function useAssetsUnderManagement({
+  poolKey,
+}: {
+  poolKey: PublicKey;
+}): number | null {
   const [aum, setAum] = useState<number | null>(null);
   const { wallet } = useSelector((s) => s.walletState);
   const connected = !!wallet;
@@ -27,7 +32,9 @@ export default function useAssetsUnderManagement(): number | null {
 
       // If connected, get the AUM by simulating a transaction
       try {
-        const aum = await window.adrena.client.getAssetsUnderManagement();
+        const aum = await window.adrena.client.getAssetsUnderManagement({
+          poolKey,
+        });
 
         if (aum === null) {
           if (retryNb >= 3) {
@@ -45,7 +52,7 @@ export default function useAssetsUnderManagement(): number | null {
         console.error('Failed to fetch AUM', error);
       }
     },
-    [connected],
+    [connected, poolKey],
   );
 
   useEffect(() => {

@@ -38,8 +38,6 @@ import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
 import { PositionInfoState, TradingInputsProps, TradingInputState } from './LongShortTradingInputs/types';
 import { calculateLimitOrderLimitPrice, calculateLimitOrderTriggerPrice } from './LongShortTradingInputs/utils';
 
-
-
 export default function LongShortTradingInputs({
   side,
   className,
@@ -49,6 +47,7 @@ export default function LongShortTradingInputs({
   allowedTokenB,
   position: openedPosition,
   wallet,
+  poolKey,
   connected,
   setTokenA,
   setTokenB,
@@ -89,7 +88,7 @@ export default function LongShortTradingInputs({
   const currentRequestRef = useRef<AbortController | null>(null);
 
   const usdcMint = window.adrena.client.getUsdcToken().mint;
-  const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
+  const usdcCustody = usdcMint && window.adrena.client.getCustodyByMint(usdcMint, poolKey);
   const usdcPrice = tokenPrices['USDC'];
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(side === 'long' ? positionInfo.custody : usdcCustody);
@@ -264,6 +263,7 @@ export default function LongShortTradingInputs({
         mint: tokenB.mint,
         collateralMint: tokenA.mint,
         swapSlippage,
+        poolKey,
       });
 
       dispatch(fetchWalletTokenBalances());
@@ -367,6 +367,7 @@ export default function LongShortTradingInputs({
           isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
           swapSlippage,
+          poolKey,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -381,6 +382,7 @@ export default function LongShortTradingInputs({
           isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
           swapSlippage,
+          poolKey,
         }));
 
       dispatch(fetchWalletTokenBalances());
@@ -404,9 +406,9 @@ export default function LongShortTradingInputs({
 
     setPositionInfo((prev) => ({
       ...prev,
-      custody: window.adrena.client.getCustodyByMint(tokenB.mint) ?? null,
+      custody: window.adrena.client.getCustodyByMint(tokenB.mint, poolKey) ?? null,
     }));
-  }, [tokenB]);
+  }, [poolKey, tokenB]);
 
   useEffect(() => {
     // If wallet not connected, then user need to connect wallet
@@ -514,6 +516,7 @@ export default function LongShortTradingInputs({
               leverage: uiLeverageToNative(inputState.leverage),
               side,
               tokenPrices,
+              poolKey,
             },
           );
         } else {
@@ -554,6 +557,7 @@ export default function LongShortTradingInputs({
               leverage: uiLeverageToNative(inputState.leverage),
               side,
               tokenPrices,
+              poolKey,
             },
           );
         }
@@ -697,7 +701,7 @@ export default function LongShortTradingInputs({
       return;
     }
 
-    const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
+    const custody = window.adrena.client.getCustodyByMint(tokenB.mint, poolKey) ?? null;
 
     const tokenPriceBTrade = tokenPrices[getTokenSymbol(tokenB.symbol)];
 
