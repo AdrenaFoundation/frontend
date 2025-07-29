@@ -86,7 +86,7 @@ export default function Modal({
   return (
     <PortalContainer>
       <motion.div
-        className="fixed w-full h-full flex justify-center items-center z-[100] overflow-y-auto"
+        className="fixed w-full h-full flex justify-center items-center z-[100] overflow-y-auto overscroll-contain"
         initial={{
           opacity: 0,
           transform: `translateY(${isMobile ? '20px' : '-20px'})`,
@@ -98,7 +98,7 @@ export default function Modal({
         }}
       >
         <div
-          className="absolute w-full h-full bg-black/70 z-[101] shadow-lg"
+          className="absolute w-full h-full bg-main/85 z-[101] shadow-lg"
           onClick={() => close()}
         />
 
@@ -162,7 +162,9 @@ export default function Modal({
 
           <div className={twMerge('relative', className)}>
             {children}{' '}
-            {!disableFade ? <div className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-secondary z-20" /> : null}
+            {!disableFade ? (
+              <div className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-secondary z-20" />
+            ) : null}
           </div>
         </motion.div>
       </motion.div>

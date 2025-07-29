@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
-import TabSelect from '@/components/common/TabSelect/TabSelect';
+import SelectOptions from '@/components/common/SelectOptions/SelectOptions';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import {
   ADX_LOCK_PERIODS,
@@ -140,10 +140,10 @@ export default function UpgradeLockedStake({
 
       <div className="w-full bg-bcolor h-[1px]" />
 
-      <div className="flex flex-col gap-5 justify-between w-full px-5 pl-6 pr-6">
+      <div className="flex flex-col gap-5 justify-between w-full pl-6 pr-6">
         <div className="mt-4">
-          <div className="flex flex-row justify-between mb-1">
-            <h5 className="ml-4"> Additional Amount</h5>
+          <div className="flex flex-row items-center justify-between mb-1">
+            <h5 className="font-interSemibold"> Additional Amount</h5>
 
             <div className="text-sm flex items-center justify-end h-6">
               <div
@@ -173,14 +173,14 @@ export default function UpgradeLockedStake({
             </div>
           </div>
 
-          <div className="relative flex flex-row w-full">
-            <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r-none">
+          <div className="relative flex flex-row w-full border border-white/10 rounded-xl overflow-hidden">
+            <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r-white/10">
               <p className="opacity-50 font-mono text-sm">
                 {lockedStake.tokenSymbol}
               </p>
             </div>
             <input
-              className="w-full bg-inputcolor border border-bcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-inputcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value
@@ -194,7 +194,7 @@ export default function UpgradeLockedStake({
         </div>
 
         <div className="mt-4">
-          <div className="flex flex-row gap-1 mb-2 ml-4">
+          <div className="flex flex-row gap-1 mb-2">
             <Image
               className="relative"
               src={lockIcon}
@@ -202,56 +202,52 @@ export default function UpgradeLockedStake({
               height={18}
               alt="lock icon"
             />
-            <h5 className="text-sm font-medium">New Lock Duration (days)</h5>
+            <h5 className="text-sm font-interSemibold">New Lock Duration (days)</h5>
           </div>
 
-          <TabSelect
-            className="font-mono"
+          <SelectOptions
             selected={lockPeriod}
-            initialSelectedIndex={lockPeriods.findIndex(
-              (x) => x.title === lockPeriod,
-            )}
-            tabs={lockPeriods}
+            options={lockPeriods}
             onClick={(title) => {
-              // Typescript not liking ADX and ALP having different types
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              setLockPeriod(title as any);
+              setLockPeriod(title);
             }}
           />
         </div>
       </div>
 
-      <div className="text-sm text-txtfade/50 ml-12 mt-4">Benefits</div>
+      <div className='px-6'>
+        <div className="text-sm opacity-30 mt-4">Benefits</div>
 
-      <div className="w-full justify-around items-center flex mt-4 flex-wrap">
-        <div className="flex flex-col items-center w-[5em] min-w-[5em] grow justify-center">
-          <div className="font-mono text-2xl">{lockPeriod}</div>
-          <div className="text-txtfade text-xs">days</div>
-        </div>
-
-        <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
-          <div className="font-mono text-2xl">{multipliers.usdc}x</div>
-          <div className="text-txtfade text-xs">USDC yield</div>
-        </div>
-
-        <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
-          <div className="font-mono text-2xl">{multipliers.adx}x</div>
-          <div className="text-txtfade text-xs">ADX yield</div>
-        </div>
-
-        {lockedStake.tokenSymbol === 'ADX' && multipliers.votes ? (
-          <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
-            <div className="font-mono text-2xl">{multipliers.votes}x</div>
-            <div className="text-txtfade text-xs">Voting power</div>
+        <div className="w-full justify-between items-center flex mt-2 flex-wrap">
+          <div className="flex flex-col items-center justify-center">
+            <div className="font-mono text-2xl">{lockPeriod}</div>
+            <div className="text-txtfade text-xs">days</div>
           </div>
-        ) : null}
+
+          <div className="flex flex-col items-center justify-center">
+            <div className="font-mono text-2xl">{multipliers.usdc}x</div>
+            <div className="text-txtfade text-xs">USDC yield</div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center">
+            <div className="font-mono text-2xl">{multipliers.adx}x</div>
+            <div className="text-txtfade text-xs">ADX yield</div>
+          </div>
+
+          {lockedStake.tokenSymbol === 'ADX' && multipliers.votes ? (
+            <div className="flex flex-col items-center justify-center">
+              <div className="font-mono text-2xl">{multipliers.votes}x</div>
+              <div className="text-txtfade text-xs">Voting power</div>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="pb-4 pl-4 pr-4 mb-4">
         <Button
           className="w-full mt-8"
           size="lg"
-          title={errorMessage ? errorMessage : '[U]pgrade'}
+          title={errorMessage ? errorMessage : 'Upgrade'}
           disabled={!!errorMessage || (lockPeriod == actualDuration && !amount)}
           onClick={(() => {
             return handleUpgradeLockedStake({

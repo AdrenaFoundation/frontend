@@ -60,47 +60,48 @@ export default function Menu({
 
   return (
     <>
-      <AnimatePresence>
+      <div
+        className={twMerge('relative', className)}
+        onClick={() => {
+          if (openMenuTriggerType !== 'click') return;
+          if (disabled) return;
+
+          setIsMenuOpen(!isMenuOpen);
+        }}
+        onMouseEnter={() => {
+          if (openMenuTriggerType !== 'hover') return;
+          if (disabled) return;
+
+          setIsMenuOpen(true);
+        }}
+        onMouseLeave={() => {
+          if (openMenuTriggerType !== 'hover') return;
+          if (disabled) return;
+
+          setIsMenuOpen(false);
+        }}
+      >
         <div
-          className={twMerge('relative', className)}
-          onClick={() => {
-            if (openMenuTriggerType !== 'click') return;
-            if (disabled) return;
-
-            setIsMenuOpen(!isMenuOpen);
-          }}
-          onMouseEnter={() => {
-            if (openMenuTriggerType !== 'hover') return;
-            if (disabled) return;
-
-            setIsMenuOpen(true);
-          }}
-          onMouseLeave={() => {
-            if (openMenuTriggerType !== 'hover') return;
-            if (disabled) return;
-
-            setIsMenuOpen(false);
-          }}
+          className={twMerge(
+            'flex h-full w-full border border-transparent',
+            (isMenuOpen || forceOpen) && withBorder
+              ? twMerge('bg-secondary', menuOpenBorderClassName)
+              : '',
+          )}
         >
-          <div
-            className={twMerge(
-              'flex h-full w-full border border-transparent',
-              (isMenuOpen || forceOpen) && withBorder
-                ? twMerge('bg-secondary', menuOpenBorderClassName)
-                : '',
-            )}
-          >
-            {trigger}
-          </div>
+          {trigger}
+        </div>
 
+        <AnimatePresence>
           {isMenuOpen || forceOpen ? (
             <motion.div
               ref={ref}
               initial="hidden"
               animate="visible"
+              exit={'hidden'}
               onClick={(e) => closeMenu(e)}
               variants={variants}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.1 }}
               className={twMerge(
                 'absolute flex flex-col bg-third overflow-hidden z-50 border mt-2 rounded-md',
                 withBorder ? 'border bg-third shadow-lg' : '',
@@ -110,18 +111,20 @@ export default function Menu({
               {children}
             </motion.div>
           ) : null}
-        </div>
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
 
-      {isDim && (isMenuOpen || forceOpen) ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="absolute top-0 left-0 w-full h-full bg-black/75 z-30"
-        />
-      ) : null}
+      <AnimatePresence>
+        {isDim && (isMenuOpen || forceOpen) ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="absolute top-0 left-0 w-full h-full bg-main/85 z-30"
+          />
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

@@ -17,10 +17,10 @@ export default function StakeRedeem({
   return (
     <div className="p-5">
       <div>
-        <div className="flex flex-row justify-between">
-          <p className="text-sm opacity-50 font-medium"> Amount</p>
+        <div className="flex flex-row items-center justify-between">
+          <p className="text-sm font-interSemibold"> Amount</p>
           <p
-            className="text-sm font-medium font cursor-pointer"
+            className="text-sm font-mono cursor-pointer"
             onClick={() => {
               if (!totalLiquidStaked) {
                 return;
@@ -34,12 +34,12 @@ export default function StakeRedeem({
               : '–'}
           </p>
         </div>
-        <div className="relative flex flex-row w-full mt-4">
+        <div className="relative flex flex-row w-full mt-2 border border-white/10 rounded-xl overflow-hidden">
           <div className="flex items-center bg-bcolor border border-bcolor rounded-l-xl px-3 border-r-none">
             <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
           </div>
           <input
-            className="w-full bg-inputcolor border rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+            className="w-full bg-inputcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
             style={{ borderColor: '#2a2a2a' }}
             type="number"
             onWheel={(e) => {

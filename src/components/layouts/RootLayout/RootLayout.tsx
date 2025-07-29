@@ -1,11 +1,11 @@
 import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
 import bookIcon from '@/../public/images/Icons/book.svg';
@@ -21,7 +21,6 @@ import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import ChatContainer from '@/components/Chat/ChatContainer';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
-import { TEAMS_MAPPING } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
@@ -30,14 +29,12 @@ import {
   VestExtended,
   WalletAdapterExtended,
 } from '@/types';
-import { addNotification } from '@/utils';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
 export default function RootLayout({
   children,
-  wallet,
   userProfile,
   userVest,
   userDelegatedVest,
@@ -53,7 +50,6 @@ export default function RootLayout({
   adapters,
 }: {
   children: ReactNode;
-  wallet: Wallet | null;
   userProfile: UserProfileExtended | null | false;
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
@@ -78,6 +74,8 @@ export default function RootLayout({
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const disableChat = useSelector((state) => state.settings.disableChat);
+  // const [isSearchUserProfilesOpen, setIsSearchUserProfilesOpen] =
+  //   useState(false);
 
   const [pages, setPages] = useState<LinksType[]>([
     { name: 'Trade', link: '/trade', icon: tradeIcon },
@@ -148,41 +146,6 @@ export default function RootLayout({
     }
   }, []);
 
-  // TODO: Remove once all teams are set
-  useEffect(() => {
-    if (!userProfile || !wallet) {
-      return;
-    }
-
-    if (userProfile.team !== TEAMS_MAPPING.DEFAULT) {
-      return;
-    }
-
-    if (
-      [
-        'Am1B44zvUodKPahohUUjdHjs4HbfhaB7vjroqxzxfy9j',
-        'EgDYVEsGJtk3pzxxP2E3ctPyUbnCgDDfXcE1cf4gHPNj',
-      ].includes(wallet.publicKey.toBase58())
-    ) {
-      addNotification({
-        title: 'Please pick your team!',
-        message: (
-          <div className="font-archivo">
-            Hello{' '}
-            <span className="text-yellow-300 font-boldy">
-              {userProfile.nickname}
-            </span>{' '}
-            please pick your team in Ranked page for S2 before the season starts
-            in few hours to be eligible for officer role. Careful if you pick
-            BONK team you may not be officer, JITO seems to have open spots.
-          </div>
-        ),
-        type: 'info',
-        duration: 'long',
-      });
-    }
-  }, [userProfile, wallet]);
-
   if (isBigScreen === null || isMobile === null) {
     return null;
   }
@@ -245,6 +208,12 @@ export default function RootLayout({
       </div>
 
       <ToastContainer />
+      <Toaster />
+
+      {/* <SearchUserProfiles
+        isOpen={isSearchUserProfilesOpen}
+        onClose={() => setIsSearchUserProfilesOpen(false)}
+      /> */}
 
       {disableChat === true ? null : (
         <ChatContainer
