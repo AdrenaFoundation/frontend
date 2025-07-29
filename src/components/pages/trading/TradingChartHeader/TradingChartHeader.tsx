@@ -1,11 +1,11 @@
 import Tippy from '@tippyjs/react';
 import Head from 'next/head';
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import Select from '@/components/common/Select/Select';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { getTokenImage, getTokenSymbol, getTokenSymbolFromChartFormat } from '@/utils';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import TradingChartHeaderStats from './TradingChartHeaderStats';
 
@@ -26,8 +26,12 @@ export default function TradingChartHeader({
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
 
-  const numberLong = allActivePositions?.filter((p) => p.side === 'long').length;
-  const numberShort = allActivePositions?.filter((p) => p.side === 'short').length;
+  const numberLong = allActivePositions?.filter(
+    (p) => p.side === 'long',
+  ).length;
+  const numberShort = allActivePositions?.filter(
+    (p) => p.side === 'short',
+  ).length;
 
   return (
     <>
@@ -40,43 +44,76 @@ export default function TradingChartHeader({
       </Head>
       <div
         className={twMerge(
-          'flex flex-col sm:flex-row items-center justify-between sm:gap-3 z-30 bg-main border-b p-1',
+          'flex flex-col md:flex-row items-center justify-between md:gap-3 z-30 bg-main border-b',
           className,
         )}
       >
-        <div className="flex items-center min-w-fit border-b sm:border-b-0 sm:border-r border-bcolor">
-          <Select
-            className="w-full"
-            selectedClassName="py-1 px-2"
-            selected={`${getTokenSymbol(selected.symbol)} / USD`}
-            options={tokenList.map((token) => {
-              return {
-                title: `${getTokenSymbol(token.symbol)} / USD`,
-                img: getTokenImage(token),
-              };
-            })}
-            onSelect={(opt: string) => {
-              const selectedTokenSymbol = getTokenSymbolFromChartFormat(opt);
-              // Force linting, you cannot not find the token in the list
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const token = tokenList.find(
-                (t) => getTokenSymbol(t.symbol) === selectedTokenSymbol,
-              )!;
+        <div className="flex items-center justify-between min-w-fit w-full border-b p-1 md:border-b-0 border-bcolor">
+          <div className="flex flex-row items-center gap-3 p-1">
+            {tokenList
+              .map((token) => {
+                return {
+                  title: `${getTokenSymbol(token.symbol)}`,
+                  img: getTokenImage(token),
+                };
+              })
+              .map((option) => (
+                <div
+                  className={twMerge(
+                    'flex flex-row items-center gap-2 border rounded-lg p-1 px-3 pr-5 cursor-pointer opacity-50 hover:opacity-100 hover:bg-third transition duration-300',
+                    getTokenSymbol(selected.symbol) === option.title
+                      ? 'opacity-100 bg-third'
+                      : '',
+                  )}
+                  onClick={() => {
+                    // Force linting, you cannot not find the token in the list
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    const token = tokenList.find(
+                      (t) => getTokenSymbol(t.symbol) === option.title,
+                    )!;
 
-              if (!token) return;
+                    if (!token) return;
 
-              onChange(token);
-            }}
-            align="left"
-          />
+                    onChange(token);
+                  }}
+                  key={option.title}
+                >
+                  <Image
+                    src={option.img}
+                    alt={option.title}
+                    width="16"
+                    height="16"
+                  />
+                  <p
+                    className={twMerge(
+                      'text-base font-boldy',
+                      getTokenSymbol(selected.symbol) === option.title &&
+                        'font-interBold',
+                    )}
+                  >
+                    {option.title}
+                  </p>
+                </div>
+              ))}
+          </div>
           {/* Long/Short positions */}
           {numberLong && numberShort ? (
             <div className="flex sm:hidden gap-0.5">
-              <Tippy content="Long positions" className="flex flex-col items-center">
-                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">{numberLong}</span>
+              <Tippy
+                content="Long positions"
+                className="flex flex-col items-center"
+              >
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                  {numberLong}
+                </span>
               </Tippy>
-              <Tippy content="Short positions" className="flex flex-col items-center">
-                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">{numberShort}</span>
+              <Tippy
+                content="Short positions"
+                className="flex flex-col items-center"
+              >
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                  {numberShort}
+                </span>
               </Tippy>
             </div>
           ) : null}
@@ -136,7 +173,12 @@ export default function TradingChartHeader({
                </div>
              </div> */}
 
-        <TradingChartHeaderStats selected={selected} numberLong={numberLong} numberShort={numberShort} />
+        <TradingChartHeaderStats
+          selected={selected}
+          numberLong={numberLong}
+          numberShort={numberShort}
+          className="p-1"
+        />
         {/* <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
           <FormatNumber
             nb={selectedTokenPrice}
@@ -213,7 +255,7 @@ export default function TradingChartHeader({
             </div>
           </div>
         </div> */}
-      </div >
+      </div>
     </>
   );
 }

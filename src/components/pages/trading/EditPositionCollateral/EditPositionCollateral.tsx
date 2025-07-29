@@ -854,7 +854,7 @@ export default function EditPositionCollateral({
                   Withdraw in
                 </div>
 
-                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer' onClick={() => setIsPickTokenModalOpen(true)}>
+                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer rounded-lg' onClick={() => setIsPickTokenModalOpen(true)}>
                   <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
                     <Image src={chevronDownIcon} alt="chevron down" />
                   </div>

@@ -27,7 +27,11 @@ function onchainAccountData({
       </div>
     ),
     value: (
-      <OnchainAccountInfo className="md:ml-auto text-sm" address={address} shorten={true} />
+      <OnchainAccountInfo
+        className="md:ml-auto text-sm"
+        address={address}
+        shorten={true}
+      />
     ),
   };
 }
@@ -47,9 +51,9 @@ export default function UserRelatedAdrenaAccounts({
 }) {
   const [data, setData] = useState<
     | {
-      rowTitle: ReactNode;
-      value: ReactNode;
-    }[]
+        rowTitle: ReactNode;
+        value: ReactNode;
+      }[]
     | null
   >(null);
 
@@ -107,8 +111,9 @@ export default function UserRelatedAdrenaAccounts({
     positions?.forEach((position) => {
       data.push(
         onchainAccountData({
-          title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
-            } Position`,
+          title: `${getTokenSymbol(position.token.symbol)} ${
+            position.side === 'long' ? 'Long' : 'Short'
+          } Position`,
           address: position.pubkey,
           program: 'Adrena',
         }),
@@ -122,17 +127,24 @@ export default function UserRelatedAdrenaAccounts({
 
   if (!data) return null;
 
-  return (<div className={twMerge("flex w-full items-center justify-center rounded-tl-none rounded-tr-none rounded-bl-xl rounded-br-xl overflow-hidden", className)}>
-    <Table
-      className='rounded-none sm:pl-8 sm:pr-6 bg-transparent border-0'
-      rowHovering={true}
-      breakpoint="0px"
-      rowTitleWidth="70%"
-      data={data}
-      rowTitleClassName="text-xs"
-      rowClassName='text-xs'
-      pagination={true}
-      nbItemPerPage={10}
-    />
-  </div>);
+  return (
+    <div
+      className={twMerge(
+        'flex w-full items-center justify-center rounded-tl-none rounded-tr-none rounded-bl-xl rounded-br-xl overflow-hidden',
+        className,
+      )}
+    >
+      <Table
+        className="rounded-none bg-transparent border-0 pb-0"
+        rowHovering={true}
+        breakpoint="0px"
+        rowTitleWidth="70%"
+        data={data}
+        rowTitleClassName="text-sm p-1"
+        rowClassName="text-sm"
+        pagination={true}
+        nbItemPerPage={10}
+      />
+    </div>
+  );
 }

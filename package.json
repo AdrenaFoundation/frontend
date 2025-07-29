@@ -11,6 +11,8 @@
   "dependencies": {
     "@bonfida/spl-name-service": "^3.0.11",
     "@coral-xyz/anchor": "=0.29.0",
+    "@dialectlabs/react-sdk-blockchain-solana": "^3.0.0-beta.6",
+    "@dialectlabs/react-ui": "^3.0.0-beta.6",
     "@emotion/react": "=11.14.0",
     "@emotion/styled": "=11.14.0",
     "@jup-ag/api": "^6.0.42",
@@ -57,6 +59,7 @@
     "react-toastify": "=10.0.7-5",
     "react-transition-group": "=4.4.5",
     "recharts": "=2.15.1",
+    "sonner": "^2.0.6",
     "tailwind-merge": "=2.5.5",
     "tailwindcss": "=3.4.16",
     "tweetnacl": "^1.0.3",
