@@ -6,7 +6,8 @@ import { Connection, Transaction } from '@solana/web3.js';
 import { AdrenaClient } from '@/AdrenaClient';
 import IConfiguration from '@/config/IConfiguration';
 import { DEFAULT_PERPS_USER } from '@/constant';
-import { IDL as ADRENA_IDL } from '@/target/adrena';
+import { Adrena } from '@/target/adrena';
+import ADRENA_IDL from '@/target/adrena.json';
 
 import { SolanaExplorerOptions } from './types';
 
@@ -43,7 +44,11 @@ export function createReadOnlyAdrenaProgram(connection: Connection) {
     }).bind(readOnlyProvider);
   }
 
-  return new Program(ADRENA_IDL, AdrenaClient.programId, readOnlyProvider);
+  return new Program(
+    ADRENA_IDL as unknown as Adrena,
+    AdrenaClient.programId,
+    readOnlyProvider,
+  );
 }
 
 // Initialize all objects that are required to launch the app

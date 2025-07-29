@@ -724,6 +724,13 @@ export class AdrenaClient {
     config: IConfiguration,
   ): Promise<AdrenaClient> {
     const poolPda = AdrenaClient.getPoolPda('main-pool');
+
+    console.log(' Pool Loading:');
+
+    await AdrenaClient.loadMainPool(readonlyAdrenaProgram, poolPda);
+
+    console.log('Main Pool Loaded:');
+
     const mainPoolPromise = AdrenaClient.loadMainPool(
       readonlyAdrenaProgram,
       poolPda,
