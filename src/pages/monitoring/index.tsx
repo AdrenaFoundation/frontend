@@ -74,7 +74,7 @@ export default function Monitoring(pageProps: PageProps) {
     livePositions: 'Live Positions',
     userProfiles: 'Traders',
     tokenomics: 'Tokenomics',
-    allStaking: 'Staking',
+    allStaking: 'ADX Staking',
     flows: 'Flows',
     walletDigger: 'Wallet Digger',
     lookupTable: 'ALT',

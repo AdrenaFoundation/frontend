@@ -8,6 +8,7 @@ import AllVestingChart from '@/components/pages/global/AllVestingChart/AllVestin
 import { EmissionsChart } from '@/components/pages/global/Emissions/EmissionsChart';
 import TokenomicsPieChart from '@/components/pages/monitoring/Data/Tokenomics';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXHolderCount from '@/hooks/useADXHolderCount';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useStakingAccount from '@/hooks/useStakingAccount';
@@ -20,15 +21,22 @@ import dexscreenerImg from '../../../public/images/dexscreener.png';
 import jupImg from '../../../public/images/jup-logo.png';
 import raydiumImg from '../../../public/images/raydium.png';
 
-const MAX_ADX_SUPPLY = 1_000_000_000;
-
 export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
+
     const totalSupplyADX = useADXTotalSupply();
+
     const {
         stakingAccount: adxStakingAccount,
     } = useStakingAccount(window.adrena.client.lmTokenMint);
+
+    const circulatingSupplyADX = useADXCirculatingSupply({
+        totalSupplyADX,
+        adxStakingAccountLockedTokens: adxStakingAccount?.nbLockedTokens ?? null,
+    });
+
     const vests = useVests();
+
     const [{
         vestingClaimed,
         vestingClaimable,
@@ -38,7 +46,14 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
         vestingClaimable: 0,
         vestingVested: 0,
     });
+
     const adxHolderCount = useADXHolderCount();
+
+    useEffect(() => {
+        (async () => {
+
+        })();
+    }, [totalSupplyADX, adxStakingAccount]);
 
     const marketCap = useMemo(() => {
         if (!tokenPriceADX || !totalSupplyADX) return 0;
@@ -47,16 +62,10 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
     }, [tokenPriceADX, totalSupplyADX]);
 
     const fullyDilutedValue = useMemo(() => {
-        if (!tokenPriceADX) return 0;
+        if (!tokenPriceADX || !circulatingSupplyADX) return 0;
 
-        return tokenPriceADX * MAX_ADX_SUPPLY;
-    }, [tokenPriceADX]);
-
-    const circulatingSupply = useMemo(() => {
-        if (!adxStakingAccount || !totalSupplyADX) return 0;
-
-        return totalSupplyADX - nativeToUi(adxStakingAccount.nbLockedTokens, window.adrena.client.adxToken.decimals);
-    }, [adxStakingAccount, totalSupplyADX]);
+        return tokenPriceADX * circulatingSupplyADX;
+    }, [circulatingSupplyADX, tokenPriceADX]);
 
     useEffect(() => {
         const calculateVestingData = () => {
@@ -130,11 +139,11 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                     />
 
                     <NumberDisplay
-                        title="MAX SUPPLY"
-                        nb={MAX_ADX_SUPPLY}
+                        title="CIRCULATING SUPPLY"
+                        nb={circulatingSupplyADX}
                         format="number"
-                        precision={0}
                         suffix='ADX'
+                        precision={0}
                         className="border-0 min-w-[12em]"
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                         headerClassName="pb-2"
@@ -144,18 +153,6 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                     <NumberDisplay
                         title="CURRENT SUPPLY"
                         nb={totalSupplyADX}
-                        format="number"
-                        suffix='ADX'
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
-
-                    <NumberDisplay
-                        title="CIRCULATING SUPPLY"
-                        nb={circulatingSupply}
                         format="number"
                         suffix='ADX'
                         precision={0}

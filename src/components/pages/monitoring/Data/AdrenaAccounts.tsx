@@ -299,13 +299,13 @@ export default function AdrenaAccounts({
           {
             rowTitle: (
               <div className="flex items-center font-boldy">
-                Referrer Fees Vault <TitleAnnotation text="PDA" />
+                ADX Token Treasury <TitleAnnotation text="PDA" />
               </div>
             ),
             value: (
               <OnchainAccountInfo
                 className="md:ml-auto"
-                address={window.adrena.client.getReferrerRewardTokenVault()}
+                address={window.adrena.client.lmTokenTreasury}
               />
             ),
           },
