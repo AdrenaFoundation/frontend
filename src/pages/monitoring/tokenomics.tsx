@@ -32,7 +32,6 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
 
     const circulatingSupplyADX = useADXCirculatingSupply({
         totalSupplyADX,
-        adxStakingAccountLockedTokens: adxStakingAccount?.nbLockedTokens ?? null,
     });
 
     const vests = useVests();
@@ -56,16 +55,16 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
     }, [totalSupplyADX, adxStakingAccount]);
 
     const marketCap = useMemo(() => {
-        if (!tokenPriceADX || !totalSupplyADX) return 0;
-
-        return tokenPriceADX * totalSupplyADX;
-    }, [tokenPriceADX, totalSupplyADX]);
-
-    const fullyDilutedValue = useMemo(() => {
         if (!tokenPriceADX || !circulatingSupplyADX) return 0;
 
         return tokenPriceADX * circulatingSupplyADX;
-    }, [circulatingSupplyADX, tokenPriceADX]);
+    }, [tokenPriceADX, circulatingSupplyADX]);
+
+    const fullyDilutedValue = useMemo(() => {
+        if (!tokenPriceADX || !totalSupplyADX) return 0;
+
+        return tokenPriceADX * totalSupplyADX;
+    }, [totalSupplyADX, tokenPriceADX]);
 
     useEffect(() => {
         const calculateVestingData = () => {
@@ -147,11 +146,12 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                         className="border-0 min-w-[12em]"
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                         headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
+                        titleClassName="text-[0.4em]"
+                        tippyInfo='Circulating supply is all the distributed ADX tokens.'
                     />
 
                     <NumberDisplay
-                        title="CURRENT SUPPLY"
+                        title="TOTAL SUPPLY"
                         nb={totalSupplyADX}
                         format="number"
                         suffix='ADX'

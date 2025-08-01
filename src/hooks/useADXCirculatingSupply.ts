@@ -1,7 +1,4 @@
-import { BN } from '@coral-xyz/anchor';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-import { nativeToUi } from '@/utils';
 
 let interval: NodeJS.Timeout | null = null;
 
@@ -9,10 +6,8 @@ const CIRCULATING_SUPPLY_LOADING_INTERVAL_IN_MS = 30_000;
 
 export default function useADXCirculatingSupply({
   totalSupplyADX,
-  adxStakingAccountLockedTokens,
 }: {
   totalSupplyADX: number | null;
-  adxStakingAccountLockedTokens: BN | null;
 }) {
   const [lmTokenTreasuryBalance, setLmTokenTreasuryBalance] = useState<
     number | null
@@ -57,21 +52,13 @@ export default function useADXCirculatingSupply({
     if (
       !window.adrena.client.readonlyConnection ||
       totalSupplyADX === null ||
-      adxStakingAccountLockedTokens === null ||
       lmTokenTreasuryBalance === null
     ) {
       return null;
     }
 
-    return (
-      totalSupplyADX -
-      lmTokenTreasuryBalance -
-      nativeToUi(
-        adxStakingAccountLockedTokens,
-        window.adrena.client.adxToken.decimals,
-      )
-    );
-  }, [adxStakingAccountLockedTokens, lmTokenTreasuryBalance, totalSupplyADX]);
+    return totalSupplyADX - lmTokenTreasuryBalance;
+  }, [lmTokenTreasuryBalance, totalSupplyADX]);
 
   return circulatingSupply;
 }
