@@ -1,8 +1,9 @@
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { setChatWebSocketStatus } from '@/actions/statusActions';
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import supabaseAnonClient from '@/supabaseAnonClient';
 
 interface UseChatroomsReturn {
@@ -44,6 +45,7 @@ export const useChatrooms = ({
   isChatOpen: boolean;
   setIsChatOpen: (isOpen: boolean) => void;
 }): UseChatroomsReturn => {
+  const dispatch = useDispatch();
   const { wallet } = useSelector((state) => state.walletState);
   const walletAddress = wallet?.walletAddress || null;
 
@@ -415,6 +417,7 @@ export const useChatrooms = ({
         if (status !== 'SUBSCRIBED') {
           console.error('Failed to subscribe to global chat messages:', err);
           setIsChatOpen(false);
+          dispatch(setChatWebSocketStatus(false));
         }
       });
     channelRef.current = channel;

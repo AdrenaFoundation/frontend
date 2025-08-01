@@ -1,7 +1,8 @@
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useSelector } from '@/store/store';
+import { setNotificationsWebSocketStatus } from '@/actions/statusActions';
+import { useDispatch, useSelector } from '@/store/store';
 import supabaseAnonClient from '@/supabaseAnonClient';
 import { AdrenaNotificationData } from '@/types';
 
@@ -23,6 +24,8 @@ export const useNotifications = (
   const enableDialectNotifications = useSelector(
     (state) => state.settings.enableDialectNotifications,
   );
+
+  const dispatch = useDispatch();
 
   const limit = 50; // Default limit
 
@@ -147,6 +150,8 @@ export const useNotifications = (
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           console.log('Subscribed to notifications channel');
+        } else {
+          dispatch(setNotificationsWebSocketStatus(false));
         }
       });
 

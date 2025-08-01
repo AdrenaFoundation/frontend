@@ -10,5 +10,5 @@ export default function Home() {
     router.push('/trade');
   }, [router]);
 
-  return <main className="w-full h-full flex" />;
+  return <main className="w-full h-full flex mb-10" />;
 }
