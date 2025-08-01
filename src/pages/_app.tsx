@@ -299,6 +299,7 @@ function AppComponent({
         setCustomRpcUrl={setCustomRpcUrl}
         setFavoriteRpc={setFavoriteRpc}
         adapters={adapters}
+        mainPool={mainPool}
       >
         {
           <TermsAndConditionsModal
