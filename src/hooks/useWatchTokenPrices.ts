@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 
+import { setTokenPricesWebSocketStatus } from '@/actions/statusActions';
 import { setTokenPrice } from '@/actions/tokenPrices';
 import DataApiClient from '@/DataApiClient';
 import { useDispatch } from '@/store/store';
@@ -37,6 +38,7 @@ export default function useWatchTokenPrices() {
         },
       );
     } catch (error) {
+      dispatch(setTokenPricesWebSocketStatus(false));
       console.error('Error loading oracle prices:', error);
     }
   }, [dispatch]);
