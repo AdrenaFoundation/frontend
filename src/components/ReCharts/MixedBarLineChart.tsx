@@ -12,7 +12,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import { AxisDomain, DataKey } from 'recharts/types/util/types';
+import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 
 import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency } from '@/utils';
@@ -61,7 +61,7 @@ export default function MixedBarLineChart<T extends string>({
     gmt?: number;
     total?: boolean;
     events?: AdrenaEvent[];
-    yAxisBarScale?: 'linear' | 'sqrt';
+    yAxisBarScale: ScaleType;
 }) {
     const [hiddenLabels, setHiddenLabels] = React.useState<
         DataKey<string | number>[]

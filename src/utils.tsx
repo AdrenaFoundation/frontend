@@ -400,6 +400,7 @@ export const DEFAULT_SETTINGS = {
   disableFriendReq: false,
   enableDialectNotifications: false,
   enableAdrenaNotifications: true,
+  useSqrtScaleForVolumeAndFeeChart: true,
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {
