@@ -22,8 +22,6 @@ export default function useADXJupiterInfo(): JupiterInfo | null {
                 headers: { Accept: "application/json" },
             })).json())[0];
 
-            console.log('RES', res);
-
             setJupiterInfo({
                 liquidity: res.liquidity,
                 native: res,
