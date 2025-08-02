@@ -14,6 +14,7 @@ import UtilizationChart from '@/components/pages/global/UtilizationChart/Utiliza
 import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
 import DataApiClient from '@/DataApiClient';
 import { PoolInfo } from '@/hooks/usePoolInfo';
+import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
 export default function BasicMonitoring({
@@ -31,6 +32,8 @@ export default function BasicMonitoring({
     lp: number;
     lm: number;
   } | null>(null);
+
+  const useSqrtScaleForVolumeAndFeeChart = useSelector((state) => state.settings.useSqrtScaleForVolumeAndFeeChart);
 
   useEffect(() => {
     if (view !== 'lite') return;
@@ -173,15 +176,14 @@ export default function BasicMonitoring({
       {
         view === 'lite' ?
           <StyledContainer className="flex gap-6">
-
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <AumChart />
-              <VolumeBarChart isSmallScreen={false} />
+              <VolumeBarChart isSmallScreen={false} yAxisBarScale={useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'} />
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <UtilizationChart />
-              <FeesBarChart isSmallScreen={isSmallScreen} />
+              <FeesBarChart isSmallScreen={isSmallScreen} yAxisBarScale={useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'} />
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">

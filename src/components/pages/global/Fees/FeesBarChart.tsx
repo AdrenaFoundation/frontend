@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { ScaleType } from 'recharts/types/util/types';
 
 import Loader from '@/components/Loader/Loader';
 import MixedBarLineChart from '@/components/ReCharts/MixedBarLineChart';
@@ -8,9 +9,10 @@ import { RechartsData } from '@/types';
 
 interface FeesChartProps {
   isSmallScreen: boolean;
+  yAxisBarScale: ScaleType;
 }
 
-export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
+export default function FeesBarChart({ isSmallScreen, yAxisBarScale }: FeesChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
@@ -258,7 +260,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       isSmallScreen={isSmallScreen}
       total={true}
       events={ADRENA_EVENTS}
-      yAxisBarScale="sqrt"
+      yAxisBarScale={yAxisBarScale}
     />
   );
 }
