@@ -10,6 +10,7 @@ import TokenomicsPieChart from '@/components/pages/monitoring/Data/Tokenomics';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXHolderCount from '@/hooks/useADXHolderCount';
+import useADXJupiterInfo from '@/hooks/useADXJupiterInfo';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useVests from '@/hooks/useVests';
@@ -20,11 +21,14 @@ import coingeckoImg from '../../../public/images/coingecko.png';
 import dexscreenerImg from '../../../public/images/dexscreener.png';
 import jupImg from '../../../public/images/jup-logo.png';
 import raydiumImg from '../../../public/images/raydium.png';
+import rugcheckImg from '../../../public/images/rugcheck.jpg';
 
 export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
     const totalSupplyADX = useADXTotalSupply();
+
+    const adxJupiterInfo = useADXJupiterInfo();
 
     const {
         stakingAccount: adxStakingAccount,
@@ -146,8 +150,8 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                         className="border-0 min-w-[12em]"
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                         headerClassName="pb-2"
-                        titleClassName="text-[0.4em]"
-                        tippyInfo='Circulating supply is all the distributed ADX tokens.'
+                        titleClassName="sm:text-[0.85em]"
+                        tippyInfo='All the distributed ADX tokens'
                     />
 
                     <NumberDisplay
@@ -171,6 +175,18 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                         headerClassName="pb-2"
                         titleClassName="text-[0.7em] sm:text-[0.7em]"
+                    />
+
+                    <NumberDisplay
+                        title="LIQUIDITY"
+                        nb={adxJupiterInfo?.liquidity ?? null}
+                        format="currency"
+                        precision={0}
+                        className="border-0 min-w-[12em]"
+                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                        headerClassName="pb-2"
+                        titleClassName="sm:text-[0.85em]"
+                        tippyInfo='Total liquidity available through Jupiter aggregator'
                     />
                 </div>
             </StyledContainer>
@@ -245,6 +261,21 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                 />
 
                                 <div className='text-sm font-boldy'>Jupiter</div>
+                            </div>
+
+                            <div className='flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer'>
+                                <Image
+                                    src={rugcheckImg}
+                                    height={60}
+                                    width={60}
+                                    alt="rugcheck"
+                                    className='border-2'
+                                    onClick={() => {
+                                        window.open('https://rugcheck.xyz/tokens/AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw');
+                                    }}
+                                />
+
+                                <div className='text-sm font-boldy'>Rugcheck</div>
                             </div>
                         </div>
 
