@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
 import { useSelector } from '@/store/store';
@@ -15,6 +16,9 @@ const adxColor = '#f96a6a';
 export default function StakingChart() {
   const { allStakingStats } = useAllStakingStats();
   const adxTotalSupply = useADXTotalSupply();
+  const adxCirculatingSupply = useADXCirculatingSupply({
+    totalSupplyADX: adxTotalSupply,
+  });
 
   const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
@@ -25,7 +29,7 @@ export default function StakingChart() {
   }[] | null>(null);
 
   useEffect(() => {
-    if (!allStakingStats || !adxTotalSupply) {
+    if (!allStakingStats || !adxCirculatingSupply) {
       setChartData(null);
       return;
     }
@@ -37,12 +41,12 @@ export default function StakingChart() {
     }[] = [
         {
           name: 'liquid',
-          ADX: (adxTotalSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked) * 100 / adxTotalSupply,
-          ADXAmount: adxTotalSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked,
+          ADX: (adxCirculatingSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked) * 100 / adxCirculatingSupply,
+          ADXAmount: adxCirculatingSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked,
         },
         {
           name: '0d',
-          ADX: allStakingStats.byDurationByAmount.ADX.liquid * 100 / adxTotalSupply,
+          ADX: allStakingStats.byDurationByAmount.ADX.liquid * 100 / adxCirculatingSupply,
           ADXAmount: allStakingStats.byDurationByAmount.ADX.liquid,
         },
       ];
@@ -50,13 +54,13 @@ export default function StakingChart() {
     Object.entries(allStakingStats.byDurationByAmount.ADX.locked).forEach(([lockedDuration, lockedAmount]) => {
       data.push({
         name: lockedDuration + 'd',
-        ADX: lockedAmount.total * 100 / adxTotalSupply,
+        ADX: lockedAmount.total * 100 / adxCirculatingSupply,
         ADXAmount: lockedAmount.total,
       });
     });
 
     setChartData(data);
-  }, [adxTotalSupply, allStakingStats]);
+  }, [adxCirculatingSupply, allStakingStats]);
 
   if (!chartData) {
     return (
@@ -96,7 +100,7 @@ export default function StakingChart() {
                         >
                           {formatPercentage(Number(item.value), 2)}
 
-                          <div className='font-boldy'>of total supply</div>
+                          <div className='font-boldy'>of circulating supply</div>
                         </div>
 
                         <div
@@ -140,8 +144,6 @@ export default function StakingChart() {
             }
             cursor={false}
           />
-
-          <Legend wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }} />
 
           <Bar
             type="monotone"
