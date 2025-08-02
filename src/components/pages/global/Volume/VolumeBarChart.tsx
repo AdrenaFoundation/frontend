@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { ScaleType } from 'recharts/types/util/types';
 
 import Loader from '@/components/Loader/Loader';
 import MixedBarLineChart from '@/components/ReCharts/MixedBarLineChart';
@@ -8,9 +9,10 @@ import { RechartsData } from '@/types';
 
 interface VolumeChartProps {
   isSmallScreen: boolean;
+  yAxisBarScale: ScaleType;
 }
 
-export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
+export default function VolumeBarChart({ isSmallScreen, yAxisBarScale }: VolumeChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
@@ -201,7 +203,7 @@ export default function VolumeBarChart({ isSmallScreen }: VolumeChartProps) {
       events={ADRENA_EVENTS}
       isSmallScreen={isSmallScreen}
       total={false}
-      yAxisBarScale="sqrt"
+      yAxisBarScale={yAxisBarScale}
     />
   );
 }

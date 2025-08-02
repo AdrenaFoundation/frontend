@@ -205,6 +205,23 @@ export default function Settings({
             size="small"
           />
         </div>
+
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-sm font-boldy opacity-50 w-full">
+            Use Sqrt scale for volume & fee chart
+          </p>
+          <Switch
+            checked={settings.useSqrtScaleForVolumeAndFeeChart}
+            onChange={() => {
+              dispatch(
+                setSettings({
+                  useSqrtScaleForVolumeAndFeeChart: !settings.useSqrtScaleForVolumeAndFeeChart,
+                }),
+              );
+            }}
+            size="small"
+          />
+        </div>
       </div>
     </>
   );
