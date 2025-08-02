@@ -15,6 +15,7 @@ import {
     FactionsLeaderboardsData,
     FactionsLeaderboardsRawAPI,
     GetPositionStatsReturnType,
+    LpIntegrationsResponse,
     MutagenLeaderboardData,
     MutagenLeaderboardRawAPI,
     PoolInfoResponse,
@@ -974,6 +975,56 @@ export default class DataApiClient {
             } as TraderProfileInfo));
         } catch (e) {
             console.error('Error fetching trader Info:', e);
+            return null;
+        }
+    }
+
+    /**
+     * Get Pool Info data preserving the exact format expected by components
+     * @param dataEndpoint API endpoint to use ('poolinfo', 'poolinfohourly', 'poolinfodaily')
+     * @param queryParams Additional query parameters to include
+     * @param dataPeriod Number of days to look back
+     * @returns Data part of the API response or null on error
+    */
+    public static async getLpIntegrations(
+        {
+            dataEndpoint,
+            queryParams,
+            dataPeriod,
+            allHistoricalData,
+        }: {
+            dataEndpoint: string,
+            queryParams: string,
+            dataPeriod: number,
+            allHistoricalData?: boolean
+        }): Promise<LpIntegrationsResponse | null> {
+        try {
+            let startDate: Date;
+
+            if (allHistoricalData) {
+                startDate = new Date('2023-09-25T00:00:00.000Z');
+            } else {
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - dataPeriod);
+            }
+
+            const url = `https://datapi.adrena.xyz/${dataEndpoint}?${queryParams}&start_date=${startDate.toISOString()}&end_date=${new Date().toISOString()}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                return null;
+            }
+
+            const apiBody = await response.json();
+
+            if (!apiBody.success) {
+                return null;
+            }
+
+            return apiBody.data;
+        } catch (error) {
+            console.error('Error fetching pool info:', error);
             return null;
         }
     }

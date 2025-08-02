@@ -1704,6 +1704,18 @@ export type TraderByVolumeInfo = {
   totalVolume: number;
 };
 
+export type LpIntegrationsResponse = {
+  snapshot_timestamp: string[];
+  lp_token_price_usd: number[];
+  lp_token_supply: number[];
+  kamino_lp_amount: number[];
+  carrot_lp_amount: number[];
+  loopscale_lp_amount: number[];
+  exponent_finance_lp_amount: number[];
+  startDate: string;
+  endDate: string;
+};
+
 // Update PoolInfoResponse to match what getPoolInfo returns (just the data part)
 export type PoolInfoResponse = {
   aum_usd?: number[];
