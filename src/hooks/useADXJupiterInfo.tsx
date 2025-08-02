@@ -9,14 +9,14 @@ export type JupiterInfo = {
     native: unknown;
 };
 
-const url = new URL("https://lite-api.jup.ag/tokens/v2/search");
-url.searchParams.set("query", window.adrena.client.adxToken.mint.toBase58());
-
 export default function useADXJupiterInfo(): JupiterInfo | null {
     const [JupiterInfo, setJupiterInfo] = useState<JupiterInfo | null>(null);
 
     const loadJupiterInfo = useCallback(async () => {
         try {
+            const url = new URL("https://lite-api.jup.ag/tokens/v2/search");
+            url.searchParams.set("query", window.adrena.client.lmTokenMint.toBase58());
+
             const res = (await (await fetch(url.toString(), {
                 method: "GET",
                 headers: { Accept: "application/json" },
