@@ -36,7 +36,7 @@ export default function StakedBarRechart<T extends string>({
   total,
   events,
 }: {
-  title: string;
+  title: ReactNode;
   data: RechartsData[];
   labels: {
     name: string;
@@ -62,6 +62,13 @@ export default function StakedBarRechart<T extends string>({
   >([]);
 
   const formatYAxis = (tickItem: number) => {
+    if (formatY === 'percentage') {
+      if (tickItem === 0) return '0%';
+      if (tickItem >= 100) return '100%';
+
+      return `${tickItem * 100}%`;
+    }
+
     return formatGraphCurrency({ tickItem, maxDecimals: 0 });
   };
 
@@ -94,7 +101,7 @@ export default function StakedBarRechart<T extends string>({
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <BarChart data={data} stackOffset='expand'>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="time" fontSize="12" />
