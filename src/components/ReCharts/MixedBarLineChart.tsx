@@ -21,7 +21,7 @@ import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTi
 import FormatNumber from '../Number/FormatNumber';
 import PeriodSelector from './PeriodSelector';
 
-interface ChartLabel {
+export interface ChartLabel {
     name: string;
     color?: string;
     type?: 'bar' | 'line';

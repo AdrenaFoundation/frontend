@@ -153,6 +153,7 @@ export default function LineRechartCohorts({
   data,
   labels,
   type,
+  hideLegend = false,
 }: {
   data: RechartsData[];
   labels: {
@@ -160,6 +161,7 @@ export default function LineRechartCohorts({
     color?: string;
   }[];
   type: 'users' | 'volumes' | 'trades';
+  hideLegend: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -204,7 +206,7 @@ export default function LineRechartCohorts({
           cursor={false}
         />
 
-        {!isMobile && (
+        {!isMobile && !hideLegend && (
           <Legend
             onClick={(e) => {
               setHiddenLabels(() => {

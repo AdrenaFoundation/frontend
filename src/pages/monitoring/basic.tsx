@@ -5,6 +5,7 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
+import DefilamaProtocolFeesChart from '@/components/pages/global/DefilamaProtocolFeesChart/DefilamaProtocolFeesChart';
 import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
@@ -201,6 +202,9 @@ export default function BasicMonitoring({
               <RealizedPnlChart isSmallScreen={isSmallScreen} />
             </div>
 
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <DefilamaProtocolFeesChart isSmallScreen={isSmallScreen} />
+            </div>
           </StyledContainer >
           : null}
     </div >
