@@ -97,7 +97,7 @@ export default function DefilamaProtocolFeesChart({ }: FeesChartProps) {
 
   return (
     <StakedBarRecharts
-      title={<div className='flex'>
+      title={<div className='flex flex-col'>
         <Tippy content="Powered by DefiLlama API" placement="auto">
           <div className='flex gap-2 items-center'>
             <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' />
@@ -105,6 +105,12 @@ export default function DefilamaProtocolFeesChart({ }: FeesChartProps) {
             <h2>SOLANA PERPS FEES</h2>
           </div>
         </Tippy>
+
+        <div className='text-xxs lowercase opacity-30 cursor-pointer hover:opacity-60'>
+          Source: <a href="https://defillama.com/fees/chain/solana?category=Derivatives" target='_blank'>
+            https://defillama.com/fees/chain/solana?category=Derivatives
+          </a>
+        </div>
       </div>}
       subValue={0}
       data={chartData}
