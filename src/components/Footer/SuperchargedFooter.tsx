@@ -2,16 +2,19 @@ import { Connection } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
 import chatIcon from '@/../public/images/chat-text.svg';
 import discorLogo from '@/../public/images/discord.png';
+import genesisTimerBg from '@/../public/images/genesis-timer-bg.png';
 import githubIcon from '@/../public/images/github.svg';
 import bookIcon from '@/../public/images/Icons/book.svg';
 import documentIcon from '@/../public/images/Icons/document.svg';
 import fuelIcon from '@/../public/images/Icons/fuel-pump-fill.svg';
+import pplIcon from '@/../public/images/Icons/person-fill.svg';
 import searchIcon from '@/../public/images/Icons/search-user.svg';
 import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import offsideLabsLogo from '@/../public/images/offside-labs-logo.svg';
@@ -24,6 +27,7 @@ import { PageProps } from '@/types';
 import { formatNumber } from '@/utils';
 
 import ChatContainer from '../Chat/ChatContainer';
+import LiveIcon from '../common/LiveIcon/LiveIcon';
 import FooterAnnouncement from './FooterAnnouncement';
 import FooterStats from './FooterStats';
 import FooterStatus from './FooterStatus';
@@ -53,33 +57,34 @@ export default function SuperchargedFooter({
   }[];
   setIsSearchUserProfilesOpen: (open: boolean) => void;
 }) {
+  const router = useRouter();
   const [title, setTitle] = useState('Chat');
   const priorityFeeAmounts = usePriorityFee();
   const priorityFeeOption = useSelector(
     (state) => state.settings.priorityFeeOption,
   );
 
+  const [onlineCount, setOnlineCount] = useState<number | null>(null);
+
   const [isNewNotification, setIsNewNotification] = useState(false);
 
-  const [isAnnouncementView, setIsAnnouncementView] = useState(false);
+  const [isAnnouncementView] = useState(false);
 
   const currentPriorityFeeValue =
     priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
 
   const [showAudits, setShowAudits] = useState(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAnnouncementView((prev) => !prev);
-    }, 10000); //
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <>
-      <footer className="fixed bottom-0 flex flex-row items-center justify-between w-full px-4 py-0 bg-secondary border-t border-t-inputcolor z-50">
+      <footer className="fixed bottom-0 flex flex-row items-center justify-between w-full py-0 bg-secondary border-t border-t-inputcolor z-50">
         <div className="flex flex-row items-center ">
-          <div className="p-2 pl-0 pr-4 border-r border-inputcolor">
+          <div
+            className="p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer transition-colors duration-300"
+            onClick={() => {
+              router.push('/admin');
+            }}
+          >
             <Image
               src={adrenaLogo}
               alt="Adrena Logo"
@@ -90,11 +95,14 @@ export default function SuperchargedFooter({
           </div>
 
           <div
-            className="relative hidden xl:flex flex-row items-center gap-3 p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer"
+            className="relative group hidden xl:flex flex-row items-center gap-3 p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer"
             onMouseEnter={() => setShowAudits(true)}
             onMouseLeave={() => setShowAudits(false)}
           >
+            <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
+
             <p className="text-xs font-interMedium">Audited by</p>
+
             <Image
               src={ottersecLogo}
               alt="OtterSec Logo"
@@ -102,6 +110,7 @@ export default function SuperchargedFooter({
               height={12}
               width={12}
             />
+
             <Image
               src={offsideLabsLogo}
               alt="Offside Labs Logo"
@@ -140,7 +149,7 @@ export default function SuperchargedFooter({
                         Offside Labs Audit.pdf
                       </p>
                       <p className="text-xs font-mono opacity-50">
-                        02. Feb 2025
+                        December 2024
                       </p>
                     </div>
                   </Link>
@@ -165,9 +174,7 @@ export default function SuperchargedFooter({
                       <p className="text-base font-interMedium">
                         Ottersec Audit.pdf
                       </p>
-                      <p className="text-xs font-mono opacity-50">
-                        02. Feb 2025
-                      </p>
+                      <p className="text-xs font-mono opacity-50">July 2024</p>
                     </div>
                   </Link>
                 </motion.div>
@@ -240,9 +247,22 @@ export default function SuperchargedFooter({
             )}
           </AnimatePresence>
 
+          <div
+            className="hidden lg:block py-2 px-4 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300"
+            onClick={() => setIsSearchUserProfilesOpen(true)}
+          >
+            <Image
+              src={searchIcon}
+              alt="Search Icon"
+              className="w-3.5 h-3.5"
+              height={12}
+              width={12}
+            />
+          </div>
+
           {disableChat === true ? null : (
             <div
-              className="flex flex-row items-center gap-2 p-1.5 px-4 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300"
+              className="relative flex flex-row items-center gap-2 p-1.5 px-4 min-w-44 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300"
               onClick={() => {
                 setIsChatOpen(!isChatOpen);
               }}
@@ -254,27 +274,48 @@ export default function SuperchargedFooter({
                 height={12}
                 width={12}
               />
+
               <p className="text-sm font-interMedium capitalize">
                 <span className="opacity-50">#</span> {title}
               </p>
+
               {isNewNotification ? (
                 <div className="flex items-center justify-center bg-redbright min-w-1.5 h-1.5 rounded-full ml-2" />
               ) : null}
+              <AnimatePresence>
+                {!isChatOpen ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: '-1rem' }}
+                    animate={{ opacity: 1, y: '-1.65rem' }}
+                    exit={{ opacity: 0, y: '-1rem' }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute top-0 left-0 w-full h-10 flex items-center justify-center"
+                  >
+                    <Image
+                      src={genesisTimerBg}
+                      alt="Genesis Timer Background"
+                      className="absolute top-0 left-0 w-full"
+                    />
+                    <div className="flex flex-row items-center justify-between w-[7.3rem] absolute top-[0.45rem] left-7">
+                      <div className="flex flex-row items-center gap-1 opacity-50">
+                        <Image
+                          src={pplIcon}
+                          alt="Chat Icon"
+                          className="w-2.5 h-2.5"
+                          height={12}
+                          width={12}
+                        />
+                        <p className="text-xxs font-mono">
+                          {onlineCount ? onlineCount : '-'}
+                        </p>
+                      </div>
+                      <LiveIcon size={9} />
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             </div>
           )}
-
-          <div
-            className="p-2 px-4 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300"
-            onClick={() => setIsSearchUserProfilesOpen(true)}
-          >
-            <Image
-              src={searchIcon}
-              alt="Search Icon"
-              className="w-3.5 h-3.5"
-              height={12}
-              width={12}
-            />
-          </div>
 
           <div className="hidden 2xl:flex flex-row items-center gap-4 p-2 px-4 border-l border-inputcolor">
             <Link
@@ -306,7 +347,7 @@ export default function SuperchargedFooter({
             </Link>
           </div>
 
-          <div className="hidden xl:flex flex-row items-center gap-4 p-2 pl-4 pr-0 border-l border-inputcolor">
+          <div className="hidden xl:flex flex-row items-center gap-4 p-2 px-4 border-l border-inputcolor">
             <Link
               href="https://github.com/AdrenaFoundation"
               target="_blank"
@@ -358,6 +399,7 @@ export default function SuperchargedFooter({
           isMobile={isMobile}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
+          setOnlineCount={setOnlineCount}
         />
       )}
     </>

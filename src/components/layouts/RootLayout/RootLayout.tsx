@@ -17,6 +17,7 @@ import tradeIcon from '@/../public/images/Icons/trade-icon.svg';
 import trophyIcon from '@/../public/images/Icons/trophy.svg';
 import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import mutagenIcon from '@/../public/images/mutagen.png';
+import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import SuperchargedFooter from '@/components/Footer/SuperchargedFooter';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
@@ -198,8 +199,9 @@ export default function RootLayout({
           setIsChatOpen={setIsChatOpen}
         />
       )}
+      <ViewsWarning />
 
-      <div className="w-full grow flex justify-center">
+      <div className="w-full grow flex justify-center sm:pb-10">
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',
@@ -218,10 +220,6 @@ export default function RootLayout({
         onClose={() => setIsSearchUserProfilesOpen(false)}
       />
 
-      {/* {disableChat === true ? null : (
-        
-      )} */}
-
       {!isBigScreen ? (
         <MobileNavbar
           PAGES={pages}
@@ -229,7 +227,6 @@ export default function RootLayout({
           userDelegatedVest={userDelegatedVest}
         />
       ) : (
-        // <Footer />
         <SuperchargedFooter
           disableChat={disableChat}
           isMobile={!isBigScreen}

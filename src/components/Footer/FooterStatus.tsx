@@ -13,7 +13,7 @@ export default function FooterStatus() {
 
   return (
     <div
-      className="relative hidden xl:flex flex-row items-center gap-2 p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer"
+      className="relative group hidden 2xl:flex flex-row items-center gap-2 p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer"
       onMouseEnter={() => setShowSubscriptions(true)}
       onMouseLeave={() => setShowSubscriptions(false)}
       onClick={() => {
@@ -22,6 +22,8 @@ export default function FooterStatus() {
         }
       }}
     >
+      <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
+
       <LiveIcon isLive={isOperational} />
       <p className="text-xs font-interMedium">{isOperational ? 'Operational' : 'Refresh'}</p>
 
@@ -40,10 +42,6 @@ export default function FooterStatus() {
                 <p className="font-boldy text-sm opacity-75">
                   Token prices
                 </p>
-              </li>
-              <li className="flex flex-row items-center gap-2">
-                <LiveIcon isLive={dataApiClient} />
-                <p className="font-boldy text-sm opacity-75">Stats Data</p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={notificationsWebSocket} />

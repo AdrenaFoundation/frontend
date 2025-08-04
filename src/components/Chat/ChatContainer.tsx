@@ -29,6 +29,7 @@ function ChatContainer({
   setIsChatOpen,
   isMobile = false,
   setIsNewNotification,
+  setOnlineCount,
 }: {
   title: string;
   setTitle: (title: string) => void;
@@ -36,6 +37,7 @@ function ChatContainer({
   isMobile: boolean;
   isChatOpen: boolean;
   setIsChatOpen: (open: boolean) => void;
+  setOnlineCount: (count: number | null) => void;
 }) {
   const { wallet } = useSelector((state) => state.walletState);
   const walletAddress = wallet?.walletAddress || null;
@@ -67,7 +69,7 @@ function ChatContainer({
     isSubscribeToFriendRequests: true,
   });
 
-  const { connectedUsers } = useLiveCount({
+  const { connectedUsers, connectedCount } = useLiveCount({
     walletAddress,
     refreshInterval: 30000, // refresh every 30 seconds
   });
@@ -135,6 +137,13 @@ function ChatContainer({
     currentChatroomId,
     setCurrentChatroom,
   ]);
+
+  useEffect(() => {
+    if (connectedCount !== null) {
+      setOnlineCount(connectedCount);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectedCount]);
 
   useEffect(() => {
     if (!walletAddress) return;

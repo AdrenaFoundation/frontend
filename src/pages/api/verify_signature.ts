@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nacl from 'tweetnacl';
 
+import supabaseAnonClient from '@/supabaseAnonClient';
 import supabaseServiceClient from '@/supabaseServiceClient';
 import { isValidPublicKey } from '@/utils';
 
@@ -9,7 +10,45 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  if (req.method === 'POST') {
+  if (req.method === 'GET') {
+    const { walletAddress } = req.query;
+    if (!walletAddress || typeof walletAddress !== 'string') {
+      return res
+        .status(400)
+        .json({ error: 'Missing or invalid walletAddress' });
+    }
+
+    if (!isValidPublicKey(walletAddress)) {
+      return res.status(400).json({ error: 'Invalid wallet address' });
+    }
+
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({ error: 'No authorization header' });
+    }
+
+    const accessToken = authHeader.replace('Bearer ', '');
+
+    try {
+      const { error } = await supabaseAnonClient
+        .from('whitelisted_wallets')
+        .select('id')
+        .eq('wallet_address', walletAddress)
+        .single()
+        .setHeader('Authorization', `Bearer ${accessToken}`);
+
+      if (error) {
+        return res.status(500).json({ isAdmin: false });
+      }
+
+      return res.status(200).json({ isAdmin: true });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ error: 'Internal server error', errMsg: err });
+    }
+  } else if (req.method === 'POST') {
     try {
       const { message, signature, walletAddress, timestamp, nonce } = req.body;
 
@@ -157,7 +196,7 @@ export default async function handler(
       });
     }
   } else {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader('Allow', ['POST', 'GET']);
     return res.status(500).json({
       error: `Method ${req.method} Not Allowed`,
     });

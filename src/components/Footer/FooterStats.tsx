@@ -1,7 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Line, LineChart, ResponsiveContainer } from 'recharts';
 
+import arrowIcon from '@/../public/images/Icons/arrow-slim.svg';
 import DataApiClient from '@/DataApiClient';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { PageProps, RechartsData } from '@/types';
@@ -14,10 +17,15 @@ export default function FooterStats({
 }: {
   mainPool: PageProps['mainPool'];
 }) {
+  const router = useRouter();
+
   const [showDetails, setShowDetails] = useState(false);
+  const [btcPriceData, setBtcPriceData] = useState<RechartsData[]>([]);
   const [aumData, setAumData] = useState<RechartsData[]>([]);
   const [volumeData, setVolumeData] = useState<RechartsData[]>([]);
-  const [totalOpenInterestData, setTotalOpenInterestData] = useState<RechartsData[]>([]);
+  const [totalOpenInterestData, setTotalOpenInterestData] = useState<
+    RechartsData[]
+  >([]);
   const aumUsd = useAssetsUnderManagement();
 
   useEffect(() => {
@@ -25,6 +33,19 @@ export default function FooterStats({
   }, []);
 
   const getData = async () => {
+    try {
+      const btcData = await fetch(
+        `https://history.oraclesecurity.org/trading-view/data?feed=BTCUSD&type=1D&till=${Date.now()}`,
+      );
+
+      if (btcData.ok) {
+        const btc = await btcData.json();
+        setBtcPriceData(btc.result);
+      }
+    } catch (error) {
+      console.error('Error fetching BTC price data:', error);
+    }
+
     const custodyResult = await DataApiClient.getCustodyInfo(
       'custodyinfodaily',
       'open_interest_long_usd=true&open_interest_short_usd=true',
@@ -49,10 +70,6 @@ export default function FooterStats({
       }
 
       if (cumulative_trading_volume_usd) {
-        console.log(
-          'Cumulative trading volume:',
-          cumulative_trading_volume_usd,
-        );
         const formattedVolumeData = cumulative_trading_volume_usd.map(
           (volume) => ({
             value: volume,
@@ -115,6 +132,7 @@ export default function FooterStats({
   };
 
   const stats = [
+    { label: 'BTC Price', value: btcPriceData[btcPriceData.length - 1]?.close },
     { label: 'VOL', value: mainPool?.totalTradingVolume },
     { label: 'AUM', value: aumUsd },
     {
@@ -129,14 +147,53 @@ export default function FooterStats({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1, ease: 'easeInOut' }}
-      className="relative p-2 px-0 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300 w-[18.75rem]"
+      className="group relative p-2 px-0 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300 w-[18.75rem]"
       onMouseOver={() => setShowDetails(true)}
       onMouseOut={() => setShowDetails(false)}
+      onClick={() => {
+        router.push('/monitoring');
+      }}
     >
+      <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
+      <AnimatePresence>
+        {showDetails ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center justify-between absolute top-0 left-0 w-full h-full bg-secondary/10 backdrop-blur-sm z-20 px-3"
+          >
+            <motion.p
+              initial={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
+              exit={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
+              transition={{ duration: 0.3 }}
+              className="text-sm font-interMedium"
+            >
+              Open monitoring page
+            </motion.p>
+            <motion.span
+              initial={{ opacity: 0, x: '1rem', filter: 'blur(2px)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
+              exit={{ opacity: 0, x: '1rem', filter: 'blur(2px)' }}
+              transition={{ duration: 0.3 }}
+            >
+              <Image
+                src={arrowIcon}
+                alt="Arrow Icon"
+                className="w-3 h-3 rotate-90"
+                width={12}
+                height={12}
+              />
+            </motion.span>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       <div className="w-5 h-full bg-gradient-to-r from-secondary to-transparent absolute left-0 top-0 z-20" />
       <div className="w-5 h-full bg-gradient-to-l from-secondary to-transparent absolute right-0 top-0 z-20" />
 
-      <div className="overflow-hidden w-full">
+      <div className="group overflow-hidden w-full">
         <motion.div
           className="flex flex-row items-center gap-3 whitespace-nowrap"
           initial={{ x: 0 }}
@@ -158,9 +215,11 @@ export default function FooterStats({
                 {stat.label}
               </span>{' '}
               <FormatNumber
-                nb={stat.value}
+                nb={stat.value as number}
                 className="text-xs"
                 format="currency"
+                prefix="$"
+                prefixClassName="text-xs"
                 isDecimalDimmed={false}
                 isAbbreviate
               />
@@ -175,7 +234,7 @@ export default function FooterStats({
                 {stat.label}
               </span>{' '}
               <FormatNumber
-                nb={stat.value}
+                nb={stat.value as number}
                 className="text-xs"
                 format="currency"
                 isDecimalDimmed={false}
@@ -197,9 +256,35 @@ export default function FooterStats({
           >
             <div className="flex flex-row items-center justify-between gap-3 p-3">
               <div>
+                <p className="text-xs font-interMedium opacity-50">BTC Price</p>
+                <FormatNumber
+                  nb={
+                    (btcPriceData[btcPriceData.length - 1]?.close as number) ||
+                    0
+                  }
+                  className="text-base"
+                  format="currency"
+                  isDecimalDimmed={false}
+                />
+              </div>
+              <ResponsiveContainer width={120} height={30}>
+                <LineChart data={btcPriceData}>
+                  <Line
+                    type="monotone"
+                    dataKey="close"
+                    stroke="#07956b"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="flex flex-row items-center justify-between gap-3 p-3 border-t border-inputcolor">
+              <div>
                 <p className="text-xs font-interMedium opacity-50">Volume</p>
                 <FormatNumber
-                  nb={stats[0].value}
+                  nb={stats[1].value as number}
                   className="text-base"
                   format="currency"
                   isDecimalDimmed={false}
@@ -233,7 +318,7 @@ export default function FooterStats({
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#F7931A"
+                    stroke="#07956b"
                     strokeWidth={2}
                     dot={false}
                   />
