@@ -122,6 +122,18 @@ export default function DrawdownChart() {
             formatLeftY="currency"
             formatRightY="percentage"
             events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
+            exportToCSV={() => {
+                if (!chartData) return;
+                const headers = ['Time', 'ALP Price', 'Max DD From Peak %'];
+                const csvContent = [headers.join(','), ...chartData.map(row => [row.time, row['ALP Price'], row['Max DD From Peak %']].join(','))].join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `drawdown_${period}_${new Date().getTime()}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }}
         />
     );
 }

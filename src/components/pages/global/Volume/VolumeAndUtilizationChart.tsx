@@ -201,6 +201,18 @@ export default function VolumeBarChart({ isSmallScreen, yAxisBarScale }: VolumeC
       yAxisBarScale={yAxisBarScale}
       formatRightY='percentage'
       rightDomain={[0, 100]}
+      exportToCSV={() => {
+        if (!chartData) return;
+        const headers = ['Time', 'Volume', 'Utilization'];
+        const csvContent = [headers.join(','), ...chartData.map(row => [row.time, row.Volume, row.Utilization].join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `volume_utilization_${period}_${new Date().getTime()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
     />
   );
 }

@@ -119,6 +119,18 @@ export default function OpenInterestLongShortChart() {
             formatLeftY="currency"
             formatRightY="percentage"
             events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
+            exportToCSV={() => {
+                if (!data) return;
+                const headers = ['Time', 'Long OI', 'Short OI', 'Long VS Short %'];
+                const csvContent = [headers.join(','), ...data.map(row => [row.time, row['Long OI'], row['Short OI'], row['Long VS Short %']].join(','))].join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `open_interest_${period}_${new Date().getTime()}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }}
         />
     );
 }

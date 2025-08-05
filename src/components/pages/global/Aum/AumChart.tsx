@@ -162,6 +162,18 @@ export default function AumChart({
       formatLeftY="currency"
       formatRightY="currency"
       events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
+      exportToCSV={() => {
+        if (!chartData) return;
+        const headers = disableLpPrice ? ['Time', 'AUM'] : ['Time', 'AUM', 'ALP Price'];
+        const csvContent = [headers.join(','), ...chartData.map(row => disableLpPrice ? [row.time, row.AUM] : [row.time, row.AUM, row['ALP Price']].join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `aum_${period}_${new Date().getTime()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
     />
   );
 }
