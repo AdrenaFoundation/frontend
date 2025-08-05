@@ -249,7 +249,7 @@ export default function MutagenLeaderboardInterseason3({
         return renderCardContainer(
             <div className="flex flex-col gap-2 mt-2">
                 <div className="flex flex-row items-center w-full">
-                    <div className="flex flex-row items-center gap-3 flex-1 flex justify-center">
+                    <div className="flex flex-row items-center gap-3 flex-1 justify-center">
                         {renderProfilePicture('sm')}
                         <div className="flex flex-col items-start text-left">
                             <span className="font-boldy text-white text-lg sm:text-xl truncate">{userRow.nickname}</span>
