@@ -1723,6 +1723,8 @@ export type PoolInfoResponse = {
   snapshot_timestamp: string[];
   startDate?: string;
   endDate?: string;
+  open_interest_long_usd?: number[];
+  open_interest_short_usd?: number[];
 };
 
 export type CustodyInfoResponse = {

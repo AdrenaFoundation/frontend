@@ -218,6 +218,18 @@ export default function UtilizationChart() {
       isMaxUtilizationReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
       formatY="percentage"
       events={ADRENA_EVENTS}
+      exportToCSV={() => {
+        if (!infos?.formattedData) return;
+        const headers = ['Time', ...Object.keys(infos.formattedData[0]).filter(key => key !== 'time')];
+        const csvContent = [headers.join(','), ...infos.formattedData.map(row => headers.map(h => (row as { [key: string]: number })[h]).join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `utilization_${period}_${new Date().getTime()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
     />
   );
 }

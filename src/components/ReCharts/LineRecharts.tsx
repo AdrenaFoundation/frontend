@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import {
   CartesianGrid,
@@ -16,6 +17,7 @@ import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
+import downloadIcon from '../../../public/images/download.png';
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
 import PeriodSelector from './PeriodSelector';
@@ -40,7 +42,8 @@ export default function LineRechart<T extends string>({
   isMaxUtilizationReferenceLine,
   events,
   isNowReferenceLine,
-  isAlpPage
+  isAlpPage,
+  exportToCSV,
 }: {
   title: string;
   data: RechartsData[];
@@ -68,6 +71,7 @@ export default function LineRechart<T extends string>({
   events?: AdrenaEvent[],
   isNowReferenceLine?: boolean;
   isAlpPage?: boolean;
+  exportToCSV?: () => void;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -108,6 +112,13 @@ export default function LineRechart<T extends string>({
               precision={0}
             />
           )}
+
+          {exportToCSV ? (
+            <div className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100" onClick={exportToCSV}>
+              <div className='text-sm tracking-wider'>Export</div>
+              <Image src={downloadIcon} width={14} height={12} alt="Download icon" />
+            </div>
+          ) : null}
         </div>
 
         {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} /> : null}

@@ -174,6 +174,18 @@ export default function CompositionChart() {
       setPeriod={setPeriod}
       events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
       precisionTooltip={0}
+      exportToCSV={() => {
+        if (!data) return;
+        const headers = ['Time', ...custodyInfo.map(info => info.symbol)];
+        const csvContent = [headers.join(','), ...data.map(row => headers.map(h => row[h] ?? 0).join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pool_composition_${period}_${new Date().getTime()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
     />
   );
 }

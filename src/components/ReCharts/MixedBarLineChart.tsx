@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import {
     Bar,
@@ -15,8 +16,9 @@ import {
 import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 
 import { AdrenaEvent, RechartsData } from '@/types';
-import { formatGraphCurrency } from '@/utils';
+import { formatGraphCurrency, formatPercentage } from '@/utils';
 
+import downloadIcon from '../../../public/images/download.png';
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
 import PeriodSelector from './PeriodSelector';
@@ -25,6 +27,8 @@ export interface ChartLabel {
     name: string;
     color?: string;
     type?: 'bar' | 'line';
+    yAxisId?: 'left' | 'right';
+    format?: 'percentage' | 'currency' | 'number';
 }
 
 export default function MixedBarLineChart<T extends string>({
@@ -43,6 +47,9 @@ export default function MixedBarLineChart<T extends string>({
     total,
     events,
     yAxisBarScale = 'linear',
+    formatRightY,
+    rightDomain,
+    exportToCSV,
 }: {
     title: string;
     data: RechartsData[];
@@ -62,6 +69,9 @@ export default function MixedBarLineChart<T extends string>({
     total?: boolean;
     events?: AdrenaEvent[];
     yAxisBarScale: ScaleType;
+    formatRightY?: 'percentage' | 'currency' | 'number';
+    rightDomain?: AxisDomain;
+    exportToCSV?: () => void;
 }) {
     const [hiddenLabels, setHiddenLabels] = React.useState<
         DataKey<string | number>[]
@@ -74,20 +84,13 @@ export default function MixedBarLineChart<T extends string>({
     // Group labels by type
     const barLabels = labels.filter(label => label.type !== 'line');
     const lineLabels = labels.filter(label => label.type === 'line' &&
-        !label.name.toLowerCase().includes('cumulative'));
+        (!label.name.toLowerCase().includes('cumulative')));
 
-    // Find the cumulative label (either Fees or Volume)
-    const cumulativeLabel = labels.find(label =>
-        label.name.toLowerCase().includes('cumulative'));
+    const hasRightAxis = labels.some(l => l.yAxisId === 'right');
 
-    // Calculate the maximum value for the cumulative line
-    const maxCumulativeValue = data.reduce((max, point) => {
-        const cumulativeValue = cumulativeLabel ? Number(point[cumulativeLabel.name] || 0) : 0;
-        return cumulativeValue > max ? cumulativeValue : max;
-    }, 0);
-
-    // Create a suitable domain for the cumulative axis
-    const cumulativeDomain: AxisDomain = [0, Math.ceil(maxCumulativeValue * 1.1)];
+    const formatMap = Object.fromEntries(
+        labels.map(label => [label.name, label.format ?? formatY])
+    );
 
     return (
         <div className="flex flex-col h-full w-full max-h-[18em]">
@@ -112,6 +115,23 @@ export default function MixedBarLineChart<T extends string>({
                             precision={0}
                         />
                     )}
+
+                    {exportToCSV ? (
+                        <div
+                            className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
+                            onClick={exportToCSV}
+                        >
+                            <div className='text-sm tracking-wider'>
+                                Export
+                            </div>
+                            <Image
+                                src={downloadIcon}
+                                width={14}
+                                height={12}
+                                alt="Download icon"
+                            />
+                        </div>
+                    ) : null}
                 </div>
 
                 <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
@@ -146,10 +166,10 @@ export default function MixedBarLineChart<T extends string>({
                     />
 
                     {/* Right Y-axis for cumulative total */}
-                    {cumulativeLabel && (
+                    {hasRightAxis ? (
                         <YAxis
-                            domain={cumulativeDomain}
-                            tickFormatter={formatYAxis}
+                            domain={rightDomain}
+                            tickFormatter={formatRightY === 'percentage' ? (value: number) => `${formatPercentage(value, 0)}%` : formatYAxis}
                             fontSize="11"
                             axisLine={true}
                             tickLine={true}
@@ -157,17 +177,18 @@ export default function MixedBarLineChart<T extends string>({
                             orientation="right"
                             scale="linear"
                         />
-                    )}
+                    ) : null}
 
                     <Tooltip
                         content={
                             <CustomRechartsToolTip
                                 isValueOnly={labels.length === 1}
                                 format={formatY}
+                                formatMap={formatMap}
                                 total={total}
                                 gmt={gmt}
                                 events={events}
-                                lineDataKeys={lineLabels.map(label => label.name).concat(cumulativeLabel ? [cumulativeLabel.name] : [])}
+                                lineDataKeys={lineLabels.map(label => label.name)}
                                 precision={0}
                             />
                         }
@@ -196,56 +217,35 @@ export default function MixedBarLineChart<T extends string>({
                     /> : null}
 
                     {/* Render bar charts */}
-                    {barLabels.map(({ name, color }) => {
-                        return (
-                            <Bar
-                                key={name}
-                                type="monotone"
-                                stackId="stacked"
-                                dataKey={hiddenLabels.includes(name) ? name + ' ' : name} // Add space to remove the line but keep the legend
-                                stroke={hiddenLabels.includes(name) ? `${color} 60` : color} // 50% opacity for hidden labels
-                                fill={color}
-                                xAxisId="main"
-                                yAxisId="left"
-                            />
-                        );
-                    })}
+                    {barLabels.map(({ name, color }) => (
+                        <Bar
+                            key={name}
+                            type="monotone"
+                            stackId="stacked"
+                            dataKey={hiddenLabels.includes(name) ? name + ' ' : name}
+                            stroke={hiddenLabels.includes(name) ? `${color} 60` : color}
+                            fill={color}
+                            xAxisId="main"
+                            yAxisId="left"
+                        />
+                    ))}
 
                     {/* Render standard line charts */}
-                    {lineLabels.map(({ name, color }) => {
-                        return (
-                            <Line
-                                key={name}
-                                type="monotone"
-                                dataKey={hiddenLabels.includes(name) ? name + ' ' : name}
-                                stroke={color}
-                                dot={false}
-                                activeDot={false}
-                                connectNulls={true}
-                                hide={hiddenLabels.includes(name)}
-                                name={name}
-                                yAxisId="left"
-                                xAxisId="main"
-                            />
-                        );
-                    })}
-
-                    {/* Render cumulative total line using right axis */}
-                    {cumulativeLabel && (
+                    {lineLabels.map((label) => (
                         <Line
-                            key={cumulativeLabel.name}
+                            key={label.name}
                             type="monotone"
-                            dataKey={hiddenLabels.includes(cumulativeLabel.name) ? cumulativeLabel.name + ' ' : cumulativeLabel.name}
-                            stroke={cumulativeLabel.color}
+                            dataKey={hiddenLabels.includes(label.name) ? label.name + ' ' : label.name}
+                            stroke={label.color}
                             dot={false}
-                            activeDot={true}
+                            activeDot={false}
                             connectNulls={true}
-                            hide={hiddenLabels.includes(cumulativeLabel.name)}
-                            name={cumulativeLabel.name}
-                            yAxisId="right"
+                            hide={hiddenLabels.includes(label.name)}
+                            name={label.name}
+                            yAxisId={label.yAxisId ?? 'left'}
                             xAxisId="main"
                         />
-                    )}
+                    ))}
 
                     {events?.map(({
                         label,
