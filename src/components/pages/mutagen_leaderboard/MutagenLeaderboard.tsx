@@ -424,18 +424,18 @@ export default function MutagenLeaderboard({
                         )}
                         <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-3">
-                                <span className="font-boldy text-white text-xl truncate sm:flex hidden">{userRow.nickname}</span>
+                                <span className="font-boldy text-white text-xl truncate">{userRow.nickname}</span>
                                 {userRow.title !== null && (
-                                    <span className="text-xs font-boldy text-txtfade md:hidden lg:flex hidden">
+                                    <span className="text-xs font-boldy text-txtfade md:hidden lg:flex hidden flex-shrink-0 whitespace-normal leading-tight">
                                         &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
                                     </span>
                                 )}
-                                <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
-                                <span className="font-boldy text-white text-xl truncate">Your rank:</span>
-                                <span className="ml-2 text-sm font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
-                                <span className="font-boldy text-txtfade text-xl truncate sm:flex hidden">|</span>
-                                <span className="font-boldy text-white text-xl truncate sm:flex hidden">Your Mutagen:</span>
-                                <span className="text-xl font-boldy text-mutagen sm:flex hidden">{formatNumber(userRow.totalPoints, 2, 0)}</span>
+                                <span className="font-boldy text-txtfade text-xl">|</span>
+                                <span className="font-boldy text-white text-xl sm:flex hidden">Rank:</span>
+                                <span className="text-sm font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
+                                <span className="font-boldy text-txtfade text-xl">|</span>
+                                <span className="font-boldy text-white text-xl sm:flex hidden">Mutagen:</span>
+                                <span className="text-xl font-boldy text-mutagen">{formatNumber(userRow.totalPoints, 2, 0)}</span>
                             </div>
                         </div>
                     </div>
