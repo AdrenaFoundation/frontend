@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import {
     Bar,
@@ -18,7 +19,6 @@ import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatPercentage } from '@/utils';
 
 import downloadIcon from '../../../public/images/download.png';
-import Image from 'next/image';
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
 import PeriodSelector from './PeriodSelector';

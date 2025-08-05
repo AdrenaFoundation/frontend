@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import React, { ReactNode } from 'react';
 import {
   CartesianGrid,
@@ -16,11 +17,10 @@ import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 import { AdrenaEvent, RechartsData } from '@/types';
 import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
 
+import downloadIcon from '../../../public/images/download.png';
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
 import PeriodSelector from './PeriodSelector';
-import Image from 'next/image';
-import downloadIcon from '../../../public/images/download.png';
 
 export default function LineRechart<T extends string>({
   title,
