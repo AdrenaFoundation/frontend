@@ -107,6 +107,13 @@ export default function MixedAreaLineChart<T extends string>({
         ])
     );
 
+    const formatMap = Object.fromEntries(
+        labels.map(label => [
+            label.name,
+            label.yAxisId === 'right' ? formatRightY : formatLeftY
+        ])
+    );
+
     return (
         <div className="flex flex-col h-full w-full max-h-[18em]">
             <div className="mb-3">
@@ -263,6 +270,7 @@ export default function MixedAreaLineChart<T extends string>({
                             <CustomRechartsToolTip
                                 isValueOnly={false}
                                 format={formatLeftY}
+                                formatMap={formatMap}
                                 gmt={gmt}
                                 events={events}
                                 lineDataKeys={lineLabels.map(label => label.name)}

@@ -7,7 +7,11 @@ import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
 import { formatSnapshotTimestamp, getGMT } from '@/utils';
 
-export default function AumChart() {
+export default function AumChart({
+  disableLpPrice = false,
+}: {
+  disableLpPrice?: boolean;
+}) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('6M');
   const periodRef = useRef(period);
@@ -30,6 +34,7 @@ export default function AumChart() {
         intervalRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
 
   const getPoolInfo = async () => {
@@ -75,7 +80,7 @@ export default function AumChart() {
       // Fetch both AUM and ALP price data in parallel
       const result = await DataApiClient.getPoolInfo({
         dataEndpoint,
-        queryParams: 'aum_usd=true&lp_token_price=true',
+        queryParams: disableLpPrice ? 'aum_usd=true' : 'aum_usd=true&lp_token_price=true',
         dataPeriod,
       });
 
@@ -90,7 +95,7 @@ export default function AumChart() {
 
       const { aum_usd, lp_token_price, snapshot_timestamp } = result;
 
-      if (!aum_usd || !lp_token_price || !snapshot_timestamp) {
+      if (!aum_usd || (!disableLpPrice && !lp_token_price) || !snapshot_timestamp) {
         console.error('Failed to fetch data: Missing required data fields');
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
@@ -103,21 +108,21 @@ export default function AumChart() {
 
       // Combine AUM and ALP price data
       const formattedData = aum_usd.map((aum: number, i: number) => {
-        const alpPrice = lp_token_price[i];
+        const alpPrice = lp_token_price?.[i] ?? null;
 
         // If both values are 0, return null for both to create breaks in the chart
         if (aum === 0 && alpPrice === 0) {
           return {
             time: timeStamp[i],
             'AUM': null,
-            'ALP Price': null,
+            ...(disableLpPrice ? {} : { 'ALP Price': null }),
           };
         }
 
         return {
           time: timeStamp[i],
           'AUM': aum,
-          'ALP Price': alpPrice,
+          ...(disableLpPrice ? {} : { 'ALP Price': alpPrice }),
         };
       });
 
@@ -141,12 +146,12 @@ export default function AumChart() {
 
   return (
     <MixedAreaLineChart
-      title={'AUM & ALP Price'}
+      title={disableLpPrice ? 'Assets Under Management' : 'AUM & ALP Price'}
       subValue={latestAum}
       data={chartData}
       labels={[
-        { name: 'AUM', color: '#5460cb', type: 'area', yAxisId: 'left' },
-        { name: 'ALP Price', color: '#fde000', type: 'line', yAxisId: 'right' }
+        { name: 'AUM', color: '#5460cb', type: 'area' as const, yAxisId: 'left' as const },
+        ...(disableLpPrice ? [] : [{ name: 'ALP Price', color: '#fde000', type: 'line' as const, yAxisId: 'right' as const }]),
       ]}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
