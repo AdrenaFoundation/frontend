@@ -68,7 +68,7 @@ const PARTNERS: Partner[] = [
     gradientColors:
       'bg-[linear-gradient(110deg,#2b5dff,#001763,#2b5dff)] animate-text-shimmer bg-[length:250%_100%]',
     bgColor: 'bg-secondary/[0.99]',
-    link: 'https://app.kamino.finance/multiply/CTthJu49dgPkCgu9TKQProuaQnkHsRPQV33sSJ96vxpG/D1ZdZSNfn6uvFCcRi8SzihnPdYHLtnjBjwxGn/5bgPMvzZv29jkFEuMwxQRJQf64gKcPfLEEUHhyrP8tce',
+    link: 'https://app.kamino.finance/multiply/CTthJu49dgPkCgu9TKQProuaQnkHsRPQV33sSJ96vxpG/D1ZdZSNfn6nfzEyK6uvFCcRi8SzihnPdYHLtnjBjwxGn/5bgPMvzZv29jkFEuMwxQRJQf64gKcPfLEEUHhyrP8tce',
   },
   {
     description: 'Loop your ALP up to 6x',
