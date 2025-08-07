@@ -18,9 +18,13 @@ import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 export default function PriorityFeeSetting({
   setCloseMobileModal,
   isMobile = false,
+  isOpen,
+  setIsOpen,
 }: {
   setCloseMobileModal?: (close: boolean) => void;
   isMobile?: boolean;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const priorityFeeAmounts = usePriorityFee();
@@ -175,9 +179,7 @@ export default function PriorityFeeSetting({
             <label htmlFor="currency" className="sr-only">
               Currency
             </label>
-            <span className="opacity-50 sm:text-sm mr-3 font-boldy">
-              SOL
-            </span>
+            <span className="opacity-50 sm:text-sm mr-3 font-boldy">SOL</span>
           </div>
         </div>
       </div>
@@ -214,6 +216,8 @@ export default function PriorityFeeSetting({
       )}
       disableOnClickInside={true}
       isDim={true}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
     >
       {content}
     </Menu>

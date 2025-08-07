@@ -13,15 +13,17 @@ import arrowIcon from '@/../public/images/Icons/arrow-slim.svg';
 import solLogo from '@/../public/images/sol.svg';
 import DataApiClient from '@/DataApiClient';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import { useSelector } from '@/store/store';
 import { PageProps, RechartsData } from '@/types';
-import { getCustodyByMint } from '@/utils';
+import { getCustodyByMint, getTokenSymbol } from '@/utils';
 
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import FormatNumber from '../Number/FormatNumber';
-import FooterStatsAvailableLiq from './FooterStatsAvailableLiq';
+import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function FooterStats({
   mainPool,
@@ -31,7 +33,8 @@ export default function FooterStats({
   const router = useRouter();
   const aumUsd = useAssetsUnderManagement();
   const [cookies, setCookies] = useCookies(['footer-activeToken']);
-  const initialActiveToken = (cookies['footer-activeToken'] as 'SOL' | 'BTC' | 'BONK') || 'BTC';
+  const initialActiveToken =
+    (cookies['footer-activeToken'] as 'SOL' | 'BTC' | 'BONK') || 'BTC';
   const [activeToken, setActiveToken] = useState<'SOL' | 'BTC' | 'BONK'>(
     initialActiveToken,
   );
@@ -50,7 +53,21 @@ export default function FooterStats({
   const [totalOpenInterestData, setTotalOpenInterestData] = useState<
     RechartsData[]
   >([]);
+
   const [isTokenDataLoading, setIsTokenDataLoading] = useState(true);
+
+  const token = window.adrena.client.tokens.find(
+    (t) => getTokenSymbol(t.symbol) === activeToken,
+  );
+
+  const tokenPrices = useSelector((state) => state.tokenPrices);
+  const tokenPrice = token?.symbol ? tokenPrices[token.symbol] : null;
+
+  const custody = token?.mint
+    ? window.adrena.client.getCustodyByMint(token?.mint)
+    : null;
+
+  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custody);
 
   useEffect(() => {
     getData();
@@ -68,7 +85,10 @@ export default function FooterStats({
     setIsTokenDataLoading(true);
     try {
       const response = await fetch(
-        `https://history.oraclesecurity.org/trading-view/data?feed=${token}USD&type=1D&from=${Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60}&till=${Date.now()}`,
+        `https://history.oraclesecurity.org/trading-view/data?feed=${token}USD&type=1D&from=${
+        // 1 month ago
+        Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
+        }&till=${Date.now()}`,
       );
 
       if (!response.ok) {
@@ -93,14 +113,13 @@ export default function FooterStats({
     const custodyResult = await DataApiClient.getCustodyInfo(
       'custodyinfodaily',
       'open_interest_long_usd=true&open_interest_short_usd=true',
-      7,
+      30,
     );
 
-    // Fetch only the last 8 days of cumulative volume for daily calculation (7 days diff)
     const result = await DataApiClient.getPoolInfo({
       dataEndpoint: 'poolinfodaily',
       queryParams: 'aum_usd=true&cumulative_trading_volume_usd=true',
-      dataPeriod: 8,
+      dataPeriod: 30,
     });
 
     if (result) {
@@ -118,6 +137,7 @@ export default function FooterStats({
         cumulative_trading_volume_usd.length >= 2
       ) {
         const formattedVolumeData = [];
+
         for (let i = 1; i < cumulative_trading_volume_usd.length; i++) {
           formattedVolumeData.push({
             value:
@@ -125,6 +145,7 @@ export default function FooterStats({
               cumulative_trading_volume_usd[i - 1],
           });
         }
+
         setVolumeData(formattedVolumeData);
       }
     }
@@ -183,15 +204,23 @@ export default function FooterStats({
 
   const stats = [
     {
-      label: `${activeToken} Price`,
-      value: tokenHistoricalData[activeToken][tokenHistoricalData[activeToken].length - 1]?.close,
+      label: 'Custody Liquidity',
+      value:
+        custodyLiquidity && tokenPrice ? custodyLiquidity * tokenPrice : null,
     },
-    { label: 'VOL', value: volumeData[volumeData.length - 1]?.value || 0 },
-    { label: 'AUM', value: aumUsd },
+    {
+      label: `${activeToken} Price`,
+      value:
+        tokenHistoricalData[activeToken][
+          tokenHistoricalData[activeToken].length - 1
+        ]?.close,
+    },
     {
       label: 'OI',
       value: (mainPool?.oiLongUsd ?? 0) + (mainPool?.oiShortUsd ?? 0),
     },
+    { label: 'AUM', value: aumUsd },
+    { label: 'VOL', value: volumeData[volumeData.length - 1]?.value || 0 },
   ];
 
   const tokenImg = {
@@ -315,11 +344,11 @@ export default function FooterStats({
             animate={{ opacity: 1, y: '-2.5rem' }}
             exit={{ opacity: 0, y: '-2rem' }}
             transition={{ duration: 0.3 }}
-            className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col bg-secondary border border-inputcolor rounded-lg z-50 overflow-hidden"
+            className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col bg-secondary border border-inputcolor rounded-lg z-50 p-2"
           >
             <div
               className={twMerge(
-                'relative flex flex-row items-center justify-between gap-3 p-3 transition-opacity duration-300',
+                'relative flex flex-row items-center justify-between gap-3 p-3 transition-opacity duration-300 border border-inputcolor rounded-lg',
                 isTokenDataLoading
                   ? 'opacity-30 pointer-events-none cursor-not-allowed'
                   : '',
@@ -342,7 +371,8 @@ export default function FooterStats({
                       />
                     </div>
                   }
-                  openMenuClassName="top-3"
+                  openMenuClassName="top-3 rounded-lg"
+                  bgClassName="rounded-lg"
                   isDim
                 >
                   <MenuItems>
@@ -415,12 +445,48 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <FooterStatsAvailableLiq
-                  activeToken={activeToken}
-                  isLoading={isTokenDataLoading}
-                />
+                <div className="flex flex-row items-center justify-center gap-1 mt-1">
+                  <InfoAnnotation
+                    className="inline-flex ml-0 opacity-30"
+                    text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
+                  />
+                  <p className="text-xs opacity-30 font-boldy">
+                    Avail. long liq.
+                  </p>
+                  <AnimatePresence mode="wait">
+                    {custodyLiquidity !== null &&
+                      tokenPrice &&
+                      custody &&
+                      !isTokenDataLoading ? (
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        key={`${activeToken}-available-liq`}
+                      >
+                        <FormatNumber
+                          nb={custodyLiquidity * tokenPrice}
+                          format="currency"
+                          precision={0}
+                          className="text-xs opacity-50 transition-opacity duration-300"
+                          isDecimalDimmed={false}
+                        />
+                      </motion.span>
+                    ) : (
+                      <motion.div
+                        key="adx-staking-loader"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-lg"
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-              <ResponsiveContainer width={120} height={30}>
+              <ResponsiveContainer width={100} height={30}>
                 <LineChart data={tokenHistoricalData[activeToken]}>
                   <Line
                     type="monotone"
@@ -433,93 +499,97 @@ export default function FooterStats({
               </ResponsiveContainer>
             </div>
 
-            <div
-              className="flex flex-row items-center justify-between gap-3 p-3 border-t border-inputcolor hover:bg-third transition duration-300"
-              onClick={() => {
-                router.push('/monitoring');
-              }}
-            >
-              <div>
-                <p className="text-xs font-interMedium opacity-50">
-                  {' '}
-                  24h Volume
-                </p>
-                <FormatNumber
-                  nb={stats[1].value as number}
-                  className="text-base"
-                  format="currency"
-                  isDecimalDimmed={false}
-                />
-              </div>
-              <ResponsiveContainer width={120} height={30}>
-                <LineChart data={volumeData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#07956b"
-                    strokeWidth={2}
-                    dot={false}
+            <div className="flex flex-col border border-inputcolor rounded-lg overflow-hidden mt-3">
+              <div
+                className="flex flex-row items-center justify-between gap-3 p-3 border-inputcolor hover:bg-third transition duration-300"
+                onClick={() => {
+                  router.push('/monitoring');
+                }}
+              >
+                <div>
+                  <p className="text-xs font-interMedium opacity-50">
+                    {' '}
+                    24h Volume
+                  </p>
+                  <FormatNumber
+                    nb={stats[4].value as number}
+                    className="text-base"
+                    format="currency"
+                    isDecimalDimmed={false}
                   />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+                </div>
+                <ResponsiveContainer width={100} height={30}>
+                  <LineChart data={volumeData}>
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#07956b"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
 
-            <div
-              className="flex flex-row items-center justify-between gap-3 p-3 border-t border-inputcolor hover:bg-third transition duration-300"
-              onClick={() => {
-                router.push('/monitoring');
-              }}
-            >
-              <div>
-                <p className="text-xs font-interMedium opacity-50">AUM</p>
-                <FormatNumber
-                  nb={aumUsd}
-                  className="text-base"
-                  format="currency"
-                  isDecimalDimmed={false}
-                />
-              </div>
-              <ResponsiveContainer width={120} height={30}>
-                <LineChart data={aumData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#07956b"
-                    strokeWidth={2}
-                    dot={false}
+              <div
+                className="flex flex-row items-center justify-between gap-3 p-3 border-t border-inputcolor hover:bg-third transition duration-300"
+                onClick={() => {
+                  router.push('/monitoring');
+                }}
+              >
+                <div>
+                  <p className="text-xs font-interMedium opacity-50">AUM</p>
+                  <FormatNumber
+                    nb={aumUsd}
+                    className="text-base"
+                    format="currency"
+                    isDecimalDimmed={false}
                   />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+                </div>
+                <ResponsiveContainer width={100} height={30}>
+                  <LineChart data={aumData}>
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#07956b"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
 
-            <div
-              className="flex flex-row items-center justify-between gap-3 p-3 border-t border-inputcolor hover:bg-third transition duration-300"
-              onClick={() => {
-                router.push('/monitoring');
-              }}
-            >
-              <div>
-                <p className="text-xs font-interMedium opacity-50">
-                  Open Interest
-                </p>
-                <FormatNumber
-                  nb={(mainPool?.oiLongUsd ?? 0) + (mainPool?.oiShortUsd ?? 0)}
-                  className="text-base"
-                  format="currency"
-                  isDecimalDimmed={false}
-                />
-              </div>
-              <ResponsiveContainer width={120} height={30}>
-                <LineChart data={totalOpenInterestData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#07956b"
-                    strokeWidth={2}
-                    dot={false}
+              <div
+                className="flex flex-row items-center justify-between gap-3 p-3 border-t border-inputcolor hover:bg-third transition duration-300"
+                onClick={() => {
+                  router.push('/monitoring');
+                }}
+              >
+                <div>
+                  <p className="text-xs font-interMedium opacity-50">
+                    Open Interest
+                  </p>
+                  <FormatNumber
+                    nb={
+                      (mainPool?.oiLongUsd ?? 0) + (mainPool?.oiShortUsd ?? 0)
+                    }
+                    className="text-base"
+                    format="currency"
+                    isDecimalDimmed={false}
                   />
-                </LineChart>
-              </ResponsiveContainer>
+                </div>
+                <ResponsiveContainer width={100} height={30}>
+                  <LineChart data={totalOpenInterestData}>
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#07956b"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </motion.div>
         )}

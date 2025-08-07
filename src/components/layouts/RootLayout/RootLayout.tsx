@@ -77,6 +77,8 @@ export default function RootLayout({
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const [isPriorityFeeOpen, setIsPriorityFeeOpen] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const disableChat = useSelector((state) => state.settings.disableChat);
   const [isSearchUserProfilesOpen, setIsSearchUserProfilesOpen] =
     useState(false);
@@ -177,6 +179,10 @@ export default function RootLayout({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           adapters={adapters}
+          isPriorityFeeOpen={isPriorityFeeOpen}
+          isSettingsOpen={isSettingsOpen}
+          setIsPriorityFeeOpen={setIsPriorityFeeOpen}
+          setIsSettingsOpen={setIsSettingsOpen}
         />
       ) : (
         <BurgerMenu
@@ -236,6 +242,8 @@ export default function RootLayout({
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}
           setIsSearchUserProfilesOpen={setIsSearchUserProfilesOpen}
+          setIsSettingsOpen={setIsSettingsOpen}
+          setIsPriorityFeeOpen={setIsPriorityFeeOpen}
         />
       )}
 

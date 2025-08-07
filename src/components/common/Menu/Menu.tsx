@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   MouseEvent as ReactMouseEvent,
   ReactNode,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -21,6 +22,9 @@ export default function Menu({
   disableOnClickInside = false,
   isDim = false,
   openMenuTriggerType = 'click',
+  bgClassName,
+  isOpen = null,
+  setIsOpen,
 }: {
   forceOpen?: boolean; // Use for dev only
   trigger: ReactNode;
@@ -33,6 +37,9 @@ export default function Menu({
   disableOnClickInside?: boolean;
   isDim?: boolean;
   openMenuTriggerType?: 'click' | 'hover';
+  bgClassName?: string;
+  isOpen?: boolean | null;
+  setIsOpen?: (isOpen: boolean) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -41,6 +48,7 @@ export default function Menu({
   // Note 1: Clicks outside of parent trigger onClose
   useOnClickOutside(ref, () => {
     setIsMenuOpen(!isMenuOpen);
+    setIsOpen?.(false);
   });
 
   const variants = {
@@ -56,7 +64,14 @@ export default function Menu({
     }
 
     setIsMenuOpen(false);
+    setIsOpen?.(false);
   };
+
+  useEffect(() => {
+    if (isOpen !== null) {
+      setIsMenuOpen(isOpen);
+    }
+  }, [isOpen]);
 
   return (
     <>
@@ -121,7 +136,10 @@ export default function Menu({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.1 }}
-            className="absolute top-0 left-0 w-full h-full bg-main/85 z-30"
+            className={twMerge(
+              'absolute top-0 left-0 w-full h-full bg-main/85 z-30',
+              bgClassName,
+            )}
           />
         ) : null}
       </AnimatePresence>

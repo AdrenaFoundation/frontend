@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
@@ -21,8 +21,10 @@ import ottersecLogo from '@/../public/images/ottersec-logo.svg';
 import pplIcon from '@/../public/images/people-fill.svg';
 import rpcIcon from '@/../public/images/rpc.svg';
 import xLogo from '@/../public/images/x.svg';
+import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import usePriorityFee from '@/hooks/usePriorityFees';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
+import supabaseAnonClient from '@/supabaseAnonClient';
 import { PageProps } from '@/types';
 import { formatNumber } from '@/utils';
 
@@ -41,6 +43,8 @@ export default function SuperchargedFooter({
   activeRpc,
   rpcInfos,
   setIsSearchUserProfilesOpen,
+  setIsPriorityFeeOpen,
+  setIsSettingsOpen,
 }: {
   disableChat?: boolean;
   isMobile: boolean;
@@ -56,33 +60,102 @@ export default function SuperchargedFooter({
     latency: number | null;
   }[];
   setIsSearchUserProfilesOpen: (open: boolean) => void;
+  setIsPriorityFeeOpen: (open: boolean) => void;
+  setIsSettingsOpen: (open: boolean) => void;
 }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const wallet = useSelector((state) => state.walletState.wallet);
+  const walletAddress = wallet?.walletAddress ?? null;
+  const verifiedWalletAddresses = useSelector(
+    (state) => state.supabaseAuth.verifiedWalletAddresses,
+  );
+
   const [title, setTitle] = useState('Chat');
+
   const priorityFeeAmounts = usePriorityFee();
   const priorityFeeOption = useSelector(
     (state) => state.settings.priorityFeeOption,
   );
+  const currentPriorityFeeValue =
+    priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isCheckAdminLoading, setIsCheckAdminLoading] = useState(false);
 
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
-
   const [isNewNotification, setIsNewNotification] = useState(false);
 
   const [isAnnouncementView] = useState(false);
 
-  const currentPriorityFeeValue =
-    priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
-
   const [showAudits, setShowAudits] = useState(false);
+
+  useEffect(() => {
+    if (!walletAddress) {
+      return;
+    }
+
+    const checkAdminStatus = async () => {
+      setIsCheckAdminLoading(true);
+
+      const {
+        data: { session },
+      } = await supabaseAnonClient.auth.getSession();
+      try {
+        const response = await fetch(
+          `/api/verify_signature?walletAddress=${walletAddress}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(session
+                ? { Authorization: `Bearer ${session.access_token}` }
+                : {}),
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsAdmin(data.isAdmin);
+        } else {
+          console.error('Failed to verify admin status');
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+      } finally {
+        setIsCheckAdminLoading(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [walletAddress, verifiedWalletAddresses]);
 
   return (
     <>
       <footer className="fixed bottom-0 flex flex-row items-center justify-between w-full py-0 bg-secondary border-t border-t-inputcolor z-50">
         <div className="flex flex-row items-center ">
           <div
-            className="p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer transition-colors duration-300"
+            className={twMerge(
+              'p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer transition-colors duration-300',
+              isCheckAdminLoading && 'cursor-wait pointer-events-none',
+            )}
             onClick={() => {
-              router.push('/admin');
+              if (
+                walletAddress &&
+                !verifiedWalletAddresses.includes(walletAddress)
+              ) {
+                dispatch(setIsAuthModalOpen(true));
+              } else if (
+                isAdmin &&
+                walletAddress &&
+                verifiedWalletAddresses.includes(walletAddress)
+              ) {
+                router.push('/admin');
+              } else {
+                router.push('/trade');
+              }
             }}
           >
             <Image
@@ -184,7 +257,12 @@ export default function SuperchargedFooter({
 
           <FooterStatus />
 
-          <div className="flex flex-row items-center gap-2 p-2 px-4 border-r border-inputcolor">
+          <div
+            className="flex flex-row items-center gap-2 p-2 px-4 border-r border-inputcolor hover:bg-third transition-colors duration-300 cursor-pointer"
+            onClick={() => {
+              setIsPriorityFeeOpen(true);
+            }}
+          >
             <Image
               src={fuelIcon}
               alt="Priority Fee Settings"
@@ -200,7 +278,12 @@ export default function SuperchargedFooter({
             </p>
           </div>
 
-          <div className="flex flex-row items-center gap-1 p-2 px-4 border-r border-inputcolor">
+          <div
+            className="flex flex-row items-center gap-1 p-2 px-4 border-r border-inputcolor hover:bg-third transition-colors duration-300 cursor-pointer"
+            onClick={() => {
+              setIsSettingsOpen(true);
+            }}
+          >
             <Image
               src={rpcIcon}
               alt="RPC Settings"
@@ -316,8 +399,6 @@ export default function SuperchargedFooter({
               width={12}
             />
           </div>
-
-
 
           <div className="hidden 2xl:flex flex-row items-center gap-4 p-2 px-4 border-l border-inputcolor">
             <Link

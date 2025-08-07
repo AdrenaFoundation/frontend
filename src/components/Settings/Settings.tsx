@@ -32,6 +32,8 @@ export default function Settings({
   isGenesis = false,
   isMobile = false,
   setCloseMobileModal,
+  isOpen,
+  setIsOpen,
 }: {
   activeRpc: {
     name: string;
@@ -52,6 +54,8 @@ export default function Settings({
   isGenesis?: boolean;
   isMobile?: boolean;
   setCloseMobileModal?: (close: boolean) => void;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const settings = useSelector((state) => state.settings);
@@ -238,6 +242,8 @@ export default function Settings({
       )}
       disableOnClickInside={true}
       isDim={true}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
     >
       {content}
     </Menu>
