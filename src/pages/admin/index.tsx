@@ -5,6 +5,7 @@ import ErrorReport from '@/components/Admin/ErrorReport';
 import MaintenanceAlert from '@/components/Admin/MaintenanceAlert';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { useDispatch, useSelector } from '@/store/store';
 import supabaseAnonClient from '@/supabaseAnonClient';
 
@@ -71,7 +72,13 @@ export default function Admin() {
     );
   }
 
-  if (!walletAddress || !verifiedWalletAddresses.includes(walletAddress)) {
+  if (!walletAddress) {
+    return (
+      <WalletConnection />
+    );
+  }
+
+  if (!verifiedWalletAddresses.includes(walletAddress)) {
     return (
       <div className="flex flex-col items-center justify-center mx-auto max-w-4xl h-full">
         <div className="flex flex-col gap-3 border bg-third rounded-lg p-3">

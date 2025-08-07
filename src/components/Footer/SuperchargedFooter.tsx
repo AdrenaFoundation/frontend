@@ -9,16 +9,16 @@ import { twMerge } from 'tailwind-merge';
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
 import chatIcon from '@/../public/images/chat-text.svg';
 import discorLogo from '@/../public/images/discord.png';
-import genesisTimerBg from '@/../public/images/genesis-timer-bg.png';
 import githubIcon from '@/../public/images/github.svg';
 import bookIcon from '@/../public/images/Icons/book.svg';
 import documentIcon from '@/../public/images/Icons/document.svg';
 import fuelIcon from '@/../public/images/Icons/fuel-pump-fill.svg';
-import pplIcon from '@/../public/images/Icons/person-fill.svg';
 import searchIcon from '@/../public/images/Icons/search-user.svg';
 import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import offsideLabsLogo from '@/../public/images/offside-labs-logo.svg';
+import onlineCountBg from '@/../public/images/online-count-bg.svg';
 import ottersecLogo from '@/../public/images/ottersec-logo.svg';
+import pplIcon from '@/../public/images/people-fill.svg';
 import rpcIcon from '@/../public/images/rpc.svg';
 import xLogo from '@/../public/images/x.svg';
 import usePriorityFee from '@/hooks/usePriorityFees';
@@ -247,19 +247,6 @@ export default function SuperchargedFooter({
             )}
           </AnimatePresence>
 
-          <div
-            className="hidden lg:block py-2 px-4 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300"
-            onClick={() => setIsSearchUserProfilesOpen(true)}
-          >
-            <Image
-              src={searchIcon}
-              alt="Search Icon"
-              className="w-3.5 h-3.5"
-              height={12}
-              width={12}
-            />
-          </div>
-
           {disableChat === true ? null : (
             <div
               className="relative flex flex-row items-center gap-2 p-1.5 px-4 min-w-44 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300"
@@ -280,7 +267,7 @@ export default function SuperchargedFooter({
               </p>
 
               {isNewNotification ? (
-                <div className="flex items-center justify-center bg-redbright min-w-1.5 h-1.5 rounded-full ml-2" />
+                <div className="flex items-center justify-center bg-redbright min-w-1.5 rounded-full ml-2" />
               ) : null}
               <AnimatePresence>
                 {!isChatOpen ? (
@@ -289,14 +276,14 @@ export default function SuperchargedFooter({
                     animate={{ opacity: 1, y: '-1.65rem' }}
                     exit={{ opacity: 0, y: '-1rem' }}
                     transition={{ duration: 0.3 }}
-                    className="absolute top-0 left-0 w-full h-10 flex items-center justify-center"
+                    className="absolute top-0 -right-[2.0625rem] w-full flex items-center justify-center"
                   >
                     <Image
-                      src={genesisTimerBg}
-                      alt="Genesis Timer Background"
-                      className="absolute top-0 left-0 w-full"
+                      src={onlineCountBg}
+                      alt="Online Count Background"
+                      className="absolute top-0 right-0 w-full h-[1.625rem]"
                     />
-                    <div className="flex flex-row items-center justify-between w-[7.3rem] absolute top-[0.45rem] left-7">
+                    <div className="flex flex-row items-center justify-between w-[4.3rem] absolute top-[0.44rem] left-[3.3rem]">
                       <div className="flex flex-row items-center gap-1 opacity-50">
                         <Image
                           src={pplIcon}
@@ -305,7 +292,7 @@ export default function SuperchargedFooter({
                           height={12}
                           width={12}
                         />
-                        <p className="text-xxs font-mono">
+                        <p className="text-xxs font-mono mt-[0.068rem]">
                           {onlineCount ? onlineCount : '-'}
                         </p>
                       </div>
@@ -316,6 +303,21 @@ export default function SuperchargedFooter({
               </AnimatePresence>
             </div>
           )}
+
+          <div
+            className="hidden lg:block py-2 px-4 border-l border-inputcolor cursor-pointer hover:bg-third transition-colors duration-300"
+            onClick={() => setIsSearchUserProfilesOpen(true)}
+          >
+            <Image
+              src={searchIcon}
+              alt="Search Icon"
+              className="w-3.5 h-3.5"
+              height={12}
+              width={12}
+            />
+          </div>
+
+
 
           <div className="hidden 2xl:flex flex-row items-center gap-4 p-2 px-4 border-l border-inputcolor">
             <Link

@@ -31,7 +31,7 @@ export default function ViewsWarning() {
             {releventMessages.map((msg) => (
                 <div
                     key={msg.id}
-                    className="flex flex-row items-center justify-center gap-3 p-1 w-full z-20 border-b border-b-white/20"
+                    className="flex flex-row items-center justify-center gap-3 p-1 w-full z-20 border-b border-b-white/20 "
                     style={{ background: msg.color || '#b45309' }}
                 >
                     <div className="flex flex-row items-center gap-2">
