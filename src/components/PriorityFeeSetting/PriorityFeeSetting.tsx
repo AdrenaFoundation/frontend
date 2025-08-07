@@ -23,8 +23,8 @@ export default function PriorityFeeSetting({
 }: {
   setCloseMobileModal?: (close: boolean) => void;
   isMobile?: boolean;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const priorityFeeAmounts = usePriorityFee();

@@ -54,8 +54,8 @@ export default function Settings({
   isGenesis?: boolean;
   isMobile?: boolean;
   setCloseMobileModal?: (close: boolean) => void;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const settings = useSelector((state) => state.settings);
