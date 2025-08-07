@@ -98,7 +98,6 @@ import {
   findATAAddressSync,
   getJupiterApiQuote,
   getTokenSymbol,
-  isAccountInitialized,
   jupInstructionToTransactionInstruction,
   JupiterSwapError,
   nativeToUi,
@@ -4457,11 +4456,13 @@ export class AdrenaClient {
         owner,
         preInstructions,
       }),
-      this.checkATAAddressInitializedAndCreatePreInstruction({
-        mint: stakingRewardTokenMint,
-        owner,
-        preInstructions,
-      }),
+      // Use override if provided, otherwise create ATA
+      overrideRewardTokenAccount ||
+        this.checkATAAddressInitializedAndCreatePreInstruction({
+          mint: stakingRewardTokenMint,
+          owner,
+          preInstructions,
+        }),
     ]);
 
     const staking = this.getStakingPda(stakedTokenMint);

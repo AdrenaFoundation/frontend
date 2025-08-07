@@ -984,13 +984,6 @@ export function tryPubkey(p: string): PublicKey | null {
   }
 }
 
-export async function isAccountInitialized(
-  connection: Connection,
-  address: PublicKey,
-): Promise<boolean> {
-  return !!(await connection.getAccountInfo(address));
-}
-
 export async function getTokenAccountBalanceNullable(
   connection: Connection,
   ata: PublicKey,
