@@ -70,10 +70,10 @@ export default function StopLossTakeProfitInput({
     if (input !== null) {
       if (position.side === 'long') {
         priceChangePnL =
-          (position.sizeUsd * (input - position.price)) / markPrice - fees;
+          (position.sizeUsd * (input - position.price)) / position.price - fees;
       } else if (position.side === 'short') {
         priceChangePnL =
-          (position.sizeUsd * (position.price - input)) / markPrice - fees;
+          (position.sizeUsd * (position.price - input)) / position.price - fees;
       }
     }
 
