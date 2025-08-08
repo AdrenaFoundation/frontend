@@ -27,7 +27,6 @@ const PartnerCard: React.FC<Partner> = ({
       className={twMerge(
         'flex flex-row items-center justify-between pt-3 pb-3 pl-5 pr-5 rounded-xl relative z-10 hover:opacity-90 transition-opacity duration-300 min-h-[2.75rem] max-h-[2.75rem]',
         bgColor,
-        icon.includes('kamino') && 'pt-2 pb-2',
       )}
     >
       <div className="flex-1">
@@ -35,6 +34,7 @@ const PartnerCard: React.FC<Partner> = ({
       </div>
 
       <div className="flex items-center gap-3">
+        |
         <Image
           src={icon}
           alt="Partner logo"
