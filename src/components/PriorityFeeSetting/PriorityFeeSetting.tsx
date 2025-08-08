@@ -218,6 +218,7 @@ export default function PriorityFeeSetting({
       isDim={true}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
+      bgClassName="fixed"
     >
       {content}
     </Menu>

@@ -86,8 +86,8 @@ export default function FooterStats({
     try {
       const response = await fetch(
         `https://history.oraclesecurity.org/trading-view/data?feed=${token}USD&type=1D&from=${
-        // 1 month ago
-        Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
+          // 1 month ago
+          Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
         }&till=${Date.now()}`,
       );
 
@@ -372,7 +372,7 @@ export default function FooterStats({
                     </div>
                   }
                   openMenuClassName="top-3 rounded-lg"
-                  bgClassName="rounded-lg"
+                  bgClassName="rounded-lg fixed"
                   isDim
                 >
                   <MenuItems>
@@ -455,9 +455,9 @@ export default function FooterStats({
                   </p>
                   <AnimatePresence mode="wait">
                     {custodyLiquidity !== null &&
-                      tokenPrice &&
-                      custody &&
-                      !isTokenDataLoading ? (
+                    tokenPrice &&
+                    custody &&
+                    !isTokenDataLoading ? (
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

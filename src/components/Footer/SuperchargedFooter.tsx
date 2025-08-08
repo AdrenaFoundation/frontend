@@ -261,6 +261,7 @@ export default function SuperchargedFooter({
             className="flex flex-row items-center gap-2 p-2 px-4 border-r border-inputcolor hover:bg-third transition-colors duration-300 cursor-pointer"
             onClick={() => {
               setIsPriorityFeeOpen(true);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >
             <Image
@@ -282,6 +283,7 @@ export default function SuperchargedFooter({
             className="flex flex-row items-center gap-1 p-2 px-4 border-r border-inputcolor hover:bg-third transition-colors duration-300 cursor-pointer"
             onClick={() => {
               setIsSettingsOpen(true);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >
             <Image
