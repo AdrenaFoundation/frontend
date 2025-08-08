@@ -138,7 +138,7 @@ export default function TradingStats({
               className="text-lg"
             />
             <div className="opacity-50">/</div>
-            <div className="flex gap-1">
+            <div className="flex items-center gap-2">
               <FormatNumber
                 nb={livePositionsNb}
                 precision={0}

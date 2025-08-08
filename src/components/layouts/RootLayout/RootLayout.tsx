@@ -17,20 +17,22 @@ import tradeIcon from '@/../public/images/Icons/trade-icon.svg';
 import trophyIcon from '@/../public/images/Icons/trophy.svg';
 import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import mutagenIcon from '@/../public/images/mutagen.png';
+import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
-import ChatContainer from '@/components/Chat/ChatContainer';
+import SuperchargedFooter from '@/components/Footer/SuperchargedFooter';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
+import SearchUserProfiles from '@/components/SearchUserProfiles/SearchUserProfiles';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
   LinksType,
+  PageProps,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
 } from '@/types';
 
-import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
 export default function RootLayout({
@@ -48,6 +50,7 @@ export default function RootLayout({
   setCustomRpcUrl,
   setFavoriteRpc,
   adapters,
+  mainPool,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
@@ -69,13 +72,16 @@ export default function RootLayout({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   adapters: WalletAdapterExtended[];
+  mainPool: PageProps['mainPool'];
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const [isPriorityFeeOpen, setIsPriorityFeeOpen] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const disableChat = useSelector((state) => state.settings.disableChat);
-  // const [isSearchUserProfilesOpen, setIsSearchUserProfilesOpen] =
-  //   useState(false);
+  const [isSearchUserProfilesOpen, setIsSearchUserProfilesOpen] =
+    useState(false);
 
   const [pages, setPages] = useState<LinksType[]>([
     { name: 'Trade', link: '/trade', icon: tradeIcon },
@@ -173,6 +179,10 @@ export default function RootLayout({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           adapters={adapters}
+          isPriorityFeeOpen={isPriorityFeeOpen}
+          isSettingsOpen={isSettingsOpen}
+          setIsPriorityFeeOpen={setIsPriorityFeeOpen}
+          setIsSettingsOpen={setIsSettingsOpen}
         />
       ) : (
         <BurgerMenu
@@ -195,8 +205,9 @@ export default function RootLayout({
           setIsChatOpen={setIsChatOpen}
         />
       )}
+      <ViewsWarning />
 
-      <div className="w-full grow flex justify-center">
+      <div className="w-full grow flex justify-center sm:pb-10">
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',
@@ -210,18 +221,10 @@ export default function RootLayout({
       <ToastContainer />
       <Toaster />
 
-      {/* <SearchUserProfiles
+      <SearchUserProfiles
         isOpen={isSearchUserProfilesOpen}
         onClose={() => setIsSearchUserProfilesOpen(false)}
-      /> */}
-
-      {disableChat === true ? null : (
-        <ChatContainer
-          isMobile={!isBigScreen}
-          isChatOpen={isChatOpen}
-          setIsChatOpen={setIsChatOpen}
-        />
-      )}
+      />
 
       {!isBigScreen ? (
         <MobileNavbar
@@ -230,7 +233,18 @@ export default function RootLayout({
           userDelegatedVest={userDelegatedVest}
         />
       ) : (
-        <Footer />
+        <SuperchargedFooter
+          disableChat={disableChat}
+          isMobile={!isBigScreen}
+          isChatOpen={isChatOpen}
+          setIsChatOpen={setIsChatOpen}
+          mainPool={mainPool}
+          activeRpc={activeRpc}
+          rpcInfos={rpcInfos}
+          setIsSearchUserProfilesOpen={setIsSearchUserProfilesOpen}
+          setIsSettingsOpen={setIsSettingsOpen}
+          setIsPriorityFeeOpen={setIsPriorityFeeOpen}
+        />
       )}
 
       <QuestMenu isMobile={!isBigScreen} />

@@ -65,7 +65,7 @@ export default function ErrorReport() {
       fetchErrorReport(errorCode.trim());
       router.push(
         {
-          pathname: '/error_report',
+          pathname: '/admin',
           query: { code: errorCode.trim() },
         },
         undefined,
@@ -113,23 +113,22 @@ export default function ErrorReport() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6 bg-secondary rounded-xl mt-8">
-      <h1 className="text-xl font-boldy mb-6 text-center">
-        Error Report Lookup
-      </h1>
+    <div className="w-full max-w-4xl mx-auto p-4 border rounded-xl mt-8">
+      <h1 className="text-xl font-interSemibold mb-3 capitalize">Error Report Lookup</h1>
 
-      <div className="flex items-center gap-2 mb-8">
+      <div className="relative flex items-center gap-2">
         <input
           type="text"
           placeholder="Enter error code"
           value={errorCode}
           onChange={(e) => setErrorCode(e.target.value)}
-          className="text-sm p-3 rounded-lg text-ellipsis font-mono outline-none w-full border-0 tr-rounded-lg bg-inputcolor"
+          className="text-sm p-3 rounded-xl text-ellipsis font-mono outline-none w-full bg-inputcolor border border-white/10"
         />
         <Button
           title="Search"
           onClick={() => handleSearch()}
-          disabled={loading}
+          disabled={loading || !errorCode.trim()}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2"
         />
       </div>
 
@@ -146,7 +145,7 @@ export default function ErrorReport() {
       )}
 
       {reportData && !loading && (
-        <div className="bg-[#08141E] border border-[#1A2938] rounded-xl p-4">
+        <div className="bg-[#08141E] border border-[#1A2938] rounded-xl p-4 mt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <h2 className="text-lg font-interSemibold mb-2 text-white">
@@ -298,7 +297,7 @@ export default function ErrorReport() {
             <h2 className="text-lg font-semibold mb-2 text-white">
               Console Logs
             </h2>
-            <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor overflow-auto max-h-[300px]">
+            <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor overflow-auto max-h-[18.75rem] overscroll-contain">
               {formatConsoleLogs(reportData.console_log as unknown as string)}
             </div>
           </div>
@@ -308,7 +307,7 @@ export default function ErrorReport() {
               <h2 className="text-lg font-semibold mb-2 text-white">
                 Recent API Requests
               </h2>
-              <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor overflow-auto max-h-[300px]">
+              <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor overflow-auto max-h-[18.75rem overscroll-contain">
                 <pre className="text-xs font-mono">
                   {JSON.stringify(reportData.recent_post_data, null, 2)}
                 </pre>

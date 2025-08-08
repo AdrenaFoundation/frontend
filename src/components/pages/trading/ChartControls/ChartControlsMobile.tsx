@@ -44,18 +44,6 @@ export default function ChartControlsMobile({
       {/* Primary buttons - always visible */}
       <div className="flex gap-2 justify-center">
         <ChartToggleButton
-          isActive={chartPreferences.updateTPSLByDrag}
-          onClick={() => {
-            setChartPreferences((prev) => ({
-              ...prev,
-              updateTPSLByDrag: !prev.updateTPSLByDrag,
-            }));
-          }}
-        >
-          Drag. SL/TP
-        </ChartToggleButton>
-
-        <ChartToggleButton
           isActive={chartPreferences.showAllActivePositionsLiquidationLines}
           onClick={() => {
             setChartPreferences({

@@ -23,19 +23,26 @@ import ChatSidebar from './ChatSidebar';
 import FriendRequestView from './FriendRequestView';
 
 function ChatContainer({
+  title,
+  setTitle,
   isChatOpen,
   setIsChatOpen,
   isMobile = false,
+  setIsNewNotification,
+  setOnlineCount,
 }: {
+  title: string;
+  setTitle: (title: string) => void;
+  setIsNewNotification: (isNew: boolean) => void;
   isMobile: boolean;
   isChatOpen: boolean;
   setIsChatOpen: (open: boolean) => void;
+  setOnlineCount: (count: number | null) => void;
 }) {
   const { wallet } = useSelector((state) => state.walletState);
   const walletAddress = wallet?.walletAddress || null;
 
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
-
 
   const {
     chatrooms,
@@ -62,7 +69,7 @@ function ChatContainer({
     isSubscribeToFriendRequests: true,
   });
 
-  const { connectedUsers } = useLiveCount({
+  const { connectedUsers, connectedCount } = useLiveCount({
     walletAddress,
     refreshInterval: 30000, // refresh every 30 seconds
   });
@@ -75,7 +82,6 @@ function ChatContainer({
 
   const [isChatroomsOpen, setIsChatroomsOpen] = useState(true);
 
-  const [title, setTitle] = useState('Chat');
   const [activeProfile, setActiveProfile] =
     useState<UserProfileMetadata | null>(null);
 
@@ -123,6 +129,7 @@ function ChatContainer({
 
       setTitle(newTitle ?? '');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     chatrooms,
     walletAddress,
@@ -132,6 +139,13 @@ function ChatContainer({
   ]);
 
   useEffect(() => {
+    if (connectedCount !== null) {
+      setOnlineCount(connectedCount);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectedCount]);
+
+  useEffect(() => {
     if (!walletAddress) return;
     const totalPendingRequests = friendRequests.filter(
       (req) =>
@@ -139,14 +153,14 @@ function ChatContainer({
     ).length;
 
     const usersTotalUnreadMessages = chatrooms.reduce((acc, room) => {
-
-      if ((userProfilesMap[walletAddress] &&
-        room.type === 'community' &&
-        userProfilesMap[walletAddress].team !== 0 &&
-        [
-          GENERAL_CHAT_ROOM_ID,
-          userProfilesMap[walletAddress].team === 1 ? 2 : 1,
-        ].includes(room.id)) ||
+      if (
+        (userProfilesMap[walletAddress] &&
+          room.type === 'community' &&
+          userProfilesMap[walletAddress].team !== 0 &&
+          [
+            GENERAL_CHAT_ROOM_ID,
+            userProfilesMap[walletAddress].team === 1 ? 2 : 1,
+          ].includes(room.id)) ||
         room.type === 'private'
       ) {
         return acc + room.unread_count;
@@ -156,7 +170,15 @@ function ChatContainer({
     }, 0);
 
     setTotalNotifications(totalPendingRequests + usersTotalUnreadMessages);
-  }, [friendRequests, userProfilesMap, walletAddress, chatrooms, totalUnreadCount]);
+    setIsNewNotification(totalPendingRequests + usersTotalUnreadMessages > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    friendRequests,
+    userProfilesMap,
+    walletAddress,
+    chatrooms,
+    totalUnreadCount,
+  ]);
 
   return (
     <>
@@ -362,26 +384,28 @@ function ChatContainerWrapper({
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ height: '2.5625rem', width: '20rem' }}
-        animate={{
-          height: isChatOpen ? height : '2.5625rem',
-          width: isChatOpen ? '35.5rem' : '20rem',
-        }}
-        exit={{ height: '2.5625rem', width: '20rem' }}
-        transition={{ duration: 0.3 }}
-        className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-t-lg min-w-[18.75rem] overflow-hidden"
-        style={{ userSelect: isDragging ? 'none' : 'auto' }}
-      >
-        <div
-          className={twMerge(
-            'absolute -top-2 w-full hover:bg-blue/50 h-[0.625rem] transition-colors duration-300 cursor-ns-resize',
-            isDragging ? 'bg-blue/50' : 'bg-transparent',
-          )}
-          onMouseDown={handleMouseDown}
-        />
-        {children}
-      </motion.div>
+      {isChatOpen ? (
+        <motion.div
+          initial={{ opacity: 0, y: '-2rem' }}
+          animate={{ opacity: 1, y: '-2.5rem' }}
+          exit={{ opacity: 0, y: '-2rem' }}
+          transition={{ duration: 0.3 }}
+          className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-lg w-[32rem] overflow-hidden"
+          style={{
+            userSelect: isDragging ? 'none' : 'auto',
+            height: height || 'auto',
+          }}
+        >
+          <div
+            className={twMerge(
+              'absolute -top-2 w-full hover:bg-blue/50 h-[0.625rem] transition-colors duration-300 cursor-ns-resize',
+              isDragging ? 'bg-blue/50' : 'bg-transparent',
+            )}
+            onMouseDown={handleMouseDown}
+          />
+          {children}
+        </motion.div>
+      ) : null}
     </AnimatePresence>
   );
 }

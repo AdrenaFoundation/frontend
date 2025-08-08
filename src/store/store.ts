@@ -6,6 +6,7 @@ import {
 } from 'react-redux';
 
 import borrowRatesReducer from '@/reducers/borrowRatesReducer';
+import statusReducer from '@/reducers/statusReducer';
 import streamingTokenPricesReducer from '@/reducers/streamingTokenPricesReducer';
 import supabaseAuthReducer from '@/reducers/supabaseAuthReducer';
 import tokenPricesReducer from '@/reducers/tokenPricesReducer';
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   walletTokenBalances: walletBalancesReducer,
   borrowRates: borrowRatesReducer,
   settings: settingsReducer,
+  status: statusReducer,
   supabaseAuth: supabaseAuthReducer,
 });
 
