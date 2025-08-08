@@ -5,7 +5,7 @@ import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana';
 import { Notifications, NotificationsButton } from '@dialectlabs/react-ui';
 import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import Image from 'next/image';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import notificationIcon from '@/../public/images/Icons/bell-fill.svg';
@@ -39,10 +39,14 @@ export const DialectNotification = ({
   isMobile?: boolean;
 }) => {
   const wallet = useSelector((state) => state.walletState.wallet);
+  const hasShownNotification = useRef(false);
+  const lastAuthStatus = useRef<boolean | null>(null);
 
   const key = 'dialect-auth-token-' + (wallet?.walletAddress ?? '');
 
-  const isAuthenticated = Boolean(localStorage.getItem(key));
+  const isAuthenticated = useMemo(() => {
+    return Boolean(localStorage.getItem(key));
+  }, [key]);
 
   const adapter = adapters.find((x) => x.name === 'Phantom');
 
@@ -72,15 +76,33 @@ export const DialectNotification = ({
   }, [adapter, wallet]);
 
   useEffect(() => {
-    if (wallet?.walletAddress && isDialectSubscriber && !isAuthenticated) {
+    if (
+      wallet?.walletAddress &&
+      isDialectSubscriber &&
+      !isAuthenticated &&
+      document.hasFocus() &&
+      !hasShownNotification.current &&
+      lastAuthStatus.current !== isAuthenticated
+    ) {
+      hasShownNotification.current = true;
+      lastAuthStatus.current = isAuthenticated;
+
       addNotification({
         type: 'info',
         title: 'Dialect session has expired',
-        message: 'Please sign message again to view your Dialect notifications.',
+        message:
+          'Please sign message again to view your Dialect notifications.',
         duration: 'long',
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    lastAuthStatus.current = isAuthenticated;
+  }, [wallet?.walletAddress, isDialectSubscriber, isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated && hasShownNotification.current) {
+      hasShownNotification.current = false;
+    }
   }, [isAuthenticated]);
 
   if (!isConnected || !wallet || !customWalletAdapter) return null;
@@ -100,7 +122,7 @@ export const DialectNotification = ({
                 onClick={() => setOpen(!open)}
                 className={twMerge(
                   ' !group !z-10 !border-r !border-[#414E5E] !p-1.5 !px-1.5 hover:bg-third transition-colors cursor-pointer rounded-l-lg',
-                  open && 'bg-third', // Visual feedback when open or pinned
+                  open && 'bg-third',
                   !wallet?.walletAddress && 'cursor-not-allowed opacity-50',
                   isMobile && '!border !border-[#414E5E] !p-2 !rounded-full',
                 )}
@@ -123,7 +145,7 @@ export const DialectNotification = ({
                       isMobile && '!top-0 !right-0',
                     )}
                     style={{
-                      backgroundColor: '#ef4444', // Force red color
+                      backgroundColor: '#ef4444',
                       animation:
                         'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     }}
