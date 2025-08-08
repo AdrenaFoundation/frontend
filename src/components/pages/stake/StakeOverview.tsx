@@ -78,7 +78,7 @@ export default function StakeOverview({
       : {
         size: 'desc',
         duration: 'asc',
-        lastClicked: 'size',
+        lastClicked: 'duration',
       };
   });
 
