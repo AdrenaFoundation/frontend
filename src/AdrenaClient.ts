@@ -103,6 +103,7 @@ import {
   nativeToUi,
   parseTransactionError,
   PercentilePriorityFeeList,
+  isAccountInitialized,
   sleep,
   u128SplitToBN,
   uiToNative,
@@ -213,6 +214,10 @@ export class AdrenaClient {
       if (!this.connection) throw new Error('Connection not found');
 
       const ataAddress = findATAAddressSync(owner, mint);
+
+      if (await isAccountInitialized(this.connection, ataAddress)) {
+        return ataAddress;
+      }
 
       preInstructions.push(
         createAssociatedTokenAccountIdempotentInstruction(
