@@ -35,7 +35,6 @@ export default function ALPSwap({
         !connected && 'overflow-hidden',
       )}
     >
-
       <TabSelect
         selected={selectedAction as string}
         tabs={[
