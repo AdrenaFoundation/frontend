@@ -137,7 +137,7 @@ export default function MutagenLeaderboard({
             )}
 
             {d.title !== null ? (
-              <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
+              <div className="text-[0.68em] font-boldy text-txtfade truncate max-w-[6rem]">
                 {USER_PROFILE_TITLES[d.title]}
               </div>
             ) : null}
@@ -434,7 +434,7 @@ export default function MutagenLeaderboard({
             )}
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-3">
-                <span className="font-boldy text-white text-xl truncate">
+                <span className="font-boldy text-white text-xl truncate flex-1 min-w-0">
                   {userRow.nickname}
                 </span>
                 {userRow.title !== null && (
@@ -442,21 +442,25 @@ export default function MutagenLeaderboard({
                     &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
                   </span>
                 )}
-                <span className="font-boldy text-txtfade text-xl">|</span>
-                <span className="font-boldy text-white text-xl sm:flex hidden">
+                <span className="font-boldy text-txtfade text-xl flex-shrink-0">
+                  |
+                </span>
+                <span className="font-boldy text-white text-xl sm:flex hidden flex-shrink-0">
                   Rank:
                 </span>
-                <span className="text-sm font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">
+                <span className="text-sm font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow flex-shrink-0">
                   #{userRow.rank}
                 </span>
-                <span className="font-boldy text-txtfade text-xl">|</span>
-                <span className="font-boldy text-white text-xl sm:flex hidden">
+                <span className="font-boldy text-txtfade text-xl flex-shrink-0">
+                  |
+                </span>
+                <span className="font-boldy text-white text-xl sm:flex hidden flex-shrink-0">
                   Mutagen:
                 </span>
-                <span className="text-xl font-boldy text-mutagen sm:flex hidden">
+                <span className="text-xl font-boldy text-mutagen sm:flex hidden flex-shrink-0">
                   {formatNumber(userRow.totalPoints, 2, 0)}
                 </span>
-                <span className="text-xl font-boldy text-mutagen sm:hidden flex items-center">
+                <span className="text-xl font-boldy text-mutagen sm:hidden flex items-center flex-shrink-0">
                   <img
                     src="https://app.adrena.xyz/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fneedle.fd8822dd.png&w=64&q=75"
                     alt="Mutagen"
@@ -481,7 +485,7 @@ export default function MutagenLeaderboard({
         paginationClassName="scale-[80%] p-0"
         nbItemPerPage={itemsPerPage}
         nbItemPerPageWhenBreakpoint={3}
-        breakpoint="0" // No breakpoint
+        breakpoint="0"
         rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
         rowTitleWidth="0%"
         isFirstColumnId
