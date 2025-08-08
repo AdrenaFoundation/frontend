@@ -25,8 +25,9 @@ const PartnerCard: React.FC<Partner> = ({
   >
     <div
       className={twMerge(
-        'flex flex-row items-center justify-between pt-3 pb-3 pl-5 pr-5 rounded-xl relative z-10 hover:opacity-90 transition-opacity duration-300',
+        'flex flex-row items-center justify-between pt-3 pb-3 pl-5 pr-5 rounded-xl relative z-10 hover:opacity-90 transition-opacity duration-300 min-h-[2.75rem] max-h-[2.75rem]',
         bgColor,
+        icon.includes('kamino') && 'pt-2 pb-2',
       )}
     >
       <div className="flex-1">
@@ -39,7 +40,10 @@ const PartnerCard: React.FC<Partner> = ({
           alt="Partner logo"
           width={20}
           height={20}
-          className="w-[5rem] h-5 object-contain"
+          className={twMerge(
+            'w-[5rem] h-auto object-contain',
+            icon.includes('carrot') && 'translate-y-[-0.16rem]',
+          )}
         />
         <Image
           src="/images/Icons/arrow-sm-45.svg"
@@ -63,7 +67,7 @@ const PARTNERS: Partner[] = [
     link: 'https://boost.deficarrot.com/tokens/GyTsdytwPU2oRK9YfpJz8Nb5auxuPegSPrTA5gWTb2o',
   },
   {
-    description: 'Multiply your yield with low-risk vaults',
+    description: 'Multiply your yield with low-risk',
     icon: '/images/kamino.svg',
     gradientColors:
       'bg-[linear-gradient(110deg,#2b5dff,#001763,#2b5dff)] animate-text-shimmer bg-[length:250%_100%]',
