@@ -455,7 +455,7 @@ export default function OwnerBloc({
           return true;
         }
 
-        return false;
+        return true;
       },
     );
 
@@ -475,7 +475,7 @@ export default function OwnerBloc({
           return false;
         }
 
-        return true;
+        return false;
       },
     );
 
