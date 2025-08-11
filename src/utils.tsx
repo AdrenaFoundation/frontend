@@ -1095,7 +1095,6 @@ export async function isAccountInitialized(
     return false;
   }
 
-  // Check if account has sufficient rent exemption
   const rentExemptionAmount =
     await connection.getMinimumBalanceForRentExemption(accountInfo.data.length);
 
