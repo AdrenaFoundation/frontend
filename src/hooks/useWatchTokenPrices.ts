@@ -21,7 +21,6 @@ export default function useWatchTokenPrices() {
 
   const loadChaosLabsPrices = useCallback(async () => {
     if (!dispatch) return;
-    dispatch(setTokenPricesWebSocketLoading(true));
 
     try {
       const latestPrices = await DataApiClient.getChaosLabsPrices();
