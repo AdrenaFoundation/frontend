@@ -10,6 +10,13 @@ import Checkbox from '../common/Checkbox/Checkbox';
 import Loader from '../Loader/Loader';
 
 export default function MaintenanceAlert() {
+  const orange = '#b45309';
+  const blue = '#3a86ff';
+  const green = '#07956b';
+  const red = '#c9243a';
+
+  const COLOR_SWATCHES = [orange, blue, green, red];
+
   const {
     messages,
     loading,
@@ -24,8 +31,8 @@ export default function MaintenanceAlert() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editMsg, setEditMsg] = useState('');
   const [editPages, setEditPages] = useState<string[]>([]);
-  const [color, setColor] = useState<string>('#b45309');
-  const [editColor, setEditColor] = useState<string>('#b45309');
+  const [color, setColor] = useState<string>(orange);
+  const [editColor, setEditColor] = useState<string>(orange);
 
   const PAGES = [
     'trade',
@@ -36,53 +43,34 @@ export default function MaintenanceAlert() {
     'ranked',
   ];
 
-  const COLOR_SWATCHES = [
-    '#b45309', // orange (default)
-    '#3a86ff', // blue
-    '#07956b', // green
-    '#c9243a', // red
-  ];
-
   const handleCreate = async () => {
-    try {
-      await createMessage(msg, checkedPages, color);
-      setMsg('');
-      setCheckedPages([]);
-      setColor('#b45309');
-    } catch (err) {
-      console.error('Failed to create maintenance message:', err);
-    }
+    await createMessage(msg, checkedPages, color);
+    setMsg('');
+    setCheckedPages([]);
+    setColor(orange);
   };
 
   const handleEdit = (message: MaintenanceMessage) => {
     setEditingId(message.id);
     setEditMsg(message.message);
     setEditPages(message.pages);
-    setEditColor(message.color || '#b45309');
+    setEditColor(message.color || orange);
   };
 
   const handleUpdate = async (id: number) => {
-    try {
-      await updateMessage(id, {
-        message: editMsg,
-        pages: editPages,
-        color: editColor,
-      });
-      setEditingId(null);
-      setEditMsg('');
-      setEditPages([]);
-      setEditColor('#b45309');
-    } catch (err) {
-      console.error('Failed to update maintenance message:', err);
-    }
+    await updateMessage(id, {
+      message: editMsg,
+      pages: editPages,
+      color: editColor,
+    });
+    setEditingId(null);
+    setEditMsg('');
+    setEditPages([]);
+    setEditColor(orange);
   };
 
   const handleDelete = async (id: number) => {
-    try {
-      await deleteMessage(id);
-    } catch (err) {
-      console.error('Failed to delete maintenance message:', err);
-    }
+    await deleteMessage(id);
   };
 
   const cancelEdit = () => {
@@ -97,11 +85,11 @@ export default function MaintenanceAlert() {
         Create New Maintenance Message
       </h1>
 
-      {error && (
+      {error ? (
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
           <p className="text-red-400 text-sm">{error}</p>
         </div>
-      )}
+      ) : null}
 
       {/* Create New Message */}
       <div className="mb-8">
@@ -228,7 +216,7 @@ export default function MaintenanceAlert() {
                           >
                             <Checkbox
                               checked={editPages.includes(page)}
-                              onChange={() => { }}
+                              onChange={() => {}}
                             />
                             <span className="ml-1 text-xs font-interMedium capitalize">
                               {page}

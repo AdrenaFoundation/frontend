@@ -10,6 +10,14 @@ export type SetConnectionStatusAction = {
   };
 };
 
+export type SetConnectionLoadingStatusAction = {
+  type: 'setConnectionLoadingStatus';
+  payload: {
+    service: keyof StatusState;
+    isLoading: boolean;
+  };
+};
+
 export type SetMultipleConnectionStatusAction = {
   type: 'setMultipleConnectionStatus';
   payload: {
@@ -19,6 +27,7 @@ export type SetMultipleConnectionStatusAction = {
 
 export type StatusActions =
   | SetConnectionStatusAction
+  | SetConnectionLoadingStatusAction
   | SetMultipleConnectionStatusAction;
 
 export const setConnectionStatus =
@@ -27,6 +36,15 @@ export const setConnectionStatus =
     dispatch({
       type: 'setConnectionStatus',
       payload: { service, status },
+    });
+  };
+
+export const setConnectionLoadingStatus =
+  (service: keyof StatusState, isLoading: boolean) =>
+  async (dispatch: Dispatch<SetConnectionLoadingStatusAction>) => {
+    dispatch({
+      type: 'setConnectionLoadingStatus',
+      payload: { service, isLoading },
     });
   };
 
@@ -50,3 +68,15 @@ export const setChatWebSocketStatus = (status: boolean) =>
 
 export const setDataApiClientStatus = (status: boolean) =>
   setConnectionStatus('dataApiClient', status);
+
+export const setTokenPricesWebSocketLoading = (isLoading: boolean) =>
+  setConnectionLoadingStatus('tokenPricesWebSocketLoading', isLoading);
+
+export const setNotificationsWebSocketLoading = (isLoading: boolean) =>
+  setConnectionLoadingStatus('notificationsWebSocketLoading', isLoading);
+
+export const setChatWebSocketLoading = (isLoading: boolean) =>
+  setConnectionLoadingStatus('chatWebSocketLoading', isLoading);
+
+export const setDataApiClientLoading = (isLoading: boolean) =>
+  setConnectionLoadingStatus('dataApiClientLoading', isLoading);

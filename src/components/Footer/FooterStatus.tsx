@@ -1,15 +1,29 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import { useSelector } from '@/store/store';
 
 import LiveIcon from '../common/LiveIcon/LiveIcon';
 
 export default function FooterStatus() {
-  const { chatWebSocket, dataApiClient, notificationsWebSocket, tokenPricesWebSocket } = useSelector((state) => state.status);
+  const {
+    chatWebSocket,
+    notificationsWebSocket,
+    tokenPricesWebSocket,
+    chatWebSocketLoading,
+    notificationsWebSocketLoading,
+    tokenPricesWebSocketLoading,
+  } = useSelector((state) => state.status);
   const [showSubscriptions, setShowSubscriptions] = useState(false);
 
-  const isOperational = chatWebSocket && dataApiClient && notificationsWebSocket && tokenPricesWebSocket;
+  const isOperational =
+    chatWebSocket && notificationsWebSocket && tokenPricesWebSocket;
+
+  const isLoading =
+    chatWebSocketLoading ||
+    notificationsWebSocketLoading ||
+    tokenPricesWebSocketLoading;
 
   return (
     <div
@@ -25,7 +39,14 @@ export default function FooterStatus() {
       <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
 
       <LiveIcon isLive={isOperational} />
-      <p className="text-xs font-interMedium">{isOperational ? 'Operational' : 'Refresh'}</p>
+      <p
+        className={twMerge(
+          'text-xs font-interMedium transition-opacity duration-300',
+          isLoading && 'opacity-30',
+        )}
+      >
+        {isOperational ? 'Operational' : 'Refresh'}
+      </p>
 
       <AnimatePresence>
         {showSubscriptions && (
@@ -39,15 +60,11 @@ export default function FooterStatus() {
             <ul className="flex flex-col gap-3">
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={tokenPricesWebSocket} />
-                <p className="font-boldy text-sm opacity-75">
-                  Token prices
-                </p>
+                <p className="font-boldy text-sm opacity-75">Token prices</p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={notificationsWebSocket} />
-                <p className="font-boldy text-sm opacity-75">
-                  Notifications
-                </p>
+                <p className="font-boldy text-sm opacity-75">Notifications</p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={chatWebSocket} />
@@ -58,5 +75,5 @@ export default function FooterStatus() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

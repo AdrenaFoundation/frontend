@@ -1,6 +1,9 @@
 import { useCallback, useEffect } from 'react';
 
-import { setTokenPricesWebSocketStatus } from '@/actions/statusActions';
+import {
+  setTokenPricesWebSocketLoading,
+  setTokenPricesWebSocketStatus,
+} from '@/actions/statusActions';
 import { setTokenPrice } from '@/actions/tokenPrices';
 import DataApiClient from '@/DataApiClient';
 import { useDispatch } from '@/store/store';
@@ -18,6 +21,7 @@ export default function useWatchTokenPrices() {
 
   const loadChaosLabsPrices = useCallback(async () => {
     if (!dispatch) return;
+    dispatch(setTokenPricesWebSocketLoading(true));
 
     try {
       const latestPrices = await DataApiClient.getChaosLabsPrices();
@@ -40,6 +44,9 @@ export default function useWatchTokenPrices() {
     } catch (error) {
       dispatch(setTokenPricesWebSocketStatus(false));
       console.error('Error loading oracle prices:', error);
+    } finally {
+      dispatch(setTokenPricesWebSocketLoading(false));
+      dispatch(setTokenPricesWebSocketStatus(true));
     }
   }, [dispatch]);
 

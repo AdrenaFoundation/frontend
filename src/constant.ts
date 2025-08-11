@@ -1862,3 +1862,6 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
     additionalSwapToken: true,
   },
 ];
+
+export const ADRENA_GREEN = '#07956B';
+export const ADRENA_RED = '#C9243A';

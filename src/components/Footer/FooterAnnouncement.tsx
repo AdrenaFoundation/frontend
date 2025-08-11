@@ -2,9 +2,7 @@ import { motion } from 'framer-motion';
 import React from 'react';
 
 export default function FooterAnnouncement() {
-  const announcements = 'Black market is now live! 🚀';
-  const announcementChinese = '黑市现已上线！🚀';
-  const announcementFrench = 'Le marché noir est maintenant en direct ! 🚀';
+  const announcements: string[] = []; // TODO: Replace with API data
 
   return (
     <motion.div
@@ -29,11 +27,11 @@ export default function FooterAnnouncement() {
           }}
           style={{ willChange: 'transform' }}
         >
-          <p className="text-xs font-interMedium opacity-75">{announcementChinese}</p>
-
-          <p className="text-xs font-interMedium opacity-75">{announcements}</p>
-
-          <p className="text-xs font-interMedium opacity-75">{announcementFrench}</p>
+          {announcements.map((announcement, index) => (
+            <p key={index} className="text-xs font-interMedium opacity-75">
+              {announcement}
+            </p>
+          ))}
         </motion.div>
       </div>
     </motion.div>

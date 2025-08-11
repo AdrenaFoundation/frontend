@@ -1,7 +1,10 @@
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { setNotificationsWebSocketStatus } from '@/actions/statusActions';
+import {
+  setNotificationsWebSocketLoading,
+  setNotificationsWebSocketStatus,
+} from '@/actions/statusActions';
 import { useDispatch, useSelector } from '@/store/store';
 import supabaseAnonClient from '@/supabaseAnonClient';
 import { AdrenaNotificationData } from '@/types';
@@ -162,12 +165,15 @@ export const useNotifications = (
         },
       )
       .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('Subscribed to notifications channel');
-        } else {
+        if (status !== 'SUBSCRIBED') {
           dispatch(setNotificationsWebSocketStatus(false));
         }
+
+        console.log('Subscribed to notifications channel');
       });
+
+    dispatch(setNotificationsWebSocketLoading(false));
+    dispatch(setNotificationsWebSocketStatus(true));
 
     setChannel(newChannel);
 

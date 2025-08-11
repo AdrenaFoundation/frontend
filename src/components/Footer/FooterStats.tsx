@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { Line, LineChart, ResponsiveContainer } from 'recharts';
+import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import bonkLogo from '@/../public/images/bonk.png';
@@ -11,6 +11,7 @@ import btcLogo from '@/../public/images/btc.svg';
 import arrowDropdownIcon from '@/../public/images/Icons/arrow-down-2.svg';
 import arrowIcon from '@/../public/images/Icons/arrow-slim.svg';
 import solLogo from '@/../public/images/sol.svg';
+import { ADRENA_GREEN, ADRENA_RED } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
@@ -24,6 +25,7 @@ import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import FormatNumber from '../Number/FormatNumber';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
+import { CHAOS_API_ENDPOINT } from '../pages/trading/TradingChart/datafeed';
 
 export default function FooterStats({
   mainPool,
@@ -49,6 +51,35 @@ export default function FooterStats({
     BTC: [],
   });
   const [aumData, setAumData] = useState<RechartsData[]>([]);
+
+  const tokenDataArr = tokenHistoricalData[activeToken];
+
+  const firstPrice =
+    typeof tokenDataArr[0]?.close === 'number'
+      ? Number(tokenDataArr[0].close)
+      : null;
+
+  const lastPrice =
+    typeof tokenDataArr[tokenDataArr.length - 1]?.close === 'number'
+      ? Number(tokenDataArr[tokenDataArr.length - 1].close)
+      : null;
+
+  const priceColor = useCallback(() => {
+    if (firstPrice === null || lastPrice === null) {
+      return 'text-white'; // Default color if no data
+    }
+
+    if (lastPrice > firstPrice) {
+      return 'text-green';
+    }
+
+    if (lastPrice < firstPrice) {
+      return 'text-redbright';
+    }
+
+    return 'text-white';
+  }, [firstPrice, lastPrice])();
+
   const [volumeData, setVolumeData] = useState<RechartsData[]>([]);
   const [totalOpenInterestData, setTotalOpenInterestData] = useState<
     RechartsData[]
@@ -85,9 +116,9 @@ export default function FooterStats({
     setIsTokenDataLoading(true);
     try {
       const response = await fetch(
-        `https://history.oraclesecurity.org/trading-view/data?feed=${token}USD&type=1D&from=${
-          // 1 month ago
-          Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
+        `${CHAOS_API_ENDPOINT}/trading-view/data?feed=${token}USD&type=1H&from=${
+          // past 24 hours
+          Math.floor(Date.now() / 1000) - 24 * 60 * 60
         }&till=${Date.now()}`,
       );
 
@@ -204,16 +235,16 @@ export default function FooterStats({
 
   const stats = [
     {
-      label: 'Custody Liquidity',
-      value:
-        custodyLiquidity && tokenPrice ? custodyLiquidity * tokenPrice : null,
-    },
-    {
-      label: `${activeToken} Price`,
+      label: `24h ${activeToken} Price`,
       value:
         tokenHistoricalData[activeToken][
           tokenHistoricalData[activeToken].length - 1
         ]?.close,
+    },
+    {
+      label: `${activeToken} Liquidity`,
+      value:
+        custodyLiquidity && tokenPrice ? custodyLiquidity * tokenPrice : null,
     },
     {
       label: 'OI',
@@ -338,7 +369,7 @@ export default function FooterStats({
       </div>
 
       <AnimatePresence>
-        {showDetails && (
+        {showDetails ? (
           <motion.div
             initial={{ opacity: 0, y: '-2rem' }}
             animate={{ opacity: 1, y: '-2.5rem' }}
@@ -359,7 +390,7 @@ export default function FooterStats({
                   trigger={
                     <div className="flex flex-row items-center gap-1 mb-1 opacity-50 hover:opacity-100 transition-opacity duration-300">
                       <p className="text-xs font-interMedium">
-                        {activeToken} Price
+                        24h {activeToken} Price
                       </p>
 
                       <Image
@@ -435,12 +466,8 @@ export default function FooterStats({
                   />
 
                   <FormatNumber
-                    nb={
-                      (tokenHistoricalData[activeToken][
-                        tokenHistoricalData[activeToken].length - 1
-                      ]?.close as number) || 0
-                    }
-                    className="text-base"
+                    nb={typeof lastPrice === 'number' ? lastPrice : 0}
+                    className={`text-base ${priceColor}`}
                     format="currency"
                     isDecimalDimmed={false}
                   />
@@ -486,12 +513,22 @@ export default function FooterStats({
                   </AnimatePresence>
                 </div>
               </div>
-              <ResponsiveContainer width={100} height={30}>
+              <ResponsiveContainer width={100} height={50}>
                 <LineChart data={tokenHistoricalData[activeToken]}>
+                  <YAxis
+                    domain={[
+                      (dataMin: number) => dataMin * 0.999, // add a little padding
+                      (dataMax: number) => dataMax * 1.001,
+                    ]}
+                    tickFormatter={(v) => `$${v.toFixed(2)}`}
+                    hide={true}
+                  />
                   <Line
                     type="monotone"
                     dataKey="close"
-                    stroke="#07956b"
+                    stroke={
+                      priceColor === 'text-green' ? ADRENA_GREEN : ADRENA_RED
+                    }
                     strokeWidth={2}
                     dot={false}
                   />
@@ -518,7 +555,7 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={30}>
+                <ResponsiveContainer width={100} height={50}>
                   <LineChart data={volumeData}>
                     <Line
                       type="monotone"
@@ -546,7 +583,7 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={30}>
+                <ResponsiveContainer width={100} height={50}>
                   <LineChart data={aumData}>
                     <Line
                       type="monotone"
@@ -578,7 +615,7 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={30}>
+                <ResponsiveContainer width={100} height={50}>
                   <LineChart data={totalOpenInterestData}>
                     <Line
                       type="monotone"
@@ -592,7 +629,7 @@ export default function FooterStats({
               </div>
             </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </motion.div>
   );

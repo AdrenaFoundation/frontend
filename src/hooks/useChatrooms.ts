@@ -1,7 +1,10 @@
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { setChatWebSocketStatus } from '@/actions/statusActions';
+import {
+  setChatWebSocketLoading,
+  setChatWebSocketStatus,
+} from '@/actions/statusActions';
 import { Chatroom, Message, ReadReceipt } from '@/pages/api/chatrooms';
 import { useDispatch, useSelector } from '@/store/store';
 import supabaseAnonClient from '@/supabaseAnonClient';
@@ -420,8 +423,12 @@ export const useChatrooms = ({
           dispatch(setChatWebSocketStatus(false));
         }
       });
+
     channelRef.current = channel;
     hasSubscribed.current = true;
+
+    dispatch(setChatWebSocketStatus(true));
+    dispatch(setChatWebSocketLoading(false));
 
     return () => {
       if (channelRef.current) {
