@@ -25,6 +25,12 @@ export default function FooterStatus() {
     notificationsWebSocketLoading ||
     tokenPricesWebSocketLoading;
 
+  const text = (() => {
+    if (isLoading) return 'Loading...';
+    if (isOperational) return 'Operational';
+    return 'Refresh';
+  })();
+
   return (
     <div
       className="relative group hidden 2xl:flex flex-row items-center gap-2 p-2 px-4 border-r border-inputcolor hover:bg-third cursor-pointer"
@@ -38,14 +44,14 @@ export default function FooterStatus() {
     >
       <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
 
-      <LiveIcon isLive={isOperational} />
+      <LiveIcon isLive={isOperational} isLoading={isLoading} />
       <p
         className={twMerge(
           'text-xs font-interMedium transition-opacity duration-300',
           isLoading && 'opacity-30',
         )}
       >
-        {isOperational ? 'Operational' : 'Refresh'}
+        {text}
       </p>
 
       <AnimatePresence>
