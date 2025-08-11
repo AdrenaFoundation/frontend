@@ -23,13 +23,10 @@ export default function TradingChart({
   chartPreferences,
   getMarksCallback,
 }: ChartOptions) {
-
-  const {
-    widget,
-    widgetReady,
-    isLoading,
-    reloadWidget,
-  } = useChartState(token, getMarksCallback);
+  const { widget, widgetReady, isLoading, reloadWidget } = useChartState(
+    token,
+    getMarksCallback,
+  );
 
   // Use chart drawing hook to draw positions and orders
   useChartDrawing({
@@ -51,7 +48,8 @@ export default function TradingChart({
     if (!widget) return;
 
     // Retrieve saved resolution or default to '60'
-    const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || '60';
+    const savedResolution =
+      localStorage.getItem(STORAGE_KEY_RESOLUTION) || '60';
 
     widget.setSymbol(
       `Crypto.${getTokenSymbol(token.symbol)}/USD`,
@@ -67,10 +65,10 @@ export default function TradingChart({
   }, [token.symbol]);
 
   return (
-    <div className="flex flex-col w-full overflow-hidden bg-secondary select-none">
+    <div className="flex flex-col w-full overflow-hidden bg-secondary select-none relative">
       <Loader
         className={twMerge(
-          'mt-[20%] ml-auto mr-auto',
+          'absolute inset-0 flex items-center justify-center',
           isLoading ? '' : 'hidden',
         )}
       />
