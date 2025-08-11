@@ -63,7 +63,7 @@ export default function MoreMenu({
     <div className="relative" ref={ref} onMouseLeave={handleMouseLeave}>
       <h5
         className={twMerge(
-          'whitespace-nowrap font-medium opacity-50 hover:opacity-100 cursor-pointer',
+          'whitespace-nowrap font-medium opacity-50 hover:opacity-100 cursor-pointer p-0.5 -m-0.5',
           PAGES.some((page) => pathname === page.link) || isOpen
             ? 'grayscale-0 opacity-100'
             : 'grayscale',
