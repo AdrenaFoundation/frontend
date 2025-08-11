@@ -6,14 +6,17 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import AllStakingChartADX from '@/components/pages/global/AllStakingChart/AllStakingChartADX';
 import UnlockStakingChart from '@/components/pages/global/AllStakingChart/UnlockStakingChart';
 import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
-import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 import StakingChart from '@/components/pages/global/Staking/StakingChart';
+import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
 
-export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
+export default function AllStaking({ view }: { isSmallScreen: boolean, view: string }) {
     const { allStakingStats } = useAllStakingStats();
     const totalSupplyADX = useADXTotalSupply();
+    const circulatingSupplyADX = useADXCirculatingSupply({
+        totalSupplyADX,
+    });
 
     useEffect(() => {
         if (view !== 'allStaking') return;
@@ -23,20 +26,28 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
         <div className="flex flex-col gap-2 p-2 items-center justify-center">
             <StyledContainer className="p-4">
                 <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em] ">
-                    <AprLpChart isSmallScreen={isSmallScreen} />
                     <AprLmChart />
+
+                    <div className='flex flex-col items-center justify-center gap-1 w-full'>
+                        <h2 className='flex'>LOCKED STAKE REPARTITION</h2>
+
+                        <div className='w-full flex h-[15em]'>
+                            <StakingChart />
+                        </div>
+                    </div>
                 </div>
+
             </StyledContainer>
 
             <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
                 <div className='flex flex-col items-center justify-center gap-1'>
                     <h2 className='flex'>STAKED ADX</h2>
 
-                    {allStakingStats && totalSupplyADX ?
+                    {allStakingStats && circulatingSupplyADX ?
                         <Tippy
                             content={
                                 <div className="text-sm flex">
-                                    Total staked ADX / Total supply ADX
+                                    Total staked ADX / Circulating supply ADX
                                 </div>
                             }
                             placement="auto"
@@ -53,7 +64,7 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
                                 <span className='text-txtfade text-base font-mono'>{"/"}</span>
 
                                 <FormatNumber
-                                    nb={totalSupplyADX}
+                                    nb={circulatingSupplyADX}
                                     isAbbreviate={true}
                                     isAbbreviateIcon={false}
                                     className='text-txtfade text-base'
@@ -63,7 +74,7 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
                                 <div className='flex'>
                                     <span className='text-txtfade text-base font-mono'>{"("}</span>
                                     <FormatNumber
-                                        nb={(allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid) * 100 / totalSupplyADX}
+                                        nb={(allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid) * 100 / circulatingSupplyADX}
                                         className='text-txtfade text-base'
                                         isDecimalDimmed={false}
                                         format='percentage'
@@ -74,7 +85,7 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
                         </Tippy> : null}
                 </div>
 
-                <div className='flex w-full min-h-[15em] h-[15em] grow'>
+                <div className='flex w-full min-h-[15em] h-[20em] grow'>
                     <AllStakingChartADX allStakingStats={allStakingStats} />
                 </div>
 
@@ -83,14 +94,6 @@ export default function AllStaking({ isSmallScreen, view }: { isSmallScreen: boo
 
                     <div className='w-full flex h-[20em]'>
                         <UnlockStakingChart allStakingStats={allStakingStats} stakingType="ADX" />
-                    </div>
-                </div>
-
-                <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
-                    <h2 className='flex'>LOCKED STAKE REPARTITION</h2>
-
-                    <div className='w-full flex h-[20em]'>
-                        <StakingChart />
                     </div>
                 </div>
             </StyledContainer >

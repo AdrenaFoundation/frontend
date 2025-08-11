@@ -124,7 +124,7 @@ export default function UsersCohortsChart() {
   return <div className="flex flex-col h-full w-full max-h-[18em]">
     <div className="flex mb-3 justify-between items-center">
       <div className="flex gap-x-3 items-center">
-        <h2 className="">Weekly User Retention</h2>
+        <h2>Weekly Trader Retention</h2>
       </div>
 
       <div className="flex gap-3 items-center">
@@ -138,6 +138,7 @@ export default function UsersCohortsChart() {
       type={type}
       data={chartData}
       labels={cohortsInfo ?? []}
+      hideLegend={true}
     />
   </div>;
 }

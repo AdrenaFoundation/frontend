@@ -127,6 +127,14 @@ export default class DataApiClient {
         };
     }
 
+    public static async getAllTimeTradersCount(): Promise<number | null> {
+        const result = await fetch(
+            `${DataApiClient.DATAPI_URL}/all-time-traders-count`,
+        ).then((res) => res.json());
+
+        return result.data.count ?? null;
+    }
+
     public static async getRolling7dAprsInfo(type: 'lm' | 'lp'): Promise<{
         aprs: {
             annualized_rate_adx: number;

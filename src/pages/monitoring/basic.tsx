@@ -5,6 +5,7 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
+import DefilamaProtocolFeesChart from '@/components/pages/global/DefilamaProtocolFeesChart/DefilamaProtocolFeesChart';
 import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
@@ -14,6 +15,7 @@ import UtilizationChart from '@/components/pages/global/UtilizationChart/Utiliza
 import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
 import DataApiClient from '@/DataApiClient';
 import { PoolInfo } from '@/hooks/usePoolInfo';
+import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
 export default function BasicMonitoring({
@@ -25,10 +27,14 @@ export default function BasicMonitoring({
   isSmallScreen: boolean;
   view: string;
 }) {
+  const [allTimeTraders, setAllTimeTraders] = React.useState<number | null>(null);
+
   const [aprs, setAprs] = React.useState<{
     lp: number;
     lm: number;
   } | null>(null);
+
+  const useSqrtScaleForVolumeAndFeeChart = useSelector((state) => state.settings.useSqrtScaleForVolumeAndFeeChart);
 
   useEffect(() => {
     if (view !== 'lite') return;
@@ -47,6 +53,13 @@ export default function BasicMonitoring({
         // Ignore
       });
 
+    DataApiClient.getAllTimeTradersCount().then((count) => {
+      setAllTimeTraders(count);
+    })
+      .catch(() => {
+        // Ignore
+      });
+
     const interval = setInterval(() => {
       DataApiClient.getRolling7DGlobalApr().then(
         ({
@@ -61,6 +74,12 @@ export default function BasicMonitoring({
         .catch(() => {
           // Ignore
         });
+
+      DataApiClient.getAllTimeTradersCount().then((count) => {
+        setAllTimeTraders(count);
+      }).catch(() => {
+        // Ignore
+      });
     }, 60000);
 
     return () => clearInterval(interval);
@@ -121,7 +140,7 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[12em]'
+              className='border-0 min-w-[10em]'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.85em] sm:text-[0.85em]'
@@ -134,11 +153,22 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[12em]'
+              className='border-0 min-w-[10em]'
               bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.85em] sm:text-[0.85em]'
               tippyInfo='Average yield for 540d staked ADX in the last 7 days'
+            />
+
+            <NumberDisplay
+              title="Traders"
+              nb={allTimeTraders ?? null}
+              format="number"
+              precision={0}
+              className='border-0 min-w-[8em]'
+              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
+              headerClassName='pb-2'
+              titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
           </div>
         </StyledContainer>
@@ -147,15 +177,14 @@ export default function BasicMonitoring({
       {
         view === 'lite' ?
           <StyledContainer className="flex gap-6">
-
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <AumChart />
-              <VolumeBarChart isSmallScreen={false} />
+              <VolumeBarChart isSmallScreen={false} yAxisBarScale={useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'} />
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <UtilizationChart />
-              <FeesBarChart isSmallScreen={isSmallScreen} />
+              <FeesBarChart isSmallScreen={isSmallScreen} yAxisBarScale={useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'} />
             </div>
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
@@ -173,6 +202,9 @@ export default function BasicMonitoring({
               <RealizedPnlChart isSmallScreen={isSmallScreen} />
             </div>
 
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <DefilamaProtocolFeesChart isSmallScreen={isSmallScreen} />
+            </div>
           </StyledContainer >
           : null}
     </div >

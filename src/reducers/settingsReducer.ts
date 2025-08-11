@@ -16,6 +16,7 @@ export type SettingsState = {
   disableFriendReq: boolean;
   enableDialectNotifications: boolean;
   enableAdrenaNotifications: boolean;
+  useSqrtScaleForVolumeAndFeeChart: boolean;
 };
 
 // freeze the initial state object to make sure it can be re-used through

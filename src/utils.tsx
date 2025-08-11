@@ -400,6 +400,7 @@ export const DEFAULT_SETTINGS = {
   disableFriendReq: false,
   enableDialectNotifications: false,
   enableAdrenaNotifications: true,
+  useSqrtScaleForVolumeAndFeeChart: true,
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {
@@ -443,7 +444,6 @@ export function addNotification({
       }[duration] ?? 5000,
     position: position,
     style: {
-      // if position is bottom then add extra margin to the bottom
       marginBottom: position.startsWith('bottom') ? '1.5rem' : '0',
     },
   });
@@ -1092,7 +1092,16 @@ export async function isAccountInitialized(
   connection: Connection,
   address: PublicKey,
 ): Promise<boolean> {
-  return !!(await connection.getAccountInfo(address));
+  const accountInfo = await connection.getAccountInfo(address);
+
+  if (!accountInfo) {
+    return false;
+  }
+
+  const rentExemptionAmount =
+    await connection.getMinimumBalanceForRentExemption(accountInfo.data.length);
+
+  return accountInfo.lamports >= rentExemptionAmount;
 }
 
 export async function getTokenAccountBalanceNullable(
