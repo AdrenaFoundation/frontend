@@ -6,24 +6,21 @@ import DataApiClient from '@/DataApiClient';
 import { getGMT } from '@/utils';
 
 interface AprLmChartProps {
-  defaultPeriod?: string;
-  defaultLockPeriod?: number;
+  isAdxPage?: boolean;
 }
 
-export function AprLmChart({
-  defaultPeriod = '7d',
-  defaultLockPeriod = 540,
-}: AprLmChartProps) {
+export function AprLmChart({ isAdxPage = false }: AprLmChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: {
       time: string;
       [key: string]: string | number;
     }[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>(defaultPeriod);
-  const [selectedPeriod, setSelectedPeriod] = useState<number>(
-    defaultLockPeriod,
-  );
+
+  // ADX Page Custom Settings - Change these values to customize the ADX page chart
+  const [period, setPeriod] = useState<string | null>(isAdxPage ? '1M' : '7d');
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(540);
+
   const periodRef = useRef(period);
   const selectedPeriodRef = useRef(selectedPeriod);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -236,7 +233,7 @@ export function AprLmChart({
 
   return (
     <MixedAreaLineChart
-      title={`STAKED ADX APR`}
+      title={isAdxPage ? '' : 'STAKED ADX APR'} // No title for ADX page
       data={infos.formattedData}
       labels={labels}
       period={period}
@@ -251,7 +248,7 @@ export function AprLmChart({
       lockPeriod={selectedPeriod}
       setLockPeriod={setSelectedPeriod}
       lockPeriods={[0, 90, 180, 360, 540]}
-      exportToCSV={exportToCSV}
+      exportToCSV={isAdxPage ? undefined : exportToCSV} // No export for ADX page
     />
   );
 }
