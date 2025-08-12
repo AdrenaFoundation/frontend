@@ -48,6 +48,10 @@ export default function Header({
   setCustomRpcUrl,
   setFavoriteRpc,
   adapters,
+  isPriorityFeeOpen,
+  isSettingsOpen,
+  setIsPriorityFeeOpen,
+  setIsSettingsOpen
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: LinksType[];
@@ -69,6 +73,10 @@ export default function Header({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   adapters: WalletAdapterExtended[];
+  isPriorityFeeOpen: boolean;
+  isSettingsOpen: boolean;
+  setIsPriorityFeeOpen: (isOpen: boolean) => void;
+  setIsSettingsOpen: (isOpen: boolean) => void;
 }) {
   const pathname = usePathname();
   const { aprs } = useAPR();
@@ -88,9 +96,9 @@ export default function Header({
   const EXTERNAL_LINKS = PAGES.filter((p) => p.external);
 
   return (
-    <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
+    <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-[51]">
       <div className="flex flex-row items-center gap-4">
-        <Link className="font-bold uppercase relative" href="/">
+        <Link className="font-bold uppercase relative p-1.5 -m-1.5" href="/">
           <Image
             src={logo}
             className={twMerge(
@@ -125,7 +133,7 @@ export default function Header({
             <Link
               href={page.link}
               className={twMerge(
-                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center',
+                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center p-0.5 -m-0.5',
                 pathname === page.link
                   ? 'grayscale-0 opacity-100'
                   : 'grayscale',
@@ -255,7 +263,7 @@ export default function Header({
         <div className="flex flex-row items-center border border-[#414E5E] rounded-lg">
           <NotificationBell adapters={adapters} />
 
-          <PriorityFeeSetting />
+          <PriorityFeeSetting isOpen={isPriorityFeeOpen} setIsOpen={setIsPriorityFeeOpen} />
 
           <Settings
             activeRpc={activeRpc}
@@ -267,6 +275,8 @@ export default function Header({
             setAutoRpcMode={setAutoRpcMode}
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
+            isOpen={isSettingsOpen}
+            setIsOpen={setIsSettingsOpen}
           />
         </div>
 

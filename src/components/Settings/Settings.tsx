@@ -33,6 +33,8 @@ export default function Settings({
   isGenesis = false,
   isMobile = false,
   setCloseMobileModal,
+  isOpen,
+  setIsOpen,
 }: {
   activeRpc: {
     name: string;
@@ -53,6 +55,8 @@ export default function Settings({
   isGenesis?: boolean;
   isMobile?: boolean;
   setCloseMobileModal?: (close: boolean) => void;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
 }) {
   const dispatch = useDispatch();
   const settings = useSelector((state) => state.settings);
@@ -109,7 +113,7 @@ export default function Settings({
               className={twMerge(
                 'justify-start transition duration-300 rounded-lg px-2 py-4 border border-bcolor hover:bg-third bg-third hover:opacity-100 hover:grayscale-0',
                 exp !== settings.preferredSolanaExplorer &&
-                'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
+                  'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
               )}
               iconClassName="w-[20px] h-[20px]"
               variant="outline"
@@ -199,7 +203,8 @@ export default function Settings({
             onChange={() => {
               dispatch(
                 setSettings({
-                  enableAdrenaNotifications: !settings.enableAdrenaNotifications,
+                  enableAdrenaNotifications:
+                    !settings.enableAdrenaNotifications,
                 }),
               );
             }}
@@ -266,6 +271,9 @@ export default function Settings({
       )}
       disableOnClickInside={true}
       isDim={true}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      bgClassName="fixed"
     >
       {content}
     </Menu>

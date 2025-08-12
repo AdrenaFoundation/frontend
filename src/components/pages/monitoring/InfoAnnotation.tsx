@@ -29,7 +29,7 @@ export default function InfoAnnotation({
         {title ? <h3>{title}</h3> : <></>}
 
         <Image
-          className={twMerge('opacity-50 hover:opacity-100 ml-1', className)}
+          className={twMerge('opacity-50 hover:opacity-100 ml-1 transition-opacity duration-300', className)}
           src={infoIcon}
           alt="info icon"
           width={iconWidth}
