@@ -64,7 +64,7 @@ const PARTNERS: Partner[] = [
     gradientColors:
       'bg-[linear-gradient(110deg,#34D399,#F98635,#34D399)] animate-text-shimmer bg-[length:250%_100%]',
     bgColor: 'bg-secondary/[0.99]',
-    link: 'https://boost.deficarrot.com/tokens/GyTsdytwPU2oRK9YfpJz8Nb5auxuPegSPrTA5gWTb2o',
+    link: 'https://boost.deficarrot.com/boost/tokens/GyTsdytwPU2oRK9YfpJz8Nb5auxuPegSPrTA5gWTb2o/',
   },
   {
     description: 'Multiply your yield with low-risk',
@@ -75,7 +75,7 @@ const PARTNERS: Partner[] = [
     link: 'https://app.kamino.finance/multiply/CTthJu49dgPkCgu9TKQProuaQnkHsRPQV33sSJ96vxpG/D1ZdZSNfn6nfzEyK6uvFCcRi8SzihnPdYHLtnjBjwxGn/5bgPMvzZv29jkFEuMwxQRJQf64gKcPfLEEUHhyrP8tce',
   },
   {
-    description: 'Loop your ALP up to 6x',
+    description: 'Loop your ALP up to 5x',
     icon: '/images/loopscale.svg',
     gradientColors:
       'bg-[linear-gradient(110deg,#c9c8ff,#0075ff,#c9c8ff)] animate-text-shimmer bg-[length:250%_100%]',
