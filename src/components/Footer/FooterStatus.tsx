@@ -15,14 +15,30 @@ export default function FooterStatus() {
     notificationsWebSocketLoading,
     tokenPricesWebSocketLoading,
   } = useSelector((state) => state.status);
+  const isChatDisabled = useSelector((state) => state.settings.disableChat);
+  const isNotificationsDisabled = useSelector(
+    (state) => state.settings.enableAdrenaNotifications,
+  );
+
   const [showSubscriptions, setShowSubscriptions] = useState(false);
 
+  const chatStatus = isChatDisabled ? true : chatWebSocket;
+  const isChatStatusLoading = isChatDisabled ? false : chatWebSocketLoading;
+
+  const notificationsStatus = !isNotificationsDisabled
+    ? true
+    : notificationsWebSocket;
+
+  const isNotificationsStatusLoading = !isNotificationsDisabled
+    ? false
+    : notificationsWebSocketLoading;
+
   const isOperational =
-    chatWebSocket && notificationsWebSocket && tokenPricesWebSocket;
+    chatStatus && notificationsStatus && tokenPricesWebSocket;
 
   const isLoading =
-    chatWebSocketLoading ||
-    notificationsWebSocketLoading ||
+    isChatStatusLoading ||
+    isNotificationsStatusLoading ||
     tokenPricesWebSocketLoading;
 
   const text = (() => {
