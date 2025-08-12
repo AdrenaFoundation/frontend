@@ -16,13 +16,13 @@ import {
 } from '../../../../../public/charting_library/charting_library.js';
 import { subscribeOnStream, unsubscribeFromStream } from './streaming';
 
+export const CHAOS_API_ENDPOINT = 'https://history.oraclesecurity.org';
+
 export default function datafeed({
   getMarksCallback,
 }: {
   getMarksCallback: IDatafeedChartApi['getMarks'];
 }): IBasicDataFeed {
-  const API_ENDPOINT = 'https://history.oraclesecurity.org';
-
   // Use it to keep a record of the most recent bar on the chart
   const lastBarsCache = new Map();
 
@@ -329,7 +329,7 @@ export default function datafeed({
       const feed = symbolInfo.name;
 
       fetch(
-        `${API_ENDPOINT}/trading-view/data?feed=${feed}&type=${type}&from=${from * 1000}&till=${to * 1000}`,
+        `${CHAOS_API_ENDPOINT}/trading-view/data?feed=${feed}&type=${type}&from=${from * 1000}&till=${to * 1000}`,
       )
         .then((response) => {
           response

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import React, { useCallback, useMemo,useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import InputString from '@/components/common/inputString/InputString';
@@ -35,15 +35,16 @@ export default function SearchUserProfiles({
 
     const query = searchQuery.toLowerCase().trim();
 
-    return allUserProfilesMetadata
-      .filter((user) => {
-        if (user.nickname.toLowerCase().includes(query)) return true;
+    const nicknameMatches = allUserProfilesMetadata.filter((user) =>
+      user.nickname.toLowerCase().includes(query)
+    );
 
-        if (user.owner.toBase58().toLowerCase().includes(query)) return true;
+    const addressMatches = allUserProfilesMetadata.filter((user) =>
+      !user.nickname.toLowerCase().includes(query) &&
+      user.owner.toBase58().toLowerCase().includes(query)
+    );
 
-        return false;
-      })
-      .slice(0, 50); // Limit to 50 results for performance
+    return [...nicknameMatches, ...addressMatches].slice(0, 50);
   }, [searchQuery, allUserProfilesMetadata]);
 
   const closeProfileModal = useCallback(() => {
@@ -141,7 +142,7 @@ export default function SearchUserProfiles({
                               'flex items-center gap-3 p-2 px-4 rounded-lg border border-bcolor hover:border-white/10 cursor-pointer transition-all duration-200',
                               'hover:bg-third/50 group',
                               loadingProfile === user.owner.toBase58() &&
-                                'opacity-50 pointer-events-none',
+                              'opacity-50 pointer-events-none',
                             )}
                             onClick={() =>
                               setSelectedProfile(user as UserProfileExtended)
@@ -151,7 +152,7 @@ export default function SearchUserProfiles({
                               <Image
                                 src={
                                   PROFILE_PICTURES[
-                                    user.profilePicture as keyof typeof PROFILE_PICTURES
+                                  user.profilePicture as keyof typeof PROFILE_PICTURES
                                   ] || PROFILE_PICTURES[0]
                                 }
                                 alt="Profile"

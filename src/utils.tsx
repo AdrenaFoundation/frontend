@@ -443,6 +443,9 @@ export function addNotification({
         long: 5000,
       }[duration] ?? 5000,
     position: position,
+    style: {
+      marginBottom: position.startsWith('bottom') ? '1.5rem' : '0',
+    },
   });
 }
 
