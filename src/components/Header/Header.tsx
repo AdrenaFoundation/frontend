@@ -90,7 +90,7 @@ export default function Header({
   return (
     <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-50">
       <div className="flex flex-row items-center gap-4">
-        <Link className="font-bold uppercase relative" href="/">
+        <Link className="font-bold uppercase relative p-1.5 -m-1.5" href="/">
           <Image
             src={logo}
             className={twMerge(
@@ -125,7 +125,7 @@ export default function Header({
             <Link
               href={page.link}
               className={twMerge(
-                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center',
+                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center p-0.5 -m-0.5',
                 pathname === page.link
                   ? 'grayscale-0 opacity-100'
                   : 'grayscale',
