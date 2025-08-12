@@ -4,6 +4,8 @@ import LineRechart from '@/components/ReCharts/LineRecharts';
 
 interface EmissionsChartProps {
   isSmallScreen: boolean;
+  showOnlyADX?: boolean;
+  customTitle?: string;
 }
 
 const lmEmissionsStart = new Date(1727006400000);
@@ -39,43 +41,65 @@ const startOfLmLpMonthCounter = new Date(1726591514000);
 const vestingStart = new Date(1734696000000);
 const vestingEnd = new Date(1789905600000);
 
-const investorVestPerDay = (156650000 / ((vestingEnd.getTime() - vestingStart.getTime()) / (1000 * 60 * 60 * 24))) * 50 / 100;
-const launchTeamVestPerDay = (202350000 / ((vestingEnd.getTime() - vestingStart.getTime()) / (1000 * 60 * 60 * 24))) * 50 / 100;
-const foundationVestPerDay = (90000000 / ((vestingEnd.getTime() - vestingStart.getTime()) / (1000 * 60 * 60 * 24))) * 50 / 100;
+const investorVestPerDay =
+  ((156650000 /
+    ((vestingEnd.getTime() - vestingStart.getTime()) / (1000 * 60 * 60 * 24))) *
+    50) /
+  100;
+const launchTeamVestPerDay =
+  ((202350000 /
+    ((vestingEnd.getTime() - vestingStart.getTime()) / (1000 * 60 * 60 * 24))) *
+    50) /
+  100;
+const foundationVestPerDay =
+  ((90000000 /
+    ((vestingEnd.getTime() - vestingStart.getTime()) / (1000 * 60 * 60 * 24))) *
+    50) /
+  100;
 
 const genesisStartDate = new Date(1726574400000);
 const genesisEndDate = new Date(1742385600000);
 
 const genesisAdxRewards = 50_000_000;
-const genesisEmissionPerDay = genesisAdxRewards / ((genesisEndDate.getTime() - genesisStartDate.getTime()) / (1000 * 60 * 60 * 24));
+const genesisEmissionPerDay =
+  genesisAdxRewards /
+  ((genesisEndDate.getTime() - genesisStartDate.getTime()) /
+    (1000 * 60 * 60 * 24));
 
 export const fullyLiquidALPStaking = new Date(1742385600000);
 
-export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
+export function EmissionsChart({
+  isSmallScreen,
+  showOnlyADX = false,
+  customTitle = '',
+}: EmissionsChartProps) {
   const emissions: Emissions = useMemo(() => {
     // Generate all timestamps
-    const emissions = Array.from({ length: 770 }).reduce((acc: Emissions, _, i) => {
-      const d = new Date(startDate.getTime());
-      d.setDate(d.getDate() + i);
+    const emissions = Array.from({ length: 770 }).reduce(
+      (acc: Emissions, _, i) => {
+        const d = new Date(startDate.getTime());
+        d.setDate(d.getDate() + i);
 
-      acc.push({
-        date: d,
-        time: d.toLocaleDateString('en-US', {
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric',
-          timeZone: 'UTC',
-        }),
-        adxLiquidityMining: 0,
-        alpLiquidityMining: 0,
-        genesisLiquidityMining: 0,
-        investorVesting: 0,
-        launchTeamVesting: 0,
-        foundationVesting: 0,
-      })
+        acc.push({
+          date: d,
+          time: d.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric',
+            timeZone: 'UTC',
+          }),
+          adxLiquidityMining: 0,
+          alpLiquidityMining: 0,
+          genesisLiquidityMining: 0,
+          investorVesting: 0,
+          launchTeamVesting: 0,
+          foundationVesting: 0,
+        });
 
-      return acc;
-    }, [] as Emissions);
+        return acc;
+      },
+      [] as Emissions,
+    );
 
     // Calculate LM emissions
 
@@ -86,16 +110,26 @@ export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
 
     // Handle ADX/ALP staking LM emissions
     emissions.forEach((emission) => {
-      if (emission.date.getTime() >= (lastMonthUpdate.getTime() + (secondsPerMonth * 1000))) {
+      if (
+        emission.date.getTime() >=
+        lastMonthUpdate.getTime() + secondsPerMonth * 1000
+      ) {
         // One month as passed, apply decay
         monthsSinceStart += 1;
-        lastMonthUpdate = new Date(lastMonthUpdate.getTime() + (secondsPerMonth * 1000));
+        lastMonthUpdate = new Date(
+          lastMonthUpdate.getTime() + secondsPerMonth * 1000,
+        );
 
-        alpLmPerDayDyn = alpLmPerDayDyn - (alpLmPerDayDyn * alpLmEmissionDecay / 100);
+        alpLmPerDayDyn =
+          alpLmPerDayDyn - (alpLmPerDayDyn * alpLmEmissionDecay) / 100;
 
-        const adxLmEmissionDecay = monthsSinceStart < 12 ? adxLmEmissionDecayYear1 : adxLmEmissionDecayYear2;
+        const adxLmEmissionDecay =
+          monthsSinceStart < 12
+            ? adxLmEmissionDecayYear1
+            : adxLmEmissionDecayYear2;
 
-        adxLmPerDayDyn = adxLmPerDayDyn - (adxLmPerDayDyn * adxLmEmissionDecay / 100);
+        adxLmPerDayDyn =
+          adxLmPerDayDyn - (adxLmPerDayDyn * adxLmEmissionDecay) / 100;
       }
 
       if (emission.date.getTime() < lmEmissionsStart.getTime()) {
@@ -112,7 +146,10 @@ export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
 
     // Handle vesting
     emissions.forEach((emission) => {
-      if (emission.date.getTime() <= vestingStart.getTime() || emission.date.getTime() >= vestingEnd.getTime()) {
+      if (
+        emission.date.getTime() <= vestingStart.getTime() ||
+        emission.date.getTime() >= vestingEnd.getTime()
+      ) {
         return;
       }
 
@@ -123,7 +160,10 @@ export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
 
     // Handle genesis
     emissions.forEach((emission) => {
-      if (emission.date.getTime() <= genesisStartDate.getTime() || emission.date.getTime() >= genesisEndDate.getTime()) {
+      if (
+        emission.date.getTime() <= genesisStartDate.getTime() ||
+        emission.date.getTime() >= genesisEndDate.getTime()
+      ) {
         return;
       }
 
@@ -133,41 +173,57 @@ export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
     return emissions;
   }, []);
 
-  return (
-    <LineRechart
-      title=""
-      formatY="number"
-      isNowReferenceLine={true}
-      data={emissions.map(({
+  // Filter data based on showOnlyADX prop
+  const chartData = showOnlyADX
+    ? emissions.map(({ time, adxLiquidityMining }) => ({
         time,
-        alpLiquidityMining,
-        adxLiquidityMining,
-        genesisLiquidityMining,
-        investorVesting,
-        launchTeamVesting,
-        foundationVesting,
-      }) => ({
-        time,
-        'ALP LM': alpLiquidityMining,
         'ADX LM': adxLiquidityMining,
-        'ALP Genesis LM': genesisLiquidityMining,
-        'Investor Vesting': investorVesting,
-        'Launch Team Vesting': launchTeamVesting,
-        'Foundation Vesting': foundationVesting,
-      }))}
-      labels={[
+      }))
+    : emissions.map(
+        ({
+          time,
+          alpLiquidityMining,
+          adxLiquidityMining,
+          genesisLiquidityMining,
+          investorVesting,
+          launchTeamVesting,
+          foundationVesting,
+        }) => ({
+          time,
+          'ALP LM': alpLiquidityMining,
+          'ADX LM': adxLiquidityMining,
+          'ALP Genesis LM': genesisLiquidityMining,
+          'Investor Vesting': investorVesting,
+          'Launch Team Vesting': launchTeamVesting,
+          'Foundation Vesting': foundationVesting,
+        }),
+      );
+
+  // Filter labels based on showOnlyADX prop
+  const chartLabels = showOnlyADX
+    ? [{ name: 'ADX LM', color: '#a82e2e' }]
+    : [
         { name: 'ALP LM', color: '#256281' },
         { name: 'ADX LM', color: '#a82e2e' },
         { name: 'ALP Genesis LM', color: '#7ed7c1' },
         { name: 'Investor Vesting', color: '#9e8cae' },
         { name: 'Launch Team Vesting', color: '#d4c7df' },
         { name: 'Foundation Vesting', color: '#eb6672' },
-      ]}
+      ];
+
+  return (
+    <LineRechart
+      title={customTitle}
+      formatY="number"
+      isNowReferenceLine={true}
+      data={chartData}
+      labels={chartLabels}
       scale="sqrt"
       periods={[]}
       yDomain={[0]}
       gmt={0}
       isSmallScreen={isSmallScreen}
+      showLegend={!showOnlyADX}
     />
   );
 }

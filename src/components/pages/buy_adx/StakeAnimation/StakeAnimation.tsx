@@ -64,16 +64,6 @@ export default function StakeAnimation({
 
   return (
     <div className="flex flex-col md:flex-row gap-[30px] justify-between items-center mb-[200px]">
-      <div className="w-full">
-        <h1 className="text-[36px] mb-1">{title}</h1>
-        <p className="text-[24px]">{subtitle}</p>
-        <Button
-          size="lg"
-          title={isADX ? ' Stake ADX' : 'Stake ALP'}
-          href={'/stake'}
-          className="mt-3"
-        />
-      </div>
 
       <div className="w-full">
         <div className="max-w-[600px] md:ml-auto">

@@ -1,6 +1,6 @@
 import ALPDetails from '@/components/pages/buy_alp/ALPDetails';
 import PartnerCards from '@/components/pages/buy_alp/PartnerCards';
-import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
+import ALPSwap from '@/components/pages/buy_alp/ALPSwap/ALPSwap';
 import { PageProps } from '@/types';
 
 export default function Buy({ connected }: PageProps) {
