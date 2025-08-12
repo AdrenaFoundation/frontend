@@ -8,6 +8,7 @@ import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
 import AddressLookupTable from './AddressLookupTable';
+import AdvancedPoolMonitoring from './advanced';
 import AllPositions from './allPositions';
 import AllStaking from './allStaking';
 import AllUserProfiles from './allUserProfiles';
@@ -48,6 +49,8 @@ export default function Monitoring(pageProps: PageProps) {
         'tokenomics',
         'flows',
         'walletDigger',
+        'lookupTable',
+        'advanced',
       ].includes(searchParamsView)
     ) {
       return searchParamsView as MonitorViews;
@@ -57,14 +60,15 @@ export default function Monitoring(pageProps: PageProps) {
 
   type MonitorViews =
     | 'lite'
-    | 'livePositions'
-    | 'allStaking'
-    | 'flows'
-    | 'userProfiles'
-    | 'tokenomics'
     | 'full'
+    | 'livePositions'
+    | 'userProfiles'
+    | 'allStaking'
+    | 'tokenomics'
+    | 'flows'
     | 'walletDigger'
-    | 'lookupTable';
+    | 'lookupTable'
+    | 'advanced';
   const [view, setView] = useState<MonitorViews>(initialView as MonitorViews);
   const [previousView, setPreviousView] = useState<MonitorViews>('lite');
 
@@ -78,6 +82,7 @@ export default function Monitoring(pageProps: PageProps) {
     flows: 'Flows',
     walletDigger: 'Wallet Digger',
     lookupTable: 'ALT',
+    advanced: 'Autonom',
   };
 
   function getTranslateX(
@@ -120,6 +125,8 @@ export default function Monitoring(pageProps: PageProps) {
         return <WalletDigger view={view} {...pageProps} />;
       case 'lookupTable':
         return <AddressLookupTable view={view} />;
+      case 'advanced':
+        return <AdvancedPoolMonitoring isSmallScreen={isSmallScreen} />;
       default:
         return <div>Invalid view</div>;
     }
@@ -134,45 +141,49 @@ export default function Monitoring(pageProps: PageProps) {
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="m-1 sm:mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
-        <div className="flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[45em] ml-auto mr-auto">
+        <div className="flex flex-col md:flex-row items-center justify-evenly w-[22em] md:w-[50em] ml-auto mr-auto">
           {MonitoringHeaderLink('lite')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
 
           {MonitoringHeaderLink('livePositions')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
 
           {MonitoringHeaderLink('allStaking')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
 
           {MonitoringHeaderLink('flows')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
 
           {MonitoringHeaderLink('userProfiles')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
 
           {MonitoringHeaderLink('tokenomics')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
 
           {MonitoringHeaderLink('full')}
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
 
           {MonitoringHeaderLink('walletDigger')}
 
           {showLookupTablePage ? (
             <>
-              <span className="opacity-20 text-2xl hidden sm:block mx-1">
+              <span className="opacity-20 text-2xl hidden md:block mx-1">
                 /
               </span>
 
               {MonitoringHeaderLink('lookupTable')}
             </>
           ) : null}
+
+          <span className="opacity-20 text-2xl hidden md:block mx-1">/</span>
+
+          {MonitoringHeaderLink('advanced')}
         </div>
       </div>
 
