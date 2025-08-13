@@ -1,21 +1,22 @@
-import Image from 'next/image';
-import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import TabSelect from '@/components/common/TabSelect/TabSelect';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
-
-import ADXSwapBuy from './ADXSwapBuy';
-import ADXSwapSell from './ADXSwapSell';
+import ADXJupiterWidget from './ADXJupiterWidget';
+import { WalletAdapterExtended } from '@/types';
+import { Connection } from '@solana/web3.js';
 
 export default function ADXSwap({
   className,
   connected,
+  adapters,
+  activeRpc,
 }: {
   className?: string;
   connected: boolean;
+  adapters: WalletAdapterExtended[];
+  activeRpc: { name: string; connection: Connection };
 }) {
-  const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
+  const adxMint = window.adrena.client.adxToken.mint.toBase58();
 
   return (
     <div
@@ -25,22 +26,16 @@ export default function ADXSwap({
         !connected && 'overflow-hidden',
       )}
     >
-      <TabSelect
-        selected={selectedAction}
-        tabs={[
-          { title: 'BUY', activeColor: 'border-white' },
-          { title: 'SELL', activeColor: 'border-white' },
-        ]}
-        onClick={(title) => {
-          setSelectedAction(title as 'buy' | 'sell');
-        }}
-      />
-
-      {selectedAction === 'buy' ? (
-        <ADXSwapBuy connected={connected} />
-      ) : (
-        <ADXSwapSell connected={connected} />
-      )}
+      <div className={!connected ? 'blur-sm' : ''}>
+        <ADXJupiterWidget
+          defaultOutputMint={adxMint}
+          connected={connected}
+          adapters={adapters}
+          activeRpc={activeRpc}
+          id="adx-swap-widget"
+          className="bg-transparent border-transparent min-w-[300px] w-full"
+        />
+      </div>
 
       {!connected ? (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 h-full w-full backdrop-blur-sm">

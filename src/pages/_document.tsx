@@ -5,22 +5,20 @@ export const metadata = {
   metadataBase: new URL('https://app.adrena.xyz/'),
   title: 'Adrena | Season 2: Factions',
   description:
-    "Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards",
+    'Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards',
   openGraph: {
     title: 'Adrena | Season 2: Factions',
     description:
-      "Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards",
-    images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/s2-OG.jpg',
+      'Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards',
+    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/s2-OG.jpg',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Adrena | Season 2: Factions',
     description:
-      "Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards",
+      'Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards',
     creator: '@adrenaprotocol',
-    images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/s2-OG.jpg',
+    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/s2-OG.jpg',
   },
 } as const;
 
@@ -55,6 +53,12 @@ export default function Document() {
         <Script
           src="https://terminal.jup.ag/main-v3.js"
           strategy="beforeInteractive"
+        />
+        <Script
+          src="https://plugin.jup.ag/plugin-v1.js"
+          strategy="beforeInteractive"
+          data-preload
+          defer
         />
       </Head>
       <body>

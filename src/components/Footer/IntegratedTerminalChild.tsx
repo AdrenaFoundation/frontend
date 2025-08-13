@@ -61,15 +61,22 @@ export default function IntegratedTerminalChild({
         userSlippageMode: 'DYNAMIC' | 'FIXED';
         dynamicSlippageBps: number;
       }) => {
-        const tokenB = getTokenSymbol(getTokenNameByMint(new PublicKey(form.toMint)))
-        const allowedTokenBSymbols = allowedTokenB.map((t) => getTokenSymbol(t.symbol));
+        const tokenB = getTokenSymbol(
+          getTokenNameByMint(new PublicKey(form.toMint)),
+        );
+        const allowedTokenBSymbols = allowedTokenB.map((t) =>
+          getTokenSymbol(t.symbol),
+        );
 
         if (!allowedTokenBSymbols.includes(tokenB)) {
           return;
         }
 
-        setTokenB(allowedTokenB.find((t) => getTokenSymbol(t.symbol) === getTokenSymbol(tokenB)) as Token);
-
+        setTokenB(
+          allowedTokenB.find(
+            (t) => getTokenSymbol(t.symbol) === getTokenSymbol(tokenB),
+          ) as Token,
+        );
       },
       onSuccess: ({ txid }: { txid: string }) => {
         console.log({ txid });

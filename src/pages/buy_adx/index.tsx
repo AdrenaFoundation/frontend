@@ -7,10 +7,12 @@ import ADXVoteAnimation from '@/components/buy_adx/ADXVoteAnimation';
 import Button from '@/components/common/Button/Button';
 import StakeAnimation from '@/components/pages/buy_adx/StakeAnimation/StakeAnimation';
 import { PageProps } from '@/types';
+import { WalletAdapterExtended } from '@/types';
+import { Connection } from '@solana/web3.js';
 
 import jupIcon from '../../../public/images/jup-logo.png';
 
-export default function BuyADX({}: PageProps) {
+export default function BuyADX({ connected, adapters, activeRpc }: PageProps) {
   return (
     <>
       {/* Container 1: Constrained width for details + swap (like ALP page) */}
@@ -21,7 +23,9 @@ export default function BuyADX({}: PageProps) {
 
           <div className="basis-2/6 flex flex-col gap-4">
             <ADXSwap
-              connected={false}
+              connected={connected}
+              adapters={adapters}
+              activeRpc={activeRpc}
               className="relative z-10 bg-secondary p-3 sm:p-5 rounded-xl border h-fit"
             />
           </div>
@@ -48,7 +52,7 @@ export default function BuyADX({}: PageProps) {
 
               <Button
                 title="Buy ADX on Jupiter"
-                href="https://jup.ag/swap/USDC-AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw"
+                href="https://jup.ag/swap/SOL-AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw"
                 isOpenLinkInNewTab
                 rightIcon={jupIcon}
                 iconClassName="w-5 h-5"
