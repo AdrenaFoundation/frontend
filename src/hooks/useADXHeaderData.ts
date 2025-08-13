@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo,useState } from 'react';
 
-import useAPR from '@/hooks/useAPR';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useAPR from '@/hooks/useAPR';
 import { useSelector } from '@/store/store';
 
 export type ADXHeaderData = {

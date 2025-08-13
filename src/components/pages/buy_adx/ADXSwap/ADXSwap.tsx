@@ -1,9 +1,10 @@
+import { Connection } from '@solana/web3.js';
 import { twMerge } from 'tailwind-merge';
 
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
-import ADXJupiterWidget from './ADXJupiterWidget';
 import { WalletAdapterExtended } from '@/types';
-import { Connection } from '@solana/web3.js';
+
+import ADXJupiterWidget from './ADXJupiterWidget';
 
 export default function ADXSwap({
   className,

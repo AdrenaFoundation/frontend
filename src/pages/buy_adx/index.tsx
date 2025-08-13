@@ -1,14 +1,11 @@
 import React from 'react';
 
-import ADXDetails from '@/components/pages/buy_adx/ADXDetails';
-import ADXSwap from '@/components/pages/buy_adx/ADXSwap/ADXSwap';
-import ADXFeeStreamAnimation from '@/components/buy_adx/ADXFeeStreamAnimation';
 import ADXVoteAnimation from '@/components/buy_adx/ADXVoteAnimation';
 import Button from '@/components/common/Button/Button';
+import ADXDetails from '@/components/pages/buy_adx/ADXDetails';
+import ADXSwap from '@/components/pages/buy_adx/ADXSwap/ADXSwap';
 import StakeAnimation from '@/components/pages/buy_adx/StakeAnimation/StakeAnimation';
 import { PageProps } from '@/types';
-import { WalletAdapterExtended } from '@/types';
-import { Connection } from '@solana/web3.js';
 
 import jupIcon from '../../../public/images/jup-logo.png';
 
@@ -82,7 +79,7 @@ export default function BuyADX({ connected, adapters, activeRpc }: PageProps) {
             />
           </div>
 
-          <StakeAnimation isADX title="" subtitle="" />
+          <StakeAnimation isADX />
         </div>
 
         {/* Section 4: Governance Section */}

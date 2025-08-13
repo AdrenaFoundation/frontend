@@ -2,20 +2,10 @@ import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
-import Button from '@/components/common/Button/Button';
-
 import walletIcon from '../../../../../public/images/wallet-icon.svg';
 import StakeTimerAnimation from './StakeTimerAnimation';
 
-export default function StakeAnimation({
-  isADX = false,
-  title,
-  subtitle,
-}: {
-  isADX?: boolean;
-  title: string;
-  subtitle: string;
-}) {
+export default function StakeAnimation({ isADX = false }: { isADX?: boolean }) {
   const c1Initial = {
     amount: 1200,
     daysLocked: 90,
@@ -64,7 +54,6 @@ export default function StakeAnimation({
 
   return (
     <div className="flex flex-col md:flex-row gap-[30px] justify-between items-center mb-[200px]">
-
       <div className="w-full">
         <div className="max-w-[600px] md:ml-auto">
           <div className="flex flex-row gap-3 lg:gap-6 p-3 rounded-lg mb-[50px]">

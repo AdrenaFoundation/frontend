@@ -4,8 +4,8 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
-import ADXHeader from './ADXHeader';
 import { AprLmChart } from '../global/Apr/AprLmChart';
+import ADXHeader from './ADXHeader';
 
 export default function ADXDetails({ className }: { className?: string }) {
   return (
@@ -17,11 +17,11 @@ export default function ADXDetails({ className }: { className?: string }) {
           <div className="flex flex-col justify-between">
             <div>
               <p className="text-sm opacity-75">
-                <span className="font-interSemibold">ADX</span> is Adrena's
+                <span className="font-interSemibold">ADX</span> is Adrena&apos;s
                 revenue share and governance token that is freely tradable on
-                the open market. It's designed to align holders with the
-                protocol's long-term success by conferring both economic and
-                control benefits.
+                the open market. It&apos;s designed to align holders with the
+                protocol&apos;s long-term success by conferring both economic
+                and control benefits.
               </p>
 
               <p className="text-sm opacity-75 mt-4">

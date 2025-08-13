@@ -1,5 +1,5 @@
 import { WalletName } from '@solana/wallet-adapter-base';
-import { WalletProvider, useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, WalletProvider } from '@solana/wallet-adapter-react';
 import { Connection } from '@solana/web3.js';
 import { useEffect } from 'react';
 
@@ -54,6 +54,33 @@ function Inner({
   const passthroughWalletContextState = useWallet();
 
   useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-background',
+      '6, 16, 24',
+    ); // bg-secondary
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-module',
+      '16, 23, 31',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-interactive',
+      '33, 42, 54',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-primary',
+      '199, 242, 132',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-primary-text',
+      '232, 249, 255',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-warning',
+      '251, 191, 36',
+    );
+  }, []);
+
+  useEffect(() => {
     if (connected && walletState?.adapterName) {
       passthroughWalletContextState.select(
         walletState.adapterName as WalletName,
@@ -78,12 +105,16 @@ function Inner({
         logoUri: 'https://app.adrena.xyz/_next/static/media/adx.ed486967.svg',
       },
     });
-  }, [activeRpc.name, id, defaultOutputMint]);
+  }, [activeRpc.name, id, defaultOutputMint, activeRpc.connection.rpcEndpoint]);
 
   useEffect(() => {
     if (!window.Jupiter.syncProps) return;
     window.Jupiter.syncProps({ passthroughWalletContextState });
-  }, [passthroughWalletContextState.connected, connected]);
+  }, [
+    passthroughWalletContextState.connected,
+    connected,
+    passthroughWalletContextState,
+  ]);
 
   return <div id={id} className={className} />;
 }
