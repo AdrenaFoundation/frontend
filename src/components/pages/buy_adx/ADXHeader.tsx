@@ -40,6 +40,7 @@ export default function ADXHeader() {
               format="number"
               prefix="Circulating: "
               className="text-sm font-mono opacity-50"
+              suffix="ADX"
             />
             {circulatingPercentage && (
               <span className="text-sm font-mono opacity-90">
@@ -54,6 +55,7 @@ export default function ADXHeader() {
               format="number"
               prefix="Staked: "
               className="text-sm font-mono opacity-50"
+              suffix="ADX"
             />
             {stakedPercentage && (
               <span className="text-sm font-mono opacity-90">

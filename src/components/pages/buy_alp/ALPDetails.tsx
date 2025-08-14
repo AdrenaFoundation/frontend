@@ -73,7 +73,7 @@ export default function ALPDetails({ className }: { className?: string }) {
             </div>
           </div>
 
-          <div className="w-full h-[15em]">
+          <div className="w-full h-[15em] -mb-5">
             <AprLpChart isSmallScreen={false} isAlpPage />
           </div>
 

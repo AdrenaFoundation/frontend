@@ -51,7 +51,7 @@ export default function ADXDetails({ className }: { className?: string }) {
             </div>
           </div>
 
-          <div className="w-full h-[20em] flex items-center justify-center">
+          <div className="w-full h-[20em] -mb-5">
             <AprLmChart isAdxPage />
           </div>
 

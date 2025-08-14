@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
+import { useALPPoolUsage } from '@/hooks/useALPPoolUsage';
 import useAPR from '@/hooks/useAPR';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { useSelector } from '@/store/store';
@@ -9,6 +10,7 @@ import { useSelector } from '@/store/store';
 export default function ALPHeader() {
   const { aprs } = useAPR();
   const aumUsd = useAssetsUnderManagement();
+  const { poolUsage } = useALPPoolUsage();
   const tokenPriceALP = useSelector((s) => s.tokenPrices.ALP);
 
   const alpApr = aprs?.lp ?? null;
@@ -32,12 +34,31 @@ export default function ALPHeader() {
             )}
           </div>
         </div>
-        <FormatNumber
-          nb={aumUsd}
-          format="currency"
-          prefix="Current TVL: "
-          className="text-sm font-mono opacity-50"
-        />
+
+        <div>
+          <FormatNumber
+            nb={aumUsd}
+            format="currency"
+            prefix="Total TVL: "
+            className="text-sm font-mono opacity-50"
+          />
+
+          <div className="flex items-center gap-2">
+            <FormatNumber
+              nb={poolUsage?.totalUsageUsd}
+              format="currency"
+              prefix="Pool Usage: "
+              className="text-sm font-mono opacity-50"
+            />
+            {poolUsage && (
+              <>
+                <span className="text-sm font-mono opacity-90">
+                  ({poolUsage.totalUsagePercentage.toFixed(0)}%)
+                </span>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       <FormatNumber
