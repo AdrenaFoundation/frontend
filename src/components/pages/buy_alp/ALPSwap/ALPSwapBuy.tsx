@@ -106,7 +106,9 @@ export default function ALPSwapBuy({
       return false; // No need to swap if the token is already USDC
     }
 
-    return window.adrena.client.tokens.some(t => t.symbol === collateralToken.symbol);
+    return window.adrena.client.tokens.some(
+      (t) => t.symbol === collateralToken.symbol,
+    );
   }, [collateralToken.symbol, usdcToken.symbol]);
 
   const estimateAddLiquidityAndFee = useCallback(async () => {
@@ -150,23 +152,18 @@ export default function ALPSwapBuy({
 
         setCollateralInputUsd(
           (tokenPrices[usdcToken.symbol] ?? 1) *
-          nativeToUi(amountUsd, usdcToken.decimals),
+            nativeToUi(amountUsd, usdcToken.decimals),
         );
 
-        amountAndFee =
-          await window.adrena.client.getAddLiquidityAmountAndFee({
-            amountIn: amountUsd,
-            token: usdcToken,
-          });
+        amountAndFee = await window.adrena.client.getAddLiquidityAmountAndFee({
+          amountIn: amountUsd,
+          token: usdcToken,
+        });
       } else {
-        amountAndFee =
-          await window.adrena.client.getAddLiquidityAmountAndFee({
-            amountIn: uiToNative(
-              collateralInput,
-              collateralToken.decimals,
-            ),
-            token: collateralToken,
-          });
+        amountAndFee = await window.adrena.client.getAddLiquidityAmountAndFee({
+          amountIn: uiToNative(collateralInput, collateralToken.decimals),
+          token: collateralToken,
+        });
       }
 
       setIsMainDataLoading(false);
@@ -202,15 +199,20 @@ export default function ALPSwapBuy({
       setErrorMessage('Pool ratio reached for this token');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collateralInput, collateralToken.decimals, collateralToken.mint, doJupiterSwap, swapSlippage, !!tokenPrices[usdcToken.symbol], usdcToken]);
+  }, [
+    collateralInput,
+    collateralToken.decimals,
+    collateralToken.mint,
+    doJupiterSwap,
+    swapSlippage,
+    !!tokenPrices[usdcToken.symbol],
+    usdcToken,
+  ]);
 
   // Trigger calculations
   useEffect(() => {
     estimateAddLiquidityAndFee();
-  }, [
-    collateralInput,
-    estimateAddLiquidityAndFee,
-  ]);
+  }, [collateralInput, estimateAddLiquidityAndFee]);
 
   const handleRouteChange = (token: Token) => {
     setCollateralInput(null);
@@ -230,7 +232,13 @@ export default function ALPSwapBuy({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col gap-1 transition-opacity duration-300', className, !connected && 'opacity-20 cursor-not-allowed')}>
+    <div
+      className={twMerge(
+        'relative flex flex-col gap-1 transition-opacity duration-300',
+        className,
+        !connected && 'opacity-20 cursor-not-allowed',
+      )}
+    >
       <div className="flex items-center justify-between mt-4 mb-1">
         <h5 className="text-white">Collateral</h5>
 
@@ -251,10 +259,7 @@ export default function ALPSwapBuy({
         inputContainerClassName="border border-white/20 h-14"
         value={collateralInput}
         selectedToken={collateralToken ?? undefined}
-        tokenList={[
-          ...window.adrena.client.tokens,
-          ...ALTERNATIVE_SWAP_TOKENS,
-        ]}
+        tokenList={[...window.adrena.client.tokens, ...ALTERNATIVE_SWAP_TOKENS]}
         recommendedToken={usdcToken}
         subText={
           collateralToken ? (
@@ -276,31 +281,46 @@ export default function ALPSwapBuy({
         }}
       />
 
-      {eligibleToSwaplessRoute ? <Tippy content={"Use the swapless route to mint ALP directly with this token. Fees are higher when minting with non-stable assets."} placement="top">
-        <div className='ml-auto flex gap-2 items-center cursor-pointer'>
-          <Checkbox checked={useSwaplessRoute} onChange={() => setUseSwaplessRoute(!useSwaplessRoute)} />
+      {eligibleToSwaplessRoute ? (
+        <Tippy
+          content={
+            'Use the swapless route to mint ALP directly with this token. Fees are higher when minting with non-stable assets.'
+          }
+          placement="top"
+        >
+          <div className="ml-auto flex gap-2 items-center cursor-pointer">
+            <Checkbox
+              checked={useSwaplessRoute}
+              onChange={() => setUseSwaplessRoute(!useSwaplessRoute)}
+            />
 
-          <div className='text-xs text-white/30' onClick={() => setUseSwaplessRoute(!useSwaplessRoute)}>
-            use swapless route
+            <div
+              className="text-xs text-white/30"
+              onClick={() => setUseSwaplessRoute(!useSwaplessRoute)}
+            >
+              use swapless route
+            </div>
           </div>
-        </div>
-      </Tippy> : null}
+        </Tippy>
+      ) : null}
 
-      {doJupiterSwap ? <>
-        <div className="text-xs gap-1 flex ml-auto mr-auto mt-4 pt-1 pb-1 w-full items-center justify-center">
-          <span className='text-white/30'>{collateralToken.symbol}</span>
-          <span className='text-white/30'>auto-swapped to</span>
-          <span className='text-white/30'>{usdcToken.symbol}</span>
-          <span className='text-white/30'>via Jupiter</span>
-        </div>
+      {doJupiterSwap ? (
+        <>
+          <div className="text-xs gap-1 flex ml-auto mr-auto mt-4 pt-1 pb-1 w-full items-center justify-center">
+            <span className="text-white/30">{collateralToken.symbol}</span>
+            <span className="text-white/30">auto-swapped to</span>
+            <span className="text-white/30">{usdcToken.symbol}</span>
+            <span className="text-white/30">via Jupiter</span>
+          </div>
 
-        <SwapSlippageSection
-          swapSlippage={swapSlippage}
-          setSwapSlippage={setSwapSlippage}
-          className="mt-4 mb-4"
-          titleClassName="ml-0"
-        />
-      </> : null}
+          <SwapSlippageSection
+            swapSlippage={swapSlippage}
+            setSwapSlippage={setSwapSlippage}
+            className="mt-4 mb-4"
+            titleClassName="ml-0"
+          />
+        </>
+      ) : null}
 
       <div className="flex flex-row justify-between items-center"></div>
 
@@ -335,12 +355,16 @@ export default function ALPSwapBuy({
             <div className="flex justify-between items-center h-12 p-4">
               <div className="flex gap-2 items-center">
                 <Image
-                  src={useSwaplessRoute ? collateralToken.image : usdcToken?.image}
+                  src={
+                    useSwaplessRoute ? collateralToken.image : usdcToken?.image
+                  }
                   className="w-4 h-4"
                   alt="token logo"
                 />
                 <p className="text-base font-boldy">
-                  {useSwaplessRoute ? collateralToken.symbol : usdcToken?.symbol}
+                  {useSwaplessRoute
+                    ? collateralToken.symbol
+                    : usdcToken?.symbol}
                 </p>
               </div>
 
@@ -355,7 +379,9 @@ export default function ALPSwapBuy({
                     />
 
                     <div className="text-base font-mono">
-                      {useSwaplessRoute ? collateralToken.symbol : usdcToken?.symbol}
+                      {useSwaplessRoute
+                        ? collateralToken.symbol
+                        : usdcToken?.symbol}
                     </div>
                   </div>
                 </div>
@@ -374,18 +400,20 @@ export default function ALPSwapBuy({
       ) : null}
 
       {/* Button to execute action */}
-      {connected ? <Button
-        title="Mint ALP"
-        size="lg"
-        disabled={
-          errorMessage !== null ||
-          isMainDataLoading ||
-          alpInput === null ||
-          collateralInput === null
-        }
-        className="justify-center w-full mt-2"
-        onClick={executeBuyAlp}
-      /> : null}
+      {connected ? (
+        <Button
+          title="Mint ALP"
+          size="lg"
+          disabled={
+            errorMessage !== null ||
+            isMainDataLoading ||
+            alpInput === null ||
+            collateralInput === null
+          }
+          className="justify-center w-full mt-2"
+          onClick={executeBuyAlp}
+        />
+      ) : null}
     </div>
   );
 }

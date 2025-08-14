@@ -26,7 +26,7 @@ export default function ADXHeader() {
           <div className="flex flex-row items-center gap-4">
             <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ADX</h1>
             {tokenPrice && (
-              <span className="text-xl opacity-70 font-normal">
+              <span className="text-xl opacity-90 font-normal">
                 ${tokenPrice.toFixed(4)}
               </span>
             )}
@@ -35,33 +35,31 @@ export default function ADXHeader() {
 
         <div>
           <div className="flex items-center gap-2">
-            {circulatingPercentage && (
-              <span className="text-sm font-mono opacity-50">
-                ({circulatingPercentage.toFixed(1)}%)
-              </span>
-            )}
             <FormatNumber
               nb={circulatingSupply}
               format="number"
-              prefix="Circulating Supply: "
+              prefix="Circulating: "
               className="text-sm font-mono opacity-50"
-              suffix=" ADX"
             />
+            {circulatingPercentage && (
+              <span className="text-sm font-mono opacity-90">
+                ({circulatingPercentage.toFixed(1)}%)
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
-            {stakedPercentage && (
-              <span className="text-sm font-mono opacity-50">
-                ({stakedPercentage.toFixed(1)}%)
-              </span>
-            )}
             <FormatNumber
               nb={totalStaked}
               format="number"
               prefix="Staked: "
               className="text-sm font-mono opacity-50"
-              suffix=" ADX"
             />
+            {stakedPercentage && (
+              <span className="text-sm font-mono opacity-90">
+                ({stakedPercentage.toFixed(1)}%)
+              </span>
+            )}
           </div>
         </div>
       </div>
