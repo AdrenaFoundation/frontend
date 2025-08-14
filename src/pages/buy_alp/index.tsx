@@ -5,7 +5,7 @@ import { PageProps } from '@/types';
 
 export default function Buy({ connected }: PageProps) {
   return (
-    <div className="flex flex-col gap-4 mt-4 pb-[150px] p-[20px] w-full max-w-[1300px] m-auto">
+    <div className="flex flex-col gap-4 mt-4 w-full max-w-[1300px] m-auto">
       <div className="flex flex-col lg:flex-row justify-between gap-4">
         <ALPDetails className="relative z-10 bg-secondary p-3 sm:p-5 rounded-xl border basis-4/6 sm:h-fit" />
 
