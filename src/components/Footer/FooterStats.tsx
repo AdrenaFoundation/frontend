@@ -117,8 +117,8 @@ export default function FooterStats({
     try {
       const response = await fetch(
         `${CHAOS_API_ENDPOINT}/trading-view/data?feed=${token}USD&type=1H&from=${
-          // past 24 hours
-          Math.floor(Date.now() / 1000) - 24 * 60 * 60
+        // past 24 hours
+        Math.floor(Date.now() / 1000) - 24 * 60 * 60
         }&till=${Date.now()}`,
       );
 
@@ -236,10 +236,7 @@ export default function FooterStats({
   const stats = [
     {
       label: `24h ${activeToken} Price`,
-      value:
-        tokenHistoricalData[activeToken][
-          tokenHistoricalData[activeToken].length - 1
-        ]?.close,
+      value: tokenPrices[activeToken],
     },
     {
       label: `${activeToken} Liquidity`,
@@ -466,7 +463,7 @@ export default function FooterStats({
                   />
 
                   <FormatNumber
-                    nb={typeof lastPrice === 'number' ? lastPrice : 0}
+                    nb={tokenPrices[activeToken]}
                     className={`text-base ${priceColor}`}
                     format="currency"
                     isDecimalDimmed={false}
@@ -482,9 +479,9 @@ export default function FooterStats({
                   </p>
                   <AnimatePresence mode="wait">
                     {custodyLiquidity !== null &&
-                    tokenPrice &&
-                    custody &&
-                    !isTokenDataLoading ? (
+                      tokenPrice &&
+                      custody &&
+                      !isTokenDataLoading ? (
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
