@@ -14,7 +14,11 @@ import {
 import { AxisDomain, DataKey, ScaleType } from 'recharts/types/util/types';
 
 import { AdrenaEvent, RechartsData } from '@/types';
-import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
+import {
+  formatGraphCurrency,
+  formatNumberShort,
+  formatPercentage,
+} from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
@@ -40,7 +44,8 @@ export default function LineRechart<T extends string>({
   isMaxUtilizationReferenceLine,
   events,
   isNowReferenceLine,
-  isAlpPage
+  isAlpPage,
+  showLegend = true,
 }: {
   title: string;
   data: RechartsData[];
@@ -50,10 +55,13 @@ export default function LineRechart<T extends string>({
   }[];
   period?: T | null;
   setPeriod?: (v: T | null) => void;
-  periods: (T | {
-    name: T;
-    disabled?: boolean;
-  })[];
+  periods: (
+    | T
+    | {
+        name: T;
+        disabled?: boolean;
+      }
+  )[];
   xDomain?: AxisDomain;
   yDomain?: AxisDomain;
   scale?: ScaleType;
@@ -65,9 +73,10 @@ export default function LineRechart<T extends string>({
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
   isMaxUtilizationReferenceLine?: boolean;
-  events?: AdrenaEvent[],
+  events?: AdrenaEvent[];
   isNowReferenceLine?: boolean;
   isAlpPage?: boolean;
+  showLegend?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -75,11 +84,17 @@ export default function LineRechart<T extends string>({
 
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
-      return Math.abs(tickItem) === 0 ? '0%' : formatPercentage(tickItem, precision);
+      return Math.abs(tickItem) === 0
+        ? '0%'
+        : formatPercentage(tickItem, precision);
     }
 
     if (formatY === 'currency') {
-      return formatGraphCurrency({ tickItem, maxDecimals: 0, maxDecimalsIfToken: 4 });
+      return formatGraphCurrency({
+        tickItem,
+        maxDecimals: 0,
+        maxDecimalsIfToken: 4,
+      });
     }
 
     return formatNumberShort(tickItem, precision);
@@ -91,7 +106,7 @@ export default function LineRechart<T extends string>({
         <div className="flex flex-row gap-3 items-center">
           {!isAlpPage ? <h2 className="">{title}</h2> : null}
 
-          {(tippyContent && !isAlpPage) && (
+          {tippyContent && !isAlpPage && (
             <Tippy content={tippyContent} placement="auto">
               <span className="cursor-help text-txtfade">ⓘ</span>
             </Tippy>
@@ -104,13 +119,19 @@ export default function LineRechart<T extends string>({
               format="currency"
               prefix="("
               suffix=")"
-              suffixClassName='ml-0 text-txtfade'
+              suffixClassName="ml-0 text-txtfade"
               precision={0}
             />
           )}
         </div>
 
-        {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} /> : null}
+        {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? (
+          <PeriodSelector
+            period={period}
+            setPeriod={setPeriod}
+            periods={periods}
+          />
+        ) : null}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -119,7 +140,12 @@ export default function LineRechart<T extends string>({
 
           <XAxis dataKey="time" fontSize="12" domain={xDomain} />
 
-          <YAxis domain={yDomain} tickFormatter={formatYAxis} fontSize="11" scale={scale} />
+          <YAxis
+            domain={yDomain}
+            tickFormatter={formatYAxis}
+            fontSize="11"
+            scale={scale}
+          />
 
           <Tooltip
             content={
@@ -134,27 +160,30 @@ export default function LineRechart<T extends string>({
             cursor={false}
           />
 
-          <Legend
-            onClick={(e) => {
-              setHiddenLabels(() => {
-                if (
-                  hiddenLabels.includes(
-                    String(e.dataKey).trim() as DataKey<string | number>,
-                  )
-                ) {
-                  return hiddenLabels.filter(
-                    (l) => l !== String(e.dataKey).trim(),
-                  ) as DataKey<string | number>[];
-                }
+          {/* Only show legend when showLegend is true */}
+          {showLegend && (
+            <Legend
+              onClick={(e) => {
+                setHiddenLabels(() => {
+                  if (
+                    hiddenLabels.includes(
+                      String(e.dataKey).trim() as DataKey<string | number>,
+                    )
+                  ) {
+                    return hiddenLabels.filter(
+                      (l) => l !== String(e.dataKey).trim(),
+                    ) as DataKey<string | number>[];
+                  }
 
-                return [
-                  ...hiddenLabels,
-                  String(e.dataKey).trim() as DataKey<string | number>,
-                ];
-              });
-            }}
-            wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
-          />
+                  return [
+                    ...hiddenLabels,
+                    String(e.dataKey).trim() as DataKey<string | number>,
+                  ];
+                });
+              }}
+              wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
+            />
+          )}
 
           {labels.map(({ name, color }) => {
             return (
@@ -204,19 +233,21 @@ export default function LineRechart<T extends string>({
             />
           )}
 
-          {events?.map((event, i) => <ReferenceLine
-            id={`event-${event.label}`}
-            key={event.label + '-' + i + '-' + event.time}
-            x={event.time}
-            stroke={event.color}
-            strokeDasharray="3 3"
-            label={{
-              position: event.labelPosition ?? 'insideTopRight',
-              value: event.label,
-              fill: event.color,
-              fontSize: 12,
-            }}
-          />)}
+          {events?.map((event, i) => (
+            <ReferenceLine
+              id={`event-${event.label}`}
+              key={event.label + '-' + i + '-' + event.time}
+              x={event.time}
+              stroke={event.color}
+              strokeDasharray="3 3"
+              label={{
+                position: event.labelPosition ?? 'insideTopRight',
+                value: event.label,
+                fill: event.color,
+                fontSize: 12,
+              }}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
