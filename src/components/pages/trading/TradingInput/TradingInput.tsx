@@ -118,13 +118,13 @@ export default function TradingInput({
               <div
                 className={twMerge(
                   'flex items-center gap-2',
-                  tokenList.length ? 'cursor-pointer' : '',
+                  tokenList.length > 1 ? 'cursor-pointer' : '',
                 )}
                 onClick={() =>
-                  tokenList.length && setIsPickTokenModalOpen(true)
+                  tokenList.length > 1 && setIsPickTokenModalOpen(true)
                 }
               >
-                {tokenList.length ? (
+                {tokenList.length > 1 ? (
                   <div
                     className={twMerge(
                       'flex h-2 w-2 items-center justify-center shrink-0',

@@ -11,8 +11,6 @@ export default function useAssetsUnderManagement(): number | null {
 
   const fetchAum = useCallback(
     async (retryNb: number) => {
-      // If user is not connected, use the API to get the latest AUM as a fallback
-      // as we can't simulate transactions to get the AUM
       if (!connected) {
         const res = await fetch(
           'https://datapi.adrena.xyz/poolinfo?aum_usd=true&sort=DESC&limit=1',
@@ -25,7 +23,6 @@ export default function useAssetsUnderManagement(): number | null {
         return setAum(typeof aum_usd !== 'undefined' ? aum_usd : null);
       }
 
-      // If connected, get the AUM by simulating a transaction
       try {
         const aum = await window.adrena.client.getAssetsUnderManagement();
 
@@ -35,7 +32,6 @@ export default function useAssetsUnderManagement(): number | null {
             return;
           }
 
-          // Retry fetching AUM in case of failure
           setTimeout(() => fetchAum(retryNb + 1), 100 * retryNb);
           return;
         }
@@ -53,7 +49,7 @@ export default function useAssetsUnderManagement(): number | null {
 
     const interval = setInterval(() => {
       fetchAum(0);
-    }, 15000);
+    }, 60 * 1000); // 1 minute
 
     return () => {
       clearInterval(interval);

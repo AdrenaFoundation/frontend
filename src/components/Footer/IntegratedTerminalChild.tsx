@@ -46,6 +46,33 @@ export default function IntegratedTerminalChild({
   }, [connected, walletState]);
 
   useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-background',
+      '6, 16, 24',
+    ); // bg-secondary
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-module',
+      '16, 23, 31',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-interactive',
+      '33, 42, 54',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-primary',
+      '199, 242, 132',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-primary-text',
+      '232, 249, 255',
+    );
+    document.documentElement.style.setProperty(
+      '--jupiter-plugin-warning',
+      '251, 191, 36',
+    );
+  }, []);
+
+  useEffect(() => {
     window.Jupiter.init({
       displayMode: 'integrated',
       integratedTargetId: id,
@@ -61,15 +88,22 @@ export default function IntegratedTerminalChild({
         userSlippageMode: 'DYNAMIC' | 'FIXED';
         dynamicSlippageBps: number;
       }) => {
-        const tokenB = getTokenSymbol(getTokenNameByMint(new PublicKey(form.toMint)))
-        const allowedTokenBSymbols = allowedTokenB.map((t) => getTokenSymbol(t.symbol));
+        const tokenB = getTokenSymbol(
+          getTokenNameByMint(new PublicKey(form.toMint)),
+        );
+        const allowedTokenBSymbols = allowedTokenB.map((t) =>
+          getTokenSymbol(t.symbol),
+        );
 
         if (!allowedTokenBSymbols.includes(tokenB)) {
           return;
         }
 
-        setTokenB(allowedTokenB.find((t) => getTokenSymbol(t.symbol) === getTokenSymbol(tokenB)) as Token);
-
+        setTokenB(
+          allowedTokenB.find(
+            (t) => getTokenSymbol(t.symbol) === getTokenSymbol(tokenB),
+          ) as Token,
+        );
       },
       onSuccess: ({ txid }: { txid: string }) => {
         console.log({ txid });
@@ -86,6 +120,13 @@ export default function IntegratedTerminalChild({
           title: 'Swap Error',
           error,
         });
+      },
+      formProps: {
+        swapMode: 'ExactInOrOut',
+      },
+      branding: {
+        name: 'Adrena',
+        logoUri: 'https://app.adrena.xyz/_next/static/media/adx.ed486967.svg',
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

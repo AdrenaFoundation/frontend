@@ -3,59 +3,14 @@ import Link from 'next/link';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import FormatNumber from '@/components/Number/FormatNumber';
-import useAPR from '@/hooks/useAPR';
-import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
-
 import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
 import { AprLpChart } from '../global/Apr/AprLpChart';
+import ALPHeader from './ALPHeader';
 
 export default function ALPDetails({ className }: { className?: string }) {
-  const { aprs } = useAPR();
-  const aumUsd = useAssetsUnderManagement();
-
-  const alpApr = aprs?.lp ?? null;
-
   return (
     <div className={twMerge(className, 'flex flex-col gap-3')}>
-      <div className="flex flex-row gap-2 items-center justify-between">
-        <div>
-          <div className="flex flex-row gap-2 items-center">
-            <Image
-              src={window.adrena.client.alpToken.image}
-              alt="alp icon"
-              className="w-5 sm:w-7 h-5 sm:h-7"
-            />
-
-            <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ALP</h1>
-          </div>
-          <FormatNumber
-            nb={aumUsd}
-            format="currency"
-            prefix="Current TVL: "
-            className="text-sm font-mono opacity-50"
-          />
-        </div>
-
-        <FormatNumber
-          nb={alpApr}
-          format="percentage"
-          suffix="APR"
-          precision={0}
-          suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-          className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-          isDecimalDimmed
-        />
-      </div>
-
-      {/* <div className="flex-start flex h-2 w-full overflow-hidden rounded-full bg-bcolor font-sans text-xs font-medium mt-3">
-          <div
-            className={twMerge(
-              'flex items-center justify-center h-full overflow-hidden break-all bg-gradient-to-r from-[#2C30DC] to-[#6029BA] rounded-full',
-            )}
-            style={{ width: `${aumLiquidityRatio}%` }}
-          ></div>
-        </div> */}
+      <ALPHeader />
 
       <div>
         <div className="flex flex-col gap-3 p-4 border rounded-xl">
@@ -67,10 +22,12 @@ export default function ALPDetails({ className }: { className?: string }) {
                 Essentially, traders borrow tokens to execute their trades, and
                 pay fees for the service.
               </p>
+
               <p className="text-sm opacity-75 mt-4">
                 <span className="font-interSemibold">The ALP token</span>{' '}
                 represents shares of said pool, and its value is backed by:
               </p>
+
               <ul>
                 <li className="text-sm opacity-75 list-disc ml-4 mt-1">
                   A diversified index fund comprising{' '}
@@ -102,7 +59,8 @@ export default function ALPDetails({ className }: { className?: string }) {
               </ul>
 
               <p className="text-sm opacity-75 mt-4">
-                This structure ensures ALP token holders benefit from both the pool&apos;s underlying assets and its trading activity.
+                This structure ensures ALP token holders benefit from both the
+                pool&apos;s underlying assets and its trading activity.
               </p>
 
               <p className="text-sm font-interMedium mt-2 bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
@@ -113,11 +71,9 @@ export default function ALPDetails({ className }: { className?: string }) {
                 LPers also benefit from JitoSOL native yield.
               </p>
             </div>
-
-
           </div>
 
-          <div className="w-full h-[15em]">
+          <div className="w-full h-[15em] -mb-5">
             <AprLpChart isSmallScreen={false} isAlpPage />
           </div>
 
@@ -132,50 +88,6 @@ export default function ALPDetails({ className }: { className?: string }) {
           </Link>
         </div>
       </div>
-
-      {/* <div className='w-full h-[1px] my-3' /> */}
-
-      {/* <div className="mt-4">
-        <div className="flex flex-row gap-2 items-center">
-          <h2 className="font-boldy text-base opacity-50 capitalize">
-            Total Value Locked
-          </h2>{' '}
-          <Tippy
-            content={
-              <p className="font-medium">
-                The total value of all assets in the pool
-              </p>
-            }
-            placement="auto"
-          >
-            <Image
-              src={infoIcon}
-              width={14}
-              height={14}
-              alt="info icon"
-              className="opacity-50"
-            />
-          </Tippy>
-        </div>
-
-        <div className="flex flex-col gap-1 mt-2">
-          <FormatNumber
-            nb={aumUsd}
-            format="currency"
-            className="text-[1.2rem] sm:text-[2rem] font-interBold"
-            precision={0}
-          />
-
-          <FormatNumber
-            nb={mainPool?.aumSoftCapUsd ?? null}
-            format="currency"
-            prefix="Max: "
-            className="text-sm font-mono opacity-50"
-          />
-        </div>
-      </div> */}
-
-      {/* <PoolRatios poolInfo={poolInfo} /> */}
     </div>
   );
 }
