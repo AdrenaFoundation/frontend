@@ -6,16 +6,18 @@ import { PageProps } from '@/types';
 export default function Buy({ connected }: PageProps) {
   return (
     <div className="flex flex-col gap-4 mt-4 w-full max-w-[1300px] m-auto">
-      <div className="flex flex-col lg:flex-row justify-between gap-4">
+      <div className="flex flex-col lg:flex-row justify-between gap-4 ml-4 mr-4">
         <ALPDetails className="relative z-10 bg-secondary p-3 sm:p-5 rounded-xl border basis-4/6 sm:h-fit" />
 
-        <div className="basis-2/6 flex flex-col gap-4">
-          <ALPSwap
-            connected={connected}
-            className="relative z-10 bg-secondary p-3 sm:p-5 rounded-xl border h-fit"
-          />
+        <div className="basis-2/6 flex flex-col gap-4 mx-auto">
+          <div className="flex flex-col md:flex-row lg:flex-col gap-4">
+            <ALPSwap
+              connected={connected}
+              className="relative z-10 bg-secondary p-3 sm:p-5 rounded-xl border h-fit flex-shrink-0"
+            />
 
-          <PartnerCards />
+            <PartnerCards className="flex-shrink min-w-0" />
+          </div>
         </div>
       </div>
 

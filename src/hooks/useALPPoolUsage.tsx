@@ -32,8 +32,7 @@ export function useALPPoolUsage(): {
 
         const custodyData = await DataApiClient.getCustodyInfo(
           'custodyinfo',
-          'open_interest_long_usd=true&open_interest_short_usd=true',
-          1,
+          'open_interest_long_usd=true&open_interest_short_usd=true&limit=1&sort=DESC',
         );
 
         if (!custodyData) {
@@ -58,9 +57,8 @@ export function useALPPoolUsage(): {
           const custody = await getCustodyByMint(mint);
           if (!custody || !longValues) continue;
 
-          const latestIndex = longValues.length - 1;
-          const longOI = parseFloat(longValues[latestIndex] || '0');
-          const shortOI = parseFloat(typedShortOI[mint]?.[latestIndex] || '0');
+          const longOI = parseFloat(longValues[0] || '0');
+          const shortOI = parseFloat(typedShortOI[mint]?.[0] || '0');
 
           if (custody.tokenInfo.symbol === 'USDC') {
             shortUsageUsd += longOI + shortOI;

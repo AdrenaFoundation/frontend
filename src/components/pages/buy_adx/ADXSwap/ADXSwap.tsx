@@ -34,7 +34,7 @@ export default function ADXSwap({
           adapters={adapters}
           activeRpc={activeRpc}
           id="adx-swap-widget"
-          className="bg-transparent border-transparent min-w-[300px] w-full"
+          className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
         />
       </div>
 
