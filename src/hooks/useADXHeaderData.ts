@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo,useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
@@ -62,7 +62,7 @@ export default function useADXHeaderData(): ADXHeaderData {
   useEffect(() => {
     loadADXStakingData();
 
-    const interval = setInterval(loadADXStakingData, 5 * 60 * 1000);
+    const interval = setInterval(loadADXStakingData, 60 * 1000); // 1 minute
 
     return () => clearInterval(interval);
   }, [loadADXStakingData]);

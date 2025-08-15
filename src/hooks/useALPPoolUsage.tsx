@@ -25,6 +25,11 @@ export function useALPPoolUsage(): {
   useEffect(() => {
     const loadPoolUsage = async () => {
       try {
+        if (aumUsd === null) {
+          console.log('AUM not loaded yet, skipping pool usage calculation');
+          return;
+        }
+
         const custodyData = await DataApiClient.getCustodyInfo(
           'custodyinfo',
           'open_interest_long_usd=true&open_interest_short_usd=true',
@@ -53,8 +58,9 @@ export function useALPPoolUsage(): {
           const custody = await getCustodyByMint(mint);
           if (!custody || !longValues) continue;
 
-          const longOI = parseFloat(longValues[0] || '0');
-          const shortOI = parseFloat(typedShortOI[mint]?.[0] || '0');
+          const latestIndex = longValues.length - 1;
+          const longOI = parseFloat(longValues[latestIndex] || '0');
+          const shortOI = parseFloat(typedShortOI[mint]?.[latestIndex] || '0');
 
           if (custody.tokenInfo.symbol === 'USDC') {
             shortUsageUsd += longOI + shortOI;
@@ -65,9 +71,12 @@ export function useALPPoolUsage(): {
           totalUsageUsd += longOI + shortOI;
         }
 
-        const totalTVL = aumUsd || 0;
-        const totalUsagePercentage =
-          totalTVL > 0 ? (totalUsageUsd / totalTVL) * 100 : 0;
+        if (!aumUsd || aumUsd <= 0) {
+          console.log('Invalid AUM value, skipping percentage calculation');
+          return;
+        }
+
+        const totalUsagePercentage = (totalUsageUsd / aumUsd) * 100;
 
         setPoolUsage({
           totalUsageUsd,
@@ -84,9 +93,16 @@ export function useALPPoolUsage(): {
       }
     };
 
-    loadPoolUsage();
+    if (aumUsd !== null) {
+      loadPoolUsage();
+    }
 
-    const interval = setInterval(loadPoolUsage, 60000);
+    const interval = setInterval(() => {
+      if (aumUsd !== null) {
+        loadPoolUsage();
+      }
+    }, 60 * 1000); // 1 minute
+
     return () => clearInterval(interval);
   }, [trickReload, aumUsd]);
 
