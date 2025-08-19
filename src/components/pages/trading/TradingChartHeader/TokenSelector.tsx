@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,11 +11,26 @@ import chevronDownIcon from '../../../../../public/images/chevron-down.svg';
 import starIcon from '../../../../../public/images/Icons/star.svg';
 import starFilledIcon from '../../../../../public/images/Icons/star-filled.svg';
 
+// TODO: add this as an option to FormatNumber global utils
+const formatVolume = (value: number): string => {
+  if (value >= 1e9) {
+    return `${(value / 1e9).toFixed(2)}B`;
+  } else if (value >= 1e6) {
+    return `${(value / 1e6).toFixed(2)}M`;
+  } else if (value >= 1e3) {
+    return `${(value / 1e3).toFixed(2)}k`;
+  } else {
+    return value.toFixed(2);
+  }
+};
+
 interface TokenSelectorProps {
   tokenList: Token[];
   selected: Token;
   onChange: (token: Token) => void;
   className?: string;
+  favorites: string[];
+  setFavorites: (favorites: string[]) => void;
 }
 
 export default function TokenSelector({
@@ -23,61 +38,56 @@ export default function TokenSelector({
   selected,
   onChange,
   className,
+  favorites,
+  setFavorites,
 }: TokenSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [favorites, setFavorites] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const favoritesContainerRef = useRef<HTMLDivElement>(null);
 
   const allTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
 
-  // Load favorites from localStorage
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem('tokenFavorites');
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
-    }
-  }, []);
+  const custodyData = useMemo(() => {
+    return tokenList.reduce(
+      (acc, token) => {
+        const custody = window.adrena.client.getCustodyByMint(token.mint);
+        if (custody) {
+          acc[token.symbol] = custody;
+        }
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+  }, [tokenList]);
 
-  // Check scroll position and show/hide arrows
-  const checkScrollPosition = () => {
-    if (favoritesContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } =
-        favoritesContainerRef.current;
-      setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
-    }
-  };
+  const liquidityData = useMemo(() => {
+    return tokenList.reduce(
+      (acc, token) => {
+        const custody = custodyData[token.symbol];
+        if (custody) {
+          const availableLiquidity =
+            custody.availableLiquidity ||
+            custody.available ||
+            custody.liquidity ||
+            0;
 
-  // Scroll favorites left/right
-  const scrollFavorites = (direction: 'left' | 'right') => {
-    if (favoritesContainerRef.current) {
-      const scrollAmount = 200; // Scroll by 200px
-      const newScrollLeft =
-        favoritesContainerRef.current.scrollLeft +
-        (direction === 'left' ? -scrollAmount : scrollAmount);
-      favoritesContainerRef.current.scrollTo({
-        left: newScrollLeft,
-        behavior: 'smooth',
-      });
-    }
-  };
+          const shortLiquidity =
+            (custody.maxCumulativeShortPositionSizeUsd || 0) -
+            (custody.oiShortUsd || 0);
 
-  // Save favorites to localStorage
-  const toggleFavorite = (symbol: string) => {
-    const newFavorites = favorites.includes(symbol)
-      ? favorites.filter((f) => f !== symbol)
-      : [...favorites, symbol];
+          acc[token.symbol] = {
+            long: Math.max(0, availableLiquidity),
+            short: Math.max(0, shortLiquidity),
+          };
+        }
+        return acc;
+      },
+      {} as Record<string, { long: number; short: number }>,
+    );
+  }, [tokenList, custodyData]);
 
-    setFavorites(newFavorites);
-    localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
-  };
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -92,18 +102,29 @@ export default function TokenSelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Check scroll position when favorites change
-  useEffect(() => {
-    checkScrollPosition();
-  }, [favorites]);
+  const toggleFavorite = (symbol: string) => {
+    const newFavorites = favorites.includes(symbol)
+      ? favorites.filter((f) => f !== symbol)
+      : favorites.length < 5
+        ? [...favorites, symbol]
+        : favorites;
 
-  // Filter tokens based on search term
-  const filteredTokens = tokenList.filter((token) => {
+    setFavorites(newFavorites);
+    localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
+  };
+
+  const allTokens = tokenList;
+
+  const filteredTokens = allTokens.filter((token) => {
     const symbol = getTokenSymbol(token.symbol);
-    return symbol.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = symbol
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchesCategory = selectedCategory === 'all' || true;
+    return matchesSearch && matchesCategory;
   });
 
-  // Sort tokens: favorites first, then alphabetically
   const sortedTokens = [...filteredTokens].sort((a, b) => {
     const aSymbol = getTokenSymbol(a.symbol);
     const bSymbol = getTokenSymbol(b.symbol);
@@ -112,51 +133,24 @@ export default function TokenSelector({
 
     if (aIsFavorite && !bIsFavorite) return -1;
     if (!aIsFavorite && bIsFavorite) return 1;
-    return aSymbol.localeCompare(bSymbol);
+
+    const aVolume = stats?.[a.symbol]?.dailyVolume ?? 0;
+    const bVolume = stats?.[b.symbol]?.dailyVolume ?? 0;
+    return bVolume - aVolume;
   });
 
-  // Add test tokens for development - remove in production!
-  const TEST_FAVORITES = [
-    'TEST1',
-    'TEST2',
-    'TEST3',
-    'TEST4',
-    'TEST5',
-    'TEST6',
-    'TEST7',
-    'TEST8',
-    'TEST9',
-    'TEST10',
-  ];
-
-  // Get favorite tokens for display in header
-  // Filter out the currently selected token to avoid redundancy
-  const favoriteTokens = [
-    ...tokenList.filter(
+  const favoriteTokens = allTokens
+    .filter(
       (token) =>
         favorites.includes(getTokenSymbol(token.symbol)) &&
         token.symbol !== selected.symbol,
-    ),
-    // Add test tokens for development - remove in production!
-    ...TEST_FAVORITES.map((testSymbol) => ({
-      symbol: testSymbol,
-      mint: 'test-mint' as any,
-      color: '#666',
-      name: `Test Token ${testSymbol}`,
-      decimals: 6,
-      displayAmountDecimalsPrecision: 2,
-      displayPriceDecimalsPrecision: 2,
-      isStable: false,
-      image:
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM2NjY2NjYiLz4KPHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCAxMiAxMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYgMkw3LjUgNkgxMS41TDguNSA4TDEwIDEyTDYgMTBMNC41IDhMMS41IDZINi41TDYgMloiIGZpbGw9IiNGQkIyNCIvPgo8L3N2Zz4KPC9zdmc+',
-    })),
-  ];
+    )
+    .slice(0, 5);
 
   return (
     <div className={twMerge('relative', className)} ref={dropdownRef}>
-      {/* Main row: Token selector + Favorites */}
-      <div className="flex flex-row items-center gap-3">
-        {/* Current token display with dropdown arrow */}
+      {/* Just the token selector button */}
+      <div className="flex-shrink-0">
         <div
           className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 cursor-pointer hover:bg-third transition duration-300 bg-main"
           onClick={() => setIsOpen(!isOpen)}
@@ -181,137 +175,66 @@ export default function TokenSelector({
             )}
           />
         </div>
-
-        {/* Favorites display to the right with scroll */}
-        {favoriteTokens.length > 0 && (
-          <div className="relative w-64 sm:w-80 md:w-96 lg:w-[400px] flex-shrink-0">
-            {/* Left fade and arrow */}
-            {showLeftArrow && (
-              <div className="absolute left-0 top-0 bottom-0 flex items-center z-10">
-                <div className="w-8 h-full bg-gradient-to-r from-main to-transparent flex items-center justify-center">
-                  <button
-                    onClick={() => scrollFavorites('left')}
-                    className="w-6 h-6 bg-third/80 hover:bg-third rounded-full flex items-center justify-center transition-colors"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M7.5 3L4.5 6L7.5 9"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Right fade and arrow */}
-            {showRightArrow && (
-              <div className="absolute right-0 top-0 bottom-0 flex items-center z-10">
-                <div className="w-6 h-full bg-gradient-to-l from-main to-transparent flex items-center justify-center min-w-0">
-                  <button
-                    onClick={() => scrollFavorites('right')}
-                    className="w-6 h-6 bg-third/40 hover:bg-third/70 rounded-full flex items-center justify-center transition-colors"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.5 3L7.5 6L4.5 9"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Scrollable favorites container */}
-            <div
-              ref={favoritesContainerRef}
-              className="flex flex-row items-center gap-2 overflow-x-auto overflow-y-hidden scrollbar-hide"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              onScroll={checkScrollPosition}
-            >
-              {favoriteTokens.map((token) => {
-                const symbol = getTokenSymbol(token.symbol);
-                return (
-                  <div
-                    key={token.symbol}
-                    className={twMerge(
-                      'flex flex-row items-center gap-2 border rounded-lg p-1 px-3 pr-5 cursor-pointer opacity-50 hover:opacity-100 hover:bg-third transition duration-300 flex-shrink-0',
-                      selected.symbol === token.symbol
-                        ? 'opacity-100 bg-third'
-                        : '',
-                    )}
-                    onClick={() => onChange(token)}
-                  >
-                    <Image
-                      src={getTokenImage(token)}
-                      alt={symbol}
-                      width={16}
-                      height={16}
-                    />
-                    <p
-                      className={twMerge(
-                        'text-base font-boldy',
-                        selected.symbol === token.symbol && 'font-interBold',
-                      )}
-                    >
-                      {symbol}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-64 max-h-96 overflow-y-auto bg-main border border-bcolor rounded-lg shadow-lg z-50">
-          {/* Search bar */}
-          <div className="p-3 border-b border-bcolor">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search tokens..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 bg-third border border-bcolor rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 text-base"
-              />
+        <div className="absolute top-full left-0 mt-1 w-[30rem] bg-main border border-bcolor rounded-lg shadow-lg z-50">
+          {/* Search and category bar */}
+          <div className="p-2 border-b border-bcolor">
+            <div className="flex flex-row items-center gap-2">
+              {/* Search input */}
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Search token"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-3 py-2 bg-inputcolor border border-white/10 rounded-lg text-white font-mono placeholder-white/30 text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Column headers */}
+          <div className="px-2 py-1.5 bg-third/20 border-b border-bcolor">
+            <div className="grid grid-cols-10 gap-2 text-sm">
+              <div className="col-span-3 font-boldy text-white/50">Ticker</div>
+              <div className="col-span-3 font-boldy text-white/50">
+                Price / 24h%
+              </div>
+              <div className="col-span-2 font-boldy text-white/50">
+                24h Vol.
+              </div>
+              <div className="col-span-2 font-boldy text-white/50">
+                Avail. Liq.
+              </div>
             </div>
           </div>
 
           {/* Token list */}
-          <div className="max-h-80 overflow-y-auto">
+          <div
+            className="overflow-y-auto"
+            style={{
+              maxHeight: `${Math.min(sortedTokens.length * 3.5 + 2, 25)}rem`,
+            }}
+          >
             {sortedTokens.map((token) => {
               const symbol = getTokenSymbol(token.symbol);
               const tokenPrice = allTokenPrices[symbol] ?? null;
               const dailyChange = stats?.[token.symbol]?.dailyChange ?? null;
+              const dailyVolume = stats?.[token.symbol]?.dailyVolume ?? null;
               const isFavorite = favorites.includes(symbol);
+
+              const custody = custodyData[token.symbol];
+
+              const liquidity = liquidityData[token.symbol];
 
               return (
                 <div
                   key={token.symbol}
                   className={twMerge(
-                    'flex items-center justify-between p-3 hover:bg-third cursor-pointer border-b border-bcolor/20 last:border-b-0',
+                    'grid grid-cols-10 gap-2 items-center p-2 hover:bg-third cursor-pointer border-b border-bcolor/20 last:border-b-0',
                     selected.symbol === token.symbol ? 'bg-third/50' : '',
                   )}
                   onClick={() => {
@@ -320,8 +243,8 @@ export default function TokenSelector({
                     setSearchTerm('');
                   }}
                 >
-                  {/* Left side: Star and Symbol */}
-                  <div className="flex items-center gap-3">
+                  {/* Ticker column */}
+                  <div className="col-span-3 flex items-center gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -341,16 +264,17 @@ export default function TokenSelector({
                         className={twMerge(
                           'transition-all duration-200',
                           isFavorite ? 'scale-110' : 'scale-100',
+                          !isFavorite ? 'opacity-50' : '',
                         )}
                       />
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <Image
                         src={getTokenImage(token)}
                         alt={symbol}
-                        width={20}
-                        height={20}
+                        width={18}
+                        height={18}
                       />
                       <span className="text-base font-boldy text-white">
                         {symbol}
@@ -358,10 +282,10 @@ export default function TokenSelector({
                     </div>
                   </div>
 
-                  {/* Right side: Price and 24h change */}
-                  <div className="flex flex-col items-end gap-1">
+                  {/* Price / 24h% column */}
+                  <div className="col-span-3 flex flex-col gap-0.5">
                     {tokenPrice ? (
-                      <span className="text-base font-boldy text-white">
+                      <span className="text-base font-mono text-white">
                         $
                         {tokenPrice.toFixed(
                           token.displayPriceDecimalsPrecision || 2,
@@ -388,6 +312,41 @@ export default function TokenSelector({
                     ) : (
                       <span className="text-sm text-gray-400">-</span>
                     )}
+                  </div>
+
+                  {/* 24h Volume column */}
+                  <div className="col-span-2 text-base text-white">
+                    {dailyVolume ? (
+                      <span className="font-mono text-base">
+                        {formatVolume(dailyVolume)}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </div>
+
+                  {/* Available Liquidity */}
+                  <div className="col-span-2 flex flex-col gap-0.5">
+                    {/* Long liquidity */}
+                    <span className="text-base text-green font-mono">
+                      {(() => {
+                        if (liquidity && tokenPrice) {
+                          const longValue = liquidity.long * tokenPrice;
+                          return formatVolume(longValue);
+                        }
+                        return '-';
+                      })()}
+                    </span>
+                    {/* Short liquidity */}
+                    <span className="text-sm text-red font-mono">
+                      {(() => {
+                        if (liquidity) {
+                          const shortValue = liquidity.short;
+                          return formatVolume(shortValue);
+                        }
+                        return '-';
+                      })()}
+                    </span>
                   </div>
                 </div>
               );
