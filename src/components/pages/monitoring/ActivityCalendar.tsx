@@ -5,9 +5,28 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import calendarIcon from '@/../public/images/Icons/calendar.svg';
+import monitorIcon from '@/../public/images/Icons/monitor-icon.svg';
 import SelectOptions from '@/components/common/SelectOptions/SelectOptions';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+
+import ActivityMiniChart from './ActivityMiniChart';
+import PositionHistoryTable from './PositionHistoryTable/PositionHistoryTable';
+
+export type ActivityDataType = {
+  date: Date;
+  stats: {
+    totalPositions: number;
+    winrate: number;
+    color: string;
+    size: number;
+    pnl: number;
+    volume: number;
+    increaseSize: number;
+    totalFees: number;
+    bubbleSize: number;
+  } | null;
+};
 
 export default function ActivityCalendar({
   data,
@@ -18,23 +37,9 @@ export default function ActivityCalendar({
   setSelectedRange,
   wrapperClassName,
   isUserActivity = false,
+  walletAddress,
 }: {
-  data:
-    | {
-        date: Date;
-        stats: {
-          totalPositions: number;
-          winrate: number;
-          color: string;
-          size: number;
-          pnl: number;
-          volume: number;
-          increaseSize: number;
-          totalFees: number;
-          bubbleSize: number;
-        } | null;
-      }[]
-    | null;
+  data: ActivityDataType[] | null;
   setEndDate?: (date: string) => void;
   setStartDate?: (date: string) => void;
   bubbleBy: string;
@@ -42,6 +47,7 @@ export default function ActivityCalendar({
   setSelectedRange?: (range: string) => void;
   wrapperClassName?: string;
   isUserActivity?: boolean;
+  walletAddress?: string | null;
 }) {
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const isTablet = useBetterMediaQuery('(max-width: 1024px)');
@@ -128,7 +134,7 @@ export default function ActivityCalendar({
           wrapperClassName,
         )}
       >
-        <div className="flex flex-col sm:flex-row mb-6 pl-3 pr-3 justify-between items-center">
+        <div className="flex flex-col sm:flex-row mb-6 px-3 justify-between items-center">
           <p className="font-interSemibold text-lg">Daily Trading activity</p>
           <div className="flex flex-row gap-3 animate-pulse">
             <div className="h-4 w-20 bg-third/20 rounded" />
@@ -213,110 +219,106 @@ export default function ActivityCalendar({
     }));
 
   return (
-    <div
-      className={twMerge(
-        'bg-[#040D14] border rounded-lg p-3',
-        wrapperClassName,
-      )}
-    >
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 justify-between items-center sm:px-1">
-        <p className="font-interSemibold text-lg">Daily Trading activity</p>
-
-        <div className="flex flex-row gap-3">
-          <SelectOptions
-            title="Bubble by"
-            selected={bubbleBy}
-            options={['pnl', 'volume', 'position count']}
-            onClick={setBubbleBy}
+    <div className="m-3 border rounded-xl overflow-hidden bg-[#040D14] mt-6 mb-3">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6 justify-between items-center bg-third border-b">
+        <div className="flex flex-row items-center gap-2 p-2 px-3">
+          <Image
+            src={monitorIcon}
+            alt="Monitor Icon"
+            width={12}
+            height={12}
+            className="w-3 h-3 opacity-50"
           />
+
+          <p className="font-interSemibold text-sm">Daily Trading activity</p>
+        </div>
+
+        <div className="flex flex-row items-center">
+          <div className="flex flex-row gap-3 p-2 px-3 border-l border-inputcolor">
+            <SelectOptions
+              selected={bubbleBy}
+              options={['pnl', 'volume', 'position count']}
+              onClick={setBubbleBy}
+              className="p-0 border-0"
+            />
+          </div>
+
+          <div className="flex flex-row items-center gap-2 px-3 p-2 border-l border-inputcolor">
+            <Image
+              src={calendarIcon}
+              alt="Calendar"
+              width={12}
+              height={12}
+              className="w-3 h-3 opacity-50"
+            />
+
+            <p className="text-sm font-interMedium">
+              {new Date('03/12/2024').toLocaleDateString('en-US', {
+                year: 'numeric',
+                day: 'numeric',
+                month: 'short',
+              })}{' '}
+              –{' '}
+              {new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                day: 'numeric',
+                month: 'short',
+              })}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="gap-3 mt-4 flex flex-col items-center justify-center">
-        <div
-          ref={containerRef}
-          className="hide-scrollbar w-full lg:w-[80%] flex justify-center"
-        >
-          <div className="relative flex flex-col">
-            <div className="relative flex flex-row mt-4">
-              {sortedMonths.map((monthData, i) => {
-                let weekNumber = Math.floor(monthData.firstDayIndex / 7);
+      <div className={twMerge('bg-[#040D14] rounded-lg p-3', wrapperClassName)}>
+        <div className="gap-3 mt-4 flex flex-col items-center justify-center">
+          <div
+            ref={containerRef}
+            className="hide-scrollbar w-full lg:w-[80%] flex justify-center"
+          >
+            <div className="relative flex flex-col">
+              <div className="relative flex flex-row mt-4">
+                {sortedMonths.map((monthData, i) => {
+                  let weekNumber = Math.floor(monthData.firstDayIndex / 7);
 
-                if (i > 0) {
-                  const prevMonth = sortedMonths[i - 1];
-                  const prevWeek = Math.floor(prevMonth.firstDayIndex / 7);
-                  if (weekNumber === prevWeek) {
-                    weekNumber += 1;
+                  if (i > 0) {
+                    const prevMonth = sortedMonths[i - 1];
+                    const prevWeek = Math.floor(prevMonth.firstDayIndex / 7);
+                    if (weekNumber === prevWeek) {
+                      weekNumber += 1;
+                    }
                   }
-                }
 
-                const cellWidth = blockSize + blockMargin;
-                const position = weekNumber * cellWidth;
+                  const cellWidth = blockSize + blockMargin;
+                  const position = weekNumber * cellWidth;
 
-                return (
-                  <div
-                    key={i}
-                    className="absolute text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
-                    style={{
-                      left: `${position}px`,
-                      top: '-24px',
-                      fontSize: '12px',
-                    }}
-                  >
-                    {monthData.month}
-                  </div>
-                );
-              })}
-            </div>
-            <div
-              className="relative grid w-fit grid-flow-col grid-rows-7 overflow-auto"
-              style={{
-                columnGap: `${blockMargin}px`,
-                rowGap: `${blockMargin}px`,
-                padding: '1px', // Add padding to ensure highlights are visible
-              }}
-            >
-              {processedData.map(({ date, stats }, i) => {
-                if (stats === null) {
                   return (
-                    <Tippy
-                      content={
-                        <p className="text-xs font-boldy">
-                          {new Date(date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            day: 'numeric',
-                            month: 'short',
-                          })}
-                        </p>
-                      }
+                    <div
                       key={i}
+                      className="absolute text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
+                      style={{
+                        left: `${position}px`,
+                        top: '-24px',
+                        fontSize: '12px',
+                      }}
                     >
-                      <div
-                        key={i}
-                        className={twMerge(
-                          'bg-third hover:bg-secondary rounded-sm transition duration-300 relative',
-                          isToday(new Date(date)) &&
-                            'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
-                        )}
-                        style={{
-                          width: blockSize,
-                          height: blockSize,
-                        }}
-                      />
-                    </Tippy>
+                      {monthData.month}
+                    </div>
                   );
-                }
-                return (
-                  <Tippy
-                    content={
-                      <div className="flex flex-col gap-1">
-                        <div className="flex flex-row gap-1 items-center mb-1">
-                          <Image
-                            src={calendarIcon}
-                            alt="calendar"
-                            width={10}
-                            height={10}
-                          />
+                })}
+              </div>
+              <div
+                className="relative grid w-fit grid-flow-col grid-rows-7 overflow-auto"
+                style={{
+                  columnGap: `${blockMargin}px`,
+                  rowGap: `${blockMargin}px`,
+                  padding: '1px', // Add padding to ensure highlights are visible
+                }}
+              >
+                {processedData.map(({ date, stats }, i) => {
+                  if (stats === null) {
+                    return (
+                      <Tippy
+                        content={
                           <p className="text-xs font-boldy">
                             {new Date(date).toLocaleDateString('en-US', {
                               year: 'numeric',
@@ -324,173 +326,219 @@ export default function ActivityCalendar({
                               month: 'short',
                             })}
                           </p>
-                        </div>
-
-                        <FormatNumber
-                          nb={stats.totalPositions}
-                          prefix="positions: "
-                          prefixClassName={twMerge(
-                            'font-mono opacity-50',
-                            bubbleBy === 'position count' &&
-                              'text-[#F1C40F] opacity-100',
+                        }
+                        key={i}
+                      >
+                        <div
+                          key={i}
+                          className={twMerge(
+                            'bg-third hover:bg-secondary rounded-sm transition duration-300 relative',
+                            isToday(new Date(date)) &&
+                              'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
                           )}
+                          style={{
+                            width: blockSize,
+                            height: blockSize,
+                          }}
                         />
+                      </Tippy>
+                    );
+                  }
+                  return (
+                    <Tippy
+                      content={
+                        <div className="flex flex-col gap-1">
+                          <div className="flex flex-row gap-1 items-center mb-1">
+                            <Image
+                              src={calendarIcon}
+                              alt="calendar"
+                              width={10}
+                              height={10}
+                            />
+                            <p className="text-xs font-boldy">
+                              {new Date(date).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                day: 'numeric',
+                                month: 'short',
+                              })}
+                            </p>
+                          </div>
 
-                        <div className="flex items-center gap-2">
                           <FormatNumber
-                            nb={stats.pnl}
-                            prefix="pnl: "
-                            format="currency"
+                            nb={stats.totalPositions}
+                            prefix="positions: "
                             prefixClassName={twMerge(
                               'font-mono opacity-50',
-                              bubbleBy === 'pnl' &&
+                              bubbleBy === 'position count' &&
                                 'text-[#F1C40F] opacity-100',
                             )}
                           />
-                          {stats.pnl !== 0 && (
-                            <span
-                              className={
-                                stats.pnl > 0
-                                  ? 'text-[#17AC81]'
-                                  : 'text-[#AB2E42]'
-                              }
-                            >
-                              {stats.pnl > 0 ? '↑' : '↓'}
-                            </span>
-                          )}
+
+                          <div className="flex items-center gap-2">
+                            <FormatNumber
+                              nb={stats.pnl}
+                              prefix="pnl: "
+                              format="currency"
+                              prefixClassName={twMerge(
+                                'font-mono opacity-50',
+                                bubbleBy === 'pnl' &&
+                                  'text-[#F1C40F] opacity-100',
+                              )}
+                            />
+                            {stats.pnl !== 0 && (
+                              <span
+                                className={
+                                  stats.pnl > 0
+                                    ? 'text-[#17AC81]'
+                                    : 'text-[#AB2E42]'
+                                }
+                              >
+                                {stats.pnl > 0 ? '↑' : '↓'}
+                              </span>
+                            )}
+                          </div>
+
+                          <FormatNumber
+                            nb={stats.size}
+                            prefix="size: "
+                            format="currency"
+                            prefixClassName={twMerge(
+                              'font-mono opacity-50',
+                              bubbleBy === 'Open Size'
+                                ? 'text-[#F1C40F] opacity-100'
+                                : '',
+                            )}
+                          />
+
+                          <FormatNumber
+                            nb={stats.volume}
+                            prefix="volume: "
+                            format="currency"
+                            prefixClassName={twMerge(
+                              'font-mono opacity-50',
+                              bubbleBy === 'volume' &&
+                                'text-[#F1C40F] opacity-100',
+                            )}
+                          />
+                          <FormatNumber
+                            nb={stats.totalFees}
+                            prefix="fees: "
+                            format="currency"
+                            prefixClassName={twMerge(
+                              'font-mono opacity-50',
+                              bubbleBy === 'Fees'
+                                ? 'text-[#F1C40F] opacity-100'
+                                : '',
+                            )}
+                          />
+
+                          <FormatNumber
+                            nb={stats.winrate}
+                            prefix="winrate: "
+                            format="percentage"
+                            prefixClassName="font-mono opacity-50"
+                          />
                         </div>
-
-                        <FormatNumber
-                          nb={stats.size}
-                          prefix="size: "
-                          format="currency"
-                          prefixClassName={twMerge(
-                            'font-mono opacity-50',
-                            bubbleBy === 'Open Size'
-                              ? 'text-[#F1C40F] opacity-100'
-                              : '',
-                          )}
-                        />
-
-                        <FormatNumber
-                          nb={stats.volume}
-                          prefix="volume: "
-                          format="currency"
-                          prefixClassName={twMerge(
-                            'font-mono opacity-50',
-                            bubbleBy === 'volume' &&
-                              'text-[#F1C40F] opacity-100',
-                          )}
-                        />
-                        <FormatNumber
-                          nb={stats.totalFees}
-                          prefix="fees: "
-                          format="currency"
-                          prefixClassName={twMerge(
-                            'font-mono opacity-50',
-                            bubbleBy === 'Fees'
-                              ? 'text-[#F1C40F] opacity-100'
-                              : '',
-                          )}
-                        />
-
-                        <FormatNumber
-                          nb={stats.winrate}
-                          prefix="winrate: "
-                          format="percentage"
-                          prefixClassName="font-mono opacity-50"
-                        />
-                      </div>
-                    }
-                    key={'cell-' + i}
-                  >
-                    <div
-                      className={twMerge(
-                        'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer transition duration-300 relative',
-                        isToday(new Date(date)) &&
-                          'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
-                      )}
-                      style={{
-                        width: blockSize,
-                        height: blockSize,
-                      }}
-                      onClick={() => {
-                        if (isUserActivity) return;
-                        const startDate = new Date(date);
-                        const endDate = startDate.setHours(
-                          startDate.getHours() + 24,
-                        );
-                        setSelectedRange?.('Custom');
-                        setStartDate?.(new Date(date).toISOString());
-                        setEndDate?.(new Date(endDate).toISOString());
-                      }}
+                      }
+                      key={'cell-' + i}
                     >
-                      <svg height="100%" width="100%">
-                        <motion.circle
-                          cx="50%"
-                          cy="50%"
-                          initial={{ r: 0 }}
-                          animate={{
-                            r: Math.min(
-                              (stats.bubbleSize * scaleFactor) / 2,
-                              blockSize / 2,
-                            ),
-                          }}
-                          transition={{ duration: 0.3 }}
-                          fill={stats.color}
-                          className="inline-block"
-                        ></motion.circle>
-                      </svg>
-                    </div>
-                  </Tippy>
-                );
-              })}
-            </div>
-
-            <div className="flex flex-row items-center justify-center mt-3 gap-6">
-              <div className="flex flex-row gap-2 items-center">
-                <p className="font-mono opacity-30 text-sm">pnl</p>
-
-                <div className="flex flex-row items-center gap-1">
-                  {[
-                    { color: '#AB2E42', label: 'Loss' },
-                    { color: '#BD773E', label: 'Below Avg' },
-                    { color: '#17AC81', label: 'Above Avg' },
-                  ].map(({ color, label }, i) => (
-                    <Tippy key={i} content={label}>
                       <div
-                        className={`h-2 w-2 rounded-sm cursor-help transition-opacity duration-300 hover:opacity-80`}
-                        style={{ backgroundColor: color }}
-                      />
+                        className={twMerge(
+                          'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer transition duration-300 relative',
+                          isToday(new Date(date)) &&
+                            'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
+                        )}
+                        style={{
+                          width: blockSize,
+                          height: blockSize,
+                        }}
+                        onClick={() => {
+                          if (isUserActivity) return;
+                          const startDate = new Date(date);
+                          const endDate = startDate.setHours(
+                            startDate.getHours() + 24,
+                          );
+                          setSelectedRange?.('Custom');
+                          setStartDate?.(new Date(date).toISOString());
+                          setEndDate?.(new Date(endDate).toISOString());
+                        }}
+                      >
+                        <svg height="100%" width="100%">
+                          <motion.circle
+                            cx="50%"
+                            cy="50%"
+                            initial={{ r: 0 }}
+                            animate={{
+                              r: Math.min(
+                                (stats.bubbleSize * scaleFactor) / 2,
+                                blockSize / 2,
+                              ),
+                            }}
+                            transition={{ duration: 0.3 }}
+                            fill={stats.color}
+                            className="inline-block"
+                          ></motion.circle>
+                        </svg>
+                      </div>
                     </Tippy>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-              <div className="flex flex-row items-center gap-2 justify-center">
-                <button
-                  onClick={exportCalendarData}
-                  className="text-xs opacity-30 hover:opacity-100 transition-opacity duration-300 flex items-center gap-1"
-                >
-                  Export CSV
-                  <svg
-                    className="w-3 h-3 translate-y-[-0.35em]"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
+
+              <div className="flex flex-row items-center justify-center mt-3 gap-6">
+                <div className="flex flex-row gap-2 items-center">
+                  <p className="font-mono opacity-30 text-sm">pnl</p>
+
+                  <div className="flex flex-row items-center gap-1">
+                    {[
+                      { color: '#AB2E42', label: 'Loss' },
+                      { color: '#BD773E', label: 'Below Avg' },
+                      { color: '#17AC81', label: 'Above Avg' },
+                    ].map(({ color, label }, i) => (
+                      <Tippy key={i} content={label}>
+                        <div
+                          className={`h-2 w-2 rounded-sm cursor-help transition-opacity duration-300 hover:opacity-80`}
+                          style={{ backgroundColor: color }}
+                        />
+                      </Tippy>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex flex-row items-center gap-2 justify-center">
+                  <button
+                    onClick={exportCalendarData}
+                    className="text-xs opacity-30 hover:opacity-100 transition-opacity duration-300 flex items-center gap-1"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3"
-                    />
-                  </svg>
-                </button>
+                    Export CSV
+                    <svg
+                      className="w-3 h-3 translate-y-[-0.35em]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <ActivityMiniChart
+        data={data}
+        bubbleBy={bubbleBy.toLowerCase() as 'pnl' | 'volume' | 'position count'}
+      />
+
+      {walletAddress ? (
+        <PositionHistoryTable walletAddress={walletAddress} />
+      ) : null}
     </div>
   );
 }
