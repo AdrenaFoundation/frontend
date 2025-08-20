@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
+import { Line, LineChart, ResponsiveContainer } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
-import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { ADRENA_GREEN, ADRENA_RED } from '@/constant';
 import { useSelector } from '@/store/store';
 import { EnrichedTraderInfo } from '@/types';
 import { formatSecondsToTimeDifference } from '@/utils';
@@ -13,14 +13,31 @@ export default function TradingStats({
   traderInfo,
   className,
   livePositionsNb,
+  data,
 }: {
   traderInfo: EnrichedTraderInfo | null;
   className?: string;
   livePositionsNb: number | null;
+  data?:
+    | {
+        date: Date;
+        stats: {
+          totalPositions: number;
+          winrate: number;
+          color: string;
+          size: number;
+          pnl: number;
+          volume: number;
+          increaseSize: number;
+          totalFees: number;
+          bubbleSize: number;
+        } | null;
+      }[]
+    | null;
 }) {
   const settings = useSelector((state) => state.settings);
 
-  const [showAfterFees, setShowAfterFees] = useState(settings.showFeesInPnl);
+  const [showAfterFees] = useState(settings.showFeesInPnl);
 
   const totalProfitLoss = useMemo(() => {
     return (
@@ -29,143 +46,130 @@ export default function TradingStats({
     );
   }, [showAfterFees, traderInfo?.totalFees, traderInfo?.totalPnl]);
 
+  const STATS = [
+    {
+      title: 'Total PnL',
+      nb: totalProfitLoss,
+      format: 'currency',
+      precision: 2,
+      className: twMerge(
+        totalProfitLoss > 0 ? 'text-green' : '',
+        totalProfitLoss < 0 ? 'text-redbright' : '',
+      ),
+      data: data?.map((d) => ({
+        value: d.stats?.pnl ?? 0,
+      })),
+    },
+    {
+      title: 'Total Volume',
+      nb: traderInfo?.totalVolume ?? 0,
+      format: 'currency',
+      precision: 0,
+      data: data?.map((d) => ({
+        value: d.stats?.volume ?? 0,
+      })),
+    },
+    {
+      title: 'Total Fees',
+      nb: traderInfo?.totalFees ?? 0,
+      format: 'currency',
+      precision: 0,
+      data: data?.map((d) => ({
+        value: d.stats?.totalFees ?? 0,
+      })),
+    },
+    {
+      title: 'Positions',
+      nb: traderInfo?.totalNumberPositions ?? 0,
+      suffix: `/${livePositionsNb}`,
+      suffixClassName: 'text-sm font-boldy opacity-50',
+      icon: <LiveIcon />,
+      precision: 0,
+      format: 'number',
+      data: data?.map((d) => ({
+        value: d.stats?.totalPositions ?? 0,
+      })),
+    },
+    {
+      title: 'Best Trade',
+      nb: traderInfo?.largestWinningTrade
+        ? traderInfo.largestWinningTrade > 0
+          ? traderInfo.largestWinningTrade
+          : null
+        : null,
+      format: 'currency',
+      precision: 2,
+      className: 'text-green',
+    },
+    {
+      title: 'Worst Trade',
+      nb: traderInfo?.largestLosingTrade
+        ? traderInfo.largestLosingTrade < 0
+          ? traderInfo.largestLosingTrade
+          : null
+        : null,
+      format: 'currency',
+      precision: 2,
+      className: 'text-redbright',
+    },
+    {
+      title: 'Win Rate',
+      nb: traderInfo?.winRatePercentage ?? 0,
+      format: 'percentage',
+      precision: 2,
+    },
+    {
+      title: 'Avg. Time Opened',
+      nb: formatSecondsToTimeDifference(traderInfo?.avgHoldingTime ?? 0),
+      precision: 0,
+      format: 'time',
+    },
+  ];
+
   return (
-    <div
-      className={twMerge(
-        'flex-wrap flex-row w-full flex gap-6 pl-4 pr-4',
-        className,
-      )}
-    >
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-        <NumberDisplay
-          title={
-            <div className="flex">
-              <div className="flex flex-col font-boldy opacity-50">
-                Realized PnL
-              </div>
-              <div className="flex gap-1 items-center justify-start absolute top-2 right-2">
-                <Switch
-                  checked={showAfterFees}
-                  onChange={() => setShowAfterFees(!showAfterFees)}
-                  size="small"
+    <div className={className}>
+      <ul className="grid grid-cols-4 items-center justify-between gap-2 p-3">
+        {STATS.map((stat) => (
+          <li
+            key={stat.title}
+            className="flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-lg"
+          >
+            <div>
+              <p className="text-sm font-boldy opacity-50">{stat.title}</p>{' '}
+              {typeof stat.nb === 'number' ? (
+                <FormatNumber
+                  nb={stat.nb}
+                  format={
+                    stat.format as 'currency' | 'percentage' | 'number' | 'time'
+                  }
+                  precision={stat.precision ?? 2}
+                  className={twMerge('text-xl', stat?.className)}
+                  isDecimalDimmed={false}
                 />
-                <div className="ml-0.5 text-xs lowercase w-9 text-gray-600 whitespace-nowrap text-center">
-                  {showAfterFees ? 'w/ fees' : 'w/o fees'}
-                </div>
-              </div>
+              ) : (
+                <p className="text-xl font-mono">{stat.nb}</p>
+              )}
             </div>
-          }
-          nb={totalProfitLoss}
-          format="currency"
-          precision={2}
-          className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"
-          headerClassName="pb-2"
-          titleClassName="capitalize text-[0.7em] sm:text-[0.7em]"
-          bodyClassName={twMerge(
-            'text-lg',
-            totalProfitLoss > 0 ? 'text-green' : '',
-            totalProfitLoss < 0 ? 'text-red' : '',
-          )}
-          isDecimalDimmed={false}
-        />
-
-        <NumberDisplay
-          title="Total Fees"
-          nb={traderInfo?.totalFees ?? 0}
-          format="currency"
-          precision={0}
-          className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"
-          headerClassName="pb-2"
-          titleClassName="capitalize text-[0.7em] sm:text-[0.7em]"
-          bodyClassName="text-lg"
-        />
-
-        <NumberDisplay
-          title="Win Rate"
-          nb={traderInfo?.winRatePercentage ?? 0}
-          format="percentage"
-          precision={2}
-          className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"
-          headerClassName="pb-2"
-          titleClassName="capitalize text-[0.7em] sm:text-[0.7em]"
-          bodyClassName="text-lg"
-          isDecimalDimmed={false}
-        />
-
-        <NumberDisplay
-          title="Total Volume"
-          nb={traderInfo?.totalVolume ?? 0}
-          format="currency"
-          precision={0}
-          className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"
-          headerClassName="pb-2"
-          titleClassName="capitalize text-[0.7em] sm:text-[0.7em]"
-          bodyClassName="text-lg"
-        />
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-        <NumberDisplay
-          title="Most profitable Trade"
-          nb={traderInfo?.largestWinningTrade ? traderInfo.largestWinningTrade > 0 ? traderInfo.largestWinningTrade : null : null}
-          format="currency"
-          precision={2}
-          className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"
-          headerClassName="pb-2"
-          titleClassName="capitalize text-[0.7em] sm:text-[0.7em]"
-          bodyClassName="text-green text-lg"
-        />
-
-        <NumberDisplay
-          title="Most Unfortunate Trade"
-          nb={traderInfo?.largestLosingTrade ? traderInfo.largestLosingTrade < 0 ? traderInfo.largestLosingTrade : null : null}
-          format="currency"
-          precision={2}
-          className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"
-          headerClassName="pb-2"
-          titleClassName="capitalize text-[0.7em] sm:text-[0.7em]"
-          bodyClassName="text-red text-lg"
-        />
-
-        <div className="flex-col w-full rounded-lg z-20 relative flex items-center flex-1 min-h-[2em] border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5">
-          <div className="flex flex-col text-center justify-center pb-2 opacity-50 capitalize text-[0.7em] sm:text-[0.7em] font-boldy">
-            Positions
-          </div>
-          <div className="flex gap-1 items-center justify-center w-full">
-            <FormatNumber
-              nb={traderInfo?.totalNumberPositions ?? 0}
-              precision={0}
-              className="text-lg"
-            />
-            <div className="opacity-50">/</div>
-            <div className="flex items-center gap-2">
-              <FormatNumber
-                nb={livePositionsNb}
-                precision={0}
-                className="text-lg"
-                suffixClassName="text-sm font-boldy opacity-50"
-              />
-              <LiveIcon />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex-col w-full rounded-lg p-3 z-20 relative flex items-center flex-1 min-h-[2em] border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5">
-          <div className="flex flex-col text-center justify-center pb-2">
-            <div className="flex flex-col">
-              <h1 className="opacity-50 font-boldy capitalize text-[0.7em] sm:text-[0.7em]">
-                Avg. Time Opened
-              </h1>
-              <h5 className="opacity-50 text-xs"></h5>
-            </div>
-          </div>
-          <div className="flex flex-col gap-0">
-            <p className="font-mono inline-block text-lg">
-              {formatSecondsToTimeDifference(traderInfo?.avgHoldingTime ?? 0)}
-            </p>
-          </div>
-        </div>
-      </div>
+            <ResponsiveContainer width={80} height={30}>
+              <LineChart data={stat.data ?? []}>
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke={
+                    stat.className?.includes('text-green')
+                      ? ADRENA_GREEN
+                      : stat.className?.includes('text-redbright')
+                        ? ADRENA_RED
+                        : '#ffffff'
+                  }
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

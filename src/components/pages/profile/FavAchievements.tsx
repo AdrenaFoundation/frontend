@@ -22,25 +22,13 @@ export default function FavAchievements({
     favoriteAchievements?.includes(a.index),
   );
 
+  console.log(userProfile);
+
   return (
     <>
       <div>
-        <div className="flex flex-row justify-between items-center px-4 pt-2">
-          <p className="font-interSemibold text-lg mb-3">
-            Achievements{' '}
-            <span className="opacity-50 ml-1">
-              {
-                ACHIEVEMENTS.filter(
-                  (achievement) =>
-                    userProfile.achievements?.[achievement.index] > 0,
-                ).length
-              }{' '}
-              / {ACHIEVEMENTS.length}
-            </span>
-          </p>
-        </div>
         <div
-          className="relative flex flex-row justify-center items-center gap-6 px-4 overflow-hidden cursor-pointer"
+          className="flex flex-row justify-end items-center px-[50px] overflow-hidden cursor-pointer"
           onClick={() => setIsModalOpen(true)}
         >
           {!isFavoriteLoading ? (
@@ -49,14 +37,13 @@ export default function FavAchievements({
                 unlocked={true}
                 achievement={achievement as AchievementInfoExtended}
                 statPlacement="top"
-                className="scale-[0.5] sm:scale-[0.8] w-[3.125rem] h-[10.375rem] sm:w-[6.25rem] sm:h-[14.375rem]"
+                className="scale-[0.5] sm:scale-[0.6] w-[3.125rem] h-[10.375rem] sm:w-[4.25rem] sm:h-[11.375rem]"
                 key={`achievement-${achievement.index}`}
               />
             ))
           ) : (
             <Loader />
           )}
-          <div className="absolute bottom-0 bg-gradient-to-t from-main to-transparent w-full h-[2em]" />
         </div>
       </div>
       <AnimatePresence>
