@@ -82,6 +82,7 @@ export default function ViewProfileModal({
                 <StakingStats
                     stakingAccounts={stakingAccounts}
                     className="gap-y-4 pb-2"
+                    walletAddress={walletAddress}
                 />
 
                 <div className="h-[1px] w-full bg-bcolor" />
