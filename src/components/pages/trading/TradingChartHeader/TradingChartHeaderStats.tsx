@@ -36,15 +36,12 @@ export default function TradingChartHeaderStats({
 
   if (selectedTokenPrice !== null) {
     if (previousTokenPrice !== null) {
-      // if streamingTokenPrices is higher than previous value, set color to green
-      // if streamingTokenPrices is smaller than previous value, set color to red
       const newTokenColor =
         selectedTokenPrice > previousTokenPrice
           ? 'text-green'
           : selectedTokenPrice < previousTokenPrice
             ? 'text-red'
             : tokenColor;
-      // make sure we're only updating the local state if the new color is different.
       if (newTokenColor !== tokenColor) {
         setTokenColor(newTokenColor);
       }
@@ -206,7 +203,7 @@ export default function TradingChartHeaderStats({
             </span>
             <span
               className={twMerge(
-                'font-mono text-xs sm:text-xxs', // Adjusted to text-xs
+                'font-mono text-xs sm:text-xxs',
                 dailyChange
                   ? dailyChange > 0
                     ? 'text-green'
@@ -215,7 +212,7 @@ export default function TradingChartHeaderStats({
               )}
             >
               {dailyChange
-                ? `${dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
+                ? `${dailyChange.toFixed(2)}%`
                 : '-'}
             </span>
           </div>
@@ -235,7 +232,7 @@ export default function TradingChartHeaderStats({
                 format="currency"
                 isAbbreviate={true}
                 isDecimalDimmed={false}
-                className="font-mono text-xxs" // Ensure smaller font
+                className="font-mono text-xxs"
               />
             </span>
           </div>
@@ -251,7 +248,7 @@ export default function TradingChartHeaderStats({
             </span>
             <span className="font-mono text-xs sm:text-xxs">
               <FormatNumber
-                nb={lastDayHigh} // Assuming high is available in stats
+                nb={lastDayHigh}
                 format="currency"
                 className="font-mono text-xxs"
               />
@@ -269,7 +266,7 @@ export default function TradingChartHeaderStats({
             </span>
             <span className="font-mono text-xxs sm:text-xs">
               <FormatNumber
-                nb={lastDayLow} // Assuming low is available in stats
+                nb={lastDayLow}
                 format="currency"
                 className="font-mono text-xxs"
               />

@@ -1,28 +1,16 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import { useSelector } from '@/store/store';
-import { Token } from '@/types';
+import { Token, CustodyExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 import useDailyStats from '@/hooks/useDailyStats';
+import { useDebounce } from '@/hooks/useDebounce';
 
 import chevronDownIcon from '../../../../../public/images/chevron-down.svg';
 import starIcon from '../../../../../public/images/Icons/star.svg';
 import starFilledIcon from '../../../../../public/images/Icons/star-filled.svg';
-
-// TODO: add this as an option to FormatNumber global utils
-const formatVolume = (value: number): string => {
-  if (value >= 1e9) {
-    return `${(value / 1e9).toFixed(2)}B`;
-  } else if (value >= 1e6) {
-    return `${(value / 1e6).toFixed(2)}M`;
-  } else if (value >= 1e3) {
-    return `${(value / 1e3).toFixed(2)}k`;
-  } else {
-    return value.toFixed(2);
-  }
-};
 
 interface TokenSelectorProps {
   tokenList: Token[];
@@ -31,7 +19,39 @@ interface TokenSelectorProps {
   className?: string;
   favorites: string[];
   setFavorites: (favorites: string[]) => void;
+  selectedAction: 'long' | 'short' | 'swap';
 }
+
+interface TokenDataItem {
+  token: Token;
+  symbol: string;
+  custody: CustodyExtended;
+  tokenPrice: number | null;
+  availableLiquidity: number;
+  isShort: boolean;
+  dailyChange: number | null;
+  isFavorite: boolean;
+}
+
+const formatLiquidity = (
+  liquidity: number,
+  isShort: boolean,
+  tokenPrice: number | null,
+) => {
+  if (!liquidity) return '-';
+
+  const liquidityUsd = isShort
+    ? liquidity
+    : tokenPrice
+      ? liquidity * tokenPrice
+      : 0;
+  if (!liquidityUsd) return '-';
+
+  if (liquidityUsd >= 1e9) return `$${(liquidityUsd / 1e9).toFixed(2)}B`;
+  if (liquidityUsd >= 1e6) return `$${(liquidityUsd / 1e6).toFixed(2)}M`;
+  if (liquidityUsd >= 1e3) return `$${(liquidityUsd / 1e3).toFixed(2)}k`;
+  return `$${liquidityUsd.toFixed(0)}`;
+};
 
 export default function TokenSelector({
   tokenList,
@@ -40,53 +60,127 @@ export default function TokenSelector({
   className,
   favorites,
   setFavorites,
+  selectedAction,
 }: TokenSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const allTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
 
   const custodyData = useMemo(() => {
-    return tokenList.reduce(
-      (acc, token) => {
-        const custody = window.adrena.client.getCustodyByMint(token.mint);
-        if (custody) {
-          acc[token.symbol] = custody;
-        }
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
+    const data: Record<string, CustodyExtended> = {};
+    tokenList.forEach((token) => {
+      const custody = window.adrena.client.getCustodyByMint(token.mint);
+      if (custody) {
+        data[token.symbol] = custody;
+      }
+    });
+    return data;
   }, [tokenList]);
 
-  const liquidityData = useMemo(() => {
-    return tokenList.reduce(
-      (acc, token) => {
+  const tokenData = useMemo((): TokenDataItem[] => {
+    return tokenList
+      .map((token) => {
+        const symbol = getTokenSymbol(token.symbol);
         const custody = custodyData[token.symbol];
-        if (custody) {
-          const availableLiquidity =
-            custody.availableLiquidity ||
-            custody.available ||
+
+        let tokenPrice: number | null;
+        if (symbol === 'SOL') {
+          tokenPrice = allTokenPrices['JITOSOL'] ?? null;
+        } else {
+          tokenPrice = allTokenPrices[symbol] ?? null;
+        }
+
+        if (!custody) return null;
+
+        let availableLiquidity = 0;
+        let isShort = false;
+
+        if (selectedAction === 'long' || selectedAction === 'swap') {
+          availableLiquidity =
+            (custody as any).availableLiquidity ||
+            (custody as any).available ||
             custody.liquidity ||
             0;
-
-          const shortLiquidity =
+        } else if (selectedAction === 'short') {
+          availableLiquidity = Math.max(
+            0,
             (custody.maxCumulativeShortPositionSizeUsd || 0) -
-            (custody.oiShortUsd || 0);
-
-          acc[token.symbol] = {
-            long: Math.max(0, availableLiquidity),
-            short: Math.max(0, shortLiquidity),
-          };
+              (custody.oiShortUsd || 0),
+          );
+          isShort = true;
         }
-        return acc;
-      },
-      {} as Record<string, { long: number; short: number }>,
+
+        return {
+          token,
+          symbol,
+          custody,
+          tokenPrice,
+          availableLiquidity,
+          isShort,
+          dailyChange: stats?.[token.symbol]?.dailyChange ?? null,
+          isFavorite: favorites.includes(symbol),
+        };
+      })
+      .filter((item): item is TokenDataItem => item !== null);
+  }, [
+    tokenList,
+    selectedAction,
+    custodyData,
+    allTokenPrices,
+    stats,
+    favorites,
+  ]);
+
+  const sortedTokens = useMemo(() => {
+    return [...tokenData].sort((a, b) => {
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+
+      const aLiquidityUsd = a.isShort
+        ? a.availableLiquidity
+        : a.availableLiquidity * (a.tokenPrice ?? 0);
+      const bLiquidityUsd = b.isShort
+        ? b.availableLiquidity
+        : b.availableLiquidity * (b.tokenPrice ?? 0);
+
+      return bLiquidityUsd - aLiquidityUsd;
+    });
+  }, [tokenData]);
+
+  const filteredTokens = useMemo(() => {
+    if (!debouncedSearchTerm) return sortedTokens;
+    const searchLower = debouncedSearchTerm.toLowerCase();
+    return sortedTokens.filter((item) =>
+      item.symbol.toLowerCase().includes(searchLower),
     );
-  }, [tokenList, custodyData]);
+  }, [sortedTokens, debouncedSearchTerm]);
+
+  const toggleFavorite = useCallback(
+    (symbol: string) => {
+      const newFavorites = favorites.includes(symbol)
+        ? favorites.filter((f: string) => f !== symbol)
+        : favorites.length < 3
+          ? [...favorites, symbol]
+          : favorites;
+
+      localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
+      setFavorites(newFavorites);
+    },
+    [favorites],
+  );
+
+  const handleTokenSelect = useCallback(
+    (token: Token) => {
+      onChange(token);
+      setIsOpen(false);
+      setSearchTerm('');
+    },
+    [onChange],
+  );
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -102,54 +196,19 @@ export default function TokenSelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleFavorite = (symbol: string) => {
-    const newFavorites = favorites.includes(symbol)
-      ? favorites.filter((f) => f !== symbol)
-      : favorites.length < 5
-        ? [...favorites, symbol]
-        : favorites;
-
-    setFavorites(newFavorites);
-    localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
-  };
-
-  const allTokens = tokenList;
-
-  const filteredTokens = allTokens.filter((token) => {
-    const symbol = getTokenSymbol(token.symbol);
-    const matchesSearch = symbol
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-    const matchesCategory = selectedCategory === 'all' || true;
-    return matchesSearch && matchesCategory;
-  });
-
-  const sortedTokens = [...filteredTokens].sort((a, b) => {
-    const aSymbol = getTokenSymbol(a.symbol);
-    const bSymbol = getTokenSymbol(b.symbol);
-    const aIsFavorite = favorites.includes(aSymbol);
-    const bIsFavorite = favorites.includes(bSymbol);
-
-    if (aIsFavorite && !bIsFavorite) return -1;
-    if (!aIsFavorite && bIsFavorite) return 1;
-
-    const aVolume = stats?.[a.symbol]?.dailyVolume ?? 0;
-    const bVolume = stats?.[b.symbol]?.dailyVolume ?? 0;
-    return bVolume - aVolume;
-  });
-
-  const favoriteTokens = allTokens
-    .filter(
-      (token) =>
-        favorites.includes(getTokenSymbol(token.symbol)) &&
-        token.symbol !== selected.symbol,
-    )
-    .slice(0, 5);
+  if (!tokenData.length) {
+    return (
+      <div className={twMerge('relative', className)}>
+        <div className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 bg-main opacity-50">
+          <span className="text-base font-boldy text-white">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={twMerge('relative', className)} ref={dropdownRef}>
-      {/* Just the token selector button */}
+      {/* Token selector button */}
       <div className="flex-shrink-0">
         <div
           className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 cursor-pointer hover:bg-third transition duration-300 bg-main"
@@ -161,7 +220,7 @@ export default function TokenSelector({
             width={20}
             height={20}
           />
-          <span className="text-base font-boldy text-white">
+          <span className="text-lg font-boldy text-white">
             {getTokenSymbol(selected.symbol)}
           </span>
           <Image
@@ -179,33 +238,24 @@ export default function TokenSelector({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-[30rem] bg-main border border-bcolor rounded-lg shadow-lg z-50">
-          {/* Search and category bar */}
+        <div className="absolute top-full left-0 mt-1 w-[28rem] bg-main border border-bcolor rounded-lg shadow-lg z-50">
+          {/* Search bar */}
           <div className="p-2 border-b border-bcolor">
-            <div className="flex flex-row items-center gap-2">
-              {/* Search input */}
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Search token"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 bg-inputcolor border border-white/10 rounded-lg text-white font-mono placeholder-white/30 text-sm"
-                />
-              </div>
-            </div>
+            <input
+              type="text"
+              placeholder="Search token"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 bg-inputcolor border border-white/10 rounded-lg text-white font-mono placeholder-white/30 text-sm"
+            />
           </div>
 
           {/* Column headers */}
           <div className="px-2 py-1.5 bg-third/20 border-b border-bcolor">
             <div className="grid grid-cols-10 gap-2 text-sm">
               <div className="col-span-3 font-boldy text-white/50">Ticker</div>
-              <div className="col-span-3 font-boldy text-white/50">
-                Price / 24h%
-              </div>
-              <div className="col-span-2 font-boldy text-white/50">
-                24h Vol.
-              </div>
+              <div className="col-span-3 font-boldy text-white/50">Price</div>
+              <div className="col-span-2 font-boldy text-white/50">24h%</div>
               <div className="col-span-2 font-boldy text-white/50">
                 Avail. Liq.
               </div>
@@ -216,141 +266,102 @@ export default function TokenSelector({
           <div
             className="overflow-y-auto"
             style={{
-              maxHeight: `${Math.min(sortedTokens.length * 3.5 + 2, 25)}rem`,
+              maxHeight: `${Math.min(filteredTokens.length * 3.5 + 2, 25)}rem`,
             }}
           >
-            {sortedTokens.map((token) => {
-              const symbol = getTokenSymbol(token.symbol);
-              const tokenPrice = allTokenPrices[symbol] ?? null;
-              const dailyChange = stats?.[token.symbol]?.dailyChange ?? null;
-              const dailyVolume = stats?.[token.symbol]?.dailyVolume ?? null;
-              const isFavorite = favorites.includes(symbol);
+            {filteredTokens.map((item, index) => (
+              <div
+                key={item.token.symbol}
+                className={twMerge(
+                  'grid grid-cols-10 gap-2 items-center p-2 hover:bg-third cursor-pointer border-b border-bcolor/20 last:border-b-0',
+                  selected.symbol === item.token.symbol ? 'bg-third/50' : '',
+                  index % 2 === 0 ? 'bg-main' : 'bg-third/70',
+                )}
+                onClick={() => handleTokenSelect(item.token)}
+              >
+                {/* Ticker column */}
+                <div className="col-span-3 flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(item.symbol);
+                    }}
+                    className="p-1 hover:bg-fourth rounded transition-colors"
+                  >
+                    <Image
+                      src={item.isFavorite ? starFilledIcon : starIcon}
+                      alt={
+                        item.isFavorite
+                          ? 'Remove from favorites'
+                          : 'Add to favorites'
+                      }
+                      width={14}
+                      height={14}
+                      className={twMerge(
+                        'transition-all duration-200',
+                        item.isFavorite ? 'scale-110' : 'scale-100',
+                        !item.isFavorite ? 'opacity-50' : '',
+                      )}
+                    />
+                  </button>
 
-              const custody = custodyData[token.symbol];
-
-              const liquidity = liquidityData[token.symbol];
-
-              return (
-                <div
-                  key={token.symbol}
-                  className={twMerge(
-                    'grid grid-cols-10 gap-2 items-center p-2 hover:bg-third cursor-pointer border-b border-bcolor/20 last:border-b-0',
-                    selected.symbol === token.symbol ? 'bg-third/50' : '',
-                  )}
-                  onClick={() => {
-                    onChange(token);
-                    setIsOpen(false);
-                    setSearchTerm('');
-                  }}
-                >
-                  {/* Ticker column */}
-                  <div className="col-span-3 flex items-center gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(symbol);
-                      }}
-                      className="p-1 hover:bg-fourth rounded transition-colors"
-                    >
-                      <Image
-                        src={isFavorite ? starFilledIcon : starIcon}
-                        alt={
-                          isFavorite
-                            ? 'Remove from favorites'
-                            : 'Add to favorites'
-                        }
-                        width={16}
-                        height={16}
-                        className={twMerge(
-                          'transition-all duration-200',
-                          isFavorite ? 'scale-110' : 'scale-100',
-                          !isFavorite ? 'opacity-50' : '',
-                        )}
-                      />
-                    </button>
-
-                    <div className="flex items-center gap-1.5">
-                      <Image
-                        src={getTokenImage(token)}
-                        alt={symbol}
-                        width={18}
-                        height={18}
-                      />
-                      <span className="text-base font-boldy text-white">
-                        {symbol}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Price / 24h% column */}
-                  <div className="col-span-3 flex flex-col gap-0.5">
-                    {tokenPrice ? (
-                      <span className="text-base font-mono text-white">
-                        $
-                        {tokenPrice.toFixed(
-                          token.displayPriceDecimalsPrecision || 2,
-                        )}
-                      </span>
-                    ) : (
-                      <span className="text-base text-gray-400">-</span>
-                    )}
-
-                    {dailyChange !== null ? (
-                      <span
-                        className={twMerge(
-                          'text-sm font-mono',
-                          dailyChange > 0
-                            ? 'text-green'
-                            : dailyChange < 0
-                              ? 'text-red'
-                              : 'text-gray-400',
-                        )}
-                      >
-                        {dailyChange > 0 ? '+' : ''}
-                        {dailyChange.toFixed(2)}%
-                      </span>
-                    ) : (
-                      <span className="text-sm text-gray-400">-</span>
-                    )}
-                  </div>
-
-                  {/* 24h Volume column */}
-                  <div className="col-span-2 text-base text-white">
-                    {dailyVolume ? (
-                      <span className="font-mono text-base">
-                        {formatVolume(dailyVolume)}
-                      </span>
-                    ) : (
-                      <span className="text-gray-400">-</span>
-                    )}
-                  </div>
-
-                  {/* Available Liquidity */}
-                  <div className="col-span-2 flex flex-col gap-0.5">
-                    {/* Long liquidity */}
-                    <span className="text-base text-green font-mono">
-                      {(() => {
-                        if (liquidity && tokenPrice) {
-                          const longValue = liquidity.long * tokenPrice;
-                          return formatVolume(longValue);
-                        }
-                        return '-';
-                      })()}
-                    </span>
-                    {/* Short liquidity */}
-                    <span className="text-sm text-red font-mono">
-                      {(() => {
-                        if (liquidity) {
-                          const shortValue = liquidity.short;
-                          return formatVolume(shortValue);
-                        }
-                        return '-';
-                      })()}
+                  <div className="flex items-center gap-1.5">
+                    <Image
+                      src={getTokenImage(item.token)}
+                      alt={item.symbol}
+                      width={20}
+                      height={20}
+                    />
+                    <span className="text-lg font-boldy text-white">
+                      {item.symbol}
                     </span>
                   </div>
                 </div>
-              );
-            })}
+
+                {/* Price column */}
+                <div className="col-span-3">
+                  {item.tokenPrice ? (
+                    <span className="text-base font-mono text-white">
+                      $
+                      {item.tokenPrice.toFixed(
+                        item.token.displayPriceDecimalsPrecision || 2,
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
+                </div>
+
+                {/* 24h% column */}
+                <div className="col-span-2">
+                  {item.dailyChange !== null ? (
+                    <span
+                      className={
+                        item.dailyChange > 0
+                          ? 'text-green text-base font-mono'
+                          : item.dailyChange < 0
+                            ? 'text-red text-base font-mono'
+                            : 'text-gray-400 text-base font-mono'
+                      }
+                    >
+                      {item.dailyChange > 0 ? '+' : ''}
+                      {item.dailyChange.toFixed(2)}%
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
+                </div>
+
+                {/* Avail. Liq. column */}
+                <div className="col-span-2 text-base font-mono text-white">
+                  {formatLiquidity(
+                    item.availableLiquidity,
+                    item.isShort,
+                    item.tokenPrice,
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

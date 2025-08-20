@@ -458,6 +458,7 @@ export default function Trade({
                 setTokenB(t);
               }}
               allActivePositions={allActivePositions}
+              selectedAction={selectedAction}
             />
           ) : null}
 

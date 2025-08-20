@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
@@ -67,28 +67,43 @@ export default function FavoritesBar({
   const [showRightArrow, setShowRightArrow] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const checkScrollPosition = () => {
+  const checkScrollPosition = useCallback(() => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
     setShowLeftArrow(scrollLeft > 0);
     setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
-  };
+  }, []);
+
+  const scrollLeft = useCallback(() => {
+    scrollContainerRef.current?.scrollTo({
+      left: scrollContainerRef.current.scrollLeft - 200,
+      behavior: 'smooth',
+    });
+  }, []);
+
+  const scrollRight = useCallback(() => {
+    scrollContainerRef.current?.scrollTo({
+      left: scrollContainerRef.current.scrollLeft + 200,
+      behavior: 'smooth',
+    });
+  }, []);
 
   useEffect(() => {
     checkScrollPosition();
-  }, [favoriteTokens]);
+  }, [favoriteTokens, checkScrollPosition]);
 
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollLeft -= 200;
-    }
-  };
+  const scrollContainerClasses = useMemo(
+    () => 'flex flex-row items-center gap-1 min-w-0 overflow-x-auto px-0',
+    [],
+  );
 
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollLeft += 200;
-    }
-  };
+  const scrollContainerStyle = useMemo(
+    () => ({
+      scrollbarWidth: 'none' as const,
+      msOverflowStyle: 'none' as const,
+    }),
+    [],
+  );
 
   if (favoriteTokens.length === 0) return null;
 
@@ -103,18 +118,20 @@ export default function FavoritesBar({
 
       <div
         ref={scrollContainerRef}
-        className="flex flex-row items-center gap-1 min-w-0 overflow-x-auto px-0"
+        className={scrollContainerClasses}
         onScroll={checkScrollPosition}
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        style={scrollContainerStyle}
       >
         {favoriteTokens.map((token) => {
           const symbol = getTokenSymbol(token.symbol);
+          const isSelected = selected.symbol === token.symbol;
+
           return (
             <div
               key={token.symbol}
               className={twMerge(
                 'flex flex-row items-center gap-2 border rounded-lg p-1 px-3 pr-5 cursor-pointer opacity-50 hover:opacity-100 hover:bg-third transition duration-300 flex-shrink-0 min-w-0',
-                selected.symbol === token.symbol ? 'opacity-100 bg-third' : '',
+                isSelected && 'opacity-100 bg-third',
               )}
               onClick={() => onChange(token)}
             >
@@ -127,7 +144,7 @@ export default function FavoritesBar({
               <p
                 className={twMerge(
                   'text-base font-boldy min-w-0 truncate',
-                  selected.symbol === token.symbol && 'font-interBold',
+                  isSelected && 'font-interBold',
                 )}
               >
                 {symbol}

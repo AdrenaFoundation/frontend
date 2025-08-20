@@ -1,15 +1,24 @@
 import Tippy from '@tippyjs/react';
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { getTokenSymbol } from '@/utils';
 
 import TradingChartHeaderStats from './TradingChartHeaderStats';
 import TokenSelector from './TokenSelector';
 import FavoritesBar from './FavoritesBar';
+
+interface TradingChartHeaderProps {
+  allActivePositions: PositionExtended[] | null;
+  className?: string;
+  tokenList: Token[];
+  selected: Token;
+  onChange: (t: Token) => void;
+  selectedAction: 'long' | 'short' | 'swap';
+}
 
 export default function TradingChartHeader({
   allActivePositions,
@@ -17,13 +26,8 @@ export default function TradingChartHeader({
   tokenList,
   selected,
   onChange,
-}: {
-  allActivePositions: PositionExtended[] | null;
-  className?: string;
-  tokenList: Token[];
-  selected: Token;
-  onChange: (t: Token) => void;
-}) {
+  selectedAction,
+}: TradingChartHeaderProps) {
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
@@ -35,7 +39,6 @@ export default function TradingChartHeader({
     (p) => p.side === 'short',
   ).length;
 
-  // Get favorites from localStorage
   const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
@@ -45,42 +48,26 @@ export default function TradingChartHeader({
     }
   }, []);
 
-  // Create test tokens for development
-  const TEST_FAVORITES = [
-    'TEST1',
-    'TEST2',
-    'TEST3',
-    'TEST4',
-    'TEST5',
-    'TEST6',
-    'TEST7',
-    'TEST8',
-    'TEST9',
-    'TEST10',
-  ];
+  const favoriteTokens = useMemo(
+    () =>
+      tokenList
+        .filter(
+          (token) =>
+            favorites.includes(getTokenSymbol(token.symbol)) &&
+            token.symbol !== selected.symbol,
+        )
+        .slice(0, 3),
+    [tokenList, favorites, selected.symbol],
+  );
 
-  const testTokens: Token[] = TEST_FAVORITES.map((testSymbol) => ({
-    symbol: testSymbol,
-    mint: `test-mint-${testSymbol}` as any,
-    color: '#666',
-    name: `Test Token ${testSymbol}`,
-    decimals: 6,
-    displayAmountDecimalsPrecision: 2,
-    displayPriceDecimalsPrecision: 2,
-    isStable: false,
-    image:
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iOCIgZmlsbD0iIzY2NiIvPgo8L3N2Zz4K',
-  }));
-
-  const allTokens = [...tokenList, ...testTokens];
-
-  const favoriteTokens = allTokens
-    .filter(
-      (token) =>
-        favorites.includes(getTokenSymbol(token.symbol)) &&
-        token.symbol !== selected.symbol,
-    )
-    .slice(0, 5);
+  const favoritesBarClasses = useMemo(
+    () =>
+      twMerge(
+        'min-w-0 flex-1 overflow-hidden',
+        'lg:min-w-0 lg:overflow-hidden lg:w-auto lg:flex-1',
+      ),
+    [],
+  );
 
   return (
     <>
@@ -93,13 +80,13 @@ export default function TradingChartHeader({
       </Head>
       <div
         className={twMerge(
-          'flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2 z-30 bg-main border-b', // Changed from items-center to items-start
+          'flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 z-30 bg-main border-b p-3 lg:p-1',
           className,
         )}
       >
-        {/* Left side: Token Selector + Favorites - LEFT ALIGNED */}
-        <div className="flex items-center gap-3 min-w-0 flex-1 p-1 lg:justify-start justify-start">
-          {/* Token Selector - never shrinks */}
+        {/* Left side: Token Selector + Favorites */}
+        <div className="flex items-center justify-between w-full lg:w-auto lg:flex-1 gap-3 lg:gap-3 min-w-0">
+          {/* Token Selector */}
           <div className="flex-shrink-0">
             <TokenSelector
               tokenList={tokenList}
@@ -107,17 +94,12 @@ export default function TradingChartHeader({
               onChange={onChange}
               favorites={favorites}
               setFavorites={setFavorites}
+              selectedAction={selectedAction}
             />
           </div>
 
-          {/* Favorites Bar - responsive behavior */}
-          <div
-            className="min-w-0 flex-1 overflow-hidden lg:min-w-0 lg:overflow-hidden"
-            style={{
-              minWidth: 0,
-              width: window.innerWidth >= 1024 ? 0 : 'auto',
-            }}
-          >
+          {/* Favorites Bar */}
+          <div className={favoritesBarClasses}>
             <FavoritesBar
               favoriteTokens={favoriteTokens}
               selected={selected}
@@ -125,7 +107,7 @@ export default function TradingChartHeader({
             />
           </div>
 
-          {/* Long/Short positions - on the RIGHT of favorites bar for mobile */}
+          {/* Long/Short positions */}
           {numberLong && numberShort ? (
             <div className="flex md:hidden gap-0.5 flex-shrink-0">
               <Tippy
@@ -148,10 +130,8 @@ export default function TradingChartHeader({
           ) : null}
         </div>
 
-        {/* Right side: Stats - RIGHT ALIGNED on second row */}
-        <div className="flex-shrink-0 lg:justify-end self-end lg:self-center">
-          {' '}
-          {/* Added self-end and lg:self-center */}
+        {/* Right side: Stats */}
+        <div className="flex-shrink-0 w-full md:w-auto md:justify-end lg:self-center">
           <TradingChartHeaderStats
             selected={selected}
             numberLong={numberLong}
