@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useSelector } from '@/store/store';
-import { Token, CustodyExtended } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useSelector } from '@/store/store';
+import { CustodyExtended, Token } from '@/types';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import chevronDownIcon from '../../../../../public/images/chevron-down.svg';
 import starIcon from '../../../../../public/images/Icons/star.svg';
@@ -101,8 +101,18 @@ export default function TokenSelector({
 
         if (selectedAction === 'long' || selectedAction === 'swap') {
           availableLiquidity =
-            (custody as any).availableLiquidity ||
-            (custody as any).available ||
+            (
+              custody as CustodyExtended & {
+                availableLiquidity?: number;
+                available?: number;
+              }
+            ).availableLiquidity ||
+            (
+              custody as CustodyExtended & {
+                availableLiquidity?: number;
+                available?: number;
+              }
+            ).available ||
             custody.liquidity ||
             0;
         } else if (selectedAction === 'short') {
@@ -170,7 +180,7 @@ export default function TokenSelector({
       localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
       setFavorites(newFavorites);
     },
-    [favorites],
+    [favorites, setFavorites],
   );
 
   const handleTokenSelect = useCallback(

@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
+import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { Token } from '@/types';
-import { getTokenSymbol, getTokenImage } from '@/utils';
+import { getTokenImage,getTokenSymbol } from '@/utils';
 
 import chevronDownIcon from '../../../../../public/images/chevron-down.svg';
 

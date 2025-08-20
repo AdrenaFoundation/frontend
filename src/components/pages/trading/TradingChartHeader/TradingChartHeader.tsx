@@ -1,15 +1,15 @@
 import Tippy from '@tippyjs/react';
 import Head from 'next/head';
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo,useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
-import TradingChartHeaderStats from './TradingChartHeaderStats';
-import TokenSelector from './TokenSelector';
 import FavoritesBar from './FavoritesBar';
+import TokenSelector from './TokenSelector';
+import TradingChartHeaderStats from './TradingChartHeaderStats';
 
 interface TradingChartHeaderProps {
   allActivePositions: PositionExtended[] | null;
