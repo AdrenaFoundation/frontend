@@ -1,6 +1,6 @@
 import Tippy from '@tippyjs/react';
 import Head from 'next/head';
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { MAX_FAVORITE_TOKENS } from '@/constant';

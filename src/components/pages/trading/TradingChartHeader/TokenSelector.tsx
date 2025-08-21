@@ -2,23 +2,21 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useDailyStats from '@/hooks/useDailyStats';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useSelector } from '@/store/store';
-import { CustodyExtended, Token } from '@/types';
-import {
-  getTokenImage,
-  getTokenSymbol,
-  formatNumberShort,
-  formatPriceInfo,
-  formatPercentage,
-} from '@/utils';
-import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
-import { MAX_FAVORITE_TOKENS } from '@/constant';
-
 import chevronDownIcon from '@/../public/images/chevron-down.svg';
 import starIcon from '@/../public/images/Icons/star.svg';
 import starFilledIcon from '@/../public/images/Icons/star-filled.svg';
+import useDailyStats from '@/hooks/useDailyStats';
+import { useDebounce } from '@/hooks/useDebounce';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import { useSelector } from '@/store/store';
+import { CustodyExtended, Token } from '@/types';
+import {
+  formatNumberShort,
+  formatPercentage,
+  formatPriceInfo,
+  getTokenImage,
+  getTokenSymbol,
+} from '@/utils';
 
 interface TokenSelectorProps {
   tokenList: Token[];
@@ -106,7 +104,14 @@ export default function TokenSelector({
         };
       })
       .filter((item): item is TokenDataItem => item !== null);
-  }, [tokenList, selectedAction, tokenPrices, stats, favorites]);
+  }, [
+    tokenList,
+    selectedAction,
+    tokenPrices,
+    stats,
+    favorites,
+    custodyLiquidity,
+  ]);
 
   const sortedTokens = useMemo(() => {
     return [...tokenData].sort((a, b) => {

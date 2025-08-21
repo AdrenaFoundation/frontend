@@ -1,11 +1,10 @@
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import chevronDownIcon from '@/../public/images/chevron-down.svg';
 import { Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
-
-import chevronDownIcon from '@/../public/images/chevron-down.svg';
 
 interface FavoritesBarProps {
   favoriteTokens: Token[];

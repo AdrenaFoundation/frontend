@@ -211,9 +211,7 @@ export default function TradingChartHeaderStats({
                   : 'text-white',
               )}
             >
-              {dailyChange
-                ? `${dailyChange.toFixed(2)}%`
-                : '-'}
+              {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
             </span>
           </div>
 
