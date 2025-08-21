@@ -1,58 +1,47 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { CustodyExtended } from '@/types';
 
 export default function useDynamicCustodyAvailableLiquidity(
-  custody: CustodyExtended | null,
-): number | null;
-export default function useDynamicCustodyAvailableLiquidity(
   custody: CustodyExtended[],
-): Record<string, number> | null;
-export default function useDynamicCustodyAvailableLiquidity(
-  custody: CustodyExtended | null | CustodyExtended[],
-): number | null | Record<string, number> {
-  const [availableLiquidity, setAvailableLiquidity] = useState<
-    number | null | Record<string, number>
-  >(null);
+): Record<string, number> | null {
+  const [availableLiquidity, setAvailableLiquidity] = useState<Record<
+    string,
+    number
+  > | null>(null);
 
-  const custodyList = useMemo(() => {
-    if (!custody) return [];
-    return Array.isArray(custody) ? custody : [custody];
-  }, [custody]);
+  const prevCustodyRef = useRef<CustodyExtended[]>([]);
 
   const fetchLiquidity = useCallback(async () => {
-    if (!custodyList.length) return;
+    if (!custody.length) return;
 
     try {
-      if (custodyList.length === 1) {
-        const result = await window.adrena.client.getCustodyLiquidityOnchain(
-          custodyList[0],
-        );
-        setAvailableLiquidity(result);
-      } else {
-        const results: Record<string, number> = {};
-
-        for (const custodyItem of custodyList) {
-          const result = await window.adrena.client.getCustodyLiquidityOnchain(
-            custodyItem,
-          );
-          results[custodyItem.pubkey.toBase58()] = result;
-        }
-
-        setAvailableLiquidity(results);
-      }
+      const results = await window.adrena.client.getCustodyLiquidityOnchain(
+        custody,
+      );
+      setAvailableLiquidity(results as Record<string, number>);
     } catch (error) {
       console.error('Error fetching custody liquidity:', error);
       setAvailableLiquidity(null);
     }
-  }, [custodyList]);
+  }, [custody]);
 
   useEffect(() => {
-    fetchLiquidity();
+    const custodyChanged =
+      custody.length !== prevCustodyRef.current.length ||
+      custody.some(
+        (c, i) =>
+          c.pubkey.toBase58() !== prevCustodyRef.current[i]?.pubkey.toBase58(),
+      );
 
-    const interval = setInterval(fetchLiquidity, 5000);
+    if (custodyChanged) {
+      prevCustodyRef.current = custody;
+      fetchLiquidity();
+    }
+
+    const interval = setInterval(fetchLiquidity, 10000);
     return () => clearInterval(interval);
-  }, [fetchLiquidity]);
+  }, [custody, fetchLiquidity]);
 
   return availableLiquidity;
 }

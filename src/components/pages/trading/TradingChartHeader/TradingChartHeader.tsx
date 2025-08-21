@@ -70,18 +70,13 @@ export default function TradingChartHeader({
     setFavorites((prev) => {
       const newFavorites = [...prev, symbol];
 
-      const trimmedFavorites = newFavorites.slice(0, MAX_FAVORITE_TOKENS);
-
       try {
-        localStorage.setItem(
-          'tokenFavorites',
-          JSON.stringify(trimmedFavorites),
-        );
+        localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
       } catch (error) {
         console.error('Error saving favorites:', error);
       }
 
-      return trimmedFavorites;
+      return newFavorites;
     });
   }, []);
 
@@ -118,7 +113,7 @@ export default function TradingChartHeader({
             favorites.includes(getTokenSymbol(token.symbol)) &&
             token.symbol !== selected.symbol,
         )
-        .slice(0, MAX_FAVORITE_TOKENS),
+        .slice(-MAX_FAVORITE_TOKENS),
     [tokenList, favorites, selected.symbol],
   );
 

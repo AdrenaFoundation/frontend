@@ -53,7 +53,7 @@ export default function TokenSelector({
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const tokenPrices = useSelector((s) => s.tokenPrices);
+  const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
 
   const custodyList = useMemo(() => {
@@ -61,7 +61,7 @@ export default function TokenSelector({
 
     return tokenList
       .map((token) => window.adrena.client.getCustodyByMint(token.mint))
-      .filter((custody): custody is CustodyExtended => custody !== null);
+      .filter((custody) => !!custody);
   }, [tokenList, selectedAction]);
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyList);
@@ -74,23 +74,22 @@ export default function TokenSelector({
 
         if (!custody) return null;
 
-        const tokenPrice = tokenPrices[symbol] ?? null;
-        const liquidityPrice =
-          selectedAction !== 'short'
-            ? (tokenPrices[token.symbol] ?? null)
-            : null;
-
-        let availableLiquidity: number;
-        if (selectedAction === 'short') {
-          availableLiquidity =
-            custody.maxCumulativeShortPositionSizeUsd -
-            (custody.oiShortUsd ?? 0);
-        } else {
-          availableLiquidity =
-            (custodyLiquidity as Record<string, number>)?.[
-              custody.pubkey.toBase58()
-            ] ?? 0;
-        }
+        const tokenPrice = streamingTokenPrices[symbol] ?? null;
+        const { liquidityPrice, availableLiquidity } =
+          selectedAction === 'short'
+            ? {
+                liquidityPrice: null as number | null,
+                availableLiquidity:
+                  custody.maxCumulativeShortPositionSizeUsd -
+                  (custody.oiShortUsd ?? 0),
+              }
+            : {
+                liquidityPrice: streamingTokenPrices[token.symbol] ?? null,
+                availableLiquidity:
+                  (custodyLiquidity as Record<string, number>)?.[
+                    custody.pubkey.toBase58()
+                  ] ?? 0,
+              };
 
         return {
           token,
@@ -107,7 +106,7 @@ export default function TokenSelector({
   }, [
     tokenList,
     selectedAction,
-    tokenPrices,
+    streamingTokenPrices,
     stats,
     favorites,
     custodyLiquidity,

@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
@@ -98,7 +98,15 @@ export default function FooterStats({
     ? window.adrena.client.getCustodyByMint(token?.mint)
     : null;
 
-  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custody);
+  const custodyArray = useMemo(() => (custody ? [custody] : []), [custody]);
+
+  const custodyLiquidityData =
+    useDynamicCustodyAvailableLiquidity(custodyArray);
+
+  const custodyLiquidity =
+    custody && custodyLiquidityData
+      ? custodyLiquidityData[custody.pubkey.toBase58()]
+      : null;
 
   useEffect(() => {
     getData();
@@ -117,8 +125,8 @@ export default function FooterStats({
     try {
       const response = await fetch(
         `${CHAOS_API_ENDPOINT}/trading-view/data?feed=${token}USD&type=1H&from=${
-        // past 24 hours
-        Math.floor(Date.now() / 1000) - 24 * 60 * 60
+          // past 24 hours
+          Math.floor(Date.now() / 1000) - 24 * 60 * 60
         }&till=${Date.now()}`,
       );
 
@@ -479,9 +487,9 @@ export default function FooterStats({
                   </p>
                   <AnimatePresence mode="wait">
                     {custodyLiquidity !== null &&
-                      tokenPrice &&
-                      custody &&
-                      !isTokenDataLoading ? (
+                    tokenPrice &&
+                    custody &&
+                    !isTokenDataLoading ? (
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

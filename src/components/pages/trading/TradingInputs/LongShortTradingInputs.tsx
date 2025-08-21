@@ -48,8 +48,6 @@ import {
   calculateLimitOrderTriggerPrice,
 } from './LongShortTradingInputs/utils';
 
-
-
 export default function LongShortTradingInputs({
   side,
   className,
@@ -103,15 +101,33 @@ export default function LongShortTradingInputs({
     usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
 
-  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(
-    side === 'long' ? positionInfo.custody : usdcCustody,
-  );
+  const custodyArray = useMemo(() => {
+    if (side === 'long' && positionInfo.custody) {
+      return [positionInfo.custody];
+    }
+    if (usdcCustody) {
+      return [usdcCustody];
+    }
+    return [];
+  }, [side, positionInfo.custody, usdcCustody]);
+
+  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
+
+  const tokenLiquidity =
+    side === 'long' && positionInfo.custody && custodyLiquidity
+      ? custodyLiquidity[positionInfo.custody.pubkey.toBase58()]
+      : null;
+
+  const usdcLiquidity =
+    side === 'short' && usdcCustody && custodyLiquidity
+      ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
+      : null;
 
   // Check of maximum shorts across traders
   const availableLiquidityShort =
     (positionInfo.custody &&
       positionInfo.custody.maxCumulativeShortPositionSizeUsd -
-      (positionInfo.custody.oiShortUsd ?? 0)) ??
+        (positionInfo.custody.oiShortUsd ?? 0)) ??
     0;
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
@@ -322,11 +338,11 @@ export default function LongShortTradingInputs({
           inputState.limitOrderSlippage === null
             ? null
             : calculateLimitOrderLimitPrice({
-              limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
-              tokenDecimals: tokenB.displayPriceDecimalsPrecision,
-              percent: inputState.limitOrderSlippage,
-              side,
-            }),
+                limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
+                tokenDecimals: tokenB.displayPriceDecimalsPrecision,
+                percent: inputState.limitOrderSlippage,
+                side,
+              }),
         side,
         collateralAmount: uiToNative(inputState.inputA, tokenA.decimals),
         leverage: uiLeverageToNative(inputState.leverage),
@@ -443,33 +459,33 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        })
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        }));
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          }));
 
       dispatch(fetchWalletTokenBalances());
       setInputState((prev) => ({
@@ -766,7 +782,7 @@ export default function LongShortTradingInputs({
 
   useEffect(() => {
     // Reset insufficient amount when inputs change
-    setPositionInfo(prev => ({
+    setPositionInfo((prev) => ({
       ...prev,
       insufficientAmount: false,
     }));
@@ -839,25 +855,27 @@ export default function LongShortTradingInputs({
         errorMessage: `Position Exceeds Max Size`,
       }));
 
-    // If custody doesn't have enough liquidity, tell user
-    if (side === 'long' && custodyLiquidity && projectedSize > custodyLiquidity)
+    if (side === 'long' && tokenLiquidity && projectedSize > tokenLiquidity) {
       return setPositionInfo((prev) => ({
         ...prev,
         errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
       }));
+    }
 
     if (side === 'short' && usdcCustody) {
-      if (custodyLiquidity && projectedSizeUsd > custodyLiquidity)
+      if (usdcLiquidity && projectedSizeUsd > usdcLiquidity) {
         return setPositionInfo((prev) => ({
           ...prev,
           errorMessage: `Insufficient USDC liquidity`,
         }));
+      }
 
-      if (projectedSizeUsd > availableLiquidityShort)
+      if (projectedSizeUsd > availableLiquidityShort) {
         return setPositionInfo((prev) => ({
           ...prev,
           errorMessage: `Position Exceeds USDC liquidity`,
         }));
+      }
     }
 
     // Only clear error message if we have valid position info
@@ -880,6 +898,8 @@ export default function LongShortTradingInputs({
     tokenPrices,
     side,
     availableLiquidityShort,
+    tokenLiquidity,
+    usdcLiquidity,
   ]);
 
   // Instead, use the original approach where size is calculated from position info
@@ -1135,7 +1155,13 @@ export default function LongShortTradingInputs({
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
               walletAddress={wallet?.publicKey?.toBase58() ?? null}
-              custodyLiquidity={custodyLiquidity}
+              custodyLiquidity={
+                side === 'long' && positionInfo.custody && custodyLiquidity
+                  ? custodyLiquidity[positionInfo.custody.pubkey.toBase58()]
+                  : side === 'short' && usdcCustody && custodyLiquidity
+                    ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
+                    : null
+              }
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>

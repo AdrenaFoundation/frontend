@@ -40,7 +40,7 @@ export default function ALPSwapSell({
     [collateralToken.mint],
   );
   const collateralTokenCustodyLiquidity = useDynamicCustodyAvailableLiquidity(
-    collateralTokenCustody,
+    collateralTokenCustody ? [collateralTokenCustody] : [],
   );
   const collateralTokenCustodyLiquidityUsd = useMemo(() => {
     const tokenPrice = tokenPrices[collateralToken.symbol];
@@ -48,7 +48,11 @@ export default function ALPSwapSell({
       return null;
     }
 
-    return collateralTokenCustodyLiquidity * tokenPrice;
+    return (
+      collateralTokenCustodyLiquidity[
+        collateralTokenCustody.pubkey.toBase58()
+      ] * tokenPrice
+    );
   }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity]);
 
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
