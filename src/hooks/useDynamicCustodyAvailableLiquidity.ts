@@ -3,30 +3,69 @@ import { useCallback, useEffect, useState } from 'react';
 import { CustodyExtended } from '@/types';
 
 export default function useDynamicCustodyAvailableLiquidity(
-  custody: CustodyExtended | null,
+  custody: CustodyExtended | null | CustodyExtended[],
 ) {
-  const [availableLiquidity, setAvailableLiquidity] = useState<number | null>(
-    null,
-  );
+  const [availableLiquidity, setAvailableLiquidity] = useState<
+    number | null | Record<string, number>
+  >(null);
+
+  const isMultiple = Array.isArray(custody);
+  const custodyList = isMultiple ? custody : custody ? [custody] : [];
 
   useEffect(() => {
-    setAvailableLiquidity(null);
-  }, [custody?.pubkey]);
+    if (isMultiple) {
+      setAvailableLiquidity({});
+    } else {
+      setAvailableLiquidity(null);
+    }
+  }, [isMultiple, custodyList.map((c) => c?.pubkey).join(',')]);
 
   const refresh = useCallback(async () => {
-    if (!custody) {
-      setAvailableLiquidity(null);
+    if (!custodyList.length) {
+      setAvailableLiquidity(isMultiple ? {} : null);
       return;
     }
 
     try {
-      setAvailableLiquidity(
-        await window.adrena.client.getCustodyLiquidityOnchain(custody),
-      );
+      if (isMultiple) {
+        const promises = custodyList.map(async (custody) => {
+          try {
+            const liquidity = await window.adrena.client.getCustodyLiquidityOnchain(
+              custody,
+            );
+            return { pubkey: custody.pubkey.toBase58(), liquidity };
+          } catch (e) {
+            console.log(
+              `Failed to fetch liquidity for custody ${custody.pubkey.toBase58()}:`,
+              e,
+            );
+            return { pubkey: custody.pubkey.toBase58(), liquidity: 0 };
+          }
+        });
+
+        const results = await Promise.all(promises);
+        const resultMap: Record<string, number> = {};
+        results.forEach(({ pubkey, liquidity }) => {
+          resultMap[pubkey] = liquidity;
+        });
+
+        setAvailableLiquidity(resultMap);
+      } else {
+        const result = await window.adrena.client.getCustodyLiquidityOnchain(
+          custodyList[0],
+        );
+        setAvailableLiquidity(result);
+      }
     } catch (e) {
-      console.log('Failed to refresh main accounts', e);
+      console.log('Failed to refresh custody liquidity', e);
+
+      if (isMultiple) {
+        setAvailableLiquidity({});
+      } else {
+        setAvailableLiquidity(null);
+      }
     }
-  }, [custody]);
+  }, [custodyList, isMultiple]);
 
   useEffect(() => {
     refresh();

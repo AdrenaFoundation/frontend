@@ -1,8 +1,9 @@
 import Tippy from '@tippyjs/react';
 import Head from 'next/head';
-import { useEffect, useMemo,useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { MAX_FAVORITE_TOKENS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
@@ -42,11 +43,72 @@ export default function TradingChartHeader({
   const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
-    const savedFavorites = localStorage.getItem('tokenFavorites');
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+    try {
+      const savedFavorites = localStorage.getItem('tokenFavorites');
+      if (savedFavorites) {
+        const parsed = JSON.parse(savedFavorites);
+
+        if (
+          Array.isArray(parsed) &&
+          parsed.every((item) => typeof item === 'string')
+        ) {
+          setFavorites(parsed);
+        } else {
+          console.warn('Invalid favorites format, resetting to empty array');
+          localStorage.removeItem('tokenFavorites');
+          setFavorites([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+      localStorage.removeItem('tokenFavorites');
+      setFavorites([]);
     }
   }, []);
+
+  const addFavorite = useCallback((symbol: string) => {
+    setFavorites((prev) => {
+      const newFavorites = [...prev, symbol];
+
+      const trimmedFavorites = newFavorites.slice(0, MAX_FAVORITE_TOKENS);
+
+      try {
+        localStorage.setItem(
+          'tokenFavorites',
+          JSON.stringify(trimmedFavorites),
+        );
+      } catch (error) {
+        console.error('Error saving favorites:', error);
+      }
+
+      return trimmedFavorites;
+    });
+  }, []);
+
+  const removeFavorite = useCallback((symbol: string) => {
+    setFavorites((prev) => {
+      const newFavorites = prev.filter((fav) => fav !== symbol);
+
+      try {
+        localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
+      } catch (error) {
+        console.error('Error saving favorites:', error);
+      }
+
+      return newFavorites;
+    });
+  }, []);
+
+  const toggleFavorite = useCallback(
+    (symbol: string) => {
+      if (favorites.includes(symbol)) {
+        removeFavorite(symbol);
+      } else {
+        addFavorite(symbol);
+      }
+    },
+    [favorites, addFavorite, removeFavorite],
+  );
 
   const favoriteTokens = useMemo(
     () =>
@@ -56,18 +118,12 @@ export default function TradingChartHeader({
             favorites.includes(getTokenSymbol(token.symbol)) &&
             token.symbol !== selected.symbol,
         )
-        .slice(0, 3),
+        .slice(0, MAX_FAVORITE_TOKENS),
     [tokenList, favorites, selected.symbol],
   );
 
-  const favoritesBarClasses = useMemo(
-    () =>
-      twMerge(
-        'min-w-0 flex-1 overflow-hidden',
-        'lg:min-w-0 lg:overflow-hidden lg:w-auto lg:flex-1',
-      ),
-    [],
-  );
+  const favoritesBarClasses =
+    'min-w-0 flex-1 overflow-hidden lg:min-w-0 lg:overflow-hidden lg:w-auto lg:flex-1';
 
   return (
     <>
@@ -93,7 +149,7 @@ export default function TradingChartHeader({
               selected={selected}
               onChange={onChange}
               favorites={favorites}
-              setFavorites={setFavorites}
+              onToggleFavorite={toggleFavorite}
               selectedAction={selectedAction}
             />
           </div>

@@ -6,11 +6,19 @@ import useDailyStats from '@/hooks/useDailyStats';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, Token } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import {
+  getTokenImage,
+  getTokenSymbol,
+  formatNumberShort,
+  formatPriceInfo,
+  formatPercentage,
+} from '@/utils';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import { MAX_FAVORITE_TOKENS } from '@/constant';
 
-import chevronDownIcon from '../../../../../public/images/chevron-down.svg';
-import starIcon from '../../../../../public/images/Icons/star.svg';
-import starFilledIcon from '../../../../../public/images/Icons/star-filled.svg';
+import chevronDownIcon from '@/../public/images/chevron-down.svg';
+import starIcon from '@/../public/images/Icons/star.svg';
+import starFilledIcon from '@/../public/images/Icons/star-filled.svg';
 
 interface TokenSelectorProps {
   tokenList: Token[];
@@ -18,7 +26,7 @@ interface TokenSelectorProps {
   onChange: (token: Token) => void;
   className?: string;
   favorites: string[];
-  setFavorites: (favorites: string[]) => void;
+  onToggleFavorite: (symbol: string) => void;
   selectedAction: 'long' | 'short' | 'swap';
 }
 
@@ -27,31 +35,11 @@ interface TokenDataItem {
   symbol: string;
   custody: CustodyExtended;
   tokenPrice: number | null;
+  liquidityPrice: number | null;
   availableLiquidity: number;
-  isShort: boolean;
   dailyChange: number | null;
   isFavorite: boolean;
 }
-
-const formatLiquidity = (
-  liquidity: number,
-  isShort: boolean,
-  tokenPrice: number | null,
-) => {
-  if (!liquidity) return '-';
-
-  const liquidityUsd = isShort
-    ? liquidity
-    : tokenPrice
-      ? liquidity * tokenPrice
-      : 0;
-  if (!liquidityUsd) return '-';
-
-  if (liquidityUsd >= 1e9) return `$${(liquidityUsd / 1e9).toFixed(2)}B`;
-  if (liquidityUsd >= 1e6) return `$${(liquidityUsd / 1e6).toFixed(2)}M`;
-  if (liquidityUsd >= 1e3) return `$${(liquidityUsd / 1e3).toFixed(2)}k`;
-  return `$${liquidityUsd.toFixed(0)}`;
-};
 
 export default function TokenSelector({
   tokenList,
@@ -59,7 +47,7 @@ export default function TokenSelector({
   onChange,
   className,
   favorites,
-  setFavorites,
+  onToggleFavorite,
   selectedAction,
 }: TokenSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -67,61 +55,43 @@ export default function TokenSelector({
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const allTokenPrices = useSelector((s) => s.streamingTokenPrices);
+  const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
 
-  const custodyData = useMemo(() => {
-    const data: Record<string, CustodyExtended> = {};
-    tokenList.forEach((token) => {
-      const custody = window.adrena.client.getCustodyByMint(token.mint);
-      if (custody) {
-        data[token.symbol] = custody;
-      }
-    });
-    return data;
-  }, [tokenList]);
+  const custodyList = useMemo(() => {
+    if (selectedAction === 'short') return [];
+
+    return tokenList
+      .map((token) => window.adrena.client.getCustodyByMint(token.mint))
+      .filter((custody): custody is CustodyExtended => custody !== null);
+  }, [tokenList, selectedAction]);
+
+  const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyList);
 
   const tokenData = useMemo((): TokenDataItem[] => {
     return tokenList
       .map((token) => {
         const symbol = getTokenSymbol(token.symbol);
-        const custody = custodyData[token.symbol];
-
-        let tokenPrice: number | null;
-        if (symbol === 'SOL') {
-          tokenPrice = allTokenPrices['JITOSOL'] ?? null;
-        } else {
-          tokenPrice = allTokenPrices[symbol] ?? null;
-        }
+        const custody = window.adrena.client.getCustodyByMint(token.mint);
 
         if (!custody) return null;
 
-        let availableLiquidity = 0;
-        let isShort = false;
+        const tokenPrice = tokenPrices[symbol] ?? null;
+        const liquidityPrice =
+          selectedAction !== 'short'
+            ? (tokenPrices[token.symbol] ?? null)
+            : null;
 
-        if (selectedAction === 'long' || selectedAction === 'swap') {
+        let availableLiquidity: number;
+        if (selectedAction === 'short') {
           availableLiquidity =
-            (
-              custody as CustodyExtended & {
-                availableLiquidity?: number;
-                available?: number;
-              }
-            ).availableLiquidity ||
-            (
-              custody as CustodyExtended & {
-                availableLiquidity?: number;
-                available?: number;
-              }
-            ).available ||
-            custody.liquidity ||
-            0;
-        } else if (selectedAction === 'short') {
-          availableLiquidity = Math.max(
-            0,
-            (custody.maxCumulativeShortPositionSizeUsd || 0) -
-              (custody.oiShortUsd || 0),
-          );
-          isShort = true;
+            custody.maxCumulativeShortPositionSizeUsd -
+            (custody.oiShortUsd ?? 0);
+        } else {
+          availableLiquidity =
+            (custodyLiquidity as Record<string, number>)?.[
+              custody.pubkey.toBase58()
+            ] ?? 0;
         }
 
         return {
@@ -129,37 +99,32 @@ export default function TokenSelector({
           symbol,
           custody,
           tokenPrice,
+          liquidityPrice,
           availableLiquidity,
-          isShort,
           dailyChange: stats?.[token.symbol]?.dailyChange ?? null,
           isFavorite: favorites.includes(symbol),
         };
       })
       .filter((item): item is TokenDataItem => item !== null);
-  }, [
-    tokenList,
-    selectedAction,
-    custodyData,
-    allTokenPrices,
-    stats,
-    favorites,
-  ]);
+  }, [tokenList, selectedAction, tokenPrices, stats, favorites]);
 
   const sortedTokens = useMemo(() => {
     return [...tokenData].sort((a, b) => {
       if (a.isFavorite && !b.isFavorite) return -1;
       if (!a.isFavorite && b.isFavorite) return 1;
 
-      const aLiquidityUsd = a.isShort
-        ? a.availableLiquidity
-        : a.availableLiquidity * (a.tokenPrice ?? 0);
-      const bLiquidityUsd = b.isShort
-        ? b.availableLiquidity
-        : b.availableLiquidity * (b.tokenPrice ?? 0);
+      const aLiquidityUsd =
+        selectedAction === 'short'
+          ? a.availableLiquidity
+          : a.availableLiquidity * (a.tokenPrice ?? 0);
+      const bLiquidityUsd =
+        selectedAction === 'short'
+          ? b.availableLiquidity
+          : b.availableLiquidity * (b.tokenPrice ?? 0);
 
       return bLiquidityUsd - aLiquidityUsd;
     });
-  }, [tokenData]);
+  }, [tokenData, selectedAction]);
 
   const filteredTokens = useMemo(() => {
     if (!debouncedSearchTerm) return sortedTokens;
@@ -168,20 +133,6 @@ export default function TokenSelector({
       item.symbol.toLowerCase().includes(searchLower),
     );
   }, [sortedTokens, debouncedSearchTerm]);
-
-  const toggleFavorite = useCallback(
-    (symbol: string) => {
-      const newFavorites = favorites.includes(symbol)
-        ? favorites.filter((f: string) => f !== symbol)
-        : favorites.length < 3
-          ? [...favorites, symbol]
-          : favorites;
-
-      localStorage.setItem('tokenFavorites', JSON.stringify(newFavorites));
-      setFavorites(newFavorites);
-    },
-    [favorites, setFavorites],
-  );
 
   const handleTokenSelect = useCallback(
     (token: Token) => {
@@ -294,7 +245,7 @@ export default function TokenSelector({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleFavorite(item.symbol);
+                      onToggleFavorite(item.symbol);
                     }}
                     className="p-1 hover:bg-fourth rounded transition-colors"
                   >
@@ -309,8 +260,9 @@ export default function TokenSelector({
                       height={14}
                       className={twMerge(
                         'transition-all duration-200',
-                        item.isFavorite ? 'scale-110' : 'scale-100',
-                        !item.isFavorite ? 'opacity-50' : '',
+                        item.isFavorite
+                          ? 'scale-110 opacity-100'
+                          : 'scale-100 opacity-50',
                       )}
                     />
                   </button>
@@ -332,9 +284,11 @@ export default function TokenSelector({
                 <div className="col-span-3">
                   {item.tokenPrice ? (
                     <span className="text-base font-mono text-white">
-                      $
-                      {item.tokenPrice.toFixed(
+                      {formatPriceInfo(
+                        item.tokenPrice,
                         item.token.displayPriceDecimalsPrecision || 2,
+                        2,
+                        8,
                       )}
                     </span>
                   ) : (
@@ -354,8 +308,7 @@ export default function TokenSelector({
                             : 'text-gray-400 text-base font-mono'
                       }
                     >
-                      {item.dailyChange > 0 ? '+' : ''}
-                      {item.dailyChange.toFixed(2)}%
+                      {formatPercentage(item.dailyChange, 2)}
                     </span>
                   ) : (
                     <span className="text-gray-400">-</span>
@@ -364,11 +317,20 @@ export default function TokenSelector({
 
                 {/* Avail. Liq. column */}
                 <div className="col-span-2 text-base font-mono text-white">
-                  {formatLiquidity(
-                    item.availableLiquidity,
-                    item.isShort,
-                    item.tokenPrice,
-                  )}
+                  {(() => {
+                    if (!item.availableLiquidity) return '-';
+
+                    const liquidityUsd =
+                      selectedAction === 'short'
+                        ? item.availableLiquidity
+                        : item.liquidityPrice
+                          ? item.availableLiquidity * item.liquidityPrice
+                          : 0;
+
+                    if (!liquidityUsd) return '-';
+
+                    return `$${formatNumberShort(liquidityUsd, 2)}`;
+                  })()}
                 </div>
               </div>
             ))}

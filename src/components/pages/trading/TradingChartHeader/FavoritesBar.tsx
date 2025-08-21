@@ -1,11 +1,11 @@
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { Token } from '@/types';
-import { getTokenImage,getTokenSymbol } from '@/utils';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
-import chevronDownIcon from '../../../../../public/images/chevron-down.svg';
+import chevronDownIcon from '@/../public/images/chevron-down.svg';
 
 interface FavoritesBarProps {
   favoriteTokens: Token[];
@@ -92,18 +92,13 @@ export default function FavoritesBar({
     checkScrollPosition();
   }, [favoriteTokens, checkScrollPosition]);
 
-  const scrollContainerClasses = useMemo(
-    () => 'flex flex-row items-center gap-1 min-w-0 overflow-x-auto px-0',
-    [],
-  );
+  const scrollContainerClasses =
+    'flex flex-row items-center gap-1 min-w-0 overflow-x-auto px-0';
 
-  const scrollContainerStyle = useMemo(
-    () => ({
-      scrollbarWidth: 'none' as const,
-      msOverflowStyle: 'none' as const,
-    }),
-    [],
-  );
+  const scrollContainerStyle = {
+    scrollbarWidth: 'none' as const,
+    msOverflowStyle: 'none' as const,
+  };
 
   if (favoriteTokens.length === 0) return null;
 
