@@ -1,19 +1,36 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import { useALPPoolUsage } from '@/hooks/useALPPoolUsage';
 import useAPR from '@/hooks/useAPR';
-import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
+import useMainPool from '@/hooks/useMainPool';
 import { useSelector } from '@/store/store';
 
 export default function ALPHeader() {
   const { aprs } = useAPR();
-  const aumUsd = useAssetsUnderManagement();
-  const { poolUsage } = useALPPoolUsage();
+  const mainPool = useMainPool();
   const tokenPriceALP = useSelector((s) => s.tokenPrices.ALP);
 
   const alpApr = aprs?.lp ?? null;
+
+  // Calculate pool usage directly from mainPool data
+  const poolUsage = useMemo(() => {
+    if (!mainPool) return null;
+
+    const totalOI = mainPool.oiLongUsd + mainPool.oiShortUsd;
+    const aumUsd = mainPool.aumUsd;
+
+    if (totalOI <= 0 || !aumUsd) return null;
+
+    return {
+      totalUsageUsd: totalOI,
+      totalUsagePercentage: (totalOI / aumUsd) * 100,
+      longUsageUsd: mainPool.oiLongUsd,
+      shortUsageUsd: mainPool.oiShortUsd,
+      longPercentage: (mainPool.oiLongUsd / totalOI) * 100,
+      shortPercentage: (mainPool.oiShortUsd / totalOI) * 100,
+    };
+  }, [mainPool]);
 
   return (
     <div className="flex flex-row gap-2 items-start justify-between">
@@ -37,7 +54,7 @@ export default function ALPHeader() {
 
         <div>
           <FormatNumber
-            nb={aumUsd}
+            nb={mainPool?.aumUsd}
             format="currency"
             prefix="Total TVL: "
             className="text-sm font-mono opacity-50"
