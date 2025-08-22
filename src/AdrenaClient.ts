@@ -944,12 +944,16 @@ export class AdrenaClient {
 
     return custodies.reduce<Record<string, number>>((acc, c, i) => {
       const account = accounts[i];
-      if (account) {
-        acc[c.pubkey.toBase58()] = nativeToUi(
-          account.assets.owned.sub(account.assets.locked),
-          c.decimals,
+      if (!account) {
+        throw new Error(
+          `Custody account not found for pubkey: ${c.pubkey.toBase58()}`,
         );
       }
+
+      acc[c.pubkey.toBase58()] = nativeToUi(
+        account.assets.owned.sub(account.assets.locked),
+        c.decimals,
+      );
       return acc;
     }, {});
   }

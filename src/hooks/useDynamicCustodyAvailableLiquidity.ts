@@ -19,7 +19,7 @@ export default function useDynamicCustodyAvailableLiquidity(
       const results = await window.adrena.client.getCustodyLiquidityOnchain(
         custody,
       );
-      setAvailableLiquidity(results as Record<string, number>);
+      setAvailableLiquidity(results);
     } catch (error) {
       console.error('Error fetching custody liquidity:', error);
       setAvailableLiquidity(null);
