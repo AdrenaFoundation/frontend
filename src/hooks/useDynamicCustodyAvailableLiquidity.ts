@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { CustodyExtended } from '@/types';
 
 export default function useDynamicCustodyAvailableLiquidity(
-  custody: CustodyExtended[],
+  custodies: CustodyExtended[],
 ): Record<string, number> | null {
   const [availableLiquidity, setAvailableLiquidity] = useState<Record<
     string,
@@ -13,35 +13,49 @@ export default function useDynamicCustodyAvailableLiquidity(
   const prevCustodyRef = useRef<CustodyExtended[]>([]);
 
   const fetchLiquidity = useCallback(async () => {
-    if (!custody.length) return;
+    if (!custodies.length) return;
 
     try {
       const results = await window.adrena.client.getCustodyLiquidityOnchain(
-        custody,
+        custodies,
       );
-      setAvailableLiquidity(results);
+
+      const processedResults = { ...results };
+
+      custodies.forEach((custody) => {
+        if (
+          custody.mint.toBase58() ===
+          window.adrena.client.getUsdcToken().mint.toBase58()
+        ) {
+          processedResults[
+            custody.pubkey.toBase58()
+          ] = window.adrena.client.getUsdcAvailableForShorting(custody);
+        }
+      });
+
+      setAvailableLiquidity(processedResults);
     } catch (error) {
       console.error('Error fetching custody liquidity:', error);
       setAvailableLiquidity(null);
     }
-  }, [custody]);
+  }, [custodies]);
 
   useEffect(() => {
     const custodyChanged =
-      custody.length !== prevCustodyRef.current.length ||
-      custody.some(
+      custodies.length !== prevCustodyRef.current.length ||
+      custodies.some(
         (c, i) =>
           c.pubkey.toBase58() !== prevCustodyRef.current[i]?.pubkey.toBase58(),
       );
 
     if (custodyChanged) {
-      prevCustodyRef.current = custody;
+      prevCustodyRef.current = custodies;
       fetchLiquidity();
     }
 
     const interval = setInterval(fetchLiquidity, 10000);
     return () => clearInterval(interval);
-  }, [custody, fetchLiquidity]);
+  }, [custodies, fetchLiquidity]);
 
   return availableLiquidity;
 }

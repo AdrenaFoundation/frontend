@@ -958,6 +958,20 @@ export class AdrenaClient {
     }, {});
   }
 
+  public getUsdcAvailableForShorting(usdcCustody: CustodyExtended): number {
+    if (!usdcCustody) return 0;
+
+    console.log('usdcCustody', usdcCustody);
+    const totalLocked = usdcCustody.nativeObject.assets.locked.add(
+      usdcCustody.nativeObject.assets.collateral,
+    );
+
+    return nativeToUi(
+      usdcCustody.nativeObject.assets.owned.sub(totalLocked),
+      usdcCustody.decimals,
+    );
+  }
+
   public static async loadMainPool(
     adrenaProgram: Program<Adrena>,
     mainPoolAddress: PublicKey,
