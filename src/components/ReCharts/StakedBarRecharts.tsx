@@ -32,6 +32,7 @@ export default function StakedBarRechart<T extends string>({
   isSmallScreen = true,
   subValue,
   formatY = 'currency',
+  displayYAxis = true,
   gmt,
   total,
   events,
@@ -53,6 +54,7 @@ export default function StakedBarRechart<T extends string>({
   isSmallScreen?: boolean;
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
+  displayYAxis?: boolean;
   gmt?: number;
   total?: boolean;
   events?: AdrenaEvent[],
@@ -62,6 +64,10 @@ export default function StakedBarRechart<T extends string>({
   >([]);
 
   const formatYAxis = (tickItem: number) => {
+    if (displayYAxis === false) {
+      return '';
+    }
+
     if (formatY === 'percentage') {
       if (tickItem === 0) return '0%';
       if (tickItem >= 100) return '100%';
