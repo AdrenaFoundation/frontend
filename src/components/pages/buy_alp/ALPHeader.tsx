@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import useAPR from '@/hooks/useAPR';
@@ -13,8 +13,7 @@ export default function ALPHeader() {
 
   const alpApr = aprs?.lp ?? null;
 
-  // Calculate pool usage directly from mainPool data
-  const poolUsage = useMemo(() => {
+  const poolUsage = (() => {
     if (!mainPool) return null;
 
     const totalOI = mainPool.oiLongUsd + mainPool.oiShortUsd;
@@ -30,7 +29,7 @@ export default function ALPHeader() {
       longPercentage: (mainPool.oiLongUsd / totalOI) * 100,
       shortPercentage: (mainPool.oiShortUsd / totalOI) * 100,
     };
-  }, [mainPool]);
+  })();
 
   return (
     <div className="flex flex-row gap-2 items-start justify-between">

@@ -2,17 +2,52 @@ import Image from 'next/image';
 import React from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import useADXHeaderData from '@/hooks/useADXHeaderData';
+import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
+import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useAPR from '@/hooks/useAPR';
+import useStakingAccount from '@/hooks/useStakingAccount';
+import { useSelector } from '@/store/store';
+import { nativeToUi } from '@/utils';
 
 export default function ADXHeader() {
-  const {
-    circulatingSupply,
-    totalStaked,
-    tokenPrice,
-    apr,
-    circulatingPercentage,
-    stakedPercentage,
-  } = useADXHeaderData();
+  const adxTotalSupply = useADXTotalSupply();
+  const adxCirculatingSupply = useADXCirculatingSupply({
+    totalSupplyADX: adxTotalSupply,
+  });
+  const { aprs } = useAPR();
+  const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
+
+  const { stakingAccount: adxStakingAccount } = useStakingAccount(
+    window.adrena.client.lmTokenMint,
+  );
+
+  const stakingData = (() => {
+    if (!adxStakingAccount) return null;
+
+    const decimals = adxStakingAccount.stakedTokenDecimals;
+
+    const totalLiquidStaked = nativeToUi(
+      adxStakingAccount.nbLiquidTokens,
+      decimals,
+    );
+    const totalLockedStaked = nativeToUi(
+      adxStakingAccount.nbLockedTokens,
+      decimals,
+    );
+    const totalStaked = totalLiquidStaked + totalLockedStaked;
+
+    return {
+      totalStaked,
+      circulatingPercentage:
+        adxTotalSupply && adxCirculatingSupply
+          ? (adxCirculatingSupply / adxTotalSupply) * 100
+          : null,
+      stakedPercentage:
+        adxCirculatingSupply && totalStaked
+          ? (totalStaked / adxCirculatingSupply) * 100
+          : null,
+    };
+  })();
 
   return (
     <div className="flex flex-row gap-2 items-start justify-between">
@@ -25,9 +60,9 @@ export default function ADXHeader() {
           />
           <div className="flex flex-row items-center gap-4">
             <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ADX</h1>
-            {tokenPrice && (
+            {tokenPriceADX && (
               <span className="text-xl opacity-90 font-normal">
-                ${tokenPrice.toFixed(4)}
+                ${tokenPriceADX.toFixed(4)}
               </span>
             )}
           </div>
@@ -36,30 +71,30 @@ export default function ADXHeader() {
         <div>
           <div className="flex items-center gap-2">
             <FormatNumber
-              nb={circulatingSupply}
+              nb={adxCirculatingSupply}
               format="number"
               prefix="Circulating: "
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {circulatingPercentage && (
+            {stakingData?.circulatingPercentage && (
               <span className="text-sm font-mono opacity-90">
-                ({circulatingPercentage.toFixed(1)}%)
+                ({stakingData.circulatingPercentage.toFixed(1)}%)
               </span>
             )}
           </div>
 
           <div className="flex items-center gap-2">
             <FormatNumber
-              nb={totalStaked}
+              nb={stakingData?.totalStaked}
               format="number"
               prefix="Staked: "
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {stakedPercentage && (
+            {stakingData?.stakedPercentage && (
               <span className="text-sm font-mono opacity-90">
-                ({stakedPercentage.toFixed(1)}%)
+                ({stakingData.stakedPercentage.toFixed(1)}%)
               </span>
             )}
           </div>
@@ -67,7 +102,7 @@ export default function ADXHeader() {
       </div>
 
       <FormatNumber
-        nb={apr}
+        nb={aprs?.lm}
         format="percentage"
         suffix="APR"
         precision={0}
