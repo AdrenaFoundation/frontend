@@ -45,26 +45,39 @@ export default function TradingChartHeader({
   useEffect(() => {
     try {
       const savedFavorites = localStorage.getItem('tokenFavorites');
-      if (savedFavorites) {
-        const parsed = JSON.parse(savedFavorites);
+      if (!savedFavorites) return;
 
-        if (
-          Array.isArray(parsed) &&
-          parsed.every((item) => typeof item === 'string')
-        ) {
-          setFavorites(parsed);
-        } else {
-          console.warn('Invalid favorites format, resetting to empty array');
-          localStorage.removeItem('tokenFavorites');
-          setFavorites([]);
-        }
+      const parsed = JSON.parse(savedFavorites);
+      if (
+        !Array.isArray(parsed) ||
+        !parsed.every((item) => typeof item === 'string')
+      ) {
+        localStorage.removeItem('tokenFavorites');
+        setFavorites([]);
+        return;
       }
+
+      const validTokenSymbols = new Set(
+        tokenList.map((token) => getTokenSymbol(token.symbol)),
+      );
+      const validFavorites = parsed.filter((symbol) =>
+        validTokenSymbols.has(symbol),
+      );
+
+      const contentChanged =
+        validFavorites.length !== parsed.length ||
+        !validFavorites.every((fav, index) => fav === parsed[index]);
+
+      if (contentChanged) {
+        localStorage.setItem('tokenFavorites', JSON.stringify(validFavorites));
+      }
+
+      setFavorites(validFavorites);
     } catch (error) {
-      console.error('Error loading favorites:', error);
       localStorage.removeItem('tokenFavorites');
       setFavorites([]);
     }
-  }, []);
+  }, [tokenList]);
 
   const addFavorite = useCallback((symbol: string) => {
     setFavorites((prev) => {

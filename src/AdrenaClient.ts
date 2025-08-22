@@ -928,45 +928,30 @@ export class AdrenaClient {
     return (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
   }
 
-  /**
-   * Fetches available liquidity for one or more custodies in a single RPC call if possible.
-   * Returns a number for a single custody, or a record of pubkey->liquidity for an array.
-   * Optimized to minimize RPC calls and avoid unnecessary iteration.
-   */
   public async getCustodyLiquidityOnchain(
-    custody: CustodyExtended | CustodyExtended[],
-  ): Promise<number | Record<string, number>> {
+    custodies: CustodyExtended[],
+  ): Promise<Record<string, number>> {
     if (!this.readonlyAdrenaProgram) {
-      return Array.isArray(custody) ? {} : 0;
+      return {};
     }
 
-    // Handle array input
-    if (Array.isArray(custody)) {
-      if (custody.length === 0) return {};
+    if (custodies.length === 0) return {};
 
-      const pubkeys = custody.map((c) => c.pubkey);
-      // Single fetchMultiple call for all custodies
-      const accounts = await this.readonlyAdrenaProgram.account.custody.fetchMultiple(pubkeys);
-
-      // Use reduce for a more functional, concise approach
-      return custody.reduce<Record<string, number>>((acc, c, i) => {
-        const account = accounts[i];
-        if (account) {
-          acc[c.pubkey.toBase58()] = nativeToUi(
-            account.assets.owned.sub(account.assets.locked),
-            c.decimals,
-          );
-        }
-        return acc;
-      }, {});
-    }
-
-    // Handle single custody input
-    const account = await this.readonlyAdrenaProgram.account.custody.fetch(custody.pubkey);
-    return nativeToUi(
-      account.assets.owned.sub(account.assets.locked),
-      custody.decimals,
+    const pubkeys = custodies.map((c) => c.pubkey);
+    const accounts = await this.readonlyAdrenaProgram.account.custody.fetchMultiple(
+      pubkeys,
     );
+
+    return custodies.reduce<Record<string, number>>((acc, c, i) => {
+      const account = accounts[i];
+      if (account) {
+        acc[c.pubkey.toBase58()] = nativeToUi(
+          account.assets.owned.sub(account.assets.locked),
+          c.decimals,
+        );
+      }
+      return acc;
+    }, {});
   }
 
   public static async loadMainPool(

@@ -81,7 +81,7 @@ export default function TokenSelector({
                 liquidityPrice: null as number | null,
                 availableLiquidity:
                   custody.maxCumulativeShortPositionSizeUsd -
-                  (custody.oiShortUsd ?? 0),
+                  custody.oiShortUsd,
               }
             : {
                 liquidityPrice: streamingTokenPrices[token.symbol] ?? null,
@@ -322,16 +322,12 @@ export default function TokenSelector({
                 {/* Avail. Liq. column */}
                 <div className="col-span-2 text-base font-mono text-white">
                   {(() => {
-                    if (!item.availableLiquidity) return '-';
-
                     const liquidityUsd =
                       selectedAction === 'short'
                         ? item.availableLiquidity
                         : item.liquidityPrice
                           ? item.availableLiquidity * item.liquidityPrice
                           : 0;
-
-                    if (!liquidityUsd) return '-';
 
                     return `$${formatNumberShort(liquidityUsd, 2)}`;
                   })()}
