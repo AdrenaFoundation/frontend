@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
@@ -21,7 +21,7 @@ export default function ADXHeader() {
     window.adrena.client.lmTokenMint,
   );
 
-  const stakingData = (() => {
+  const stakingData = useMemo(() => {
     if (!adxStakingAccount) return null;
 
     const decimals = adxStakingAccount.stakedTokenDecimals;
@@ -47,7 +47,7 @@ export default function ADXHeader() {
           ? (totalStaked / adxCirculatingSupply) * 100
           : null,
     };
-  })();
+  }, [adxStakingAccount, adxTotalSupply, adxCirculatingSupply]);
 
   return (
     <div className="flex flex-row gap-2 items-start justify-between">
@@ -60,11 +60,11 @@ export default function ADXHeader() {
           />
           <div className="flex flex-row items-center gap-4">
             <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ADX</h1>
-            {tokenPriceADX && (
+            {tokenPriceADX != null ? (
               <span className="text-xl opacity-90 font-normal">
                 ${tokenPriceADX.toFixed(4)}
               </span>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -77,11 +77,11 @@ export default function ADXHeader() {
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {stakingData?.circulatingPercentage && (
+            {stakingData?.circulatingPercentage != null ? (
               <span className="text-sm font-mono opacity-90">
                 ({stakingData.circulatingPercentage.toFixed(1)}%)
               </span>
-            )}
+            ) : null}
           </div>
 
           <div className="flex items-center gap-2">
@@ -92,11 +92,11 @@ export default function ADXHeader() {
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {stakingData?.stakedPercentage && (
+            {stakingData?.stakedPercentage != null ? (
               <span className="text-sm font-mono opacity-90">
                 ({stakingData.stakedPercentage.toFixed(1)}%)
               </span>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
