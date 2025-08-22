@@ -73,7 +73,7 @@ export default function TradingChartHeader({
       }
 
       setFavorites(validFavorites);
-    } catch (error) {
+    } catch {
       localStorage.removeItem('tokenFavorites');
       setFavorites([]);
     }
