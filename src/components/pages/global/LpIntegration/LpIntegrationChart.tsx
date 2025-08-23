@@ -8,7 +8,7 @@ import { getGMT } from '@/utils';
 export default function LpIntegrationChart() {
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [lpIntegrationInfo, setLpIntegrationInfo] = useState<Record<string, number>[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('1d');
+  const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
