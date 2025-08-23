@@ -7,6 +7,7 @@ import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChar
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
 import DefilamaProtocolFeesChart from '@/components/pages/global/DefilamaProtocolFeesChart/DefilamaProtocolFeesChart';
 import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
+import LpIntegrationChart from '@/components/pages/global/LpIntegration/LpIntegrationChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
@@ -204,6 +205,7 @@ export default function BasicMonitoring({
 
             <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
               <DefilamaProtocolFeesChart isSmallScreen={isSmallScreen} />
+              <LpIntegrationChart />
             </div>
           </StyledContainer >
           : null}
