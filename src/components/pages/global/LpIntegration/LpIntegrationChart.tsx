@@ -182,7 +182,7 @@ export default function LpIntegrationChart() {
         },
         {
           name: 'Liquid',
-          color: '#443c3c',
+          color: '#5e5d5d',
         },
       ]}
       period={period}
