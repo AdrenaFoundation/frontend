@@ -36,7 +36,7 @@ export default function StakeLanding({
 
   const token = useMemo(() => ({
     name: 'ADX',
-    desc: 'Own a share of the protocol: Adx governance token provides yield and voting power when staked. Align with the protocol long term success and earn more. 20% of the protocol fees and revenues are distributed to stakers.',
+    desc: 'Own a share of the protocol: Adx governance token provides yield and voting power when staked. Align with the protocol\'s long term success and earn more. 20% of the protocol fees and revenues are distributed to stakers.',
     logo: adxLogo,
     sellingPoints: [
       {
