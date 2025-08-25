@@ -859,11 +859,26 @@ export default function LongShortTradingInputs({
         errorMessage: `Position Exceeds Max Size`,
       }));
 
+    // Compare USD values instead of raw amounts
     if (side === 'long' && tokenLiquidity && projectedSize > tokenLiquidity) {
-      return setPositionInfo((prev) => ({
-        ...prev,
-        errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
-      }));
+      const projectedSizeUSD = projectedSize * tokenPriceBTrade;
+      const tokenPrice = tokenPrices[tokenB.symbol];
+
+      if (!tokenPriceBTrade || !tokenPrice) {
+        return setPositionInfo((prev) => ({
+          ...prev,
+          errorMessage: `Cannot verify liquidity - missing price data for ${tokenB.symbol}. Please try again later.`,
+        }));
+      }
+
+      const tokenLiquidityUSD = tokenLiquidity * tokenPrice;
+
+      if (projectedSizeUSD > tokenLiquidityUSD) {
+        return setPositionInfo((prev) => ({
+          ...prev,
+          errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
+        }));
+      }
     }
 
     if (side === 'short' && usdcCustody) {

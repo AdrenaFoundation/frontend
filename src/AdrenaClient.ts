@@ -961,7 +961,6 @@ export class AdrenaClient {
   public getUsdcAvailableForShorting(usdcCustody: CustodyExtended): number {
     if (!usdcCustody) return 0;
 
-    console.log('usdcCustody', usdcCustody);
     const totalLocked = usdcCustody.nativeObject.assets.locked.add(
       usdcCustody.nativeObject.assets.collateral,
     );

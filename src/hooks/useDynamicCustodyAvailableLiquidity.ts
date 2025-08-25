@@ -19,7 +19,21 @@ export default function useDynamicCustodyAvailableLiquidity(
       const results = await window.adrena.client.getCustodyLiquidityOnchain(
         custody,
       );
-      setAvailableLiquidity(results);
+
+      const processedResults = { ...results };
+
+      custody.forEach((custody) => {
+        if (
+          custody.mint.toBase58() ===
+          window.adrena.client.getUsdcToken().mint.toBase58()
+        ) {
+          processedResults[
+            custody.pubkey.toBase58()
+          ] = window.adrena.client.getUsdcAvailableForShorting(custody);
+        }
+      });
+
+      setAvailableLiquidity(processedResults);
     } catch (error) {
       console.error('Error fetching custody liquidity:', error);
       setAvailableLiquidity(null);
