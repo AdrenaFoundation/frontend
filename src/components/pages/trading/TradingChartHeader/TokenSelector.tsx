@@ -174,7 +174,7 @@ export default function TokenSelector({
       {/* Token selector button */}
       <div className="flex-shrink-0">
         <div
-          className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 cursor-pointer hover:bg-third transition duration-300 bg-main"
+          className="flex flex-row items-center gap-2 border rounded-lg p-2 cursor-pointer hover:bg-third transition duration-300 bg-main"
           onClick={() => setIsOpen(!isOpen)}
         >
           <Image
@@ -189,10 +189,10 @@ export default function TokenSelector({
           <Image
             src={chevronDownIcon}
             alt="Dropdown"
-            width={16}
-            height={16}
+            width={24}
+            height={24}
             className={twMerge(
-              'transition-transform duration-300',
+              'transition-transform duration-300 w-6 h-6',
               isOpen ? 'rotate-180' : '',
             )}
           />
@@ -201,7 +201,7 @@ export default function TokenSelector({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-[94vw] min-w-[21rem] sm:w-[28rem] bg-main border border-bcolor rounded-lg shadow-lg z-50">
+        <div className="absolute top-full left-0 mt-1 w-[94vw] min-w-[21rem] sm:w-[28rem] bg-main border border-bcolor rounded-lg shadow-2xl z-50 overflow-hidden">
           {/* Search bar */}
           <div className="p-2 border-b border-bcolor">
             <input
@@ -233,7 +233,7 @@ export default function TokenSelector({
 
           {/* Token list */}
           <div
-            className="overflow-y-auto pr-2"
+            className="overflow-y-auto"
             style={{
               maxHeight: `${Math.min(filteredTokens.length * 3.5 + 2, 25)}rem`,
             }}
@@ -242,7 +242,7 @@ export default function TokenSelector({
               <div
                 key={item.token.symbol}
                 className={twMerge(
-                  'grid grid-cols-10 gap-1.5 sm:gap-2 items-center p-2 hover:bg-third cursor-pointer border-b border-bcolor/20 last:border-b-0',
+                  'grid grid-cols-10 gap-1.5 sm:gap-2 items-center p-2 hover:bg-third cursor-pointer border-b border-bcolor/20 last:border-b-0 pr-4 sm:pr-2',
                   selected.symbol === item.token.symbol ? 'bg-third/50' : '',
                   index % 2 === 0 ? 'bg-main' : 'bg-third/70',
                 )}
@@ -312,7 +312,7 @@ export default function TokenSelector({
                         item.dailyChange > 0
                           ? 'text-green text-base font-mono'
                           : item.dailyChange < 0
-                            ? 'text-red text-base font-mono'
+                            ? 'text-redbright text-base font-mono'
                             : 'text-gray-400 text-base font-mono'
                       }
                     >

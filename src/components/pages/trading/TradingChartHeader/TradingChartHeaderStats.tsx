@@ -31,7 +31,7 @@ export default function TradingChartHeaderStats({
     null,
   );
   const [tokenColor, setTokenColor] = useState<
-    'text-white' | 'text-green' | 'text-red'
+    'text-white' | 'text-green' | 'text-redbright'
   >('text-white');
 
   if (selectedTokenPrice !== null) {
@@ -40,7 +40,7 @@ export default function TradingChartHeaderStats({
         selectedTokenPrice > previousTokenPrice
           ? 'text-green'
           : selectedTokenPrice < previousTokenPrice
-            ? 'text-red'
+            ? 'text-redbright'
             : tokenColor;
       if (newTokenColor !== tokenColor) {
         setTokenColor(newTokenColor);
@@ -87,7 +87,7 @@ export default function TradingChartHeaderStats({
               dailyChange
                 ? dailyChange > 0
                   ? 'text-green'
-                  : 'text-red'
+                  : 'text-redbright'
                 : 'text-white'
             }`}
           >
@@ -207,7 +207,7 @@ export default function TradingChartHeaderStats({
                 dailyChange
                   ? dailyChange > 0
                     ? 'text-green'
-                    : 'text-red'
+                    : 'text-redbright'
                   : 'text-white',
               )}
             >
