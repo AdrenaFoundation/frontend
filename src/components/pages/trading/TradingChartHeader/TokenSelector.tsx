@@ -6,7 +6,6 @@ import chevronDownIcon from '@/../public/images/chevron-down.svg';
 import starIcon from '@/../public/images/Icons/star.svg';
 import starFilledIcon from '@/../public/images/Icons/star-filled.svg';
 import useDailyStats from '@/hooks/useDailyStats';
-import { useDebounce } from '@/hooks/useDebounce';
 import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, Token } from '@/types';
@@ -50,7 +49,6 @@ export default function TokenSelector({
 }: TokenSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 100);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
@@ -131,12 +129,12 @@ export default function TokenSelector({
   }, [tokenData, selectedAction]);
 
   const filteredTokens = useMemo(() => {
-    if (!debouncedSearchTerm) return sortedTokens;
-    const searchLower = debouncedSearchTerm.toLowerCase();
+    if (!searchTerm) return sortedTokens;
+    const searchLower = searchTerm.toLowerCase();
     return sortedTokens.filter((item) =>
       item.symbol.toLowerCase().includes(searchLower),
     );
-  }, [sortedTokens, debouncedSearchTerm]);
+  }, [sortedTokens, searchTerm]);
 
   const handleTokenSelect = useCallback(
     (token: Token) => {
