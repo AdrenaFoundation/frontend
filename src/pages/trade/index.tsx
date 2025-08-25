@@ -452,16 +452,13 @@ export default function Trade({
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
-              tokenList={
-                selectedAction === 'short' || selectedAction === 'long'
-                  ? window.adrena.client.tokens.filter((t) => !t.isStable)
-                  : window.adrena.client.tokens
-              }
+              tokenList={window.adrena.client.tokens.filter((t) => !t.isStable)}
               selected={tokenB}
               onChange={(t: Token) => {
                 setTokenB(t);
               }}
               allActivePositions={allActivePositions}
+              selectedAction={selectedAction}
             />
           ) : null}
 

@@ -1,44 +1,47 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { CustodyExtended } from '@/types';
 
 export default function useDynamicCustodyAvailableLiquidity(
-  custody: CustodyExtended | null,
-) {
-  const [availableLiquidity, setAvailableLiquidity] = useState<number | null>(
-    null,
-  );
+  custody: CustodyExtended[],
+): Record<string, number> | null {
+  const [availableLiquidity, setAvailableLiquidity] = useState<Record<
+    string,
+    number
+  > | null>(null);
 
-  useEffect(() => {
-    setAvailableLiquidity(null);
-  }, [custody?.pubkey]);
+  const prevCustodyRef = useRef<CustodyExtended[]>([]);
 
-  const refresh = useCallback(async () => {
-    if (!custody) {
-      setAvailableLiquidity(null);
-      return;
-    }
+  const fetchLiquidity = useCallback(async () => {
+    if (!custody.length) return;
 
     try {
-      setAvailableLiquidity(
-        await window.adrena.client.getCustodyLiquidityOnchain(custody),
+      const results = await window.adrena.client.getCustodyLiquidityOnchain(
+        custody,
       );
-    } catch (e) {
-      console.log('Failed to refresh main accounts', e);
+      setAvailableLiquidity(results);
+    } catch (error) {
+      console.error('Error fetching custody liquidity:', error);
+      setAvailableLiquidity(null);
     }
   }, [custody]);
 
   useEffect(() => {
-    refresh();
+    const custodyChanged =
+      custody.length !== prevCustodyRef.current.length ||
+      custody.some(
+        (c, i) =>
+          c.pubkey.toBase58() !== prevCustodyRef.current[i]?.pubkey.toBase58(),
+      );
 
-    const interval = setInterval(() => {
-      refresh();
-    }, 10_000);
+    if (custodyChanged) {
+      prevCustodyRef.current = custody;
+      fetchLiquidity();
+    }
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [refresh]);
+    const interval = setInterval(fetchLiquidity, 10000);
+    return () => clearInterval(interval);
+  }, [custody, fetchLiquidity]);
 
   return availableLiquidity;
 }

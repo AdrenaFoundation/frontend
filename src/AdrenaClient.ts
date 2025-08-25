@@ -929,18 +929,33 @@ export class AdrenaClient {
   }
 
   public async getCustodyLiquidityOnchain(
-    custody: CustodyExtended,
-  ): Promise<number> {
-    if (!this.readonlyAdrenaProgram) return 0;
+    custodies: CustodyExtended[],
+  ): Promise<Record<string, number>> {
+    if (!this.readonlyAdrenaProgram) {
+      return {};
+    }
 
-    const result = await this.readonlyAdrenaProgram.account.custody.fetch(
-      custody.pubkey,
+    if (custodies.length === 0) return {};
+
+    const pubkeys = custodies.map((c) => c.pubkey);
+    const accounts = await this.readonlyAdrenaProgram.account.custody.fetchMultiple(
+      pubkeys,
     );
 
-    return nativeToUi(
-      result.assets.owned.sub(result.assets.locked),
-      custody.decimals,
-    );
+    return custodies.reduce<Record<string, number>>((acc, c, i) => {
+      const account = accounts[i];
+      if (!account) {
+        throw new Error(
+          `Custody account not found for pubkey: ${c.pubkey.toBase58()}`,
+        );
+      }
+
+      acc[c.pubkey.toBase58()] = nativeToUi(
+        account.assets.owned.sub(account.assets.locked),
+        c.decimals,
+      );
+      return acc;
+    }, {});
   }
 
   public static async loadMainPool(

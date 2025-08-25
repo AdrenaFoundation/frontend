@@ -31,20 +31,17 @@ export default function TradingChartHeaderStats({
     null,
   );
   const [tokenColor, setTokenColor] = useState<
-    'text-white' | 'text-green' | 'text-red'
+    'text-white' | 'text-green' | 'text-redbright'
   >('text-white');
 
   if (selectedTokenPrice !== null) {
     if (previousTokenPrice !== null) {
-      // if streamingTokenPrices is higher than previous value, set color to green
-      // if streamingTokenPrices is smaller than previous value, set color to red
       const newTokenColor =
         selectedTokenPrice > previousTokenPrice
           ? 'text-green'
           : selectedTokenPrice < previousTokenPrice
-            ? 'text-red'
+            ? 'text-redbright'
             : tokenColor;
-      // make sure we're only updating the local state if the new color is different.
       if (newTokenColor !== tokenColor) {
         setTokenColor(newTokenColor);
       }
@@ -90,7 +87,7 @@ export default function TradingChartHeaderStats({
               dailyChange
                 ? dailyChange > 0
                   ? 'text-green'
-                  : 'text-red'
+                  : 'text-redbright'
                 : 'text-white'
             }`}
           >
@@ -159,7 +156,7 @@ export default function TradingChartHeaderStats({
       <div className="hidden sm:flex w-auto justify-start gap-3 lg:gap-6 items-center">
         {/* Desktop: Long/Short first, Mobile: Price first */}
         {numberLong && numberShort ? (
-          <div className="flex flex-row gap-2 mr-0 xl:mr-4">
+          <div className="flex-row gap-2 mr-0 xl:mr-4 hidden md:flex">
             <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
               <Link
                 href="/monitoring?view=livePositions"
@@ -206,17 +203,15 @@ export default function TradingChartHeaderStats({
             </span>
             <span
               className={twMerge(
-                'font-mono text-xs sm:text-xxs', // Adjusted to text-xs
+                'font-mono text-xs sm:text-xxs',
                 dailyChange
                   ? dailyChange > 0
                     ? 'text-green'
-                    : 'text-red'
+                    : 'text-redbright'
                   : 'text-white',
               )}
             >
-              {dailyChange
-                ? `${dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
-                : '-'}
+              {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
             </span>
           </div>
 
@@ -235,7 +230,7 @@ export default function TradingChartHeaderStats({
                 format="currency"
                 isAbbreviate={true}
                 isDecimalDimmed={false}
-                className="font-mono text-xxs" // Ensure smaller font
+                className="font-mono text-xxs"
               />
             </span>
           </div>
@@ -251,7 +246,7 @@ export default function TradingChartHeaderStats({
             </span>
             <span className="font-mono text-xs sm:text-xxs">
               <FormatNumber
-                nb={lastDayHigh} // Assuming high is available in stats
+                nb={lastDayHigh}
                 format="currency"
                 className="font-mono text-xxs"
               />
@@ -269,7 +264,7 @@ export default function TradingChartHeaderStats({
             </span>
             <span className="font-mono text-xxs sm:text-xs">
               <FormatNumber
-                nb={lastDayLow} // Assuming low is available in stats
+                nb={lastDayLow}
                 format="currency"
                 className="font-mono text-xxs"
               />
