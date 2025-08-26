@@ -117,15 +117,12 @@ export default function LongShortTradingInputs({
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
 
-  const tokenLiquidity =
+  const availableLiquidity =
     side === 'long' && positionInfo.custody && custodyLiquidity
       ? custodyLiquidity[positionInfo.custody.pubkey.toBase58()]
-      : null;
-
-  const usdcLiquidity =
-    side === 'short' && usdcCustody && custodyLiquidity
-      ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
-      : null;
+      : side === 'short' && usdcCustody && custodyLiquidity
+        ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
+        : null;
 
   // Check of maximum shorts across traders
   const availableLiquidityShort =
@@ -859,8 +856,11 @@ export default function LongShortTradingInputs({
         errorMessage: `Position Exceeds Max Size`,
       }));
 
-    // Compare USD values instead of raw amounts
-    if (side === 'long' && tokenLiquidity && projectedSize > tokenLiquidity) {
+    if (
+      side === 'long' &&
+      availableLiquidity &&
+      projectedSize > availableLiquidity
+    ) {
       const projectedSizeUSD = projectedSize * tokenPriceBTrade;
       const tokenPrice = tokenPrices[tokenB.symbol];
 
@@ -871,9 +871,9 @@ export default function LongShortTradingInputs({
         }));
       }
 
-      const tokenLiquidityUSD = tokenLiquidity * tokenPrice;
+      const availableLiquidityUSD = availableLiquidity * tokenPrice;
 
-      if (projectedSizeUSD > tokenLiquidityUSD) {
+      if (projectedSizeUSD > availableLiquidityUSD) {
         return setPositionInfo((prev) => ({
           ...prev,
           errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
@@ -881,20 +881,15 @@ export default function LongShortTradingInputs({
       }
     }
 
-    if (side === 'short' && usdcCustody) {
-      if (usdcLiquidity && projectedSizeUsd > usdcLiquidity) {
-        return setPositionInfo((prev) => ({
-          ...prev,
-          errorMessage: `Insufficient USDC liquidity`,
-        }));
-      }
-
-      if (projectedSizeUsd > availableLiquidityShort) {
-        return setPositionInfo((prev) => ({
-          ...prev,
-          errorMessage: `Position Exceeds USDC liquidity`,
-        }));
-      }
+    if (
+      side === 'short' &&
+      availableLiquidity &&
+      projectedSizeUsd > availableLiquidity
+    ) {
+      return setPositionInfo((prev) => ({
+        ...prev,
+        errorMessage: `Insufficient USDC liquidity`,
+      }));
     }
 
     // Only clear error message if we have valid position info
@@ -917,8 +912,7 @@ export default function LongShortTradingInputs({
     tokenPrices,
     side,
     availableLiquidityShort,
-    tokenLiquidity,
-    usdcLiquidity,
+    availableLiquidity,
   ]);
 
   // Instead, use the original approach where size is calculated from position info
@@ -1174,13 +1168,7 @@ export default function LongShortTradingInputs({
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
               walletAddress={wallet?.publicKey?.toBase58() ?? null}
-              custodyLiquidity={
-                side === 'long' && positionInfo.custody && custodyLiquidity
-                  ? custodyLiquidity[positionInfo.custody.pubkey.toBase58()]
-                  : side === 'short' && usdcCustody && custodyLiquidity
-                    ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
-                    : null
-              }
+              custodyLiquidity={availableLiquidity}
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>
