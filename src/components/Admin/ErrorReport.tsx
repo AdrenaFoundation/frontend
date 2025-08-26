@@ -4,12 +4,11 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import copyIcon from '@/../public/images/copy.svg';
 import shovelIcon from '@/../public/images/Icons/shovel.svg';
 import Button from '@/components/common/Button/Button';
+import CopyButton from '@/components/common/CopyButton/CopyButton';
 import Loader from '@/components/Loader/Loader';
 import { ErrorReportType } from '@/types';
-import { addNotification } from '@/utils';
 
 export default function ErrorReport() {
   const router = useRouter();
@@ -74,16 +73,6 @@ export default function ErrorReport() {
     }
   };
 
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    addNotification({
-      title: `${label} copied to clipboard`,
-      type: 'success',
-      duration: 'regular',
-      position: 'top-right',
-    });
-  };
-
   const formatConsoleLogs = (logs: string) => {
     if (typeof logs === 'string') {
       try {
@@ -114,7 +103,9 @@ export default function ErrorReport() {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 border rounded-xl mt-8">
-      <h1 className="text-xl font-interSemibold mb-3 capitalize">Error Report Lookup</h1>
+      <h1 className="text-xl font-interSemibold mb-3 capitalize">
+        Error Report Lookup
+      </h1>
 
       <div className="relative flex items-center gap-2">
         <input
@@ -156,15 +147,10 @@ export default function ErrorReport() {
                 <div className="text-sm text-gray-400">Report Code</div>
                 <div className="flex items-center gap-2">
                   <span className="font-mono">{reportData.ref}</span>
-                  <Image
-                    src={copyIcon}
-                    alt="copy"
-                    width={12}
-                    height={12}
-                    className="cursor-pointer opacity-50 hover:opacity-100"
-                    onClick={() =>
-                      copyToClipboard(reportData.ref, 'Error code')
-                    }
+                  <CopyButton
+                    textToCopy={reportData.ref}
+                    notificationTitle="Error code copied to clipboard"
+                    className="cursor-pointer w-3 h-3 opacity-50 hover:opacity-100"
                   />
                 </div>
               </div>
@@ -213,15 +199,10 @@ export default function ErrorReport() {
                     >
                       {reportData.txHash}
                     </a>
-                    <Image
-                      src={copyIcon}
-                      alt="copy"
-                      width={12}
-                      height={12}
-                      className="cursor-pointer opacity-50 hover:opacity-100"
-                      onClick={() =>
-                        copyToClipboard(reportData.txHash!, 'Transaction hash')
-                      }
+                    <CopyButton
+                      textToCopy={reportData.txHash}
+                      notificationTitle="Transaction hash copied to clipboard"
+                      className="cursor-pointer w-3 h-3 opacity-50 hover:opacity-100"
                     />
                   </div>
                 </div>
@@ -244,18 +225,10 @@ export default function ErrorReport() {
                   >
                     {reportData.wallet_address}
                   </a>
-                  <Image
-                    src={copyIcon}
-                    alt="copy"
-                    width={12}
-                    height={12}
-                    className="cursor-pointer opacity-50 hover:opacity-100"
-                    onClick={() =>
-                      copyToClipboard(
-                        reportData.wallet_address,
-                        'Wallet address',
-                      )
-                    }
+                  <CopyButton
+                    textToCopy={reportData.wallet_address}
+                    notificationTitle="Wallet address copied to clipboard"
+                    className="cursor-pointer w-3 h-3 opacity-50 hover:opacity-100"
                   />
 
                   <Link
@@ -269,7 +242,6 @@ export default function ErrorReport() {
                       alt="shovel"
                       width={12}
                       height={12}
-                      className=""
                     />
                   </Link>
                 </div>
