@@ -90,7 +90,7 @@ export default function Trade({
   // FIXME: Only call this hook in a single place & as-close as possible to consumers.
   const positions = usePositions(wallet?.publicKey?.toBase58() ?? null);
   const { positionsData } = usePositionsHistory({
-    walletAddress: wallet?.publicKey.toBase58() ?? null,
+    walletAddress: wallet?.publicKey?.toBase58() ?? null,
     batchSize: 200,
     interval: 10_000,
   });
@@ -128,7 +128,7 @@ export default function Trade({
     positionsHistory: positionsData?.positions ?? [],
     allActivePositions: allPositions,
     activeToken: tokenB,
-    walletAddress: wallet?.publicKey.toBase58() ?? null,
+    walletAddress: wallet?.publicKey?.toBase58() ?? null,
     chartPreferences,
   });
 
@@ -152,7 +152,7 @@ export default function Trade({
   const [view, setView] = useState<ViewType>('positions');
 
   const { limitOrderBook, reload } = useLimitOrderBook({
-    walletAddress: wallet?.publicKey.toBase58() ?? null,
+    walletAddress: wallet?.publicKey?.toBase58() ?? null,
   });
 
   const minChartHeight = 200; // Minimum height
@@ -563,10 +563,10 @@ export default function Trade({
               {view === 'history' ? (
                 <div className="flex flex-col w-full p-4 pt-2">
                   <PositionsHistory
-                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    walletAddress={wallet?.publicKey?.toBase58() ?? null}
                     connected={connected}
                     exportButtonPosition="top"
-                    key={`history-${wallet?.publicKey.toBase58() || 'none'}`}
+                    key={`history-${wallet?.publicKey?.toBase58() || 'none'}`}
                   />
                 </div>
               ) : null}
@@ -586,7 +586,7 @@ export default function Trade({
               {view === 'limitOrder' ? (
                 <div className="flex flex-col w-full p-4 pt-2">
                   <LimitOrder
-                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    walletAddress={wallet?.publicKey?.toBase58() ?? null}
                     limitOrderBook={limitOrderBook}
                     reload={reload}
                   />
@@ -613,10 +613,10 @@ export default function Trade({
               {view === 'history' ? (
                 <div className="mt-1 w-full p-4 pt-2 flex grow">
                   <PositionsHistory
-                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    walletAddress={wallet?.publicKey?.toBase58() ?? null}
                     connected={connected}
                     exportButtonPosition="top"
-                    key={`history-${wallet?.publicKey.toBase58() || 'none'}`}
+                    key={`history-${wallet?.publicKey?.toBase58() || 'none'}`}
                   />
                 </div>
               ) : null}
@@ -624,7 +624,7 @@ export default function Trade({
               {view === 'limitOrder' ? (
                 <div className="mt-1 w-full p-4 pt-2">
                   <LimitOrder
-                    walletAddress={wallet?.publicKey.toBase58() ?? null}
+                    walletAddress={wallet?.publicKey?.toBase58() ?? null}
                     limitOrderBook={limitOrderBook}
                     reload={reload}
                   />
