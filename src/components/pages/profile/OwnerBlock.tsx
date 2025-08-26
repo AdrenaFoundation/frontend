@@ -6,11 +6,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
-import copyIcon from '@/../../public/images/copy.svg';
 import editIcon from '@/../../public/images/Icons/edit.svg';
 import shareIcon from '@/../../public/images/Icons/share-fill.svg';
 import snsBadgeIcon from '@/../../public/images/sns-badge.svg';
 import Button from '@/components/common/Button/Button';
+import CopyButton from '@/components/common/CopyButton/CopyButton';
 import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -659,26 +659,10 @@ export default function OwnerBloc({
                   </p>
                 }
               >
-                <Image
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(
-                        walletPubkey.toBase58(),
-                      );
-
-                      addNotification({
-                        title: 'Wallet address copied to clipboard',
-                        message: '',
-                        type: 'info',
-                        duration: 'regular',
-                      });
-                    } catch (err) {
-                      console.error('Could not copy text: ', err);
-                    }
-                  }}
-                  src={copyIcon}
-                  className="w-3 h-3 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300"
-                  alt="copy icon"
+                <CopyButton
+                  textToCopy={walletPubkey.toBase58()}
+                  notificationTitle="Wallet address copied to clipboard"
+                  className="w-3 h-3 opacity-80 cursor-pointer hover:opacity-100 mr-1"
                 />
               </Tippy>
             ) : null}

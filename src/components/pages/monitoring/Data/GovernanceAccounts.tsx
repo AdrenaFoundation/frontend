@@ -1,3 +1,4 @@
+import CopyButton from '@/components/common/CopyButton/CopyButton';
 import { Cortex } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
@@ -25,11 +26,15 @@ export default function GovernanceAccounts({
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
-        className='rounded-none bg-transparent border-none'
+        className="rounded-none bg-transparent border-none"
         data={[
           {
             rowTitle: (
               <div className="flex items-center font-boldy">
+                <CopyButton
+                  textToCopy={cortex.governanceProgram.toBase58()}
+                  notificationTitle="Governance Program address copied to clipboard"
+                />
                 Governance Program
                 <InfoAnnotation
                   text="Manages the DAO's operations as the official Solana governance smart contract."
@@ -47,6 +52,10 @@ export default function GovernanceAccounts({
           {
             rowTitle: (
               <div className="flex items-center font-boldy">
+                <CopyButton
+                  textToCopy={cortex.governanceRealm.toBase58()}
+                  notificationTitle="Governance Realm PDA address copied to clipboard"
+                />
                 Governance Realm <TitleAnnotation text="PDA" />
                 <InfoAnnotation
                   text="Represents Adrena's DAO within the Solana DAO program."

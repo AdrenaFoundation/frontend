@@ -6,12 +6,10 @@ import { twMerge } from 'tailwind-merge';
 
 import { getLogs } from '@/logs';
 import {
-  addNotification,
   AdrenaTransactionError,
   getTxExplorer,
 } from '@/utils';
 
-import copyIcon from '../../../../public/images/copy.svg';
 import discordLogo from '../../../../public/images/discord.png';
 import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
 import clockIcon from '../../../../public/images/Icons/clock.png';
@@ -20,6 +18,7 @@ import doneIcon from '../../../../public/images/Icons/done.png';
 import errorIcon from '../../../../public/images/Icons/error-full.png';
 import loaderIcon from '../../../../public/images/Icons/loader.svg';
 import Button from '../Button/Button';
+import CopyButton from '../CopyButton/CopyButton';
 
 export enum NotificationStepState {
   waiting,
@@ -62,7 +61,7 @@ export default class MultiStepNotification {
     protected steps: NotificationSteps,
     protected closingTimeSuccessInMs: number,
     protected closingTimeErrorInMs: number,
-  ) { }
+  ) {}
 
   public static new({
     title,
@@ -156,10 +155,9 @@ export default class MultiStepNotification {
       const currentUrl =
         typeof window !== 'undefined' ? window.location.href : '';
 
-
       const timestamp = new Date().toISOString();
 
-      const recentLogs = getLogs()
+      const recentLogs = getLogs();
 
       const response = await fetch('/api/error_reports', {
         method: 'POST',
@@ -252,7 +250,9 @@ export default class MultiStepNotification {
             ? '10em'
             : this.error !== null
               ? 'auto'
-              : this.steps.length === 5 ? '12.873125em' : '11em',
+              : this.steps.length === 5
+                ? '12.873125em'
+                : '11em',
         }}
         transition={{ duration: 0.2 }}
         className="w-[20em] bg-[#08141E] shadow-2xl z-[9999] border border-[#1A2938] rounded-xl"
@@ -280,27 +280,19 @@ export default class MultiStepNotification {
               <div>
                 <p className="mb-1 text-sm font-boldy bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
                   Report code:{' '}
-                  <span className="text-white font-mono">{this.report_code}</span>
-                  <Image
-                    src={copyIcon}
-                    alt="copy icon"
-                    width={10}
-                    height={10}
+                  <span className="text-white font-mono">
+                    {this.report_code}
+                  </span>
+                  <CopyButton
+                    textToCopy={this.report_code!}
+                    notificationTitle="Report code copied"
                     className="inline-block cursor-pointer ml-2 opacity-50 hover:opacity-100 transition-opacity duration-300"
-                    onClick={() => {
-                      navigator.clipboard.writeText(this.report_code!);
-                      addNotification({
-                        title: 'Report code copied',
-                        type: 'success',
-                        duration: 'regular',
-                        position: 'top-right',
-                      });
-                    }}
                   />
                 </p>
 
                 <p className="text-sm text-txtfade">
-                  If you need help, please provide this code to the support team.
+                  If you need help, please provide this code to the support
+                  team.
                 </p>
               </div>
               <Button
@@ -308,10 +300,7 @@ export default class MultiStepNotification {
                 className="w-full text-xs border border-[#1A2938]"
                 leftIcon={discordLogo}
                 onClick={() => {
-                  window.open(
-                    'https://discord.gg/adrena',
-                    '_blank',
-                  );
+                  window.open('https://discord.gg/adrena', '_blank');
                 }}
                 variant="outline"
               />
@@ -368,16 +357,16 @@ export default class MultiStepNotification {
                         className={twMerge(
                           'flex flex-row items-center gap-2 w-auto text-sm font-interMedium text-nowrap max-w-full overflow-hidden transition duration-500',
                           step.state === NotificationStepState.inProgress &&
-                          'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
+                            'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
                           step.state === NotificationStepState.error &&
-                          'text-redbright',
+                            'text-redbright',
                           step.state === NotificationStepState.succeeded &&
-                          'text-green',
+                            'text-green',
                           step.state === NotificationStepState.waiting &&
-                          'opacity-40',
+                            'opacity-40',
                           step.title === 'Execute transaction' &&
-                          this.txHash &&
-                          'underline cursor-pointer group',
+                            this.txHash &&
+                            'underline cursor-pointer group',
                         )}
                         onClick={() => {
                           if (
@@ -454,7 +443,7 @@ export default class MultiStepNotification {
                       )}
 
                       {this.error instanceof AdrenaTransactionError &&
-                        this.error.txHash ? (
+                      this.error.txHash ? (
                         <Link
                           href={getTxExplorer(this.error.txHash)}
                           target="_blank"
