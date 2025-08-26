@@ -118,11 +118,11 @@ export default function TokenSelector({
       const aLiquidityUsd =
         selectedAction === 'short'
           ? a.availableLiquidity
-          : a.availableLiquidity * (a.tokenPrice ?? 0);
+          : a.availableLiquidity * (a.liquidityPrice ?? 0);
       const bLiquidityUsd =
         selectedAction === 'short'
           ? b.availableLiquidity
-          : b.availableLiquidity * (b.tokenPrice ?? 0);
+          : b.availableLiquidity * (b.liquidityPrice ?? 0);
 
       return bLiquidityUsd - aLiquidityUsd;
     });
