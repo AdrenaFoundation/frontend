@@ -11,8 +11,8 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import adxIcon from '@/../public/images/adrena_logo_adx_white.svg';
 import downloadIcon from '@/../public/images/download.png';
-import calendarIcon from '@/../public/images/Icons/calendar.svg';
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { normalize } from '@/constant';
@@ -27,7 +27,7 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import TableV2 from '../monitoring/TableV2';
+import TableV2, { TableV2HeaderType } from '../monitoring/TableV2';
 
 export default function StakingStats({
   stakingAccounts,
@@ -209,35 +209,18 @@ export default function StakingStats({
         className,
       )}
     >
-      <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-third border-b">
-        <p className="text-sm font-interSemibold p-2 px-3">Staked ADX</p>
-
-        <div className="flex flex-row items-center gap-2 px-3 p-2 border-l border-inputcolor">
-          <Image
-            src={calendarIcon}
-            alt="Calendar"
-            width={12}
-            height={12}
-            className="w-3 h-3 opacity-50"
-          />
-
-          <p className="text-sm font-interMedium">
-            {new Date('03/12/2024').toLocaleDateString('en-US', {
-              year: 'numeric',
-              day: 'numeric',
-              month: 'short',
-            })}{' '}
-            –{' '}
-            {new Date().toLocaleDateString('en-US', {
-              year: 'numeric',
-              day: 'numeric',
-              month: 'short',
-            })}
-          </p>
-        </div>
+      <div className="flex flex-row gap-2 items-center bg-third border-b p-2 px-3">
+        <Image
+          src={adxIcon}
+          alt="ADX"
+          width={24}
+          height={24}
+          className="w-4 h-4 opacity-50"
+        />
+        <p className="text-lg font-interSemibold">Staked ADX</p>
       </div>
-      <div className="flex flex-row">
-        <div className="p-3 border-r border-bcolor basis-1/3">
+      <div className="flex flex-col lg:flex-row">
+        <div className="p-3 border-r border-bcolor h-44 lg:h-auto lg:basis-1/3">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               width={500}
@@ -291,9 +274,9 @@ export default function StakingStats({
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex flex-col gap-4 p-3 basis-2/3">
+        <div className="flex flex-col gap-4 p-3 sm:basis-2/3">
           <div className="flex flex-row items-center gap-2">
-            <div className="flex flex-row items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1 gap-2">
               <p className="opacity-50 text-sm">Liquid Staked</p>{' '}
               <FormatNumber
                 nb={liquidStakedADX}
@@ -301,9 +284,12 @@ export default function StakingStats({
                 isDecimalDimmed={false}
                 suffix=" ADX"
                 className="font-mono text-sm"
+                isAbbreviate={
+                  liquidStakedADX ? liquidStakedADX > 1_000_000 : false
+                }
               />
             </div>
-            <div className="flex flex-row items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1 gap-2">
               <p className="opacity-50 text-sm">Locked Staked ADX</p>{' '}
               <FormatNumber
                 nb={lockedStakedADX}
@@ -311,6 +297,9 @@ export default function StakingStats({
                 isDecimalDimmed={false}
                 suffix=" ADX"
                 className="font-mono text-sm"
+                isAbbreviate={
+                  lockedStakedADX ? lockedStakedADX > 1_000_000 : false
+                }
               />
             </div>
           </div>
@@ -321,11 +310,11 @@ export default function StakingStats({
               tokenPrice={tokenPrice}
               stats={[
                 {
-                  title: 'Total USDC rewards',
+                  title: 'total USDC',
                   value: allTimeClaimedUsdc,
                   format: 'currency',
                 },
-                { title: 'Total ADX rewards', value: allTimeClaimedAdx },
+                { title: 'total ADX', value: allTimeClaimedAdx },
               ]}
             />
           </div>
@@ -348,12 +337,18 @@ const StatsTable = ({
     format?: 'currency' | 'number';
   }[];
 }) => {
-  const headers = [
-    { title: 'Claimed On', key: 'claimedOn' },
+  const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
+
+  const headers: TableV2HeaderType[] = [
+    { title: 'Claimed On', sticky: 'left', key: 'claimedOn' },
     { title: 'Source', key: 'source', width: 90 },
-    { title: 'USDC rewards', key: 'usdcReward', align: 'right' as const },
-    { title: 'ADX rewards', key: 'adxReward', align: 'right' as const },
-    { title: 'Total rewards', key: 'totalReward', align: 'right' as const },
+    { title: 'USDC rewards', key: 'usdcReward', align: 'right' },
+    { title: 'ADX rewards', key: 'adxReward', align: 'right' },
+    {
+      title: 'Total rewards',
+      key: 'totalReward',
+      align: 'right',
+    },
   ];
 
   const maxTotalRewards = Math.max(
@@ -419,6 +414,7 @@ const StatsTable = ({
         }
         maxValue={maxTotalRewards}
         minValue={minTotalRewards}
+        isIndicator={viewMode === 'table'}
       />
     ),
   }));
@@ -429,7 +425,11 @@ const StatsTable = ({
         headers={headers}
         data={data}
         bottomBar={<BottomBar stats={stats} />}
-        maxHeight="12rem"
+        maxHeight={'12rem'}
+        isSticky={window.innerWidth < 1200}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        title="Claim History"
       />
     </div>
   );
@@ -439,10 +439,12 @@ const TotalRewardsCell = ({
   totalRewards,
   maxValue,
   minValue,
+  isIndicator,
 }: {
   totalRewards: number;
   maxValue: number;
   minValue: number;
+  isIndicator: boolean;
 }) => {
   const scaleMax = Math.max(Math.abs(maxValue), Math.abs(minValue)) || 1;
   const heightPct = normalize(totalRewards, 10, 100, 0, scaleMax);
@@ -458,12 +460,14 @@ const TotalRewardsCell = ({
         prefix="+ "
         className="text-sm text-green"
       />
-      <div
-        className={twMerge(
-          'absolute bottom-0 left-0 bg-green/10 w-full pointer-events-none z-0',
-        )}
-        style={{ height: `${heightPct}%` }}
-      />
+      {isIndicator ? (
+        <div
+          className={twMerge(
+            'absolute bottom-0 left-0 bg-green/10 w-full pointer-events-none z-0',
+          )}
+          style={{ height: `${heightPct}%` }}
+        />
+      ) : null}
     </div>
   );
 };
@@ -478,7 +482,7 @@ const BottomBar = ({
   }[];
 }) => (
   <div className="flex flex-row justify-between">
-    <div className="flex flex-row items-center gap-5 p-1.5 px-3 border-r border-r-inputcolor">
+    <div className="flex flex-row items-center gap-2 sm:gap-5 p-1.5 px-2 sm:px-3 border-r border-r-inputcolor">
       {stats.map((stat) => (
         <div key={stat.title} className="flex flex-row gap-2 items-center">
           <p className="text-xs font-mono opacity-50">{stat.title}</p>
@@ -487,13 +491,14 @@ const BottomBar = ({
             format={stat.format}
             isDecimalDimmed={false}
             className="text-xs font-interSemibold"
+            isAbbreviate={window.innerWidth < 640}
           />
         </div>
       ))}
     </div>
 
     <div className="flex flex-row items-center">
-      <div className="flex flex-row items-center gap-3 p-1.5 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300">
+      <div className="flex flex-row items-center p-1.5 px-2 sm:px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300">
         <Image
           src={downloadIcon}
           alt="Download"

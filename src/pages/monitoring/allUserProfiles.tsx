@@ -263,7 +263,7 @@ export default function AllUserProfiles() {
         {activeProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
             title=""
             close={() => setActiveProfile(null)}
             isWrapped={false}

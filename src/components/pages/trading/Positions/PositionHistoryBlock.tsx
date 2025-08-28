@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import arrowDown2Svg from '@/../public/images/Icons/arrow-down-2.svg';
+import externalLinkLogo from '@/../public/images/Icons/arrow-sm-45.svg';
 import arrowUp2Svg from '@/../public/images/Icons/arrow-up-2.svg';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import Button from '@/components/common/Button/Button';
@@ -14,8 +14,17 @@ import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import DataApiClient from '@/DataApiClient';
 import { useSelector } from '@/store/store';
-import { EnrichedPositionApi, PositionExtended, PositionTransaction } from '@/types';
-import { formatDate2Digits, formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getTxExplorer } from '@/utils';
+import {
+  EnrichedPositionApi,
+  PositionExtended,
+  PositionTransaction,
+} from '@/types';
+import {
+  formatTimeDifference,
+  getAbbrevWalletAddress,
+  getFullTimeDifference,
+  getTxExplorer,
+} from '@/utils';
 
 import CollateralTooltip from './CollateralTootltip';
 import FeesPaidTooltip from './FeesPaidTooltip';
@@ -33,11 +42,13 @@ const PositionHistoryBlock = ({
   borderColor,
   positionHistory,
   showShareButton = true,
+  showExpanded = false,
 }: {
   bodyClassName?: string;
   borderColor?: string;
   positionHistory: EnrichedPositionApi;
   showShareButton?: boolean;
+  showExpanded?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -70,17 +81,26 @@ const PositionHistoryBlock = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (showExpanded) {
+      handleExpandToggle();
+    }
+  }, [showExpanded]);
+
   const handleExpandToggle = useCallback(async () => {
     if (!isExpanded && events.length === 0) {
       try {
-        const positionTransactions = await DataApiClient.getPositionTransactions({ positionId: positionHistory.positionId });
+        const positionTransactions =
+          await DataApiClient.getPositionTransactions({
+            positionId: positionHistory.positionId,
+          });
         setEvents(positionTransactions || []);
       } catch (error) {
         console.error('Error fetching position transactions:', error);
       }
     }
     setIsExpanded(!isExpanded);
-  }, [isExpanded, events.length, positionHistory.positionId]);
+  }, [showExpanded, isExpanded, events.length, positionHistory.positionId]);
 
   const getEventTypeLabel = (method: string) => {
     switch (method.toLowerCase()) {
@@ -140,32 +160,42 @@ const PositionHistoryBlock = ({
 
   const columnClasses = twMerge(
     POSITION_BLOCK_STYLES.column.base,
-    POSITION_BLOCK_STYLES.column.sizes.big
+    POSITION_BLOCK_STYLES.column.sizes.big,
   );
 
   const contentClasses = twMerge(
     POSITION_BLOCK_STYLES.base.content,
-    isMini && "gap-2 flex flex-wrap",
-    isMedium && "gap-2 flex flex-wrap",
-    isCompact && "gap-2 flex flex-wrap",
-    isBig && "gap-2 flex flex-wrap",
-    isBiggest && "flex flex-wrap justify-start"
+    isMini && 'gap-2 flex flex-wrap',
+    isMedium && 'gap-2 flex flex-wrap',
+    isCompact && 'gap-2 flex flex-wrap',
+    isBig && 'gap-2 flex flex-wrap',
+    isBiggest && 'flex flex-wrap justify-start',
   );
 
   return (
     <>
-      <div className={twMerge(
-        POSITION_BLOCK_STYLES.base.container,
-        '-[0.9em]',
-        bodyClassName,
-        borderColor
-      )} ref={blockRef}>
+      <div
+        className={twMerge(
+          POSITION_BLOCK_STYLES.base.container,
+          '-[0.9em]',
+          bodyClassName,
+          borderColor,
+        )}
+        ref={blockRef}
+      >
         <PositionHeader
           isHistory={true}
           isMini={isMini}
           isMedium={isMedium}
           readOnly={true}
-          positionName={<PositionName position={positionHistory} readOnly={true} isHistory={true} setTokenB={() => { }} />}
+          positionName={
+            <PositionName
+              position={positionHistory}
+              readOnly={true}
+              isHistory={true}
+              setTokenB={() => {}}
+            />
+          }
           pnl={
             <PnL
               position={positionHistory}
@@ -177,21 +207,23 @@ const PositionHistoryBlock = ({
         />
 
         <div className={contentClasses}>
-          <div className={twMerge(
-            "flex flex-wrap flex-1 justify-between gap-2",
-            isMini && "grid grid-cols-2 gap-2",
-            isMedium && "grid grid-cols-4 gap-2",
-            isCompact && "grid gap-2",
-            isBig && "grid grid-cols-8 gap-2",
-            isBiggest && "justify-between gap-2"
-          )}>
+          <div
+            className={twMerge(
+              'flex flex-wrap flex-1 justify-between gap-2',
+              isMini && 'grid grid-cols-2 gap-2',
+              isMedium && 'grid grid-cols-4 gap-2',
+              isCompact && 'grid gap-2',
+              isBig && 'grid grid-cols-8 gap-2',
+              isBiggest && 'justify-between gap-2',
+            )}
+          >
             <ValueColumn
               label="Time Opened"
               value={formatTimeDifference(
                 getFullTimeDifference(
                   positionHistory.entryDate,
-                  positionHistory.exitDate ?? new Date()
-                )
+                  positionHistory.exitDate ?? new Date(),
+                ),
               )}
               valueClassName={POSITION_BLOCK_STYLES.text.white}
               columnClasses={columnClasses}
@@ -214,7 +246,10 @@ const PositionHistoryBlock = ({
                   />
                 </VolumeTooltip>
               }
-              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.white, "underline-dashed")}
+              valueClassName={twMerge(
+                POSITION_BLOCK_STYLES.text.white,
+                'underline-dashed',
+              )}
               columnClasses={columnClasses}
             />
 
@@ -250,14 +285,28 @@ const PositionHistoryBlock = ({
               label="Status"
               value={
                 <div className="flex items-center gap-1">
-                  <span className={positionHistory.status === 'liquidate'
-                    ? POSITION_BLOCK_STYLES.text.orange
-                    : POSITION_BLOCK_STYLES.text.blue
-                  }>
-                    {positionHistory.status === 'liquidate' ? 'Liquidated' : 'Closed'}
+                  <span
+                    className={
+                      positionHistory.status === 'liquidate'
+                        ? POSITION_BLOCK_STYLES.text.orange
+                        : POSITION_BLOCK_STYLES.text.blue
+                    }
+                  >
+                    {positionHistory.status === 'liquidate'
+                      ? 'Liquidated'
+                      : 'Closed'}
                   </span>
-                  <Link href={getTxExplorer(positionHistory.lastIx)} target="_blank">
-                    <Image src={externalLinkLogo} alt="View transaction" width={12} height={12} />
+                  <Link
+                    href={getTxExplorer(positionHistory.lastIx)}
+                    target="_blank"
+                  >
+                    <Image
+                      src={externalLinkLogo}
+                      alt="View transaction"
+                      width={12}
+                      height={12}
+                      className="w-[0.375rem] h-[0.375rem] opacity-50"
+                    />
                   </Link>
                 </div>
               }
@@ -282,7 +331,10 @@ const PositionHistoryBlock = ({
                   />
                 </FeesPaidTooltip>
               }
-              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.red, "underline-dashed")}
+              valueClassName={twMerge(
+                POSITION_BLOCK_STYLES.text.red,
+                'underline-dashed',
+              )}
               columnClasses={columnClasses}
             />
 
@@ -292,13 +344,25 @@ const PositionHistoryBlock = ({
                 <CollateralTooltip
                   token={positionHistory.token}
                   entryCollateralAmount={positionHistory.entryCollateralAmount}
-                  entryCollateralAmountNative={positionHistory.entryCollateralAmountNative}
-                  increaseCollateralAmount={positionHistory.increaseCollateralAmount}
-                  increaseCollateralAmountNative={positionHistory.increaseCollateralAmountNative}
-                  decreaseCollateralAmount={positionHistory.decreaseCollateralAmount}
-                  decreaseCollateralAmountNative={positionHistory.decreaseCollateralAmountNative}
+                  entryCollateralAmountNative={
+                    positionHistory.entryCollateralAmountNative
+                  }
+                  increaseCollateralAmount={
+                    positionHistory.increaseCollateralAmount
+                  }
+                  increaseCollateralAmountNative={
+                    positionHistory.increaseCollateralAmountNative
+                  }
+                  decreaseCollateralAmount={
+                    positionHistory.decreaseCollateralAmount
+                  }
+                  decreaseCollateralAmountNative={
+                    positionHistory.decreaseCollateralAmountNative
+                  }
                   closeCollateralAmount={positionHistory.closeCollateralAmount}
-                  closeCollateralAmountNative={positionHistory.closeCollateralAmountNative}
+                  closeCollateralAmountNative={
+                    positionHistory.closeCollateralAmountNative
+                  }
                   exitAmountNative={positionHistory.exitAmountNative}
                 >
                   <FormatNumber
@@ -309,11 +373,15 @@ const PositionHistoryBlock = ({
                   />
                 </CollateralTooltip>
               }
-              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.red, "underline-dashed")}
+              valueClassName={twMerge(
+                POSITION_BLOCK_STYLES.text.red,
+                'underline-dashed',
+              )}
               columnClasses={columnClasses}
             />
 
-            <ValueColumn label="Mutagen"
+            <ValueColumn
+              label="Mutagen"
               value={
                 <MutagenTooltip
                   pointsPnlVolumeRatio={positionHistory.pointsPnlVolumeRatio}
@@ -330,34 +398,48 @@ const PositionHistoryBlock = ({
                       precisionIfPriceDecimalsBelow={12}
                     />
                   </div>
-                </MutagenTooltip>}
-              valueClassName={twMerge(POSITION_BLOCK_STYLES.text.red, "underline-dashed")}
+                </MutagenTooltip>
+              }
+              valueClassName={twMerge(
+                POSITION_BLOCK_STYLES.text.red,
+                'underline-dashed',
+              )}
               columnClasses={columnClasses}
             />
 
             {showShareButton && (
-              <div className={twMerge(
-                "flex flex-col justify-center items-center",
-                isMini && "col-span-1 col-start-2 row-start-5 mt-1 w-full justify-self-end",
-                isMedium && "col-span-1 col-start-4 row-start-3 w-full",
-                isCompact && "col-span-1 col-start-4 row-start-3 w-full",
-                isBig && "col-span-1 col-start-8 row-start-2 mt-1 w-full justify-self-end",
-                isBiggest && "flex-row justify-center items-center gap-2"
-              )}>
+              <div
+                className={twMerge(
+                  'flex flex-col justify-center items-center',
+                  isMini &&
+                    'col-span-1 col-start-2 row-start-5 mt-1 w-full justify-self-end',
+                  isMedium && 'col-span-1 col-start-4 row-start-3 w-full',
+                  isCompact && 'col-span-1 col-start-4 row-start-3 w-full',
+                  isBig &&
+                    'col-span-1 col-start-8 row-start-2 mt-1 w-full justify-self-end',
+                  isBiggest && 'flex-row justify-center items-center gap-2',
+                )}
+              >
                 <div className="lg:flex hidden flex-col justify-center items-center w-full">
                   <div className="flex items-center gap-1 w-full">
                     <Button
                       leftIcon={shareIcon}
-                      variant='secondary'
-                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "flex-1")}
+                      variant="secondary"
+                      className={twMerge(
+                        POSITION_BLOCK_STYLES.button.filled,
+                        'flex-1',
+                      )}
                       onClick={() => {
                         setIsOpen(true);
                       }}
                     />
 
                     <Button
-                      variant='secondary'
-                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "text-white flex-1")}
+                      variant="secondary"
+                      className={twMerge(
+                        POSITION_BLOCK_STYLES.button.filled,
+                        'text-white flex-1',
+                      )}
                       leftIcon={isExpanded ? arrowUp2Svg : arrowDown2Svg}
                       rounded={false}
                       onClick={handleExpandToggle}
@@ -368,7 +450,10 @@ const PositionHistoryBlock = ({
                   <div className="flex items-center gap-1 w-full">
                     <Button
                       size="xs"
-                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "flex-1")}
+                      className={twMerge(
+                        POSITION_BLOCK_STYLES.button.filled,
+                        'flex-1',
+                      )}
                       leftIcon={shareIcon}
                       rounded={false}
                       onClick={() => {
@@ -378,7 +463,10 @@ const PositionHistoryBlock = ({
 
                     <Button
                       size="xs"
-                      className={twMerge(POSITION_BLOCK_STYLES.button.filled, "text-white flex-1")}
+                      className={twMerge(
+                        POSITION_BLOCK_STYLES.button.filled,
+                        'text-white flex-1',
+                      )}
                       leftIcon={isExpanded ? arrowUp2Svg : arrowDown2Svg}
                       rounded={false}
                       onClick={handleExpandToggle}
@@ -400,85 +488,122 @@ const PositionHistoryBlock = ({
               className="overflow-hidden flex w-full"
             >
               {events.length > 0 ? (
-                <div className="space-y-2 w-full">
+                <div className="flex flex-col gap-3 w-full mt-4 p-3 bg-main rounded-xl border border-bcolor">
                   {events.map((transaction: PositionTransaction) => (
-                    <div key={transaction.transactionId} className="w-full rounded border border-white/[0.03]">
-                      <div className="flex flex-col lg:flex-row gap-3 lg:gap-0 items-center justify-between px-3 py-2.5">
-                        <div className="flex items-center gap-1">
-                          <span className={getEventTypeColor(transaction.method)}>
+                    <div
+                      key={transaction.transactionId}
+                      className="w-fit rounded-xl border border-bcolor bg-secondary"
+                    >
+                      <div className="flex flex-col lg:flex-row gap-6 items-center justify-between px-3 py-2.5">
+                        <div>
+                          <div className="flex flex-row items-center gap-1">
+                            <p className="text-xs opacity-50">Method</p>
+                            <Link
+                              href={getTxExplorer(transaction.signature)}
+                              target="_blank"
+                            >
+                              <Image
+                                src={externalLinkLogo}
+                                alt="View transaction"
+                                width={12}
+                                height={12}
+                                className="w-[0.375rem] h-[0.375rem] opacity-50"
+                              />
+                            </Link>
+                          </div>
+                          <p
+                            className={twMerge(
+                              getEventTypeColor(transaction.method),
+                              'text-sm font-interSemibold',
+                            )}
+                          >
                             {getEventTypeLabel(transaction.method)}
-                          </span>
-                          <Link href={getTxExplorer(transaction.signature)} target="_blank">
-                            <Image src={externalLinkLogo} alt="View transaction" width={12} height={12} />
-                          </Link>
+                          </p>
                         </div>
-                        <div className='ml-2 text-xxs opacity-50'>
+                        {/* <div className="ml-2 text-xs opacity-50">
                           {formatDate2Digits(transaction.transactionDate)}
-                        </div>
-                        <div className="text-xs text-white flex items-center gap-4 flex-1 justify-center flex-wrap">
-                          {transaction.additionalInfos ? (
-                            Object.entries(transaction.additionalInfos).filter(([key, value]) => value !== null && key !== 'positionPubkey' && key !== 'positionId').map(([key, value]) => {
-                              const formatKey = (key: string) => {
-                                const keyMap: Record<string, string> = {
-                                  'size': 'Size',
-                                  'price': 'Price',
-                                  'leverage': 'Leverage',
-                                  'pnl': 'PnL',
-                                  'collateralAmountUsd': 'Collateral',
-                                  'addAmountUsd': 'Added',
-                                  'removeAmountUsd': 'Removed',
-                                  'fees': 'Fees',
-                                  'exitFees': 'Exit Fees',
-                                  'borrowFees': 'Borrow Fees',
-                                  'exitAmountNative': 'Native Exit Amount',
-                                  'newCollateralAmountUsd': 'New Collateral',
-                                  'collateralAmount': 'Collateral',
-                                  'collateralAmountNative': 'Native Collateral',
-                                  'stopLossLimitPrice': 'Stop Loss',
-                                  'takeProfitLimitPrice': 'Take Profit',
-                                  'position_pubkey': 'Position Pubkey',
-                                  'percentage': 'Percentage',
-                                };
-                                return keyMap[key] || key;
-                              };
+                        </div> */}
+                        <div className="text-xs text-white flex items-center gap-6 flex-1 flex-wrap">
+                          {transaction.additionalInfos
+                            ? Object.entries(transaction.additionalInfos)
+                                .filter(
+                                  ([key, value]) =>
+                                    value !== null &&
+                                    key !== 'positionPubkey' &&
+                                    key !== 'positionId',
+                                )
+                                .map(([key, value]) => {
+                                  const formatKey = (key: string) => {
+                                    const keyMap: Record<string, string> = {
+                                      size: 'Size',
+                                      price: 'Price',
+                                      leverage: 'Leverage',
+                                      pnl: 'PnL',
+                                      collateralAmountUsd: 'Collateral',
+                                      addAmountUsd: 'Added',
+                                      removeAmountUsd: 'Removed',
+                                      fees: 'Fees',
+                                      exitFees: 'Exit Fees',
+                                      borrowFees: 'Borrow Fees',
+                                      exitAmountNative: 'Native Exit Amount',
+                                      newCollateralAmountUsd: 'New Collateral',
+                                      collateralAmount: 'Collateral',
+                                      collateralAmountNative:
+                                        'Native Collateral',
+                                      stopLossLimitPrice: 'Stop Loss',
+                                      takeProfitLimitPrice: 'Take Profit',
+                                      position_pubkey: 'Position Pubkey',
+                                      percentage: 'Percentage',
+                                    };
+                                    return keyMap[key] || key;
+                                  };
 
-                              const formatValue = (value: string | number | null) => {
-                                if (typeof value === 'number') {
+                                  const formatValue = (
+                                    value: string | number | null,
+                                  ) => {
+                                    if (typeof value === 'number') {
+                                      return (
+                                        <FormatNumber
+                                          nb={value}
+                                          format={
+                                            key === 'exitAmountNative' ||
+                                            key === 'collateralAmountNative'
+                                              ? 'number'
+                                              : key === 'percentage'
+                                                ? 'percentage'
+                                                : 'currency'
+                                          }
+                                          precision={
+                                            positionHistory.token.symbol ===
+                                            'BONK'
+                                              ? 8
+                                              : 2
+                                          }
+                                          className="text-xs text-white"
+                                          isDecimalDimmed={false}
+                                        />
+                                      );
+                                    }
+                                    if (key === 'position_pubkey') {
+                                      return getAbbrevWalletAddress(
+                                        value as string,
+                                      );
+                                    }
+                                    return value;
+                                  };
+
                                   return (
-                                    <FormatNumber
-                                      nb={value}
-                                      format={
-                                        key === 'exitAmountNative' || key === 'collateralAmountNative'
-                                          ? 'number'
-                                          : key === 'percentage'
-                                            ? 'percentage'
-                                            : 'currency'
-                                      }
-                                      precision={
-                                        positionHistory.token.symbol === 'BONK'
-                                          ? 8
-                                          : 2
-                                      }
-                                      className="text-xs text-white"
-                                      isDecimalDimmed={false}
-                                    />
+                                    <div key={key}>
+                                      <p className="font-interMedium text-xs opacity-50">
+                                        {formatKey(key)}
+                                      </p>
+                                      <p className="text-sm opacity-75">
+                                        {formatValue(value)}
+                                      </p>
+                                    </div>
                                   );
-                                }
-                                if (key === 'position_pubkey') {
-                                  return getAbbrevWalletAddress(value as string);
-                                }
-                                return value;
-                              };
-
-                              return (
-                                <span key={key} className='text-xxs opacity-50'>
-                                  {formatKey(key)}: {formatValue(value)}
-                                </span>
-                              )
-                            })
-                          ) :
-                            null
-                          }
+                                })
+                            : null}
                         </div>
                       </div>
                     </div>
@@ -489,10 +614,10 @@ const PositionHistoryBlock = ({
                   No transactions found for this position
                 </div>
               )}
-            </motion.div >
+            </motion.div>
           )}
-        </AnimatePresence >
-      </div >
+        </AnimatePresence>
+      </div>
 
       <AnimatePresence>
         {isOpen && (
@@ -506,21 +631,26 @@ const PositionHistoryBlock = ({
               {pnlValue > 0 && <Congrats />}
             </div>
             <SharePositionModal
-              position={{
-                pnl: pnlValue,
-                token: positionHistory.token,
-                side: positionHistory.side,
-                price: positionHistory.entryPrice,
-                fees: -totalFees,
-                exitFeeUsd: positionHistory.exitFees,
-                borrowFeeUsd: positionHistory.borrowFees,
-                collateralUsd: positionHistory.entryCollateralAmount,
-                sizeUsd: positionHistory.entryCollateralAmount * positionHistory.entryLeverage,
-                exitPrice: positionHistory.exitPrice,
-                nativeObject: {
-                  openTime: new Date(positionHistory.entryDate).getTime() / 1000,
-                }
-              } as unknown as PositionExtended}
+              position={
+                {
+                  pnl: pnlValue,
+                  token: positionHistory.token,
+                  side: positionHistory.side,
+                  price: positionHistory.entryPrice,
+                  fees: -totalFees,
+                  exitFeeUsd: positionHistory.exitFees,
+                  borrowFeeUsd: positionHistory.borrowFees,
+                  collateralUsd: positionHistory.entryCollateralAmount,
+                  sizeUsd:
+                    positionHistory.entryCollateralAmount *
+                    positionHistory.entryLeverage,
+                  exitPrice: positionHistory.exitPrice,
+                  nativeObject: {
+                    openTime:
+                      new Date(positionHistory.entryDate).getTime() / 1000,
+                  },
+                } as unknown as PositionExtended
+              }
             />
           </Modal>
         )}

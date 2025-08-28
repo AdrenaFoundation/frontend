@@ -36,12 +36,13 @@ export default function SearchUserProfiles({
     const query = searchQuery.toLowerCase().trim();
 
     const nicknameMatches = allUserProfilesMetadata.filter((user) =>
-      user.nickname.toLowerCase().includes(query)
+      user.nickname.toLowerCase().includes(query),
     );
 
-    const addressMatches = allUserProfilesMetadata.filter((user) =>
-      !user.nickname.toLowerCase().includes(query) &&
-      user.owner.toBase58().toLowerCase().includes(query)
+    const addressMatches = allUserProfilesMetadata.filter(
+      (user) =>
+        !user.nickname.toLowerCase().includes(query) &&
+        user.owner.toBase58().toLowerCase().includes(query),
     );
 
     return [...nicknameMatches, ...addressMatches].slice(0, 50);
@@ -142,7 +143,7 @@ export default function SearchUserProfiles({
                               'flex items-center gap-3 p-2 px-4 rounded-lg border border-bcolor hover:border-white/10 cursor-pointer transition-all duration-200',
                               'hover:bg-third/50 group',
                               loadingProfile === user.owner.toBase58() &&
-                              'opacity-50 pointer-events-none',
+                                'opacity-50 pointer-events-none',
                             )}
                             onClick={() =>
                               setSelectedProfile(user as UserProfileExtended)
@@ -152,7 +153,7 @@ export default function SearchUserProfiles({
                               <Image
                                 src={
                                   PROFILE_PICTURES[
-                                  user.profilePicture as keyof typeof PROFILE_PICTURES
+                                    user.profilePicture as keyof typeof PROFILE_PICTURES
                                   ] || PROFILE_PICTURES[0]
                                 }
                                 alt="Profile"
@@ -214,7 +215,7 @@ export default function SearchUserProfiles({
         {selectedProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto overscroll-contain"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')] bg-third/30 backdrop-blur-sm"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')] bg-third/30 backdrop-blur-sm"
             isWrapped={false}
             close={() => {
               closeProfileModal();

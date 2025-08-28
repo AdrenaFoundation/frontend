@@ -30,7 +30,7 @@ export default function Flow({
     setStartDate,
     endDate,
     setEndDate,
-    loading,
+    isInitialLoad,
   } = usePositionStats();
 
   const [selectedRange, setSelectedRange] = useState('All time');
@@ -150,7 +150,7 @@ export default function Flow({
             className="flex flex-col lg:flex-row gap-3"
           >
             <AnimatePresence mode="wait">
-              {loading
+              {isInitialLoad
                 ? // Show loading cards while data is being fetched
                   Array.from({ length: 3 }).map((_, index) => (
                     <motion.div
@@ -186,35 +186,15 @@ export default function Flow({
             </AnimatePresence>
           </motion.div>
 
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <motion.div
-                key="calendar-loader"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-[15.625rem] animate-loader rounded-lg"
-              />
-            ) : (
-              <motion.div
-                key="calendar-data"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <ActivityCalendar
-                  data={activityCalendarData}
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  bubbleBy={bubbleBy}
-                  setBubbleBy={setBubbleBy}
-                  setSelectedRange={setSelectedRange}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <ActivityCalendar
+            data={activityCalendarData}
+            selectedRange={selectedRange}
+            bubbleBy={bubbleBy}
+            setBubbleBy={setBubbleBy}
+            setSelectedRange={setSelectedRange}
+            isLoading={isInitialLoad}
+            hasData
+          />
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -266,7 +246,7 @@ export default function Flow({
         {profile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
             isWrapped={false}
             close={() => setProfile(null)}
           >

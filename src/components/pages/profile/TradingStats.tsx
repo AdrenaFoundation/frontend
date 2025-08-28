@@ -1,10 +1,10 @@
+import { AnimatePresence } from 'framer-motion';
 import { useMemo, useState } from 'react';
-import { Line, LineChart, ResponsiveContainer } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
+import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { ADRENA_GREEN, ADRENA_RED } from '@/constant';
 import { useSelector } from '@/store/store';
 import { EnrichedTraderInfo } from '@/types';
 import { formatSecondsToTimeDifference } from '@/utils';
@@ -128,47 +128,40 @@ export default function TradingStats({
 
   return (
     <div className={className}>
-      <ul className="grid grid-cols-4 items-center justify-between gap-2 p-3">
-        {STATS.map((stat) => (
-          <li
-            key={stat.title}
-            className="flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-lg"
-          >
-            <div>
-              <p className="text-sm font-boldy opacity-50">{stat.title}</p>{' '}
-              {typeof stat.nb === 'number' ? (
-                <FormatNumber
-                  nb={stat.nb}
-                  format={
-                    stat.format as 'currency' | 'percentage' | 'number' | 'time'
-                  }
-                  precision={stat.precision ?? 2}
-                  className={twMerge('text-xl', stat?.className)}
-                  isDecimalDimmed={false}
-                />
-              ) : (
-                <p className="text-xl font-mono">{stat.nb}</p>
-              )}
-            </div>
-            <ResponsiveContainer width={80} height={30}>
-              <LineChart data={stat.data ?? []}>
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke={
-                    stat.className?.includes('text-green')
-                      ? ADRENA_GREEN
-                      : stat.className?.includes('text-redbright')
-                        ? ADRENA_RED
-                        : '#ffffff'
-                  }
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </li>
-        ))}
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center justify-between gap-2 p-3">
+        <AnimatePresence mode="wait">
+          {STATS.map((stat) =>
+            stat.nb ? (
+              <li
+                key={stat.title}
+                className="flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-lg"
+              >
+                <div>
+                  <p className="text-sm font-boldy opacity-50">{stat.title}</p>{' '}
+                  <LoaderWrapper height="1.6875rem" isLoading={!traderInfo}>
+                    {typeof stat.nb === 'number' ? (
+                      <FormatNumber
+                        nb={stat.nb}
+                        format={
+                          stat.format as
+                            | 'currency'
+                            | 'percentage'
+                            | 'number'
+                            | 'time'
+                        }
+                        precision={stat.precision ?? 2}
+                        className={twMerge('text-xl', stat.className)}
+                        isDecimalDimmed={false}
+                      />
+                    ) : (
+                      <p className="text-xl font-mono">{stat.nb}</p>
+                    )}
+                  </LoaderWrapper>
+                </div>
+              </li>
+            ) : null,
+          )}
+        </AnimatePresence>
       </ul>
     </div>
   );

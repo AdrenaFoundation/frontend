@@ -4,54 +4,78 @@ import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import downloadIcon from '@/../public/images/download.png';
+import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
+import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { normalize } from '@/constant';
-import usePositionsHistory from '@/hooks/usePositionHistory';
 import { useSelector } from '@/store/store';
-import { Token } from '@/types';
+import { EnrichedPositionApi, EnrichedPositionApiV2, Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
-import TableV2 from '../TableV2';
+import PositionHistoryBlock from '../../trading/Positions/PositionHistoryBlock';
+import TableV2, { TableV2HeaderType, TableV2RowType } from '../TableV2';
 
 export default function PositionHistoryTable({
-  walletAddress,
+  positionsData,
+  isLoadingPositionsHistory,
 }: {
-  walletAddress: string;
+  positionsData: EnrichedPositionApiV2 | null;
+  isLoadingPositionsHistory: boolean;
 }) {
-  const { positionsData } = usePositionsHistory({
-    walletAddress,
-    batchSize: 100,
-    itemsPerPage: 100,
-  });
+  const [activePosition, setActivePosition] =
+    useState<EnrichedPositionApi | null>(null);
 
   const showPnlWithFees = useSelector((state) => state.settings.showFeesInPnl);
 
   const [activeCol, setActiveCol] = useState<string | null>(null);
   const [isNative, setIsNative] = useState<boolean>(false);
-
   const [isPnlWithFees, setIsPnlWithFees] = useState<boolean>(showPnlWithFees);
+  const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
 
-  const headers = [
-    { title: 'Token', key: 'token', width: 70 },
-    { title: 'Side', key: 'side', width: 60 },
+  const headers: TableV2HeaderType[] = [
+    { title: 'Token', key: 'token', width: 70, sticky: 'left' },
+    { title: 'Side', key: 'side', width: 60, sticky: 'left' },
     { title: 'Lev.', key: 'leverage', width: 55 },
-    { title: 'PnL', key: 'pnl', isNoPadding: true, align: 'right' as const },
-    { title: 'Volume', key: 'volume', align: 'right' as const },
+    { title: 'PnL', key: 'pnl', align: 'right', isSortable: true },
+    {
+      title: 'Volume',
+      key: 'volume',
+      align: 'right',
+      isSortable: true,
+    },
     {
       title: 'Collateral',
       key: 'collateral',
-      align: 'right' as const,
+      isSortable: true,
+      align: 'right',
+      hideInBlockView: true,
     },
-    { title: 'Fees Paid', key: 'fees', align: 'right' as const },
-    { title: 'Entry', key: 'entry', align: 'right' as const },
-    { title: 'Exit', key: 'exit', align: 'right' as const },
-    { title: 'Mutagen', key: 'mutagen', align: 'right' as const },
-    { title: 'Date', key: 'date', align: 'right' as const },
+    {
+      title: 'Fees Paid',
+      key: 'fees',
+      align: 'right',
+      isSortable: true,
+    },
+    { title: 'Entry', key: 'entry', align: 'right' },
+    { title: 'Exit', key: 'exit', align: 'right' },
+    {
+      title: 'Mutagen',
+      key: 'mutagen',
+      isSortable: true,
+      align: 'right',
+      hideInBlockView: true,
+    },
+    {
+      title: 'Date',
+      key: 'date',
+      isSortable: true,
+      align: 'right',
+    },
   ];
 
   if (positionsData === null) {
-    return <div className="p-3">No position history available</div>;
+    return null;
   }
 
   const {
@@ -114,6 +138,7 @@ export default function PositionHistoryTable({
         pnl={isPnlWithFees ? p.pnl : p.pnl - p.fees}
         maxPnl={maxPnl}
         minPnl={minPnl}
+        isIndicator={viewMode === 'table'}
       />
     ),
     volume: (
@@ -147,38 +172,126 @@ export default function PositionHistoryTable({
     exit: <CurrencyCell value={p.exitPrice} />,
     mutagen: <MutagenCell value={p.pointsMutations} />,
     date: <DateCell date={p.entryDate} />,
+    id: p.positionId,
   }));
 
+  const PositionBlockComponent = (item: TableV2RowType, index: number) => {
+    const position = positionsData.positions[index];
+
+    return (
+      <div
+        key={`position-block-${index}`}
+        className="bg-main border border-inputcolor rounded-lg hover:bg-third transition-colors cursor-pointer relative"
+        onClick={() => {
+          setActivePosition(position);
+        }}
+      >
+        {item.status === 'liquidate' && (
+          <div className="absolute left-0 top-0 h-full w-[0.0625rem] bg-orange" />
+        )}
+
+        <div className="flex justify-between items-center mb-3 border-b border-inputcolor p-2 px-4">
+          <div className="flex items-center gap-2">
+            {item.token}
+            <div
+              className={twMerge(
+                'text-xs p-0.5 px-2 rounded-lg',
+                position.side === 'long' ? 'bg-green/10' : 'bg-red/10',
+              )}
+            >
+              {item.side}
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-right text-xs opacity-50 font-interMedium">
+              PnL
+            </p>
+            {item.pnl}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-sm pb-2 px-4">
+          {headers.map((header) => {
+            const value = item[header.key];
+            if (['token', 'pnl', 'side'].includes(header.key)) return null;
+            return (
+              <div key={header.title}>
+                <div className="opacity-50 text-xs font-interMedium">
+                  {header.title}
+                </div>
+                <div className="text-sm">{value}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="border-t p-3">
-      <TableV2
-        headers={headers}
-        data={formattedData}
-        setActiveCol={setActiveCol}
-        bottomBar={
-          <BottomBar
-            isNative={isNative}
-            isPnlWithFees={isPnlWithFees}
-            setIsNative={setIsNative}
-            setIsPnlWithFees={setIsPnlWithFees}
-            stats={[
-              {
-                title: 'avg PnL',
-                value: avgPnl,
-              },
-              {
-                title: 'avg Volume',
-                value: avgVolume,
-              },
-              {
-                title: 'avg Collateral',
-                value: avgCollateral,
-              },
-            ]}
+    <>
+      <div className="border-t p-3">
+        <LoaderWrapper
+          isLoading={isLoadingPositionsHistory}
+          height="23.1875rem"
+          key={`position-history-table-${positionsData.totalCount}`}
+        >
+          <TableV2
+            title="Position History"
+            headers={headers}
+            data={formattedData}
+            setActiveCol={setActiveCol}
+            isSticky={window.innerWidth < 1280} // use useBetterMediaQuery
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            blockViewComponent={PositionBlockComponent}
+            onRowClick={(id) => {
+              const position =
+                positionsData.positions.find((p) => p.positionId === id) ??
+                null;
+              setActivePosition(position);
+            }}
+            bottomBar={
+              <BottomBar
+                isNative={isNative}
+                isPnlWithFees={isPnlWithFees}
+                setIsNative={setIsNative}
+                setIsPnlWithFees={setIsPnlWithFees}
+                stats={[
+                  {
+                    title: 'avg PnL',
+                    value: avgPnl,
+                  },
+                  {
+                    title: 'avg Volume',
+                    value: avgVolume,
+                  },
+                  {
+                    title: 'avg Collateral',
+                    value: avgCollateral,
+                  },
+                ]}
+              />
+            }
           />
-        }
-      />
-    </div>
+        </LoaderWrapper>
+      </div>
+      <AnimatePresence>
+        {activePosition ? (
+          <Modal
+            close={() => setActivePosition(null)}
+            className="p-5 w-full"
+            wrapperClassName="w-full max-w-[75rem]"
+          >
+            <PositionHistoryBlock
+              positionHistory={activePosition}
+              showShareButton={true}
+              showExpanded={true}
+            />
+          </Modal>
+        ) : null}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -236,7 +349,7 @@ const CurrencyCell = ({
         prefix={value > 10_000 && isCurrency ? '$' : undefined}
         isDecimalDimmed={false}
         isAbbreviate={value > 10_000}
-        className="relative z-20"
+        className="relative"
       />
       <AnimatePresence>
         {isActiveCol ? (
@@ -258,10 +371,12 @@ const PnlCell = ({
   pnl,
   maxPnl,
   minPnl,
+  isIndicator,
 }: {
   pnl: number;
   maxPnl: number;
   minPnl: number;
+  isIndicator: boolean;
 }) => {
   const positive = pnl >= 0;
   const sign = positive ? '+' : '-';
@@ -271,7 +386,7 @@ const PnlCell = ({
   const heightPct = normalize(abs, 10, 100, 0, scaleMax);
 
   return (
-    <div className="px-2">
+    <div className={twMerge(!isIndicator ? 'p-0' : 'px-2')}>
       <FormatNumber
         nb={abs}
         prefix={sign}
@@ -288,13 +403,15 @@ const PnlCell = ({
         )}
       />
 
-      <div
-        className={twMerge(
-          'absolute bottom-0 left-0 w-full pointer-events-none z-0',
-          positive ? 'bg-green/10' : 'bg-red/10',
-        )}
-        style={{ height: `${heightPct}%` }}
-      />
+      {isIndicator ? (
+        <div
+          className={twMerge(
+            'absolute bottom-0 left-0 w-full pointer-events-none z-0',
+            positive ? 'bg-green/10' : 'bg-red/10',
+          )}
+          style={{ height: `${heightPct}%` }}
+        />
+      ) : null}
     </div>
   );
 };
@@ -320,12 +437,15 @@ const LeverageCell = ({ leverage }: { leverage: number }) => (
 );
 
 const DateCell = ({ date }: { date: Date }) => {
-  const d = date;
-  const day = d.getDate();
-  const month = d.toLocaleString('en-GB', { month: 'short' });
-  const year = d.getFullYear();
-  const label = `${day}. ${month} ${year}`;
-  return <div className="font-mono text-xxs">{label}</div>;
+  return (
+    <div className="font-mono text-sm">
+      {new Date(date).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })}
+    </div>
+  );
 };
 
 const MutagenCell = ({ value }: { value: number }) => (
@@ -356,20 +476,20 @@ const BottomBar = ({
 }) => (
   <div className="flex flex-row justify-between">
     <div className="flex flex-row items-center">
-      <div className="relative p-1 px-3 border-r border-r-inputcolor">
+      <div className="hidden sm:block relative p-1 px-3 border-r border-r-inputcolor">
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-[1rem] w-[0.0625rem] bg-orange" />
         <p className="text-sm ml-3 font-mono opacity-50">Liquidated</p>
       </div>
 
-      <div className="flex flex-row items-center gap-5 p-1.5 px-3 border-r border-r-inputcolor">
+      <div className="hidden lg:flex flex-row items-center gap-5 p-1.5 px-3 border-r border-r-inputcolor">
         {stats.map((stat) => (
           <div key={stat.title} className="flex flex-row gap-2 items-center">
-            <p className="text-xs font-mono opacity-50">{stat.title}</p>
+            <p className="text-sm font-mono opacity-50">{stat.title}</p>
             <FormatNumber
               nb={stat.value}
               format="currency"
               isDecimalDimmed={false}
-              className="text-xs font-interSemibold"
+              className="text-sm font-interSemibold"
             />
           </div>
         ))}

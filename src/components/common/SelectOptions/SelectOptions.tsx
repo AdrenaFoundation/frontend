@@ -9,12 +9,14 @@ export default function SelectOptions<T>({
   options,
   onClick,
   className,
+  textClassName,
 }: {
   title?: string;
   selected: T;
   options: OptionType<T>[];
   onClick: (option: T) => void;
   className?: string;
+  textClassName?: string;
 }) {
   const isObject = (option: OptionType<T>): option is { title: T } =>
     typeof option === 'object' && option !== null && 'title' in option;
@@ -41,6 +43,7 @@ export default function SelectOptions<T>({
             isObject(option) &&
               option.disabled &&
               'opacity-30 cursor-not-allowed hover:opacity-30',
+            textClassName,
           )}
           onClick={() => {
             if (isObject(option) && option.disabled) return;

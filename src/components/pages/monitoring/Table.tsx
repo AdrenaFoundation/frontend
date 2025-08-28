@@ -7,6 +7,8 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 import Block from './Block';
 
+/** @deprecated use TableV2 instead **/
+
 export default function Table({
   breakpoint,
   className,
@@ -34,15 +36,15 @@ export default function Table({
   columnWrapperClassName?: string;
   data: (
     | {
-      rowTitle: ReactNode;
-      specificRowClassName?: string;
-      values: ReactNode[];
-    }
+        rowTitle: ReactNode;
+        specificRowClassName?: string;
+        values: ReactNode[];
+      }
     | {
-      rowTitle: ReactNode;
-      specificRowClassName?: string;
-      value: ReactNode;
-    }
+        rowTitle: ReactNode;
+        specificRowClassName?: string;
+        value: ReactNode;
+      }
   )[];
   rowTitleWidth?: string;
   pagination?: boolean;
@@ -66,15 +68,15 @@ export default function Table({
   const [pageData, setPageData] = useState<
     (
       | {
-        rowTitle: ReactNode;
-        values: ReactNode[];
-        specificRowClassName?: string;
-      }
+          rowTitle: ReactNode;
+          values: ReactNode[];
+          specificRowClassName?: string;
+        }
       | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-        specificRowClassName?: string;
-      }
+          rowTitle: ReactNode;
+          value: ReactNode;
+          specificRowClassName?: string;
+        }
     )[]
   >([]);
 
@@ -129,7 +131,7 @@ export default function Table({
               columnTitlesClassName,
             )}
             style={{
-              maxWidth: (isFirstColumnId && i == 0) ? '75px' : 'auto'
+              maxWidth: isFirstColumnId && i == 0 ? '75px' : 'auto',
             }}
           >
             {title}
@@ -169,7 +171,10 @@ export default function Table({
                 className="p-[0.3em] flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well
-                  maxWidth: (isFirstColumnId && j == 0) ? '75px' : `calc(100% - ${rowTitleWidth ?? '150px'})`,
+                  maxWidth:
+                    isFirstColumnId && j == 0
+                      ? '75px'
+                      : `calc(100% - ${rowTitleWidth ?? '150px'})`,
                 }}
               >
                 {value}
@@ -180,7 +185,7 @@ export default function Table({
       ))}
 
       {pagination && nbPages && nbPages > 1 && (
-        <div className='mt-auto pt-2'>
+        <div className="mt-auto pt-2">
           <Pagination
             className={paginationClassName}
             variant="text"
@@ -202,7 +207,7 @@ export default function Table({
       />
 
       {pagination && nbPages && nbPages > 1 && (
-        <div className='m-auto py-2'>
+        <div className="m-auto py-2">
           <Pagination
             className={paginationClassName}
             variant="text"

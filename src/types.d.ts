@@ -107,6 +107,7 @@ export type LinksType = {
 
 export type PageProps = {
   mainPool: PoolExtended | null;
+  isUserProfileLoading: boolean;
   userProfile: UserProfileExtended | null | false;
   triggerUserProfileReload: () => void;
   custodies: CustodyExtended[] | null;

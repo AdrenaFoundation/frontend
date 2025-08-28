@@ -65,6 +65,7 @@ export default function usePositionsHistory({
   interval?: number;
 }): {
   isLoadingPositionsHistory: boolean;
+  isInitialLoad: boolean;
   positionsData: EnrichedPositionApiV2 | null;
   // Pagination-related return values
   currentPage: number;
@@ -81,6 +82,7 @@ export default function usePositionsHistory({
   const [totalItems, setTotalItems] = useState<number>(0);
   const [isLoadingPositionsHistory, setIsLoadingPositionsHistory] =
     useState<boolean>(false);
+  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
   // Refs - to maintain values across renders without causing re-renders
   const walletAddressRef = useRef<string | null>(walletAddress);
@@ -130,6 +132,10 @@ export default function usePositionsHistory({
         // Handle empty response
         if (result === null) {
           setPositionsData(null);
+          // Set initial load to false only once
+          if (isInitialLoad) {
+            setIsInitialLoad(false);
+          }
           return;
         }
 
@@ -258,12 +264,23 @@ export default function usePositionsHistory({
 
         // Update total items count
         setTotalItems(result.totalCount);
+
+        // Set initial load to false only once after first successful fetch
+        if (isInitialLoad) {
+          setIsInitialLoad(false);
+        }
       } catch (e) {
         console.error('Error loading positions history:', e);
+
+        // Set initial load to false even on error to prevent infinite loading state
+        if (isInitialLoad) {
+          setIsInitialLoad(false);
+        }
       } finally {
         setIsLoadingPositionsHistory(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [batchSize, isLoadingPositionsHistory],
   );
 
@@ -442,6 +459,7 @@ export default function usePositionsHistory({
 
   return {
     isLoadingPositionsHistory,
+    isInitialLoad,
     positionsData,
     currentPage,
     totalItems,

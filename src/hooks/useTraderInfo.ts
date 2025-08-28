@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import DataApiClient from "@/DataApiClient";
-import { EnrichedTraderInfo } from "@/types";
+import DataApiClient from '@/DataApiClient';
+import { EnrichedTraderInfo } from '@/types';
 
-import useAwakeningV2 from "./useAwakeningV2";
-import useExpanseData from "./useExpanseData";
-import { WalletAdapterName } from "./useWalletAdapters";
+import useAwakeningV2 from './useAwakeningV2';
+import useExpanseData from './useExpanseData';
+import { WalletAdapterName } from './useWalletAdapters';
 
 export type ExpanseRankingTraderInfo =
   | {
@@ -43,17 +43,22 @@ export default function useTraderInfo({
   walletAddress: string | null;
 }): {
   traderInfo: EnrichedTraderInfo | null;
+  isTraderInfoLoading: boolean;
+  isInitialLoad: boolean;
   triggerTraderInfoReload: () => void;
   expanseRanking: ExpanseRankingTraderInfo | null;
   awakeningRanking: AwakeningRankingTraderInfo | null;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
   const [traderInfo, setTraderInfo] = useState<EnrichedTraderInfo | null>(null);
+  const [isTraderInfoLoading, setIsTraderInfoLoading] =
+    useState<boolean>(false);
+  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
   const wallet = useMemo(() => {
     return walletAddress
       ? {
-          adapterName: "Phantom" as WalletAdapterName,
+          adapterName: 'Phantom' as WalletAdapterName,
           walletAddress,
         }
       : null;
@@ -128,8 +133,15 @@ export default function useTraderInfo({
   const loadTraderInfo = useCallback(
     async () => {
       if (!walletAddress) {
+        setIsTraderInfoLoading(false);
+        // Set initial load to false only once
+        if (isInitialLoad) {
+          setIsInitialLoad(false);
+        }
         return;
       }
+
+      setIsTraderInfoLoading(true);
 
       async function fetchTraderInfo(): Promise<EnrichedTraderInfo | null> {
         if (!walletAddress) return null;
@@ -147,13 +159,25 @@ export default function useTraderInfo({
 
       try {
         setTraderInfo(await fetchTraderInfo());
+
+        // Set initial load to false only once after first successful fetch
+        if (isInitialLoad) {
+          setIsInitialLoad(false);
+        }
       } catch (e) {
-        console.log("Error loading trader info", e, String(e));
+        console.log('Error loading trader info', e, String(e));
+
+        // Set initial load to false even on error to prevent infinite loading state
+        if (isInitialLoad) {
+          setIsInitialLoad(false);
+        }
         throw e;
+      } finally {
+        setIsTraderInfoLoading(false);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [walletAddress],
+    [walletAddress, isInitialLoad],
   );
 
   useEffect(() => {
@@ -171,6 +195,8 @@ export default function useTraderInfo({
 
   return {
     traderInfo,
+    isTraderInfoLoading,
+    isInitialLoad,
     triggerTraderInfoReload: () => {
       triggerReload(trickReload + 1);
     },
