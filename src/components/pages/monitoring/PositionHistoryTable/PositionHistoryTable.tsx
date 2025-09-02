@@ -1,13 +1,19 @@
+import 'react-datepicker/dist/react-datepicker.css';
+
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import DatePicker from 'react-datepicker';
 import { twMerge } from 'tailwind-merge';
 
 import downloadIcon from '@/../public/images/download.png';
+import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import Select from '@/components/common/Select/Select';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { normalize } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { PositionSortOption } from '@/hooks/usePositionHistory';
 import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, EnrichedPositionApiV2, Token } from '@/types';
@@ -15,6 +21,13 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import PositionHistoryBlock from '../../trading/Positions/PositionHistoryBlock';
 import TableV2, { TableV2HeaderType, TableV2RowType } from '../TableV2';
+
+interface ExportOptions {
+  type: 'all' | 'year' | 'dateRange';
+  year?: number;
+  entryDate?: string;
+  exitDate?: string;
+}
 
 export default function PositionHistoryTable({
   positionsData,
@@ -25,6 +38,7 @@ export default function PositionHistoryTable({
   currentPage,
   totalPages,
   loadPageData,
+  walletAddress,
 }: {
   positionsData: EnrichedPositionApiV2 | null;
   isLoadingPositionsHistory: boolean;
@@ -34,6 +48,7 @@ export default function PositionHistoryTable({
   currentPage: number;
   totalPages: number;
   loadPageData: (page: number) => Promise<void>;
+  walletAddress: string | null;
 }) {
   const [activePosition, setActivePosition] =
     useState<EnrichedPositionApi | null>(null);
@@ -44,10 +59,143 @@ export default function PositionHistoryTable({
   const [isPnlWithFees, setIsPnlWithFees] = useState<boolean>(showPnlWithFees);
   const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
 
+  // Export modal state
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportOptions, setExportOptions] = useState<ExportOptions>({
+    type: 'year',
+    year: new Date().getFullYear()
+  });
+  const [exportWarning, setExportWarning] = useState<string>('');
+
+  const downloadPositionHistory = useCallback(async (options: ExportOptions): Promise<boolean> => {
+    if (!walletAddress || isDownloading) {
+      return false;
+    }
+
+    setIsDownloading(true);
+    setExportWarning(''); // Clear any previous warnings
+
+    try {
+      // Server uses large default page size (500,000), so most if not all users get everything in one request
+      const exportParams: Parameters<typeof DataApiClient.exportPositions>[0] = {
+        userWallet: walletAddress,
+      };
+
+      if (options.type === 'year' && options.year) {
+        exportParams.year = options.year;
+      } else if (options.type === 'dateRange') {
+        if (options.entryDate) {
+          exportParams.entryDate = new Date(options.entryDate);
+        }
+        if (options.exitDate) {
+          const exitDate = new Date(options.exitDate);
+          exitDate.setUTCHours(23, 59, 59, 999);
+          exportParams.exitDate = exitDate;
+        }
+      }
+
+      const firstPageResult = await DataApiClient.exportPositions(exportParams);
+
+      if (!firstPageResult) {
+        setExportWarning('Failed to export positions. Please try again.');
+        return false;
+      }
+
+      const { csvData, metadata } = firstPageResult;
+
+      if (!csvData || csvData.trim().length === 0 || metadata.totalPositions === 0) {
+        setExportWarning(`No positions available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.entryDate} to ${options.exitDate}`}`);
+        return false;
+      }
+
+      let allCsvData = csvData;
+
+      // Handle rare case where data spans multiple pages (very large datasets +500k position events)
+      if (metadata.totalPages > 1) {
+        for (let page = 2; page <= metadata.totalPages; page++) {
+          const pageResult = await DataApiClient.exportPositions({
+            ...exportParams,
+            page,
+          });
+
+          if (pageResult && pageResult.csvData) {
+            const lines = pageResult.csvData.split('\n');
+            const dataWithoutHeader = lines.slice(1).join('\n');
+            if (dataWithoutHeader.trim()) {
+              allCsvData += '\n' + dataWithoutHeader;
+            }
+          }
+
+          if (page < metadata.totalPages) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        }
+      }
+
+      // Create filename based on options
+      let filename = `positions-${walletAddress.slice(0, 8)}`;
+      if (options.type === 'year' && options.year) {
+        filename += `-${options.year}`;
+      } else if (options.type === 'dateRange') {
+        if (options.entryDate) filename += `-from-${options.entryDate}`;
+        if (options.exitDate) filename += `-to-${options.exitDate}`;
+      }
+      filename += `-${new Date().toISOString().split('T')[0]}.csv`;
+
+      // Create and download the CSV file
+      const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
+
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      return true; // Success
+
+    } catch (error) {
+      console.error('Error downloading position history:', error);
+      setExportWarning('Failed to export positions. Please try again.');
+      return false;
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [walletAddress, isDownloading]);
+
+  const handleExportSubmit = async () => {
+    const success = await downloadPositionHistory(exportOptions);
+    // Only close modal if export was successful
+    if (success) {
+      setShowExportModal(false);
+    }
+  };
+
+  const getCurrentYear = () => new Date().getFullYear();
+  const getYearOptions = () => {
+    const currentYear = getCurrentYear();
+    const years = [];
+    for (let year = currentYear; year >= 2024; year--) {
+      years.push(year);
+    }
+    return years;
+  };
+
+  const hasDateFields = Boolean(exportOptions.entryDate || exportOptions.exitDate);
+
+  const isExportValid = () => {
+    if (!hasDateFields) {
+      return true;
+    } else {
+      return Boolean(exportOptions.entryDate && exportOptions.exitDate);
+    }
+  };
+
   const headers: TableV2HeaderType[] = [
-    { title: 'Token', key: 'token', width: 70, sticky: 'left' },
-    { title: 'Side', key: 'side', width: 60, sticky: 'left' },
-    { title: 'Lev.', key: 'leverage', width: 55 },
+    { title: 'Token', key: 'token', width: 4.375, sticky: 'left' },
+    { title: 'Side', key: 'side', width: 3.75, sticky: 'left' },
+    { title: 'Lev.', key: 'leverage', width: 3.4375 },
     { title: 'PnL', key: 'pnl', align: 'right', isSortable: true },
     {
       title: 'Volume',
@@ -184,6 +332,132 @@ export default function PositionHistoryTable({
 
   return (
     <>
+      {showExportModal ? (
+        <Modal
+          title="Export Position History"
+          close={() => {
+            setExportWarning(''); // Clear warning when closing modal
+            setShowExportModal(false);
+          }}
+        >
+          <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
+            {/* Year Option */}
+            <div className="flex flex-col gap-3">
+              <h3 className="text-xl font-medium text-white">Export by Year</h3>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-white/60">Year:</label>
+                <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                  <Select
+                    selected={String(exportOptions.year || getCurrentYear())}
+                    onSelect={(value: string) => {
+                      setExportWarning(''); // Clear warning when changing options
+                      setExportOptions({
+                        type: 'year',
+                        year: parseInt(value),
+                        entryDate: '',
+                        exitDate: ''
+                      });
+                    }}
+                    options={getYearOptions().map(year => ({ title: String(year) }))}
+                    reversed={true}
+                    className="h-8 flex items-center px-2"
+                    selectedTextClassName="text-xs font-medium flex-1 text-left"
+                    menuTextClassName="text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4">
+              <div className="flex-1 h-px bg-white/10"></div>
+              <span className="text-xs text-white/40">OR</span>
+              <div className="flex-1 h-px bg-white/10"></div>
+            </div>
+
+            {/* Date Range Option */}
+            <div className="flex flex-col gap-3">
+              <h3 className="text-xl font-medium text-white">Export by Date Range</h3>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-xs text-white/60">From:</label>
+                  <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
+                    <DatePicker
+                      selected={exportOptions.entryDate ? new Date(exportOptions.entryDate) : null}
+                      onChange={(date) => {
+                        setExportWarning(''); // Clear warning when changing options
+                        setExportOptions({
+                          ...exportOptions,
+                          type: 'dateRange',
+                          entryDate: date ? date.toISOString().split('T')[0] : ''
+                        });
+                      }}
+                      className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
+                      placeholderText="Select start date"
+                      dateFormat="yyyy-MM-dd"
+                      minDate={new Date('2024-09-25')}
+                      maxDate={exportOptions.exitDate ? new Date(exportOptions.exitDate) : new Date()}
+                      popperClassName="z-[200]"
+                      popperPlacement="bottom-start"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 flex-1">
+                  <label className="text-xs text-white/60">To:</label>
+                  <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
+                    <DatePicker
+                      selected={exportOptions.exitDate ? new Date(exportOptions.exitDate) : null}
+                      onChange={(date) => {
+                        setExportWarning(''); // Clear warning when changing options
+                        setExportOptions({
+                          ...exportOptions,
+                          type: 'dateRange',
+                          exitDate: date ? date.toISOString().split('T')[0] : ''
+                        });
+                      }}
+                      className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
+                      placeholderText="Select end date"
+                      dateFormat="yyyy-MM-dd"
+                      minDate={exportOptions.entryDate ? new Date(exportOptions.entryDate) : new Date('2024-09-25')}
+                      maxDate={new Date()}
+                      popperClassName="z-[200]"
+                      popperPlacement="bottom-start"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Warning Message */}
+            {exportWarning && (
+              <div className='text-xs text-orange font-boldy'>
+                {exportWarning}
+              </div>
+            )}
+
+            {/* Export Button */}
+            <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <Button
+                onClick={() => {
+                  setExportWarning(''); // Clear warning when canceling
+                  setShowExportModal(false);
+                }}
+                variant="secondary"
+                className="px-4 py-2"
+                title="Cancel"
+              />
+              <Button
+                onClick={handleExportSubmit}
+                disabled={!isExportValid()}
+                className="px-4 py-2"
+                title={isDownloading ? 'Exporting...' : 'Export'}
+              />
+            </div>
+          </div>
+        </Modal>
+      ) : null}
+
       <div className="border-t p-3">
         <TableV2
           title="Position History"
@@ -211,6 +485,10 @@ export default function PositionHistoryTable({
               isPnlWithFees={isPnlWithFees}
               setIsNative={setIsNative}
               setIsPnlWithFees={setIsPnlWithFees}
+              onDownloadClick={() => {
+                setExportWarning(''); // Clear any previous warnings
+                setShowExportModal(true);
+              }}
             />
           }
           isLoading={isLoadingPositionsHistory}
@@ -379,13 +657,15 @@ const BottomBar = ({
   isPnlWithFees,
   setIsNative,
   setIsPnlWithFees,
+  onDownloadClick,
 }: {
   isNative: boolean;
   isPnlWithFees: boolean;
   setIsNative: (value: boolean) => void;
   setIsPnlWithFees: (value: boolean) => void;
+  onDownloadClick: () => void;
 }) => (
-  <div className="flex flex-row justify-between">
+  <div className="flex flex-row justify-end sm:justify-between">
     <div className="hidden sm:block relative p-1 px-3 border-r border-r-inputcolor">
       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-[1rem] w-[0.0625rem] bg-orange" />
       <p className="text-sm ml-3 font-mono opacity-50">Liquidated</p>
@@ -420,7 +700,10 @@ const BottomBar = ({
         <p className="text-sm font-interMedium opacity-50">Native</p>
       </div>
 
-      <div className="flex flex-row items-center gap-3 p-1.5 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300">
+      <div
+        className="flex flex-row items-center gap-3 p-1.5 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
+        onClick={onDownloadClick}
+      >
         <Image
           src={downloadIcon}
           alt="Download"

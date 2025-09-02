@@ -1,6 +1,6 @@
 import { Pagination } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import SortIcon from '@/components/Icons/SortIcon';
@@ -8,14 +8,14 @@ import SortIcon from '@/components/Icons/SortIcon';
 export type TableV2HeaderType = {
   title: string;
   key: string; // optional data key; falls back to title
-  width?: number | string; // px, %, rem, etc.
+  width?: number | string; // rem, %, px, etc.
   align?: 'left' | 'center' | 'right';
   className?: string;
   isSortable?: boolean;
   // Optional sticky column behavior. Use 'left' or 'right' to pin the column while horizontally scrolling.
   // Only works when isSticky is true on the table component.
   sticky?: 'left' | 'right';
-  stickyOffset?: number; // in px, optional manual override
+  stickyOffset?: number; // in rem, optional manual override
   stickyZIndex?: number; // optional z-index override
 };
 
@@ -71,10 +71,10 @@ export default function TableV2({
   loadPageData?: (page: number) => Promise<void>;
   isLoading?: boolean;
 }) {
+  // All hooks must be at the very top before any other logic
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
 
-  // Check if user has scrolled to bottom
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -97,9 +97,55 @@ export default function TableV2({
     };
   }, []);
 
+  // Memoized calculations for sticky columns and table layout
+  const { cumulativeLeft, cumulativeRight, minTableWidthPx } = useMemo(() => {
+    // Parse width to rem when possible (number or '<num>rem'). Returns null otherwise
+    const parseWidthPx = (
+      width?: TableV2HeaderType['width'],
+    ): number | null => {
+      if (typeof width === 'number') return width;
+      if (typeof width === 'string') {
+        const trimmed = width.trim();
+        if (trimmed.endsWith('rem')) {
+          const v = parseFloat(trimmed.replace('rem', ''));
+          return Number.isFinite(v) ? v : null;
+        }
+      }
+      return null;
+    };
+
+    // Precompute cumulative widths for sticky offsets (rem best-effort)
+    const ESTIMATED_COL_WIDTH = 7.5; // fallback for non-rem/unknown widths (120px = 7.5rem)
+    const widthPxByIndex = headers.map((h) => parseWidthPx(h.width));
+    const resolvedWidthPxByIndex = widthPxByIndex.map(
+      (w) => w ?? ESTIMATED_COL_WIDTH,
+    );
+
+    const cumulativeLeft: number[] = new Array(headers.length).fill(0);
+
+    for (let i = 1; i < headers.length; i++) {
+      cumulativeLeft[i] = cumulativeLeft[i - 1] + resolvedWidthPxByIndex[i - 1];
+    }
+
+    const cumulativeRight: number[] = new Array(headers.length).fill(0);
+
+    for (let i = headers.length - 2; i >= 0; i--) {
+      cumulativeRight[i] =
+        cumulativeRight[i + 1] + resolvedWidthPxByIndex[i + 1];
+    }
+
+    // Estimate a min table width (rem) to enable horizontal scrolling when viewport is smaller
+    const minTableWidthPx = headers.reduce((acc, h) => {
+      const w = parseWidthPx(h.width);
+      return acc + (w ?? ESTIMATED_COL_WIDTH);
+    }, 0);
+
+    return { cumulativeLeft, cumulativeRight, minTableWidthPx };
+  }, [headers]);
+
   // Helpers for sizing and alignment
   const widthFor = (width?: TableV2HeaderType['width']): string | undefined => {
-    if (typeof width === 'number') return `${width}px`;
+    if (typeof width === 'number') return `${width}rem`;
     return width;
   };
 
@@ -109,42 +155,6 @@ export default function TableV2({
       : align === 'center'
         ? 'text-center'
         : 'text-left';
-
-  // Parse width to px when possible (number or '<num>px'). Returns null otherwise
-  const parseWidthPx = (width?: TableV2HeaderType['width']): number | null => {
-    if (typeof width === 'number') return width;
-    if (typeof width === 'string') {
-      const trimmed = width.trim();
-      if (trimmed.endsWith('px')) {
-        const v = parseFloat(trimmed.replace('px', ''));
-        return Number.isFinite(v) ? v : null;
-      }
-    }
-    return null;
-  };
-
-  // Precompute cumulative widths for sticky offsets (px best-effort)
-  const ESTIMATED_COL_WIDTH = 120; // fallback for non-px/unknown widths
-  const widthPxByIndex = headers.map((h) => parseWidthPx(h.width));
-  const resolvedWidthPxByIndex = widthPxByIndex.map(
-    (w) => w ?? ESTIMATED_COL_WIDTH,
-  );
-
-  const cumulativeLeft: number[] = new Array(headers.length).fill(0);
-  for (let i = 1; i < headers.length; i++) {
-    cumulativeLeft[i] = cumulativeLeft[i - 1] + resolvedWidthPxByIndex[i - 1];
-  }
-
-  const cumulativeRight: number[] = new Array(headers.length).fill(0);
-  for (let i = headers.length - 2; i >= 0; i--) {
-    cumulativeRight[i] = cumulativeRight[i + 1] + resolvedWidthPxByIndex[i + 1];
-  }
-
-  // Estimate a min table width (px) to enable horizontal scrolling when viewport is smaller
-  const minTableWidthPx = headers.reduce((acc, h) => {
-    const w = parseWidthPx(h.width);
-    return acc + (w ?? ESTIMATED_COL_WIDTH);
-  }, 0);
 
   // Shared colgroup ensures header and body columns align perfectly
   const ColGroup = () => (
@@ -164,15 +174,14 @@ export default function TableV2({
     const style: React.CSSProperties = {};
     const classes: string[] = [];
 
-    // Only apply sticky column behavior if isSticky is enabled
     if (isSticky && h.sticky === 'left') {
       const left = h.stickyOffset ?? cumulativeLeft[colIndex] ?? 0;
       classes.push('sticky');
-      style.left = left;
+      style.left = `${left}rem`;
     } else if (isSticky && h.sticky === 'right') {
       const right = h.stickyOffset ?? cumulativeRight[colIndex] ?? 0;
       classes.push('sticky');
-      style.right = right;
+      style.right = `${right}rem`;
     }
 
     if (isSticky && h.sticky) {
@@ -329,7 +338,7 @@ export default function TableV2({
         >
           <table
             className="w-full table-fixed"
-            style={isSticky ? { minWidth: `${minTableWidthPx}px` } : undefined}
+            style={isSticky ? { minWidth: `${minTableWidthPx}rem` } : undefined}
           >
             <ColGroup />
             <thead className="bg-main border-b border-inputcolor">

@@ -366,10 +366,10 @@ export default function ActivityCalendar({
                             className={twMerge(
                               'bg-third hover:bg-secondary rounded-sm transition duration-300 relative',
                               isToday(new Date(date)) &&
-                                'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
+                              'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
                               (new Date(startDate) > new Date(date) ||
                                 new Date(endDate) < new Date(date)) &&
-                                'opacity-30',
+                              'opacity-30',
                             )}
                             style={{
                               width: blockSize,
@@ -405,7 +405,7 @@ export default function ActivityCalendar({
                               prefixClassName={twMerge(
                                 'font-mono opacity-50',
                                 bubbleBy === 'position count' &&
-                                  'text-[#F1C40F] opacity-100',
+                                'text-[#F1C40F] opacity-100',
                               )}
                             />
 
@@ -417,7 +417,7 @@ export default function ActivityCalendar({
                                 prefixClassName={twMerge(
                                   'font-mono opacity-50',
                                   bubbleBy === 'pnl' &&
-                                    'text-[#F1C40F] opacity-100',
+                                  'text-[#F1C40F] opacity-100',
                                 )}
                               />
                               {stats.pnl !== 0 && (
@@ -452,7 +452,7 @@ export default function ActivityCalendar({
                               prefixClassName={twMerge(
                                 'font-mono opacity-50',
                                 bubbleBy === 'volume' &&
-                                  'text-[#F1C40F] opacity-100',
+                                'text-[#F1C40F] opacity-100',
                               )}
                             />
                             <FormatNumber
@@ -481,11 +481,11 @@ export default function ActivityCalendar({
                           className={twMerge(
                             'flex items-center justify-center bg-third hover:bg-secondary rounded-sm cursor-pointer transition duration-300 relative',
                             isToday(new Date(date)) &&
-                              'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
+                            'after:absolute after:inset-[-1px] after:rounded-sm after:border after:border-[#2C3A47] after:z-10',
 
                             (new Date(startDate) > new Date(date) ||
                               new Date(endDate) < new Date(date)) &&
-                              'opacity-30',
+                            'opacity-30',
                           )}
                           style={{
                             width: blockSize,
@@ -519,7 +519,7 @@ export default function ActivityCalendar({
                               transition={{ duration: 0.3 }}
                               fill={
                                 new Date(startDate) > new Date(date) ||
-                                new Date(endDate) < new Date(date)
+                                  new Date(endDate) < new Date(date)
                                   ? '#1C2D42'
                                   : stats.color
                               }
@@ -598,6 +598,7 @@ export default function ActivityCalendar({
           currentPage={currentPage}
           totalPages={totalPages}
           loadPageData={loadPageData}
+          walletAddress={walletAddress}
         />
       ) : null}
     </div>
