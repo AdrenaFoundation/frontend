@@ -85,6 +85,7 @@ const PositionHistoryBlock = ({
     if (showExpanded) {
       handleExpandToggle();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showExpanded]);
 
   const handleExpandToggle = useCallback(async () => {
@@ -100,6 +101,7 @@ const PositionHistoryBlock = ({
       }
     }
     setIsExpanded(!isExpanded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showExpanded, isExpanded, events.length, positionHistory.positionId]);
 
   const getEventTypeLabel = (method: string) => {

@@ -3,6 +3,17 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import DataApiClient from '@/DataApiClient';
 import { EnrichedPositionApi, EnrichedPositionApiV2 } from '@/types';
 
+// Sort options for positions
+export type PositionSortOption =
+  | 'entry_date'
+  | 'pnl'
+  | 'volume'
+  | 'leverage'
+  | 'fees'
+  | 'mutagen';
+
+export type SortDirection = 'asc' | 'desc';
+
 // Cache the API responses by wallet address and offset
 // This cache helps reduce redundant API calls by storing previously fetched results
 const apiResponseCache: Record<
@@ -67,6 +78,7 @@ export default function usePositionsHistory({
   isLoadingPositionsHistory: boolean;
   isInitialLoad: boolean;
   positionsData: EnrichedPositionApiV2 | null;
+  accumulatedPositionsData: EnrichedPositionApi[] | null;
   // Pagination-related return values
   currentPage: number;
   totalItems: number;
@@ -75,16 +87,41 @@ export default function usePositionsHistory({
   loadPageData: (page: number) => Promise<void>;
   getPaginatedData: (page: number) => EnrichedPositionApi[];
   getCachedPositionsCount: () => number;
+  startDate: string;
+  endDate: string;
+  setStartDate: (date: string) => void;
+  setEndDate: (date: string) => void;
+  // Sort functionality
+  sortBy: PositionSortOption;
+  sortDirection: SortDirection;
+  handleSort: (sort: PositionSortOption) => void;
 } {
+  const [startDate, setStartDate] = useState<string>(
+    new Date('2024-09-25T00:00:00Z').toISOString(),
+  );
+  const [endDate, setEndDate] = useState<string>(new Date().toISOString());
+
   const [positionsData, setPositionsData] =
     useState<EnrichedPositionApiV2 | null>(null);
+  // Accumulated data for infinite scroll
+  const [accumulatedPositionsData, setAccumulatedPositionsData] = useState<
+    EnrichedPositionApi[]
+  >([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [isLoadingPositionsHistory, setIsLoadingPositionsHistory] =
     useState<boolean>(false);
-  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
   // Refs - to maintain values across renders without causing re-renders
+  const isFetchingDataRef = useRef<boolean>(true);
+
+  const entryDateRef = useRef<string | null>(startDate);
+  const exitDateRef = useRef<string | null>(endDate);
+
+  // Sort refs
+  const sortByRef = useRef<PositionSortOption>('entry_date');
+  const sortDirectionRef = useRef<SortDirection>('desc');
+
   const walletAddressRef = useRef<string | null>(walletAddress);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isInitializedRef = useRef<boolean>(false);
@@ -123,6 +160,15 @@ export default function usePositionsHistory({
 
       try {
         const result = await DataApiClient.getPositions({
+          entryDate: entryDateRef.current
+            ? new Date(entryDateRef.current)
+            : undefined,
+          exitDate: exitDateRef.current
+            ? new Date(exitDateRef.current)
+            : undefined,
+
+          sortBy: sortByRef.current,
+          sortDirection: sortDirectionRef.current,
           walletAddress: walletAddressRef.current,
           tokens: window.adrena.client.tokens,
           offset,
@@ -132,9 +178,13 @@ export default function usePositionsHistory({
         // Handle empty response
         if (result === null) {
           setPositionsData(null);
-          // Set initial load to false only once
-          if (isInitialLoad) {
-            setIsInitialLoad(false);
+          // Don't clear accumulated data on empty response unless it's offset 0
+          if (offset === 0) {
+            setAccumulatedPositionsData([]);
+          }
+          // Set fetching to false only once
+          if (isFetchingDataRef.current) {
+            isFetchingDataRef.current = false;
           }
           return;
         }
@@ -262,21 +312,36 @@ export default function usePositionsHistory({
         apiResponseCache[walletAddressRef.current][offset] = result;
         setPositionsData(result);
 
+        // Update accumulated positions data for infinite scroll
+        if (offset === 0) {
+          // Reset accumulated data for first page/new search
+          setAccumulatedPositionsData(result.positions);
+        } else {
+          // Append new positions to accumulated data, avoiding duplicates
+          setAccumulatedPositionsData((prev) => {
+            const existingIds = new Set(prev.map((p) => String(p.positionId)));
+            const newPositions = result.positions.filter(
+              (p) => !existingIds.has(String(p.positionId)),
+            );
+            return [...prev, ...newPositions];
+          });
+        }
+
         // Update total items count
         setTotalItems(result.totalCount);
-
-        // Set initial load to false only once after first successful fetch
-        if (isInitialLoad) {
-          setIsInitialLoad(false);
-        }
       } catch (e) {
         console.error('Error loading positions history:', e);
 
-        // Set initial load to false even on error to prevent infinite loading state
-        if (isInitialLoad) {
-          setIsInitialLoad(false);
+        // Set fetching to false even on error to prevent infinite loading state
+        if (isFetchingDataRef.current) {
+          isFetchingDataRef.current = false;
         }
       } finally {
+        // Set fetching to false only once after first successful fetch
+        if (isFetchingDataRef.current) {
+          isFetchingDataRef.current = false;
+        }
+
         setIsLoadingPositionsHistory(false);
       }
     },
@@ -302,6 +367,9 @@ export default function usePositionsHistory({
       // Initialize wallet cache for the new wallet
       apiResponseCache[walletAddress] = {};
 
+      // Clear accumulated data for new wallet
+      setAccumulatedPositionsData([]);
+
       // Reset page to 1
       setCurrentPage(1);
       currentPageRef.current = 1;
@@ -313,6 +381,20 @@ export default function usePositionsHistory({
       walletAddressRef.current = walletAddress;
     }
   }, [walletAddress, loadPositionsData]);
+
+  // Update date refs when state changes
+  useEffect(() => {
+    entryDateRef.current = startDate;
+    exitDateRef.current = endDate;
+  }, [startDate, endDate]);
+
+  /**
+   * Refetch data when date range changes
+   */
+  useEffect(() => {
+    refetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate, endDate, walletAddress]);
 
   /**
    * Initialize data loading and set up refresh interval
@@ -350,6 +432,27 @@ export default function usePositionsHistory({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const refetchData = () => {
+    if (walletAddress && isInitializedRef.current) {
+      // Clear cache when date range changes to ensure fresh data
+      if (apiResponseCache[walletAddress]) {
+        clearAllPositionsCache();
+        apiResponseCache[walletAddress] = {};
+      }
+
+      // Reset accumulated data for fresh start
+      setAccumulatedPositionsData([]);
+
+      // Reset to first page
+      setCurrentPage(1);
+      currentPageRef.current = 1;
+
+      // Refetch data with new date range
+      isFetchingDataRef.current = true;
+      loadPositionsData(0, true);
+    }
+  };
 
   /**
    * Load data for a specific page
@@ -457,10 +560,26 @@ export default function usePositionsHistory({
     [], // No dependencies as it just accesses global state
   );
 
+  // Handle sort functionality
+  const handleSort = (newSortBy: PositionSortOption) => {
+    if (newSortBy === sortByRef.current) {
+      // Toggle direction if same sort option
+      const newDirection = sortDirectionRef.current === 'asc' ? 'desc' : 'asc';
+      sortDirectionRef.current = newDirection;
+    } else {
+      // Set new sort option with default direction
+      sortByRef.current = newSortBy;
+      sortDirectionRef.current = 'desc'; // Default to descending for most metrics
+    }
+
+    refetchData();
+  };
+
   return {
     isLoadingPositionsHistory,
-    isInitialLoad,
+    isInitialLoad: isFetchingDataRef.current,
     positionsData,
+    accumulatedPositionsData,
     currentPage,
     totalItems,
     totalPages,
@@ -468,5 +587,12 @@ export default function usePositionsHistory({
     loadPageData,
     getPaginatedData,
     getCachedPositionsCount,
+    startDate,
+    endDate,
+    setStartDate,
+    setEndDate,
+    sortBy: sortByRef.current,
+    sortDirection: sortDirectionRef.current,
+    handleSort,
   };
 }

@@ -1,4 +1,6 @@
-import React from 'react';
+import { Pagination } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import SortIcon from '@/components/Icons/SortIcon';
@@ -15,8 +17,6 @@ export type TableV2HeaderType = {
   sticky?: 'left' | 'right';
   stickyOffset?: number; // in px, optional manual override
   stickyZIndex?: number; // optional z-index override
-  // Whether to hide this column in block view
-  hideInBlockView?: boolean;
 };
 
 export type TableV2RowType = {
@@ -29,7 +29,7 @@ export default function TableV2({
   title,
   headers,
   data,
-  maxHeight = 300,
+  height = '18.75rem',
   setActiveCol,
   bottomBar,
   className,
@@ -38,12 +38,20 @@ export default function TableV2({
   viewMode = 'table',
   onViewModeChange,
   blockViewComponent,
+  // Sort-related props
+  sortBy,
+  sortDirection,
   handleSort,
+  // Pagination-related return values
+  currentPage,
+  totalPages,
+  loadPageData,
+  isLoading = false,
 }: {
   title: string;
   headers: TableV2HeaderType[];
   data: TableV2RowType[];
-  maxHeight?: number | string;
+  height?: number | string;
   setActiveCol?: (col: string | null) => void;
   bottomBar?: React.ReactNode;
   className?: string;
@@ -52,8 +60,43 @@ export default function TableV2({
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
   blockViewComponent?: (item: TableV2RowType, index: number) => React.ReactNode;
+  // Sort-related props
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
   handleSort?: (column: string) => void;
+  // Pagination-related return values
+  currentPage?: number;
+  totalPages?: number;
+  setCurrentPage?: (page: number) => void;
+  loadPageData?: (page: number) => Promise<void>;
+  isLoading?: boolean;
 }) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+
+  // Check if user has scrolled to bottom
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const threshold = 5; // Small threshold to account for pixel precision
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+    setIsScrolledToBottom(isAtBottom);
+  };
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    container.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   // Helpers for sizing and alignment
   const widthFor = (width?: TableV2HeaderType['width']): string | undefined => {
     if (typeof width === 'number') return `${width}px`;
@@ -137,9 +180,9 @@ export default function TableV2({
       style.zIndex = z;
       // Ensure solid background so underlying cells don't bleed through
       if (isHeader) {
-        classes.push('bg-[#0E1621]');
+        classes.push('bg-[#111A27]/90 backdrop-blur-sm');
       } else {
-        classes.push('bg-secondary', 'group-hover:bg-third');
+        classes.push('bg-[#182230] ', 'group-hover:bg-third');
       }
     }
 
@@ -154,19 +197,17 @@ export default function TableV2({
       onClick={() => onRowClick?.(item.id as string | number)}
     >
       <div className="grid grid-cols-2 gap-2">
-        {headers
-          .filter((h) => !h.hideInBlockView)
-          .map((header) => {
-            const key = header.key ?? header.title;
-            return (
-              <div key={key} className="flex flex-col">
-                <span className="text-xs sm:text-sm text-white/50 font-interMedium">
-                  {header.title}
-                </span>
-                <div className="mt-1">{item[key]}</div>
-              </div>
-            );
-          })}
+        {headers.map((header) => {
+          const key = header.key ?? header.title;
+          return (
+            <div key={key} className="flex flex-col">
+              <span className="text-xs sm:text-sm text-white/50 font-interMedium">
+                {header.title}
+              </span>
+              <div className="mt-1">{item[key]}</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -206,13 +247,68 @@ export default function TableV2({
     const BlockComponent = blockViewComponent || defaultBlockComponent;
 
     return (
+      <>
+        <div
+          className={twMerge(
+            'relative rounded-xl border border-inputcolor bg-secondary overflow-hidden',
+            className,
+          )}
+        >
+          {/* View toggle header */}
+          {onViewModeChange && (
+            <div className="flex justify-between items-center p-2 px-3 bg-secondary border-b border-bcolor">
+              <div className="text-lg font-interMedium">{title}</div>
+              <ViewToggle />
+            </div>
+          )}
+
+          {/* Block view container */}
+          <div
+            ref={scrollContainerRef}
+            className="custom-chat-scrollbar overflow-y-auto overscroll-contain p-3"
+            style={{
+              height: typeof height === 'number' ? `${height}px` : height,
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {data.map((item, index) => BlockComponent(item, index))}
+            </div>
+          </div>
+
+          {bottomBar && (
+            <div className="border-t border-t-inputcolor w-full h-7 bg-[#0E1621]">
+              {bottomBar}
+            </div>
+          )}
+        </div>
+
+        {loadPageData && totalPages && totalPages > 1 ? (
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            className="mt-3"
+            onChange={(_, page) => {
+              loadPageData(page);
+              scrollContainerRef.current?.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+              });
+            }}
+          />
+        ) : null}
+      </>
+    );
+  }
+
+  return (
+    <>
       <div
         className={twMerge(
           'relative rounded-xl border border-inputcolor bg-secondary overflow-hidden',
           className,
         )}
       >
-        {/* View toggle header */}
+        {/* View toggle header for table view */}
         {onViewModeChange && (
           <div className="flex justify-between items-center p-2 px-3 bg-secondary border-b border-bcolor">
             <div className="text-lg font-interMedium">{title}</div>
@@ -220,155 +316,168 @@ export default function TableV2({
           </div>
         )}
 
-        {/* Block view container */}
+        {/* Single scroll container for both header and body */}
         <div
-          className="custom-chat-scrollbar overflow-y-auto overscroll-contain p-3"
+          ref={scrollContainerRef}
+          className={twMerge(
+            'custom-chat-scrollbar overscroll-contain',
+            isSticky ? 'overflow-auto' : 'overflow-y-auto',
+          )}
           style={{
-            maxHeight:
-              typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
+            height: typeof height === 'number' ? `${height}px` : height,
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {data.map((item, index) => BlockComponent(item, index))}
-          </div>
-        </div>
-
-        {bottomBar && (
-          <div className="border-t border-t-inputcolor w-full h-7 bg-[#0E1621]">
-            {bottomBar}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={twMerge(
-        'relative rounded-xl border border-inputcolor bg-secondary overflow-hidden',
-        className,
-      )}
-    >
-      {/* View toggle header for table view */}
-      {onViewModeChange && (
-        <div className="flex justify-between items-center p-2 px-3 bg-secondary border-b border-bcolor">
-          <div className="text-lg font-interMedium">{title}</div>
-          <ViewToggle />
-        </div>
-      )}
-
-      {/* Single scroll container for both header and body */}
-      <div
-        className={twMerge(
-          'custom-chat-scrollbar overscroll-contain',
-          isSticky ? 'overflow-auto' : 'overflow-y-auto',
-        )}
-        style={{
-          maxHeight:
-            typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
-        }}
-      >
-        <table
-          className="w-full table-fixed"
-          style={isSticky ? { minWidth: `${minTableWidthPx}px` } : undefined}
-        >
-          <ColGroup />
-          <thead className="bg-main border-b border-inputcolor">
-            <tr>
-              {headers.map((header, colIndex) => {
-                const sticky = getStickyProps(colIndex, true);
-                return (
-                  <th
-                    key={`head-${header.title}`}
-                    className={twMerge(
-                      'p-1 px-2 text-xs sm:text-sm font-interMedium border-r border-inputcolor last:border-r-0 sticky top-0 bg-[#111A27]/90 backdrop-blur-sm z-20',
-                      alignClass(header.align),
-                      header.className,
-                      sticky.className,
-                    )}
-                    style={sticky.style}
-                    onClick={() => {
-                      if (header.isSortable && handleSort && header.key) {
-                        handleSort(header.key);
-                      }
-                    }}
-                  >
-                    <div
-                      className={twMerge(
-                        'w-full',
-                        header.isSortable
-                          ? 'cursor-pointer flex flex-row items-center gap-3'
-                          : '',
-                        header.align === 'right' && header.isSortable
-                          ? 'justify-end'
-                          : '',
-                      )}
-                    >
-                      {header.isSortable && header.align === 'right' ? (
-                        <SortIcon />
-                      ) : null}
-                      {header.title}
-                      {header.isSortable && header.align === 'left' ? (
-                        <SortIcon />
-                      ) : null}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody className="rounded-t-lg">
-            {data.map((row, rowIndex) => (
-              <tr
-                key={`row-${rowIndex}`}
-                className={twMerge(
-                  'group border-b border-bcolor last:border-b-0 hover:bg-third transition-colors',
-                  onRowClick ? 'cursor-pointer' : '',
-                )}
-                onClick={() => {
-                  if (onRowClick) onRowClick(row.id as string | number);
-                }}
-              >
+          <table
+            className="w-full table-fixed"
+            style={isSticky ? { minWidth: `${minTableWidthPx}px` } : undefined}
+          >
+            <ColGroup />
+            <thead className="bg-main border-b border-inputcolor">
+              <tr>
                 {headers.map((header, colIndex) => {
-                  const key = header.key ?? header.title;
-                  const sticky = getStickyProps(colIndex, false);
+                  const sticky = getStickyProps(colIndex, true);
                   return (
-                    <td
-                      key={`cell-${rowIndex}-${colIndex}`}
+                    <th
+                      key={`head-${header.title}`}
                       className={twMerge(
-                        'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
+                        'group p-1 px-2 border-r border-inputcolor last:border-r-0 sticky top-0 bg-[#111A27]/90 backdrop-blur-sm z-20',
                         alignClass(header.align),
+                        header.className,
                         sticky.className,
                       )}
                       style={sticky.style}
-                      onMouseOver={() => {
-                        if (setActiveCol)
-                          setActiveCol(header.key ?? header.title);
-                      }}
-                      onMouseOut={() => {
-                        if (setActiveCol) setActiveCol(null);
+                      onClick={() => {
+                        if (header.isSortable && handleSort && header.key) {
+                          handleSort(header.key);
+                        }
                       }}
                     >
-                      {row[key]}
-                    </td>
+                      <div
+                        className={twMerge(
+                          'w-full',
+                          header.isSortable
+                            ? 'cursor-pointer flex flex-row items-center gap-3'
+                            : '',
+                          header.align === 'right' && header.isSortable
+                            ? 'justify-end'
+                            : '',
+                        )}
+                      >
+                        {header.isSortable && header.align === 'right' ? (
+                          <SortIcon
+                            isActive={sortBy === header.key}
+                            order={sortDirection}
+                          />
+                        ) : null}
+                        <span className="text-xs sm:text-sm font-interMedium opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                          {header.title}
+                        </span>
+                        {header.isSortable && header.align === 'left' ? (
+                          <SortIcon
+                            isActive={sortBy === header.key}
+                            order={sortDirection}
+                          />
+                        ) : null}
+                      </div>
+                    </th>
                   );
                 })}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div
-        className={twMerge(
-          'absolute bottom-0 pointer-events-none bg-gradient-to-b from-transparent to-secondary w-full h-12 z-20',
-          bottomBar ? 'bottom-[1.71875rem]' : '',
-        )}
-      />
-      {bottomBar ? (
-        <div className="bottom-0 border-t border-t-inputcolor w-full h-7 bg-[#0E1621]">
-          {bottomBar}
+            </thead>
+            <tbody className="rounded-t-lg">
+              <AnimatePresence mode="wait">
+                {isLoading
+                  ? Array.from({ length: 10 }).map((_, rowIdx) => (
+                      <motion.tr
+                        key={`loader-row-${rowIdx}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        {headers.map((_, colIdx) => (
+                          <td
+                            key={`loader-cell-${rowIdx}-${colIdx}`}
+                            className="p-4 bg-[#050D14] animate-loader border border-white/10"
+                          />
+                        ))}
+                      </motion.tr>
+                    ))
+                  : data.map((row, rowIndex) => (
+                      <motion.tr
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        key={`row-${rowIndex}`}
+                        className={twMerge(
+                          'group border-b border-bcolor hover:bg-third transition-colors',
+                          onRowClick ? 'cursor-pointer' : '',
+                          data.length > 7 ? 'last:border-b-0' : '',
+                        )}
+                        onClick={() => {
+                          if (onRowClick) onRowClick(row.id as string | number);
+                        }}
+                      >
+                        {headers.map((header, colIndex) => {
+                          const key = header.key ?? header.title;
+                          const sticky = getStickyProps(colIndex, false);
+                          return (
+                            <td
+                              key={`cell-${rowIndex}-${colIndex}`}
+                              className={twMerge(
+                                'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
+                                alignClass(header.align),
+                                sticky.className,
+                              )}
+                              style={sticky.style}
+                              onMouseOver={() => {
+                                if (setActiveCol)
+                                  setActiveCol(header.key ?? header.title);
+                              }}
+                              onMouseOut={() => {
+                                if (setActiveCol) setActiveCol(null);
+                              }}
+                            >
+                              {row[key]}
+                            </td>
+                          );
+                        })}
+                      </motion.tr>
+                    ))}
+              </AnimatePresence>
+            </tbody>
+          </table>
         </div>
+
+        {data.length > 7 && !isScrolledToBottom ? (
+          <div
+            className={twMerge(
+              'absolute bottom-0 pointer-events-none bg-gradient-to-b from-transparent to-secondary w-full h-12 z-20',
+              bottomBar ? 'bottom-[1.71875rem]' : '',
+            )}
+          />
+        ) : null}
+
+        {bottomBar ? (
+          <div className="bottom-0 border-t border-t-inputcolor w-full h-7 bg-[#0E1621]">
+            {bottomBar}
+          </div>
+        ) : null}
+      </div>
+
+      {loadPageData && totalPages && totalPages > 1 ? (
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          className="mt-3"
+          onChange={(_, page) => {
+            loadPageData(page);
+            scrollContainerRef.current?.scrollTo({
+              top: 0,
+              behavior: 'smooth',
+            });
+          }}
+        />
       ) : null}
-    </div>
+    </>
   );
 }

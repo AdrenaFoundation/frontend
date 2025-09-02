@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import calendarIcon from '@/../public/images/Icons/calendar.svg';
@@ -52,15 +52,23 @@ export default function ActivityCalendar({
   isLoading: boolean;
   hasData?: boolean;
 }) {
-  const [startDate, setStartDate] = useState<string>(
-    new Date('2024-09-25T00:00:00Z').toISOString(),
-  ); // TODO: get this from usePositionHistory
-  const [endDate, setEndDate] = useState<string>(new Date().toISOString());
-
-  const { positionsData, isInitialLoad } = usePositionsHistory({
+  const {
+    positionsData,
+    isInitialLoad,
+    startDate,
+    endDate,
+    setStartDate,
+    setEndDate,
+    handleSort,
+    sortBy,
+    sortDirection,
+    currentPage,
+    totalPages,
+    loadPageData,
+  } = usePositionsHistory({
     walletAddress: walletAddress ?? null,
-    batchSize: 100,
-    itemsPerPage: 100,
+    batchSize: 20,
+    itemsPerPage: 20,
   });
 
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
@@ -207,8 +215,6 @@ export default function ActivityCalendar({
     return () => window.removeEventListener('resize', updateSize);
   }, [processedData, isMobile]);
 
-  console.log(data);
-
   if (!processedData) {
     return (
       <div
@@ -268,35 +274,25 @@ export default function ActivityCalendar({
           </p>
         </div>
 
-        <div className="flex flex-row items-center gap-3 sm:gap-0">
+        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-0 w-full sm:w-auto">
           <div className="flex flex-row gap-3 p-3 border sm:border-y-0 sm:border-r-0 rounded-lg sm:rounded-none sm:border-l border-inputcolor w-full sm:w-auto">
             <SelectOptions
               selected={bubbleBy}
               options={['pnl', 'volume', 'position count']}
               onClick={setBubbleBy}
               className="p-0 border-0"
-              textClassName="text-xs sm:text-sm"
             />
           </div>
 
           <div className="flex flex-row items-center gap-2 px-3 p-2 border sm:border-y-0 sm:border-r-0 rounded-lg sm:rounded-none border-l border-inputcolor flex-none">
-            <Image
-              src={calendarIcon}
-              alt="Calendar"
-              width={12}
-              height={12}
-              className="w-3 h-3 opacity-50"
+            <DateSelector
+              startDate={startDate}
+              endDate={endDate}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              setSelectedRange={setSelectedRange}
+              selectedRange={selectedRange}
             />
-
-            <p className="hidden sm:block text-sm font-interMedium">
-              <DateSelector
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-                setSelectedRange={setSelectedRange}
-                selectedRange={selectedRange}
-              />
-            </p>
-            <p className="sm:hidden text-sm font-interMedium">Custom</p>
           </div>
         </div>
       </div>
@@ -496,9 +492,17 @@ export default function ActivityCalendar({
                             height: blockSize,
                           }}
                           onClick={() => {
+                            const currentDate = new Date(date);
+                            const startDate = new Date(date);
+                            const endDate = new Date(
+                              currentDate.setHours(currentDate.getHours() + 24),
+                            );
+
                             setSelectedRange?.('Custom');
-                            setStartDate?.(new Date(date).toISOString());
-                            setEndDate?.(new Date(date).toISOString());
+
+                            setStartDate?.(startDate.toISOString());
+
+                            setEndDate?.(endDate.toISOString());
                           }}
                         >
                           <svg height="100%" width="100%">
@@ -588,6 +592,12 @@ export default function ActivityCalendar({
         <PositionHistoryTable
           positionsData={positionsData}
           isLoadingPositionsHistory={isInitialLoad}
+          handleSort={handleSort}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          loadPageData={loadPageData}
         />
       ) : null}
     </div>

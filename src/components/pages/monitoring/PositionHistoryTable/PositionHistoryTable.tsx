@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -6,9 +6,9 @@ import { twMerge } from 'tailwind-merge';
 import downloadIcon from '@/../public/images/download.png';
 import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
-import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { normalize } from '@/constant';
+import { PositionSortOption } from '@/hooks/usePositionHistory';
 import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, EnrichedPositionApiV2, Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -19,16 +19,27 @@ import TableV2, { TableV2HeaderType, TableV2RowType } from '../TableV2';
 export default function PositionHistoryTable({
   positionsData,
   isLoadingPositionsHistory,
+  handleSort,
+  sortBy,
+  sortDirection,
+  currentPage,
+  totalPages,
+  loadPageData,
 }: {
   positionsData: EnrichedPositionApiV2 | null;
   isLoadingPositionsHistory: boolean;
+  handleSort: (sort: PositionSortOption) => void;
+  sortBy: PositionSortOption;
+  sortDirection: 'asc' | 'desc';
+  currentPage: number;
+  totalPages: number;
+  loadPageData: (page: number) => Promise<void>;
 }) {
   const [activePosition, setActivePosition] =
     useState<EnrichedPositionApi | null>(null);
 
   const showPnlWithFees = useSelector((state) => state.settings.showFeesInPnl);
 
-  const [activeCol, setActiveCol] = useState<string | null>(null);
   const [isNative, setIsNative] = useState<boolean>(false);
   const [isPnlWithFees, setIsPnlWithFees] = useState<boolean>(showPnlWithFees);
   const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
@@ -46,10 +57,9 @@ export default function PositionHistoryTable({
     },
     {
       title: 'Collateral',
-      key: 'collateral',
+      key: 'collateral_amount',
       isSortable: true,
       align: 'right',
-      hideInBlockView: true,
     },
     {
       title: 'Fees Paid',
@@ -62,13 +72,11 @@ export default function PositionHistoryTable({
     {
       title: 'Mutagen',
       key: 'mutagen',
-      isSortable: true,
       align: 'right',
-      hideInBlockView: true,
     },
     {
       title: 'Date',
-      key: 'date',
+      key: 'entry_date',
       isSortable: true,
       align: 'right',
     },
@@ -78,54 +86,17 @@ export default function PositionHistoryTable({
     return null;
   }
 
-  const {
-    maxPnl,
-    minPnl,
-    maxVolume,
-    minVolume,
-    maxCollateral,
-    minCollateral,
-    maxFees,
-    minFees,
-  } = positionsData.positions.reduce(
+  const { maxPnl, minPnl } = positionsData.positions.reduce(
     (acc, p) => {
       acc.maxPnl = Math.max(acc.maxPnl, p.pnl);
-      acc.maxVolume = Math.max(acc.maxVolume, p.volume);
-      acc.maxCollateral = Math.max(acc.maxCollateral, p.entryCollateralAmount);
-      acc.maxFees = Math.max(acc.maxFees, p.fees);
       acc.minPnl = Math.min(acc.minPnl, p.pnl);
-      acc.minVolume = Math.min(acc.minVolume, p.volume);
-      acc.minCollateral = Math.min(acc.minCollateral, p.entryCollateralAmount);
-      acc.minFees = Math.min(acc.minFees, p.fees);
       return acc;
     },
     {
       maxPnl: 0,
-      maxVolume: 0,
-      maxCollateral: 0,
-      maxFees: 0,
       minPnl: 0,
-      minVolume: 0,
-      minCollateral: 0,
-      minFees: 0,
-      avgPnl: 0,
-      avgVolume: 0,
-      avgCollateral: 0,
-      avgFees: 0,
     },
   );
-
-  const avgPnl =
-    positionsData.positions.reduce((acc, p) => acc + p.pnl, 0) /
-    positionsData.positions.length;
-  const avgVolume =
-    positionsData.positions.reduce((acc, p) => acc + p.volume, 0) /
-    positionsData.positions.length;
-  const avgCollateral =
-    positionsData.positions.reduce(
-      (acc, p) => acc + p.entryCollateralAmount,
-      0,
-    ) / positionsData.positions.length;
 
   const formattedData = positionsData.positions.map((p) => ({
     token: (
@@ -141,37 +112,20 @@ export default function PositionHistoryTable({
         isIndicator={viewMode === 'table'}
       />
     ),
-    volume: (
-      <CurrencyCell
-        value={p.volume}
-        isActiveCol={activeCol === 'volume'}
-        maxValue={maxVolume}
-        minValue={minVolume}
-      />
-    ),
-    collateral: (
+    volume: <CurrencyCell value={p.volume} />,
+    collateral_amount: (
       <CurrencyCell
         value={
           isNative ? p.entryCollateralAmountNative : p.entryCollateralAmount
         }
-        isActiveCol={activeCol === 'collateral'}
-        maxValue={maxCollateral}
-        minValue={minCollateral}
         isCurrency={!isNative}
       />
     ),
-    fees: (
-      <CurrencyCell
-        value={p.fees}
-        isActiveCol={activeCol === 'fees'}
-        maxValue={maxFees}
-        minValue={minFees}
-      />
-    ),
+    fees: <CurrencyCell value={p.fees} />,
     entry: <CurrencyCell value={p.entryPrice} />,
     exit: <CurrencyCell value={p.exitPrice} />,
     mutagen: <MutagenCell value={p.pointsMutations} />,
-    date: <DateCell date={p.entryDate} />,
+    entry_date: <DateCell date={p.entryDate} />,
     id: p.positionId,
   }));
 
@@ -231,50 +185,36 @@ export default function PositionHistoryTable({
   return (
     <>
       <div className="border-t p-3">
-        <LoaderWrapper
+        <TableV2
+          title="Position History"
+          headers={headers}
+          data={formattedData}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          handleSort={handleSort as (column: string) => void}
+          loadPageData={loadPageData}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          height="20rem"
+          isSticky={window.innerWidth < 1280} // use useBetterMediaQuery
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          blockViewComponent={PositionBlockComponent}
+          onRowClick={(id) => {
+            const position =
+              positionsData.positions.find((p) => p.positionId === id) ?? null;
+            setActivePosition(position);
+          }}
+          bottomBar={
+            <BottomBar
+              isNative={isNative}
+              isPnlWithFees={isPnlWithFees}
+              setIsNative={setIsNative}
+              setIsPnlWithFees={setIsPnlWithFees}
+            />
+          }
           isLoading={isLoadingPositionsHistory}
-          height="23.1875rem"
-          key={`position-history-table-${positionsData.totalCount}`}
-        >
-          <TableV2
-            title="Position History"
-            headers={headers}
-            data={formattedData}
-            setActiveCol={setActiveCol}
-            isSticky={window.innerWidth < 1280} // use useBetterMediaQuery
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            blockViewComponent={PositionBlockComponent}
-            onRowClick={(id) => {
-              const position =
-                positionsData.positions.find((p) => p.positionId === id) ??
-                null;
-              setActivePosition(position);
-            }}
-            bottomBar={
-              <BottomBar
-                isNative={isNative}
-                isPnlWithFees={isPnlWithFees}
-                setIsNative={setIsNative}
-                setIsPnlWithFees={setIsPnlWithFees}
-                stats={[
-                  {
-                    title: 'avg PnL',
-                    value: avgPnl,
-                  },
-                  {
-                    title: 'avg Volume',
-                    value: avgVolume,
-                  },
-                  {
-                    title: 'avg Collateral',
-                    value: avgCollateral,
-                  },
-                ]}
-              />
-            }
-          />
-        </LoaderWrapper>
+        />
       </div>
       <AnimatePresence>
         {activePosition ? (
@@ -324,23 +264,11 @@ const TokenCell = ({
 
 const CurrencyCell = ({
   value,
-  maxValue,
-  minValue,
-  isActiveCol = false,
   isCurrency = true,
 }: {
   value: number;
-  maxValue?: number;
-  minValue?: number;
-  isActiveCol?: boolean;
   isCurrency?: boolean;
 }) => {
-  const abs = Math.abs(value);
-
-  const scaleMax =
-    Math.max(Math.abs(maxValue ?? 0), Math.abs(minValue ?? 0)) || 1;
-  const heightPct = normalize(abs, 10, 100, 0, scaleMax);
-
   return (
     <div>
       <FormatNumber
@@ -351,18 +279,6 @@ const CurrencyCell = ({
         isAbbreviate={value > 10_000}
         className="relative"
       />
-      <AnimatePresence>
-        {isActiveCol ? (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: `${heightPct}%`, opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className={twMerge(
-              'absolute bottom-0 left-0 w-full pointer-events-none z-0 bg-inputcolor/40',
-            )}
-          />
-        ) : null}
-      </AnimatePresence>
     </div>
   );
 };
@@ -395,11 +311,11 @@ const PnlCell = ({
         isDecimalDimmed={false}
         className={twMerge(
           'relative z-10 text-sm',
-          positive ? 'text-green' : 'text-redbright',
+          positive ? 'text-[#35C488]' : 'text-redbright',
         )}
         prefixClassName={twMerge(
           'text-sm',
-          positive ? 'text-green' : 'text-redbright',
+          positive ? 'text-[#35C488]' : 'text-redbright',
         )}
       />
 
@@ -420,7 +336,7 @@ const SideCell = ({ side }: { side: string }) => (
   <div
     className={twMerge(
       'font-mono',
-      side.toLowerCase() === 'long' ? 'text-green' : 'text-redbright',
+      side.toLowerCase() === 'long' ? 'text-[#35C488]' : 'text-redbright',
     )}
   >
     {side}
@@ -463,37 +379,16 @@ const BottomBar = ({
   isPnlWithFees,
   setIsNative,
   setIsPnlWithFees,
-  stats,
 }: {
   isNative: boolean;
   isPnlWithFees: boolean;
   setIsNative: (value: boolean) => void;
   setIsPnlWithFees: (value: boolean) => void;
-  stats: {
-    title: string;
-    value: number;
-  }[];
 }) => (
   <div className="flex flex-row justify-between">
-    <div className="flex flex-row items-center">
-      <div className="hidden sm:block relative p-1 px-3 border-r border-r-inputcolor">
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-[1rem] w-[0.0625rem] bg-orange" />
-        <p className="text-sm ml-3 font-mono opacity-50">Liquidated</p>
-      </div>
-
-      <div className="hidden lg:flex flex-row items-center gap-5 p-1.5 px-3 border-r border-r-inputcolor">
-        {stats.map((stat) => (
-          <div key={stat.title} className="flex flex-row gap-2 items-center">
-            <p className="text-sm font-mono opacity-50">{stat.title}</p>
-            <FormatNumber
-              nb={stat.value}
-              format="currency"
-              isDecimalDimmed={false}
-              className="text-sm font-interSemibold"
-            />
-          </div>
-        ))}
-      </div>
+    <div className="hidden sm:block relative p-1 px-3 border-r border-r-inputcolor">
+      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-[1rem] w-[0.0625rem] bg-orange" />
+      <p className="text-sm ml-3 font-mono opacity-50">Liquidated</p>
     </div>
 
     <div className="flex flex-row items-center">

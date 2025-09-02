@@ -50,7 +50,6 @@ export const Notifications = ({
     }
   }, [isDialectSubscriber, enableDialectNotifications]);
 
-  console.log('Notifications rendered', isDialectSubscriber);
   return (
     <div
       className={twMerge(

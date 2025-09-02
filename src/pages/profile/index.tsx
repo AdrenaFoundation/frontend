@@ -177,13 +177,15 @@ export default function Profile({
                   height="9.875rem"
                   loaderClassName="m-3"
                 >
-                  <TradingStats
-                    traderInfo={traderInfo}
-                    livePositionsNb={
-                      positions === null ? null : positions.length
-                    }
-                    data={activityCalendarData}
-                  />
+                  {traderInfo !== null ? (
+                    <TradingStats
+                      traderInfo={traderInfo}
+                      livePositionsNb={
+                        positions === null ? null : positions.length
+                      }
+                      data={activityCalendarData}
+                    />
+                  ) : null}
                 </LoaderWrapper>
 
                 <div className="h-[1px] w-full bg-bcolor mb-2" />

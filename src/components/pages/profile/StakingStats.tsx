@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -7,6 +7,7 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
+  XAxis,
   YAxis,
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
@@ -21,6 +22,7 @@ import { WalletStakingAccounts } from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
 import {
+  formatDate,
   formatPriceInfo,
   getAdxLockedStakes,
   getAlpLockedStakes,
@@ -41,17 +43,17 @@ export default function StakingStats({
   const tokenPrices = useSelector((state) => state.tokenPrices);
   const tokenPrice = tokenPrices['ADX'];
 
-  const batchSize = 100; // Example batch size
-  const itemsPerPage = 100; // Example items per page
+  const batchSize = 50;
+  const itemsPerPage = 50;
 
   const {
     isLoadingClaimHistory,
+    claimHistoryGraphData,
     claimsHistory,
     // Pagination-related values
     currentPage,
-    // totalPages,
+    totalPages,
     loadPageData,
-    getPaginatedData,
   } = useClaimHistory({
     walletAddress,
     batchSize,
@@ -63,17 +65,9 @@ export default function StakingStats({
   const [lockedStakedADX, setLockedStakedADX] = useState<number | null>(null);
   const [, setLockedStakedALP] = useState<number | null>(null);
 
-  const allAdxClaims =
-    claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')?.claims ||
-    [];
-
-  const [optimisticClaim, setOptimisticClaim] = useState<{
-    rewards_usdc: number;
-    rewards_adx: number;
-  } | null>(null);
-  const [attemptedLoads, setAttemptedLoads] = useState<Record<string, boolean>>(
-    {},
-  );
+  // const allAdxClaims =
+  //   claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')?.claims ||
+  //   [];
 
   useEffect(() => {
     if (!stakingAccounts) {
@@ -111,96 +105,23 @@ export default function StakingStats({
     setLockedStakedALP(lockedStakedALP);
   }, [stakingAccounts]);
 
-  // Reset optimistic claim when fresh data is loaded
-  useEffect(() => {
-    if (claimsHistory && optimisticClaim && setOptimisticClaim) {
-      setOptimisticClaim(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [claimsHistory]);
-
-  // Get total items count
-  const totalItems = useMemo(() => {
-    if (!claimsHistory) return 0;
-    return claimsHistory.symbols.reduce(
-      (acc, symbol) => acc + (symbol.claims?.length || 0),
-      0,
-    );
-  }, [claimsHistory]);
-
-  // Get combined claims data to display
-  const paginatedClaims = useMemo(() => {
-    if (!claimsHistory) return [];
-
-    // Use the hook's getPaginatedData function
-    const claims = getPaginatedData(currentPage);
-
-    // If we got empty claims but we're not loading and we should have data,
-    // and we haven't already tried loading this page, trigger loading for this page
-    if (
-      claims.length === 0 &&
-      !isLoadingClaimHistory &&
-      totalItems > 0 &&
-      !attemptedLoads[currentPage]
-    ) {
-      // Mark this page as attempted
-      setAttemptedLoads((prev) => ({ ...prev, [currentPage]: true }));
-
-      // Use setTimeout to ensure this happens after the current render cycle
-      // Only try once per render, don't loop
-      setTimeout(() => {
-        // Double-check we still need to load before trying
-        // This helps prevent race conditions
-        if (
-          getPaginatedData(currentPage).length === 0 &&
-          !attemptedLoads[currentPage]
-        ) {
-          loadPageData(currentPage);
-        }
-      }, 0);
-    }
-
-    return claims;
-  }, [
-    claimsHistory,
-    currentPage,
-    getPaginatedData,
-    isLoadingClaimHistory,
-    loadPageData,
-    totalItems,
-    attemptedLoads,
-  ]);
-
-  // const handlePageChange = (page: number) => {
-  //   if (page === currentPage) return; // Don't reload the same page
-
-  //   // Reset the attempt tracking for the new page to allow initial load
-  //   setAttemptedLoads((prev) => {
-  //     const newAttempts = { ...prev };
-  //     // Clear the attempt for the new page
-  //     delete newAttempts[page];
-  //     return newAttempts;
-  //   });
-
-  //   loadPageData(page);
-  // };
-
-  // Reset attempted loads when wallet changes
-  useEffect(() => {
-    setAttemptedLoads({});
-  }, [walletAddress]);
-
   // Calculate the all-time claimed amounts
   const allTimeClaimedUsdc =
-    (claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')
-      ?.allTimeRewardsUsdc ?? 0) + (optimisticClaim?.rewards_usdc ?? 0);
+    claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')
+      ?.allTimeRewardsUsdc ?? 0;
 
   const allTimeClaimedAdx =
     (claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')
       ?.allTimeRewardsAdx ?? 0) +
     (claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')
-      ?.allTimeRewardsAdxGenesis ?? 0) +
-    (optimisticClaim?.rewards_adx ?? 0);
+      ?.allTimeRewardsAdxGenesis ?? 0);
+
+  const claimData = claimsHistory
+    ? (claimsHistory.symbols.find((symbol) => symbol.symbol === 'ADX')
+        ?.claims ?? null)
+    : null;
+
+  if (!claimData) return null;
 
   return (
     <div
@@ -221,58 +142,81 @@ export default function StakingStats({
       </div>
       <div className="flex flex-col lg:flex-row">
         <div className="p-3 border-r border-bcolor h-44 lg:h-auto lg:basis-1/3">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              width={500}
-              height={300}
-              data={allAdxClaims
-                .map((claim) => ({
+          {claimHistoryGraphData ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                width={500}
+                height={300}
+                data={claimHistoryGraphData.map((claim) => ({
                   date: new Date(claim.transaction_date),
                   usdc: claim.rewards_usdc,
                   adx: claim.rewards_adx * (tokenPrice || 0),
-                }))
-                .reverse()} // Reverse to show most recent first
-              margin={{
-                top: 20,
-                right: 30,
-                left: 0,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
-              <YAxis
-                tickFormatter={(value) => formatPriceInfo(value)}
-                fontSize="12"
-              />
+                  genesisAdx: claim.rewards_adx_genesis * (tokenPrice || 0),
+                }))}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 0,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
 
-              <Legend />
-              <Tooltip
-                content={
-                  <CustomRechartsToolTip
-                    format="currency"
-                    precision={2}
-                    labelCustomization={(label) => {
-                      const date = new Date(label);
-                      return date.toLocaleDateString('en-US', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      });
-                    }}
-                    precisionMap={{
-                      usdc: 2,
-                      adx: 2,
-                    }}
-                    total={true}
-                    totalColor="#10b981"
-                  />
-                }
-                cursor={false}
-              />
-              <Bar dataKey="usdc" stackId="a" fill="#3986FF" name="USDC" />
-              <Bar dataKey="adx" stackId="a" fill="#FF344F" name="ADX (USD)" />
-            </BarChart>
-          </ResponsiveContainer>
+                <YAxis
+                  tickFormatter={(value) => formatPriceInfo(value)}
+                  fontSize="12"
+                />
+
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(value) => formatDate(value)}
+                  fontSize="12"
+                  display="none"
+                />
+
+                <Legend />
+                <Tooltip
+                  content={
+                    <CustomRechartsToolTip
+                      format="currency"
+                      precision={2}
+                      labelCustomization={(label) => {
+                        const date = new Date(label);
+                        return date.toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        });
+                      }}
+                      precisionMap={{
+                        usdc: 2,
+                        adx: 2,
+                        genesisAdx: 2,
+                      }}
+                      total={true}
+                      totalColor="#10b981"
+                    />
+                  }
+                  cursor={false}
+                />
+                <Bar dataKey="usdc" stackId="a" fill="#3986FF" name="USDC" />
+
+                <Bar
+                  dataKey="adx"
+                  stackId="a"
+                  fill="#FF344F"
+                  name="ADX (USD)"
+                />
+
+                <Bar
+                  dataKey="genesis adx"
+                  stackId="a"
+                  fill="#FF344F"
+                  name="Genesis ADX (USD)"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : null}
         </div>
         <div className="flex flex-col gap-4 p-3 sm:basis-2/3">
           <div className="flex flex-row items-center gap-2">
@@ -306,8 +250,12 @@ export default function StakingStats({
 
           <div className="flex flex-col gap-3">
             <StatsTable
-              paginatedClaims={paginatedClaims}
+              paginatedClaims={claimData}
               tokenPrice={tokenPrice}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              loadPageData={loadPageData}
+              isLoadingClaimHistory={isLoadingClaimHistory}
               stats={[
                 {
                   title: 'total USDC',
@@ -327,10 +275,18 @@ export default function StakingStats({
 const StatsTable = ({
   paginatedClaims,
   tokenPrice,
+  currentPage,
+  totalPages,
+  loadPageData,
+  isLoadingClaimHistory,
   stats,
 }: {
   paginatedClaims: ClaimHistoryExtended[];
   tokenPrice: number | null;
+  currentPage: number;
+  totalPages: number;
+  loadPageData: (page: number) => Promise<void>;
+  isLoadingClaimHistory: boolean;
   stats: {
     title: string;
     value: number;
@@ -425,10 +381,14 @@ const StatsTable = ({
         headers={headers}
         data={data}
         bottomBar={<BottomBar stats={stats} />}
-        maxHeight={'12rem'}
+        height={'16rem'}
         isSticky={window.innerWidth < 1200}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        loadPageData={loadPageData}
+        isLoading={isLoadingClaimHistory}
         title="Claim History"
       />
     </div>

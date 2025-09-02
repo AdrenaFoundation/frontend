@@ -563,6 +563,14 @@ export type ClaimHistoryApi = {
   ];
 };
 
+export type ClaimHistoryGraph = {
+  rewards_adx: number;
+  rewards_usdc: number;
+  rewards_adx_genesis: number;
+  transaction_date: Date;
+  symbol: string;
+};
+
 export type ClaimHistoryExtended = {
   claim_id: number;
   created_at: Date;
