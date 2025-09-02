@@ -5,20 +5,29 @@ import { useEffect, useState } from 'react';
 interface VelocityData {
   tradingVolume24hChange: number | null;
   totalFees24hChange: number | null;
-  liquidationActivity24hChange: number | null; // Using liquidation fees as proxy
+  liquidationVolume24hChange: number | null;
   alpApr24hChange: number | null;
   adxApr24hChange: number | null;
-  traders24hChange: number | null;
+  // 7-day data
+  tradingVolume7dChange: number | null;
+  totalFees7dChange: number | null;
+  liquidationVolume7dChange: number | null;
+  alpApr7dChange: number | null;
+  adxApr7dChange: number | null;
 }
 
 export default function useVelocityIndicators() {
   const [velocityData, setVelocityData] = useState<VelocityData>({
     tradingVolume24hChange: null,
     totalFees24hChange: null,
-    liquidationActivity24hChange: null,
+    liquidationVolume24hChange: null,
     alpApr24hChange: null,
     adxApr24hChange: null,
-    traders24hChange: null,
+    tradingVolume7dChange: null,
+    totalFees7dChange: null,
+    liquidationVolume7dChange: null,
+    alpApr7dChange: null,
+    adxApr7dChange: null,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,212 +36,162 @@ export default function useVelocityIndicators() {
       try {
         setIsLoading(true);
 
-        // Fetch all data in parallel
-        const [
-          poolData,
-          alpAprData,
-          adxAprData,
-          currentTradersCount,
-        ] = await Promise.all([
-          // Get pool info data for trading volume and fees
+        // Fetch both 24h and 7d data
+        const [poolData24h, poolData7d, adxAprData] = await Promise.all([
+          // 24h data (2 days)
           DataApiClient.getPoolInfo({
-            dataEndpoint: 'poolinfohourly',
+            dataEndpoint: 'poolinfodaily',
             queryParams:
-              'cumulative_trading_volume_usd=true&cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&cumulative_referrer_fee_usd=true',
+              'cumulative_trading_volume_usd=true&cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&cumulative_referrer_fee_usd=true&lp_apr_rolling_seven_day=true&lm_apr_rolling_seven_day=true',
             dataPeriod: 2,
           }),
 
-          // Get ALP APR data (using the same method as AprLpChart)
+          // 7d data (8 days to get 7-day change)
           DataApiClient.getPoolInfo({
-            dataEndpoint: 'poolinfohourly',
-            queryParams: 'lp_apr_rolling_seven_day=true',
-            dataPeriod: 2,
-            isLiquidApr: true,
+            dataEndpoint: 'poolinfodaily',
+            queryParams:
+              'cumulative_trading_volume_usd=true&cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&cumulative_referrer_fee_usd=true&lp_apr_rolling_seven_day=true&lm_apr_rolling_seven_day=true',
+            dataPeriod: 8,
           }),
 
-          // Get ADX APR data (using the chart data method)
-          DataApiClient.getChartAprsInfo(2, 'lm', 540), // 540 days lock period (default)
-
-          // Get current traders count (we'll implement historical later)
-          DataApiClient.getAllTimeTradersCount(),
+          // ADX APR data
+          DataApiClient.getChartAprsInfo(8, 'lm', 540),
         ]);
 
         if (
-          !poolData ||
-          !poolData.cumulative_trading_volume_usd ||
-          !poolData.snapshot_timestamp
+          !poolData24h ||
+          !poolData7d ||
+          !poolData24h.snapshot_timestamp ||
+          poolData24h.snapshot_timestamp.length < 2
         ) {
           return;
         }
 
-        const timestamps = poolData.snapshot_timestamp;
-        const tradingVolumes = poolData.cumulative_trading_volume_usd;
-
-        // Calculate total fees for each timestamp
-        const totalFees = timestamps.map((_, index) => {
-          return (
-            (poolData.cumulative_swap_fee_usd?.[index] || 0) +
-            (poolData.cumulative_liquidity_fee_usd?.[index] || 0) +
-            (poolData.cumulative_close_position_fee_usd?.[index] || 0) +
-            (poolData.cumulative_liquidation_fee_usd?.[index] || 0) +
-            (poolData.cumulative_borrow_fee_usd?.[index] || 0) +
-            (poolData.cumulative_referrer_fee_usd?.[index] || 0)
-          );
-        });
-
-        // Extract liquidation fees (as proxy for liquidation activity)
-        const liquidationFees = poolData.cumulative_liquidation_fee_usd || [];
-
-        if (timestamps.length < 2) {
-          return;
-        }
-
-        // Find the most recent data point and the one closest to 24h ago
-        const currentTime = new Date().getTime();
-        const oneDayAgo = currentTime - 24 * 60 * 60 * 1000;
-
-        // Find current data (most recent)
-        let currentIndex = 0;
-        let latestTime = new Date(timestamps[0]).getTime();
-        for (let i = 1; i < timestamps.length; i++) {
-          const time = new Date(timestamps[i]).getTime();
-          if (time > latestTime) {
-            latestTime = time;
-            currentIndex = i;
-          }
-        }
-
-        // Find data closest to 24h ago
-        let yesterdayIndex = 0;
-        let minDiff = Math.abs(new Date(timestamps[0]).getTime() - oneDayAgo);
-        for (let i = 1; i < timestamps.length; i++) {
-          const diff = Math.abs(new Date(timestamps[i]).getTime() - oneDayAgo);
-          if (diff < minDiff) {
-            minDiff = diff;
-            yesterdayIndex = i;
-          }
-        }
-
-        // Calculate percentage changes
-        const calculateChange = (current: number, previous: number) => {
+        // Helper functions
+        const calculateVolumeChange = (current: number, previous: number) =>
+          current - previous;
+        const calculatePercentageChange = (
+          current: number,
+          previous: number,
+        ) => {
           if (previous === 0) return current > 0 ? 100 : 0;
           return ((current - previous) / previous) * 100;
         };
 
-        const currentTradingVolume = tradingVolumes[currentIndex];
-        const yesterdayTradingVolume = tradingVolumes[yesterdayIndex];
-        const currentFees = totalFees[currentIndex];
-        const yesterdayFees = totalFees[yesterdayIndex];
-        
-        // Calculate liquidation activity change using liquidation fees as proxy
-        const currentLiquidationFees = liquidationFees[currentIndex] || 0;
-        const yesterdayLiquidationFees = liquidationFees[yesterdayIndex] || 0;
+        const calculateTotalFees = (data: any, index: number) => {
+          return (
+            (data.cumulative_swap_fee_usd?.[index] || 0) +
+            (data.cumulative_liquidity_fee_usd?.[index] || 0) +
+            (data.cumulative_close_position_fee_usd?.[index] || 0) +
+            (data.cumulative_liquidation_fee_usd?.[index] || 0) +
+            (data.cumulative_borrow_fee_usd?.[index] || 0) +
+            (data.cumulative_referrer_fee_usd?.[index] || 0)
+          );
+        };
 
-        // Process ALP APR data
-        let alpApr24hChange = null;
-        if (
-          alpAprData &&
-          alpAprData.lp_apr_rolling_seven_day &&
-          alpAprData.snapshot_timestamp
-        ) {
-          const alpTimestamps = alpAprData.snapshot_timestamp;
-          const alpAprs = alpAprData.lp_apr_rolling_seven_day;
+        // 24h calculations
+        const current24h = {
+          tradingVolume: poolData24h.cumulative_trading_volume_usd?.[0] || 0,
+          totalFees: calculateTotalFees(poolData24h, 0),
+          liquidationVolume:
+            poolData24h.cumulative_liquidation_fee_usd?.[0] || 0,
+          alpApr: poolData24h.lp_apr_rolling_seven_day?.[0] || 0,
+        };
 
-          if (alpTimestamps.length >= 2) {
-            // Find current and 24h ago indices for ALP data
-            let alpCurrentIndex = 0;
-            let alpLatestTime = new Date(alpTimestamps[0]).getTime();
-            for (let i = 1; i < alpTimestamps.length; i++) {
-              const time = new Date(alpTimestamps[i]).getTime();
-              if (time > alpLatestTime) {
-                alpLatestTime = time;
-                alpCurrentIndex = i;
-              }
-            }
+        const previous24h = {
+          tradingVolume: poolData24h.cumulative_trading_volume_usd?.[1] || 0,
+          totalFees: calculateTotalFees(poolData24h, 1),
+          liquidationVolume:
+            poolData24h.cumulative_liquidation_fee_usd?.[1] || 0,
+          alpApr: poolData24h.lp_apr_rolling_seven_day?.[1] || 0,
+        };
 
-            let alpYesterdayIndex = 0;
-            let alpMinDiff = Math.abs(
-              new Date(alpTimestamps[0]).getTime() - oneDayAgo,
-            );
-            for (let i = 1; i < alpTimestamps.length; i++) {
-              const diff = Math.abs(
-                new Date(alpTimestamps[i]).getTime() - oneDayAgo,
-              );
-              if (diff < alpMinDiff) {
-                alpMinDiff = diff;
-                alpYesterdayIndex = i;
-              }
-            }
+        // 7d calculations
+        const current7d = {
+          tradingVolume: poolData7d.cumulative_trading_volume_usd?.[0] || 0,
+          totalFees: calculateTotalFees(poolData7d, 0),
+          liquidationVolume:
+            poolData7d.cumulative_liquidation_fee_usd?.[0] || 0,
+          alpApr: poolData7d.lp_apr_rolling_seven_day?.[0] || 0,
+        };
 
-            const currentAlpApr = alpAprs[alpCurrentIndex];
-            const yesterdayAlpApr = alpAprs[alpYesterdayIndex];
-            alpApr24hChange = calculateChange(currentAlpApr, yesterdayAlpApr);
-          }
-        }
+        const previous7d = {
+          tradingVolume: poolData7d.cumulative_trading_volume_usd?.[7] || 0,
+          totalFees: calculateTotalFees(poolData7d, 7),
+          liquidationVolume:
+            poolData7d.cumulative_liquidation_fee_usd?.[7] || 0,
+          alpApr: poolData7d.lp_apr_rolling_seven_day?.[7] || 0,
+        };
 
-        // Process ADX APR data
+        // ADX APR calculations
         let adxApr24hChange = null;
+        let adxApr7dChange = null;
         if (adxAprData && adxAprData.aprs && adxAprData.aprs.length > 0) {
           const adxData = adxAprData.aprs.find(
             (x) => x.staking_type === 'lm' && x.lock_period === 540,
           );
 
-          if (adxData && adxData.total_apr && adxData.end_date) {
-            const adxTimestamps = adxData.end_date;
-            const adxAprs = adxData.total_apr;
-
-            if (adxTimestamps.length >= 2) {
-              // Find current and 24h ago indices for ADX data
-              let adxCurrentIndex = 0;
-              let adxLatestTime = new Date(adxTimestamps[0]).getTime();
-              for (let i = 1; i < adxTimestamps.length; i++) {
-                const time = new Date(adxTimestamps[i]).getTime();
-                if (time > adxLatestTime) {
-                  adxLatestTime = time;
-                  adxCurrentIndex = i;
-                }
-              }
-
-              let adxYesterdayIndex = 0;
-              let adxMinDiff = Math.abs(
-                new Date(adxTimestamps[0]).getTime() - oneDayAgo,
-              );
-              for (let i = 1; i < adxTimestamps.length; i++) {
-                const diff = Math.abs(
-                  new Date(adxTimestamps[i]).getTime() - oneDayAgo,
-                );
-                if (diff < adxMinDiff) {
-                  adxMinDiff = diff;
-                  adxYesterdayIndex = i;
-                }
-              }
-
-              const currentAdxApr = adxAprs[adxCurrentIndex];
-              const yesterdayAdxApr = adxAprs[adxYesterdayIndex];
-              adxApr24hChange = calculateChange(currentAdxApr, yesterdayAdxApr);
-            }
+          if (
+            adxData &&
+            adxData.total_apr &&
+            adxData.end_date &&
+            adxData.end_date.length >= 2
+          ) {
+            adxApr24hChange = calculatePercentageChange(
+              adxData.total_apr[0],
+              adxData.total_apr[1],
+            );
+          }
+          if (
+            adxData &&
+            adxData.total_apr &&
+            adxData.end_date &&
+            adxData.end_date.length >= 8
+          ) {
+            adxApr7dChange = calculatePercentageChange(
+              adxData.total_apr[0],
+              adxData.total_apr[7],
+            );
           }
         }
 
-        // For traders, we'll implement a simple solution for now
-        // Note: This is a placeholder as we don't have historical trader count API
-        // In a real implementation, you'd need a new API endpoint for historical trader counts
-        let traders24hChange = null;
-        // TODO: Implement historical trader count comparison when API is available
-
         setVelocityData({
-          tradingVolume24hChange: calculateChange(
-            currentTradingVolume,
-            yesterdayTradingVolume,
+          // 24h changes
+          tradingVolume24hChange: calculateVolumeChange(
+            current24h.tradingVolume,
+            previous24h.tradingVolume,
           ),
-          totalFees24hChange: calculateChange(currentFees, yesterdayFees),
-          liquidationActivity24hChange: calculateChange(
-            currentLiquidationFees,
-            yesterdayLiquidationFees,
+          totalFees24hChange: calculateVolumeChange(
+            current24h.totalFees,
+            previous24h.totalFees,
           ),
-          alpApr24hChange,
+          liquidationVolume24hChange: calculateVolumeChange(
+            current24h.liquidationVolume,
+            previous24h.liquidationVolume,
+          ),
+          alpApr24hChange: calculatePercentageChange(
+            current24h.alpApr,
+            previous24h.alpApr,
+          ),
           adxApr24hChange,
-          traders24hChange,
+          // 7d changes
+          tradingVolume7dChange: calculateVolumeChange(
+            current7d.tradingVolume,
+            previous7d.tradingVolume,
+          ),
+          totalFees7dChange: calculateVolumeChange(
+            current7d.totalFees,
+            previous7d.totalFees,
+          ),
+          liquidationVolume7dChange: calculateVolumeChange(
+            current7d.liquidationVolume,
+            previous7d.liquidationVolume,
+          ),
+          alpApr7dChange: calculatePercentageChange(
+            current7d.alpApr,
+            previous7d.alpApr,
+          ),
+          adxApr7dChange,
         });
       } catch (error) {
         console.error('Error fetching velocity data:', error);
