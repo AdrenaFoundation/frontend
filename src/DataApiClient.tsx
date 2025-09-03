@@ -1701,4 +1701,18 @@ export default class DataApiClient {
       return null;
     }
   }
+
+  public static async getActiveTraders(period: '24h' | '7d' = '24h') {
+    const response = await fetch(
+      `${DataApiClient.DATAPI_URL}/active-traders?period=${period}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const data = await response.json();
+    return data.data?.active_traders || 0;
+  }
 }

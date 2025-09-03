@@ -87,7 +87,7 @@ export default function ALPSwap({
 
           <ul className="mb-1">
             <li className="text-xs font-mono opacity-70">10 BPS on USDC</li>
-            <li className="text-xs font-mono opacity-70">100 BPS on BTC/ETH</li>
+            <li className="text-xs font-mono opacity-70">100 BPS on BTC/SOL</li>
             <li className="text-xs font-mono opacity-70">200 BPS on BONK</li>
           </ul>
 
