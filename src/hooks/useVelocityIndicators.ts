@@ -1,5 +1,6 @@
-import DataApiClient from '@/DataApiClient';
 import { useEffect, useState } from 'react';
+
+import DataApiClient from '@/DataApiClient';
 
 interface VelocityDataPeriod {
   tradingVolumeChange: number | null;
@@ -14,6 +15,17 @@ interface VelocityData {
   '24h': VelocityDataPeriod;
   '7d': VelocityDataPeriod;
   lastFetchTime: number;
+}
+
+interface PoolDataHourly {
+  cumulative_trading_volume_usd?: number[];
+  cumulative_swap_fee_usd?: number[];
+  cumulative_liquidity_fee_usd?: number[];
+  cumulative_close_position_fee_usd?: number[];
+  cumulative_liquidation_fee_usd?: number[];
+  cumulative_borrow_fee_usd?: number[];
+  cumulative_referrer_fee_usd?: number[];
+  lp_apr_rolling_seven_day?: number[];
 }
 
 export default function useVelocityIndicators() {
@@ -67,7 +79,7 @@ export default function useVelocityIndicators() {
 
         if (!poolDataHourly) return;
 
-        const calculateTotalFees = (data: any, index: number) =>
+        const calculateTotalFees = (data: PoolDataHourly, index: number) =>
           (data.cumulative_swap_fee_usd?.[index] || 0) +
           (data.cumulative_liquidity_fee_usd?.[index] || 0) +
           (data.cumulative_close_position_fee_usd?.[index] || 0) +
@@ -144,7 +156,7 @@ export default function useVelocityIndicators() {
     fetchVelocityData();
     const interval = setInterval(fetchVelocityData, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [data.lastFetchTime]);
 
   return data;
 }

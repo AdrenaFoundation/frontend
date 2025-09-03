@@ -1,8 +1,9 @@
-import chevronDown from '@/../public/images/chevron-down.svg';
-import FormatNumber from '@/components/Number/FormatNumber';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
+
+import chevronDown from '@/../public/images/chevron-down.svg';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 interface VelocityIndicatorProps {
   change: number | null;
