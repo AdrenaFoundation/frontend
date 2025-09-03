@@ -42,8 +42,8 @@ import { hexStringToByteArray } from './utils';
 
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
-  // public static DATAPI_URL = 'http://localhost:8080';
-  public static DATAPI_URL = 'https://datapi.adrena.xyz';
+  public static DATAPI_URL = 'http://localhost:8080';
+  // public static DATAPI_URL = 'https://datapi.adrena.xyz';
 
   public static async getPriceAtDate(date: Date): Promise<{
     adxPrice: number | null;
@@ -1700,5 +1700,19 @@ export default class DataApiClient {
       console.error('Error exporting claims:', error);
       return null;
     }
+  }
+
+  public static async getActiveTraders(period: '24h' | '7d' = '24h') {
+    const response = await fetch(
+      `${DataApiClient.DATAPI_URL}/active-traders?period=${period}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const data = await response.json();
+    return data.data?.active_traders || 0;
   }
 }

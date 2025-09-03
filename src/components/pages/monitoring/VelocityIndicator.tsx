@@ -1,67 +1,68 @@
+import chevronDown from '@/../public/images/chevron-down.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
+import Image from 'next/image';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 interface VelocityIndicatorProps {
   change: number | null;
-  isLoading?: boolean;
   className?: string;
-  isCurrency?: boolean;
+  format?: 'currency' | 'percentage' | 'number';
   period?: '24h' | '7d';
+  onTogglePeriod?: () => void;
 }
 
-export default function VelocityIndicator({
+const VelocityIndicator = React.memo(function VelocityIndicator({
   change,
-  isLoading = false,
   className,
-  isCurrency = false,
+  format = 'currency',
   period = '24h',
+  onTogglePeriod,
 }: VelocityIndicatorProps) {
-  if (isLoading || change === null) {
-    return (
-      <div className={twMerge('text-xs text-txtfade', className)}>
-        <div className="w-12 h-3 bg-third/30 rounded animate-pulse" />
-      </div>
-    );
+  if (change === null) {
+    return <div className={twMerge('text-base', className)}>-</div>;
   }
 
   const isPositive = change >= 0;
-  const icon = isPositive ? '↗' : '↘';
-  const sign = isPositive ? '+' : '-';
+  const sign = isPositive ? '+' : '';
 
   return (
     <div
       className={twMerge(
-        'flex items-center gap-1 text-xs font-mono',
-        isPositive ? 'text-green-400' : 'text-brightred',
+        'flex items-center gap-1 text-base font-mono',
         className,
       )}
     >
-      {isCurrency ? (
-        <>
-          <span className="text-xs">{sign}$</span>
-          <FormatNumber
-            nb={Math.abs(change)}
-            format="number"
-            precision={0}
-            className="text-xs"
-            isDecimalDimmed={false}
+      {/* Chevron toggle */}
+      {onTogglePeriod && (
+        <div
+          className="flex flex-col cursor-pointer hover:opacity-70 transition-opacity"
+          onClick={onTogglePeriod}
+        >
+          <Image
+            src={chevronDown}
+            alt="up"
+            className="w-3 h-3 opacity-50 rotate-180 -mb-1"
           />
-        </>
-      ) : (
-        <>
-          <span className="text-xs">{sign}</span>
-          <FormatNumber
-            nb={Math.abs(change)}
-            format="percentage"
-            precision={1}
-            className="text-xs"
-            isDecimalDimmed={false}
-          />
-        </>
+          <Image src={chevronDown} alt="down" className="w-3 h-3 opacity-50" />
+        </div>
       )}
-      <span className="text-txtfade opacity-75">{period}</span>
-      <span className="text-[0.8em] ml-auto">{icon}</span>{' '}
-      {/* Arrow on the right */}
+
+      {/* Period indicator */}
+      <span className="text-base opacity-50">{period}</span>
+
+      {/* Value */}
+      <FormatNumber
+        nb={change}
+        format={format}
+        precision={format === 'currency' ? 0 : format === 'number' ? 0 : 1}
+        prefix={sign}
+        className={twMerge('text-base', isPositive ? 'text-green' : 'text-red')}
+        isDecimalDimmed={false}
+        showSignBeforePrefix={true}
+      />
     </div>
   );
-}
+});
+
+export default VelocityIndicator;

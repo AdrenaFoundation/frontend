@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import Switch from '@/components/common/Switch/Switch';
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import BorrowRateChart from '@/components/pages/global/BorrowRate/BorrowRateChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
@@ -37,14 +36,25 @@ export default function BasicMonitoring({
   const [aprs, setAprs] = React.useState<{ lp: number; lm: number } | null>(
     null,
   );
-  const [timePeriod, setTimePeriod] = useState<'24h' | '7d'>('24h');
+  const [timePeriod, setTimePeriod] = useState<'24h' | '7d'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('monitoring-time-period');
+      return saved === '24h' || saved === '7d' ? saved : '24h';
+    }
+    return '24h';
+  });
 
-  const { velocityData, isLoading: isVelocityLoading } =
-    useVelocityIndicators();
+  const velocityData = useVelocityIndicators();
 
   const useSqrtScaleForVolumeAndFeeChart = useSelector(
     (state) => state.settings.useSqrtScaleForVolumeAndFeeChart,
   );
+
+  const handleTimePeriodChange = () => {
+    const newPeriod = timePeriod === '24h' ? '7d' : '24h';
+    setTimePeriod(newPeriod);
+    localStorage.setItem('monitoring-time-period', newPeriod);
+  };
 
   useEffect(() => {
     if (view !== 'lite') return;
@@ -56,15 +66,13 @@ export default function BasicMonitoring({
           lm: lm_apr_rolling_seven_day,
         });
       })
-      .catch(() => {
-      });
+      .catch(() => {});
 
     DataApiClient.getAllTimeTradersCount()
       .then((count) => {
         setAllTimeTraders(count);
       })
-      .catch(() => {
-      });
+      .catch(() => {});
 
     const interval = setInterval(() => {
       DataApiClient.getRolling7DGlobalApr()
@@ -74,58 +82,23 @@ export default function BasicMonitoring({
             lm: lm_apr_rolling_seven_day,
           });
         })
-        .catch(() => {
-        });
+        .catch(() => {});
 
       DataApiClient.getAllTimeTradersCount()
         .then((count) => {
           setAllTimeTraders(count);
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     }, 60000);
 
     return () => clearInterval(interval);
   }, [view]);
-
-  const getVelocityData = (
-    metric:
-      | 'tradingVolume'
-      | 'totalFees'
-      | 'liquidationVolume'
-      | 'alpApr'
-      | 'adxApr',
-  ) => {
-    const suffix = timePeriod === '24h' ? '24hChange' : '7dChange';
-    const key = `${metric}${suffix}` as keyof typeof velocityData;
-    return velocityData[key];
-  };
 
   return (
     <div className="flex flex-col gap-2">
       {mainPool && (
         <StyledContainer className="p-0">
           <div className="flex flex-wrap justify-between">
-            {/* Time Period Toggle */}
-            <div className="border-0 min-w-[12em] flex flex-col justify-center">
-              <div className="pb-2 text-center">
-                <p className="text-[0.7em] sm:text-[0.7em] opacity-50">
-                  Time Period
-                </p>
-              </div>
-              <div className="flex items-center justify-center gap-4">
-                <span className="text-sm opacity-50">24h</span>
-                <Switch
-                  checked={timePeriod === '7d'}
-                  onChange={() =>
-                    setTimePeriod(timePeriod === '24h' ? '7d' : '24h')
-                  }
-                  size="medium"
-                />
-                <span className="text-sm opacity-50">7d</span>
-              </div>
-            </div>
-
             <NumberDisplay
               title="TOTAL TRADING VOLUME"
               nb={mainPool.totalTradingVolume}
@@ -137,11 +110,11 @@ export default function BasicMonitoring({
               titleClassName="text-[0.7em] sm:text-[0.7em]"
               footer={
                 <VelocityIndicator
-                  change={getVelocityData('tradingVolume')}
-                  isLoading={isVelocityLoading}
+                  change={velocityData[timePeriod].tradingVolumeChange}
                   className="mt-1"
-                  isCurrency={true}
+                  format="currency"
                   period={timePeriod}
+                  onTogglePeriod={handleTimePeriodChange}
                 />
               }
             />
@@ -157,11 +130,11 @@ export default function BasicMonitoring({
               titleClassName="text-[0.7em] sm:text-[0.7em]"
               footer={
                 <VelocityIndicator
-                  change={getVelocityData('liquidationVolume')}
-                  isLoading={isVelocityLoading}
+                  change={velocityData[timePeriod].liquidationVolumeChange}
                   className="mt-1"
-                  isCurrency={true}
+                  format="currency"
                   period={timePeriod}
+                  onTogglePeriod={handleTimePeriodChange}
                 />
               }
             />
@@ -177,11 +150,11 @@ export default function BasicMonitoring({
               titleClassName="text-[0.7em] sm:text-[0.7em]"
               footer={
                 <VelocityIndicator
-                  change={getVelocityData('totalFees')}
-                  isLoading={isVelocityLoading}
+                  change={velocityData[timePeriod].totalFeesChange}
                   className="mt-1"
-                  isCurrency={true}
+                  format="currency"
                   period={timePeriod}
+                  onTogglePeriod={handleTimePeriodChange}
                 />
               }
             />
@@ -199,11 +172,11 @@ export default function BasicMonitoring({
               tippyInfo="Average yield for ALP in the last 7 days"
               footer={
                 <VelocityIndicator
-                  change={getVelocityData('alpApr')}
-                  isLoading={isVelocityLoading}
+                  change={velocityData[timePeriod].alpAprChange}
                   className="mt-1"
-                  isCurrency={false}
+                  format="percentage"
                   period={timePeriod}
+                  onTogglePeriod={handleTimePeriodChange}
                 />
               }
             />
@@ -221,17 +194,17 @@ export default function BasicMonitoring({
               tippyInfo="Average yield for 540d staked ADX in the last 7 days"
               footer={
                 <VelocityIndicator
-                  change={getVelocityData('adxApr')}
-                  isLoading={isVelocityLoading}
+                  change={velocityData[timePeriod].adxAprChange}
                   className="mt-1"
-                  isCurrency={false}
+                  format="percentage"
                   period={timePeriod}
+                  onTogglePeriod={handleTimePeriodChange}
                 />
               }
             />
 
             <NumberDisplay
-              title="Traders"
+              title="Total Traders"
               nb={allTimeTraders ?? null}
               format="number"
               precision={0}
@@ -239,6 +212,15 @@ export default function BasicMonitoring({
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
               headerClassName="pb-2"
               titleClassName="text-[0.7em] sm:text-[0.7em]"
+              footer={
+                <VelocityIndicator
+                  change={velocityData[timePeriod].activeTraders}
+                  className="mt-1"
+                  format="number"
+                  period={timePeriod}
+                  onTogglePeriod={handleTimePeriodChange}
+                />
+              }
             />
           </div>
         </StyledContainer>
