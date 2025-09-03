@@ -19,7 +19,6 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
-import { BN } from '@coral-xyz/anchor';
 
 export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const wallet = useSelector((state) => state.walletState.wallet);
@@ -151,84 +150,16 @@ export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: b
     };
 
     const unrealizedPnl = useMemo(() => {
-        let i = 0;
-        const unrealizedPnl = allPositions.reduce((pnl, position) => {
-            // if (position.custody.toBase58() !== 'GZ9XfWwgTRhkma2Y91Q9r1XKotNXYjBnKKabj19rhT71') { // SOL
-            //     // if (position.custody.toBase58() !== 'GFu3qS22mo6bAjg4Lr5R7L8pPgHq6GvbjJPKEHkbbs2c') { // BTC
-            //     return pnl;
-            // }
-
-            i++;
-
+        return allPositions.reduce((pnl, position) => {
             return pnl + (position.pnl ?? 0);
         }, 0);
-
-        console.log('>>>unrealizedPnl', unrealizedPnl, i);
-
-        return unrealizedPnl;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allPositions.map((x) => x.pnl ?? 0).join(',')]);
 
-    // const quantity = useMemo(() => {
-    //     const { weightedPrice, totalQuantity } = allPositions.reduce(({
-    //         weightedPrice,
-    //         totalQuantity,
-    //     }, position) => {
-    //         if (position.custody.toBase58() !== 'GZ9XfWwgTRhkma2Y91Q9r1XKotNXYjBnKKabj19rhT71') { // SOL
-    //             // if (position.custody.toBase58() !== 'GFu3qS22mo6bAjg4Lr5R7L8pPgHq6GvbjJPKEHkbbs2c') { // BTC
-    //             return { weightedPrice, totalQuantity };
-    //         }
-
-    //         console.log('> sizeUsd', position.nativeObject.sizeUsd.toString(), position.nativeObject.price.toString());
-
-    //         const sizeScaled = position.nativeObject.sizeUsd.mul(new BN(10 ** 4));
-    //         const quantity = sizeScaled.mul(new BN(10000)).div(position.nativeObject.price);
-
-    //         console.log('> quantity', quantity.toString());
-    //         console.log('> sizeScaled', sizeScaled.toString());
-
-    //         return {
-    //             weightedPrice: weightedPrice.add(position.nativeObject.price.mul(quantity)),
-    //             totalQuantity: totalQuantity.add(quantity),
-    //         }
-    //     }, { weightedPrice: new BN(0), totalQuantity: new BN(0) });
-
-    //     console.log(">>> Weighted Price and Quantity", { weightedPrice: weightedPrice.toString(), totalQuantity: totalQuantity.toString() });
-    //     if (totalQuantity.isZero()) return 0;
-    //     console.log('>>> Resulting price: {}', weightedPrice.div(totalQuantity).toString());
-
-    //     return weightedPrice.div(totalQuantity);
-
-    // }, [allPositions]);
-
     const unrealizedBorrowFee = useMemo(() => {
-        const borrowFeeUsd = allPositions.reduce((total, position) => {
-            // if (position.custody.toBase58() !== 'GZ9XfWwgTRhkma2Y91Q9r1XKotNXYjBnKKabj19rhT71') { // SOL
-            //      if (position.custody.toBase58() !== 'GFu3qS22mo6bAjg4Lr5R7L8pPgHq6GvbjJPKEHkbbs2c') { // BTC
-            //     return total;
-            // }
-
-            return total + (position.borrowFeeUsd ?? 0);
+        return allPositions.reduce((total, position) => {
+            return total + ((position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0));
         }, 0);
-
-        const paidInterestUsd = allPositions.reduce((total, position) => {
-            //if (position.custody.toBase58() !== 'GZ9XfWwgTRhkma2Y91Q9r1XKotNXYjBnKKabj19rhT71') { // SOL
-            //     if (position.custody.toBase58() !== 'GFu3qS22mo6bAjg4Lr5R7L8pPgHq6GvbjJPKEHkbbs2c') { // BTC
-            //    return total;
-            // }
-
-            return total + (position.paidInterestUsd ?? 0);
-        }, 0);
-
-        // 294,207
-        // 803,604
-
-        // 249,769,229,367+1,006,547,693,350+97,932,424,692+1,838,417,072
-
-        console.log(">>>borrowFeeUsd", borrowFeeUsd);
-        console.log(">>>paidInterestUsd", paidInterestUsd);
-
-        return borrowFeeUsd - paidInterestUsd;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allPositions.map((x) => x.borrowFeeUsd ?? 0).join(',')]);
 
