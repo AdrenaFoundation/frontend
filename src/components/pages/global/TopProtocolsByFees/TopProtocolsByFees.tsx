@@ -11,6 +11,7 @@ export default function TopProtocolsByFees() {
     name: string;
     fees: number;
     rank: number;
+    logo: string;
   }[] | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
@@ -19,6 +20,7 @@ export default function TopProtocolsByFees() {
     total24h: number;
     total7d: number;
     total30d: number;
+    logo: string;
   }> | null>(null);
 
   const getTopProtocolsByApi = useCallback(async () => {
@@ -35,6 +37,7 @@ export default function TopProtocolsByFees() {
           total24h: number;
           total7d: number;
           total30d: number;
+          logo: string;
         }>;
       } = await res.json();
 
@@ -56,7 +59,7 @@ export default function TopProtocolsByFees() {
 
       if (!attributeName) return;
 
-      const protocols = apiRetProtocols.filter((p) => typeof p[attributeName] != 'undefined').map((protocol) => [protocol[attributeName], protocol.name] as const);
+      const protocols = apiRetProtocols.filter((p) => typeof p[attributeName] != 'undefined').map((protocol) => [protocol[attributeName], protocol.name, protocol.logo] as const);
 
       // Sort protocols by total7d in descending order and take the 3 protocols UP and down Adrena
       const sortedProtocols = protocols
@@ -68,10 +71,11 @@ export default function TopProtocolsByFees() {
       const topProtocols = sortedProtocols.slice(Math.max(0, adrenaIndex - 3), adrenaIndex)
         .concat(sortedProtocols.slice(adrenaIndex, adrenaIndex + 4));
 
-      setData(topProtocols.map(([fees, name], i) => ({
+      setData(topProtocols.map(([fees, name, logo], i) => ({
         name,
         fees,
         rank: adrenaIndex - 3 + i + 1,
+        logo,
       })));
     } catch (e) {
       console.error(e);
@@ -110,13 +114,21 @@ export default function TopProtocolsByFees() {
 
   return <div className='flex flex-col'>
     <div className="flex flex-col h-full w-full max-h-[18em]">
-      <div className="flex mb-3 justify-between items-center">
-        <div className='flex gap-2 items-center'>
-          <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' />
+      <div className='flex flex-col mb-3'>
+        <div className='flex justify-between items-center'>
+          <div className='flex gap-2 items-center'>
+            <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' />
 
-          <h2>TOP PROTOCOLS BY FEES</h2>
+            <h2>TOP PROTOCOLS BY FEES</h2>
+          </div>
+          <PeriodSelector period={period} setPeriod={setPeriod} periods={['1d', '7d', '1M']} />
         </div>
-        <PeriodSelector period={period} setPeriod={setPeriod} periods={['1d', '7d', '1M']} />
+
+        <div className='text-xxs lowercase opacity-30 cursor-pointer hover:opacity-60'>
+          Source: <a href="https://defillama.com/fees" target='_blank'>
+            https://defillama.com/fees
+          </a>
+        </div>
       </div>
 
       <div className='flex'>
@@ -126,10 +138,13 @@ export default function TopProtocolsByFees() {
       </div>
 
       <div className='flex flex-col'>
-        {data.map(({ name, fees, rank }, i) => (
+        {data.map(({ name, fees, rank, logo }, i) => (
           <div key={name} className={`flex justify-between items-center border-b ${i === 0 ? 'border-t' : ''} border-bcolor p-1`}>
             <div className="flex items-center gap-2">
               <div className={`text-sm font-boldy w-6 text-left ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{rank}</div>
+              { /* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={logo} alt={`${name} logo`} className={`h-4 w-4 ${name === 'Adrena Protocol' ? 'grayscale' : 'grayscale'}`} />
+
               <div className={`text-sm font-boldy ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{name}</div>
             </div>
 
