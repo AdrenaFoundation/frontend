@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 
 import { AdrenaClient } from '@/AdrenaClient';
+import CopyButton from '@/components/common/CopyButton/CopyButton';
 import { CustodyExtended } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
@@ -15,24 +16,30 @@ export default function OracleAccounts({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const pythProgramId = new PublicKey(
+    'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
+  );
+
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>Oracle Accounts</p>
-        <p className="text-base opacity-50">
-          Oracle on-chain accounts (PDAs).
-        </p>
+        <p className="text-base opacity-50">Oracle on-chain accounts (PDAs).</p>
       </div>
 
       <Table
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
-        className='rounded-none bg-transparent border-none'
+        className="rounded-none bg-transparent border-none"
         data={[
           {
             rowTitle: (
               <div className="flex items-center font-boldy">
+                <CopyButton
+                  textToCopy={pythProgramId.toBase58()}
+                  notificationTitle="Pyth Program address copied to clipboard"
+                />
                 Pyth Program
                 <InfoAnnotation
                   text="Account containing the source code of the Pyth smart contract."
@@ -43,9 +50,7 @@ export default function OracleAccounts({
             value: (
               <OnchainAccountInfo
                 className="md:ml-auto"
-                address={
-                  new PublicKey('rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ')
-                }
+                address={pythProgramId}
               />
             ),
           },
@@ -55,6 +60,10 @@ export default function OracleAccounts({
                 {
                   rowTitle: (
                     <div className="flex items-center">
+                      <CopyButton
+                        textToCopy={AdrenaClient.oraclePda.toBase58()}
+                        notificationTitle={`${custody.tokenInfo.symbol} Oracle PDA address copied to clipboard`}
+                      />
                       {custody.tokenInfo.symbol} Oracle
                       <TitleAnnotation text="PDA" />
                     </div>
@@ -72,6 +81,10 @@ export default function OracleAccounts({
                 rows.push({
                   rowTitle: (
                     <div className="flex items-center">
+                      <CopyButton
+                        textToCopy={AdrenaClient.oraclePda.toBase58()}
+                        notificationTitle={`${custody.tradeTokenInfo.symbol} Oracle PDA address copied to clipboard`}
+                      />
                       {custody.tradeTokenInfo.symbol} Oracle
                       <TitleAnnotation text="PDA" />
                     </div>

@@ -44,7 +44,9 @@ export default function RemainingTimeToDate({
       ) : null}
 
       <div className={twMerge('font-mono', classNameTime)}>
-        {remaining !== null ? formatMilliseconds(remaining < 0 && stopAtZero ? 0 : remaining) : '-'}
+        {remaining !== null
+          ? formatMilliseconds(remaining < 0 && stopAtZero ? 0 : remaining)
+          : '-'}
       </div>
     </div>
   );
