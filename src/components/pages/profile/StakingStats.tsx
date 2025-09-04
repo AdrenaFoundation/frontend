@@ -24,6 +24,7 @@ import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRech
 import FormatNumber from '@/components/Number/FormatNumber';
 import { normalize } from '@/constant';
 import DataApiClient from '@/DataApiClient';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useClaimHistory from '@/hooks/useClaimHistory';
 import { WalletStakingAccounts } from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
@@ -575,6 +576,7 @@ const StatsTable = ({
     format?: 'currency' | 'number';
   }[];
 }) => {
+  const isMobile = useBetterMediaQuery('(max-width: 1200px)');
   const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
 
   const headers: TableV2HeaderType[] = [
@@ -664,7 +666,7 @@ const StatsTable = ({
         data={data}
         bottomBar={<BottomBar stats={stats} onDownloadClick={onDownloadClick} />}
         height={'16rem'}
-        isSticky={window.innerWidth < 1200}
+        isSticky={!!isMobile}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         currentPage={currentPage}
@@ -724,36 +726,40 @@ const BottomBar = ({
     format?: 'currency' | 'number';
   }[];
   onDownloadClick: () => void;
-}) => (
-  <div className="flex flex-row justify-between">
-    <div className="flex flex-row items-center gap-2 sm:gap-5 p-1.5 px-2 sm:px-3 border-r border-r-inputcolor">
-      {stats.map((stat) => (
-        <div key={stat.title} className="flex flex-row gap-2 items-center">
-          <p className="text-xs font-mono opacity-50">{stat.title}</p>
-          <FormatNumber
-            nb={stat.value}
-            format={stat.format}
-            isDecimalDimmed={false}
-            className="text-xs font-interSemibold"
-            isAbbreviate={window.innerWidth < 640}
+}) => {
+  const isMobile = useBetterMediaQuery('(max-width: 640px)');
+
+  return (
+    <div className="flex flex-row justify-between">
+      <div className="flex flex-row items-center gap-2 sm:gap-5 p-1.5 px-2 sm:px-3 border-r border-r-inputcolor">
+        {stats.map((stat) => (
+          <div key={stat.title} className="flex flex-row gap-2 items-center">
+            <p className="text-xs font-mono opacity-50">{stat.title}</p>
+            <FormatNumber
+              nb={stat.value}
+              format={stat.format}
+              isDecimalDimmed={false}
+              className="text-xs font-interSemibold"
+              isAbbreviate={!!isMobile}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-row items-center">
+        <div
+          className="flex flex-row items-center p-1.5 px-2 sm:px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
+          onClick={onDownloadClick}
+        >
+          <Image
+            src={downloadIcon}
+            alt="Download"
+            width={16}
+            height={16}
+            className="w-4 h-4"
           />
         </div>
-      ))}
-    </div>
-
-    <div className="flex flex-row items-center">
-      <div
-        className="flex flex-row items-center p-1.5 px-2 sm:px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-        onClick={onDownloadClick}
-      >
-        <Image
-          src={downloadIcon}
-          alt="Download"
-          width={16}
-          height={16}
-          className="w-4 h-4"
-        />
       </div>
     </div>
-  </div>
-);
+  )
+}

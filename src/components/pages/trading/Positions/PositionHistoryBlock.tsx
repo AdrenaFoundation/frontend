@@ -20,6 +20,7 @@ import {
   PositionTransaction,
 } from '@/types';
 import {
+  formatDate2Digits,
   formatTimeDifference,
   getAbbrevWalletAddress,
   getFullTimeDifference,
@@ -195,7 +196,7 @@ const PositionHistoryBlock = ({
               position={positionHistory}
               readOnly={true}
               isHistory={true}
-              setTokenB={() => {}}
+              setTokenB={() => { }}
             />
           }
           pnl={
@@ -414,11 +415,11 @@ const PositionHistoryBlock = ({
                 className={twMerge(
                   'flex flex-col justify-center items-center',
                   isMini &&
-                    'col-span-1 col-start-2 row-start-5 mt-1 w-full justify-self-end',
+                  'col-span-1 col-start-2 row-start-5 mt-1 w-full justify-self-end',
                   isMedium && 'col-span-1 col-start-4 row-start-3 w-full',
                   isCompact && 'col-span-1 col-start-4 row-start-3 w-full',
                   isBig &&
-                    'col-span-1 col-start-8 row-start-2 mt-1 w-full justify-self-end',
+                  'col-span-1 col-start-8 row-start-2 mt-1 w-full justify-self-end',
                   isBiggest && 'flex-row justify-center items-center gap-2',
                 )}
               >
@@ -490,121 +491,124 @@ const PositionHistoryBlock = ({
               className="overflow-hidden flex w-full"
             >
               {events.length > 0 ? (
-                <div className="flex flex-col gap-3 w-full mt-4 p-3 bg-main rounded-xl border border-bcolor">
+                <div className="flex flex-col gap-3 w-full mt-4 p-3 bg-main rounded-xl border border-bcolor max-h-[20rem] overflow-y-auto">
                   {events.map((transaction: PositionTransaction) => (
                     <div
                       key={transaction.transactionId}
                       className="w-fit rounded-xl border border-bcolor bg-secondary"
                     >
                       <div className="flex flex-col lg:flex-row gap-6 items-center justify-between px-3 py-2.5">
-                        <div>
-                          <div className="flex flex-row items-center gap-1">
-                            <p className="text-xs opacity-50">Method</p>
-                            <Link
-                              href={getTxExplorer(transaction.signature)}
-                              target="_blank"
+                        <div className='flex flex-row gap-6'>
+                          <div>
+                            <div className="flex flex-row items-center gap-1">
+                              <p className="text-xs opacity-50">Method</p>
+                              <Link
+                                href={getTxExplorer(transaction.signature)}
+                                target="_blank"
+                              >
+                                <Image
+                                  src={externalLinkLogo}
+                                  alt="View transaction"
+                                  width={12}
+                                  height={12}
+                                  className="w-[0.375rem] h-[0.375rem] opacity-50"
+                                />
+                              </Link>
+                            </div>
+                            <p
+                              className={twMerge(
+                                getEventTypeColor(transaction.method),
+                                'text-sm font-interSemibold',
+                              )}
                             >
-                              <Image
-                                src={externalLinkLogo}
-                                alt="View transaction"
-                                width={12}
-                                height={12}
-                                className="w-[0.375rem] h-[0.375rem] opacity-50"
-                              />
-                            </Link>
+                              {getEventTypeLabel(transaction.method)}
+                            </p>
                           </div>
-                          <p
-                            className={twMerge(
-                              getEventTypeColor(transaction.method),
-                              'text-sm font-interSemibold',
-                            )}
-                          >
-                            {getEventTypeLabel(transaction.method)}
-                          </p>
+                          <div className="ml-2">
+                            <p className='text-xs opacity-50'>Date</p>
+                            <p className='text-xs opacity-75'>{formatDate2Digits(transaction.transactionDate)}</p>
+                          </div>
                         </div>
-                        {/* <div className="ml-2 text-xs opacity-50">
-                          {formatDate2Digits(transaction.transactionDate)}
-                        </div> */}
                         <div className="text-xs text-white flex items-center gap-6 flex-1 flex-wrap">
                           {transaction.additionalInfos
                             ? Object.entries(transaction.additionalInfos)
-                                .filter(
-                                  ([key, value]) =>
-                                    value !== null &&
-                                    key !== 'positionPubkey' &&
-                                    key !== 'positionId',
-                                )
-                                .map(([key, value]) => {
-                                  const formatKey = (key: string) => {
-                                    const keyMap: Record<string, string> = {
-                                      size: 'Size',
-                                      price: 'Price',
-                                      leverage: 'Leverage',
-                                      pnl: 'PnL',
-                                      collateralAmountUsd: 'Collateral',
-                                      addAmountUsd: 'Added',
-                                      removeAmountUsd: 'Removed',
-                                      fees: 'Fees',
-                                      exitFees: 'Exit Fees',
-                                      borrowFees: 'Borrow Fees',
-                                      exitAmountNative: 'Native Exit Amount',
-                                      newCollateralAmountUsd: 'New Collateral',
-                                      collateralAmount: 'Collateral',
-                                      collateralAmountNative:
-                                        'Native Collateral',
-                                      stopLossLimitPrice: 'Stop Loss',
-                                      takeProfitLimitPrice: 'Take Profit',
-                                      position_pubkey: 'Position Pubkey',
-                                      percentage: 'Percentage',
-                                    };
-                                    return keyMap[key] || key;
+                              .filter(
+                                ([key, value]) =>
+                                  value !== null &&
+                                  key !== 'positionPubkey' &&
+                                  key !== 'positionId',
+                              )
+                              .map(([key, value]) => {
+                                const formatKey = (key: string) => {
+                                  const keyMap: Record<string, string> = {
+                                    size: 'Size',
+                                    price: 'Price',
+                                    leverage: 'Leverage',
+                                    pnl: 'PnL',
+                                    collateralAmountUsd: 'Collateral',
+                                    addAmountUsd: 'Added',
+                                    removeAmountUsd: 'Removed',
+                                    fees: 'Fees',
+                                    exitFees: 'Exit Fees',
+                                    borrowFees: 'Borrow Fees',
+                                    exitAmountNative: 'Native Exit Amount',
+                                    newCollateralAmountUsd: 'New Collateral',
+                                    collateralAmount: 'Collateral',
+                                    collateralAmountNative:
+                                      'Native Collateral',
+                                    stopLossLimitPrice: 'Stop Loss',
+                                    takeProfitLimitPrice: 'Take Profit',
+                                    position_pubkey: 'Position Pubkey',
+                                    percentage: 'Percentage',
                                   };
+                                  return keyMap[key] || key;
+                                };
 
-                                  const formatValue = (
-                                    value: string | number | null,
-                                  ) => {
-                                    if (typeof value === 'number') {
-                                      return (
-                                        <FormatNumber
-                                          nb={value}
-                                          format={
-                                            key === 'exitAmountNative' ||
+                                const formatValue = (
+                                  value: string | number | null,
+                                ) => {
+                                  if (typeof value === 'number') {
+                                    return (
+                                      <FormatNumber
+                                        nb={value}
+                                        format={
+                                          key === 'exitAmountNative' ||
                                             key === 'collateralAmountNative'
-                                              ? 'number'
-                                              : key === 'percentage'
-                                                ? 'percentage'
-                                                : 'currency'
-                                          }
-                                          precision={
-                                            positionHistory.token.symbol ===
+                                            ? 'number'
+                                            : key === 'percentage'
+                                              ? 'percentage'
+                                              : 'currency'
+                                        }
+                                        precision={
+                                          positionHistory.token.symbol ===
                                             'BONK'
-                                              ? 8
-                                              : 2
-                                          }
-                                          className="text-xs text-white"
-                                          isDecimalDimmed={false}
-                                        />
-                                      );
-                                    }
-                                    if (key === 'position_pubkey') {
-                                      return getAbbrevWalletAddress(
-                                        value as string,
-                                      );
-                                    }
-                                    return value;
-                                  };
+                                            ? 8
+                                            : 2
+                                        }
+                                        className="text-xs text-white"
+                                        isDecimalDimmed={false}
+                                      />
+                                    );
+                                  }
+                                  if (key === 'position_pubkey') {
+                                    return getAbbrevWalletAddress(
+                                      value as string,
+                                    );
+                                  }
+                                  return value;
+                                };
 
-                                  return (
-                                    <div key={key}>
-                                      <p className="font-interMedium text-xs opacity-50">
-                                        {formatKey(key)}
-                                      </p>
-                                      <p className="text-sm opacity-75">
-                                        {formatValue(value)}
-                                      </p>
-                                    </div>
-                                  );
-                                })
+                                return (
+                                  <div key={key}>
+                                    <p className="font-interMedium text-xs opacity-50">
+                                      {formatKey(key)}
+                                    </p>
+                                    <p className="text-sm opacity-75">
+                                      {formatValue(value)}
+                                    </p>
+                                  </div>
+                                );
+                              })
                             : null}
                         </div>
                       </div>

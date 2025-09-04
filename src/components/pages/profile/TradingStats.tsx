@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { EnrichedTraderInfo } from '@/types';
 import { formatSecondsToTimeDifference } from '@/utils';
@@ -19,22 +20,24 @@ export default function TradingStats({
   className?: string;
   livePositionsNb: number | null;
   data?:
-    | {
-        date: Date;
-        stats: {
-          totalPositions: number;
-          winrate: number;
-          color: string;
-          size: number;
-          pnl: number;
-          volume: number;
-          increaseSize: number;
-          totalFees: number;
-          bubbleSize: number;
-        } | null;
-      }[]
-    | null;
+  | {
+    date: Date;
+    stats: {
+      totalPositions: number;
+      winrate: number;
+      color: string;
+      size: number;
+      pnl: number;
+      volume: number;
+      increaseSize: number;
+      totalFees: number;
+      bubbleSize: number;
+    } | null;
+  }[]
+  | null;
 }) {
+  const isMobile = useBetterMediaQuery('(max-width: 768px)');
+
   const settings = useSelector((state) => state.settings);
 
   const [showAfterFees] = useState(settings.showFeesInPnl);
@@ -144,14 +147,15 @@ export default function TradingStats({
                         nb={stat.nb}
                         format={
                           stat.format as
-                            | 'currency'
-                            | 'percentage'
-                            | 'number'
-                            | 'time'
+                          | 'currency'
+                          | 'percentage'
+                          | 'number'
+                          | 'time'
                         }
                         precision={stat.precision ?? 2}
                         className={twMerge('text-xl', stat.className)}
                         isDecimalDimmed={false}
+                        isAbbreviate={isMobile ? stat.nb > 100_000_000 : false}
                       />
                     ) : (
                       <p className="text-xl font-mono">{stat.nb}</p>

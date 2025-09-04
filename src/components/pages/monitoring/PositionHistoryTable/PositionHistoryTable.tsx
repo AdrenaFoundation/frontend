@@ -14,6 +14,7 @@ import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { normalize } from '@/constant';
 import DataApiClient from '@/DataApiClient';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionSortOption } from '@/hooks/usePositionHistory';
 import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, EnrichedPositionApiV2, Token } from '@/types';
@@ -50,6 +51,8 @@ export default function PositionHistoryTable({
   loadPageData: (page: number) => Promise<void>;
   walletAddress: string | null;
 }) {
+  const isMobile = useBetterMediaQuery('(max-width: 1280px)');
+
   const [activePosition, setActivePosition] =
     useState<EnrichedPositionApi | null>(null);
 
@@ -272,7 +275,7 @@ export default function PositionHistoryTable({
     fees: <CurrencyCell value={p.fees} />,
     entry: <CurrencyCell value={p.entryPrice} />,
     exit: <CurrencyCell value={p.exitPrice} />,
-    mutagen: <MutagenCell value={p.pointsMutations} />,
+    mutagen: <MutagenCell value={p.totalPoints} />,
     entry_date: <DateCell date={p.entryDate} />,
     id: p.positionId,
   }));
@@ -470,7 +473,7 @@ export default function PositionHistoryTable({
           currentPage={currentPage}
           totalPages={totalPages}
           height="20rem"
-          isSticky={window.innerWidth < 1280} // use useBetterMediaQuery
+          isSticky={!!isMobile}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           blockViewComponent={PositionBlockComponent}
@@ -613,7 +616,7 @@ const PnlCell = ({
 const SideCell = ({ side }: { side: string }) => (
   <div
     className={twMerge(
-      'font-mono',
+      'font-mono text-[0.7rem]',
       side.toLowerCase() === 'long' ? 'text-[#35C488]' : 'text-redbright',
     )}
   >
