@@ -286,7 +286,7 @@ export default class MultiStepNotification {
                   <CopyButton
                     textToCopy={this.report_code!}
                     notificationTitle="Report code copied"
-                    className="inline-block cursor-pointer ml-2 opacity-50 hover:opacity-100 transition-opacity duration-300"
+                    wrapperClassName="inline-block ml-2 opacity-50"
                   />
                 </p>
 
