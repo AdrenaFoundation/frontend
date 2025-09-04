@@ -76,18 +76,18 @@ export default function TokenSelector({
         const { liquidityPrice, availableLiquidity } =
           selectedAction === 'short'
             ? {
-                liquidityPrice: null as number | null,
-                availableLiquidity:
-                  custody.maxCumulativeShortPositionSizeUsd -
-                  custody.oiShortUsd,
-              }
+              liquidityPrice: null as number | null,
+              availableLiquidity:
+                custody.maxCumulativeShortPositionSizeUsd -
+                custody.oiShortUsd,
+            }
             : {
-                liquidityPrice: streamingTokenPrices[token.symbol] ?? null,
-                availableLiquidity:
-                  (custodyLiquidity as Record<string, number>)?.[
-                    custody.pubkey.toBase58()
-                  ] ?? 0,
-              };
+              liquidityPrice: streamingTokenPrices[token.symbol] ?? null,
+              availableLiquidity:
+                (custodyLiquidity as Record<string, number>)?.[
+                custody.pubkey.toBase58()
+                ] ?? 0,
+            };
 
         return {
           token,
@@ -282,7 +282,7 @@ export default function TokenSelector({
                       width={20}
                       height={20}
                     />
-                    <span className="text-lg font-boldy text-white">
+                    <span className="text-base font-boldy text-white">
                       {item.symbol}
                     </span>
                   </div>
@@ -291,7 +291,7 @@ export default function TokenSelector({
                 {/* Price column */}
                 <div className="col-span-4 sm:col-span-3">
                   {item.tokenPrice ? (
-                    <span className="text-base font-mono text-white">
+                    <span className="text-sm font-mono text-white">
                       {formatPriceInfo(
                         item.tokenPrice,
                         item.token.displayPriceDecimalsPrecision || 2,
@@ -310,10 +310,10 @@ export default function TokenSelector({
                     <span
                       className={
                         item.dailyChange > 0
-                          ? 'text-green text-base font-mono'
+                          ? 'text-green text-sm font-mono'
                           : item.dailyChange < 0
-                            ? 'text-redbright text-base font-mono'
-                            : 'text-gray-400 text-base font-mono'
+                            ? 'text-redbright text-sm font-mono'
+                            : 'text-gray-400 text-sm font-mono'
                       }
                     >
                       {formatPercentage(item.dailyChange, 2)}
@@ -324,7 +324,7 @@ export default function TokenSelector({
                 </div>
 
                 {/* Avail. Liq. column */}
-                <div className="col-span-2 text-base font-mono text-white">
+                <div className="col-span-2 text-sm font-mono text-white">
                   {(() => {
                     const liquidityUsd =
                       selectedAction === 'short'
