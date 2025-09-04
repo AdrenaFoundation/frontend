@@ -678,9 +678,7 @@ export default function Stake({
   // The rewards pending for the user
   const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
     useStakingClaimableRewards('ADX');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { rewards: alpRewards, fetchRewards: fetchAlpRewards } =
-    useStakingClaimableRewards('ALP');
+
 
   // The rewards pending collection in the current round
   const alpStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
@@ -800,8 +798,8 @@ export default function Stake({
                 lockedStakes={alpLockedStakes}
                 handleLockedStakeRedeem={handleLockedStakeRedeem}
                 handleClickOnClaimRewardsAndRedeem={() => handleClaimRewardsAndRedeemALP()}
-                userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
-                userPendingAdxRewards={alpRewards.pendingAdxRewards}
+                userPendingUsdcRewards={0}
+                userPendingAdxRewards={0}
                 roundPendingUsdcRewards={
                   alpStakingCurrentRoundRewards.usdcRewards ??
                   0
@@ -810,7 +808,7 @@ export default function Stake({
                   alpStakingCurrentRoundRewards.adxRewards ??
                   0
                 }
-                pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
+                pendingGenesisAdxRewards={0}
                 walletAddress={wallet?.walletAddress ?? null}
               />
             </div> : null}

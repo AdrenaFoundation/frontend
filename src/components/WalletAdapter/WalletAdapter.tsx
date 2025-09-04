@@ -1,3 +1,5 @@
+import { usePrivy } from '@privy-io/react-auth';
+import { useConnectedStandardWallets } from '@privy-io/react-auth/solana';
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -10,6 +12,7 @@ import {
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { PROFILE_PICTURES } from '@/constant';
+import { usePrivySidebar } from '@/contexts/PrivySidebarContext';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
@@ -52,6 +55,10 @@ export default function WalletAdapter({
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
+  const { authenticated: privyAuthenticated, logout: privyLogout } = usePrivy();
+  const { isSidebarOpen, openSidebar, closeSidebar } = usePrivySidebar();
+  const { ready: walletsReady } = useConnectedStandardWallets();
+
   const connectedAdapter = useMemo(
     () => wallet && adapters.find((x) => x.name === wallet.adapterName),
     [wallet, adapters],
@@ -78,7 +85,9 @@ export default function WalletAdapter({
   }
 
   const connectedWalletAdapterName = wallet?.adapterName;
-  const connected = !!connectedWalletAdapterName;
+
+  // handle Privy connected stay to be actually authenticated, not just connected
+  const connected = !!connectedWalletAdapterName || (privyAuthenticated && walletsReady);
 
   const isBreak = useBetterMediaQuery('(min-width: 640px)');
 
@@ -153,7 +162,7 @@ export default function WalletAdapter({
                   !isIconOnly
                     ? userProfile
                       ? getAbbrevNickname(userProfile.nickname)
-                      : getAbbrevWalletAddress(wallet.walletAddress)
+                      : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User')
                     : null
                 }
                 leftIcon={
@@ -172,6 +181,16 @@ export default function WalletAdapter({
                     return;
                   }
 
+                  if (privyAuthenticated) {
+                    // For Privy wallets, open/close the sidebar instead of opening profile page
+                    if (isSidebarOpen) {
+                      closeSidebar();
+                    } else {
+                      openSidebar();
+                    }
+                    return;
+                  }
+
                   router.push('/profile');
                 }}
               />
@@ -182,6 +201,10 @@ export default function WalletAdapter({
                   setMenuIsOpen(!menuIsOpen);
 
                   if (!connected || !connectedAdapter) return;
+
+                  if (privyAuthenticated) {
+                    privyLogout();
+                  }
 
                   dispatch(disconnectWalletAction(connectedAdapter));
                 }}
@@ -298,6 +321,10 @@ export default function WalletAdapter({
                 <MenuItem
                   className="sm:hidden py-2"
                   onClick={() => {
+                    if (privyAuthenticated) {
+                      privyLogout();
+                    }
+
                     if (!connected || !connectedAdapter) return;
 
                     dispatch(disconnectWalletAction(connectedAdapter));
@@ -326,6 +353,7 @@ export default function WalletAdapter({
               dispatch(openCloseConnectionModalAction(true));
             }
           }}
+
         />
       )}
 

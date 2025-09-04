@@ -47,7 +47,6 @@ import { hexStringToByteArray } from './utils';
 export default class DataApiClient {
   // public static DATAPI_URL = 'http://localhost:8080';
   public static DATAPI_URL = 'https://datapi.adrena.xyz';
-
   public static async getPriceAtDate(date: Date): Promise<{
     adxPrice: number | null;
     alpPrice: number | null;

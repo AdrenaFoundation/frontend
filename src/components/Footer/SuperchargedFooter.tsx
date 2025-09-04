@@ -71,6 +71,8 @@ export default function SuperchargedFooter({
   const verifiedWalletAddresses = useSelector(
     (state) => state.supabaseAuth.verifiedWalletAddresses,
   );
+  // do not try more than 3 times
+
 
   const [title, setTitle] = useState('Chat');
 

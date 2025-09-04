@@ -23,6 +23,7 @@ import {
   applySlippage,
   getJupiterApiQuote,
   getTokenSymbol,
+  getWalletAddress,
   nativeToUi,
   uiLeverageToNative,
   uiToNative,
@@ -1170,10 +1171,10 @@ export default function LongShortTradingInputs({
               onInputBChange={handleInputBChange}
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
-              walletAddress={wallet?.publicKey?.toBase58() ?? null}
-              custodyLiquidity={availableLiquidity}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
+              walletAddress={getWalletAddress(wallet)}
+              custodyLiquidity={availableLiquidity}
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>
