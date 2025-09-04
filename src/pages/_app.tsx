@@ -1,6 +1,7 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { PrivyProvider, SolanaCluster, usePrivy } from '@privy-io/react-auth';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -8,7 +9,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
@@ -22,6 +23,8 @@ import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
+import { privyConfig } from '@/config/privy';
+import { PrivySidebarProvider } from '@/contexts/PrivySidebarContext';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import useRpc from '@/hooks/useRPC';
@@ -88,28 +91,54 @@ export default function App(props: AppProps) {
     });
   }
 
+  // Create dynamic Privy configuration that updates when RPC changes (needed for custom RPCs)
+  const privyConfigDynamic = useMemo(() => ({
+    appId: privyConfig.appId,
+    config: {
+      solanaClusters: [
+        {
+          name: 'mainnet-beta',
+          rpcUrl: activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`,
+          blockExplorerUrl: 'https://solscan.io',
+        }
+      ] as SolanaCluster[],
+      appearance: privyConfig.appearance,
+      loginMethods: privyConfig.loginMethods as unknown as ('email' | 'google' | 'twitter' | 'discord' | 'wallet')[],
+      embeddedWallets: privyConfig.embeddedWallets,
+      externalWallets: privyConfig.externalWallets,
+      walletConnectCloudProjectId: privyConfig.walletConnectCloudProjectId,
+    }
+  }), [activeRpc?.connection?.rpcEndpoint]);
+
   // The Loaded is rendered while the app init, but also rendered in SSR.
   if (initStatus !== 'done' || !activeRpc) return <Loader />;
 
   return (
-    <Provider store={store}>
-      <CookiesProvider>
-        <AppComponent
-          activeRpc={activeRpc}
-          rpcInfos={rpcInfos}
-          autoRpcMode={autoRpcMode}
-          customRpcUrl={customRpcUrl}
-          customRpcLatency={customRpcLatency}
-          favoriteRpc={favoriteRpc}
-          setAutoRpcMode={setAutoRpcMode}
-          setCustomRpcUrl={setCustomRpcUrl}
-          setFavoriteRpc={setFavoriteRpc}
-          {...props}
-        />
-        <Analytics />
-        <SpeedInsights />
-      </CookiesProvider>
-    </Provider>
+    <PrivyProvider
+      appId={privyConfigDynamic.appId}
+      config={privyConfigDynamic.config}
+    >
+      <Provider store={store}>
+        <CookiesProvider>
+          <PrivySidebarProvider>
+            <AppComponent
+              activeRpc={activeRpc}
+              rpcInfos={rpcInfos}
+              autoRpcMode={autoRpcMode}
+              customRpcUrl={customRpcUrl}
+              customRpcLatency={customRpcLatency}
+              favoriteRpc={favoriteRpc}
+              setAutoRpcMode={setAutoRpcMode}
+              setCustomRpcUrl={setCustomRpcUrl}
+              setFavoriteRpc={setFavoriteRpc}
+              {...props}
+            />
+            <Analytics />
+            <SpeedInsights />
+          </PrivySidebarProvider>
+        </CookiesProvider>
+      </Provider>
+    </PrivyProvider >
   );
 }
 
@@ -154,10 +183,49 @@ function AppComponent({
   const custodies = useCustodies(mainPool);
   const adapters = useWalletAdapters();
   const wallet = useWallet(adapters);
-  const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
+  const walletState = useSelector((s) => s.walletState.wallet);
+  const walletAddress = walletState?.walletAddress;
   const { userProfile, triggerUserProfileReload } = useUserProfile(
     walletAddress ?? null,
   );
+
+  // Add Privy integration to check for authenticated state
+  const { ready: privyReady, authenticated: privyAuthenticated, user } = usePrivy();
+
+  // Auto-connect Privy adapter when authenticated
+  useEffect(() => {
+    if (!privyReady || !privyAuthenticated) return;
+
+    // Check if Privy adapter is already connected
+    if (walletState?.adapterName === 'Privy') return;
+
+    // Find the Privy adapter
+    const privyAdapter = adapters.find(adapter => adapter.name === 'Privy');
+    if (!privyAdapter) return;
+
+    // Get wallet address from Privy user data or localStorage
+    let walletAddress = null;
+
+    // First try to get from localStorage (for selected wallet)
+    if (typeof window !== 'undefined') {
+      walletAddress = localStorage.getItem('privy:selectedWallet');
+    }
+    // else get from Privy user data (embedded wallet)
+    else if (user?.wallet?.address) {
+      walletAddress = user.wallet.address;
+    }
+
+    if (walletAddress) {
+      console.log('Auto-connecting Privy adapter with address:', walletAddress);
+      dispatch({
+        type: 'connect',
+        payload: {
+          adapterName: 'Privy',
+          walletAddress: walletAddress,
+        },
+      });
+    }
+  }, [privyReady, privyAuthenticated, user, walletState?.adapterName, adapters, dispatch]);
 
   useSettingsPersistence();
   useWatchTokenPrices();

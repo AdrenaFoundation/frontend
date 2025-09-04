@@ -152,7 +152,7 @@ export default function ALPSwapBuy({
 
         setCollateralInputUsd(
           (tokenPrices[usdcToken.symbol] ?? 1) *
-            nativeToUi(amountUsd, usdcToken.decimals),
+          nativeToUi(amountUsd, usdcToken.decimals),
         );
 
         amountAndFee = await window.adrena.client.getAddLiquidityAmountAndFee({
@@ -205,6 +205,7 @@ export default function ALPSwapBuy({
     collateralToken.mint,
     doJupiterSwap,
     swapSlippage,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     !!tokenPrices[usdcToken.symbol],
     usdcToken,
   ]);

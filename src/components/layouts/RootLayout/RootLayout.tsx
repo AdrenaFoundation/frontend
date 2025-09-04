@@ -21,6 +21,7 @@ import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import SuperchargedFooter from '@/components/Footer/SuperchargedFooter';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
+import { PrivyGlobalSidebar } from '@/components/Privy/PrivyGlobalSidebar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import SearchUserProfiles from '@/components/SearchUserProfiles/SearchUserProfiles';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -248,6 +249,9 @@ export default function RootLayout({
       )}
 
       <QuestMenu isMobile={!isBigScreen} />
+
+      {/* Global Privy Sidebar */}
+      <PrivyGlobalSidebar />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

@@ -8,6 +8,7 @@ import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
 import { ALTERNATIVE_SWAP_TOKENS } from '@/constant';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token, WalletAdapterExtended } from '@/types';
+import { getWalletAddress } from '@/utils';
 
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
@@ -54,9 +55,10 @@ export default function TradeComp({
   const [isWhitelistedSwapper, setIsWhitelistedSwapper] = useState(false);
 
   useEffect(() => {
+    const walletAddress = getWalletAddress(wallet);
     if (
-      window.adrena.client.mainPool.whitelistedSwapper.toBase58() ==
-      wallet?.publicKey?.toBase58()
+      walletAddress &&
+      window.adrena.client.mainPool.whitelistedSwapper.toBase58() === walletAddress
     ) {
       setIsWhitelistedSwapper(true);
     }
