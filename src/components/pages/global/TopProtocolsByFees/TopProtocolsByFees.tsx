@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -124,11 +125,20 @@ export default function TopProtocolsByFees() {
           <PeriodSelector period={period} setPeriod={setPeriod} periods={['1d', '7d', '1M']} />
         </div>
 
-        <div className='text-xxs lowercase opacity-30 cursor-pointer hover:opacity-60'>
-          Source: <a href="https://defillama.com/fees" target='_blank'>
-            https://defillama.com/fees
-          </a>
-        </div>
+        <Tippy content={<div className='flex flex-col'>
+          <div>
+            Note: The ranking shown on DeFiLlama differs from the one displayed here. We use the DeFiLlama API<span className='text-white/50 text-sm ml-1'>* </span>, while their site uses a different data source for rankings.
+          </div>
+
+          <div className='text-white/50 text-sm mt-2'>* https://api-docs.defillama.com/#tag/fees-and-revenue/get/overview/fees</div>
+        </div>}>
+
+          <div className='text-xxs lowercase opacity-30 cursor-pointer hover:opacity-60'>
+            Source: <a href="https://defillama.com/fees" target='_blank'>
+              https://defillama.com/fees
+            </a>
+          </div>
+        </Tippy>
       </div>
 
       <div className='flex'>
@@ -154,6 +164,6 @@ export default function TopProtocolsByFees() {
           </div>
         ))}
       </div>
-    </div>
-  </div>;
+    </div >
+  </div >;
 }
