@@ -16,6 +16,8 @@ export const USD_DECIMALS = 6;
 export const LP_DECIMALS = 6;
 export const SOL_DECIMALS = 9;
 
+export const MAX_FAVORITE_TOKENS = 3;
+
 export const ADRENA_TEAM_WALLET = new PublicKey(
   'HxazXZVsy2Y63rUAVV9D6f3prWVh9M8qrZAGYMsx3GrV',
 );

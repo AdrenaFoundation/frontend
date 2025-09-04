@@ -302,19 +302,21 @@ export function formatGraphCurrency({
 }
 
 export function formatNumberShort(
-  nb: number | string,
+  nb: number | string | null | undefined,
   maxDecimals = 2,
 ): string {
   if (typeof nb === 'string') {
     nb = Number(nb);
   }
+
+  if (nb === null || nb === undefined || isNaN(Number(nb))) {
+    return '-';
+  }
+
   if (nb < 1_000) return nb.toFixed(maxDecimals).toString();
-
-  if (nb < 1_000_000) return `${(nb / 1_000).toFixed(maxDecimals)}K`; // Use maxDecimals
-
-  if (nb < 1_000_000_000) return `${(nb / 1_000_000).toFixed(maxDecimals)}M`; // Use maxDecimals
-
-  return `${(nb / 1_000_000_000).toFixed(maxDecimals)}B`; // Use maxDecimals
+  if (nb < 1_000_000) return `${(nb / 1_000).toFixed(maxDecimals)}K`;
+  if (nb < 1_000_000_000) return `${(nb / 1_000_000).toFixed(maxDecimals)}M`;
+  return `${(nb / 1_000_000_000).toFixed(maxDecimals)}B`;
 }
 
 export function formatPercentage(

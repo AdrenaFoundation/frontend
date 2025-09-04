@@ -1,18 +1,53 @@
 import Image from 'next/image';
-import React from 'react';
+import { useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import useADXHeaderData from '@/hooks/useADXHeaderData';
+import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
+import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useAPR from '@/hooks/useAPR';
+import useStakingAccount from '@/hooks/useStakingAccount';
+import { useSelector } from '@/store/store';
+import { nativeToUi } from '@/utils';
 
 export default function ADXHeader() {
-  const {
-    circulatingSupply,
-    totalStaked,
-    tokenPrice,
-    apr,
-    circulatingPercentage,
-    stakedPercentage,
-  } = useADXHeaderData();
+  const adxTotalSupply = useADXTotalSupply();
+  const adxCirculatingSupply = useADXCirculatingSupply({
+    totalSupplyADX: adxTotalSupply,
+  });
+  const { aprs } = useAPR();
+  const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
+
+  const { stakingAccount: adxStakingAccount } = useStakingAccount(
+    window.adrena.client.lmTokenMint,
+  );
+
+  const stakingData = useMemo(() => {
+    if (!adxStakingAccount) return null;
+
+    const decimals = adxStakingAccount.stakedTokenDecimals;
+
+    const totalLiquidStaked = nativeToUi(
+      adxStakingAccount.nbLiquidTokens,
+      decimals,
+    );
+    const totalLockedStaked = nativeToUi(
+      adxStakingAccount.nbLockedTokens,
+      decimals,
+    );
+    const totalStaked = totalLiquidStaked + totalLockedStaked;
+
+    return {
+      totalStaked,
+      circulatingPercentage:
+        adxTotalSupply && adxCirculatingSupply
+          ? (adxCirculatingSupply / adxTotalSupply) * 100
+          : null,
+      stakedPercentage:
+        adxCirculatingSupply && totalStaked
+          ? (totalStaked / adxCirculatingSupply) * 100
+          : null,
+    };
+  }, [adxStakingAccount, adxTotalSupply, adxCirculatingSupply]);
 
   return (
     <div className="flex flex-row gap-2 items-start justify-between">
@@ -25,56 +60,58 @@ export default function ADXHeader() {
           />
           <div className="flex flex-row items-center gap-4">
             <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ADX</h1>
-            {tokenPrice && (
-              <span className="text-xl opacity-90 font-normal">
-                ${tokenPrice.toFixed(4)}
-              </span>
-            )}
           </div>
         </div>
 
         <div>
           <div className="flex items-center gap-2">
             <FormatNumber
-              nb={circulatingSupply}
+              nb={adxCirculatingSupply}
               format="number"
               prefix="Circulating: "
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {circulatingPercentage && (
+            {stakingData && stakingData.circulatingPercentage !== null ? (
               <span className="text-sm font-mono opacity-90">
-                ({circulatingPercentage.toFixed(1)}%)
+                ({stakingData.circulatingPercentage.toFixed(1)}%)
               </span>
-            )}
+            ) : null}
           </div>
 
           <div className="flex items-center gap-2">
             <FormatNumber
-              nb={totalStaked}
+              nb={stakingData?.totalStaked}
               format="number"
               prefix="Staked: "
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {stakedPercentage && (
+            {stakingData && stakingData.stakedPercentage !== null ? (
               <span className="text-sm font-mono opacity-90">
-                ({stakedPercentage.toFixed(1)}%)
+                ({stakingData.stakedPercentage.toFixed(1)}%)
               </span>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
 
-      <FormatNumber
-        nb={apr}
-        format="percentage"
-        suffix="APR"
-        precision={0}
-        suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-        className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-        isDecimalDimmed
-      />
+      <div className="flex flex-col items-end gap-1">
+        <FormatNumber
+          nb={aprs?.lm}
+          format="percentage"
+          suffix="APR"
+          precision={0}
+          suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          isDecimalDimmed
+        />
+        {tokenPriceADX != null ? (
+          <span className="text-xl font-boldy">
+            ${tokenPriceADX.toFixed(4)}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }

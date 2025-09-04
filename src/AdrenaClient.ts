@@ -582,10 +582,11 @@ export class AdrenaClient {
       'user' in params ? this.getUserProfilePda(params.user) : params.profile;
 
     // Fetch raw account data
-    const accountInfo = await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(
-      userProfilePda,
-      'processed',
-    );
+    const accountInfo =
+      await this.readonlyAdrenaProgram.provider.connection.getAccountInfo(
+        userProfilePda,
+        'processed',
+      );
 
     // If no data, profile doesn't exist
     if (!accountInfo || !accountInfo.data) {
@@ -610,9 +611,8 @@ export class AdrenaClient {
           return;
         }
 
-        const updatedProfile = this.decodeUserProfileAnyVersion(
-          updatedAccountInfo,
-        );
+        const updatedProfile =
+          this.decodeUserProfileAnyVersion(updatedAccountInfo);
         if (updatedProfile === false) {
           onProfileChange?.(false);
         } else {
@@ -635,10 +635,11 @@ export class AdrenaClient {
   ): false | UserProfile | UserProfileV1 {
     try {
       // Try parsing as V2 first
-      const p = this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode(
-        'userProfile',
-        accountInfo.data,
-      );
+      const p =
+        this.readonlyAdrenaProgram.account.userProfile.coder.accounts.decode(
+          'userProfile',
+          accountInfo.data,
+        );
 
       if (!p || p.createdAt.isZero()) {
         throw new Error('Invalid data');
@@ -648,10 +649,11 @@ export class AdrenaClient {
     } catch {
       try {
         // Try parsing as V1 (legacy)
-        const p = this.readonlyAdrenaProgram.account.userProfileV1.coder.accounts.decodeUnchecked(
-          'userProfileV1',
-          accountInfo.data,
-        );
+        const p =
+          this.readonlyAdrenaProgram.account.userProfileV1.coder.accounts.decodeUnchecked(
+            'userProfileV1',
+            accountInfo.data,
+          );
 
         if (!p || p.createdAt.isZero()) {
           throw new Error('Invalid data');
@@ -929,18 +931,32 @@ export class AdrenaClient {
   }
 
   public async getCustodyLiquidityOnchain(
-    custody: CustodyExtended,
-  ): Promise<number> {
-    if (!this.readonlyAdrenaProgram) return 0;
+    custodies: CustodyExtended[],
+  ): Promise<Record<string, number>> {
+    if (!this.readonlyAdrenaProgram) {
+      return {};
+    }
 
-    const result = await this.readonlyAdrenaProgram.account.custody.fetch(
-      custody.pubkey,
-    );
+    if (custodies.length === 0) return {};
 
-    return nativeToUi(
-      result.assets.owned.sub(result.assets.locked),
-      custody.decimals,
-    );
+    const pubkeys = custodies.map((c) => c.pubkey);
+    const accounts =
+      await this.readonlyAdrenaProgram.account.custody.fetchMultiple(pubkeys);
+
+    return custodies.reduce<Record<string, number>>((acc, c, i) => {
+      const account = accounts[i];
+      if (!account) {
+        throw new Error(
+          `Custody account not found for pubkey: ${c.pubkey.toBase58()}`,
+        );
+      }
+
+      acc[c.pubkey.toBase58()] = nativeToUi(
+        account.assets.owned.sub(account.assets.locked),
+        c.decimals,
+      );
+      return acc;
+    }, {});
   }
 
   public static async loadMainPool(
@@ -959,9 +975,8 @@ export class AdrenaClient {
       (custody) => !custody.equals(PublicKey.default),
     );
 
-    const result = await adrenaProgram.account.custody.fetchMultiple(
-      custodiesAddresses,
-    );
+    const result =
+      await adrenaProgram.account.custody.fetchMultiple(custodiesAddresses);
 
     // No custodies should be null
     if (result.find((c) => c === null)) {
@@ -1071,9 +1086,10 @@ export class AdrenaClient {
     );
 
     // Load custodies in same order as declared in mainPool
-    const untypedCustodies = await this.adrenaProgram.account.custody.fetchMultiple(
-      custodiesAddresses,
-    );
+    const untypedCustodies =
+      await this.adrenaProgram.account.custody.fetchMultiple(
+        custodiesAddresses,
+      );
 
     if (untypedCustodies.find((custodies) => !custodies)) {
       throw new Error('Cannot load custodies');
@@ -1083,17 +1099,17 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const lpTokenAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const lpTokenAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: this.lpTokenMint,
         preInstructions,
-      },
-    );
+      });
 
     const lpStaking = this.getStakingPda(this.lpTokenMint);
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .addLiquidity({
@@ -1154,21 +1170,19 @@ export class AdrenaClient {
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
 
-    const userStakingAccount = await this.adrenaProgram.account.userStaking.fetchNullable(
-      userStaking,
-    );
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
       throw new Error('User staking account not found');
     }
 
-    const rewardTokenAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const rewardTokenAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: stakingRewardTokenMint,
         preInstructions,
-      },
-    );
+      });
 
     await this.checkATAAddressInitializedAndCreatePreInstruction({
       owner,
@@ -1201,9 +1215,8 @@ export class AdrenaClient {
         governanceRealm: this.governanceRealm,
         governanceRealmConfig: this.governanceRealmConfig,
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord: this.getGovernanceGoverningTokenOwnerRecordPda(
-          owner,
-        ),
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -1241,25 +1254,22 @@ export class AdrenaClient {
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
-    const stakingLmRewardTokenVault = this.getStakingLmRewardTokenVaultPda(
-      staking,
-    );
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
 
-    const userStakingAccount = await this.adrenaProgram.account.userStaking.fetchNullable(
-      userStaking,
-    );
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
       throw new Error('User staking account not found');
     }
 
-    const rewardTokenAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const rewardTokenAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: stakingRewardTokenMint,
         preInstructions,
-      },
-    );
+      });
 
     await this.checkATAAddressInitializedAndCreatePreInstruction({
       owner,
@@ -1288,9 +1298,8 @@ export class AdrenaClient {
         governanceRealm: this.governanceRealm,
         governanceRealmConfig: this.governanceRealmConfig,
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord: this.getGovernanceGoverningTokenOwnerRecordPda(
-          owner,
-        ),
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -1354,14 +1363,13 @@ export class AdrenaClient {
 
         console.log('Amount in after slippage', amountIn.toString());
 
-        const swapInstructions = await window.adrena.jupiterApiClient.swapInstructionsPost(
-          {
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
               userPublicKey: owner.toBase58(),
               quoteResponse: quoteResult,
             },
-          },
-        );
+          });
 
         if (swapInstructions === null) {
           notification.currentStepErrored('Failed to get swap instructions');
@@ -1436,7 +1444,8 @@ export class AdrenaClient {
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
 
     const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .removeLiquidity({
@@ -1487,13 +1496,12 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const receivingAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint,
         preInstructions,
-      },
-    );
+      });
 
     const transaction = await (
       await this.buildRemoveLiquidityTx({
@@ -1535,9 +1543,8 @@ export class AdrenaClient {
 
     // Tokens received by the program
     const receivingCustody = this.findCustodyAddress(collateralMint);
-    const receivingCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      collateralMint,
-    );
+    const receivingCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(collateralMint);
 
     const collateralAccount = findATAAddressSync(owner, mint);
 
@@ -1545,9 +1552,8 @@ export class AdrenaClient {
     // i.e open a 1 ETH long position, principal custody is ETH
     const principalCustody = this.findCustodyAddress(mint);
 
-    const principalCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      mint,
-    );
+    const principalCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(mint);
 
     const fundingAccount = findATAAddressSync(owner, collateralMint);
 
@@ -1557,7 +1563,8 @@ export class AdrenaClient {
     // Think and use proper slippage, for now use 0.3%
     const priceWithSlippage = applySlippage(price, 0.3);
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .openOrIncreasePositionWithSwapLong({
@@ -1613,9 +1620,8 @@ export class AdrenaClient {
 
     // Tokens received by the program
     const receivingCustody = this.findCustodyAddress(collateralMint);
-    const receivingCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      collateralMint,
-    );
+    const receivingCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(collateralMint);
 
     // Custody used to provide collateral when opening the position
     // When long, should be the same as principal token
@@ -1638,9 +1644,8 @@ export class AdrenaClient {
     // i.e open a 1 ETH long position, principal custody is ETH
     const principalCustody = this.findCustodyAddress(mint);
 
-    const principalCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      mint,
-    );
+    const principalCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(mint);
 
     const fundingAccount = findATAAddressSync(owner, collateralMint);
 
@@ -1650,7 +1655,8 @@ export class AdrenaClient {
     // Think and use proper slippage, for now use 0.3%
     const priceWithSlippage = applySlippage(price, -0.3);
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .openOrIncreasePositionWithSwapShort({
@@ -1710,16 +1716,15 @@ export class AdrenaClient {
     const fundingAccount = findATAAddressSync(owner, mintA);
 
     const receivingCustody = this.findCustodyAddress(mintA);
-    const receivingCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      mintA,
-    );
+    const receivingCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(mintA);
 
     const dispensingCustody = this.findCustodyAddress(mintB);
-    const dispensingCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      mintB,
-    );
+    const dispensingCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(mintB);
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .swap({
@@ -1800,7 +1805,8 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const tx = await this.adrenaProgram.methods
       .closePositionLong({
@@ -1888,7 +1894,8 @@ export class AdrenaClient {
       this.loadUserProfile({ user: position.owner }),
     ]);
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const tx = await this.adrenaProgram.methods
       .closePositionShort({
@@ -1950,13 +1957,12 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const receivingAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: mintB,
         preInstructions,
-      },
-    );
+      });
 
     const transaction = await (
       await this.buildSwapTx({
@@ -2034,14 +2040,13 @@ export class AdrenaClient {
           );
         }
 
-        const swapInstructions = await window.adrena.jupiterApiClient.swapInstructionsPost(
-          {
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
               userPublicKey: position.owner.toBase58(),
               quoteResponse: quoteResult,
             },
-          },
-        );
+          });
 
         if (swapInstructions === null) {
           throw new JupiterSwapError(
@@ -2148,14 +2153,13 @@ export class AdrenaClient {
           );
         }
 
-        const swapInstructions = await window.adrena.jupiterApiClient.swapInstructionsPost(
-          {
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
               userPublicKey: position.owner.toBase58(),
               quoteResponse: quoteResult,
             },
-          },
-        );
+          });
 
         if (swapInstructions === null) {
           throw new JupiterSwapError(
@@ -2354,9 +2358,10 @@ export class AdrenaClient {
         if (doJupiterSwap) {
           // We are most likely going to hit max instruction size if we try to create the user profile along the swap
           // Better to have the user to execute two transactions
-          const initProfileNotification = MultiStepNotification.newForRegularTransaction(
-            'Initialize Profile',
-          ).fire();
+          const initProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Initialize Profile',
+            ).fire();
 
           await this.initUserProfile({
             nickname: await this.getUniqueMonsterName(),
@@ -2387,9 +2392,10 @@ export class AdrenaClient {
         if (doJupiterSwap) {
           // We are most likely going to hit max instruction size if we try to edit the user profile along the swap
           // Better to have the user to execute two transactions
-          const editProfileNotification = MultiStepNotification.newForRegularTransaction(
-            'Edit Profile Referral',
-          ).fire();
+          const editProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Edit Profile Referral',
+            ).fire();
 
           await this.editUserProfile({
             referrerProfile,
@@ -2490,14 +2496,13 @@ export class AdrenaClient {
           -swapSlippage,
         );
 
-        const swapInstructions = await window.adrena.jupiterApiClient.swapInstructionsPost(
-          {
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
               userPublicKey: owner.toBase58(),
               quoteResponse: quoteResult,
             },
-          },
-        );
+          });
 
         if (swapInstructions === null) {
           throw new JupiterSwapError(
@@ -2737,9 +2742,10 @@ export class AdrenaClient {
         if (doJupiterSwap) {
           // We are most likely going to hit max instruction size if we try to create the user profile along the swap
           // Better to have the user to execute two transactions
-          const initProfileNotification = MultiStepNotification.newForRegularTransaction(
-            'Initialize Profile',
-          ).fire();
+          const initProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Initialize Profile',
+            ).fire();
 
           await this.initUserProfile({
             nickname: await this.getUniqueMonsterName(),
@@ -2770,9 +2776,10 @@ export class AdrenaClient {
         if (doJupiterSwap) {
           // We are most likely going to hit max instruction size if we try to edit the user profile along the swap
           // Better to have the user to execute two transactions
-          const editProfileNotification = MultiStepNotification.newForRegularTransaction(
-            'Edit Profile Referral',
-          ).fire();
+          const editProfileNotification =
+            MultiStepNotification.newForRegularTransaction(
+              'Edit Profile Referral',
+            ).fire();
 
           await this.editUserProfile({
             referrerProfile,
@@ -2866,14 +2873,13 @@ export class AdrenaClient {
           -swapSlippage,
         );
 
-        const swapInstructions = await window.adrena.jupiterApiClient.swapInstructionsPost(
-          {
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
               userPublicKey: owner.toBase58(),
               quoteResponse: quoteResult,
             },
-          },
-        );
+          });
 
         if (swapInstructions === null) {
           throw new JupiterSwapError(
@@ -3001,14 +3007,13 @@ export class AdrenaClient {
           addedCollateral.toString(),
         );
 
-        const swapInstructions = await window.adrena.jupiterApiClient.swapInstructionsPost(
-          {
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
               userPublicKey: position.owner.toBase58(),
               quoteResponse: quoteResult,
             },
-          },
-        );
+          });
 
         if (swapInstructions === null) {
           throw new JupiterSwapError(
@@ -3044,9 +3049,11 @@ export class AdrenaClient {
       throw error;
     }
 
-    const builder = await (position.side === 'long'
-      ? this.buildAddCollateralLongTx.bind(this)
-      : this.buildAddCollateralShortTx.bind(this))({
+    const builder = await (
+      position.side === 'long'
+        ? this.buildAddCollateralLongTx.bind(this)
+        : this.buildAddCollateralShortTx.bind(this)
+    )({
       position,
       collateralAmount: addedCollateral,
     });
@@ -3263,9 +3270,10 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const userProfileAccount = await this.readonlyAdrenaProgram.account.userProfile.fetch(
-      userProfilePda,
-    );
+    const userProfileAccount =
+      await this.readonlyAdrenaProgram.account.userProfile.fetch(
+        userProfilePda,
+      );
 
     return this.adrenaProgram.methods
       .editUserProfile({
@@ -3290,8 +3298,8 @@ export class AdrenaClient {
           typeof referrerProfile !== 'undefined'
             ? referrerProfile
             : userProfileAccount.referrerProfile.equals(PublicKey.default)
-            ? null
-            : userProfileAccount.referrerProfile,
+              ? null
+              : userProfileAccount.referrerProfile,
       })
       .instruction();
   }
@@ -3364,7 +3372,8 @@ export class AdrenaClient {
 
     const fundingAccount = findATAAddressSync(position.owner, custody.mint);
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .addCollateralLong({
@@ -3428,7 +3437,8 @@ export class AdrenaClient {
       collateralCustody.mint,
     );
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .addCollateralShort({
@@ -3485,15 +3495,15 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const receivingAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
         mint: custody.mint,
         preInstructions,
-      },
-    );
+      });
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
@@ -3563,15 +3573,15 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const receivingAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: position.owner,
         mint: collateralCustody.mint,
         preInstructions,
-      },
-    );
+      });
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
@@ -3617,9 +3627,8 @@ export class AdrenaClient {
 
     const userVestPda = this.getUserVestPda(walletAddress);
 
-    const vest = await this.readonlyAdrenaProgram.account.vest.fetchNullable(
-      userVestPda,
-    );
+    const vest =
+      await this.readonlyAdrenaProgram.account.vest.fetchNullable(userVestPda);
 
     if (!vest) return false;
 
@@ -3716,13 +3725,12 @@ export class AdrenaClient {
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
-    const receivingAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: this.getUsdcToken().mint,
         preInstructions,
-      },
-    );
+      });
 
     const distributeFeesIx = await this.buildDistributeFeesIx();
 
@@ -3764,11 +3772,11 @@ export class AdrenaClient {
     const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
-    const position = await this.readonlyAdrenaProgram.account.position.fetch(
-      targetPosition,
-    );
+    const position =
+      await this.readonlyAdrenaProgram.account.position.fetch(targetPosition);
 
     const userProfileAccount = await this.loadUserProfile({
       user: position.owner,
@@ -3827,13 +3835,12 @@ export class AdrenaClient {
       paramOwner ??
       (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
 
-    const receivingAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner: targetWallet ?? owner,
         mint: this.adxToken.mint,
         preInstructions,
-      },
-    );
+      });
 
     const vestRegistry = await this.loadVestRegistry();
 
@@ -3855,9 +3862,8 @@ export class AdrenaClient {
         governanceRealm: this.governanceRealm,
         governanceRealmConfig: this.governanceRealmConfig,
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord: this.getGovernanceGoverningTokenOwnerRecordPda(
-          owner,
-        ),
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
         adrenaProgram: this.adrenaProgram.programId,
         governanceProgram: this.config.governanceProgram,
         systemProgram: SystemProgram.programId,
@@ -3920,10 +3926,11 @@ export class AdrenaClient {
     const stakingPda = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, stakingPda);
 
-    const account = await this.readonlyAdrenaProgram.account.userStaking.fetchNullable(
-      userStaking,
-      'processed',
-    );
+    const account =
+      await this.readonlyAdrenaProgram.account.userStaking.fetchNullable(
+        userStaking,
+        'processed',
+      );
 
     if (!account) return null;
 
@@ -4019,9 +4026,8 @@ export class AdrenaClient {
     const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
-    const stakingLmRewardTokenVault = this.getStakingLmRewardTokenVaultPda(
-      staking,
-    );
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
 
     const rewardTokenAccount = findATAAddressSync(
       owner,
@@ -4077,9 +4083,8 @@ export class AdrenaClient {
         governanceRealm: this.governanceRealm,
         governanceRealmConfig: this.governanceRealmConfig,
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord: this.getGovernanceGoverningTokenOwnerRecordPda(
-          owner,
-        ),
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
         governanceProgram: this.config.governanceProgram,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -4129,39 +4134,34 @@ export class AdrenaClient {
     }
 
     // Initialize all required ATAs using idempotent instructions
-    const [
-      stakedTokenAccount,
-      lmTokenAccount,
-      rewardTokenAccount,
-    ] = await Promise.all([
-      this.checkATAAddressInitializedAndCreatePreInstruction({
-        mint: stakedTokenMint,
-        owner,
-        preInstructions,
-      }),
-      this.checkATAAddressInitializedAndCreatePreInstruction({
-        mint: this.lmTokenMint,
-        owner,
-        preInstructions,
-      }),
-      this.checkATAAddressInitializedAndCreatePreInstruction({
-        mint: stakingRewardTokenMint,
-        owner,
-        preInstructions,
-      }),
-    ]);
+    const [stakedTokenAccount, lmTokenAccount, rewardTokenAccount] =
+      await Promise.all([
+        this.checkATAAddressInitializedAndCreatePreInstruction({
+          mint: stakedTokenMint,
+          owner,
+          preInstructions,
+        }),
+        this.checkATAAddressInitializedAndCreatePreInstruction({
+          mint: this.lmTokenMint,
+          owner,
+          preInstructions,
+        }),
+        this.checkATAAddressInitializedAndCreatePreInstruction({
+          mint: stakingRewardTokenMint,
+          owner,
+          preInstructions,
+        }),
+      ]);
 
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
-    const stakingLmRewardTokenVault = this.getStakingLmRewardTokenVaultPda(
-      staking,
-    );
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
 
-    const userStakingAccount = await this.adrenaProgram.account.userStaking.fetchNullable(
-      userStaking,
-    );
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
       throw new Error('user staking account not found');
@@ -4192,9 +4192,8 @@ export class AdrenaClient {
         governanceRealm: this.governanceRealm,
         governanceRealmConfig: this.governanceRealmConfig,
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord: this.getGovernanceGoverningTokenOwnerRecordPda(
-          owner,
-        ),
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -4237,9 +4236,8 @@ export class AdrenaClient {
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
 
-    const userStakingAccount = await this.adrenaProgram.account.userStaking.fetchNullable(
-      userStaking,
-    );
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     // should not happen
     if (!userStakingAccount) {
@@ -4263,9 +4261,8 @@ export class AdrenaClient {
         governanceRealm: this.governanceRealm,
         governanceRealmConfig: this.governanceRealmConfig,
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord: this.getGovernanceGoverningTokenOwnerRecordPda(
-          owner,
-        ),
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -4374,7 +4371,8 @@ export class AdrenaClient {
     if (stakedTokenMint === this.alpToken.mint) {
       usdcPattern = /Transfer rewards amount: (\d+(\.\d+)?)/;
       adxPattern = /Transfer lm_rewards_token_amount: (\d+(\.\d+)?)/;
-      adxGenesisRewardsPattern = /Mint (\d+(\.\d+)?) LM tokens for ecosystem bucket/;
+      adxGenesisRewardsPattern =
+        /Mint (\d+(\.\d+)?) LM tokens for ecosystem bucket/;
     } else {
       usdcPattern = /Transfer rewards amount: (\d+(\.\d+)?)/;
       adxPattern = /Distribute (\d+(\.\d+)?) lm rewards/;
@@ -4446,41 +4444,36 @@ export class AdrenaClient {
     }
 
     // Initialize all required ATAs using idempotent instructions
-    const [
-      stakedTokenAccount,
-      lmTokenAccount,
-      rewardTokenAccount,
-    ] = await Promise.all([
-      this.checkATAAddressInitializedAndCreatePreInstruction({
-        mint: stakedTokenMint,
-        owner,
-        preInstructions,
-      }),
-      this.checkATAAddressInitializedAndCreatePreInstruction({
-        mint: this.lmTokenMint,
-        owner,
-        preInstructions,
-      }),
-      // Use override if provided, otherwise create ATA
-      overrideRewardTokenAccount ||
+    const [stakedTokenAccount, lmTokenAccount, rewardTokenAccount] =
+      await Promise.all([
         this.checkATAAddressInitializedAndCreatePreInstruction({
-          mint: stakingRewardTokenMint,
+          mint: stakedTokenMint,
           owner,
           preInstructions,
         }),
-    ]);
+        this.checkATAAddressInitializedAndCreatePreInstruction({
+          mint: this.lmTokenMint,
+          owner,
+          preInstructions,
+        }),
+        // Use override if provided, otherwise create ATA
+        overrideRewardTokenAccount ||
+          this.checkATAAddressInitializedAndCreatePreInstruction({
+            mint: stakingRewardTokenMint,
+            owner,
+            preInstructions,
+          }),
+      ]);
 
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
-    const stakingLmRewardTokenVault = this.getStakingLmRewardTokenVaultPda(
-      staking,
-    );
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
 
-    const userStakingAccount = await this.adrenaProgram.account.userStaking.fetchNullable(
-      userStaking,
-    );
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
       throw new Error('user staking account not found');
@@ -4506,9 +4499,8 @@ export class AdrenaClient {
         governanceRealm: this.governanceRealm,
         governanceRealmConfig: this.governanceRealmConfig,
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
-        governanceGoverningTokenOwnerRecord: this.getGovernanceGoverningTokenOwnerRecordPda(
-          owner,
-        ),
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -4551,30 +4543,27 @@ export class AdrenaClient {
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
-    const stakingLmRewardTokenVault = this.getStakingLmRewardTokenVaultPda(
-      staking,
-    );
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
 
-    const rewardTokenAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const rewardTokenAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: stakingRewardTokenMint,
         preInstructions,
-      },
-    );
+      });
 
     await this.checkATAAddressInitializedAndCreatePreInstruction({
       owner,
       mint: stakedTokenMint,
       preInstructions,
     });
-    const lmTokenAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const lmTokenAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: this.lmTokenMint,
         preInstructions,
-      },
-    );
+      });
 
     const transaction = await this.adrenaProgram.methods
       .initUserStaking()
@@ -4637,13 +4626,12 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
-    const receivingAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const receivingAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: collateralCustodyInfos.mint,
         preInstructions,
-      },
-    );
+      });
 
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const cortex = AdrenaClient.cortexPda;
@@ -4739,9 +4727,10 @@ export class AdrenaClient {
     const pool = this.mainPool.pubkey;
     const limitOrderBook = this.getLimitOrderBookPda(owner);
 
-    const limitOrderBookAccount = await this.adrenaProgram.account.limitOrderBook.fetchNullable(
-      limitOrderBook,
-    );
+    const limitOrderBookAccount =
+      await this.adrenaProgram.account.limitOrderBook.fetchNullable(
+        limitOrderBook,
+      );
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
@@ -4787,14 +4776,13 @@ export class AdrenaClient {
           -swapSlippage,
         );
 
-        const swapInstructions = await window.adrena.jupiterApiClient.swapInstructionsPost(
-          {
+        const swapInstructions =
+          await window.adrena.jupiterApiClient.swapInstructionsPost({
             swapRequest: {
               userPublicKey: owner.toBase58(),
               quoteResponse: quoteResult,
             },
-          },
-        );
+          });
 
         if (swapInstructions === null) {
           notification?.currentStepErrored('Failed to get swap instructions');
@@ -4900,23 +4888,21 @@ export class AdrenaClient {
 
     const lmStaking = this.getStakingPda(this.lmTokenMint);
     const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault = this.getStakingRewardTokenVaultPda(
-      lmStaking,
-    );
-    const lpStakingRewardTokenVault = this.getStakingRewardTokenVaultPda(
-      lpStaking,
-    );
+    const lmStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lmStaking);
+    const lpStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lpStaking);
 
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      stakingRewardTokenMint,
-    );
+    const stakingRewardTokenCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
 
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
     );
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     return this.adrenaProgram.methods
       .distributeFees({
@@ -5231,7 +5217,8 @@ export class AdrenaClient {
       return null;
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getSwapAmountAndFees({
@@ -5288,7 +5275,8 @@ export class AdrenaClient {
 
     const collateralCustody = this.getCustodyByMint(instructionCollateralMint);
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     // Anchor is bugging when calling a view, that is making CPI calls inside
     // Need to do it manually, so we can get the correct amounts
@@ -5347,7 +5335,8 @@ export class AdrenaClient {
       return null;
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getEntryPriceAndFee({
@@ -5400,7 +5389,8 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getExitPriceAndFee({
@@ -5456,7 +5446,8 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getPnl({
@@ -5516,7 +5507,8 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getLiquidationPrice({
@@ -5554,11 +5546,12 @@ export class AdrenaClient {
     const currentTime = new BN(Date.now() / 1000);
 
     // Calculate cumulative interest for the custody
-    const cumulativeInterest = collateralCustody.nativeObject.borrowRateState.cumulativeInterest.low.add(
-      collateralCustody.nativeObject.borrowRateState.cumulativeInterest.high.mul(
-        new BN(2).pow(new BN(64)),
-      ),
-    );
+    const cumulativeInterest =
+      collateralCustody.nativeObject.borrowRateState.cumulativeInterest.low.add(
+        collateralCustody.nativeObject.borrowRateState.cumulativeInterest.high.mul(
+          new BN(2).pow(new BN(64)),
+        ),
+      );
 
     if (
       currentTime.gt(collateralCustody.nativeObject.borrowRateState.lastUpdate)
@@ -5571,11 +5564,12 @@ export class AdrenaClient {
       cumulativeInterest.add(newCumulativeInterest);
     }
 
-    const cumulativeInterestSnapshot = position.nativeObject.cumulativeInterestSnapshot.low.add(
-      position.nativeObject.cumulativeInterestSnapshot.high.mul(
-        new BN(2).pow(new BN(64)),
-      ),
-    );
+    const cumulativeInterestSnapshot =
+      position.nativeObject.cumulativeInterestSnapshot.low.add(
+        position.nativeObject.cumulativeInterestSnapshot.high.mul(
+          new BN(2).pow(new BN(64)),
+        ),
+      );
 
     // Calculate position borrow fee
     const positionInterest = cumulativeInterest.gt(cumulativeInterestSnapshot)
@@ -5678,6 +5672,12 @@ export class AdrenaClient {
                 ),
               USD_DECIMALS,
             );
+        if (
+          position.pubkey.toBase58() ===
+          'ADdeuTcn6oN1ukxGyjrMVPC8NzH4oVDFS8Psns7gNWbJ'
+        ) {
+          console.log('MAX PROFIT', { maxProfitUsd: maxProfitUsd.toString() });
+        }
 
         return {
           profitUsd: nativeToUi(
@@ -5687,6 +5687,16 @@ export class AdrenaClient {
           lossUsd: 0,
           borrowFeeUsd: nativeToUi(interestUsd, USD_DECIMALS),
         };
+      }
+
+      if (
+        position.pubkey.toBase58() ===
+        'ADdeuTcn6oN1ukxGyjrMVPC8NzH4oVDFS8Psns7gNWbJ'
+      ) {
+        console.log(
+          'LOSSES',
+          nativeToUi(unrealizedLossUsd.sub(potentialProfitUsd), USD_DECIMALS),
+        );
       }
 
       return {
@@ -5745,9 +5755,10 @@ export class AdrenaClient {
     const marginUsd = position.nativeObject.collateralUsd;
 
     // 10 decimals
-    let maxPriceDiffScaled = (maxLossUsd.gte(marginUsd)
-      ? maxLossUsd.sub(marginUsd)
-      : marginUsd.sub(maxLossUsd)
+    let maxPriceDiffScaled = (
+      maxLossUsd.gte(marginUsd)
+        ? maxLossUsd.sub(marginUsd)
+        : marginUsd.sub(maxLossUsd)
     ).mul(new BN(10000));
 
     // 10 decimals
@@ -5902,10 +5913,11 @@ export class AdrenaClient {
     const actualPositionAddresses =
       positionAddresses || this.getPossiblePositionAddresses(user);
 
-    const positions = (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
-      actualPositionAddresses,
-      'recent',
-    )) as (Position | null)[];
+    const positions =
+      (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
+        actualPositionAddresses,
+        'recent',
+      )) as (Position | null)[];
 
     // Create extended positions
     return positions.reduce(
@@ -5931,9 +5943,8 @@ export class AdrenaClient {
   }
 
   public async loadAllPositions(): Promise<PositionExtended[]> {
-    const positions = (await this.readonlyAdrenaProgram.account.position.all()) as (ProgramAccount<
-      Position
-    > | null)[];
+    const positions =
+      (await this.readonlyAdrenaProgram.account.position.all()) as (ProgramAccount<Position> | null)[];
 
     return positions.reduce<PositionExtended[]>(
       (acc: PositionExtended[], position: ProgramAccount<Position> | null) => {
@@ -6040,7 +6051,8 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const allStaking = await this.readonlyAdrenaProgram.account.userStaking.all();
+    const allStaking =
+      await this.readonlyAdrenaProgram.account.userStaking.all();
 
     if (!allStaking) return null;
 
@@ -6217,7 +6229,8 @@ export class AdrenaClient {
       return null;
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getAssetsUnderManagement({
@@ -6263,7 +6276,8 @@ export class AdrenaClient {
       throw new Error('Cannot add 0 liquidity');
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getAddLiquidityAmountAndFee({
@@ -6311,7 +6325,8 @@ export class AdrenaClient {
       return null;
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getRemoveLiquidityAmountAndFee({
@@ -6345,7 +6360,8 @@ export class AdrenaClient {
       return null;
     }
 
-    const oraclePrices: ChaosLabsPricesExtended | null = await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const instruction = await this.adrenaProgram.methods
       .getLpTokenPrice({
@@ -6385,9 +6401,8 @@ export class AdrenaClient {
 
     const staking = this.getStakingPda(stakedTokenMint);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
-    const stakingLmRewardTokenVault = this.getStakingLmRewardTokenVaultPda(
-      staking,
-    );
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
 
     const transaction = await this.adrenaProgram.methods
@@ -6556,7 +6571,7 @@ export class AdrenaClient {
     if (typeName === 'BN') {
       const bn = new BN(Buffer.from(returnDataEncoded, 'base64'), 'le');
 
-      return (bn as unknown) as T;
+      return bn as unknown as T;
     }
 
     const returnData = base64.decode(returnDataEncoded);
@@ -6970,7 +6985,8 @@ export class AdrenaClient {
 
     /////////////////////// Confirm the transaction (and retry if needed) ///////////////////////
     let txIsConfirmed = false;
-    let confirmTxRet: RpcResponseAndContext<SignatureStatus | null> | null = null;
+    let confirmTxRet: RpcResponseAndContext<SignatureStatus | null> | null =
+      null;
     const MAX_TIMEOUT = 120000; // Stop after 120 seconds
     const MIN_LOOP_TIME = 500;
     let txSendAttempts = 1;
@@ -7168,19 +7184,17 @@ export class AdrenaClient {
           })
         : overrideRewardTokenAccount;
 
-    const lmTokenAccount = await this.checkATAAddressInitializedAndCreatePreInstruction(
-      {
+    const lmTokenAccount =
+      await this.checkATAAddressInitializedAndCreatePreInstruction({
         owner,
         mint: this.lmTokenMint,
         preInstructions,
-      },
-    );
+      });
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
-    const stakingLmRewardTokenVault = this.getStakingLmRewardTokenVaultPda(
-      staking,
-    );
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
 
     const accounts = {
       caller,
@@ -7260,14 +7274,12 @@ export class AdrenaClient {
 
     const recentSlot = await this.connection.getSlot();
 
-    const [
-      createIx,
-      lookupTableAddress,
-    ] = AddressLookupTableProgram.createLookupTable({
-      authority: wallet.publicKey,
-      payer: wallet.publicKey,
-      recentSlot,
-    });
+    const [createIx, lookupTableAddress] =
+      AddressLookupTableProgram.createLookupTable({
+        authority: wallet.publicKey,
+        payer: wallet.publicKey,
+        recentSlot,
+      });
 
     const transaction = new Transaction().add(createIx);
 

@@ -63,7 +63,7 @@ export default function TokenInfoHeader({
                 <p className="m-auto opacity-75 text-base p-3">
                     {isALP
                         ? 'Provide liquidities: the longer the period, the higher the rewards. 70% of protocol fees are distributed to ALP holder and stakers.'
-                        : 'Align with the protocol long term success: the longer the period, the higher the rewards. 20% of protocol fees are distributed to ADX stakers.'}
+                        : 'Align with the protocol\'s long term success: the longer the period, the higher the rewards. 20% of protocol fees are distributed to ADX stakers.'}
                 </p>
             </div>
         </div>

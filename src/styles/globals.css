@@ -35,3 +35,7 @@
   background-color: rgba(16, 225, 163, 0.8);
   width: 50px;
 }
+
+.favorites-scroll::-webkit-scrollbar {
+  display: none;
+}
