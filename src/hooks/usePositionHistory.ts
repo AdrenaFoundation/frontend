@@ -78,7 +78,6 @@ export default function usePositionsHistory({
   isLoadingPositionsHistory: boolean;
   isInitialLoad: boolean;
   positionsData: EnrichedPositionApiV2 | null;
-  accumulatedPositionsData: EnrichedPositionApi[] | null;
   // Pagination-related return values
   currentPage: number;
   totalItems: number;
@@ -103,10 +102,6 @@ export default function usePositionsHistory({
 
   const [positionsData, setPositionsData] =
     useState<EnrichedPositionApiV2 | null>(null);
-  // Accumulated data for infinite scroll
-  const [accumulatedPositionsData, setAccumulatedPositionsData] = useState<
-    EnrichedPositionApi[]
-  >([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [isLoadingPositionsHistory, setIsLoadingPositionsHistory] =
@@ -179,9 +174,6 @@ export default function usePositionsHistory({
         if (result === null) {
           setPositionsData(null);
           // Don't clear accumulated data on empty response unless it's offset 0
-          if (offset === 0) {
-            setAccumulatedPositionsData([]);
-          }
           // Set fetching to false only once
           if (isFetchingDataRef.current) {
             isFetchingDataRef.current = false;
@@ -312,21 +304,6 @@ export default function usePositionsHistory({
         apiResponseCache[walletAddressRef.current][offset] = result;
         setPositionsData(result);
 
-        // Update accumulated positions data for infinite scroll
-        if (offset === 0) {
-          // Reset accumulated data for first page/new search
-          setAccumulatedPositionsData(result.positions);
-        } else {
-          // Append new positions to accumulated data, avoiding duplicates
-          setAccumulatedPositionsData((prev) => {
-            const existingIds = new Set(prev.map((p) => String(p.positionId)));
-            const newPositions = result.positions.filter(
-              (p) => !existingIds.has(String(p.positionId)),
-            );
-            return [...prev, ...newPositions];
-          });
-        }
-
         // Update total items count
         setTotalItems(result.totalCount);
       } catch (e) {
@@ -366,9 +343,6 @@ export default function usePositionsHistory({
 
       // Initialize wallet cache for the new wallet
       apiResponseCache[walletAddress] = {};
-
-      // Clear accumulated data for new wallet
-      setAccumulatedPositionsData([]);
 
       // Reset page to 1
       setCurrentPage(1);
@@ -440,9 +414,6 @@ export default function usePositionsHistory({
         clearAllPositionsCache();
         apiResponseCache[walletAddress] = {};
       }
-
-      // Reset accumulated data for fresh start
-      setAccumulatedPositionsData([]);
 
       // Reset to first page
       setCurrentPage(1);
@@ -579,7 +550,6 @@ export default function usePositionsHistory({
     isLoadingPositionsHistory,
     isInitialLoad: isFetchingDataRef.current,
     positionsData,
-    accumulatedPositionsData,
     currentPage,
     totalItems,
     totalPages,
