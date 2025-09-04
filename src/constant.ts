@@ -1863,6 +1863,20 @@ export const ALTERNATIVE_SWAP_TOKENS: Token[] = [
       'https://shdw-drive.genesysgo.net/7G7ayDnjFoLcEUVkxQ2Jd4qquAHp5LiSBii7t81Y2E23/carrot.png',
     additionalSwapToken: true,
   },
+  // Wrapped SOL
+  {
+    mint: new PublicKey('So11111111111111111111111111111111111111112'),
+    symbol: 'SOL',
+    color: '#c74ae3',
+    name: 'SOL',
+    decimals: 9,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 2,
+    isStable: false,
+    image:
+      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f736f6c616e612d6c6162732f746f6b656e2d6c6973742f6d61696e2f6173736574732f6d61696e6e65742f536f31313131313131313131313131313131313131313131313131313131313131313131313131313131322f6c6f676f2e706e67',
+    additionalSwapToken: true,
+  },
 ];
 
 export const ADRENA_GREEN = '#07956B';

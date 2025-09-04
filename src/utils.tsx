@@ -1,4 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
+import { Wallet } from '@coral-xyz/anchor';
 import { QuoteResponse } from '@jup-ag/api';
 import { sha256 } from '@noble/hashes/sha256';
 import {
@@ -18,7 +19,7 @@ import {
 import { BigNumber } from 'bignumber.js';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
@@ -559,7 +560,7 @@ export class AdrenaTransactionError {
   constructor(
     public txHash: string | null,
     public readonly errorString: string,
-  ) {}
+  ) { }
 
   public setTxHash(txHash: string): void {
     this.txHash = txHash;
@@ -1210,25 +1211,22 @@ export function formatMilliseconds(milliseconds: number): string {
   }
 
   if (hours || formatted.length) {
-    const h = `${hours < 0 ? '-' : ''}${
-      Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
-    }`;
+    const h = `${hours < 0 ? '-' : ''}${Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${h}h`;
   }
 
   if (minutes || formatted.length) {
-    const m = `${minutes < 0 ? '-' : ''}${
-      Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
-    }`;
+    const m = `${minutes < 0 ? '-' : ''}${Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${m}m`;
   }
 
   if (seconds || formatted.length) {
-    const s = `${seconds < 0 ? '-' : ''}${
-      Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
-    }`;
+    const s = `${seconds < 0 ? '-' : ''}${Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${s}s`;
   }
@@ -1810,4 +1808,35 @@ export function isPartialClose(activePercent: number | null) {
   return (
     typeof activePercent === 'number' && activePercent > 0 && activePercent < 1
   );
+}
+
+// Safely get wallet address, handling Privy loading delays
+export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
+  if (!wallet) return null;
+
+  try {
+    // Check if wallet has publicKey property
+    if (!wallet.publicKey) return null;
+
+    // Safely call toBase58() with error handling
+    const address = wallet.publicKey.toBase58();
+
+    // Validate that we got a valid Solana address (should be 32-44 characters)
+    if (typeof address === 'string' && address.length >= 32 && address.length <= 44) {
+      return address;
+    }
+
+    return null;
+  } catch (error) {
+    // Log error in development but don't crash
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Error getting wallet address:', error);
+    }
+    return null;
+  }
+}
+
+// Hook for getting a memoized wallet address that updates safely
+export function useWalletAddress(wallet: Wallet | null | undefined): string | null {
+  return React.useMemo(() => getWalletAddress(wallet), [wallet]);
 }

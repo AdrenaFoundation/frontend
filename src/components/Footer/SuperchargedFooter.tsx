@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
@@ -71,6 +71,8 @@ export default function SuperchargedFooter({
   const verifiedWalletAddresses = useSelector(
     (state) => state.supabaseAuth.verifiedWalletAddresses,
   );
+  // do not try more than 3 times
+
 
   const [title, setTitle] = useState('Chat');
 
@@ -83,6 +85,7 @@ export default function SuperchargedFooter({
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCheckAdminLoading, setIsCheckAdminLoading] = useState(false);
+  const isCheckingAdminRef = useRef(false); // Use ref instead of state to prevent re-renders
 
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
   const [isNewNotification, setIsNewNotification] = useState(false);
@@ -92,41 +95,58 @@ export default function SuperchargedFooter({
   const [showAudits, setShowAudits] = useState(false);
 
   useEffect(() => {
-    if (!walletAddress) {
+    if (!walletAddress || isCheckingAdminRef.current) {
       return;
     }
 
     const checkAdminStatus = async () => {
+      isCheckingAdminRef.current = true; // Prevent concurrent calls
+      let attemps = 0; // Reset attempts counter for each call
       setIsCheckAdminLoading(true);
 
       const {
         data: { session },
       } = await supabaseAnonClient.auth.getSession();
-      try {
-        const response = await fetch(
-          `/api/verify_signature?walletAddress=${walletAddress}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(session
-                ? { Authorization: `Bearer ${session.access_token}` }
-                : {}),
-            },
-          },
-        );
 
-        if (response.ok) {
-          const data = await response.json();
-          setIsAdmin(data.isAdmin);
-        } else {
-          console.error('Failed to verify admin status');
-        }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-      } finally {
+      if (!session) {
         setIsCheckAdminLoading(false);
+        isCheckingAdminRef.current = false;
+        return;
+      };
+
+      while (attemps < 3) {
+        try {
+          const response = await fetch(
+            `/api/verify_signature?walletAddress=${walletAddress}`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(session
+                  ? { Authorization: `Bearer ${session.access_token}` }
+                  : {}),
+              },
+            },
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            setIsAdmin(data.isAdmin);
+          } else {
+            console.error('Failed to verify admin status');
+          }
+        } catch (error) {
+          console.error('Error checking admin status:', error);
+        } finally {
+          setIsCheckAdminLoading(false);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        attemps++;
       }
+
+      // Reset checking flag when done
+      isCheckingAdminRef.current = false;
     };
 
     checkAdminStatus();

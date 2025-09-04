@@ -6,6 +6,7 @@ import { ADRENA_TEAM_WALLET } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
+import { getWalletAddress } from '@/utils';
 
 import AddressLookupTable from './AddressLookupTable';
 import AllPositions from './allPositions';
@@ -30,11 +31,10 @@ export default function Monitoring(pageProps: PageProps) {
   );
 
   useEffect(() => {
-    console.log('Wallet:', pageProps.wallet?.publicKey.toBase58());
     setShowLookupTablePage(
-      pageProps.wallet?.publicKey.toBase58() === ADRENA_TEAM_WALLET.toBase58(),
+      getWalletAddress(pageProps.wallet) === ADRENA_TEAM_WALLET.toBase58(),
     );
-  }, [pageProps.wallet?.publicKey]);
+  }, [pageProps.wallet]);
 
   const initialView = (() => {
     const searchParamsView = searchParams.get('view') ?? 'lite';

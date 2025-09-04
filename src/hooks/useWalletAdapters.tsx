@@ -14,6 +14,7 @@ import phantomLogo from '../../public/images/phantom.svg';
 import solflareLogo from '../../public/images/solflare.png';
 import squadxLogo from '../../public/images/squadx-logo.png';
 import walletconnectLogo from '../../public/images/walletconnect.png';
+import { usePrivyAdapter } from "./usePrivyAdapter";
 
 export const WALLET_ICONS = {
     Phantom: phantomLogo,
@@ -22,7 +23,8 @@ export const WALLET_ICONS = {
     WalletConnect: walletconnectLogo,
     'Coinbase Wallet': coinbaseLogo,
     SquadsX: squadxLogo,
-} as const satisfies Partial<Record<WalletAdapterName, ImageRef>>;
+    Privy: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iNjQiIGZpbGw9IiM2QTU5RkYiLz4KPHBhdGggZD0iTTY0IDMyQzQ1LjIgMzIgMzAgNDcuMiAzMCA2NkMzMCA4NC44IDQ1LjIgMTAwIDY0IDEwMEM4Mi44IDEwMCA5OCA4NC44IDk4IDY2Qzk4IDQ3LjIgODIuOCAzMiA2NCAzMlpNNjQgODhDNTEuOSA4OCA0MiA3OC4xIDQyIDY2QzQyIDUzLjkgNTEuOSA0NCA2NCA0NEM3Ni4xIDQ0IDg2IDUzLjkgODYgNjZDODYgNzguMSA3Ni4xIDg4IDY0IDg4WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+',
+} as const satisfies Partial<Record<WalletAdapterName, ImageRef | string>>;
 
 const SUPPORTED_WALLETS = [
     'Phantom',
@@ -31,6 +33,7 @@ const SUPPORTED_WALLETS = [
     'WalletConnect',
     'Backpack',
     'SquadsX',
+    'Privy',
 ] as const;
 
 // Handpicked list of supported wallets
@@ -43,10 +46,13 @@ export const WALLET_COLORS = {
     WalletConnect: '#0798fe',
     'Coinbase Wallet': '#072b79',
     SquadsX: '#000000',
+    Privy: '#6A59FF',
 } as const satisfies Record<WalletAdapterName, string>;
 
 export default function useWalletAdapters(): WalletAdapterExtended[] {
-    const adapters = useStandardWalletAdapters([
+    const privyAdapter = usePrivyAdapter();
+
+    const standardAdapters = useStandardWalletAdapters([
         // Add specialized wallet adapters here
         //
         // Wallets compatible with the @solana/wallet-adapter-wallets package will be added automatically
@@ -68,8 +74,17 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
         }),
     ]);
 
+    // Combine standard adapters with Privy adapter
+    const allAdapters = useMemo(() => {
+        const combinedAdapters = privyAdapter
+            ? [...standardAdapters, privyAdapter]
+            : standardAdapters;
+
+        return combinedAdapters;
+    }, [standardAdapters, privyAdapter]);
+
     // Remove the adapters that has been added automatically but that we don't want to use
-    return useMemo(() => adapters.filter(adapter => {
+    return useMemo(() => allAdapters.filter(adapter => {
         return SUPPORTED_WALLETS.includes(adapter.name as WalletAdapterName);
     }).map((adapter) => {
         const name = adapter.name as WalletAdapterName;
@@ -81,5 +96,5 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
         (adapter as WalletAdapterExtended).walletName = name;
 
         return adapter as WalletAdapterExtended;
-    }), [adapters]);
+    }), [allAdapters]);
 }

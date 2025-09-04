@@ -72,7 +72,7 @@ export default function CompetitionBanner({
                                     backgroundOrigin: 'border-box',
                                     backgroundPosition: 'center 20%'
                                 }}
-                            /> : <img
+                            /> : <Image
                                 src={banner}
                                 alt="competition banner"
                                 className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
