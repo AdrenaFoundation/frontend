@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
@@ -60,11 +60,6 @@ export default function ADXHeader() {
           />
           <div className="flex flex-row items-center gap-4">
             <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ADX</h1>
-            {tokenPriceADX != null ? (
-              <span className="text-xl opacity-90 font-normal">
-                ${tokenPriceADX.toFixed(4)}
-              </span>
-            ) : null}
           </div>
         </div>
 
@@ -77,7 +72,7 @@ export default function ADXHeader() {
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {stakingData?.circulatingPercentage != null ? (
+            {stakingData && stakingData.circulatingPercentage !== null ? (
               <span className="text-sm font-mono opacity-90">
                 ({stakingData.circulatingPercentage.toFixed(1)}%)
               </span>
@@ -92,7 +87,7 @@ export default function ADXHeader() {
               className="text-sm font-mono opacity-50"
               suffix="ADX"
             />
-            {stakingData?.stakedPercentage != null ? (
+            {stakingData && stakingData.stakedPercentage !== null ? (
               <span className="text-sm font-mono opacity-90">
                 ({stakingData.stakedPercentage.toFixed(1)}%)
               </span>
@@ -101,15 +96,22 @@ export default function ADXHeader() {
         </div>
       </div>
 
-      <FormatNumber
-        nb={aprs?.lm}
-        format="percentage"
-        suffix="APR"
-        precision={0}
-        suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-        className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-        isDecimalDimmed
-      />
+      <div className="flex flex-col items-end gap-1">
+        <FormatNumber
+          nb={aprs?.lm}
+          format="percentage"
+          suffix="APR"
+          precision={0}
+          suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          isDecimalDimmed
+        />
+        {tokenPriceADX != null ? (
+          <span className="text-xl font-boldy">
+            ${tokenPriceADX.toFixed(4)}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }

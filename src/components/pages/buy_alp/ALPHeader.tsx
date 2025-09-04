@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import useAPR from '@/hooks/useAPR';
@@ -14,12 +14,19 @@ export default function ALPHeader() {
   const alpApr = aprs?.lp ?? null;
 
   const poolUsage = useMemo(() => {
-    if (!mainPool) return null;
+    if (
+      !mainPool ||
+      typeof mainPool.oiLongUsd !== 'number' ||
+      typeof mainPool.oiShortUsd !== 'number' ||
+      typeof mainPool.aumUsd !== 'number'
+    ) {
+      return null;
+    }
 
     const totalOI = mainPool.oiLongUsd + mainPool.oiShortUsd;
     const aumUsd = mainPool.aumUsd;
 
-    if (totalOI <= 0 || !aumUsd) return null;
+    if (totalOI === 0 || aumUsd === 0) return null;
 
     return {
       totalUsageUsd: totalOI,
@@ -43,11 +50,6 @@ export default function ALPHeader() {
 
           <div className="flex flex-row items-center gap-4">
             <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ALP</h1>
-            {tokenPriceALP != null ? (
-              <span className="text-xl opacity-70 font-normal">
-                ${tokenPriceALP.toFixed(4)}
-              </span>
-            ) : null}
           </div>
         </div>
 
@@ -66,7 +68,7 @@ export default function ALPHeader() {
               prefix="Pool Usage: "
               className="text-sm font-mono opacity-50"
             />
-            {poolUsage != null ? (
+            {poolUsage && poolUsage.totalUsagePercentage !== null ? (
               <>
                 <span className="text-sm font-mono opacity-90">
                   ({poolUsage.totalUsagePercentage.toFixed(0)}%)
@@ -77,15 +79,22 @@ export default function ALPHeader() {
         </div>
       </div>
 
-      <FormatNumber
-        nb={alpApr}
-        format="percentage"
-        suffix="APR"
-        precision={0}
-        suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-        className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-        isDecimalDimmed
-      />
+      <div className="flex flex-col items-end gap-1">
+        <FormatNumber
+          nb={alpApr}
+          format="percentage"
+          suffix="APR"
+          precision={0}
+          suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          isDecimalDimmed
+        />
+        {tokenPriceALP != null ? (
+          <span className="text-xl font-boldy">
+            ${tokenPriceALP.toFixed(4)}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }
