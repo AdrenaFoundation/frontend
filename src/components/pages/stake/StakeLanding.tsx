@@ -14,7 +14,7 @@ import { useDispatch } from '@/store/store';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import adxMonster from '../../../../public/images/ADX_monster.png';
 import governanceIcon from '../../../../public/images/governance.svg';
-import Table from '../monitoring/Table';
+import Table from '../monitoring/TableLegacy';
 
 export default function StakeLanding({
   handleClickOnStakeMoreADX,

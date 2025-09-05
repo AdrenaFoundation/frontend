@@ -10,7 +10,7 @@ import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import FormatNumber from '@/components/Number/FormatNumber';
-import Table from '@/components/pages/monitoring/Table';
+import Table from '@/components/pages/monitoring/TableLegacy';
 import { PROFILE_PICTURES, TEAMS_MAPPING, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';

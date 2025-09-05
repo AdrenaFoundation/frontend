@@ -155,9 +155,8 @@ function AppComponent({
   const adapters = useWalletAdapters();
   const wallet = useWallet(adapters);
   const walletAddress = useSelector((s) => s.walletState.wallet?.walletAddress);
-  const { userProfile, triggerUserProfileReload } = useUserProfile(
-    walletAddress ?? null,
-  );
+  const { userProfile, isUserProfileLoading, triggerUserProfileReload } =
+    useUserProfile(walletAddress ?? null);
 
   useSettingsPersistence();
   useWatchTokenPrices();
@@ -339,6 +338,7 @@ function AppComponent({
 
         <Component
           {...pageProps}
+          isUserProfileLoading={isUserProfileLoading}
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
           userVest={userVest}

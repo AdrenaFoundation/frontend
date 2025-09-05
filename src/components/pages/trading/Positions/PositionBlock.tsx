@@ -12,7 +12,13 @@ import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token, UserProfileMetadata } from '@/types';
-import { formatTimeDifference, getAbbrevWalletAddress, getFullTimeDifference, getNonUserProfile, getTokenSymbol } from '@/utils';
+import {
+  formatTimeDifference,
+  getAbbrevWalletAddress,
+  getFullTimeDifference,
+  getNonUserProfile,
+  getTokenSymbol,
+} from '@/utils';
 
 import ViewProfileModal from '../../profile/ViewProfileModal';
 import { ButtonGroup } from './PositionBlockComponents/ButtonGroup';
@@ -77,7 +83,7 @@ export function PositionBlock({
 
   // const borrowRate = useSelector((s) => s.borrowRates[position.side === 'long' ? position.custody.toBase58() : position.collateralCustody.toBase58()]);
   const tradeTokenPrice = useSelector((s) =>
-    selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol))
+    selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol)),
   );
 
   useEffect(() => {
@@ -132,16 +138,16 @@ export function PositionBlock({
     isBig && POSITION_BLOCK_STYLES.column.sizes.big,
     isCompact && POSITION_BLOCK_STYLES.column.sizes.compact,
     isMedium && POSITION_BLOCK_STYLES.column.sizes.medium,
-    isMini && POSITION_BLOCK_STYLES.column.sizes.mini
+    isMini && POSITION_BLOCK_STYLES.column.sizes.mini,
   );
 
   const contentClasses = twMerge(
     POSITION_BLOCK_STYLES.base.content,
-    isMini && "gap-2 flex flex-wrap",
-    isMedium && "gap-2 flex flex-wrap",
-    isCompact && "gap-2 flex flex-wrap",
-    isBig && "gap-2 flex flex-wrap",
-    isBiggest && "flex flex-wrap justify-start"
+    isMini && 'gap-2 flex flex-wrap',
+    isMedium && 'gap-2 flex flex-wrap',
+    isCompact && 'gap-2 flex flex-wrap',
+    isBig && 'gap-2 flex flex-wrap',
+    isBiggest && 'flex flex-wrap justify-start',
   );
 
   const ownerInfo = (
@@ -150,12 +156,21 @@ export function PositionBlock({
         Owner
       </div>
 
-      {position.userProfile && position.userProfile.nickname.length > 0 ? <div className='text-sm border-b border-transparent hover:border-white cursor-pointer' onClick={() => setIsProfileOpen(true)}>
-        {position.userProfile.nickname}
-      </div> :
-        <div className='text-xs text-txtfade border-b border-transparent hover:border-txtfade cursor-pointer' onClick={() => setIsProfileOpen(true)}>
+      {position.userProfile && position.userProfile.nickname.length > 0 ? (
+        <div
+          className="text-sm border-b border-transparent hover:border-white cursor-pointer"
+          onClick={() => setIsProfileOpen(true)}
+        >
+          {position.userProfile.nickname}
+        </div>
+      ) : (
+        <div
+          className="text-xs text-txtfade border-b border-transparent hover:border-txtfade cursor-pointer"
+          onClick={() => setIsProfileOpen(true)}
+        >
           {getAbbrevWalletAddress(position.owner.toBase58())}
-        </div>}
+        </div>
+      )}
     </div>
   );
 
@@ -169,12 +184,13 @@ export function PositionBlock({
         d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"
       />
     </svg>
-  )
+  );
 
   const borrowResolve = () => {
     try {
-      const notification =
-        MultiStepNotification.newForRegularTransaction('Position Borrow Resolve').fire();
+      const notification = MultiStepNotification.newForRegularTransaction(
+        'Position Borrow Resolve',
+      ).fire();
 
       window.adrena.client.positionBorrowResolve({
         notification,
@@ -185,19 +201,38 @@ export function PositionBlock({
     }
   };
 
-  const positionBorrowFeesShouldBeResolved = useMemo(() => ((position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0)) > 50, [position.borrowFeeUsd, position.paidInterestUsd]);
+  const positionBorrowFeesShouldBeResolved = useMemo(
+    () => (position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0) > 50,
+    [position.borrowFeeUsd, position.paidInterestUsd],
+  );
 
   return (
     <>
       <div
-        className={twMerge(POSITION_BLOCK_STYLES.base.container, bodyClassName, borderColor)}
+        className={twMerge(
+          POSITION_BLOCK_STYLES.base.container,
+          bodyClassName,
+          borderColor,
+        )}
         ref={blockRef}
       >
         <PositionHeader
           readOnly={readOnly}
-          positionName={<PositionName position={position} readOnly={readOnly} setTokenB={setTokenB} />}
+          positionName={
+            <PositionName
+              position={position}
+              readOnly={readOnly}
+              setTokenB={setTokenB}
+            />
+          }
           ownerInfo={ownerInfo}
-          pnl={<PnL position={position} showAfterFees={showAfterFees} setShowAfterFees={setShowAfterFees} />}
+          pnl={
+            <PnL
+              position={position}
+              showAfterFees={showAfterFees}
+              setShowAfterFees={setShowAfterFees}
+            />
+          }
           netValue={<NetValue position={position} />}
           isMini={isMini}
           isMedium={isMedium}
@@ -205,17 +240,21 @@ export function PositionBlock({
         />
 
         <div className={contentClasses}>
-          <div className={twMerge(
-            "flex flex-wrap flex-1",
-            (isMini) && "grid grid-cols-2 gap-2",
-            (isMedium) && "grid grid-cols-3 gap-2",
-            (isCompact) && "grid grid-cols-4 gap-2",
-            (isBig) && "grid grid-cols-7 gap-2",
-            (isBiggest) && "justify-between gap-2"
-          )}>
+          <div
+            className={twMerge(
+              'flex flex-wrap flex-1',
+              isMini && 'grid grid-cols-2 gap-2',
+              isMedium && 'grid grid-cols-3 gap-2',
+              isCompact && 'grid grid-cols-4 gap-2',
+              isBig && 'grid grid-cols-7 gap-2',
+              isBiggest && 'justify-between gap-2',
+            )}
+          >
             <ValueColumn
               label="Time Open"
-              value={formatTimeDifference(getFullTimeDifference(position.openDate, new Date(Date.now())))}
+              value={formatTimeDifference(
+                getFullTimeDifference(position.openDate, new Date(Date.now())),
+              )}
               valueClassName={POSITION_BLOCK_STYLES.text.white}
               columnClasses={columnClasses}
             />
@@ -249,7 +288,11 @@ export function PositionBlock({
               }
               tooltip={
                 <FormatNumber
-                  nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+                  nb={
+                    position.side === 'long'
+                      ? position.size
+                      : position.sizeUsd / position.price
+                  }
                   format="number"
                   className={POSITION_BLOCK_STYLES.text.white}
                   precision={position.token.displayAmountDecimalsPrecision}
@@ -265,10 +308,15 @@ export function PositionBlock({
               value={
                 <div
                   className={twMerge(
-                    "flex rounded w-fit",
-                    !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                    'flex rounded w-fit',
+                    !readOnly &&
+                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
-                  onClick={!readOnly ? () => triggerEditPositionCollateral?.(position) : undefined}
+                  onClick={
+                    !readOnly
+                      ? () => triggerEditPositionCollateral?.(position)
+                      : undefined
+                  }
                 >
                   <FormatNumber
                     nb={position.collateralUsd}
@@ -331,11 +379,18 @@ export function PositionBlock({
               value={
                 <div
                   className={twMerge(
-                    "flex rounded w-fit",
-                    !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                    'flex rounded w-fit',
+                    !readOnly &&
+                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
-                  onClick={!readOnly ? () => triggerEditPositionCollateral?.(position) : undefined}
-                > <FormatNumber
+                  onClick={
+                    !readOnly
+                      ? () => triggerEditPositionCollateral?.(position)
+                      : undefined
+                  }
+                >
+                  {' '}
+                  <FormatNumber
                     nb={position.liquidationPrice}
                     format="currency"
                     precision={position.token.displayPriceDecimalsPrecision}
@@ -356,9 +411,7 @@ export function PositionBlock({
                   nb={position.breakEvenPrice}
                   format="currency"
                   precision={position.token.displayPriceDecimalsPrecision}
-                  minimumFractionDigits={
-                    2
-                  }
+                  minimumFractionDigits={2}
                   className={POSITION_BLOCK_STYLES.text.purple}
                   isDecimalDimmed={false}
                 />
@@ -372,34 +425,40 @@ export function PositionBlock({
               value={
                 <div
                   className={twMerge(
-                    "flex rounded w-fit",
-                    !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                    'flex rounded w-fit',
+                    !readOnly &&
+                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
-                  onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
+                  onClick={
+                    !readOnly
+                      ? () => triggerStopLossTakeProfit?.(position)
+                      : undefined
+                  }
                 >
                   {position.takeProfitIsSet &&
-                    position.takeProfitLimitPrice &&
-                    position.takeProfitLimitPrice > 0 ? (
+                  position.takeProfitLimitPrice &&
+                  position.takeProfitLimitPrice > 0 ? (
                     <>
                       <FormatNumber
                         nb={position.takeProfitLimitPrice}
                         format="currency"
                         className={POSITION_BLOCK_STYLES.text.blue}
                         precision={position.token.displayPriceDecimalsPrecision}
-                        minimumFractionDigits={
-                          2
-                        }
+                        minimumFractionDigits={2}
                         isDecimalDimmed={false}
                       />
                       {editIcon}
                     </>
                   ) : (
                     <>
-                      <div className={twMerge(
-                        "flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 gap-0.5",
-                      )}
+                      <div
+                        className={twMerge(
+                          'flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 gap-0.5',
+                        )}
                       >
-                        <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
+                        <div className={POSITION_BLOCK_STYLES.text.white}>
+                          -
+                        </div>
                         {editIcon}
                       </div>
                     </>
@@ -414,14 +473,19 @@ export function PositionBlock({
               value={
                 <div
                   className={twMerge(
-                    "flex rounded w-fit",
-                    !readOnly && "cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100"
+                    'flex rounded w-fit',
+                    !readOnly &&
+                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
-                  onClick={!readOnly ? () => triggerStopLossTakeProfit?.(position) : undefined}
+                  onClick={
+                    !readOnly
+                      ? () => triggerStopLossTakeProfit?.(position)
+                      : undefined
+                  }
                 >
                   {position.stopLossIsSet &&
-                    position.stopLossLimitPrice &&
-                    position.stopLossLimitPrice > 0 ? (
+                  position.stopLossLimitPrice &&
+                  position.stopLossLimitPrice > 0 ? (
                     <>
                       <FormatNumber
                         nb={position.stopLossLimitPrice}
@@ -435,11 +499,14 @@ export function PositionBlock({
                     </>
                   ) : (
                     <>
-                      <div className={twMerge(
-                        "flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 gap-0.5",
-                      )}
+                      <div
+                        className={twMerge(
+                          'flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 gap-0.5',
+                        )}
                       >
-                        <div className={POSITION_BLOCK_STYLES.text.white}>-</div>
+                        <div className={POSITION_BLOCK_STYLES.text.white}>
+                          -
+                        </div>
                         {editIcon}
                       </div>
                     </>
@@ -449,19 +516,26 @@ export function PositionBlock({
               columnClasses={columnClasses}
             />
 
-            {readOnly ? (positionBorrowFeesShouldBeResolved ? <Tippy content={
-              `Settle the position’s $${((position.borrowFeeUsd ?? 0) - position.paidInterestUsd).toFixed(2)} in borrow fees now. Fees are distributed to LPs, stakers, the DAO, and referrals.`
-            }>
-              <div>
-                <Button
-                  size="xs"
-                  className={twMerge(POSITION_BLOCK_STYLES.button.base, 'min-w-[14em] mt-1')}
-                  title='Resolve Borrow Fees'
-                  rounded={false}
-                  onClick={() => borrowResolve()}
-                />
-              </div>
-            </Tippy> : null) : (
+            {readOnly ? (
+              positionBorrowFeesShouldBeResolved ? (
+                <Tippy
+                  content={`Settle the position’s $${((position.borrowFeeUsd ?? 0) - position.paidInterestUsd).toFixed(2)} in borrow fees now. Fees are distributed to LPs, stakers, the DAO, and referrals.`}
+                >
+                  <div>
+                    <Button
+                      size="xs"
+                      className={twMerge(
+                        POSITION_BLOCK_STYLES.button.base,
+                        'min-w-[14em] mt-1',
+                      )}
+                      title="Resolve Borrow Fees"
+                      rounded={false}
+                      onClick={() => borrowResolve()}
+                    />
+                  </div>
+                </Tippy>
+              ) : null
+            ) : (
               <ButtonGroup
                 position={position}
                 closableIn={closableIn}
@@ -491,7 +565,9 @@ export function PositionBlock({
             >
               <div className="absolute top-0 w-[300px]">
                 {(() => {
-                  const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
+                  const fees = -(
+                    (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0)
+                  );
                   const pnlUsd = position.pnl ? position.pnl - fees : null;
                   if (!pnlUsd || pnlUsd < 0) return;
                   return <Congrats />;
@@ -507,19 +583,22 @@ export function PositionBlock({
           {isProfileOpen && (
             <Modal
               className="h-[80vh] w-full overflow-y-auto"
-              wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+              wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
               title=""
               close={() => setIsProfileOpen(false)}
               isWrapped={false}
             >
               <ViewProfileModal
-                profile={position.userProfile || getNonUserProfile(position.owner.toBase58())}
+                profile={
+                  position.userProfile ||
+                  getNonUserProfile(position.owner.toBase58())
+                }
                 close={() => setIsProfileOpen(false)}
               />
             </Modal>
           )}
         </AnimatePresence>
-      </div >
+      </div>
     </>
   );
 }

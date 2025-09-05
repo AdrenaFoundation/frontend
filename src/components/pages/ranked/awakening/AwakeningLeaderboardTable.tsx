@@ -10,7 +10,7 @@ import { DIVISIONS } from '@/constants/divisions';
 import { TradingCompetitionLeaderboardAPI } from '@/types';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 
-import Table from '../../monitoring/Table';
+import Table from '../../monitoring/TableLegacy';
 
 export default function AwakeningLeaderboardTable({
     division,

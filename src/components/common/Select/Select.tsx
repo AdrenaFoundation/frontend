@@ -24,6 +24,7 @@ export default function Select<T extends string>({
   onSelect,
   reversed,
   align = 'right',
+  disableImageAsBg = false,
 }: {
   className?: string;
   selectedClassName?: string;
@@ -33,22 +34,48 @@ export default function Select<T extends string>({
   menuItemClassName?: string;
   menuTextClassName?: string;
   selected: T;
-  options: { title: T; img?: ImageRef | string; disabled?: boolean }[];
+  options: {
+    title: T;
+    img?: ImageRef | string;
+    disabled?: boolean;
+    imgClassName?: string;
+  }[];
   onSelect: (opt: T) => void;
+  disableImageAsBg?: boolean;
 
   // Reverse the image position
   reversed?: boolean;
   align?: 'right' | 'left';
 }) {
-  const selectedImg = options.find((option) => option.title === selected)?.img;
+  const selectedImg = options.find((option) => option.title === selected);
 
   // Option hovering on
   const [optionHover, setOptionHover] = useState<number | null>(null);
 
-  const img = selectedImg ? typeof selectedImg === "string" ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={selectedImg} className="w-[20px] h-[20px]" alt="logo" />
-  ) : <Image src={selectedImg} className="w-[20px] h-[20px]" alt="logo" /> : null;
+  const img = selectedImg?.img ? (
+    typeof selectedImg.img === 'string' ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={selectedImg.img}
+        className={twMerge(
+          'w-[20px] h-[20px]',
+
+          selectedImg.imgClassName,
+        )}
+        alt="logo"
+      />
+    ) : (
+      <Image
+        src={selectedImg.img}
+        className={twMerge(
+          'w-[20px] h-[20px]',
+
+          selectedImg.imgClassName,
+        )}
+        alt="logo"
+      />
+    )
+  ) : null;
 
   const chevron =
     options.length > 1 ? (
@@ -83,7 +110,12 @@ export default function Select<T extends string>({
                 <>
                   <div className="flex flex-row gap-2 items-center">
                     {img}
-                    <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
+                    <span
+                      className={twMerge(
+                        'text-lg font-boldy z-20 m-auto select-none',
+                        selectedTextClassName,
+                      )}
+                    >
                       {selected}
                     </span>
                   </div>
@@ -93,7 +125,12 @@ export default function Select<T extends string>({
                 <>
                   {chevron}
                   <div className="flex flex-row gap-2 items-center">
-                    <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
+                    <span
+                      className={twMerge(
+                        'text-lg font-boldy z-20 m-auto select-none',
+                        selectedTextClassName,
+                      )}
+                    >
                       {selected}
                     </span>
                     {img}
@@ -118,7 +155,13 @@ export default function Select<T extends string>({
 
                   <MenuItem
                     disabled={option.disabled}
-                    className={twMerge("flex flex-row items-center relative overflow-hidden h-14", menuItemClassName, option?.img ? "justify-end" : "justify-center")}
+                    className={twMerge(
+                      'flex flex-row items-center relative overflow-hidden h-14',
+                      menuItemClassName,
+                      option?.img && !disableImageAsBg
+                        ? 'justify-end'
+                        : 'justify-center',
+                    )}
                     onMouseEnter={() => setOptionHover(i)}
                     onMouseLeave={() => setOptionHover(null)}
                     onClick={() => {
@@ -126,7 +169,7 @@ export default function Select<T extends string>({
                     }}
                     key={option.title + i}
                   >
-                    {option?.img ? (
+                    {option?.img && !disableImageAsBg ? (
                       <Image
                         src={option.img}
                         className={twMerge(
@@ -141,7 +184,12 @@ export default function Select<T extends string>({
                       />
                     ) : null}
 
-                    <span className={twMerge("font-boldy text-lg z-20", menuTextClassName)}>
+                    <span
+                      className={twMerge(
+                        'font-boldy text-lg z-20',
+                        menuTextClassName,
+                      )}
+                    >
                       {option.title}
                     </span>
                   </MenuItem>

@@ -30,7 +30,6 @@ export const Notifications = ({
   hasMore: boolean;
   isDialectSubscriber: boolean;
 }) => {
-
   const dispatch = useDispatch();
   const enableDialectNotifications = useSelector(
     (state) => state.settings.enableDialectNotifications,

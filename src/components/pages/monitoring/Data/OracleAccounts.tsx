@@ -5,7 +5,7 @@ import { CustodyExtended } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
 import OnchainAccountInfo from '../OnchainAccountInfo';
-import Table from '../Table';
+import Table from '../TableLegacy';
 import TitleAnnotation from '../TitleAnnotation';
 
 export default function OracleAccounts({
