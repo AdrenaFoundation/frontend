@@ -744,7 +744,7 @@ export default function OwnerBloc({
           </div>
 
           <div className="flex mt-1">
-            <p className="font-InterSemibold text-3xl relative">
+            <p className="font-interSemibold text-3xl relative">
               {userProfile.nickname}
             </p>
           </div>
