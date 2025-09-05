@@ -15,28 +15,34 @@ import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 
 export default function Interseason3({
-    jtoPrice,
+  jtoPrice,
 }: {
-    jtoPrice: number | null;
+  jtoPrice: number | null;
 }) {
-    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
-    const leaderboardData = useMutagenLeaderboardData({ allUserProfilesMetadata, seasonName: 'interseason3', rankFilter: 'points_trading' });
-    // const tokenPrices = useSelector((s) => s.tokenPrices);
+  const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+  const leaderboardData = useMutagenLeaderboardData({
+    allUserProfilesMetadata,
+    seasonName: 'interseason3',
+    rankFilter: 'points_trading',
+  });
+  // const tokenPrices = useSelector((s) => s.tokenPrices);
 
-    const [activeProfile, setActiveProfile] = useState<UserProfileExtended | null>(null);
-    // const [rewardsAs, setRewardsAs] = useState<'tokens' | 'usd'>('usd');
+  const [activeProfile, setActiveProfile] =
+    useState<UserProfileExtended | null>(null);
+  // const [rewardsAs, setRewardsAs] = useState<'tokens' | 'usd'>('usd');
 
-    return (
-        <div className="w-full mx-auto px-4 relative flex flex-col pb-4">
-            <div className="flex flex-col gap-2 items-center justify-center text-center px-4 mx-auto max-w-[100em]">
-                <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full">
-                    For this Summer Event, the rule is simple: Top 25 traders will share the prize pool of 21,200 JTO and 3,160,000,000 BONK.
-                </span>
-                <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full">
-                    Ready, Set, Trade!
-                </span>
+  return (
+    <div className="w-full mx-auto px-4 relative flex flex-col pb-4">
+      <div className="flex flex-col gap-2 items-center justify-center text-center px-4 mx-auto max-w-[100em]">
+        <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full">
+          For this Summer Event, the rule is simple: Top 25 traders will share
+          the prize pool of 21,200 JTO and 3,160,000,000 BONK.
+        </span>
+        <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full">
+          Ready, Set, Trade!
+        </span>
 
-                {/* <div className="w-full flex justify-center items-center flex-col gap-6 mt-8">
+        {/* <div className="w-full flex justify-center items-center flex-col gap-6 mt-8">
                     <div className="text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase">PRIZE POOL REWARDS</div>
 
                     <div className='flex h-[2em] items-center justify-center gap-4 opacity-80'>
@@ -118,41 +124,43 @@ export default function Interseason3({
                     </div>
                 </div> */}
 
-                {leaderboardData ? (
-                    <MutagenLeaderboardInterseason3
-                        data={leaderboardData}
-                        jtoPrice={jtoPrice}
-                        onClickUserProfile={async (wallet: PublicKey) => {
-                            const p = await window.adrena.client.loadUserProfile({ user: wallet });
+        {leaderboardData ? (
+          <MutagenLeaderboardInterseason3
+            data={leaderboardData}
+            jtoPrice={jtoPrice}
+            onClickUserProfile={async (wallet: PublicKey) => {
+              const p = await window.adrena.client.loadUserProfile({
+                user: wallet,
+              });
 
-                            if (p === false) {
-                                setActiveProfile(getNonUserProfile(wallet.toBase58()));
-                            } else {
-                                setActiveProfile(p);
-                            }
-                        }}
-                    />
-                ) : (
-                    <div className="flex w-full items-center justify-center mb-8 mt-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                    </div>
-                )}
-            </div>
+              if (p === false) {
+                setActiveProfile(getNonUserProfile(wallet.toBase58()));
+              } else {
+                setActiveProfile(p);
+              }
+            }}
+          />
+        ) : (
+          <div className="flex w-full items-center justify-center mb-8 mt-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        )}
+      </div>
 
-            {activeProfile && (
-                <Modal
-                    className="h-[80vh] w-full overflow-y-auto"
-                    wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
-                    title=""
-                    close={() => setActiveProfile(null)}
-                    isWrapped={false}
-                >
-                    <ViewProfileModal
-                        profile={activeProfile}
-                        close={() => setActiveProfile(null)}
-                    />
-                </Modal>
-            )}
-        </div>
-    );
+      {activeProfile && (
+        <Modal
+          className="h-[80vh] w-full overflow-y-auto"
+          wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
+          title=""
+          close={() => setActiveProfile(null)}
+          isWrapped={false}
+        >
+          <ViewProfileModal
+            profile={activeProfile}
+            close={() => setActiveProfile(null)}
+          />
+        </Modal>
+      )}
+    </div>
+  );
 }

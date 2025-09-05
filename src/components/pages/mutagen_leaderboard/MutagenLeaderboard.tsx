@@ -10,7 +10,7 @@ import { useSelector } from '@/store/store';
 import { MutagenLeaderboardData } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
 
-import Table from '../monitoring/Table';
+import Table from '../monitoring/TableLegacy';
 
 type SortField =
   | 'totalVolume'

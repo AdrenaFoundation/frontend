@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import Table from '@/components/pages/monitoring/Table';
+import Table from '@/components/pages/monitoring/TableLegacy';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import { useSelector } from '@/store/store';
 import { SeasonLeaderboardsData } from '@/types';

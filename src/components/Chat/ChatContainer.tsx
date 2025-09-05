@@ -94,7 +94,7 @@ function ChatContainer({
         );
         acc[profile.owner.toBase58()].profilePictureUrl =
           PROFILE_PICTURES[
-          profile.profilePicture as keyof typeof PROFILE_PICTURES
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
           ];
         acc[profile.owner.toBase58()].team =
           acc[profile.owner.toBase58()]?.team || 0;
@@ -252,7 +252,7 @@ function ChatContainer({
         {activeProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
             title=""
             close={() => setActiveProfile(null)}
             isWrapped={false}
@@ -326,8 +326,8 @@ function ChatTitle({
 
       <div className="flex flex-row items-center gap-2">
         {totalNotifications !== null &&
-          totalNotifications > 0 &&
-          !isChatOpen ? (
+        totalNotifications > 0 &&
+        !isChatOpen ? (
           <div className="flex items-center justify-center bg-redbright min-w-2 h-2 rounded-full" />
         ) : null}
         <div

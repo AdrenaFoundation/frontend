@@ -30,7 +30,7 @@ export default function Flow({
     setStartDate,
     endDate,
     setEndDate,
-    loading,
+    isInitialLoad,
   } = usePositionStats();
 
   const [selectedRange, setSelectedRange] = useState('All time');
@@ -119,7 +119,7 @@ export default function Flow({
                           setStartDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[104px] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
@@ -133,7 +133,7 @@ export default function Flow({
                           setEndDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[104px] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
@@ -150,71 +150,51 @@ export default function Flow({
             className="flex flex-col lg:flex-row gap-3"
           >
             <AnimatePresence mode="wait">
-              {loading
+              {isInitialLoad
                 ? // Show loading cards while data is being fetched
-                  Array.from({ length: 3 }).map((_, index) => (
-                    <motion.div
-                      key={`loading-${index}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-lg"
-                    />
-                  ))
+                Array.from({ length: 3 }).map((_, index) => (
+                  <motion.div
+                    key={`loading-${index}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-lg"
+                  />
+                ))
                 : groupedStats
                   ? Object.entries(groupedStats).map(
-                      ([symbol, symbolStats], index) => (
-                        <motion.div
-                          key={symbol}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                          className="flex-1"
-                        >
-                          <PositionStatsCard
-                            symbol={symbol}
-                            stats={symbolStats}
-                            custodies={custodies}
-                            isLoading={false}
-                          />
-                        </motion.div>
-                      ),
-                    )
+                    ([symbol, symbolStats], index) => (
+                      <motion.div
+                        key={symbol}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        className="flex-1"
+                      >
+                        <PositionStatsCard
+                          symbol={symbol}
+                          stats={symbolStats}
+                          custodies={custodies}
+                          isLoading={false}
+                        />
+                      </motion.div>
+                    ),
+                  )
                   : null}
             </AnimatePresence>
           </motion.div>
 
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <motion.div
-                key="calendar-loader"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-[15.625rem] animate-loader rounded-lg"
-              />
-            ) : (
-              <motion.div
-                key="calendar-data"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <ActivityCalendar
-                  data={activityCalendarData}
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  bubbleBy={bubbleBy}
-                  setBubbleBy={setBubbleBy}
-                  setSelectedRange={setSelectedRange}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <ActivityCalendar
+            data={activityCalendarData}
+            selectedRange={selectedRange}
+            bubbleBy={bubbleBy}
+            setBubbleBy={setBubbleBy}
+            setSelectedRange={setSelectedRange}
+            isLoading={isInitialLoad}
+            hasData
+          />
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -266,7 +246,7 @@ export default function Flow({
         {profile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
             isWrapped={false}
             close={() => setProfile(null)}
           >

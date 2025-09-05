@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import Loader from '@/components/Loader/Loader';
+import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import FavAchievements from '@/components/pages/profile/FavAchievements';
 import OwnerBlock from '@/components/pages/profile/OwnerBlock';
@@ -36,7 +36,13 @@ export default function Profile({
   const walletAddress = useSelector(selectWalletAddress);
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
   const positions = usePositions(walletAddress);
-  const { traderInfo, expanseRanking, awakeningRanking } = useTraderInfo({
+  const {
+    traderInfo,
+    expanseRanking,
+    factionRanking,
+    awakeningRanking,
+    isInitialLoad: isTraderInfoInitialLoad,
+  } = useTraderInfo({
     walletAddress,
   });
 
@@ -53,14 +59,10 @@ export default function Profile({
     isFavoriteLoading,
   } = useFavorite();
 
-  const {
-    activityCalendarData,
-    bubbleBy,
-    setBubbleBy,
-    loading,
-    setStartDate,
-    setEndDate,
-  } = usePositionStats(true);
+  const [selectedRange, setSelectedRange] = useState('All time');
+
+  const { activityCalendarData, bubbleBy, setBubbleBy, isInitialLoad } =
+    usePositionStats(true);
 
   // When the profile page loads, update the profile so it's up to date with latests
   // user actions
@@ -130,10 +132,13 @@ export default function Profile({
         }}
       />
 
-      <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
-        <div className={twMerge("z-20 w-full flex flex-col rounded-xl backdrop-blur-md border-2 border-white/10 shadow-lg",
-          userProfile === false ? 'overflow-hidden' : 'min-h-full'
-        )}>
+      <div className="flex flex-col pl-4 pr-4 pb-4 w-full min-h-full self-center pt-3">
+        <div
+          className={twMerge(
+            'z-20 w-full flex flex-col rounded-xl backdrop-blur-md border-2 border-white/10 shadow-lg',
+            userProfile === false ? 'overflow-hidden' : 'min-h-full',
+          )}
+        >
           {userProfile === false ? (
             <div className="flex w-full justify-center items-center bg-main">
               <ProfileCreation
@@ -144,72 +149,79 @@ export default function Profile({
             </div>
           ) : (
             <>
-              <OwnerBlock
-                userProfile={userProfile}
-                triggerUserProfileReload={triggerUserProfileReload}
-                canUpdateNickname={!readonly}
-                className="flex w-full w-min-[30em]"
-                walletPubkey={wallet?.publicKey}
-                favoriteAchievements={favoriteAchievements}
-                updateFavoriteAchievements={updateFavoriteAchievements}
-                createFavoriteAchievements={createFavoriteAchievements}
-                isUpdatingMetadata={isUpdatingMetadata}
-                setIsUpdatingMetadata={setIsUpdatingMetadata}
-                activeUpdateTab={activeUpdateTab}
-                setActiveUpdateTab={setActiveUpdateTab}
-              />
-
-              <div className="bg-main flex flex-col gap-2 rounded-bl-xl rounded-br-xl border-t">
-                <FavAchievements
+              <div className="relative">
+                <OwnerBlock
                   userProfile={userProfile}
+                  triggerUserProfileReload={triggerUserProfileReload}
+                  canUpdateNickname={!readonly}
+                  className="flex w-full w-min-[30em]"
+                  walletPubkey={wallet?.publicKey}
                   favoriteAchievements={favoriteAchievements}
-                  isFavoriteLoading={isFavoriteLoading}
+                  updateFavoriteAchievements={updateFavoriteAchievements}
+                  createFavoriteAchievements={createFavoriteAchievements}
+                  isUpdatingMetadata={isUpdatingMetadata}
+                  setIsUpdatingMetadata={setIsUpdatingMetadata}
+                  activeUpdateTab={activeUpdateTab}
+                  setActiveUpdateTab={setActiveUpdateTab}
                 />
+                <div className="flex items-center justify-center md:absolute md:bottom-0 md:right-[6rem] bg-main md:bg-transparent">
+                  <FavAchievements
+                    favoriteAchievements={favoriteAchievements}
+                    isFavoriteLoading={isFavoriteLoading}
+                  />
+                </div>
+                <div className="absolute bottom-0 bg-gradient-to-t from-main to-transparent w-full h-[2em]" />
+              </div>
+              <div className="bg-main flex flex-col rounded-bl-xl rounded-br-xl border-t">
+                <LoaderWrapper
+                  isLoading={isTraderInfoInitialLoad}
+                  height="9.875rem"
+                  loaderClassName="m-3"
+                >
+                  {traderInfo !== null ? (
+                    <TradingStats
+                      traderInfo={traderInfo}
+                      livePositionsNb={
+                        positions === null ? null : positions.length
+                      }
+                      data={activityCalendarData}
+                    />
+                  ) : null}
+                </LoaderWrapper>
 
                 <div className="h-[1px] w-full bg-bcolor mb-2" />
-
-                <TradingStats
-                  traderInfo={traderInfo}
-                  livePositionsNb={positions === null ? null : positions.length}
-                  className="gap-y-4 pt-2 pb-2"
-                />
-
-                <div className="h-[1px] w-full bg-bcolor mb-2" />
-
-                <StakingStats
-                  stakingAccounts={stakingAccounts}
-                  className="gap-y-4 pb-2"
-                />
-
-                <div className="h-[1px] w-full bg-bcolor" />
 
                 <RankingStats
                   expanseRanking={expanseRanking}
+                  factionRanking={factionRanking}
                   awakeningRanking={awakeningRanking}
                   userProfile={userProfile}
                   className="gap-y-4 pt-2 pb-2"
+                  isLoading={isTraderInfoInitialLoad}
                 />
 
-                <div className="h-[1px] w-full bg-bcolor" />
+                <div className="h-[1px] w-full bg-bcolor mt-4" />
 
-                {!loading && connected ? (
-                  <ActivityCalendar
-                    data={activityCalendarData}
-                    setStartDate={setStartDate}
-                    setEndDate={setEndDate}
-                    bubbleBy={bubbleBy}
-                    setBubbleBy={setBubbleBy}
-                    wrapperClassName="bg-transparent border-transparent"
-                    isUserActivity
+                <ActivityCalendar
+                  data={activityCalendarData}
+                  selectedRange={selectedRange}
+                  setSelectedRange={setSelectedRange}
+                  bubbleBy={bubbleBy}
+                  setBubbleBy={setBubbleBy}
+                  wrapperClassName="bg-transparent border-transparent"
+                  walletAddress={walletAddress}
+                  isLoading={isInitialLoad}
+                  hasData={!!traderInfo}
+                />
+
+                {stakingAccounts ? (
+                  <StakingStats
+                    stakingAccounts={stakingAccounts}
+                    walletAddress={walletAddress}
                   />
-                ) : (
-                  <div className="p-4 bg-[#050D14] flex-1 h-full flex items-center justify-center">
-                    <Loader />
-                  </div>
-                )}
+                ) : null}
 
                 <div className="h-[1px] w-full bg-bcolor" />
-
                 <UserRelatedAdrenaAccounts
                   className="h-auto w-full flex mt-auto pb-4"
                   userProfile={userProfile}

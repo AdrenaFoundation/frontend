@@ -6,7 +6,7 @@ import abbreviateWords from '../abbreviateWords';
 import DateInfo from '../DateInfo';
 import NumberInfo from '../NumberInfo';
 import OnchainAccountInfo from '../OnchainAccountInfo';
-import Table from '../Table';
+import Table from '../TableLegacy';
 
 export default function VestsBreakdown({
   vests,
