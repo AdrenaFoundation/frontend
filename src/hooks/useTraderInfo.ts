@@ -5,6 +5,7 @@ import { EnrichedTraderInfo } from '@/types';
 
 import useAwakeningV2 from './useAwakeningV2';
 import useExpanseData from './useExpanseData';
+import useFactionsData from './useFactionsData';
 import { WalletAdapterName } from './useWalletAdapters';
 
 export type ExpanseRankingTraderInfo =
@@ -37,6 +38,21 @@ export type AwakeningRankingTraderInfo =
       endDate: Date | null;
     };
 
+export type FactionRankingTraderInfo =
+  | {
+      pnl: number;
+      rank: number;
+      volume: number;
+      tradersCount: number;
+      startDate: Date | null;
+      endDate: Date | null;
+    }
+  | {
+      startDate: Date | null;
+      endDate: Date | null;
+    }
+  | null;
+
 export default function useTraderInfo({
   walletAddress,
 }: {
@@ -48,6 +64,7 @@ export default function useTraderInfo({
   triggerTraderInfoReload: () => void;
   expanseRanking: ExpanseRankingTraderInfo | null;
   awakeningRanking: AwakeningRankingTraderInfo | null;
+  factionRanking: FactionRankingTraderInfo | null;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
   const [traderInfo, setTraderInfo] = useState<EnrichedTraderInfo | null>(null);
@@ -71,6 +88,10 @@ export default function useTraderInfo({
   });
   const awakeningLeaderboard = useAwakeningV2({
     wallet,
+    allUserProfilesMetadata: emptyMetadata,
+  });
+
+  const factionLeaderboard = useFactionsData({
     allUserProfilesMetadata: emptyMetadata,
   });
 
@@ -129,6 +150,30 @@ export default function useTraderInfo({
       endDate: awakeningLeaderboard.endDate,
     };
   }, [awakeningLeaderboard, walletAddress]);
+
+  const factionRanking = useMemo(() => {
+    if (!walletAddress) return null;
+
+    if (!factionLeaderboard) return null;
+
+    const currentUserData = factionLeaderboard.seasonLeaderboard.find(
+      (u) => u.userWallet === walletAddress,
+    );
+    if (!currentUserData)
+      return {
+        startDate: factionLeaderboard.startDate,
+        endDate: factionLeaderboard.endDate,
+      };
+
+    return {
+      pnl: currentUserData.pnl,
+      rank: currentUserData.rank,
+      volume: currentUserData.volume,
+      tradersCount: factionLeaderboard.seasonLeaderboard.length,
+      startDate: factionLeaderboard.startDate,
+      endDate: factionLeaderboard.endDate,
+    };
+  }, [factionLeaderboard, walletAddress]);
 
   const loadTraderInfo = useCallback(
     async () => {
@@ -202,5 +247,6 @@ export default function useTraderInfo({
     },
     expanseRanking,
     awakeningRanking,
+    factionRanking,
   };
 }

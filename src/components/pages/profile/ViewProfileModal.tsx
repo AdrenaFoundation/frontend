@@ -36,6 +36,7 @@ export default function ViewProfileModal({
   const {
     traderInfo,
     expanseRanking,
+    factionRanking,
     awakeningRanking,
     isInitialLoad: isTraderInfoInitialLoad,
   } = useTraderInfo({
@@ -112,6 +113,7 @@ export default function ViewProfileModal({
 
         <RankingStats
           expanseRanking={expanseRanking}
+          factionRanking={factionRanking}
           awakeningRanking={awakeningRanking}
           className="gap-y-4 pt-2 pb-2"
           userProfile={profile}
@@ -152,7 +154,7 @@ export default function ViewProfileModal({
                       key={position.pubkey.toBase58()}
                       position={position}
                       readOnly={true}
-                      setTokenB={() => {}}
+                      setTokenB={() => { }}
                     />
                   ))}
                 </div>

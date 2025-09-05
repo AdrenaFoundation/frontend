@@ -3,16 +3,18 @@ import { twMerge } from 'tailwind-merge';
 
 import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { TRADING_COMPETITION_SEASONS } from '@/constant';
+import { TEAMS, TRADING_COMPETITION_SEASONS } from '@/constant';
 import {
   AwakeningRankingTraderInfo,
   ExpanseRankingTraderInfo,
+  FactionRankingTraderInfo,
 } from '@/hooks/useTraderInfo';
 import { UserProfileExtended } from '@/types';
 
 export default function RankingStats({
   expanseRanking,
   awakeningRanking,
+  factionRanking,
   className,
   userProfile,
   isLoading,
@@ -20,6 +22,7 @@ export default function RankingStats({
   className?: string;
   expanseRanking: ExpanseRankingTraderInfo | null;
   awakeningRanking: AwakeningRankingTraderInfo | null;
+  factionRanking: FactionRankingTraderInfo | null;
   userProfile: UserProfileExtended | null | false;
   isLoading: boolean;
 }) {
@@ -75,9 +78,18 @@ export default function RankingStats({
       startDate: TRADING_COMPETITION_SEASONS.factions.startDate,
       endDate: TRADING_COMPETITION_SEASONS.factions.endDate,
       userTeam: userProfile && 'team' in userProfile ? userProfile.team : null,
-      tradersCount: null,
-      userVolume: null,
-      userPnL: null,
+      userRank:
+        factionRanking && 'rank' in factionRanking ? factionRanking.rank : null,
+      tradersCount:
+        factionRanking && 'tradersCount' in factionRanking
+          ? factionRanking.tradersCount
+          : null,
+      userVolume:
+        factionRanking && 'volume' in factionRanking
+          ? factionRanking.volume
+          : null,
+      userPnL:
+        factionRanking && 'pnl' in factionRanking ? factionRanking.pnl : null,
     },
   ];
 
@@ -113,6 +125,21 @@ export default function RankingStats({
                   )}
                 >
                   {season.name}
+                  {season.name === 'Factions' &&
+                    season.userTeam !== undefined &&
+                    season.userTeam !== null &&
+                    season.userTeam !== 0 ? (
+                    <p
+                      className={twMerge(
+                        'text-xs',
+                        TEAMS[season.userTeam as keyof typeof TEAMS] === 'Bonk'
+                          ? 'text-orange'
+                          : 'text-blue',
+                      )}
+                    >
+                      team {TEAMS[season.userTeam as keyof typeof TEAMS]}
+                    </p>
+                  ) : null}
                 </div>
               </div>
               <div className="flex flex-row items-center gap-2 p-2">

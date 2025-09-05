@@ -39,6 +39,7 @@ export default function Profile({
   const {
     traderInfo,
     expanseRanking,
+    factionRanking,
     awakeningRanking,
     isInitialLoad: isTraderInfoInitialLoad,
   } = useTraderInfo({
@@ -192,6 +193,7 @@ export default function Profile({
 
                 <RankingStats
                   expanseRanking={expanseRanking}
+                  factionRanking={factionRanking}
                   awakeningRanking={awakeningRanking}
                   userProfile={userProfile}
                   className="gap-y-4 pt-2 pb-2"
