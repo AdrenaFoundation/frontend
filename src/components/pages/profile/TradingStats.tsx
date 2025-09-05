@@ -41,13 +41,14 @@ export default function TradingStats({
   const settings = useSelector((state) => state.settings);
 
   const [showAfterFees] = useState(settings.showFeesInPnl);
+  const [isPnlWithFees, setIsPnlWithFees] = useState(showAfterFees);
 
   const totalProfitLoss = useMemo(() => {
     return (
       (traderInfo?.totalPnl ?? 0) +
-      (showAfterFees ? 0 : (traderInfo?.totalFees ?? 0))
+      (isPnlWithFees ? 0 : (traderInfo?.totalFees ?? 0))
     );
-  }, [showAfterFees, traderInfo?.totalFees, traderInfo?.totalPnl]);
+  }, [isPnlWithFees, traderInfo?.totalFees, traderInfo?.totalPnl]);
 
   const STATS = [
     {
@@ -62,6 +63,7 @@ export default function TradingStats({
       data: data?.map((d) => ({
         value: d.stats?.pnl ?? 0,
       })),
+      onClick: () => setIsPnlWithFees(!isPnlWithFees),
     },
     {
       title: 'Total Volume',
@@ -137,10 +139,20 @@ export default function TradingStats({
             stat.nb ? (
               <li
                 key={stat.title}
-                className="flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-lg"
+                className={twMerge("flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-lg",
+                  stat?.onClick && "cursor-pointer"
+                )}
+                onClick={stat?.onClick}
               >
                 <div>
-                  <p className="text-sm font-boldy opacity-50">{stat.title}</p>{' '}
+                  <div className='flex flex-row items-center gap-1'>
+                    <p className="text-sm font-boldy opacity-50">
+                      {stat.title}
+                    </p>{' '}
+                    {stat.title == 'Total PnL' ? (
+                      <p className='text-xxs opacity-50'>{isPnlWithFees ? 'w/ fees' : 'w/o fees'}</p>
+                    ) : null}
+                  </div>
                   <LoaderWrapper height="1.6875rem" isLoading={!traderInfo}>
                     {typeof stat.nb === 'number' ? (
                       <FormatNumber

@@ -1,7 +1,7 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import {
   Bar,
@@ -16,13 +16,11 @@ import {
 import { twMerge } from 'tailwind-merge';
 
 import adxIcon from '@/../public/images/adrena_logo_adx_white.svg';
-import downloadIcon from '@/../public/images/download.png';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Select from '@/components/common/Select/Select';
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { normalize } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useClaimHistory from '@/hooks/useClaimHistory';
@@ -37,7 +35,8 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import TableV2, { TableV2HeaderType } from '../monitoring/TableV2';
+import TableV2, { TableHeaderType } from '../monitoring/Table';
+import { BottomBar, TotalRewardsCell } from './StakingStatsComp/StakingCells';
 
 interface ExportOptions {
   type: 'all' | 'year' | 'dateRange';
@@ -424,10 +423,10 @@ export default function StakingStats({
                   width={500}
                   height={300}
                   data={claimHistoryGraphData.map((claim) => ({
-                    date: new Date(claim.transaction_date),
-                    usdc: claim.rewards_usdc,
-                    adx: claim.rewards_adx * (tokenPrice || 0),
-                    genesisAdx: claim.rewards_adx_genesis * (tokenPrice || 0),
+                    date: new Date(claim.transactionDate),
+                    usdc: claim.rewardsUsdc,
+                    adx: claim.rewardsAdx * (tokenPrice || 0),
+                    genesisAdx: claim.rewardsAdxGenesis * (tokenPrice || 0),
                   }))}
                   margin={{
                     top: 20,
@@ -579,7 +578,7 @@ const StatsTable = ({
   const isMobile = useBetterMediaQuery('(max-width: 1200px)');
   const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
 
-  const headers: TableV2HeaderType[] = [
+  const headers: TableHeaderType[] = [
     { title: 'Claimed On', sticky: 'left', key: 'claimedOn' },
     { title: 'Source', key: 'source', width: 5.625 },
     { title: 'USDC rewards', key: 'usdcReward', align: 'right' },
@@ -591,21 +590,23 @@ const StatsTable = ({
     },
   ];
 
-  const maxTotalRewards = Math.max(
-    ...paginatedClaims.map(
-      (claim) => claim.rewards_usdc + claim.rewards_adx * (tokenPrice ?? 0),
-    ),
-    0,
-  );
+  const { maxTotalRewards, minTotalRewards } = useMemo(() => {
+    return paginatedClaims.reduce(
+      (acc, claim) => {
+        const totalReward = claim.rewards_usdc + claim.rewards_adx * (tokenPrice ?? 0);
+        acc.maxTotalRewards = Math.max(acc.maxTotalRewards, totalReward);
+        acc.minTotalRewards = Math.min(acc.minTotalRewards, totalReward);
+        return acc;
+      },
+      {
+        maxTotalRewards: 0,
+        minTotalRewards: 0,
+      },
+    );
+  }, [paginatedClaims, tokenPrice]);
 
-  const minTotalRewards = Math.min(
-    ...paginatedClaims.map(
-      (claim) => claim.rewards_usdc + claim.rewards_adx * (tokenPrice ?? 0),
-    ),
-    0,
-  );
 
-  const data = paginatedClaims.map((claim) => ({
+  const data = useMemo(() => paginatedClaims.map((claim) => ({
     claimedOn: (
       <p className="font-mono text-sm">
         {new Date(claim.transaction_date).toLocaleDateString('en-US', {
@@ -657,7 +658,7 @@ const StatsTable = ({
         isIndicator={viewMode === 'table'}
       />
     ),
-  }));
+  })), [paginatedClaims, tokenPrice, maxTotalRewards, minTotalRewards, viewMode]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -678,88 +679,3 @@ const StatsTable = ({
     </div>
   );
 };
-
-const TotalRewardsCell = ({
-  totalRewards,
-  maxValue,
-  minValue,
-  isIndicator,
-}: {
-  totalRewards: number;
-  maxValue: number;
-  minValue: number;
-  isIndicator: boolean;
-}) => {
-  const scaleMax = Math.max(Math.abs(maxValue), Math.abs(minValue)) || 1;
-  const heightPct = normalize(totalRewards, 10, 100, 0, scaleMax);
-
-  return (
-    <div>
-      <FormatNumber
-        nb={totalRewards}
-        precision={2}
-        isDecimalDimmed={false}
-        format="currency"
-        suffixClassName="text-sm text-green"
-        prefix="+ "
-        className="text-sm text-green"
-      />
-      {isIndicator ? (
-        <div
-          className={twMerge(
-            'absolute bottom-0 left-0 bg-green/10 w-full pointer-events-none z-0',
-          )}
-          style={{ height: `${heightPct}%` }}
-        />
-      ) : null}
-    </div>
-  );
-};
-
-const BottomBar = ({
-  stats,
-  onDownloadClick,
-}: {
-  stats: {
-    title: string;
-    value: number;
-    format?: 'currency' | 'number';
-  }[];
-  onDownloadClick: () => void;
-}) => {
-  const isMobile = useBetterMediaQuery('(max-width: 640px)');
-
-  return (
-    <div className="flex flex-row justify-between">
-      <div className="flex flex-row items-center gap-2 sm:gap-5 p-1.5 px-2 sm:px-3 border-r border-r-inputcolor">
-        {stats.map((stat) => (
-          <div key={stat.title} className="flex flex-row gap-2 items-center">
-            <p className="text-xs font-mono opacity-50">{stat.title}</p>
-            <FormatNumber
-              nb={stat.value}
-              format={stat.format}
-              isDecimalDimmed={false}
-              className="text-xs font-interSemibold"
-              isAbbreviate={!!isMobile}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="flex flex-row items-center">
-        <div
-          className="flex flex-row items-center p-1.5 px-2 sm:px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-          onClick={onDownloadClick}
-        >
-          <Image
-            src={downloadIcon}
-            alt="Download"
-            width={16}
-            height={16}
-            className="w-4 h-4"
-          />
-        </div>
-      </div>
-    </div>
-  )
-}

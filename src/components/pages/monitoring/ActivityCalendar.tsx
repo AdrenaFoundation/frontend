@@ -15,6 +15,10 @@ import usePositionsHistory from '@/hooks/usePositionHistory';
 import ActivityMiniChart from './ActivityMiniChart';
 import DateSelector from './DateSelector';
 import PositionHistoryTable from './PositionHistoryTable/PositionHistoryTable';
+import {
+  calculateCalendarDimensions,
+  calculateMonthPosition,
+} from './utils/calendarUtils';
 
 export type ActivityDataType = {
   date: Date;
@@ -74,8 +78,8 @@ export default function ActivityCalendar({
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const isTablet = useBetterMediaQuery('(max-width: 1024px)');
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [blockSize, setBlockSize] = React.useState(16);
-  const [blockMargin, setBlockMargin] = React.useState(2);
+  const [blockSize, setBlockSize] = React.useState(1); // in rem
+  const [blockMargin, setBlockMargin] = React.useState(0.125); // in rem
   const [scaleFactor, setScaleFactor] = React.useState(1);
 
   const isToday = React.useCallback((dateToCheck: Date) => {
@@ -188,25 +192,16 @@ export default function ActivityCalendar({
 
   React.useEffect(() => {
     const updateSize = () => {
-      if (containerRef.current) {
+      if (containerRef.current && processedData) {
         const containerWidth = containerRef.current.offsetWidth;
-        const totalColumns = Math.ceil((processedData?.length || 0) / 7) || 1;
-        const baseSize = 16;
-        const maxBlockSize = 32;
-
-        const availableWidth = containerWidth - 40;
-        const calculatedSize = Math.min(
-          maxBlockSize,
-          Math.max(
-            baseSize,
-            Math.floor((availableWidth - totalColumns * 4) / totalColumns),
-          ),
+        const dimensions = calculateCalendarDimensions(
+          containerWidth,
+          processedData.length
         );
-        const newScaleFactor = calculatedSize / baseSize;
 
-        setBlockSize(calculatedSize);
-        setBlockMargin(2);
-        setScaleFactor(newScaleFactor);
+        setBlockSize(dimensions.blockSize);
+        setBlockMargin(dimensions.blockMargin);
+        setScaleFactor(dimensions.scaleFactor);
       }
     };
 
@@ -236,7 +231,7 @@ export default function ActivityCalendar({
           >
             <div
               className="animate-pulse grid grid-flow-col grid-rows-7"
-              style={{ gap: '2px' }}
+              style={{ gap: '0.125rem' }}
             >
               {Array(91)
                 .fill(0)
@@ -245,8 +240,8 @@ export default function ActivityCalendar({
                     key={i}
                     className="bg-third/20 rounded-sm"
                     style={{
-                      width: 16,
-                      height: 16,
+                      width: '1rem',
+                      height: '1rem',
                     }}
                   />
                 ))}
@@ -320,17 +315,20 @@ export default function ActivityCalendar({
                       }
                     }
 
-                    const cellWidth = blockSize + blockMargin;
-                    const position = weekNumber * cellWidth;
+                    const position = calculateMonthPosition(
+                      weekNumber,
+                      blockSize,
+                      blockMargin
+                    );
 
                     return (
                       <div
                         key={i}
                         className="absolute text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
                         style={{
-                          left: `${position}px`,
-                          top: '-24px',
-                          fontSize: '12px',
+                          left: `${position}rem`,
+                          top: '-1.5rem',
+                          fontSize: '0.75rem',
                         }}
                       >
                         {monthData.month}
@@ -341,9 +339,9 @@ export default function ActivityCalendar({
                 <div
                   className="relative grid w-fit grid-flow-col grid-rows-7 overflow-auto"
                   style={{
-                    columnGap: `${blockMargin}px`,
-                    rowGap: `${blockMargin}px`,
-                    padding: '1px', // Add padding to ensure highlights are visible
+                    columnGap: `${blockMargin}rem`,
+                    rowGap: `${blockMargin}rem`,
+                    padding: '0.0625rem', // Add padding to ensure highlights are visible
                   }}
                 >
                   {processedData.map(({ date, stats }, i) => {
@@ -372,8 +370,8 @@ export default function ActivityCalendar({
                               'opacity-30',
                             )}
                             style={{
-                              width: blockSize,
-                              height: blockSize,
+                              width: `${blockSize}rem`,
+                              height: `${blockSize}rem`,
                             }}
                           />
                         </Tippy>
@@ -488,8 +486,8 @@ export default function ActivityCalendar({
                             'opacity-30',
                           )}
                           style={{
-                            width: blockSize,
-                            height: blockSize,
+                            width: `${blockSize}rem`,
+                            height: `${blockSize}rem`,
                           }}
                           onClick={() => {
                             const currentDate = new Date(date);
@@ -513,7 +511,7 @@ export default function ActivityCalendar({
                               animate={{
                                 r: Math.min(
                                   (stats.bubbleSize * scaleFactor) / 2,
-                                  blockSize / 2,
+                                  (blockSize * 16) / 2, // Convert rem to pixels for radius calculation
                                 ),
                               }}
                               transition={{ duration: 0.3 }}

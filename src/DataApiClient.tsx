@@ -10,6 +10,7 @@ import {
   ClaimHistoryExtended,
   ClaimHistoryExtendedApi,
   ClaimHistoryGraph,
+  ClaimHistoryGraphRaw,
   CustodyInfoResponse,
   EnrichedPositionApi,
   EnrichedPositionApiV2,
@@ -1205,23 +1206,38 @@ export default class DataApiClient {
 
     const url = `${DataApiClient.DATAPI_URL}/claimGraph?user_wallet=${walletAddress}&start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}&symbol=${symbol}&sort=${sortDirection.toUpperCase()}`;
 
-    const response = await fetch(url);
+    try {
+      const response = await fetch(url);
 
-    if (!response.ok) {
-      console.log('API response was not ok');
+      if (!response.ok) {
+        console.log('API response was not ok');
+        return null;
+      }
+
+      const apiBody = await response.json();
+
+      const apiData: ClaimHistoryGraphRaw[] | undefined = apiBody.data;
+
+      if (typeof apiData === 'undefined') {
+        console.log('apiData is undefined');
+        return null;
+      }
+
+      const formattedData: ClaimHistoryGraph[] = apiData.map((data) => ({
+        rewardsAdx: data.rewards_adx,
+        rewardsUsdc: data.rewards_usdc,
+        rewardsAdxGenesis: data.rewards_adx_genesis,
+        transactionDate: new Date(data.transaction_date),
+        symbol: data.symbol,
+      }));
+
+      return formattedData;
+
+    } catch (error) {
+      console.error('Error fetching claim history graph data:', error);
       return null;
     }
 
-    const apiBody = await response.json();
-
-    const apiData: ClaimHistoryGraph[] | undefined = apiBody.data;
-
-    if (typeof apiData === 'undefined') {
-      console.log('apiData is undefined');
-      return null;
-    }
-
-    return apiData;
   }
 
   public static async fetchClaimsHistory({

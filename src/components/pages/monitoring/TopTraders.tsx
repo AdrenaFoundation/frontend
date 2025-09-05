@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
-import Table from '@/components/pages/monitoring/Table';
+import Table from '@/components/pages/monitoring/TableLegacy';
 import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Trader, UserProfileExtended, UserProfileMetadata } from '@/types';

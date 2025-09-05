@@ -7,7 +7,7 @@ import { PositionExtended, UserProfileExtended, VestExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
 import OnchainAccountInfo from '../monitoring/OnchainAccountInfo';
-import Table from '../monitoring/Table';
+import Table from '../monitoring/TableLegacy';
 import TitleAnnotation from '../monitoring/TitleAnnotation';
 
 // Utility function to reduce boilerplate
@@ -51,9 +51,9 @@ export default function UserRelatedAdrenaAccounts({
 }) {
   const [data, setData] = useState<
     | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-      }[]
+      rowTitle: ReactNode;
+      value: ReactNode;
+    }[]
     | null
   >(null);
 
@@ -111,9 +111,8 @@ export default function UserRelatedAdrenaAccounts({
     positions?.forEach((position) => {
       data.push(
         onchainAccountData({
-          title: `${getTokenSymbol(position.token.symbol)} ${
-            position.side === 'long' ? 'Long' : 'Short'
-          } Position`,
+          title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
+            } Position`,
           address: position.pubkey,
           program: 'Adrena',
         }),

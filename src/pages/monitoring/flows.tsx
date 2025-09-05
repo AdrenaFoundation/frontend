@@ -119,7 +119,7 @@ export default function Flow({
                           setStartDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[104px] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
@@ -133,7 +133,7 @@ export default function Flow({
                           setEndDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[104px] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
@@ -152,36 +152,36 @@ export default function Flow({
             <AnimatePresence mode="wait">
               {isInitialLoad
                 ? // Show loading cards while data is being fetched
-                  Array.from({ length: 3 }).map((_, index) => (
-                    <motion.div
-                      key={`loading-${index}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-lg"
-                    />
-                  ))
+                Array.from({ length: 3 }).map((_, index) => (
+                  <motion.div
+                    key={`loading-${index}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-lg"
+                  />
+                ))
                 : groupedStats
                   ? Object.entries(groupedStats).map(
-                      ([symbol, symbolStats], index) => (
-                        <motion.div
-                          key={symbol}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                          className="flex-1"
-                        >
-                          <PositionStatsCard
-                            symbol={symbol}
-                            stats={symbolStats}
-                            custodies={custodies}
-                            isLoading={false}
-                          />
-                        </motion.div>
-                      ),
-                    )
+                    ([symbol, symbolStats], index) => (
+                      <motion.div
+                        key={symbol}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        className="flex-1"
+                      >
+                        <PositionStatsCard
+                          symbol={symbol}
+                          stats={symbolStats}
+                          custodies={custodies}
+                          isLoading={false}
+                        />
+                      </motion.div>
+                    ),
+                  )
                   : null}
             </AnimatePresence>
           </motion.div>

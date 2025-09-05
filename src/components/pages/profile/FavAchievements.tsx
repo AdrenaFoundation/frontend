@@ -23,7 +23,7 @@ export default function FavAchievements({
     <>
       <div>
         <div
-          className="flex flex-row justify-end items-center px-[50px] overflow-hidden cursor-pointer"
+          className="flex flex-row justify-end items-center px-[3.125rem] overflow-hidden cursor-pointer"
           onClick={() => setIsModalOpen(true)}
         >
           <AnimatePresence mode="wait">
@@ -38,7 +38,7 @@ export default function FavAchievements({
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3, delay: i * 0.05 }}
                       className="bg-[#050D14] animate-loader rounded-lg w-[7.2rem] h-[9.648125rem] border border-white/10"
-                      style={{ transform: `translateX(${i * -35}px)` }}
+                      style={{ transform: `translateX(${i * -2.1875}rem)` }}
                     />
                   ),
                 )}
