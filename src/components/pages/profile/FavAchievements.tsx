@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
 import { ACHIEVEMENTS } from '@/constant';
@@ -56,7 +57,20 @@ export default function FavAchievements({
                     unlocked={true}
                     achievement={achievement as AchievementInfoExtended}
                     statPlacement="top"
-                    className="scale-[0.5] sm:scale-[0.6] w-[3.125rem] h-[10.375rem] sm:w-[4.25rem] sm:h-[11.375rem]"
+                    className={twMerge(
+                      "w-[4rem] h-[10rem] scale-[0.6] lg:scale-[0.8] lg:w-[8rem] lg:h-[10rem]",
+                      achievements.length === 3 ? (
+                        twMerge(
+                          i === 0 ? "rotate-[-30deg] relative top-6 left-4" : "",
+                          i === 2 ? "rotate-[20deg] relative top-6" : "",
+                        )
+                      ) : achievements.length === 2 ? (
+                        twMerge(
+                          i === 0 ? "rotate-[-30deg] relative top-6 left-4" : "",
+                          i === 1 ? "rotate-[20deg] relative top-6" : "",
+                        )
+                      ) : "",
+                    )}
                   />
                 </motion.span>
               ))

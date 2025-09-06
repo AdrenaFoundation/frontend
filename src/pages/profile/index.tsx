@@ -164,7 +164,7 @@ export default function Profile({
                   activeUpdateTab={activeUpdateTab}
                   setActiveUpdateTab={setActiveUpdateTab}
                 />
-                <div className="flex items-center justify-center md:absolute md:bottom-0 md:right-[6rem] bg-main md:bg-transparent">
+                <div className="flex items-center justify-center md:absolute md:bottom-0 md:right-[2rem] lg:right-[6rem] bg-main md:bg-transparent">
                   <FavAchievements
                     favoriteAchievements={favoriteAchievements}
                     isFavoriteLoading={isFavoriteLoading}
