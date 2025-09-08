@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "fmt": "prettier -w .",
+    "fmt": "prettier -w . --ignore-path .prettierignore",
     "start": "next start",
     "lint": "next lint"
   },
