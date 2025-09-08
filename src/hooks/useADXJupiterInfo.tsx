@@ -5,50 +5,57 @@ let interval: NodeJS.Timeout | null = null;
 const JUPITER_INFO_INTERVAL_IN_MS = 30_000;
 
 export type JupiterInfo = {
-    liquidity: number;
-    native: unknown;
+  liquidity: number;
+  native: unknown;
 };
 
 export default function useADXJupiterInfo(): JupiterInfo | null {
-    const [JupiterInfo, setJupiterInfo] = useState<JupiterInfo | null>(null);
+  const [JupiterInfo, setJupiterInfo] = useState<JupiterInfo | null>(null);
 
-    const loadJupiterInfo = useCallback(async () => {
-        try {
-            const url = new URL("https://lite-api.jup.ag/tokens/v2/search");
-            url.searchParams.set("query", window.adrena.client.lmTokenMint.toBase58());
+  const loadJupiterInfo = useCallback(async () => {
+    try {
+      const url = new URL('https://lite-api.jup.ag/tokens/v2/search');
+      url.searchParams.set(
+        'query',
+        window.adrena.client.lmTokenMint.toBase58(),
+      );
 
-            const res = (await (await fetch(url.toString(), {
-                method: "GET",
-                headers: { Accept: "application/json" },
-            })).json())[0];
+      const res = (
+        await (
+          await fetch(url.toString(), {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+          })
+        ).json()
+      )[0];
 
-            setJupiterInfo({
-                liquidity: res.liquidity,
-                native: res,
-            });
-        } catch (e) {
-            console.log('Error loading Jupiter info about ADX token', e);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [window.adrena.client.readonlyConnection]);
+      setJupiterInfo({
+        liquidity: res.liquidity,
+        native: res,
+      });
+    } catch (e) {
+      console.log('Error loading Jupiter info about ADX token', e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.adrena.client.readonlyConnection]);
 
-    useEffect(() => {
-        loadJupiterInfo();
+  useEffect(() => {
+    loadJupiterInfo();
 
-        interval = setInterval(() => {
-            loadJupiterInfo();
-        }, JUPITER_INFO_INTERVAL_IN_MS);
+    interval = setInterval(() => {
+      loadJupiterInfo();
+    }, JUPITER_INFO_INTERVAL_IN_MS);
 
-        return () => {
-            if (!interval) {
-                return;
-            }
+    return () => {
+      if (!interval) {
+        return;
+      }
 
-            clearInterval(interval);
-            interval = null;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loadJupiterInfo]);
+      clearInterval(interval);
+      interval = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadJupiterInfo]);
 
-    return JupiterInfo;
+  return JupiterInfo;
 }

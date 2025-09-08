@@ -107,7 +107,13 @@ export default function TradingStats({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         <NumberDisplay
           title="Most profitable Trade"
-          nb={traderInfo?.largestWinningTrade ? traderInfo.largestWinningTrade > 0 ? traderInfo.largestWinningTrade : null : null}
+          nb={
+            traderInfo?.largestWinningTrade
+              ? traderInfo.largestWinningTrade > 0
+                ? traderInfo.largestWinningTrade
+                : null
+              : null
+          }
           format="currency"
           precision={2}
           className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"
@@ -118,7 +124,13 @@ export default function TradingStats({
 
         <NumberDisplay
           title="Most Unfortunate Trade"
-          nb={traderInfo?.largestLosingTrade ? traderInfo.largestLosingTrade < 0 ? traderInfo.largestLosingTrade : null : null}
+          nb={
+            traderInfo?.largestLosingTrade
+              ? traderInfo.largestLosingTrade < 0
+                ? traderInfo.largestLosingTrade
+                : null
+              : null
+          }
           format="currency"
           precision={2}
           className="border border-bcolor bg-third pl-4 pr-4 pt-5 pb-5"

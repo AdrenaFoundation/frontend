@@ -212,14 +212,16 @@ export default function Settings({
           />
         </div>
 
-
-        <Tippy content={
-          <div>
-            SQRT scale reduces the gap between small and large values by using their
-            square root. This makes charts easier to read when there are big spikes,
-            since extreme values don&apos;t overshadow the rest of the data.
-          </div>
-        }>
+        <Tippy
+          content={
+            <div>
+              SQRT scale reduces the gap between small and large values by using
+              their square root. This makes charts easier to read when there are
+              big spikes, since extreme values don&apos;t overshadow the rest of
+              the data.
+            </div>
+          }
+        >
           <div className="flex flex-row justify-between items-center">
             <p className="text-sm font-boldy opacity-50 w-full">
               Use Sqrt scale for volume & fee chart
@@ -230,7 +232,8 @@ export default function Settings({
               onChange={() => {
                 dispatch(
                   setSettings({
-                    useSqrtScaleForVolumeAndFeeChart: !settings.useSqrtScaleForVolumeAndFeeChart,
+                    useSqrtScaleForVolumeAndFeeChart:
+                      !settings.useSqrtScaleForVolumeAndFeeChart,
                   }),
                 );
               }}

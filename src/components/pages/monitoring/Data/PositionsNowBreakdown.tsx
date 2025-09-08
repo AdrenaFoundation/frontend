@@ -16,7 +16,6 @@ export default function PositionsNowBreakdown({
 }) {
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
-
       <div className="flex flex-row items-center gap-2 w-full border-b p-3">
         <p className={titleClassName}>Live Positions Open Interest</p>
 
@@ -28,10 +27,14 @@ export default function PositionsNowBreakdown({
           .filter((c) => !c.isStable)
           .map((custody, i) => {
             return (
-              <div key={custody.pubkey.toBase58()} className={twMerge('flex-1 border rounded-xl lg:rounded-none lg:border-0 pl-5 pt-3 pr-3 pb-3',
-                i !== 0 ? 'lg:border-l' : '',
-                i !== 2 ? 'lg:pr-0' : ''
-              )}>
+              <div
+                key={custody.pubkey.toBase58()}
+                className={twMerge(
+                  'flex-1 border rounded-xl lg:rounded-none lg:border-0 pl-5 pt-3 pr-3 pb-3',
+                  i !== 0 ? 'lg:border-l' : '',
+                  i !== 2 ? 'lg:pr-0' : '',
+                )}
+              >
                 <div className="flex flex-row items-center gap-2">
                   <Image
                     src={custody.tokenInfo.image}
@@ -40,12 +43,21 @@ export default function PositionsNowBreakdown({
                     height="24"
                   />
 
-                  <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
+                  <p className={twMerge(titleClassName, 'opacity-100')}>
+                    {custody.tokenInfo.symbol}
+                  </p>
                 </div>
 
                 <div className="flex flex-col">
                   <div className="mt-3">
-                    <div className={twMerge(titleClassName, 'text-green opacity-75')}>Long</div>
+                    <div
+                      className={twMerge(
+                        titleClassName,
+                        'text-green opacity-75',
+                      )}
+                    >
+                      Long
+                    </div>
 
                     <div className="flex flex-col">
                       <NumberDisplay
@@ -53,9 +65,11 @@ export default function PositionsNowBreakdown({
                           custody.nativeObject.longPositions.lockedAmount,
                           custody.decimals,
                         )}
-                        precision={custody.tokenInfo.displayAmountDecimalsPrecision}
+                        precision={
+                          custody.tokenInfo.displayAmountDecimalsPrecision
+                        }
                         suffix={custody.tokenInfo.symbol}
-                        className='border-0 p-1 items-start'
+                        className="border-0 p-1 items-start"
                       />
 
                       <NumberDisplay
@@ -64,17 +78,24 @@ export default function PositionsNowBreakdown({
                           USD_DECIMALS,
                         )}
                         precision={0}
-                        format='currency'
-                        className='border-0 p-1 items-start'
-                        bodyClassName='text-sm text-txtfade'
+                        format="currency"
+                        className="border-0 p-1 items-start"
+                        bodyClassName="text-sm text-txtfade"
                       />
                     </div>
                   </div>
 
                   <div className="w-full h-[1px] bg-bcolor my-1" />
 
-                  <div className='mt-2'>
-                    <div className={twMerge(titleClassName, 'mr-4 text-red opacity-75')}>Short</div>
+                  <div className="mt-2">
+                    <div
+                      className={twMerge(
+                        titleClassName,
+                        'mr-4 text-red opacity-75',
+                      )}
+                    >
+                      Short
+                    </div>
 
                     <NumberDisplay
                       nb={nativeToUi(
@@ -84,8 +105,8 @@ export default function PositionsNowBreakdown({
                         USD_DECIMALS,
                       )}
                       precision={0}
-                      suffix='USDC'
-                      className='border-0 p-1 items-start'
+                      suffix="USDC"
+                      className="border-0 p-1 items-start"
                     />
                   </div>
                 </div>

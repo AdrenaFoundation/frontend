@@ -11,7 +11,12 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { addNotification, getTokenImage, getTokenSymbol, validateTPSLInputs } from '@/utils';
+import {
+  addNotification,
+  getTokenImage,
+  getTokenSymbol,
+  validateTPSLInputs,
+} from '@/utils';
 
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
@@ -31,14 +36,14 @@ export default function StopLossTakeProfit({
     position.stopLossIsSet &&
       position.stopLossLimitPrice &&
       position.stopLossLimitPrice > 0
-      ? position.stopLossLimitPrice ?? null
+      ? (position.stopLossLimitPrice ?? null)
       : null,
   );
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(
     position.takeProfitIsSet &&
       position.takeProfitLimitPrice &&
       position.takeProfitLimitPrice > 0
-      ? position.takeProfitLimitPrice ?? null
+      ? (position.takeProfitLimitPrice ?? null)
       : null,
   );
 
@@ -52,16 +57,16 @@ export default function StopLossTakeProfit({
 
   // Set or Cancel SL and TP depending user inputs
   const applyConfiguration = async () => {
-    if (!validateTPSLInputs(
-      {
+    if (
+      !validateTPSLInputs({
         takeProfitInput,
         stopLossInput,
         markPrice,
         position,
         setTakeProfitError,
         setStopLossError,
-      }
-    )) {
+      })
+    ) {
       return;
     }
 
@@ -81,18 +86,20 @@ export default function StopLossTakeProfit({
           takeProfitInput !== position.takeProfitLimitPrice)
       ) {
         transaction.add(
-          await (position.side === 'long'
-            ? window.adrena.client.buildSetTakeProfitLongIx.bind(
-              window.adrena.client,
-            )
-            : window.adrena.client.buildSetTakeProfitShortIx.bind(
-              window.adrena.client,
-            ))({
-              position,
-              takeProfitLimitPrice: new BN(
-                takeProfitInput * 10 ** PRICE_DECIMALS,
-              ),
-            }),
+          await (
+            position.side === 'long'
+              ? window.adrena.client.buildSetTakeProfitLongIx.bind(
+                  window.adrena.client,
+                )
+              : window.adrena.client.buildSetTakeProfitShortIx.bind(
+                  window.adrena.client,
+                )
+          )({
+            position,
+            takeProfitLimitPrice: new BN(
+              takeProfitInput * 10 ** PRICE_DECIMALS,
+            ),
+          }),
         );
       }
 
@@ -122,17 +129,19 @@ export default function StopLossTakeProfit({
         console.log('Set stop loss at', takeProfitInput);
 
         transaction.add(
-          await (position.side === 'long'
-            ? window.adrena.client.buildSetStopLossLongIx.bind(
-              window.adrena.client,
-            )
-            : window.adrena.client.buildSetStopLossShortIx.bind(
-              window.adrena.client,
-            ))({
-              position,
-              stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
-              closePositionPrice: null, // No slippage
-            }),
+          await (
+            position.side === 'long'
+              ? window.adrena.client.buildSetStopLossLongIx.bind(
+                  window.adrena.client,
+                )
+              : window.adrena.client.buildSetStopLossShortIx.bind(
+                  window.adrena.client,
+                )
+          )({
+            position,
+            stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
+            closePositionPrice: null, // No slippage
+          }),
         );
       }
 
@@ -185,7 +194,6 @@ export default function StopLossTakeProfit({
       )}
     >
       <div className="px-6 sm:px-3 w-full">
-
         <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mb-3 w-full">
           <div className="w-full flex justify-between">
             <div className="flex gap-2 items-center">
@@ -244,11 +252,9 @@ export default function StopLossTakeProfit({
               />
             </div>
           </div>
-
         </div>
 
         <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-lg border p-3 py-2.5">
-
           <div className="flex w-full justify-between items-center">
             <span className="text-sm text-txtfade">Net Value</span>
             <>
@@ -319,8 +325,6 @@ export default function StopLossTakeProfit({
         title={position.stopLossIsSet ? 'Update Stop Loss' : 'Stop Loss'}
         setIsError={setTakeProfitError}
       />
-
-
 
       <div className="w-full mt-0 gap-4 flex flex-col sm:flex-row p-4 border-t">
         <Button

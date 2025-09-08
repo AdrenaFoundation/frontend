@@ -50,7 +50,7 @@ export default function AdrenaAccounts({
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="50%"
-        className='rounded-none bg-transparent border-none'
+        className="rounded-none bg-transparent border-none"
         data={[
           {
             rowTitle: (
@@ -157,7 +157,9 @@ export default function AdrenaAccounts({
               value: (
                 <OnchainAccountInfo
                   className="md:ml-auto"
-                  address={window.adrena.client.findCustodyTokenAccountAddress(custody.mint)}
+                  address={window.adrena.client.findCustodyTokenAccountAddress(
+                    custody.mint,
+                  )}
                 />
               ),
             }))

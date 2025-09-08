@@ -10,12 +10,21 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import {
+  NameType,
+  ValueType,
+} from 'recharts/types/component/DefaultTooltipContent';
 import { DataKey } from 'recharts/types/util/types';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import { RechartsData } from '@/types';
-import { chunkArray, formatNumber, formatNumberShort, formatPercentage, formatToWeekOf } from '@/utils';
+import {
+  chunkArray,
+  formatNumber,
+  formatNumberShort,
+  formatPercentage,
+  formatToWeekOf,
+} from '@/utils';
 
 function CustomRechartsToolTip({
   data,
@@ -45,104 +54,133 @@ function CustomRechartsToolTip({
 
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[10em] grow">
-        {label && <p className="text-lg mb-2 font-mono">{labelCustomization ? labelCustomization(label) : label}</p>}
+        {label && (
+          <p className="text-lg mb-2 font-mono">
+            {labelCustomization ? labelCustomization(label) : label}
+          </p>
+        )}
 
-        <div className='flex h-auto gap-4'>
-
+        <div className="flex h-auto gap-4">
           {/* Have multiple tables */}
-          {payloadChunks.map((payload, i) => <table className='w-full table-auto h-10' key={`table-cohort-${i}`}>
-            <thead>
-              <tr>
-                <th className='text-xs font-boldy'>Name</th>
+          {payloadChunks.map((payload, i) => (
+            <table className="w-full table-auto h-10" key={`table-cohort-${i}`}>
+              <thead>
+                <tr>
+                  <th className="text-xs font-boldy">Name</th>
 
-                <th className='text-xs font-boldy'>
-                  {{
-                    users: 'Users',
-                    volumes: 'Volume',
-                    trades: 'Trades',
-                  }[type]}
-                </th>
+                  <th className="text-xs font-boldy">
+                    {
+                      {
+                        users: 'Users',
+                        volumes: 'Volume',
+                        trades: 'Trades',
+                      }[type]
+                    }
+                  </th>
 
-                {type === 'users' ? <th className='text-xs font-boldy'>
-                  {{
-                    users: 'Retention',
-                    volumes: 'Change',
-                    trades: 'Change',
-                  }[type]}
-                </th> : null}
-              </tr>
-            </thead>
+                  {type === 'users' ? (
+                    <th className="text-xs font-boldy">
+                      {
+                        {
+                          users: 'Retention',
+                          volumes: 'Change',
+                          trades: 'Change',
+                        }[type]
+                      }
+                    </th>
+                  ) : null}
+                </tr>
+              </thead>
 
-            <tbody>
-              {i === 0 ? <tr>
-                <td className='text-center'>
-                  <span
-                    style={{ color: totalColor }}
-                    className='text-sm'
-                  >
-                    Total
-                  </span>
-                </td>
+              <tbody>
+                {i === 0 ? (
+                  <tr>
+                    <td className="text-center">
+                      <span style={{ color: totalColor }} className="text-sm">
+                        Total
+                      </span>
+                    </td>
 
-                <td className='text-center text-sm font-mono' style={{ color: totalColor }}>
-                  {type === 'volumes'
-                    ? <FormatNumber
-                      nb={total}
-                      format="currency"
-                      prefix='$'
-                      precision={0}
-                      isDecimalDimmed={false}
-                      className='border-0 text-sm font-mono'
-                      isAbbreviate={true}
-                      isAbbreviateIcon={false}
-                    />
-                    : formatNumber(Number(total), precision)}
-                </td>
-
-                {type === 'users' ? <td className='text-center text-txtfade text-sm'>
-                  -
-                </td> : null}
-              </tr> : null}
-
-              {(i === 0 ? payload.slice(1) : payload).map((item) => {
-                const originalData = data.find(x => x && item.dataKey && !!x[item.dataKey]);
-
-                const originalNumber = originalData && item.dataKey ? Number(originalData[item.dataKey]) : 0;
-                const originalPercentage = Number(item.value) * 100 / originalNumber;
-
-                return <tr key={item.dataKey}>
-                  <td className='text-center text-nowrap'>
-                    <span style={{ color: item.color }} className='text-sm'>{'Cohort ' + originalData?.['time']}</span>
-                  </td>
-
-                  <td className='text-center'>
-                    <span
-                      style={{ color: item.color }}
+                    <td
+                      className="text-center text-sm font-mono"
+                      style={{ color: totalColor }}
                     >
-                      {type === 'volumes'
-                        ? <FormatNumber
-                          nb={Number(item.value)}
-                          prefix='$'
+                      {type === 'volumes' ? (
+                        <FormatNumber
+                          nb={total}
                           format="currency"
+                          prefix="$"
                           precision={0}
                           isDecimalDimmed={false}
-                          className='border-0 text-sm font-mono'
+                          className="border-0 text-sm font-mono"
                           isAbbreviate={true}
                           isAbbreviateIcon={false}
                         />
-                        : <span className='text-sm font-mono'>{formatNumber(Number(item.value), precision)}</span>}
-                    </span>
-                  </td>
+                      ) : (
+                        formatNumber(Number(total), precision)
+                      )}
+                    </td>
 
-                  {type === 'users' ? <td className='text-center text-sm font-mono text-txtfade'>
-                    {formatPercentage(originalPercentage, precision)}
-                  </td> : null}
-                </tr>
-              })}
-            </tbody>
-          </table>)}
+                    {type === 'users' ? (
+                      <td className="text-center text-txtfade text-sm">-</td>
+                    ) : null}
+                  </tr>
+                ) : null}
+
+                {(i === 0 ? payload.slice(1) : payload).map((item) => {
+                  const originalData = data.find(
+                    (x) => x && item.dataKey && !!x[item.dataKey],
+                  );
+
+                  const originalNumber =
+                    originalData && item.dataKey
+                      ? Number(originalData[item.dataKey])
+                      : 0;
+                  const originalPercentage =
+                    (Number(item.value) * 100) / originalNumber;
+
+                  return (
+                    <tr key={item.dataKey}>
+                      <td className="text-center text-nowrap">
+                        <span style={{ color: item.color }} className="text-sm">
+                          {'Cohort ' + originalData?.['time']}
+                        </span>
+                      </td>
+
+                      <td className="text-center">
+                        <span style={{ color: item.color }}>
+                          {type === 'volumes' ? (
+                            <FormatNumber
+                              nb={Number(item.value)}
+                              prefix="$"
+                              format="currency"
+                              precision={0}
+                              isDecimalDimmed={false}
+                              className="border-0 text-sm font-mono"
+                              isAbbreviate={true}
+                              isAbbreviateIcon={false}
+                            />
+                          ) : (
+                            <span className="text-sm font-mono">
+                              {formatNumber(Number(item.value), precision)}
+                            </span>
+                          )}
+                        </span>
+                      </td>
+
+                      {type === 'users' ? (
+                        <td className="text-center text-sm font-mono text-txtfade">
+                          {formatPercentage(originalPercentage, precision)}
+                        </td>
+                      ) : null}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ))}
         </div>
-      </div >
+      </div>
     );
   }
 
@@ -190,7 +228,12 @@ export default function LineRechartCohorts({
 
         <XAxis dataKey="time" fontSize="12" />
 
-        <YAxis domain={['auto', 'auto']} tickFormatter={formatYAxis} fontSize="11" scale={"log"} />
+        <YAxis
+          domain={['auto', 'auto']}
+          tickFormatter={formatYAxis}
+          fontSize="11"
+          scale={'log'}
+        />
 
         <Tooltip
           wrapperStyle={{ zIndex: 20 }}
@@ -228,7 +271,7 @@ export default function LineRechartCohorts({
             }}
             wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
             formatter={(value) => {
-              const originalData = data.find(x => x && value && !!x[value]);
+              const originalData = data.find((x) => x && value && !!x[value]);
 
               return originalData?.['time'] ?? value;
             }}

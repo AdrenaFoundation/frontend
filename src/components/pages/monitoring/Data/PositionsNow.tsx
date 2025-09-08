@@ -22,7 +22,7 @@ export default function PositionsNow({
           alt="Live icon"
           width={12}
           height={12}
-          className='animate-pulse'
+          className="animate-pulse"
         />
       </div>
 
@@ -31,30 +31,30 @@ export default function PositionsNow({
           title="Long positions"
           nb={mainPool.nbOpenLongPositions}
           precision={0}
-          className='rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r'
+          className="rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r"
         />
 
         <NumberDisplay
           title="Short positions"
           nb={mainPool.nbOpenShortPositions}
           precision={0}
-          className='rounded-none border-t-0 border-l-0 border-r-0 border-b'
+          className="rounded-none border-t-0 border-l-0 border-r-0 border-b"
         />
 
         <NumberDisplay
           title="Open Interest Long"
           nb={mainPool.longPositions}
           precision={0}
-          format='currency'
-          className='rounded-none border-t-0 border-l-0 border-r-0 border-b-0 sm:border-r'
+          format="currency"
+          className="rounded-none border-t-0 border-l-0 border-r-0 border-b-0 sm:border-r"
         />
 
         <NumberDisplay
           title="Open Interest Short"
           nb={mainPool.shortPositions}
           precision={0}
-          format='currency'
-          className='rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-t-0'
+          format="currency"
+          className="rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-t-0"
         />
       </div>
     </div>

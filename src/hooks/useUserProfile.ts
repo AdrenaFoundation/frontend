@@ -1,7 +1,7 @@
-import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useState } from "react";
+import { PublicKey } from '@solana/web3.js';
+import { useCallback, useEffect, useState } from 'react';
 
-import { UserProfileExtended } from "@/types";
+import { UserProfileExtended } from '@/types';
 
 export default function useUserProfile(walletAddress: string | null): {
   userProfile: UserProfileExtended | false | null;

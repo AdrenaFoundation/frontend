@@ -12,27 +12,31 @@ export default function StakingRewardsWaitingToBeClaimed({
   adxStakingAccount: Staking;
   titleClassName?: string;
 }) {
-  const adxStakingPendingRewards = adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
-    if (!round.rate) return acc;
+  const adxStakingPendingRewards =
+    adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
+      if (!round.rate) return acc;
 
-    const totalToClaim = round.rate.mul(round.totalStake.sub(round.totalClaim)).div(new BN(10 ** RATE_DECIMALS));
+      const totalToClaim = round.rate
+        .mul(round.totalStake.sub(round.totalClaim))
+        .div(new BN(10 ** RATE_DECIMALS));
 
-    return acc + nativeToUi(
-      totalToClaim,
-      adxStakingAccount.rewardTokenDecimals,
-    );
-  }, 0);
+      return (
+        acc + nativeToUi(totalToClaim, adxStakingAccount.rewardTokenDecimals)
+      );
+    }, 0);
 
-  const adxStakingPendingLmRewards = adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
-    if (!round.lmRate) return acc;
+  const adxStakingPendingLmRewards =
+    adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
+      if (!round.lmRate) return acc;
 
-    const lmTotalToClaim = round.lmRate.mul(round.lmTotalStake.sub(round.lmTotalClaim)).div(new BN(10 ** RATE_DECIMALS));
+      const lmTotalToClaim = round.lmRate
+        .mul(round.lmTotalStake.sub(round.lmTotalClaim))
+        .div(new BN(10 ** RATE_DECIMALS));
 
-    return acc + nativeToUi(
-      lmTotalToClaim,
-      window.adrena.client.adxToken.decimals,
-    );
-  }, 0);
+      return (
+        acc + nativeToUi(lmTotalToClaim, window.adrena.client.adxToken.decimals)
+      );
+    }, 0);
 
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
@@ -49,15 +53,15 @@ export default function StakingRewardsWaitingToBeClaimed({
         <NumberDisplay
           nb={adxStakingPendingRewards}
           precision={0}
-          suffix='USDC'
-          className='border-0 p-0'
+          suffix="USDC"
+          className="border-0 p-0"
         />
 
         <NumberDisplay
           nb={adxStakingPendingLmRewards}
           precision={0}
-          suffix='ADX'
-          className='border-0 p-0'
+          suffix="ADX"
+          className="border-0 p-0"
         />
       </div>
     </div>

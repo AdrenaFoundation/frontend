@@ -1,5 +1,5 @@
-import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
+import 'tippy.js/dist/tippy.css';
 
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';

@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import DataApiClient from "@/DataApiClient";
-import { EnrichedTraderInfo } from "@/types";
+import DataApiClient from '@/DataApiClient';
+import { EnrichedTraderInfo } from '@/types';
 
-import useAwakeningV2 from "./useAwakeningV2";
-import useExpanseData from "./useExpanseData";
-import { WalletAdapterName } from "./useWalletAdapters";
+import useAwakeningV2 from './useAwakeningV2';
+import useExpanseData from './useExpanseData';
+import { WalletAdapterName } from './useWalletAdapters';
 
 export type ExpanseRankingTraderInfo =
   | {
@@ -53,7 +53,7 @@ export default function useTraderInfo({
   const wallet = useMemo(() => {
     return walletAddress
       ? {
-          adapterName: "Phantom" as WalletAdapterName,
+          adapterName: 'Phantom' as WalletAdapterName,
           walletAddress,
         }
       : null;
@@ -148,7 +148,7 @@ export default function useTraderInfo({
       try {
         setTraderInfo(await fetchTraderInfo());
       } catch (e) {
-        console.log("Error loading trader info", e, String(e));
+        console.log('Error loading trader info', e, String(e));
         throw e;
       }
     },

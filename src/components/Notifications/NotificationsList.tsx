@@ -6,7 +6,6 @@ import { AdrenaNotificationData } from '@/types';
 
 import { NotificationItem } from './NotificationItem';
 
-
 export const NotificationsList = ({
   notifications,
   isLoading = false,
@@ -36,7 +35,7 @@ export const NotificationsList = ({
 
     if (
       target.scrollTop + target.clientHeight >=
-      target.scrollHeight - threshold &&
+        target.scrollHeight - threshold &&
       !isLoading &&
       hasMore
     ) {
@@ -46,7 +45,11 @@ export const NotificationsList = ({
     // Mark visible unread notifications as read (only once per notification)
     if (onMarkAsRead) {
       sortedNotifications.forEach((notification, idx) => {
-        if (notification.is_read || markedAsReadArr.current.includes(notification.transaction_signature)) return;
+        if (
+          notification.is_read ||
+          markedAsReadArr.current.includes(notification.transaction_signature)
+        )
+          return;
         const ref = notificationRefs.current[idx];
         if (!ref) return;
         const rect = ref.getBoundingClientRect();
@@ -55,7 +58,7 @@ export const NotificationsList = ({
         const isVisible =
           rect.top < parentRect.bottom &&
           rect.bottom > parentRect.top &&
-          rect.bottom - Math.max(rect.top, parentRect.top) > (rect.height / 2);
+          rect.bottom - Math.max(rect.top, parentRect.top) > rect.height / 2;
         if (isVisible) {
           markedAsReadArr.current.push(notification.transaction_signature);
           onMarkAsRead(notification.transaction_signature);
@@ -67,7 +70,6 @@ export const NotificationsList = ({
   useEffect(() => {
     markedAsReadArr.current = [];
   }, [notifications]);
-
 
   if (isLoading) {
     return (

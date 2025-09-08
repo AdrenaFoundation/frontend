@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import copyIcon from '@/../public/images/copy.svg';
@@ -114,7 +114,9 @@ export default function ErrorReport() {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 border rounded-xl mt-8">
-      <h1 className="text-xl font-interSemibold mb-3 capitalize">Error Report Lookup</h1>
+      <h1 className="text-xl font-interSemibold mb-3 capitalize">
+        Error Report Lookup
+      </h1>
 
       <div className="relative flex items-center gap-2">
         <input

@@ -17,18 +17,18 @@ export default function TermsAndConditionsModal({
   ...args
 }:
   | {
-    className?: string;
-    isOpen: boolean;
-    readonly: true;
-    closeTrigger: () => void;
-  }
+      className?: string;
+      isOpen: boolean;
+      readonly: true;
+      closeTrigger: () => void;
+    }
   | {
-    className?: string;
-    isOpen: boolean;
-    readonly: false;
-    agreeTrigger: () => void;
-    declineTrigger: () => void;
-  }) {
+      className?: string;
+      isOpen: boolean;
+      readonly: false;
+      agreeTrigger: () => void;
+      declineTrigger: () => void;
+    }) {
   const [acceptedTermsAndConditions, setAcceptedTermsAndConditions] =
     useState<boolean>(false);
 
@@ -58,7 +58,7 @@ export default function TermsAndConditionsModal({
         'max-h-[40em]',
       )}
     >
-      <div className='flex flex-col pb-4'>
+      <div className="flex flex-col pb-4">
         <div className="flex mt-4 items-center justify-center w-full">
           <Checkbox
             checked={acceptedTermsAndConditions}
@@ -77,7 +77,6 @@ export default function TermsAndConditionsModal({
               className="ml-1 underline flex gap-1 items-center"
             >
               Terms of Service*
-
               <Image
                 src={externalLinkLogo}
                 alt="External link"
@@ -107,7 +106,6 @@ export default function TermsAndConditionsModal({
               className="ml-1 underline flex gap-1 items-center"
             >
               Token Terms and Conditions*
-
               <Image
                 src={externalLinkLogo}
                 alt="External link"
@@ -120,7 +118,10 @@ export default function TermsAndConditionsModal({
         </div>
       </div>
 
-      <p className='text-xxs opacity-50 text-center'>*Please check the boxes to agree to the terms and conditions before continuing.</p>
+      <p className="text-xxs opacity-50 text-center">
+        *Please check the boxes to agree to the terms and conditions before
+        continuing.
+      </p>
       <div className="flex w-full flex-row gap-3 mt-6 border-t border-grey max-w-full flex-wrap">
         {readonly ? (
           <>

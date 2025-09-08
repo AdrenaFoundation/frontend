@@ -22,22 +22,20 @@ export default function LockedStakes({
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
   readonly?: boolean;
 }) {
-  const lockedStakesPerDuration = lockedStakes.reduce((acc, lockedStake) => {
-    if (!acc[lockedStake.lockDuration.toString()])
-      acc[lockedStake.lockDuration.toString()] = [];
+  const lockedStakesPerDuration = lockedStakes.reduce(
+    (acc, lockedStake) => {
+      if (!acc[lockedStake.lockDuration.toString()])
+        acc[lockedStake.lockDuration.toString()] = [];
 
-    acc[lockedStake.lockDuration.toString()].push(lockedStake);
+      acc[lockedStake.lockDuration.toString()].push(lockedStake);
 
-    return acc;
-  }, {} as Record<string, LockedStakeExtended[]>);
+      return acc;
+    },
+    {} as Record<string, LockedStakeExtended[]>,
+  );
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col w-full',
-        className,
-      )}
-    >
+    <div className={twMerge('flex flex-col w-full', className)}>
       {Object.values(lockedStakesPerDuration).map((lockedStakes, i) => (
         <LockedStakesDuration
           readonly={readonly}

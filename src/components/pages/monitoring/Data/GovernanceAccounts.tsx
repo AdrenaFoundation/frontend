@@ -25,7 +25,7 @@ export default function GovernanceAccounts({
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
-        className='rounded-none bg-transparent border-none'
+        className="rounded-none bg-transparent border-none"
         data={[
           {
             rowTitle: (

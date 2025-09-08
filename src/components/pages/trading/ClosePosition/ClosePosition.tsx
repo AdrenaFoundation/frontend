@@ -95,9 +95,13 @@ export default function ClosePosition({
   const [activePercent, setActivePercent] = useState<number | null>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState<boolean>(true);
-  const [isCalculatingJupiter, setIsCalculatingJupiter] = useState<boolean>(false);
-  const [isCalculatingNative, setIsCalculatingNative] = useState<boolean>(false);
-  const [lastCalculationTime, setLastCalculationTime] = useState<number>(Date.now());
+  const [isCalculatingJupiter, setIsCalculatingJupiter] =
+    useState<boolean>(false);
+  const [isCalculatingNative, setIsCalculatingNative] =
+    useState<boolean>(false);
+  const [lastCalculationTime, setLastCalculationTime] = useState<number>(
+    Date.now(),
+  );
 
   // Ref to track current request for race condition handling
   const currentRequestRef = useRef<AbortController | null>(null);
@@ -114,7 +118,9 @@ export default function ClosePosition({
 
     try {
       // Fetch exitPriceAndFee first
-      const exitPriceAndFee = await window.adrena.client.getExitPriceAndFee({ position });
+      const exitPriceAndFee = await window.adrena.client.getExitPriceAndFee({
+        position,
+      });
 
       if (abortController.signal.aborted) {
         return;
@@ -132,8 +138,10 @@ export default function ClosePosition({
 
       if (abortController.signal.aborted) return;
 
-      const remainingCollateral = position.collateralUsd * (1 - (activePercent ?? 1));
-      const shouldSkipJupiter = isPartialClose(activePercent) && remainingCollateral < 10;
+      const remainingCollateral =
+        position.collateralUsd * (1 - (activePercent ?? 1));
+      const shouldSkipJupiter =
+        isPartialClose(activePercent) && remainingCollateral < 10;
 
       // Check remaining collateral validation for all cases
       if (shouldSkipJupiter) {
@@ -159,11 +167,16 @@ export default function ClosePosition({
           return;
         }
         // Apply slippage to get the actual amount the user will receive
-        const amountWithSlippage = applySlippage(new BN(jupiterQuote.outAmount), -swapSlippage);
+        const amountWithSlippage = applySlippage(
+          new BN(jupiterQuote.outAmount),
+          -swapSlippage,
+        );
         setAmountOut(nativeToUi(amountWithSlippage, redeemToken.decimals));
       } else {
         setIsCalculatingNative(true);
-        setAmountOut(nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals));
+        setAmountOut(
+          nativeToUi(exitPriceAndFee.amountOut, redeemToken.decimals),
+        );
       }
 
       setErrorMsg(null);
@@ -187,7 +200,10 @@ export default function ClosePosition({
 
     const intervalId = setInterval(() => {
       const timeSinceLastCalculation = Date.now() - lastCalculationTime;
-      if (errorMsg !== 'Remaining collateral must be at least $10' && timeSinceLastCalculation >= 5000) {
+      if (
+        errorMsg !== 'Remaining collateral must be at least $10' &&
+        timeSinceLastCalculation >= 5000
+      ) {
         runCalculation();
       }
     }, 1000);
@@ -198,134 +214,147 @@ export default function ClosePosition({
 
   const rowStyle = 'w-full flex justify-between items-center';
 
-  const doFullClose = useCallback(async (useCollateralToken = false) => {
-    if (!markPrice) return;
+  const doFullClose = useCallback(
+    async (useCollateralToken = false) => {
+      if (!markPrice) return;
 
-    const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
+      const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction(notificationTitle).fire();
+      const notification =
+        MultiStepNotification.newForRegularTransaction(
+          notificationTitle,
+        ).fire();
 
-    try {
-      const priceAndFee = await window.adrena.client.getExitPriceAndFee({
-        position,
-      });
+      try {
+        const priceAndFee = await window.adrena.client.getExitPriceAndFee({
+          position,
+        });
 
-      if (!priceAndFee) {
-        notification.currentStepErrored(
-          'Cannot calculate position closing price',
-        );
-        return;
-      }
-
-      // 1%
-      const slippageInBps = 100;
-
-      const priceWithSlippage =
-        position.side === 'short'
-          ? priceAndFee.price
-            .mul(new BN(10_000))
-            .div(new BN(10_000 - slippageInBps))
-          : priceAndFee.price
-            .mul(new BN(10_000 - slippageInBps))
-            .div(new BN(10_000));
-
-      // Use collateral token if specified, otherwise use redeemToken
-      const tokenToUse = useCollateralToken ? position.collateralToken : redeemToken;
-
-      // compute integer bps (1…9999 for partials, or 10000 for full/zero)
-      const bps = isPartialClose(activePercent)
-        ? Math.floor((activePercent ?? 1) * 10_000)
-        : 10_000;
-
-      const scaledAmountOut = priceAndFee.amountOut
-        .mul(new BN(bps))
-        .div(new BN(10_000));
-
-      await (
-        position.side === 'long'
-          ? window.adrena.client.closePositionLong.bind(window.adrena.client)
-          : window.adrena.client.closePositionShort.bind(window.adrena.client)
-      )({
-        position,
-        price: priceWithSlippage,
-        expectedCollateralAmountOut: scaledAmountOut,
-        redeemToken: tokenToUse,
-        swapSlippage,
-        notification,
-        percentage: new BN(
-          activePercent ? activePercent * 100 * 10_000 : 100 * 10_000,
-        ), // 100% by default
-        getTransactionLogs: (logs) => {
-          if (!logs) return;
-
-          const events = logs.events as ClosePositionEvent;
-
-          const profit = nativeToUi(events.profitUsd, USD_DECIMALS);
-          const loss = nativeToUi(events.lossUsd, USD_DECIMALS);
-          const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
-          const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
-
-          if (showPopupOnPositionClose && (activePercent ? activePercent * 100 === 100 : true)) {
-            setShareClosePosition({
-              ...position,
-              pnl: profit - loss,
-              exitFeeUsd,
-              borrowFeeUsd,
-            });
-          }
-        },
-      });
-
-      dispatch(fetchWalletTokenBalances());
-      triggerUserProfileReload();
-
-      onClose();
-    } catch (error) {
-      if (error instanceof JupiterSwapError) {
-        if (notification) {
-          notification.setErrorActions([
-            {
-              title: 'Retry',
-              onClick: () => {
-                notification.close(0);
-                doFullClose(useCollateralToken);
-              },
-              variant: 'primary'
-            },
-            {
-              title: `Close in ${position.collateralToken.symbol}`,
-              onClick: () => {
-                notification.close(0);
-                doFullClose(true);
-              },
-              variant: 'outline'
-            }
-          ]);
-          notification.currentStepErrored(error.errorString);
+        if (!priceAndFee) {
+          notification.currentStepErrored(
+            'Cannot calculate position closing price',
+          );
+          return;
         }
-        return;
-      }
 
-      if (notification) {
-        notification.currentStepErrored(
-          error instanceof AdrenaTransactionError ? error.errorString :
-            error instanceof Error ? error.message : 'Transaction failed'
-        );
+        // 1%
+        const slippageInBps = 100;
+
+        const priceWithSlippage =
+          position.side === 'short'
+            ? priceAndFee.price
+                .mul(new BN(10_000))
+                .div(new BN(10_000 - slippageInBps))
+            : priceAndFee.price
+                .mul(new BN(10_000 - slippageInBps))
+                .div(new BN(10_000));
+
+        // Use collateral token if specified, otherwise use redeemToken
+        const tokenToUse = useCollateralToken
+          ? position.collateralToken
+          : redeemToken;
+
+        // compute integer bps (1…9999 for partials, or 10000 for full/zero)
+        const bps = isPartialClose(activePercent)
+          ? Math.floor((activePercent ?? 1) * 10_000)
+          : 10_000;
+
+        const scaledAmountOut = priceAndFee.amountOut
+          .mul(new BN(bps))
+          .div(new BN(10_000));
+
+        await (
+          position.side === 'long'
+            ? window.adrena.client.closePositionLong.bind(window.adrena.client)
+            : window.adrena.client.closePositionShort.bind(window.adrena.client)
+        )({
+          position,
+          price: priceWithSlippage,
+          expectedCollateralAmountOut: scaledAmountOut,
+          redeemToken: tokenToUse,
+          swapSlippage,
+          notification,
+          percentage: new BN(
+            activePercent ? activePercent * 100 * 10_000 : 100 * 10_000,
+          ), // 100% by default
+          getTransactionLogs: (logs) => {
+            if (!logs) return;
+
+            const events = logs.events as ClosePositionEvent;
+
+            const profit = nativeToUi(events.profitUsd, USD_DECIMALS);
+            const loss = nativeToUi(events.lossUsd, USD_DECIMALS);
+            const exitFeeUsd = nativeToUi(events.exitFeeUsd, USD_DECIMALS);
+            const borrowFeeUsd = nativeToUi(events.borrowFeeUsd, USD_DECIMALS);
+
+            if (
+              showPopupOnPositionClose &&
+              (activePercent ? activePercent * 100 === 100 : true)
+            ) {
+              setShareClosePosition({
+                ...position,
+                pnl: profit - loss,
+                exitFeeUsd,
+                borrowFeeUsd,
+              });
+            }
+          },
+        });
+
+        dispatch(fetchWalletTokenBalances());
+        triggerUserProfileReload();
+
+        onClose();
+      } catch (error) {
+        if (error instanceof JupiterSwapError) {
+          if (notification) {
+            notification.setErrorActions([
+              {
+                title: 'Retry',
+                onClick: () => {
+                  notification.close(0);
+                  doFullClose(useCollateralToken);
+                },
+                variant: 'primary',
+              },
+              {
+                title: `Close in ${position.collateralToken.symbol}`,
+                onClick: () => {
+                  notification.close(0);
+                  doFullClose(true);
+                },
+                variant: 'outline',
+              },
+            ]);
+            notification.currentStepErrored(error.errorString);
+          }
+          return;
+        }
+
+        if (notification) {
+          notification.currentStepErrored(
+            error instanceof AdrenaTransactionError
+              ? error.errorString
+              : error instanceof Error
+                ? error.message
+                : 'Transaction failed',
+          );
+        }
       }
-    }
-  }, [
-    markPrice,
-    activePercent,
-    position,
-    redeemToken,
-    swapSlippage,
-    dispatch,
-    triggerUserProfileReload,
-    onClose,
-    showPopupOnPositionClose,
-    setShareClosePosition,
-  ]);
+    },
+    [
+      markPrice,
+      activePercent,
+      position,
+      redeemToken,
+      swapSlippage,
+      dispatch,
+      triggerUserProfileReload,
+      onClose,
+      showPopupOnPositionClose,
+      setShareClosePosition,
+    ],
+  );
 
   const handleExecute = async () => {
     await doFullClose();
@@ -371,7 +400,11 @@ export default function ClosePosition({
     }
   };
 
-  const rightArrowElement = <span className="text-white/60 ml-2 mr-2" aria-label="remaining value">→</span>;
+  const rightArrowElement = (
+    <span className="text-white/60 ml-2 mr-2" aria-label="remaining value">
+      →
+    </span>
+  );
 
   const calculatePnLValues = useMemo(() => {
     if (!position.pnl || !markPrice) return null;
@@ -399,15 +432,15 @@ export default function ClosePosition({
     remainingValue = null,
     isBold = false,
     isRemainingValueBold = false,
-    format = "currency",
+    format = 'currency',
     precision = 3,
-    suffix = "",
-    prefix = "",
-    className = "text-txtfade text-sm",
+    suffix = '',
+    prefix = '',
+    className = 'text-txtfade text-sm',
     isDecimalDimmed = true,
     minimumFractionDigits,
-    remainingValueClassName = "",
-    isAbbreviate = false
+    remainingValueClassName = '',
+    isAbbreviate = false,
   }: {
     label: string;
     value: number | null;
@@ -415,7 +448,7 @@ export default function ClosePosition({
     remainingValue?: number | null;
     isBold?: boolean;
     isRemainingValueBold?: boolean;
-    format?: "currency" | "number";
+    format?: 'currency' | 'number';
     precision?: number;
     suffix?: string;
     prefix?: string;
@@ -441,7 +474,12 @@ export default function ClosePosition({
           isAbbreviate={isAbbreviate}
         />
 
-        <div style={{ display: showArrow && remainingValue !== null ? 'flex' : 'none' }} className="items-center">
+        <div
+          style={{
+            display: showArrow && remainingValue !== null ? 'flex' : 'none',
+          }}
+          className="items-center"
+        >
           {rightArrowElement}
           <div className="flex flex-col">
             <div className="flex flex-col items-end text-sm">
@@ -468,7 +506,7 @@ export default function ClosePosition({
     value,
     showArrow = false,
     remainingValue = null,
-    isBold = false
+    isBold = false,
   }: {
     label: string;
     value: number | null;
@@ -478,8 +516,7 @@ export default function ClosePosition({
   }) => (
     <div className={rowStyle}>
       <div className="text-sm">
-        {label}{' '}
-        <span className="text-txtfade">(net)</span>
+        {label} <span className="text-txtfade">(net)</span>
       </div>
 
       <div className="flex flex-row items-center text-sm font-mono">
@@ -492,7 +529,12 @@ export default function ClosePosition({
           isDecimalDimmed={false}
         />
 
-        <div style={{ display: showArrow && remainingValue !== null ? 'flex' : 'none' }} className="items-center">
+        <div
+          style={{
+            display: showArrow && remainingValue !== null ? 'flex' : 'none',
+          }}
+          className="items-center"
+        >
           {rightArrowElement}
           <div className="flex flex-col">
             <div className="flex flex-col items-end text-sm">
@@ -523,16 +565,21 @@ export default function ClosePosition({
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
               <p className="text-sm font-boldy mb-2">
-                {activePercent && activePercent !== 1 ? 'Size to Partially Close' : 'Size to Close'}
+                {activePercent && activePercent !== 1
+                  ? 'Size to Partially Close'
+                  : 'Size to Close'}
               </p>
 
               <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center justify-between border bg-third rounded-lg p-3">
                   <InputNumber
-                    value={customAmount ?? (activePercent === 1 ? calculatePercentage(1) ?? undefined : undefined)}
-                    placeholder={
-                      position.sizeUsd.toFixed(2)
+                    value={
+                      customAmount ??
+                      (activePercent === 1
+                        ? (calculatePercentage(1) ?? undefined)
+                        : undefined)
                     }
+                    placeholder={position.sizeUsd.toFixed(2)}
                     className="bg-transparent font-mono border-0 !text-xl outline-none w-full"
                     onChange={handleCustomAmount}
                     decimalConstraint={18}
@@ -553,7 +600,7 @@ export default function ClosePosition({
                         className={twMerge(
                           'flex-grow text-xs bg-third border border-bcolor text-opacity-50 hover:text-opacity-100 hover:border-white/10 rounded-lg flex-1 font-mono',
                           percent / 100 === activePercent &&
-                          'border-white/10 text-opacity-100',
+                            'border-white/10 text-opacity-100',
                         )}
                         onClick={() => {
                           const newPercent = percent / 100;
@@ -564,13 +611,18 @@ export default function ClosePosition({
 
                           // Validate size is greater than 0
                           if (newAmount === null || newAmount <= 0) {
-                            setErrorMsg('Size to close must be greater than $0');
+                            setErrorMsg(
+                              'Size to close must be greater than $0',
+                            );
                             return;
                           }
 
-                          const remainingCollateral = position.collateralUsd * (1 - newPercent);
+                          const remainingCollateral =
+                            position.collateralUsd * (1 - newPercent);
                           if (newPercent < 1 && remainingCollateral < 10) {
-                            setErrorMsg('Remaining collateral must be at least $10');
+                            setErrorMsg(
+                              'Remaining collateral must be at least $10',
+                            );
                           } else {
                             setErrorMsg(null);
                           }
@@ -582,7 +634,9 @@ export default function ClosePosition({
               </div>
             </div>
 
-            {errorMsg ? <ErrorDisplay errorMessage={errorMsg} className="mt-2" /> : null}
+            {errorMsg ? (
+              <ErrorDisplay errorMessage={errorMsg} className="mt-2" />
+            ) : null}
 
             <div className="my-3">
               <div className="flex items-center justify-between mb-2">
@@ -590,8 +644,11 @@ export default function ClosePosition({
                 {isCalculating ? (
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-txtfade">
-                      {isCalculatingNative ? 'Calculating...' : isCalculatingJupiter ? 'Calculating Jupiter route...' :
-                        null}
+                      {isCalculatingNative
+                        ? 'Calculating...'
+                        : isCalculatingJupiter
+                          ? 'Calculating Jupiter route...'
+                          : null}
                     </span>
                   </div>
                 ) : null}
@@ -611,12 +668,15 @@ export default function ClosePosition({
                   />
 
                   <FormatNumber
-                    nb={exitPriceAndFee &&
+                    nb={
+                      exitPriceAndFee &&
                       collateralMarkPrice &&
                       nativeToUi(
                         exitPriceAndFee.amountOut,
                         position.collateralToken.decimals,
-                      ) * collateralMarkPrice * (activePercent ?? 1)
+                      ) *
+                        collateralMarkPrice *
+                        (activePercent ?? 1)
                     }
                     format="currency"
                     className="text-txtfade text-sm"
@@ -674,8 +734,6 @@ export default function ClosePosition({
                     setAmountOut(null);
                     setExitPriceAndFee(null);
                     setErrorMsg(null);
-
-
                   }}
                 />
               </div>
@@ -694,10 +752,12 @@ export default function ClosePosition({
                   />
                   <div className="flex flex-col gap-2">
                     <div>
-                      Cannot find Jupiter route for {position.collateralToken.symbol} → {redeemToken.symbol}.
+                      Cannot find Jupiter route for{' '}
+                      {position.collateralToken.symbol} → {redeemToken.symbol}.
                     </div>
                     <div className="text-xs text-orange/80">
-                      You can close in {position.collateralToken.symbol} instead.
+                      You can close in {position.collateralToken.symbol}{' '}
+                      instead.
                     </div>
                     <Button
                       title={`Use ${position.collateralToken.symbol}`}
@@ -706,7 +766,8 @@ export default function ClosePosition({
                       onClick={() => {
                         dispatch(
                           setSettings({
-                            closePositionCollateralSymbol: position.collateralToken.symbol,
+                            closePositionCollateralSymbol:
+                              position.collateralToken.symbol,
                           }),
                         );
                         setRedeemToken(position.collateralToken);
@@ -745,7 +806,8 @@ export default function ClosePosition({
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
               <div className="text-white text-sm mb-1 font-boldy">
-                Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
+                Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of
+                Position
               </div>
 
               <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
@@ -814,29 +876,39 @@ export default function ClosePosition({
                   value={position.sizeUsd}
                   format="currency"
                   showArrow={Boolean(activePercent && activePercent !== 1)}
-                  remainingValue={activePercent ? position.sizeUsd * (1 - activePercent) : null}
+                  remainingValue={
+                    activePercent
+                      ? position.sizeUsd * (1 - activePercent)
+                      : null
+                  }
                   precision={position.token.displayPriceDecimalsPrecision}
                   isDecimalDimmed={true}
-                  remainingValueClassName='text-white text-sm'
+                  remainingValueClassName="text-white text-sm"
                 />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
                 <ValueDisplay
                   label="Size native"
-                  value={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+                  value={
+                    position.side === 'long'
+                      ? position.size
+                      : position.sizeUsd / position.price
+                  }
                   format="number"
                   precision={position.token.displayAmountDecimalsPrecision}
                   suffix={getTokenSymbol(position.token.symbol)}
                   showArrow={Boolean(activePercent && activePercent !== 1)}
-                  remainingValue={activePercent ?
-                    (position.side === 'long'
-                      ? position.size * (1 - activePercent)
-                      : (position.sizeUsd / position.price) * (1 - activePercent)
-                    ) : null
+                  remainingValue={
+                    activePercent
+                      ? position.side === 'long'
+                        ? position.size * (1 - activePercent)
+                        : (position.sizeUsd / position.price) *
+                          (1 - activePercent)
+                      : null
                   }
                   isDecimalDimmed={true}
-                  remainingValueClassName='text-white text-sm'
+                  remainingValueClassName="text-white text-sm"
                   isAbbreviate={true}
                 />
 
@@ -847,10 +919,14 @@ export default function ClosePosition({
                   value={position.collateralUsd}
                   format="currency"
                   showArrow={Boolean(activePercent && activePercent !== 1)}
-                  remainingValue={activePercent ? position.collateralUsd * (1 - activePercent) : null}
+                  remainingValue={
+                    activePercent
+                      ? position.collateralUsd * (1 - activePercent)
+                      : null
+                  }
                   precision={2}
                   isDecimalDimmed={true}
-                  remainingValueClassName='text-white text-sm'
+                  remainingValueClassName="text-white text-sm"
                 />
 
                 <div className="w-full h-[1px] bg-bcolor my-1" />
@@ -890,7 +966,11 @@ export default function ClosePosition({
                 ) : null}
 
                 <PnLDisplay
-                  label={!activePercent || (activePercent && activePercent !== 1) ? 'Unrealized PnL' : 'Realized PnL'}
+                  label={
+                    !activePercent || (activePercent && activePercent !== 1)
+                      ? 'Unrealized PnL'
+                      : 'Realized PnL'
+                  }
                   value={calculatePnLValues?.totalPnL ?? null}
                   showArrow={Boolean(activePercent && activePercent !== 1)}
                   remainingValue={calculatePnLValues?.remainingPnL ?? null}
@@ -1019,21 +1099,27 @@ export default function ClosePosition({
         <div className="flex gap-2 mt-2">
           <Button
             className={twMerge(
-              "w-full",
+              'w-full',
               (errorMsg !== null ||
                 (customAmount !== null && customAmount <= 0) ||
-                (activePercent !== null && activePercent < 0.01)) && "opacity-50 cursor-not-allowed"
+                (activePercent !== null && activePercent < 0.01)) &&
+                'opacity-50 cursor-not-allowed',
             )}
             size="lg"
             variant="primary"
             title={
               <span className="text-main text-base font-boldy">
-                {(activePercent !== null && activePercent < 0.01) ? 'Cannot close less than 1%' : `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
+                {activePercent !== null && activePercent < 0.01
+                  ? 'Cannot close less than 1%'
+                  : `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
               </span>
             }
-            disabled={errorMsg !== null ||
+            disabled={
+              errorMsg !== null ||
               (customAmount !== null && customAmount <= 0) ||
-              (activePercent === null || activePercent < 0.01)}
+              activePercent === null ||
+              activePercent < 0.01
+            }
             onClick={() => handleExecute()}
           />
         </div>

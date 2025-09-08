@@ -20,12 +20,16 @@ export default function SwapDetails({
     <div className="flex flex-col  text-sm">
       <div className={rowStyle}>
         <span className="text-txtfade">{tokenA.symbol} Price</span>
-        <span className="font-mono">{formatPriceInfo(priceA, tokenA.displayPriceDecimalsPrecision)}</span>
+        <span className="font-mono">
+          {formatPriceInfo(priceA, tokenA.displayPriceDecimalsPrecision)}
+        </span>
       </div>
 
       <div className={rowStyle}>
         <span className="text-txtfade">{tokenB.symbol} Price</span>
-        <span className="font-mono">{formatPriceInfo(priceB, tokenB.displayPriceDecimalsPrecision)}</span>
+        <span className="font-mono">
+          {formatPriceInfo(priceB, tokenB.displayPriceDecimalsPrecision)}
+        </span>
       </div>
 
       <div className={rowStyle}>
@@ -33,9 +37,9 @@ export default function SwapDetails({
         <span className="font-mono">
           {tokenPrices && priceB
             ? formatPriceInfo(
-              window.adrena.client.getCustodyByMint(tokenB.mint).liquidity *
-              priceB,
-            )
+                window.adrena.client.getCustodyByMint(tokenB.mint).liquidity *
+                  priceB,
+              )
             : '-'}
         </span>
       </div>

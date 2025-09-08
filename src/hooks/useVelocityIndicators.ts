@@ -60,22 +60,18 @@ export default function useVelocityIndicators() {
           return;
         }
 
-        const [
-          poolDataHourly,
-          adxAprData,
-          activeTraders24h,
-          activeTraders7d,
-        ] = await Promise.all([
-          DataApiClient.getPoolInfo({
-            dataEndpoint: 'poolinfohourly',
-            queryParams:
-              'cumulative_trading_volume_usd=true&cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&cumulative_referrer_fee_usd=true&lp_apr_rolling_seven_day=true&sort=DESC',
-            dataPeriod: 7 * 24, // 168 hours
-          }),
-          DataApiClient.getChartAprsInfo(8, 'lm', 540),
-          DataApiClient.getActiveTraders('24h'),
-          DataApiClient.getActiveTraders('7d'),
-        ]);
+        const [poolDataHourly, adxAprData, activeTraders24h, activeTraders7d] =
+          await Promise.all([
+            DataApiClient.getPoolInfo({
+              dataEndpoint: 'poolinfohourly',
+              queryParams:
+                'cumulative_trading_volume_usd=true&cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&cumulative_referrer_fee_usd=true&lp_apr_rolling_seven_day=true&sort=DESC',
+              dataPeriod: 7 * 24, // 168 hours
+            }),
+            DataApiClient.getChartAprsInfo(8, 'lm', 540),
+            DataApiClient.getActiveTraders('24h'),
+            DataApiClient.getActiveTraders('7d'),
+          ]);
 
         if (!poolDataHourly) return;
 

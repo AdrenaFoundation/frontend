@@ -142,11 +142,11 @@ export default function WalletAdapter({
                 style={
                   !isBreak
                     ? {
-                      backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
-                      backgroundSize: 'cover',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPositionY: 'center',
-                    }
+                        backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
+                        backgroundSize: 'cover',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPositionY: 'center',
+                      }
                     : {}
                 }
                 title={

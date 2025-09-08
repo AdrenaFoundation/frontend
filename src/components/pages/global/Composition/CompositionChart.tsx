@@ -102,7 +102,12 @@ export default function CompositionChart() {
           });
         }
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
+        if (
+          periodRef.current === '1M' ||
+          periodRef.current === '3M' ||
+          periodRef.current === '6M' ||
+          periodRef.current === '1Y'
+        ) {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -168,7 +173,11 @@ export default function CompositionChart() {
         color: info.color,
       }))}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       yDomain={['dataMax']}
       setPeriod={setPeriod}

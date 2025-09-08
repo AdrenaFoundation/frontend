@@ -19,7 +19,7 @@ export default async function handler(
   if (req.method === 'POST') {
     const { account } = req.body;
 
-    const stakedTokenMint = client.adxToken.mint
+    const stakedTokenMint = client.adxToken.mint;
 
     if (!stakedTokenMint) {
       return res.writeHead(400, ACTIONS_CORS_HEADERS).json({

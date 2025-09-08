@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageRef, VestExtended } from '@/types';
@@ -27,7 +26,7 @@ export default function MobileNavbar({
             'Referral',
             'Leaderboard',
             userVest || userDelegatedVest ? null : 'Vest',
-            'Achievements'
+            'Achievements',
           ].includes(p.name),
       ).map((page) => {
         return (

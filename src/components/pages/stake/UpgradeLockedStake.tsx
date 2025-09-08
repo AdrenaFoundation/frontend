@@ -164,8 +164,9 @@ export default function UpgradeLockedStake({
 
                 <span className="text-txtfade font-mono text-xs mr-1">
                   {walletBalance !== null
-                    ? `${formatNumber(walletBalance, lockedStake.tokenSymbol === 'ALP' ? window.adrena.client.alpToken.displayAmountDecimalsPrecision : window.adrena.client.adxToken.displayAmountDecimalsPrecision)} ${lockedStake.tokenSymbol
-                    }`
+                    ? `${formatNumber(walletBalance, lockedStake.tokenSymbol === 'ALP' ? window.adrena.client.alpToken.displayAmountDecimalsPrecision : window.adrena.client.adxToken.displayAmountDecimalsPrecision)} ${
+                        lockedStake.tokenSymbol
+                      }`
                     : '–'}
                 </span>
               </div>
@@ -202,7 +203,9 @@ export default function UpgradeLockedStake({
               height={18}
               alt="lock icon"
             />
-            <h5 className="text-sm font-interSemibold">New Lock Duration (days)</h5>
+            <h5 className="text-sm font-interSemibold">
+              New Lock Duration (days)
+            </h5>
           </div>
 
           <SelectOptions
@@ -215,7 +218,7 @@ export default function UpgradeLockedStake({
         </div>
       </div>
 
-      <div className='px-6'>
+      <div className="px-6">
         <div className="text-sm opacity-30 mt-4">Benefits</div>
 
         <div className="w-full justify-between items-center flex mt-2 flex-wrap">
@@ -249,14 +252,14 @@ export default function UpgradeLockedStake({
           size="lg"
           title={errorMessage ? errorMessage : 'Upgrade'}
           disabled={!!errorMessage || (lockPeriod == actualDuration && !amount)}
-          onClick={(() => {
+          onClick={() => {
             return handleUpgradeLockedStake({
               lockedStake,
               upgradedDuration:
                 lockPeriod !== actualDuration ? lockPeriod : undefined,
               additionalAmount: amount ?? undefined,
             });
-          })}
+          }}
         />
       </div>
     </div>

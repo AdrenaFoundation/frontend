@@ -14,8 +14,8 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-        time: string;
-      }
+          time: string;
+        }
       | { [key: string]: number }
     )[];
 
@@ -88,7 +88,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       const result = await DataApiClient.getCustodyInfo(
         dataEndpoint,
         'cumulative_profit_usd=true&cumulative_loss_usd=true',
-        dataPeriod
+        dataPeriod,
       );
 
       if (!result) {
@@ -107,7 +107,9 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       } = result;
 
       if (!cumulativeProfitUsd || !cumulativeLossUsd || !snapshot_timestamp) {
-        console.error('Failed to fetch realized PnL data: Missing required data fields');
+        console.error(
+          'Failed to fetch realized PnL data: Missing required data fields',
+        );
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
             Could not fetch realized PnL data
@@ -115,7 +117,10 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
         );
       }
 
-      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
+      const timeStamp = formatSnapshotTimestamp(
+        snapshot_timestamp,
+        periodRef.current,
+      );
 
       // Each custody keeps an utilization array
       const infos = window.adrena.client.custodies.map((c) => ({
@@ -156,12 +161,15 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
 
       const formatted = timeStamp.map((time: string, i: number) => ({
         time,
-        ...infos.reduce((acc, { custody, values }) => {
-          if (custody.tokenInfo.symbol !== 'USDC') {
-            acc[custody.tokenInfo.symbol] = values[i];
-          }
-          return acc;
-        }, {} as { [key: string]: number }),
+        ...infos.reduce(
+          (acc, { custody, values }) => {
+            if (custody.tokenInfo.symbol !== 'USDC') {
+              acc[custody.tokenInfo.symbol] = values[i];
+            }
+            return acc;
+          },
+          {} as { [key: string]: number },
+        ),
         Total: totalInfos[i],
       }));
 
@@ -208,7 +216,11 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       ]}
       yDomain={[0]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}

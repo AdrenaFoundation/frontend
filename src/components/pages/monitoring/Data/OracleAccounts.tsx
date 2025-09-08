@@ -19,16 +19,14 @@ export default function OracleAccounts({
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>Oracle Accounts</p>
-        <p className="text-base opacity-50">
-          Oracle on-chain accounts (PDAs).
-        </p>
+        <p className="text-base opacity-50">Oracle on-chain accounts (PDAs).</p>
       </div>
 
       <Table
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
-        className='rounded-none bg-transparent border-none'
+        className="rounded-none bg-transparent border-none"
         data={[
           {
             rowTitle: (

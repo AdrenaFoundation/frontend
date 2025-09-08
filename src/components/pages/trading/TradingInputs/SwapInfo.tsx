@@ -41,12 +41,12 @@ export default function SwapInfo({
             <div className="text-sm">
               {tokenPriceA && tokenPriceB
                 ? formatPriceInfo(
-                  nativeToUi(swapFeesAndAmount.feeIn, tokenA.decimals) *
-                  tokenPriceA +
-                  nativeToUi(swapFeesAndAmount.feeOut, tokenB.decimals) *
-                  tokenPriceB,
-                  USD_DECIMALS,
-                )
+                    nativeToUi(swapFeesAndAmount.feeIn, tokenA.decimals) *
+                      tokenPriceA +
+                      nativeToUi(swapFeesAndAmount.feeOut, tokenB.decimals) *
+                        tokenPriceB,
+                    USD_DECIMALS,
+                  )
                 : null}
             </div>
           ) : (
@@ -75,10 +75,10 @@ export default function SwapInfo({
                 <div className="text-txtfade text-[0.9em]">
                   {tokenPriceA
                     ? formatPriceInfo(
-                      nativeToUi(swapFeesAndAmount.feeIn, tokenA.decimals) *
-                      tokenPriceA,
-                      tokenA.displayPriceDecimalsPrecision,
-                    )
+                        nativeToUi(swapFeesAndAmount.feeIn, tokenA.decimals) *
+                          tokenPriceA,
+                        tokenA.displayPriceDecimalsPrecision,
+                      )
                     : null}
                 </div>
               </div>
@@ -105,10 +105,10 @@ export default function SwapInfo({
                 <div className="text-txtfade text-[0.9em]">
                   {tokenPriceB
                     ? formatPriceInfo(
-                      nativeToUi(swapFeesAndAmount.feeOut, tokenB.decimals) *
-                      tokenPriceB,
-                      tokenB.displayPriceDecimalsPrecision,
-                    )
+                        nativeToUi(swapFeesAndAmount.feeOut, tokenB.decimals) *
+                          tokenPriceB,
+                        tokenB.displayPriceDecimalsPrecision,
+                      )
                     : null}
                 </div>
               </div>

@@ -25,9 +25,9 @@ export default function IntegratedTerminal({
   allowedTokenB: Token[];
   setTokenB: (t: Token) => void;
 }) {
-  const adapter = adapters.find(x => x.name === 'Phantom');
+  const adapter = adapters.find((x) => x.name === 'Phantom');
 
-  return (adapter ?
+  return adapter ? (
     <WalletProvider wallets={[adapter]} autoConnect>
       <IntegratedTerminalChild
         connected={connected}
@@ -37,6 +37,6 @@ export default function IntegratedTerminal({
         setTokenB={setTokenB}
         id={id}
       />
-    </WalletProvider> : null
-  );
+    </WalletProvider>
+  ) : null;
 }

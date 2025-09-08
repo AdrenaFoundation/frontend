@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -140,15 +140,15 @@ export default function StakeTimerAnimation({
             animate={
               cooldown
                 ? {
-                  translateX: x,
-                  translateY: y,
-                  opacity: 1,
-                }
+                    translateX: x,
+                    translateY: y,
+                    opacity: 1,
+                  }
                 : {
-                  translateX: x[1] + 10,
-                  translateY: y[1] - 100,
-                  opacity: 0,
-                }
+                    translateX: x[1] + 10,
+                    translateY: y[1] - 100,
+                    opacity: 0,
+                  }
             }
             transition={{
               duration: 0.5,

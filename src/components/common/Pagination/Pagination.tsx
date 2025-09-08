@@ -40,7 +40,7 @@ const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === 1 || isLoading}
           className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50"
         >
-          {isLoading && currentPage > 1 ? "..." : "<"}
+          {isLoading && currentPage > 1 ? '...' : '<'}
         </button>
         <span className="text-sm text-txtfade">
           {`${currentPage} / ${totalPages}`}
@@ -50,7 +50,7 @@ const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === totalPages || isLoading}
           className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50"
         >
-          {isLoading && currentPage < totalPages ? "..." : ">"}
+          {isLoading && currentPage < totalPages ? '...' : '>'}
         </button>
       </div>
       {itemsSeen && totalItems ? (

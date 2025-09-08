@@ -51,7 +51,7 @@ export default function Header({
   isPriorityFeeOpen,
   isSettingsOpen,
   setIsPriorityFeeOpen,
-  setIsSettingsOpen
+  setIsSettingsOpen,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: LinksType[];
@@ -263,7 +263,10 @@ export default function Header({
         <div className="flex flex-row items-center border border-[#414E5E] rounded-lg">
           <NotificationBell adapters={adapters} />
 
-          <PriorityFeeSetting isOpen={isPriorityFeeOpen} setIsOpen={setIsPriorityFeeOpen} />
+          <PriorityFeeSetting
+            isOpen={isPriorityFeeOpen}
+            setIsOpen={setIsPriorityFeeOpen}
+          />
 
           <Settings
             activeRpc={activeRpc}

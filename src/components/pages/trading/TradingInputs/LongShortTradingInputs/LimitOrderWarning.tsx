@@ -13,8 +13,9 @@ export default function LimitOrderWarning() {
         alt="Info icon"
       />
       <span className="text-sm opacity-50 font-boldy">
-        Limit orders will only execute if sufficient liquidity is available at the time of order execution.
+        Limit orders will only execute if sufficient liquidity is available at
+        the time of order execution.
       </span>
     </div>
-  )
+  );
 }

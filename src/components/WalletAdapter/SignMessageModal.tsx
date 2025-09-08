@@ -12,7 +12,6 @@ import { WalletAdapterExtended } from '@/types';
 import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
 
-
 export default function SignMessageModal({
   adapters,
 }: {
@@ -107,7 +106,8 @@ Nonce: ${nonce}`;
         >
           <div className="flex flex-col gap-2 pb-3">
             <p className="text-sm font-boldy">
-              Please verify your wallet address by signing a message to prove ownership.
+              Please verify your wallet address by signing a message to prove
+              ownership.
             </p>
           </div>
 

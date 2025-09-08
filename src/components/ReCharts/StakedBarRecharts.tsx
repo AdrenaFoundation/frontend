@@ -45,10 +45,13 @@ export default function StakedBarRechart<T extends string>({
   }[];
   period: T | null;
   setPeriod: (v: T | null) => void;
-  periods: (T | {
-    name: T;
-    disabled?: boolean;
-  })[];
+  periods: (
+    | T
+    | {
+        name: T;
+        disabled?: boolean;
+      }
+  )[];
   domain?: AxisDomain;
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
@@ -57,7 +60,7 @@ export default function StakedBarRechart<T extends string>({
   displayYAxis?: boolean;
   gmt?: number;
   total?: boolean;
-  events?: AdrenaEvent[],
+  events?: AdrenaEvent[];
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -97,17 +100,21 @@ export default function StakedBarRechart<T extends string>({
               format="currency"
               prefix="("
               suffix=")"
-              suffixClassName='ml-0 text-txtfade'
+              suffixClassName="ml-0 text-txtfade"
               precision={0}
             />
           )}
         </div>
 
-        <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+        <PeriodSelector
+          period={period}
+          setPeriod={setPeriod}
+          periods={periods}
+        />
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} stackOffset='expand'>
+        <BarChart data={data} stackOffset="expand">
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="time" fontSize="12" />
@@ -127,26 +134,28 @@ export default function StakedBarRechart<T extends string>({
             cursor={false}
           />
 
-          {labels.length > 1 ? <Legend
-            onClick={(e) => {
-              setHiddenLabels(() => {
-                if (
-                  hiddenLabels.includes(
+          {labels.length > 1 ? (
+            <Legend
+              onClick={(e) => {
+                setHiddenLabels(() => {
+                  if (
+                    hiddenLabels.includes(
+                      String(e.dataKey).trim() as DataKey<string | number>,
+                    )
+                  ) {
+                    return hiddenLabels.filter(
+                      (l) => l !== String(e.dataKey).trim(),
+                    ) as DataKey<string | number>[];
+                  }
+                  return [
+                    ...hiddenLabels,
                     String(e.dataKey).trim() as DataKey<string | number>,
-                  )
-                ) {
-                  return hiddenLabels.filter(
-                    (l) => l !== String(e.dataKey).trim(),
-                  ) as DataKey<string | number>[];
-                }
-                return [
-                  ...hiddenLabels,
-                  String(e.dataKey).trim() as DataKey<string | number>,
-                ];
-              });
-            }}
-            wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
-          /> : null}
+                  ];
+                });
+              }}
+              wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
+            />
+          ) : null}
 
           {labels.map(({ name, color }) => {
             return (
@@ -161,12 +170,8 @@ export default function StakedBarRechart<T extends string>({
             );
           })}
 
-          {events?.map(({
-            label,
-            time,
-            color,
-            labelPosition,
-          }, i) => <ReferenceLine
+          {events?.map(({ label, time, color, labelPosition }, i) => (
+            <ReferenceLine
               key={label + '-' + i + '-' + time}
               x={time}
               stroke={color}
@@ -177,7 +182,8 @@ export default function StakedBarRechart<T extends string>({
                 fill: color,
                 fontSize: 12,
               }}
-            />)}
+            />
+          ))}
         </BarChart>
       </ResponsiveContainer>
     </div>

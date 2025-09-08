@@ -28,16 +28,17 @@ export default function SelectOptions<T>({
         <div
           className={twMerge(
             'text-sm font-boldy cursor-pointer opacity-50 hover:opacity-100 transition duration-300',
-            selected === (isObject(option) ? option.title : (option as T)) && 'opacity-100',
+            selected === (isObject(option) ? option.title : (option as T)) &&
+              'opacity-100',
             isObject(option) && option.activeColor,
-            isObject(option) && option.disabled && 'opacity-30 cursor-not-allowed hover:opacity-30'
+            isObject(option) &&
+              option.disabled &&
+              'opacity-30 cursor-not-allowed hover:opacity-30',
           )}
           onClick={() => {
             if (isObject(option) && option.disabled) return;
 
-            onClick(
-              isObject(option) ? option.title : (option as T)
-            );
+            onClick(isObject(option) ? option.title : (option as T));
           }}
           key={index}
         >

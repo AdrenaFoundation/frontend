@@ -32,23 +32,26 @@ export default function usePoolInfo(
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null);
 
   const calculatePoolInfo = useCallback(async () => {
-    const poolAumUsd = window.adrena.client.tokens.reduce((total, token) => {
-      if (total === null) return null;
+    const poolAumUsd = window.adrena.client.tokens.reduce(
+      (total, token) => {
+        if (total === null) return null;
 
-      const price = tokenPrices[token.symbol];
+        const price = tokenPrices[token.symbol];
 
-      const custody = custodies?.find(
-        (custody) => token.custody && custody.pubkey.equals(token.custody),
-      );
+        const custody = custodies?.find(
+          (custody) => token.custody && custody.pubkey.equals(token.custody),
+        );
 
-      if (!custody) return null;
-      if (!price) return null;
+        if (!custody) return null;
+        if (!price) return null;
 
-      const custodyUsdValue =
-        nativeToUi(custody.nativeObject.assets.owned, token.decimals) * price;
+        const custodyUsdValue =
+          nativeToUi(custody.nativeObject.assets.owned, token.decimals) * price;
 
-      return total + custodyUsdValue;
-    }, 0 as number | null);
+        return total + custodyUsdValue;
+      },
+      0 as number | null,
+    );
 
     if (poolAumUsd === null) return setPoolInfo(null);
 

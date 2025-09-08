@@ -1,9 +1,9 @@
-import { Dispatch } from "@reduxjs/toolkit";
+import { Dispatch } from '@reduxjs/toolkit';
 
-import { SettingsState } from "@/reducers/settingsReducer";
+import { SettingsState } from '@/reducers/settingsReducer';
 
 export type SetSettingsAction = {
-  type: "setSettings";
+  type: 'setSettings';
   payload: {
     [property in keyof SettingsState]?: SettingsState[property];
   };
@@ -15,7 +15,7 @@ export const setSettings =
   (settings: { [property in keyof SettingsState]?: SettingsState[property] }) =>
   async (dispatch: Dispatch<SetSettingsAction>) => {
     dispatch({
-      type: "setSettings",
+      type: 'setSettings',
       payload: settings,
     });
   };

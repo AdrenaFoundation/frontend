@@ -7,37 +7,37 @@ const INTERVAL_IN_MS = 30_000;
 export type FeesData = [number, { [key: string]: number }][] | null;
 
 export default function useDefilamaFeesData(): FeesData | null {
-    const [feesData, setFeesData] = useState<FeesData | null>(null);
+  const [feesData, setFeesData] = useState<FeesData | null>(null);
 
-    const loadFeesData = useCallback(async () => {
-        try {
-            const result = await fetch(
-                `https://api.llama.fi/overview/fees/solana?excludeTotalDataChartBreakdown=false`,
-            ).then((res) => res.json());
+  const loadFeesData = useCallback(async () => {
+    try {
+      const result = await fetch(
+        `https://api.llama.fi/overview/fees/solana?excludeTotalDataChartBreakdown=false`,
+      ).then((res) => res.json());
 
-            setFeesData(result.totalDataChartBreakdown);
-        } catch (e) {
-            console.log('Error loading ADX token supply', e);
-        }
-    }, []);
+      setFeesData(result.totalDataChartBreakdown);
+    } catch (e) {
+      console.log('Error loading ADX token supply', e);
+    }
+  }, []);
 
-    useEffect(() => {
-        loadFeesData();
+  useEffect(() => {
+    loadFeesData();
 
-        interval = setInterval(() => {
-            loadFeesData();
-        }, INTERVAL_IN_MS);
+    interval = setInterval(() => {
+      loadFeesData();
+    }, INTERVAL_IN_MS);
 
-        return () => {
-            if (!interval) {
-                return;
-            }
+    return () => {
+      if (!interval) {
+        return;
+      }
 
-            clearInterval(interval);
-            interval = null;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loadFeesData]);
+      clearInterval(interval);
+      interval = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadFeesData]);
 
-    return feesData;
+  return feesData;
 }

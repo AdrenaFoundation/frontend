@@ -10,7 +10,9 @@ function AddTrader({
 }: {
   receiverWalletAddress: string | null;
 }) {
-  const isFriendReqDisabled = useSelector((state) => state.settings.disableFriendReq);
+  const isFriendReqDisabled = useSelector(
+    (state) => state.settings.disableFriendReq,
+  );
 
   const wallet = useSelector((state) => state.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;

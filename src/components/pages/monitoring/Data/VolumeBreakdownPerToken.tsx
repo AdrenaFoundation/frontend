@@ -42,7 +42,9 @@ export default function VolumeBreakdownPerToken({
                   height="24"
                 />
 
-                <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
+                <p className={twMerge(titleClassName, 'opacity-100')}>
+                  {custody.tokenInfo.symbol}
+                </p>
               </div>
 
               <div className="flex flex-col mt-3">
@@ -72,9 +74,9 @@ export default function VolumeBreakdownPerToken({
                           USD_DECIMALS,
                         )}
                         precision={0}
-                        format='currency'
-                        className='border-0 p-0 min-h-0'
-                        bodyClassName='text-base'
+                        format="currency"
+                        className="border-0 p-0 min-h-0"
+                        bodyClassName="text-base"
                       />
                     </div>
                   </div>

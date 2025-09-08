@@ -1,5 +1,4 @@
 import Lottie from 'lottie-react';
-import React from 'react';
 
 import loader from './animation_llnqetok.json';
 
@@ -20,7 +19,7 @@ export default function Loader({
         autoplay={true}
         style={{ height, width }}
         rendererSettings={{
-          preserveAspectRatio: 'xMidYMid slice'
+          preserveAspectRatio: 'xMidYMid slice',
         }}
       />
     </div>

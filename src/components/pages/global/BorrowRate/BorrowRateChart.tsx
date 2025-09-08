@@ -10,8 +10,8 @@ export default function BorrowRateChart() {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-        time: string;
-      }
+          time: string;
+        }
       | { [key: string]: number }
     )[];
 
@@ -85,7 +85,7 @@ export default function BorrowRateChart() {
       const result = await DataApiClient.getCustodyInfo(
         dataEndpoint,
         'borrow_rate=true',
-        dataPeriod
+        dataPeriod,
       );
 
       if (!result) {
@@ -100,7 +100,9 @@ export default function BorrowRateChart() {
       const { borrow_rate, snapshot_timestamp } = result;
 
       if (!borrow_rate || !snapshot_timestamp) {
-        console.error('Failed to fetch borrow rate data: Missing required data fields');
+        console.error(
+          'Failed to fetch borrow rate data: Missing required data fields',
+        );
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
             Could not fetch borrow rate data
@@ -114,7 +116,9 @@ export default function BorrowRateChart() {
         values: [] as number[],
       }));
 
-      for (const [custodyKey, borrowRateValues] of Object.entries(borrow_rate)) {
+      for (const [custodyKey, borrowRateValues] of Object.entries(
+        borrow_rate,
+      )) {
         const custodyInfos = infos.find(
           ({ custody }) => custody.pubkey.toBase58() === custodyKey,
         );
@@ -127,7 +131,10 @@ export default function BorrowRateChart() {
       }
 
       const formatted = snapshot_timestamp.map((time: string, i: number) => {
-        const formattedTime = formatSnapshotTimestamp([time], periodRef.current)[0];
+        const formattedTime = formatSnapshotTimestamp(
+          [time],
+          periodRef.current,
+        )[0];
 
         return {
           time: formattedTime,
@@ -172,7 +179,11 @@ export default function BorrowRateChart() {
         })}
       yDomain={[0, 0.01]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       formatY="percentage"

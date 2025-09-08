@@ -11,9 +11,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useDispatch } from '@/store/store';
 import { Vest } from '@/types';
-import {
-  nativeToUi,
-} from '@/utils';
+import { nativeToUi } from '@/utils';
 
 export default function VestStats({
   vest,
@@ -56,7 +54,7 @@ export default function VestStats({
     (vest.lastClaimTimestamp.toNumber() === 0
       ? vest.unlockStartTimestamp.toNumber()
       : vest.lastClaimTimestamp.toNumber()) *
-    1000;
+      1000;
 
   const claimableAmount = hasVestStarted
     ? nbSecondsSinceLastClaim * amountPerSecond
@@ -79,17 +77,14 @@ export default function VestStats({
 
   const claimVest = async () => {
     const notification =
-      MultiStepNotification.newForRegularTransaction(
-        'Claim Vest',
-      ).fire();
+      MultiStepNotification.newForRegularTransaction('Claim Vest').fire();
 
     try {
       await window.adrena.client.claimUserVest({
         notification,
       });
 
-      if (getUserVesting)
-        getUserVesting();
+      if (getUserVesting) getUserVesting();
 
       dispatch(fetchWalletTokenBalances());
     } catch (error) {
@@ -154,13 +149,15 @@ export default function VestStats({
           />
         </div>
 
-        {!readonly ? <Button
-          title="Claim ADX"
-          className="w-full mt-3 h-8"
-          size="lg"
-          disabled={claimableAmount === 0}
-          onClick={() => claimVest()}
-        /> : null}
+        {!readonly ? (
+          <Button
+            title="Claim ADX"
+            className="w-full mt-3 h-8"
+            size="lg"
+            disabled={claimableAmount === 0}
+            onClick={() => claimVest()}
+          />
+        ) : null}
       </div>
 
       <div className="py-5 sm:py-0 w-[300px] sm:w-[400px] order-1 sm:order-2">

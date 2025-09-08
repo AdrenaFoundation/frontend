@@ -8,7 +8,9 @@ export type WalletStakingAccounts = {
   ALP: UserStakingExtended | null;
 };
 
-export default function useWalletStakingAccounts(walletAddress: string | null): {
+export default function useWalletStakingAccounts(
+  walletAddress: string | null,
+): {
   stakingAccounts: WalletStakingAccounts | null;
   triggerWalletStakingAccountsReload: () => void;
 } {
@@ -49,7 +51,11 @@ export default function useWalletStakingAccounts(walletAddress: string | null): 
 
     // trigger also when connection change in case the call happens before everything is set up
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getUserStakingAccount, window.adrena.client.readonlyConnection, triggerCount]);
+  }, [
+    getUserStakingAccount,
+    window.adrena.client.readonlyConnection,
+    triggerCount,
+  ]);
 
   return {
     stakingAccounts,

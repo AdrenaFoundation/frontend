@@ -76,7 +76,8 @@ export const DialectNotification = ({
       addNotification({
         type: 'info',
         title: 'Dialect session has expired',
-        message: 'Please sign message again to view your Dialect notifications.',
+        message:
+          'Please sign message again to view your Dialect notifications.',
         duration: 'long',
       });
     }

@@ -73,9 +73,7 @@ export default function Admin() {
   }
 
   if (!walletAddress) {
-    return (
-      <WalletConnection />
-    );
+    return <WalletConnection />;
   }
 
   if (!verifiedWalletAddresses.includes(walletAddress)) {

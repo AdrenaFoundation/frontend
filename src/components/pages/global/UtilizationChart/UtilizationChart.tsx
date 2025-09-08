@@ -9,8 +9,8 @@ export default function UtilizationChart() {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-        time: string;
-      }
+          time: string;
+        }
       | { [key: string]: number }
     )[];
 
@@ -113,7 +113,11 @@ export default function UtilizationChart() {
           const ownedNb = parseFloat(ownedValue);
           const lockedNb = parseFloat(locked[custodyKey][i]);
 
-          custodyInfos.values.push(ownedNb ? Number((ownedNb ? (lockedNb * 100) / ownedNb : 0).toFixed(4)) : 0);
+          custodyInfos.values.push(
+            ownedNb
+              ? Number((ownedNb ? (lockedNb * 100) / ownedNb : 0).toFixed(4))
+              : 0,
+          );
         });
       }
 
@@ -134,7 +138,12 @@ export default function UtilizationChart() {
             });
           }
 
-          if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
+          if (
+            periodRef.current === '1M' ||
+            periodRef.current === '3M' ||
+            periodRef.current === '6M' ||
+            periodRef.current === '1Y'
+          ) {
             return new Date(time).toLocaleDateString('en-US', {
               day: 'numeric',
               month: 'numeric',
@@ -212,10 +221,18 @@ export default function UtilizationChart() {
         })}
       yDomain={[0, 100]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
-      isMaxUtilizationReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
+      isMaxUtilizationReferenceLine={Object.values(
+        infos.formattedData[infos.formattedData.length - 1],
+      )
+        .filter((v) => typeof v === 'number')
+        .every((v) => v < 98)}
       formatY="percentage"
       events={ADRENA_EVENTS}
     />

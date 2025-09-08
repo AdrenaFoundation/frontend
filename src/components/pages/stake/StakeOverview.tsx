@@ -47,8 +47,13 @@ export default function StakeOverview({
   totalLiquidStaked?: number | null;
   totalRedeemableLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
-  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
-  handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
+  handleLockedStakeRedeem: (
+    lockedStake: LockedStakeExtended,
+    earlyExit: boolean,
+  ) => void;
+  handleClickOnStakeMore: (
+    initialLockPeriod: AlpLockPeriod | AdxLockPeriod,
+  ) => void;
   handleClickOnClaimRewards: () => Promise<void>;
   handleClickOnClaimRewardsAndBuyAdx: () => Promise<void>;
   handleClickOnRedeem?: () => void;
@@ -69,17 +74,18 @@ export default function StakeOverview({
     isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
-  const [isClaimingAndBuyAdxRewards, setIsClaimingAndBuyAdxRewards] = useState(false);
+  const [isClaimingAndBuyAdxRewards, setIsClaimingAndBuyAdxRewards] =
+    useState(false);
 
   const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
     const savedConfig = localStorage.getItem(storageKey);
     return savedConfig
       ? JSON.parse(savedConfig)
       : {
-        size: 'desc',
-        duration: 'asc',
-        lastClicked: 'duration',
-      };
+          size: 'desc',
+          duration: 'asc',
+          lastClicked: 'duration',
+        };
   });
 
   const [roundPassed, setRoundPassed] = useState<boolean>(false);
@@ -94,7 +100,7 @@ export default function StakeOverview({
         stakingAccount.currentStakingRound.startTime,
       ).getTime();
 
-      if ((nextRound - Date.now()) < 0) {
+      if (nextRound - Date.now() < 0) {
         setRoundPassed(true);
       } else if (roundPassed) {
         setRoundPassed(false);
@@ -163,15 +169,13 @@ export default function StakeOverview({
   const totalStakeAmount =
     (isALP
       ? totalLockedStake
-      : (Number(totalLockedStake) || 0) + (Number(totalLiquidStaked) || 0)) ?? 0;
+      : (Number(totalLockedStake) || 0) + (Number(totalLiquidStaked) || 0)) ??
+    0;
 
   return (
     <div className="flex flex-col bg-main rounded-2xl border">
       {/* Token info header */}
-      <TokenInfoHeader
-        token={token}
-        totalStakeAmount={totalStakeAmount}
-      />
+      <TokenInfoHeader token={token} totalStakeAmount={totalStakeAmount} />
 
       <div className="flex flex-col h-full">
         <div className="h-[1px] bg-bcolor w-full my-3" />
@@ -220,6 +224,6 @@ export default function StakeOverview({
           />
         )}
       </div>
-    </div >
+    </div>
   );
 }

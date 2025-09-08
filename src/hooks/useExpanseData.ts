@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from 'react';
 
-import DataApiClient from "@/DataApiClient";
+import DataApiClient from '@/DataApiClient';
 import {
   ProfilePicture,
   SeasonLeaderboardsData,
   UserProfileMetadata,
   UserProfileTitle,
-} from "@/types";
+} from '@/types';
 
 function applyProfile(
   leaderboardData: SeasonLeaderboardsData | null,
@@ -65,7 +65,7 @@ export default function useExpanseData({
     if (!allMetadata) return;
 
     DataApiClient.getSeasonLeaderboards({
-      season: "expanse",
+      season: 'expanse',
     })
       .then((data) => {
         applyProfile(data, allMetadata);
@@ -77,7 +77,7 @@ export default function useExpanseData({
 
     const interval = setInterval(() => {
       DataApiClient.getSeasonLeaderboards({
-        season: "expanse",
+        season: 'expanse',
       })
         .then((data) => {
           applyProfile(data, allMetadata);

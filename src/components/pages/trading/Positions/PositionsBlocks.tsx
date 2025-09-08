@@ -63,7 +63,12 @@ export function PositionsBlocks({
             </div>
           ) : (
             <div className="flex justify-center items-center">
-              <Button title="Open a position" href="/trade" size="lg" className='my-4' />
+              <Button
+                title="Open a position"
+                href="/trade"
+                size="lg"
+                className="my-4"
+              />
             </div>
           )}
         </>

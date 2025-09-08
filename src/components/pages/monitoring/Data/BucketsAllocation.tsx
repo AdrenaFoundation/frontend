@@ -9,9 +9,7 @@ import {
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import { Cortex } from '@/types';
-import {
-  nativeToUi,
-} from '@/utils';
+import { nativeToUi } from '@/utils';
 
 export default function BucketsAllocation({
   cortex,

@@ -85,7 +85,7 @@ export default function OpenInterestChart({
       const result = await DataApiClient.getCustodyInfo(
         dataEndpoint,
         'open_interest_long_usd=true&open_interest_short_usd=true',
-        dataPeriod
+        dataPeriod,
       );
 
       if (!result) {
@@ -103,8 +103,14 @@ export default function OpenInterestChart({
         snapshot_timestamp,
       } = result;
 
-      if (!open_interest_long_usd || !open_interest_short_usd || !snapshot_timestamp) {
-        console.error('Failed to fetch open interest data: Missing required data fields');
+      if (
+        !open_interest_long_usd ||
+        !open_interest_short_usd ||
+        !snapshot_timestamp
+      ) {
+        console.error(
+          'Failed to fetch open interest data: Missing required data fields',
+        );
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
             Could not fetch open interest data
@@ -112,7 +118,10 @@ export default function OpenInterestChart({
         );
       }
 
-      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
+      const timeStamp = formatSnapshotTimestamp(
+        snapshot_timestamp,
+        periodRef.current,
+      );
 
       const custodyInfos: TokenInfo[] = [];
 
@@ -208,7 +217,11 @@ export default function OpenInterestChart({
       ]}
       yDomain={['dataMax']}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}

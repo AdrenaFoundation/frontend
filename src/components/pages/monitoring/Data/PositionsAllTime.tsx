@@ -19,29 +19,29 @@ export default function PositionsAllTime({
           title="Trading Volume"
           nb={mainPool.totalTradingVolume}
           precision={0}
-          className='rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r'
-          format='currency'
+          className="rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r"
+          format="currency"
         />
         <NumberDisplay
           title="Liquidation Volume"
           nb={mainPool.totalLiquidationVolume}
           precision={0}
-          className='rounded-none border-t-0 border-l-0 border-r-0 border-b'
-          format='currency'
+          className="rounded-none border-t-0 border-l-0 border-r-0 border-b"
+          format="currency"
         />
         <NumberDisplay
           title="Profits"
           nb={mainPool.profitsUsd}
           precision={0}
-          className='rounded-none border-t-0 border-l-0 border-r-0 border-b-0 sm:border-r'
-          format='currency'
+          className="rounded-none border-t-0 border-l-0 border-r-0 border-b-0 sm:border-r"
+          format="currency"
         />
         <NumberDisplay
           title="Losses"
           nb={mainPool.lossUsd}
           precision={0}
-          className='rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-t-0'
-          format='currency'
+          className="rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-t-0"
+          format="currency"
         />
       </div>
     </div>

@@ -175,7 +175,7 @@ export default function OwnerBloc({
             !updatingMetadata.favoriteAchievements?.includes(achievement.index),
         ) ||
         currentFavoriteAchievements.length !==
-        (updatingMetadata.favoriteAchievements?.length ?? 0);
+          (updatingMetadata.favoriteAchievements?.length ?? 0);
 
       if (isNewChanges) {
         updateFavoriteAchievements?.(
@@ -290,7 +290,9 @@ export default function OwnerBloc({
 
     return Object.entries(WALLPAPERS).map(([v, path]) => {
       const unlocked = unlockedWallpapers.includes(Number(v));
-      const achievement = ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === Number(v));
+      const achievement = ACHIEVEMENTS.find(
+        (achievement) => achievement.wallpaperUnlock === Number(v),
+      );
       return (
         <Tippy
           content={
@@ -378,7 +380,9 @@ export default function OwnerBloc({
 
     return Object.entries(PROFILE_PICTURES).map(([v, path]) => {
       const unlocked = unlockedPfpIndexes.includes(Number(v));
-      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === Number(v));
+      const achievement = ACHIEVEMENTS.find(
+        (achievement) => achievement.pfpUnlock === Number(v),
+      );
       return (
         <Tippy
           content={
@@ -490,8 +494,12 @@ export default function OwnerBloc({
             return (
               <Tippy
                 content={
-                  ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index) &&
-                    ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title
+                  ACHIEVEMENTS.find(
+                    (achievement) => achievement.titleUnlock === index,
+                  ) &&
+                  ACHIEVEMENTS.find(
+                    (achievement) => achievement.titleUnlock === index,
+                  )?.title
                     ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
                     : 'Unlocked by default'
                 }
@@ -504,7 +512,7 @@ export default function OwnerBloc({
                       (index as unknown as ProfilePicture)
                       ? 'border-yellow-400/80'
                       : 'border-transparent grayscale',
-                    'cursor-pointer'
+                    'cursor-pointer',
                   )}
                   onClick={() => {
                     // if (!unlocked) return;
@@ -526,8 +534,12 @@ export default function OwnerBloc({
         <div className="w-full h-[1px] bg-bcolor" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-20 cursor-disabled">
           {lockedTitles.map((title) => {
-            const index = Object.values(USER_PROFILE_TITLES).findIndex((t) => t === title);
-            const achievement = ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index);
+            const index = Object.values(USER_PROFILE_TITLES).findIndex(
+              (t) => t === title,
+            );
+            const achievement = ACHIEVEMENTS.find(
+              (achievement) => achievement.titleUnlock === index,
+            );
             return (
               <Tippy
                 content={
@@ -802,30 +814,30 @@ export default function OwnerBloc({
               <div className="h-[1em]">
                 {(trimmedUpdatedNickname &&
                   trimmedUpdatedNickname.length < 3) ||
-                  !trimmedUpdatedNickname ? (
+                !trimmedUpdatedNickname ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
                     Nickname must be at least 3 characters
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
+                typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
                   'undefined' &&
-                  trimmedUpdatedNickname.length > 3 ? (
+                trimmedUpdatedNickname.length > 3 ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
                     Checking nickname availability...
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
+                alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">
                     Nickname is already taken
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
+                alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">
                     Nickname is available
                   </div>
@@ -956,11 +968,11 @@ export default function OwnerBloc({
                                 ? 'border-yellow-400/80'
                                 : 'border-[#ffffff20] grayscale',
                               updatingMetadata.favoriteAchievements?.length ===
-                              3 &&
-                              !updatingMetadata.favoriteAchievements.includes(
-                                achievement.index,
-                              ) &&
-                              'opacity-20 hover:opacity-20 cursor-disabled',
+                                3 &&
+                                !updatingMetadata.favoriteAchievements.includes(
+                                  achievement.index,
+                                ) &&
+                                'opacity-20 hover:opacity-20 cursor-disabled',
                             )}
                             onClick={() => {
                               if (
@@ -977,15 +989,15 @@ export default function OwnerBloc({
                                 favoriteAchievements:
                                   u.favoriteAchievements !== null
                                     ? u.favoriteAchievements.includes(
-                                      achievement.index,
-                                    )
-                                      ? u.favoriteAchievements?.filter(
-                                        (a) => a !== achievement.index,
-                                      )
-                                      : [
-                                        ...u.favoriteAchievements,
                                         achievement.index,
-                                      ]
+                                      )
+                                      ? u.favoriteAchievements?.filter(
+                                          (a) => a !== achievement.index,
+                                        )
+                                      : [
+                                          ...u.favoriteAchievements,
+                                          achievement.index,
+                                        ]
                                     : null,
                               }));
                             }}

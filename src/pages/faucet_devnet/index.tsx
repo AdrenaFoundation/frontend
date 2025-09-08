@@ -26,9 +26,7 @@ import {
   uiToNative,
 } from '@/utils';
 
-export default function FaucetDevnet({
-  wallet,
-}: PageProps) {
+export default function FaucetDevnet({ wallet }: PageProps) {
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -120,7 +118,12 @@ export default function FaucetDevnet({
         LAMPORTS_PER_SOL,
       );
 
-      const signatureResult = await connection.confirmTransaction({ signature: txHash, blockhash: (await connection.getLatestBlockhash('confirmed')).blockhash, lastValidBlockHeight: (await connection.getLatestBlockhash('confirmed')).lastValidBlockHeight });
+      const signatureResult = await connection.confirmTransaction({
+        signature: txHash,
+        blockhash: (await connection.getLatestBlockhash('confirmed')).blockhash,
+        lastValidBlockHeight: (await connection.getLatestBlockhash('confirmed'))
+          .lastValidBlockHeight,
+      });
 
       if (signatureResult.value.err) {
         throw signatureResult.value.err;

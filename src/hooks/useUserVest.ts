@@ -19,7 +19,9 @@ export default function useUserVest(walletAddress: string | null): {
       return;
     }
 
-    setUserVest(await window.adrena.client.loadUserVest(new PublicKey(walletAddress)));
+    setUserVest(
+      await window.adrena.client.loadUserVest(new PublicKey(walletAddress)),
+    );
   }, [walletAddress]);
 
   useEffect(() => {

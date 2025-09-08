@@ -131,9 +131,12 @@ export default function Profile({
       />
 
       <div className="flex flex-col max-w-[65em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
-        <div className={twMerge("z-20 w-full flex flex-col rounded-xl backdrop-blur-md border-2 border-white/10 shadow-lg",
-          userProfile === false ? 'overflow-hidden' : 'min-h-full'
-        )}>
+        <div
+          className={twMerge(
+            'z-20 w-full flex flex-col rounded-xl backdrop-blur-md border-2 border-white/10 shadow-lg',
+            userProfile === false ? 'overflow-hidden' : 'min-h-full',
+          )}
+        >
           {userProfile === false ? (
             <div className="flex w-full justify-center items-center bg-main">
               <ProfileCreation
