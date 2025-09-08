@@ -10,7 +10,7 @@ out/
 .next/
 
 # Charting library bundles (minified files)
-public/charting_library/bundles/
+public/charting_library/
 
 # Coverage directory used by tools like istanbul
 coverage/
