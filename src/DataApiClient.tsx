@@ -1702,17 +1702,50 @@ export default class DataApiClient {
     }
   }
 
-  public static async getActiveTraders(period: '24h' | '7d' = '24h') {
-    const response = await fetch(
-      `${DataApiClient.DATAPI_URL}/active-traders?period=${period}`,
-      {
+  public static async getActiveTraders(
+    period: 'daily' | 'weekly' | 'monthly' | 'yearly' = 'daily',
+  ) {
+    try {
+      const response = await fetch(
+        `${DataApiClient.DATAPI_URL}/active-traders?period=${period}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data?.active_traders || 0;
+    } catch (error) {
+      console.error('Error fetching active traders:', error);
+      return 0;
+    }
+  }
+
+  public static async getVelocityIndicators() {
+    try {
+      const response = await fetch(`${DataApiClient.DATAPI_URL}/velocity`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      },
-    );
-    const data = await response.json();
-    return data.data?.active_traders || 0;
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error('Error fetching velocity indicators:', error);
+      return null;
+    }
   }
 }

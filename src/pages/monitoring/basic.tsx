@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -36,25 +36,12 @@ export default function BasicMonitoring({
   const [aprs, setAprs] = React.useState<{ lp: number; lm: number } | null>(
     null,
   );
-  const [timePeriod, setTimePeriod] = useState<'24h' | '7d'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('monitoring-time-period');
-      return saved === '24h' || saved === '7d' ? saved : '24h';
-    }
-    return '24h';
-  });
 
   const velocityData = useVelocityIndicators();
 
   const useSqrtScaleForVolumeAndFeeChart = useSelector(
     (state) => state.settings.useSqrtScaleForVolumeAndFeeChart,
   );
-
-  const handleTimePeriodChange = () => {
-    const newPeriod = timePeriod === '24h' ? '7d' : '24h';
-    setTimePeriod(newPeriod);
-    localStorage.setItem('monitoring-time-period', newPeriod);
-  };
 
   useEffect(() => {
     if (view !== 'lite') return;
@@ -104,18 +91,19 @@ export default function BasicMonitoring({
               nb={mainPool.totalTradingVolume}
               format="currency"
               precision={0}
-              className="border-0 min-w-[12em]"
-              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-              headerClassName="pb-2"
-              titleClassName="text-[0.7em] sm:text-[0.7em]"
+              className="border-0 min-w-[12em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-2 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
-                <VelocityIndicator
-                  change={velocityData[timePeriod].tradingVolumeChange}
-                  className="mt-1"
-                  format="currency"
-                  period={timePeriod}
-                  onTogglePeriod={handleTimePeriodChange}
-                />
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].tradingVolumeChange}
+                    weeklyChange={velocityData['7d'].tradingVolumeChange}
+                    className="mt-1"
+                    format="currency"
+                  />
+                </div>
               }
             />
 
@@ -124,18 +112,19 @@ export default function BasicMonitoring({
               nb={mainPool.totalLiquidationVolume}
               format="currency"
               precision={0}
-              className="border-0 min-w-[12em]"
-              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-              headerClassName="pb-2"
-              titleClassName="text-[0.7em] sm:text-[0.7em]"
+              className="border-0 min-w-[12em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-2 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
-                <VelocityIndicator
-                  change={velocityData[timePeriod].liquidationVolumeChange}
-                  className="mt-1"
-                  format="currency"
-                  period={timePeriod}
-                  onTogglePeriod={handleTimePeriodChange}
-                />
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].liquidationVolumeChange}
+                    weeklyChange={velocityData['7d'].liquidationVolumeChange}
+                    className="mt-1"
+                    format="currency"
+                  />
+                </div>
               }
             />
 
@@ -144,18 +133,19 @@ export default function BasicMonitoring({
               nb={mainPool.totalFeeCollected}
               format="currency"
               precision={0}
-              className="border-0 min-w-[12em]"
-              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-              headerClassName="pb-2"
-              titleClassName="text-[0.7em] sm:text-[0.7em]"
+              className="border-0 min-w-[12em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-2 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
-                <VelocityIndicator
-                  change={velocityData[timePeriod].totalFeesChange}
-                  className="mt-1"
-                  format="currency"
-                  period={timePeriod}
-                  onTogglePeriod={handleTimePeriodChange}
-                />
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].totalFeesChange}
+                    weeklyChange={velocityData['7d'].totalFeesChange}
+                    className="mt-1"
+                    format="currency"
+                  />
+                </div>
               }
             />
 
@@ -165,19 +155,20 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className="border-0 min-w-[10em]"
-              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-              headerClassName="pb-2"
-              titleClassName="text-[0.85em] sm:text-[0.85em]"
+              className="border-0 min-w-[10em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-2 text-center"
+              titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
               tippyInfo="Average yield for ALP in the last 7 days"
               footer={
-                <VelocityIndicator
-                  change={velocityData[timePeriod].alpAprChange}
-                  className="mt-1"
-                  format="percentage"
-                  period={timePeriod}
-                  onTogglePeriod={handleTimePeriodChange}
-                />
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].alpAprChange}
+                    weeklyChange={velocityData['7d'].alpAprChange}
+                    className="mt-1"
+                    format="percentage"
+                  />
+                </div>
               }
             />
 
@@ -187,19 +178,20 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className="border-0 min-w-[10em]"
-              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-              headerClassName="pb-2"
-              titleClassName="text-[0.85em] sm:text-[0.85em]"
+              className="border-0 min-w-[10em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-2 text-center"
+              titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
               tippyInfo="Average yield for 540d staked ADX in the last 7 days"
               footer={
-                <VelocityIndicator
-                  change={velocityData[timePeriod].adxAprChange}
-                  className="mt-1"
-                  format="percentage"
-                  period={timePeriod}
-                  onTogglePeriod={handleTimePeriodChange}
-                />
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].adxAprChange}
+                    weeklyChange={velocityData['7d'].adxAprChange}
+                    className="mt-1"
+                    format="percentage"
+                  />
+                </div>
               }
             />
 
@@ -208,18 +200,19 @@ export default function BasicMonitoring({
               nb={allTimeTraders ?? null}
               format="number"
               precision={0}
-              className="border-0 min-w-[8em]"
-              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-              headerClassName="pb-2"
-              titleClassName="text-[0.7em] sm:text-[0.7em]"
+              className="border-0 min-w-[8em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-2 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
-                <VelocityIndicator
-                  change={velocityData[timePeriod].activeTraders}
-                  className="mt-1"
-                  format="number"
-                  period={timePeriod}
-                  onTogglePeriod={handleTimePeriodChange}
-                />
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].newTraders}
+                    weeklyChange={velocityData['7d'].newTraders}
+                    className="mt-1"
+                    format="number"
+                  />
+                </div>
               }
             />
           </div>
