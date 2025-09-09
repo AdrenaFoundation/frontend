@@ -842,11 +842,11 @@ export default class DataApiClient {
   }): Promise<EnrichedPositionApiV2 | null> {
     try {
       const response = await fetch(
-        `${DataApiClient.DATAPI_URL}/v3/position?user_wallet=${walletAddress
+        `${DataApiClient.DATAPI_URL}/v4/position?user_wallet=${walletAddress
         }&status=liquidate&status=close&limit=${limit}&offset=${offset}${entryDate
-          ? `&entry_date=${entryDate.toISOString().split('T')[0]}`
+          ? `&entry_date=${entryDate.toISOString()}`
           : ''
-        }${exitDate ? `&exit_date=${exitDate.toISOString().split('T')[0]}` : ''}${sortBy ? `&sortField=${sortBy}` : ''
+        }${exitDate ? `&exit_date=${exitDate.toISOString()}` : ''}${sortBy ? `&sortField=${sortBy}` : ''
         }${sortDirection ? `&sort=${sortDirection.toUpperCase()}` : ''}`,
       );
 
