@@ -62,6 +62,8 @@ export default function StakeAnimation({ isADX = false }: { isADX?: boolean }) {
                 src={walletIcon}
                 className="w-5 h-5 inline-block mr-1"
                 alt="alp logo"
+                width={20}
+                height={20}
               />
               <p className="inline-block text-base">Wallet</p>
             </div>
@@ -72,6 +74,8 @@ export default function StakeAnimation({ isADX = false }: { isADX?: boolean }) {
                   src={usdcToken.image}
                   className="w-4 h-4"
                   alt="alp logo"
+                  width={16}
+                  height={16}
                 />
               )}
               <div className="font-mono text-sm md:text-base">
@@ -87,6 +91,8 @@ export default function StakeAnimation({ isADX = false }: { isADX?: boolean }) {
                 src={window.adrena.client.adxToken.image}
                 className="w-4 h-4"
                 alt="alp logo"
+                width={16}
+                height={16}
               />
 
               <div className="font-mono text-sm md:text-base">

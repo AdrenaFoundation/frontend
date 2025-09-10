@@ -73,7 +73,6 @@ export default function SuperchargedFooter({
   );
   // do not try more than 3 times
 
-
   const [title, setTitle] = useState('Chat');
 
   const priorityFeeAmounts = usePriorityFee();
@@ -101,7 +100,7 @@ export default function SuperchargedFooter({
 
     const checkAdminStatus = async () => {
       isCheckingAdminRef.current = true; // Prevent concurrent calls
-      let attemps = 0; // Reset attempts counter for each call
+      let attemps = 3; // Reset attempts counter for each call
       setIsCheckAdminLoading(true);
 
       const {
@@ -114,7 +113,7 @@ export default function SuperchargedFooter({
         return;
       };
 
-      while (attemps < 3) {
+      while (attemps <= 3) {
         try {
           const response = await fetch(
             `/api/verify_signature?walletAddress=${walletAddress}`,
@@ -141,7 +140,6 @@ export default function SuperchargedFooter({
           setIsCheckAdminLoading(false);
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 5000));
         attemps++;
       }
 
@@ -387,6 +385,8 @@ export default function SuperchargedFooter({
                       src={onlineCountBg}
                       alt="Online Count Background"
                       className="absolute top-0 right-0 w-full h-[1.625rem]"
+                      height={26}
+                      width={26}
                     />
                     <div className="flex flex-row items-center justify-between w-[4.3rem] absolute top-[0.44rem] left-[3.3rem]">
                       <div className="flex flex-row items-center gap-1 opacity-50">

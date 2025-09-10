@@ -119,6 +119,8 @@ export default function ADXVoteAnimation() {
                   src={participant.pfp}
                   className="w-full"
                   alt="adx logo"
+                  width={40}
+                  height={40}
                 />
               </motion.div>
             ))

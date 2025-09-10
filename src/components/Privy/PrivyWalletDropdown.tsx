@@ -1,10 +1,10 @@
 import { usePrivy } from '@privy-io/react-auth';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { PROFILE_PICTURES } from '@/constant';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
+import { getAbbrevNickname, getAbbrevWalletAddress, getWalletTypeDisplayName, isPrivyEmbeddedWallet } from '@/utils';
 
 interface PrivyWalletDropdownProps {
     solanaWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>;
@@ -14,9 +14,6 @@ interface PrivyWalletDropdownProps {
     user?: { email?: { address?: string } } | null;
     wallet?: { walletAddress?: string; adapterName?: string } | null;
     onWalletSelection: (index: number) => void;
-    onCopyAddress: () => void;
-    onLogout: () => void;
-    onCloseSidebar: () => void;
     className?: string;
 }
 
@@ -28,9 +25,6 @@ export function PrivyWalletDropdown({
     user,
     wallet,
     onWalletSelection,
-    onCopyAddress,
-    onLogout,
-    onCloseSidebar,
     className = ''
 }: PrivyWalletDropdownProps) {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -38,23 +32,43 @@ export function PrivyWalletDropdown({
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
     const { connectWallet } = usePrivy();
 
+    // Memoize profile data to avoid unnecessary recalculations
+    const profilesMap = useMemo(() => {
+        const map: Record<string, { picture?: string; nickname?: string }> = {};
+        allUserProfilesMetadata.forEach(profile => {
+            const walletAddress = profile.owner.toBase58();
+            const pictureUrl = PROFILE_PICTURES[profile.profilePicture as keyof typeof PROFILE_PICTURES];
+            map[walletAddress] = {
+                picture: pictureUrl,
+                nickname: profile.nickname
+            };
+        });
+        return map;
+    }, [allUserProfilesMetadata]);
+
+    // Simple loading state - profiles are loading if we don't have data yet
+    const isLoadingProfiles = allUserProfilesMetadata.length === 0;
+
     // Helper function to get profile picture for a wallet address
     const getProfilePicture = (walletAddress: string): string | undefined => {
-        const userProfile = allUserProfilesMetadata.find(profile => profile.owner.toBase58() === walletAddress);
-        if (userProfile) {
-            const pictureUrl = PROFILE_PICTURES[userProfile.profilePicture as keyof typeof PROFILE_PICTURES];
-            return pictureUrl;
-        }
-        return undefined;
+        return profilesMap[walletAddress]?.picture;
     };
 
     // Helper function to get profile name for a wallet address
     const getProfileName = (walletAddress: string): string | undefined => {
-        const userProfile = allUserProfilesMetadata.find(profile => profile.owner.toBase58() === walletAddress);
-        if (userProfile) {
-            return getAbbrevNickname(userProfile.nickname);
+        const nickname = profilesMap[walletAddress]?.nickname;
+        return nickname ? getAbbrevNickname(nickname) : undefined;
+    };
+
+    // Helper function to unlink external wallet
+    const handleUnlinkWallet = async (walletAddress: string) => {
+        try {
+            // For now, we'll show a message since Privy doesn't have a direct unlink method
+            // Users need to unlink through their wallet's interface
+            alert(`To unlink wallet ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}, please disconnect it from your wallet provider (Phantom, Solflare, etc.) and then reconnect to Privy.`);
+        } catch (error) {
+            console.error('Error unlinking wallet:', error);
         }
-        return undefined;
     };
 
     // Close dropdown when clicking outside
@@ -70,24 +84,31 @@ export function PrivyWalletDropdown({
     }, []);
 
     const getDisplayText = () => {
-        if (selectedWallet?.address) {
-            return getProfileName(selectedWallet.address) || getAbbrevWalletAddress(selectedWallet.address);
+        // Determine the active wallet address
+        const activeAddress = selectedWallet?.address || externalWallet?.address || wallet?.walletAddress;
+
+        if (activeAddress) {
+            // Check for cached or fresh profile name
+            const profileName = getProfileName(activeAddress);
+            if (profileName) {
+                return profileName;
+            }
+
+            // If loading and no cached data, show abbreviated address
+            // This prevents flashing between different display texts
+            return getAbbrevWalletAddress(activeAddress);
         }
-        if (externalWallet?.address) {
-            return getProfileName(externalWallet.address) || getAbbrevWalletAddress(externalWallet.address);
-        }
-        if (wallet?.walletAddress) {
-            return getProfileName(wallet.walletAddress) || getAbbrevWalletAddress(wallet.walletAddress);
-        }
+
         if (user?.email?.address) {
             return getAbbrevNickname(user.email.address.split('@')[0]);
         }
+
         return 'No wallet';
     };
 
     const getWalletType = () => {
         if (selectedWallet) {
-            return selectedWallet.standardWallet.name.toLowerCase().includes('privy') ? 'Adrena Account' : selectedWallet.standardWallet.name;
+            return getWalletTypeDisplayName(selectedWallet.standardWallet.name);
         }
         if (externalWallet) {
             return externalWallet.adapterName;
@@ -118,6 +139,7 @@ export function PrivyWalletDropdown({
                 {/* Profile Picture - Takes 2 lines height */}
                 <div className="flex-shrink-0">
                     {selectedWallet?.address ? (
+                        // Check if we have a custom profile picture
                         getProfilePicture(selectedWallet.address) ? (
                             <Image
                                 src={getProfilePicture(selectedWallet.address) || ''}
@@ -126,7 +148,11 @@ export function PrivyWalletDropdown({
                                 width={40}
                                 height={40}
                             />
-                        ) : selectedWallet.standardWallet.name.toLowerCase().includes('privy') ? (
+                        ) : isLoadingProfiles && isPrivyEmbeddedWallet(selectedWallet.standardWallet.name) ? (
+                            // Show loading state for Privy wallets while profiles load
+                            <div className="w-10 h-10 rounded-full bg-gray-700 animate-pulse" />
+                        ) : isPrivyEmbeddedWallet(selectedWallet.standardWallet.name) ? (
+                            // Only show default after profiles have loaded and no custom picture found
                             <Image
                                 src={PROFILE_PICTURES[0]}
                                 alt="Adrena Account"
@@ -135,6 +161,7 @@ export function PrivyWalletDropdown({
                                 height={40}
                             />
                         ) : selectedWallet.standardWallet.icon ? (
+                            // External wallet icon
                             <Image
                                 src={selectedWallet.standardWallet.icon}
                                 alt={selectedWallet.standardWallet.name}
@@ -143,6 +170,7 @@ export function PrivyWalletDropdown({
                                 height={40}
                             />
                         ) : (
+                            // Fallback icon
                             <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
                                 <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -150,6 +178,7 @@ export function PrivyWalletDropdown({
                             </div>
                         )
                     ) : (
+                        // No wallet selected
                         <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
                             <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -161,13 +190,13 @@ export function PrivyWalletDropdown({
                 {/* Content - Profile Name + Wallet Info */}
                 <div className="flex-1 min-w-0">
                     {/* Profile Name - 1 line */}
-                    <div className="font-medium text-white">
+                    <div className={`font-medium text-white ${isLoadingProfiles && !getProfileName(selectedWallet?.address || '') ? 'animate-pulse' : ''}`}>
                         {getDisplayText()}
                     </div>
 
                     {/* Wallet Icon + Name - Under profile name */}
                     <div className="text-xs text-gray-400 flex items-center gap-2 mt-1">
-                        {selectedWallet?.standardWallet.name.toLowerCase().includes('privy') ? (
+                        {selectedWallet?.standardWallet.name && isPrivyEmbeddedWallet(selectedWallet.standardWallet.name) ? (
                             <Image
                                 src="/images/adx.svg"
                                 alt="Adrena"
@@ -402,6 +431,15 @@ export function PrivyWalletDropdown({
                                                 <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" strokeWidth="2" />
                                             </svg>
                                         </button>
+                                        <button
+                                            onClick={() => handleUnlinkWallet(wallet.address)}
+                                            className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                                            title="Unlink wallet"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -421,46 +459,6 @@ export function PrivyWalletDropdown({
                         </div>
                     )}
 
-                    {/* Action Buttons */}
-                    <div className="border-t border-gray-700">
-                        <button
-                            onClick={() => {
-                                onCopyAddress();
-                                setShowDropdown(false);
-                            }}
-                            className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                        >
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="9" y="9" width="10" height="10" rx="2" ry="2" strokeWidth="2" />
-                                <rect x="5" y="5" width="10" height="10" rx="2" ry="2" strokeWidth="2" />
-                            </svg>
-                            Copy Address
-                        </button>
-                        <button
-                            onClick={() => {
-                                onLogout();
-                                setShowDropdown(false);
-                            }}
-                            className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            Disconnect
-                        </button>
-                        <button
-                            onClick={() => {
-                                onCloseSidebar();
-                                setShowDropdown(false);
-                            }}
-                            className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Close Sidebar
-                        </button>
-                    </div>
                 </div>
             ) : null}
         </div>

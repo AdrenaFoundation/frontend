@@ -1810,6 +1810,24 @@ export function isPartialClose(activePercent: number | null) {
   );
 }
 
+/**
+ * Check if a wallet is a Privy embedded wallet
+ * @param walletName - The wallet name to check
+ * @returns true if it's a Privy embedded wallet
+ */
+export function isPrivyEmbeddedWallet(walletName: string): boolean {
+  return walletName.toLowerCase().includes('privy');
+}
+
+/**
+ * Get wallet type display name
+ * @param walletName - The wallet name
+ * @returns Display name for the wallet type
+ */
+export function getWalletTypeDisplayName(walletName: string): string {
+  return isPrivyEmbeddedWallet(walletName) ? 'Adrena Account' : walletName;
+}
+
 // Safely get wallet address, handling Privy loading delays
 export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
   if (!wallet) return null;

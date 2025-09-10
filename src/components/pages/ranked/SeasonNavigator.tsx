@@ -46,6 +46,8 @@ export default function SeasonNavigator({
                     /> : <Image
                         src={TRADING_COMPETITION_SEASONS[season].img}
                         alt="competition banner"
+                        width={1040}
+                        height={1040}
                         className="absolute top-0 left-0 w-full h-full object-cover opacity-70"
                     />}
                 </div>

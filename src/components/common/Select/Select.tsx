@@ -48,12 +48,12 @@ export default function Select<T extends string>({
   const img = selectedImg ? typeof selectedImg === "string" ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={selectedImg} className="w-[20px] h-[20px]" alt="logo" />
-  ) : <Image src={selectedImg} className="w-[20px] h-[20px]" alt="logo" /> : null;
+  ) : <Image src={selectedImg} className="w-[20px] h-[20px]" alt="logo" width={20} height={20} /> : null;
 
   const chevron =
     options.length > 1 ? (
       <div className="flex h-2 w-2 items-center justify-center shrink-0 mr-1 ml-1">
-        <Image src={chevronDownIcon} alt="chevron down" />
+        <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} />
       </div>
     ) : null;
 
