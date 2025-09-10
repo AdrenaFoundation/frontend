@@ -403,6 +403,7 @@ export const DEFAULT_SETTINGS = {
   enableDialectNotifications: false,
   enableAdrenaNotifications: true,
   useSqrtScaleForVolumeAndFeeChart: true,
+  lastSelectedTradingToken: '',
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {

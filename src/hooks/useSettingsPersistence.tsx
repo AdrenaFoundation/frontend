@@ -28,6 +28,7 @@ export default function useSettingsPersistence() {
     'withdraw-collateral-symbol',
     'enable-adrena-notifications',
     'use-sqrt-scale-for-volume-and-fee-chart',
+    'last-selected-trading-token',
   ]);
 
   const settings = useSelector((state) => state.settings);
@@ -132,6 +133,13 @@ export default function useSettingsPersistence() {
         updatedSettings.useSqrtScaleForVolumeAndFeeChart = v;
     }
 
+    {
+      const v =
+        preferences?.lastSelectedTradingToken ??
+        cookies['last-selected-trading-token'];
+      updatedSettings.lastSelectedTradingToken = v;
+    }
+
     dispatch(setSettings(updatedSettings));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!cookies, !!dispatch, preferences]);
@@ -157,6 +165,7 @@ export default function useSettingsPersistence() {
             enableAdrenaNotifications: 'enable-adrena-notifications',
             useSqrtScaleForVolumeAndFeeChart:
               'use-sqrt-scale-for-volume-and-fee-chart',
+            lastSelectedTradingToken: 'last-selected-trading-token',
           } as Record<keyof SettingsState, keyof typeof cookies>
         )[key as keyof SettingsState],
         value,

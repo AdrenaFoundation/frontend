@@ -17,6 +17,7 @@ export type SettingsState = {
   enableDialectNotifications: boolean;
   enableAdrenaNotifications: boolean;
   useSqrtScaleForVolumeAndFeeChart: boolean;
+  lastSelectedTradingToken: string;
 };
 
 // freeze the initial state object to make sure it can be re-used through

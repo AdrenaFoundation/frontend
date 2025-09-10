@@ -113,6 +113,7 @@ export default function Trade({
     'showPositionHistory',
     'updateTPSLByDrag',
     'showHighLow',
+    'last-selected-trading-token',
   ]);
 
   const [chartPreferences, setChartPreferences] = useState<ChartPreferences>({
@@ -263,15 +264,21 @@ export default function Trade({
         ? window.adrena.client.tokens
         : window.adrena.client.tokens.filter((t) => !t.isStable);
 
-    // If token is not set or token is not allowed, set default token
     if (
       !tokenB ||
       !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
-      setTokenB(pickDefaultToken(positions));
+      const lastSelectedToken = tokenBCandidate.find(
+        (t) => t.symbol === settings.lastSelectedTradingToken,
+      );
+
+      if (lastSelectedToken) {
+        setTokenB(lastSelectedToken);
+      } else {
+        setTokenB(pickDefaultToken(positions));
+      }
     }
 
-    // If token is not set or token is not allowed, set default token
     if (
       !tokenA ||
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
@@ -455,6 +462,11 @@ export default function Trade({
               tokenList={window.adrena.client.tokens.filter((t) => !t.isStable)}
               selected={tokenB}
               onChange={(t: Token) => {
+                dispatch(
+                  setSettings({
+                    lastSelectedTradingToken: t.symbol,
+                  }),
+                );
                 setTokenB(t);
               }}
               allActivePositions={allActivePositions}
