@@ -79,7 +79,7 @@ export default function Select<T extends string>({
   const chevron =
     options.length > 1 ? (
       <div className="flex h-2 w-2 items-center justify-center shrink-0 mr-1 ml-1">
-        <Image src={chevronDownIcon} alt="chevron down" />
+        <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} />
       </div>
     ) : null;
 

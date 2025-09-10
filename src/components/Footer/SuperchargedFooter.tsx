@@ -73,7 +73,6 @@ export default function SuperchargedFooter({
   );
   // do not try more than 3 times
 
-
   const [title, setTitle] = useState('Chat');
 
   const priorityFeeAmounts = usePriorityFee();
@@ -328,6 +327,8 @@ export default function SuperchargedFooter({
                       src={onlineCountBg}
                       alt="Online Count Background"
                       className="absolute top-0 right-0 w-full h-[1.625rem]"
+                      height={26}
+                      width={26}
                     />
                     <div className="flex flex-row items-center justify-between w-[4.3rem] absolute top-[0.44rem] left-[3.3rem]">
                       <div className="flex flex-row items-center gap-1 opacity-50">

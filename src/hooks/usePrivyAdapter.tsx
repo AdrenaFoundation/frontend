@@ -4,9 +4,10 @@
 
 import { usePrivy } from '@privy-io/react-auth';
 import { useConnectedStandardWallets, useSendTransaction } from '@privy-io/react-auth/solana';
+import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { EventEmitter } from 'events';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { WalletAdapterExtended } from '@/types';
 
@@ -19,13 +20,14 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   const [publicKey, setPublicKey] = useState<PublicKey | null>(null);
   const [solanaAddress, setSolanaAddress] = useState<string | null>(null);
 
-  // Create event emitter for the adapter
+  // Use refs for stable references
   const eventEmitter = useMemo(() => new EventEmitter(), []);
+  const adapterRef = useRef<WalletAdapterExtended>();
 
-  const solanaWallets = connectedStandardWallets.filter((w) => {
-    // Check if it's a Privy embedded wallet by checking the standardWallet name
-    return w.standardWallet.name.toLowerCase().includes('privy');
-  });
+  const solanaWallets = useMemo(() =>
+    connectedStandardWallets.filter((w) =>
+      w.standardWallet.name.toLowerCase().includes('privy')
+    ), [connectedStandardWallets]);
 
   // Find Solana wallet and auto-connect
   useEffect(() => {
@@ -128,6 +130,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
   }, [logout]);
 
+  // function used by adrena client
   const signTransaction = useCallback(async (transaction: Transaction): Promise<Transaction> => {
     if (!solanaAddress) {
       throw new Error('No Solana wallet connected');
@@ -203,26 +206,65 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     return result.signature;
   }, [solanaAddress, solanaWallets]);
 
-  // Create the adapter with proper event emitter methods
-  const walletAdapter: WalletAdapterExtended = useMemo(() => {
-    const adapter = {
-      name: 'Privy',
-      url: 'https://privy.io',
-      icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iNjQiIGZpbGw9IiM2QTU5RkYiLz4KPHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMyIDhDMTguNzQ1IDggOCAxOC43NDUgOCAzMkM4IDQ1LjI1NSAxOC43NDUgNTYgMzIgNTZDNDUuMjU1IDU2IDU2IDQ1LjI1NSA1NiAzMkM1NiAxOC43NDUgNDUuMjU1IDggMzIgOFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAyNEgyNFY0MEgyNFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MCAyNEg0MFY0MEg0MFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K',
-      publicKey,
-      connecting,
-      connected: authenticated && !!solanaAddress,
-      supportedTransactionVersions: new Set([0]),
-      readyState: ready ? 'Installed' : 'NotDetected',
-      ready,
-      connect,
-      disconnect,
-      signTransaction,
-      signAllTransactions,
-      signMessage,
-      // Missing required properties
-      autoConnect: false,
-      sendTransaction: async (transaction: Transaction, connection: unknown) => {
+  // Create adapter instance once and update its properties
+  useEffect(() => {
+    if (!adapterRef.current && ready) {
+      // Create the adapter only once
+      adapterRef.current = {
+        name: 'Privy',
+        url: 'https://privy.io',
+        icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iNjQiIGZpbGw9IiM2QTU5RkYiLz4KPHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMyIDhDMTguNzQ1IDggOCAxOC43NDUgOCAzMkM4IDQ1LjI1NSAxOC43NDUgNTYgMzIgNTZDNDUuMjU1IDU2IDU2IDQ1LjI1NSA1NiAzMkM1NiAxOC43NDUgNDUuMjU1IDggMzIgOFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAyNEgyNFY0MEgyNFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MCAyNEg0MFY0MEg0MFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K',
+        publicKey: null,
+        connecting: false,
+        connected: false,
+        supportedTransactionVersions: new Set([0]),
+        readyState: WalletReadyState.Installed,
+        autoConnect: false,
+        // Placeholder methods - will be updated below
+        connect: async () => { },
+        disconnect: async () => { },
+        sendTransaction: async () => '',
+        // SignerWalletAdapter methods (added via type assertion)
+        signTransaction: async (tx: Transaction) => tx,
+        signAllTransactions: async (txs: Transaction[]) => txs,
+        signMessage: async (msg: Uint8Array) => msg,
+        // Event emitter methods
+        on: eventEmitter.on.bind(eventEmitter),
+        once: eventEmitter.once.bind(eventEmitter),
+        off: eventEmitter.off.bind(eventEmitter),
+        removeAllListeners: eventEmitter.removeAllListeners.bind(eventEmitter),
+        emit: eventEmitter.emit.bind(eventEmitter),
+        // WalletAdapterExtended specific properties
+        color: '#ab9ff2',
+        beta: false,
+        walletName: 'Privy' as const,
+        recommended: true,
+      } as unknown as WalletAdapterExtended;
+    }
+
+    // Update adapter properties whenever state changes
+    if (adapterRef.current) {
+      adapterRef.current.publicKey = publicKey;
+      adapterRef.current.connecting = connecting;
+      adapterRef.current.connected = authenticated && !!solanaAddress;
+      adapterRef.current.readyState = (ready ? WalletReadyState.Installed : WalletReadyState.NotDetected) as WalletReadyState;
+
+      // Update methods
+      adapterRef.current.connect = connect;
+      adapterRef.current.disconnect = disconnect;
+
+      // These properties exist on SignerWalletAdapter but need to be added via type assertion
+      const adapter = adapterRef.current as WalletAdapterExtended & {
+        signTransaction: typeof signTransaction;
+        signAllTransactions: typeof signAllTransactions;
+        signMessage: typeof signMessage;
+      };
+      adapter.signTransaction = signTransaction;
+      adapter.signAllTransactions = signAllTransactions;
+      adapter.signMessage = signMessage;
+
+      // function not used by adrena client right now, may be used later
+      adapterRef.current.sendTransaction = async (transaction: Transaction, connection: unknown) => {
         if (!solanaAddress) {
           throw new Error('No Solana wallet connected');
         }
@@ -245,20 +287,12 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           connection: solanaConnection,
           address: solanaAddress,
           uiOptions: {
-            showWalletUIs: true, // Show confirmation modals for sending
+            showWalletUIs: false, // Show confirmation modals for sending
           },
         });
         return receipt.signature;
-      },
-      // Event emitter methods
-      on: eventEmitter.on.bind(eventEmitter),
-      once: eventEmitter.once.bind(eventEmitter),
-      off: eventEmitter.off.bind(eventEmitter),
-      removeAllListeners: eventEmitter.removeAllListeners.bind(eventEmitter),
-      emit: eventEmitter.emit.bind(eventEmitter),
-    } as unknown as WalletAdapterExtended;
-
-    return adapter;
+      };
+    }
   }, [
     publicKey,
     connecting,
@@ -275,5 +309,5 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   ]);
 
   // Only return the adapter if Privy is ready
-  return ready ? walletAdapter : null;
+  return ready ? adapterRef.current || null : null;
 }

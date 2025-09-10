@@ -427,6 +427,8 @@ export const TRADING_COMPETITION_SEASONS = {
       "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
     ] as string[],
     bannerClassName: 'h-[30em] justify-center',
+    width: 1040,
+    height: 1040,
   },
 
   expanse: {
@@ -452,6 +454,8 @@ export const TRADING_COMPETITION_SEASONS = {
       `Come get some.`,
     ] as string[],
     bannerClassName: 'h-[30em] justify-center',
+    width: 1040,
+    height: 1040,
   },
 
   factions: {
@@ -469,6 +473,8 @@ export const TRADING_COMPETITION_SEASONS = {
     usdcRewards: 0,
     description: [``] as string[],
     bannerClassName: 'h-[32em] pt-20',
+    width: 1040,
+    height: 1040,
   },
 
   interseason3: {
@@ -486,6 +492,8 @@ export const TRADING_COMPETITION_SEASONS = {
     usdcRewards: 0,
     description: [`Welcome to the Summer Event!`] as string[],
     bannerClassName: 'h-[32em] pt-20',
+    width: 1040,
+    height: 1040,
   },
 
   anniversary1: {

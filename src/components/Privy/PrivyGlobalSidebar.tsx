@@ -13,25 +13,13 @@ import { useDispatch, useSelector } from '@/store/store';
 import { PrivyWalletDropdown } from './PrivyWalletDropdown';
 
 export function PrivyGlobalSidebar() {
-    const { ready, authenticated, user, logout } = usePrivy();
+    const { ready, authenticated, user } = usePrivy();
     const { fundWallet } = useFundWallet();
     const { exportWallet } = useExportWallet();
     const { wallets: connectedStandardWallets } = useConnectedStandardWallets();
 
     const dispatch = useDispatch();
 
-    // Comprehensive Privy logout handler that cleans all states
-    const handlePrivyLogout = async () => {
-        try {
-            // 1. Call Privy's logout
-            await logout();
-
-            // 2. Clear Redux wallet state
-            dispatch({ type: 'disconnect' });
-        } catch (error) {
-            console.error('Error during Privy logout:', error);
-        }
-    };
     // Get external wallet state from Redux store
     const { wallet } = useSelector((s) => s.walletState);
 
@@ -42,8 +30,6 @@ export function PrivyGlobalSidebar() {
 
     /*  const [splTokens, setSplTokens] = useState<{ mint: string; uiAmount: number; decimals: number }[]>([]);
      const [isLoadingSplTokens, setIsLoadingSplTokens] = useState(false); */
-
-    const [copied, setCopied] = useState(false);
 
     // Use context for sidebar state
     const { isSidebarOpen, closeSidebar } = usePrivySidebar();
@@ -144,18 +130,6 @@ export function PrivyGlobalSidebar() {
         }
     }, [selectedWallet?.address]);
 
-    // Copy selected address to clipboard with visual feedback
-    const handleCopyAddress = async () => {
-        const addressToCopy = selectedWallet?.address || externalWallet?.address || wallet?.walletAddress;
-        if (!addressToCopy) return;
-        try {
-            await navigator.clipboard.writeText(addressToCopy);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1200);
-        } catch (e) {
-            console.error('Failed to copy address:', e);
-        }
-    };
 
     // Fetch SPL token holdings for selected wallet
     /* const fetchSplTokens = async (address: string) => {
@@ -305,42 +279,8 @@ export function PrivyGlobalSidebar() {
                         user={user}
                         wallet={wallet}
                         onWalletSelection={handleWalletSelection}
-                        onCopyAddress={handleCopyAddress}
-                        onLogout={handlePrivyLogout}
-                        onCloseSidebar={closeSidebar}
                         className="text-white"
                     />
-
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={handleCopyAddress}
-                            className={`transition-colors ${copied ? 'text-green-400' : 'text-gray-400 hover:text-white'}`}
-                            title={copied ? 'Copied!' : 'Copy address'}
-                        >
-                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <rect x="9" y="9" width="10" height="10" rx="2" ry="2" strokeWidth="2" />
-                                <rect x="5" y="5" width="10" height="10" rx="2" ry="2" strokeWidth="2" />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={handlePrivyLogout}
-                            className="text-red-400 hover:text-red-300 transition-colors"
-                            title="Disconnect Wallet"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={closeSidebar}
-                            className="text-gray-400 hover:text-white transition-colors"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
                 </div>
 
                 {/* Holdings List */}
