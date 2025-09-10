@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import { useState } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageRef } from '@/types';
@@ -25,6 +24,8 @@ export default function Select<T extends string>({
   reversed,
   align = 'right',
   disableImageAsBg = false,
+  openUpward = false,
+  menuItemHeight = 'h-14',
 }: {
   className?: string;
   selectedClassName?: string;
@@ -42,10 +43,10 @@ export default function Select<T extends string>({
   }[];
   onSelect: (opt: T) => void;
   disableImageAsBg?: boolean;
-
-  // Reverse the image position
   reversed?: boolean;
   align?: 'right' | 'left';
+  openUpward?: boolean;
+  menuItemHeight?: string;
 }) {
   const selectedImg = options.find((option) => option.title === selected);
 
@@ -79,7 +80,7 @@ export default function Select<T extends string>({
 
   const chevron =
     options.length > 1 ? (
-      <div className="flex h-2 w-2 items-center justify-center shrink-0 mr-1 ml-1">
+      <div className="flex h-2 w-2 items-center justify-center shrink-0 mr-1 ml-1 sm:hidden">
         <Image src={chevronDownIcon} alt="chevron down" />
       </div>
     ) : null;
@@ -89,11 +90,12 @@ export default function Select<T extends string>({
       <Menu
         disabled={options.length <= 1}
         withBorder={true}
+        openUpward={openUpward}
         trigger={
           <div
             className={twMerge(
               'flex items-center whitespace-nowrap hover:opacity-90 shadow-xl overflow-hidden relative h-full w-full',
-              options.length > 1 ? 'cursor-pointer' : '',
+              options.length > 1 ? 'cursor-pointer sm:cursor-default' : '',
               menuClassName,
             )}
           >
@@ -145,7 +147,7 @@ export default function Select<T extends string>({
         openMenuClassName="w-full"
       >
         {options.length > 1 && (
-          <MenuItems className="w-full justify-center">
+          <MenuItems className="w-full justify-center sm:hidden">
             {options
               .filter((option) => option.title !== selected)
               .map((option, i) => (
@@ -156,7 +158,7 @@ export default function Select<T extends string>({
                   <MenuItem
                     disabled={option.disabled}
                     className={twMerge(
-                      'flex flex-row items-center relative overflow-hidden h-14',
+                      `flex flex-row items-center relative overflow-hidden ${menuItemHeight}`,
                       menuItemClassName,
                       option?.img && !disableImageAsBg
                         ? 'justify-end'

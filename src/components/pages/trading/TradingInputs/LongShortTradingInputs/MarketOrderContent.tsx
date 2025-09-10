@@ -75,6 +75,8 @@ export const MarketOrderContent = ({
           onTokenBSelect(token);
         }}
         reversed={true}
+        openUpward={true}
+        menuItemHeight="h-12"
       />
 
       {!isInfoLoading ? (
