@@ -1,15 +1,7 @@
-import { SolanaCluster } from '@privy-io/react-auth';
 import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
 
 export const privyConfig = {
-  appId: process.env.NEXT_PUBLIC_PRIVY_APP_ID || 'YOUR_PRIVY_APP_ID',
-  solanaClusters: [
-    {
-      name: 'mainnet-beta',
-      rpcUrl: `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`,
-      blockExplorerUrl: 'https://solscan.io',
-    },
-  ] as SolanaCluster[],
+  appId: process.env.PRIVY_APP_ID,
   appearance: {
     theme: 'dark' as const,
     accentColor: '#ab9ff2' as const,

@@ -98,6 +98,8 @@ module.exports = (phase, { defaultConfig }) => {
       KV_REST_API_URL: process.env.KV_REST_API_URL,
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+      PRIVY_APP_ID: process.env.PRIVY_APP_ID,
+      PRIVY_CLIENT_ID: process.env.PRIVY_CLIENT_ID,
     },
   };
 };
