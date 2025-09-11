@@ -1,4 +1,5 @@
 import { Wallet } from '@coral-xyz/anchor';
+import { PublicKey } from '@solana/web3.js';
 
 import { useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
@@ -9,7 +10,31 @@ export default function useWallet(adapters: WalletAdapterExtended[]) {
   if (walletState) {
     const adapter = adapters.find((x) => x.name === walletState.adapterName);
 
-    // Cast to wallet because Adapters contains necessary Wallet functions
+    if (!adapter) return null;
+
+    if (adapter.name === 'Coinbase Wallet') {
+      const enhancedWallet = {
+        ...adapter,
+        get publicKey() {
+          return adapter.publicKey || new PublicKey(walletState.walletAddress);
+        },
+        async signTransaction(transaction: any) {
+          if (!adapter.connected) {
+            await adapter.connect();
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          }
+          if (
+            'signTransaction' in adapter &&
+            typeof adapter.signTransaction === 'function'
+          ) {
+            return adapter.signTransaction(transaction);
+          }
+          throw new Error('Coinbase Wallet signing failed');
+        },
+      };
+      return enhancedWallet as unknown as Wallet;
+    }
+
     return (adapter as unknown as Wallet) ?? null;
   }
 
