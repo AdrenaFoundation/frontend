@@ -115,7 +115,7 @@ export default function App(props: AppProps) {
 
   return (
     <PrivyProvider
-      appId={privyConfigDynamic.appId}
+      appId={privyConfigDynamic.appId as string}
       config={privyConfigDynamic.config}
     >
       <Provider store={store}>

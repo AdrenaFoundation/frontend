@@ -1,7 +1,13 @@
 import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
 
+const privyAppId = process.env.PRIVY_APP_ID || 'no-privy-app-id';
+
+if (privyAppId === 'no-privy-app-id') {
+  console.error('PRIVY_APP_ID is not set');
+}
+
 export const privyConfig = {
-  appId: process.env.PRIVY_APP_ID,
+  appId: privyAppId,
   appearance: {
     theme: 'dark' as const,
     accentColor: '#ab9ff2' as const,
