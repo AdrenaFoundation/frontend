@@ -127,6 +127,8 @@ export const disconnectWalletAction =
         type: 'disconnect',
       });
 
+      clearAdminCache();
+
       addNotification({
         title: 'Wallet disconnected',
         duration: 'fast',
@@ -146,3 +148,11 @@ export const disconnectWalletAction =
       );
     }
   };
+
+const clearAdminCache = () => {
+  try {
+    localStorage.removeItem('admin_status_cache');
+  } catch (error) {
+    console.warn('Failed to clear admin cache:', error);
+  }
+};
