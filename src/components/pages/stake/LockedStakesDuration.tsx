@@ -21,17 +21,12 @@ export default function LockedStakesDuration({
   readonly = false,
   className,
   handleRedeem,
-  handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
 }: {
   lockedStakes: LockedStakeExtended[];
   readonly?: boolean;
   className?: string;
-  handleRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
-  handleClickOnFinalizeLockedRedeem: (
-    lockedStake: LockedStakeExtended,
-    earlyExit: boolean,
-  ) => void;
+  handleRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
@@ -264,7 +259,6 @@ export default function LockedStakesDuration({
             key={i}
             className="border-t"
             handleRedeem={handleRedeem}
-            handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
             handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
           />)}
 
@@ -323,23 +317,13 @@ export default function LockedStakesDuration({
             )}
           </div> : null}
         </div> : !readonly ? <div className='flex w-full'>
-          <Button
-            variant="outline"
-            size="xs"
-            title="Early Exit"
-            className="rounded-none py-2 border-b-0 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
-            onClick={() => {
-              handleClickOnFinalizeLockedRedeem(lockedStakes[0], true)
-            }}
-          />
-
           {timeRemainingFirstUnlock !== null && timeRemainingFirstUnlock <= 0 ? <Button
             variant="outline"
             size="xs"
             title="Redeem"
             className="rounded-none py-2 border-b-0 border-l-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
             onClick={() => {
-              handleRedeem(lockedStakes[0], false)
+              handleRedeem(lockedStakes[0])
             }}
           /> : null}
 

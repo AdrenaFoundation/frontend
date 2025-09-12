@@ -34,7 +34,6 @@ export default function FullyLiquidALPStaking({
     lockedStakes,
     handleLockedStakeRedeem,
     handleClickOnClaimRewardsAndRedeem,
-    handleClickOnFinalizeLockedRedeem,
     userPendingUsdcRewards,
     userPendingAdxRewards,
     pendingGenesisAdxRewards,
@@ -44,10 +43,8 @@ export default function FullyLiquidALPStaking({
     lockedStakes: LockedStakeExtended[] | null;
     handleLockedStakeRedeem: (
         lockedStake: LockedStakeExtended,
-        earlyExit: boolean,
     ) => void;
     handleClickOnClaimRewardsAndRedeem: () => Promise<void>;
-    handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
     userPendingUsdcRewards: number;
     userPendingAdxRewards: number;
     roundPendingUsdcRewards: number;
@@ -441,9 +438,6 @@ export default function FullyLiquidALPStaking({
                             lockedStakes={sortedLockedStakes}
                             className='gap-3 mt-4'
                             handleRedeem={handleLockedStakeRedeem}
-                            handleClickOnFinalizeLockedRedeem={
-                                handleClickOnFinalizeLockedRedeem
-                            }
                             handleClickOnUpdateLockedStake={
                                 () => {
                                     // Nothing

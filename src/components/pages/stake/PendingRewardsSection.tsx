@@ -61,7 +61,7 @@ export default function PendingRewardsSection({
                                         </p>
                                         <p className="text-sm">
                                             Locked ALP can be retrieved once the locking period is
-                                            over, or by doing an early exit.
+                                            over.
                                         </p>
                                     </>
                                 ) : (
@@ -72,8 +72,7 @@ export default function PendingRewardsSection({
                                         </p>
                                         <p className="text-sm">
                                             Liquid staked ADX can be unstaked at any time. Locked
-                                            ADX can be retrieved once the locking period is over, or
-                                            by performing an early exit.
+                                            ADX can be retrieved once the locking period is over.
                                         </p>
                                     </>
                                 )}
