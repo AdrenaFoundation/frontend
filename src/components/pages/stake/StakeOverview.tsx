@@ -47,7 +47,7 @@ export default function StakeOverview({
   totalLiquidStaked?: number | null;
   totalRedeemableLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
-  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
+  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
   handleClickOnClaimRewards: () => Promise<void>;
   handleClickOnClaimRewardsAndBuyAdx: () => Promise<void>;

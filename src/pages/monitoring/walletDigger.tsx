@@ -472,9 +472,6 @@ export default function WalletDigger({
                           handleRedeem={() => {
                             /* readonly */
                           }}
-                          handleClickOnFinalizeLockedRedeem={() => {
-                            /* readonly */
-                          }}
                           handleClickOnUpdateLockedStake={() => {
                             /* readonly */
                           }}
@@ -487,9 +484,6 @@ export default function WalletDigger({
                           lockedStakes={alpLockedStakes}
                           className="gap-3 mt-4 w-[25em] grow"
                           handleRedeem={() => {
-                            /* readonly */
-                          }}
-                          handleClickOnFinalizeLockedRedeem={() => {
                             /* readonly */
                           }}
                           handleClickOnUpdateLockedStake={() => {
