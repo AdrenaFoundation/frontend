@@ -1,5 +1,5 @@
 import { Wallet } from '@coral-xyz/anchor';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Transaction } from '@solana/web3.js';
 
 import { useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
@@ -18,7 +18,7 @@ export default function useWallet(adapters: WalletAdapterExtended[]) {
         get publicKey() {
           return adapter.publicKey || new PublicKey(walletState.walletAddress);
         },
-        async signTransaction(transaction: any) {
+        async signTransaction(transaction: Transaction) {
           if (!adapter.connected) {
             await adapter.connect();
             await new Promise((resolve) => setTimeout(resolve, 100));
