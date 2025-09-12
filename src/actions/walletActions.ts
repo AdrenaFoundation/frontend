@@ -98,8 +98,16 @@ export const connectWalletAction =
 
     try {
       await adapter.connect();
-      localStorage.setItem('autoConnectAuthorized', 'true');
 
+      if (adapter.connected && adapter.publicKey) {
+        setTimeout(() => {
+          if (adapter.connected && adapter.publicKey) {
+            connectFn(adapter.publicKey);
+          }
+        }, 100);
+      }
+
+      localStorage.setItem('autoConnectAuthorized', 'true');
       localStorage.setItem('lastConnectedWallet', adapter.name);
     } catch (err: unknown) {
       localStorage.setItem('autoConnectAuthorized', 'false');
