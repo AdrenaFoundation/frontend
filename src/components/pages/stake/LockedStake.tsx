@@ -14,17 +14,12 @@ export default function LockedStake({
   className,
   readonly = false,
   handleRedeem,
-  handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
 }: {
   lockedStake: LockedStakeExtended;
   className?: string;
   readonly?: boolean;
   handleRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
-  handleClickOnFinalizeLockedRedeem: (
-    lockedStake: LockedStakeExtended,
-    earlyExit: boolean,
-  ) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
@@ -81,16 +76,6 @@ export default function LockedStake({
           className="rounded-lg rounded-t-none border-none py-2 bg-green text-white w-full"
           onClick={() => handleRedeem(lockedStake, false)}
         /> : <>
-          <Button
-            variant="outline"
-            size="xs"
-            title="Early Exit"
-            className="py-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-6"
-            onClick={() => {
-              handleClickOnFinalizeLockedRedeem(lockedStake, true)
-            }}
-          />
-
           {!lockedStake.isGenesis ? (
             <Tippy
               disabled={lockedStake.qualifiedForRewardsInResolvedRoundCount !== 0}

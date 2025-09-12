@@ -8,17 +8,12 @@ export default function LockedStakes({
   lockedStakes,
   className,
   handleRedeem,
-  handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
   readonly = false,
 }: {
   lockedStakes: LockedStakeExtended[];
   className?: string;
-  handleRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
-  handleClickOnFinalizeLockedRedeem: (
-    lockedStake: LockedStakeExtended,
-    earlyExit: boolean,
-  ) => void;
+  handleRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
   readonly?: boolean;
 }) {
@@ -44,7 +39,6 @@ export default function LockedStakes({
           lockedStakes={lockedStakes}
           key={i}
           handleRedeem={handleRedeem}
-          handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
           handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
         />
       ))}

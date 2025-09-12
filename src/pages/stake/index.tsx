@@ -10,7 +10,6 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakingRecap from '@/components/pages/stake/ALPStakingRecap';
-import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import FullyLiquidALPStaking from '@/components/pages/stake/FullyLiquidALPStaking';
 import StakeApr from '@/components/pages/stake/StakeApr';
 import StakeLanding from '@/components/pages/stake/StakeLanding';
@@ -296,7 +295,6 @@ export default function Stake({
 
   const handleLockedStakeRedeem = async (
     lockedStake: LockedStakeExtended,
-    earlyExit = false,
   ) => {
     if (!owner) {
       addNotification({
@@ -306,7 +304,7 @@ export default function Stake({
       return;
     }
 
-    if (earlyExit && !finalizeLockedStakeRedeem) return;
+    if (!finalizeLockedStakeRedeem) return;
 
     const notification =
       MultiStepNotification.newForRegularTransaction('Unstake').fire();
@@ -323,14 +321,8 @@ export default function Stake({
         id: lockedStake.id,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
-        earlyExit,
         notification,
       });
-
-      if (earlyExit) {
-        setLockedStake(null);
-        setFinalizeLockedStakeRedeem(false);
-      }
     } catch (error) {
       console.error('error', error);
     } finally {
@@ -371,7 +363,7 @@ export default function Stake({
           id: lockedStake.id,
           stakedTokenMint: window.adrena.client.alpToken.mint,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-errorÒ
+          // @ts-expect-error
           lockedStakeIndex: new BN(lockedStake.index),
           earlyExit: true,
           notification,
@@ -813,13 +805,6 @@ export default function Stake({
                 lockedStakes={alpLockedStakes}
                 handleLockedStakeRedeem={handleLockedStakeRedeem}
                 handleClickOnClaimRewardsAndRedeem={() => handleClaimRewardsAndRedeemALP()}
-                handleClickOnFinalizeLockedRedeem={(
-                  lockedStake: LockedStakeExtended,
-                ) => {
-                  setLockedStake(lockedStake);
-                  setUpgradeLockedStake(false);
-                  setFinalizeLockedStakeRedeem(true);
-                }}
                 userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
                 userPendingAdxRewards={alpRewards.pendingAdxRewards}
                 roundPendingUsdcRewards={
@@ -883,30 +868,6 @@ export default function Stake({
 
             <AnimatePresence>
               {modal}
-
-              {finalizeLockedStakeRedeem && (
-                <Modal
-                  title="Early Exit"
-                  close={() => {
-                    setLockedStake(null);
-                    setUpgradeLockedStake(false);
-                    setFinalizeLockedStakeRedeem(false);
-                  }}
-                  className="max-w-[25em]"
-                >
-                  {lockedStake ? (
-                    <FinalizeLockedStakeRedeem
-                      lockedStake={lockedStake}
-                      stakeTokenMintDecimals={
-                        lockedStake.tokenSymbol === 'ADX'
-                          ? window.adrena.client.adxToken.decimals
-                          : window.adrena.client.alpToken.decimals
-                      }
-                      handleLockedStakeRedeem={handleLockedStakeRedeem}
-                    />
-                  ) : null}
-                </Modal>
-              )}
 
               {upgradeLockedStake && (
                 <Modal
