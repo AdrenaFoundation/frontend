@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
@@ -22,9 +22,9 @@ import pplIcon from '@/../public/images/people-fill.svg';
 import rpcIcon from '@/../public/images/rpc.svg';
 import xLogo from '@/../public/images/x.svg';
 import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
+import useAdminStatus from '@/hooks/useAdminStatus';
 import usePriorityFee from '@/hooks/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
-import supabaseAnonClient from '@/supabaseAnonClient';
 import { PageProps } from '@/types';
 import { formatNumber } from '@/utils';
 
@@ -81,8 +81,8 @@ export default function SuperchargedFooter({
   const currentPriorityFeeValue =
     priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
 
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isCheckAdminLoading, setIsCheckAdminLoading] = useState(false);
+  const { isAdmin, isLoading: isCheckAdminLoading } =
+    useAdminStatus(walletAddress);
 
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
   const [isNewNotification, setIsNewNotification] = useState(false);
@@ -90,47 +90,6 @@ export default function SuperchargedFooter({
   const [isAnnouncementView] = useState(false);
 
   const [showAudits, setShowAudits] = useState(false);
-
-  useEffect(() => {
-    if (!walletAddress) {
-      return;
-    }
-
-    const checkAdminStatus = async () => {
-      setIsCheckAdminLoading(true);
-
-      const {
-        data: { session },
-      } = await supabaseAnonClient.auth.getSession();
-      try {
-        const response = await fetch(
-          `/api/verify_signature?walletAddress=${walletAddress}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(session
-                ? { Authorization: `Bearer ${session.access_token}` }
-                : {}),
-            },
-          },
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setIsAdmin(data.isAdmin);
-        } else {
-          console.error('Failed to verify admin status');
-        }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-      } finally {
-        setIsCheckAdminLoading(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [walletAddress, verifiedWalletAddresses]);
 
   return (
     <>

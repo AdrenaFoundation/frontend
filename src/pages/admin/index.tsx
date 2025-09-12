@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import ErrorReport from '@/components/Admin/ErrorReport';
@@ -73,9 +73,7 @@ export default function Admin() {
   }
 
   if (!walletAddress) {
-    return (
-      <WalletConnection />
-    );
+    return <WalletConnection />;
   }
 
   if (!verifiedWalletAddresses.includes(walletAddress)) {
