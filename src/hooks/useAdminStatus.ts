@@ -7,13 +7,13 @@ export default function useAdminStatus(walletAddress: string | null) {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const verifiedWalletAddresses = useSelector(
+  const adminWalletAddresses = useSelector(
     (state) => state.supabaseAuth.verifiedWalletAddresses,
   );
 
   const checkAdminStatus = useCallback(
     async (address: string) => {
-      if (!verifiedWalletAddresses.includes(address)) {
+      if (!adminWalletAddresses.includes(address)) {
         setIsAdmin(false);
         return;
       }
@@ -51,7 +51,7 @@ export default function useAdminStatus(walletAddress: string | null) {
         setIsLoading(false);
       }
     },
-    [verifiedWalletAddresses],
+    [adminWalletAddresses],
   );
 
   useEffect(() => {
