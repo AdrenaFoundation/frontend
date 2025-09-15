@@ -47,6 +47,9 @@ export const WALLET_COLORS = {
 
 export default function useWalletAdapters(): WalletAdapterExtended[] {
   const adapters = useStandardWalletAdapters([
+    // Add specialized wallet adapters here
+    //
+    // Wallets compatible with the @solana/wallet-adapter-wallets package will be added automatically
     new PhantomWalletAdapter(),
     new CoinbaseWalletAdapter(),
     new SolflareWalletAdapter(),
@@ -65,6 +68,7 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
     }),
   ]);
 
+  // Remove the adapters that has been added automatically but that we don't want to use
   return useMemo(
     () =>
       adapters

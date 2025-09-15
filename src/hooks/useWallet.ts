@@ -21,7 +21,6 @@ export default function useWallet(adapters: WalletAdapterExtended[]) {
         async signTransaction(transaction: Transaction) {
           if (!adapter.connected) {
             await adapter.connect();
-            await new Promise((resolve) => setTimeout(resolve, 100));
           }
           if (
             'signTransaction' in adapter &&
