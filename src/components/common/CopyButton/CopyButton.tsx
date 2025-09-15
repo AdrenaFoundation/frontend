@@ -8,18 +8,12 @@ import { addNotification } from '@/utils';
 interface CopyButtonProps {
   textToCopy: string;
   className?: string;
-  wrapperClassName?: string;
   notificationTitle?: string;
 }
 
 const CopyButton = forwardRef<HTMLDivElement, CopyButtonProps>(
   (
-    {
-      textToCopy,
-      className = 'w-3 h-3 cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300',
-      wrapperClassName,
-      notificationTitle = 'Text copied to clipboard',
-    },
+    { textToCopy, className, notificationTitle = 'Text copied to clipboard' },
     ref,
   ) => {
     const handleCopy = async (e: React.MouseEvent) => {
@@ -40,20 +34,14 @@ const CopyButton = forwardRef<HTMLDivElement, CopyButtonProps>(
     };
 
     return (
-      <div
-        ref={ref}
-        className={twMerge(
-          'inline-flex items-center justify-center',
-          wrapperClassName,
-        )}
-      >
+      <div ref={ref} className="inline-flex items-center justify-center">
         <Image
           src={copyIcon}
           alt="copy icon"
           width={12}
           height={12}
           className={twMerge(
-            'w-3 h-3 cursor-pointer opacity-90 hover:opacity-100',
+            'w-3 h-3 cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300',
             className,
           )}
           onClick={handleCopy}

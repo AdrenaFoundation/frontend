@@ -150,7 +150,7 @@ export default function ErrorReport() {
                   <CopyButton
                     textToCopy={reportData.ref}
                     notificationTitle="Error code copied to clipboard"
-                    wrapperClassName="opacity-50"
+                    className="opacity-50"
                   />
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default function ErrorReport() {
                     <CopyButton
                       textToCopy={reportData.txHash}
                       notificationTitle="Transaction hash copied to clipboard"
-                      wrapperClassName="opacity-50"
+                      className="opacity-50"
                     />
                   </div>
                 </div>
@@ -228,7 +228,7 @@ export default function ErrorReport() {
                   <CopyButton
                     textToCopy={reportData.wallet_address}
                     notificationTitle="Wallet address copied to clipboard"
-                    wrapperClassName="opacity-50"
+                    className="opacity-50"
                   />
 
                   <Link

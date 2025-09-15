@@ -31,7 +31,7 @@ export default function MintAccounts({
                 <CopyButton
                   textToCopy={window.adrena.client.lmTokenMint.toBase58()}
                   notificationTitle="ADX Mint address copied to clipboard"
-                  wrapperClassName="mr-2"
+                  className="mr-2"
                 />
                 ADX <TitleAnnotation text="Mint" />
                 <InfoAnnotation
@@ -53,7 +53,7 @@ export default function MintAccounts({
                 <CopyButton
                   textToCopy={window.adrena.client.lpTokenMint.toBase58()}
                   notificationTitle="ALP Mint address copied to clipboard"
-                  wrapperClassName="mr-2"
+                  className="mr-2"
                 />
                 ALP <TitleAnnotation text="Mint" />
                 <InfoAnnotation
@@ -79,7 +79,7 @@ export default function MintAccounts({
                       <CopyButton
                         textToCopy={custody.mint.toBase58()}
                         notificationTitle={`${custody.tokenInfo.symbol} Mint address copied to clipboard`}
-                        wrapperClassName="mr-2"
+                        className="mr-2"
                       />
                       {custody.tokenInfo.symbol}
                       <TitleAnnotation text="Mint" />
@@ -104,7 +104,7 @@ export default function MintAccounts({
                       <CopyButton
                         textToCopy={custody.tradeMint.toBase58()}
                         notificationTitle={`${custody.tradeTokenInfo.symbol} Mint address copied to clipboard`}
-                        wrapperClassName="mr-2"
+                        className="mr-2"
                       />
                       {custody.tradeTokenInfo.symbol}
                       <TitleAnnotation text="Mint" />

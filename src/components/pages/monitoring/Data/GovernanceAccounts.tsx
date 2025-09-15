@@ -34,7 +34,7 @@ export default function GovernanceAccounts({
                 <CopyButton
                   textToCopy={cortex.governanceProgram.toBase58()}
                   notificationTitle="Governance Program address copied to clipboard"
-                  wrapperClassName="mr-2"
+                  className="mr-2"
                 />
                 Governance Program
                 <InfoAnnotation
@@ -56,7 +56,7 @@ export default function GovernanceAccounts({
                 <CopyButton
                   textToCopy={cortex.governanceRealm.toBase58()}
                   notificationTitle="Governance Realm PDA address copied to clipboard"
-                  wrapperClassName="mr-2"
+                  className="mr-2"
                 />
                 Governance Realm <TitleAnnotation text="PDA" />
                 <InfoAnnotation

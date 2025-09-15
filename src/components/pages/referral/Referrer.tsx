@@ -135,7 +135,7 @@ export default function Referrer({
             <CopyButton
               textToCopy={link}
               notificationTitle="Referral link copied to clipboard"
-              wrapperClassName="w-4 h-4"
+              className="w-4 h-4"
             />
           </div>
         </div>

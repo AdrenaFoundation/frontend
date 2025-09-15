@@ -664,6 +664,7 @@ export default function OwnerBloc({
                 <CopyButton
                   textToCopy={walletPubkey.toBase58()}
                   notificationTitle="Wallet address copied to clipboard"
+                  className="opacity-70"
                 />
               </Tippy>
             ) : null}
