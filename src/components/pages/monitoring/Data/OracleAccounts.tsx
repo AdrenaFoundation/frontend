@@ -39,6 +39,7 @@ export default function OracleAccounts({
                 <CopyButton
                   textToCopy={pythProgramId.toBase58()}
                   notificationTitle="Pyth Program address copied to clipboard"
+                  wrapperClassName="mr-2"
                 />
                 Pyth Program
                 <InfoAnnotation
@@ -63,6 +64,7 @@ export default function OracleAccounts({
                       <CopyButton
                         textToCopy={AdrenaClient.oraclePda.toBase58()}
                         notificationTitle={`${custody.tokenInfo.symbol} Oracle PDA address copied to clipboard`}
+                        wrapperClassName="mr-2"
                       />
                       {custody.tokenInfo.symbol} Oracle
                       <TitleAnnotation text="PDA" />
@@ -84,6 +86,7 @@ export default function OracleAccounts({
                       <CopyButton
                         textToCopy={AdrenaClient.oraclePda.toBase58()}
                         notificationTitle={`${custody.tradeTokenInfo.symbol} Oracle PDA address copied to clipboard`}
+                        wrapperClassName="mr-2"
                       />
                       {custody.tradeTokenInfo.symbol} Oracle
                       <TitleAnnotation text="PDA" />
