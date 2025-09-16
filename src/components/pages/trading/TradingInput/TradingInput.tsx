@@ -127,7 +127,7 @@ export default function TradingInput({
                 {tokenList.length > 1 ? (
                   <div
                     className={twMerge(
-                      'flex h-2 w-2 items-center justify-center shrink-0 sm:hidden',
+                      'flex h-2 w-2 items-center justify-center shrink-0',
                     )}
                   >
                     <Image src={chevronDownIcon} alt="chevron down" />
