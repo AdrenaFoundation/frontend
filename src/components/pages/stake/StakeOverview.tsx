@@ -33,7 +33,6 @@ export default function StakeOverview({
   handleClickOnClaimRewards,
   handleClickOnRedeem,
   handleClickOnClaimRewardsAndBuyAdx,
-  handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
   userPendingUsdcRewards,
   userPendingAdxRewards,
@@ -52,7 +51,6 @@ export default function StakeOverview({
   handleClickOnClaimRewards: () => Promise<void>;
   handleClickOnClaimRewardsAndBuyAdx: () => Promise<void>;
   handleClickOnRedeem?: () => void;
-  handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
   userPendingUsdcRewards: number;
   userPendingAdxRewards: number;
@@ -206,7 +204,6 @@ export default function StakeOverview({
           onSort={handleSort}
           onAddStake={handleClickOnStakeMore}
           onRedeem={handleLockedStakeRedeem}
-          onFinalize={handleClickOnFinalizeLockedRedeem}
           onUpdate={handleClickOnUpdateLockedStake}
           defaultLockPeriod={DEFAULT_LOCKED_STAKE_LOCK_DURATION}
         />

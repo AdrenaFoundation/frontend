@@ -832,12 +832,6 @@ export default function Stake({
                   setActiveStakingToken('ADX');
                 }}
                 handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
-                handleClickOnFinalizeLockedRedeem={(
-                  lockedStake: LockedStakeExtended,
-                ) => {
-                  setLockedStake(lockedStake);
-                  setUpgradeLockedStake(false);
-                }}
                 userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
                 userPendingAdxRewards={adxRewards.pendingAdxRewards}
                 roundPendingUsdcRewards={
