@@ -162,7 +162,7 @@ export default function TokenSelector({
   if (!tokenData.length) {
     return (
       <div className={twMerge('relative', className)}>
-        <div className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 bg-main opacity-50">
+        <div className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 bg-secondary opacity-50">
           <span className="text-base font-boldy text-white">Loading...</span>
         </div>
       </div>
@@ -174,7 +174,7 @@ export default function TokenSelector({
       {/* Token selector button */}
       <div className="flex-shrink-0">
         <div
-          className="flex flex-row items-center gap-2 border rounded-lg p-2 cursor-pointer hover:bg-third transition duration-300 bg-main"
+          className="flex flex-row items-center gap-2 border rounded-lg p-2 cursor-pointer hover:bg-third transition duration-300 bg-secondary"
           onClick={() => setIsOpen(!isOpen)}
         >
           <Image
@@ -201,7 +201,7 @@ export default function TokenSelector({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-[94vw] min-w-[21rem] sm:w-[28rem] bg-main border border-bcolor rounded-lg shadow-2xl z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-[94vw] min-w-[21rem] sm:w-[28rem] bg-secondary border border-bcolor rounded-lg shadow-2xl z-50 overflow-hidden">
           {/* Search bar */}
           <div className="p-2 border-b border-bcolor">
             <input

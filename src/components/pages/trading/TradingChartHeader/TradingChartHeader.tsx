@@ -144,7 +144,7 @@ export default function TradingChartHeader({
       </Head>
       <div
         className={twMerge(
-          'flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 z-30 bg-main border-b p-3 lg:p-1',
+          'flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 z-30 bg-secondary border-b p-3 lg:p-1',
           className,
         )}
       >

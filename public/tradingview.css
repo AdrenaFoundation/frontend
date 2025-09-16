@@ -1,10 +1,10 @@
 .theme-dark:root {
-  --tv-color-platform-background: #0d1118;
-  --tv-color-pane-background: #0d1118;
-  --tv-color-toolbar-button-background-hover: #0d1118;
-  --tv-color-toolbar-button-background-expanded: #0d1118;
-  --tv-color-toolbar-button-background-active: #0d1118;
-  --tv-color-toolbar-button-background-active-hover: #0d1118;
+  --tv-color-platform-background: #061018;
+  --tv-color-pane-background: #061018;
+  --tv-color-toolbar-button-background-hover: #061018;
+  --tv-color-toolbar-button-background-expanded: #061018;
+  --tv-color-toolbar-button-background-active: #061018;
+  --tv-color-toolbar-button-background-active-hover: #061018;
   --tv-color-toolbar-button-text: #ffffff80;
   --tv-color-toolbar-button-text-hover: #ffffff;
   --tv-color-toolbar-button-text-active: #ffffff;
@@ -12,13 +12,17 @@
   --tv-color-item-active-text: #07956b;
   --tv-color-toolbar-toggle-button-background-active: #2b3a4d;
   --tv-color-toolbar-toggle-button-background-active-hover: #2b3a4d;
-  --tv-color-toolbar-divider-background: rgb(251, 223, 244);
+  --tv-color-toolbar-divider-background: #15202c;
   --tv-color-toolbar-save-layout-loader: rgb(134, 137, 147);
 }
 
 html.theme-dark .chart-controls-bar {
   display: none;
   height: 0;
+}
+
+html.theme-dark .toolbar-qqNP9X6e {
+  border-bottom: solid 1px #15202c !important;
 }
 
 html.theme-dark .menuWrap-g78rwseC {
