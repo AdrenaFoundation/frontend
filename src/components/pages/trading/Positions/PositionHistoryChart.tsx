@@ -79,10 +79,12 @@ export default function PositionHistoryChart({
         const data = await response.json();
 
         if (data.result && Array.isArray(data.result)) {
-          const formattedData = data.result.map((item: any) => ({
-            timestamp: item.time, // Convert seconds to milliseconds
-            price: item.close,
-          }));
+          const formattedData = data.result.map(
+            (item: { time: number; close: number }) => ({
+              timestamp: item.time, // Convert seconds to milliseconds
+              price: item.close,
+            }),
+          );
           console.log('Price data timestamps:', {
             first: formattedData[0],
             last: formattedData[formattedData.length - 1],
