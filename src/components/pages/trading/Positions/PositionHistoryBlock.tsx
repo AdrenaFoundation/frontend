@@ -498,7 +498,7 @@ const PositionHistoryBlock = ({
                       className="w-fit rounded-md border border-bcolor bg-secondary"
                     >
                       <div className="flex flex-col lg:flex-row gap-6 items-center justify-between px-3 py-2.5">
-                        <div className='flex flex-row gap-6'>
+                        <div className="flex flex-row gap-6">
                           <div>
                             <div className="flex flex-row items-center gap-1">
                               <p className="text-xs opacity-50">Method</p>
@@ -525,8 +525,10 @@ const PositionHistoryBlock = ({
                             </p>
                           </div>
                           <div className="ml-2">
-                            <p className='text-xs opacity-50'>Date</p>
-                            <p className='text-xs opacity-75'>{formatDate2Digits(transaction.transactionDate)}</p>
+                            <p className="text-xs opacity-50">Date</p>
+                            <p className="text-xs opacity-75">
+                              {formatDate2Digits(transaction.transactionDate)}
+                            </p>
                           </div>
                         </div>
                         <div className="text-xs text-white flex items-center gap-6 flex-1 flex-wrap">

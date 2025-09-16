@@ -452,7 +452,7 @@ export default function Trade({
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full sm:p-4 pb-[200px] sm:pb-4">
-      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
+      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-50 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col w-full">
         <div className="flex flex-col w-full border sm:rounded-md overflow-hidden bg-secondary">
