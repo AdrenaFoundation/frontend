@@ -25,9 +25,8 @@ export default function Menu({
   bgClassName,
   isOpen = null,
   setIsOpen,
-  openUpward = false,
 }: {
-  forceOpen?: boolean;
+  forceOpen?: boolean; // Use for dev only
   trigger: ReactNode;
   className?: string;
   openMenuClassName?: string;
@@ -41,7 +40,6 @@ export default function Menu({
   bgClassName?: string;
   isOpen?: boolean | null;
   setIsOpen?: (isOpen: boolean) => void;
-  openUpward?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -120,8 +118,7 @@ export default function Menu({
               variants={variants}
               transition={{ duration: 0.1 }}
               className={twMerge(
-                'absolute flex flex-col bg-third overflow-hidden z-50 border rounded-md',
-                openUpward ? 'bottom-full mb-2' : 'mt-2',
+                'absolute flex flex-col bg-third overflow-hidden z-50 border mt-2 rounded-md',
                 withBorder ? 'border bg-third shadow-lg' : '',
                 openMenuClassName,
               )}
