@@ -17,7 +17,6 @@ interface LockedStakesSectionProps {
     onSort: (key: 'size' | 'duration') => void;
     onAddStake: (lockPeriod: AdxLockPeriod | AlpLockPeriod) => void;
     onRedeem: (lockedStake: LockedStakeExtended) => void;
-    onFinalize: (lockedStake: LockedStakeExtended) => void;
     onUpdate: (lockedStake: LockedStakeExtended) => void;
     defaultLockPeriod: AdxLockPeriod | AlpLockPeriod;
 }
