@@ -104,8 +104,6 @@ export default function Stake({
     'ADX' | 'ALP' | null
   >(null);
 
-  const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
-    useState<boolean>(false);
   const [upgradeLockedStake, setUpgradeLockedStake] = useState<boolean>(false);
   const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
     null,
@@ -304,8 +302,6 @@ export default function Stake({
       return;
     }
 
-    if (!finalizeLockedStakeRedeem) return;
-
     const notification =
       MultiStepNotification.newForRegularTransaction('Unstake').fire();
 
@@ -375,7 +371,6 @@ export default function Stake({
       }
 
       setLockedStake(null);
-      setFinalizeLockedStakeRedeem(false);
     } catch (error) {
       console.error('error', error);
     } finally {
@@ -837,13 +832,6 @@ export default function Stake({
                   setActiveStakingToken('ADX');
                 }}
                 handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
-                handleClickOnFinalizeLockedRedeem={(
-                  lockedStake: LockedStakeExtended,
-                ) => {
-                  setLockedStake(lockedStake);
-                  setUpgradeLockedStake(false);
-                  setFinalizeLockedStakeRedeem(true);
-                }}
                 userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
                 userPendingAdxRewards={adxRewards.pendingAdxRewards}
                 roundPendingUsdcRewards={
@@ -858,7 +846,6 @@ export default function Stake({
                 ) => {
                   setLockedStake(lockedStake);
                   setUpgradeLockedStake(true);
-                  setFinalizeLockedStakeRedeem(false);
                 }}
                 walletAddress={wallet?.walletAddress ?? null}
                 optimisticClaim={optimisticClaimAdx}
@@ -875,7 +862,6 @@ export default function Stake({
                   close={() => {
                     setLockedStake(null);
                     setUpgradeLockedStake(false);
-                    setFinalizeLockedStakeRedeem(false);
                   }}
                   className="max-w-[28em]"
                 >
