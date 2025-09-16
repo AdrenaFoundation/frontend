@@ -4,10 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/chevron-down.svg';
-import starFilledIcon from '@/../public/images/Icons/star-filled.svg';
 import starIcon from '@/../public/images/Icons/star.svg';
+import starFilledIcon from '@/../public/images/Icons/star-filled.svg';
 import Modal from '@/components/common/Modal/Modal';
-import { useTokenSelectorData } from '@/hooks/useTokenSelectorData';
+import {
+  TokenDataItem,
+  useTokenSelectorData,
+} from '@/hooks/useTokenSelectorData';
 import { Token } from '@/types';
 import {
   formatNumberShort,
@@ -30,16 +33,14 @@ interface TokenSelectorProps {
   onClose?: () => void;
 }
 
-// Shared token list component
 function TokenList({
   tokens,
   selected,
   onTokenSelect,
-  favorites = [],
   onToggleFavorite,
   selectedAction,
 }: {
-  tokens: any[];
+  tokens: TokenDataItem[];
   selected: Token;
   onTokenSelect: (token: Token) => void;
   favorites: string[];
@@ -194,7 +195,6 @@ export default function TokenSelector({
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Use controlled or internal state
   const isOpen = asModal ? (controlledIsOpen ?? false) : internalIsOpen;
   const handleClose = asModal
     ? () => {
@@ -209,7 +209,6 @@ export default function TokenSelector({
   const tokenData = useTokenSelectorData(tokenList, selectedAction, favorites);
 
   const sortedAndFilteredTokens = useMemo(() => {
-    // Sort by favorites first, then by liquidity
     const sorted = [...tokenData].sort((a, b) => {
       if (a.isFavorite && !b.isFavorite) return -1;
       if (!a.isFavorite && b.isFavorite) return 1;
@@ -226,7 +225,6 @@ export default function TokenSelector({
       return bLiquidityUsd - aLiquidityUsd;
     });
 
-    // Filter by search term
     if (!searchTerm) return sorted;
     const searchLower = searchTerm.toLowerCase();
     return sorted.filter((item) =>
@@ -242,7 +240,6 @@ export default function TokenSelector({
     [onChange, handleClose],
   );
 
-  // Click outside handler for dropdown mode
   useEffect(() => {
     if (asModal) return;
 

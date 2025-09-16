@@ -1,15 +1,27 @@
+import { useMemo } from 'react';
+
 import useDailyStats from '@/hooks/useDailyStats';
 import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
 import { useSelector } from '@/store/store';
-import { Token } from '@/types';
+import { CustodyExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
-import { useMemo } from 'react';
+
+export interface TokenDataItem {
+  token: Token;
+  symbol: string;
+  custody: CustodyExtended;
+  tokenPrice: number | null;
+  liquidityPrice: number | null;
+  availableLiquidity: number;
+  dailyChange: number | null;
+  isFavorite: boolean;
+}
 
 export function useTokenSelectorData(
   tokenList: Token[],
   selectedAction: 'long' | 'short' | 'swap',
   favorites: string[],
-) {
+): TokenDataItem[] {
   const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
 
@@ -58,7 +70,7 @@ export function useTokenSelectorData(
           isFavorite: favorites.includes(symbol),
         };
       })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
+      .filter((item): item is TokenDataItem => item !== null);
   }, [
     tokenList,
     selectedAction,

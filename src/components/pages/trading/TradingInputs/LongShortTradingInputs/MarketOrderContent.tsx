@@ -1,14 +1,14 @@
+import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { CustodyExtended, PositionExtended, Token } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
-import Image from 'next/image';
-
 import TokenSelector from '@/components/pages/trading/TradingChartHeader/TokenSelector';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { CustodyExtended, PositionExtended, Token } from '@/types';
+import { getTokenImage, getTokenSymbol } from '@/utils';
+
 import InfoAnnotation from '../../../monitoring/InfoAnnotation';
 import { ErrorDisplay } from './ErrorDisplay';
 import SolanaIDInfo from './SolanaIDInfo';
@@ -56,7 +56,12 @@ export const MarketOrderContent = ({
   tokenPriceBTrade,
   walletAddress,
   custodyLiquidity,
-}: MarketOrderContentProps) => {
+  favorites = [],
+  onToggleFavorite,
+}: MarketOrderContentProps & {
+  favorites?: string[];
+  onToggleFavorite?: (symbol: string) => void;
+}) => {
   const [showTokenSelector, setShowTokenSelector] = useState(false);
   const isMobile = useBetterMediaQuery('(max-width: 639px)');
 
@@ -117,6 +122,8 @@ export const MarketOrderContent = ({
             setShowTokenSelector(false);
           }}
           selectedAction={side}
+          favorites={favorites}
+          onToggleFavorite={onToggleFavorite}
         />
 
         {!isInfoLoading ? (
