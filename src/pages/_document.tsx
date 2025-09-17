@@ -3,22 +3,22 @@ import Script from 'next/script';
 
 export const metadata = {
   metadataBase: new URL('https://app.adrena.xyz/'),
-  title: 'Adrena | Season 2: Factions',
+  title: 'Adrena Protocol | Trade Perpetuals on Solana',
   description:
-    'Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards',
+    'Trade on Solana with up to 100x leverage. 0 slippage, 0 spread, non-custodial. Earn 10% fees on every referral.',
   openGraph: {
-    title: 'Adrena | Season 2: Factions',
+    title: 'Adrena Protocol | Trade Perpetuals on Solana',
     description:
-      'Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards',
-    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/s2-OG.jpg',
+      'Trade on Solana with up to 100x leverage. 0 slippage, 0 spread, non-custodial. Earn 10% fees on every referral.',
+    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/frontend-banner.png',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Adrena | Season 2: Factions',
+    title: 'Adrena Protocol | Trade Perpetuals on Solana',
     description:
-      'Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards',
+      'Trade on Solana with up to 100x leverage. 0 slippage, 0 spread, non-custodial. Earn 10% fees on every referral.',
     creator: '@adrenaprotocol',
-    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/s2-OG.jpg',
+    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/frontend-banner.png',
   },
 } as const;
 
@@ -31,7 +31,7 @@ export default function Document() {
 
         <meta
           name="description"
-          content="Trade. Battle. Earn. Compete for a share of over 12 million ADX, 4.2B BONK and 25K JTO rewards"
+          content="Trade on Solana with up to 100x leverage. 0 slippage, 0 spread, non-custodial. Earn 10% fees on every referral."
         />
         <link rel="icon" href="/favicon.ico" />
 
