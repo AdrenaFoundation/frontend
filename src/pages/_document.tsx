@@ -10,7 +10,8 @@ export const metadata = {
     title: 'Adrena Protocol | Trade Perpetuals on Solana',
     description:
       'Trade on Solana with up to 100x leverage. 0 slippage, 0 spread, non-custodial. Earn 10% fees on every referral.',
-    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/frontend-banner.png',
+    images:
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/frontend-banner.png',
   },
   twitter: {
     card: 'summary_large_image',
@@ -18,7 +19,8 @@ export const metadata = {
     description:
       'Trade on Solana with up to 100x leverage. 0 slippage, 0 spread, non-custodial. Earn 10% fees on every referral.',
     creator: '@adrenaprotocol',
-    images: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/frontend-banner.png',
+    images:
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/frontend-banner.png',
   },
 } as const;
 
