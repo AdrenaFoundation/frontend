@@ -366,6 +366,7 @@ export const TRADING_COMPETITION_SEASONS = {
   awakening: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/awakening/comp-banner-I4GlDkseidl72PgFvy8rbqb4Ktxr9s.jpg',
     title: 'Awakening',
+    bannerTitle: 'Awakening',
     subTitle: 'pre-season',
     startDate: new Date('11/11/2024'),
     endDate: new Date('12/23/2024'),
@@ -384,6 +385,7 @@ export const TRADING_COMPETITION_SEASONS = {
   expanse: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/expanse/expanse-banner-M4jVXVtzATa0P36KUpVvc1hXFNkznk.jpg',
     title: 'The Expanse',
+    bannerTitle: 'The Expanse',
     subTitle: 'new season',
     startDate: new Date('2025-01-31T23:59:59.999Z'),
     endDate: new Date('2025-04-11T23:59:59.999Z'),
@@ -407,6 +409,7 @@ export const TRADING_COMPETITION_SEASONS = {
   factions: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/factions-banner-OKwsUEBqusOest7hhIPaKsklmSlNdh.jpg',
     title: 'Factions',
+    bannerTitle: 'Factions',
     subTitle: 'Season 2',
     startDate: new Date('2025-04-25T23:59:59.999Z'),
     endDate: new Date('2025-07-04T23:59:59.999Z'),
@@ -422,6 +425,7 @@ export const TRADING_COMPETITION_SEASONS = {
   interseason3: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/summerEvent/summer-event.jpg',
     title: 'Summer Event',
+    bannerTitle: 'Summer Event',
     subTitle: 'Interseason',
     startDate: new Date('2025-07-04T23:59:59.999Z'),
     endDate: new Date('2025-09-05T23:59:59.999Z'),
@@ -431,6 +435,22 @@ export const TRADING_COMPETITION_SEASONS = {
     jtoRewards: 21200,
     bonkRewards: 3160000000,
     description: [`Welcome to the Summer Event!`] as string[],
+    bannerClassName: 'h-[32em] pt-20',
+  },
+
+  interseason4: {
+    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/anniversary.jpg',
+    title: '1st Anniversary',
+    bannerTitle: 'Anniversary',
+    subTitle: 'Interseason',
+    startDate: new Date('2025-09-17T23:59:59.999Z'),
+    endDate: new Date('2025-09-31T23:59:59.999Z'),
+    gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
+    primaryColor: '#247CFA',
+    adxRewards: 2000000,
+    jtoRewards: 0,
+    bonkRewards: 0,
+    description: [`Welcome to the Adrena Birthday Party!`] as string[],
     bannerClassName: 'h-[32em] pt-20',
   },
 } as const;

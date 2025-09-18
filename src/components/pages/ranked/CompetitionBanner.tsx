@@ -65,7 +65,7 @@ export default function CompetitionBanner({
                             key={title}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            {seasonName === 'interseason3' ? <div
+                            {seasonName === 'interseason3' || seasonName === 'interseason4' ? <div
                                 className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
                                 style={{
                                     backgroundImage: `url(${banner})`,
@@ -177,7 +177,7 @@ export default function CompetitionBanner({
                                 nb={97166.49}
                                 className="text-5xl font-boldy"
                                 isDecimalDimmed={false}
-                            /> : seasonName === 'interseason3' ?
+                            /> : seasonName === 'interseason3' || seasonName === 'interseason4' ?
                                 <FormatNumber
                                     format='currency'
                                     nb={totalPrize}
@@ -214,11 +214,10 @@ export default function CompetitionBanner({
                                         isDecimalDimmed={false}
                                     />
 
-                                    <div className='flex text-md text-txtfade'>/</div>
+                                    {jtoRewards || bonkRewards ? <div className='flex text-md text-txtfade'>/</div> : null}
                                 </div> : null}
 
                             {jtoRewards ? <>
-
                                 <div className="flex flex-row gap-1 items-center justify-center">
                                     <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
 
@@ -259,7 +258,7 @@ export default function CompetitionBanner({
                     </div>
                 </div> : null}
 
-                <div
+                {seasonName !== 'interseason4' ? <div
                     className={twMerge(
                         'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
                         startDate && startDate.getTime() >= Date.now() ? 'mt-[2em]' : 'mt-[4em]',
@@ -282,7 +281,7 @@ export default function CompetitionBanner({
                             className="w-[1.7em] md:w-[2.5em]"
                         />
                     </> : null}
-                </div>
+                </div> : null}
             </div>
 
             <div className="flex items-center justify-center">
