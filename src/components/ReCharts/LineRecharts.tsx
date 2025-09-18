@@ -1,5 +1,5 @@
 import Tippy from '@tippyjs/react';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -46,6 +46,8 @@ export default function LineRechart<T extends string>({
   isNowReferenceLine,
   isAlpPage,
   showLegend = true,
+  startTimestamp,
+  endTimestamp,
 }: {
   title: string;
   data: RechartsData[];
@@ -58,9 +60,9 @@ export default function LineRechart<T extends string>({
   periods: (
     | T
     | {
-        name: T;
-        disabled?: boolean;
-      }
+      name: T;
+      disabled?: boolean;
+    }
   )[];
   xDomain?: AxisDomain;
   yDomain?: AxisDomain;
@@ -77,10 +79,16 @@ export default function LineRechart<T extends string>({
   isNowReferenceLine?: boolean;
   isAlpPage?: boolean;
   showLegend?: boolean;
+  startTimestamp?: number;
+  endTimestamp?: number;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
   >([]);
+
+  const activeEvents = useMemo(() => {
+    return (events || []).filter(event => startTimestamp && endTimestamp && event.timestamp >= startTimestamp && event.timestamp <= endTimestamp);
+  }, [events, startTimestamp, endTimestamp]);
 
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
@@ -155,6 +163,8 @@ export default function LineRechart<T extends string>({
                 gmt={gmt}
                 precision={precisionTooltip}
                 events={events}
+                startTimestamp={startTimestamp}
+                endTimestamp={endTimestamp}
               />
             }
             cursor={false}
@@ -233,7 +243,7 @@ export default function LineRechart<T extends string>({
             />
           )}
 
-          {events?.map((event, i) => (
+          {activeEvents?.map((event, i) => (
             <ReferenceLine
               id={`event-${event.label}`}
               key={event.label + '-' + i + '-' + event.time}

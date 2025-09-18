@@ -27,6 +27,8 @@ export default function CustomRechartsToolTip({
   events,
   lineDataKeys,
   precisionMap,
+  startTimestamp,
+  endTimestamp,
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
@@ -42,9 +44,11 @@ export default function CustomRechartsToolTip({
   events?: AdrenaEvent[];
   lineDataKeys?: string[];
   precisionMap?: Record<string, number>;
+  startTimestamp?: number; // Mandatory if events is provided
+  endTimestamp?: number; // Mandatory if events is provided
 }) {
   if (active && payload && payload.length) {
-    const activeEvents = (events || []).filter(event => event.time === label);
+    const activeEvents = (events || []).filter(event => startTimestamp && endTimestamp && event.timestamp >= startTimestamp && event.timestamp <= endTimestamp && event.time === label);
 
     return (
       <div className="bg-third p-3 border border-white/20 rounded-lg min-w-[12em]">

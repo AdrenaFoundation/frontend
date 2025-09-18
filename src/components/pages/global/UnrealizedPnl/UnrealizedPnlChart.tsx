@@ -4,7 +4,7 @@ import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
-import { formatSnapshotTimestamp, getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getGMT, periodModeToSeconds } from '@/utils';
 
 interface UnrealizedPnlChartProps {
   isSmallScreen: boolean;
@@ -21,10 +21,11 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
 
     custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('7d');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState<number>(0);
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
 
   useEffect(() => {
     periodRef.current = period;
@@ -167,6 +168,13 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
         formattedData: formatted,
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
       });
+
+      if (periodRef.current) {
+        setTimestamps({
+          start: Date.now() / 1000 - periodModeToSeconds(periodRef.current),
+          end: Date.now() / 1000,
+        });
+      }
     } catch (e) {
       console.error('Error fetching unrealized PnL data:', e);
     }
@@ -205,6 +213,8 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       isSmallScreen={isSmallScreen}
       events={ADRENA_EVENTS}
       precisionTooltip={0}
+      startTimestamp={timestamps.start}
+      endTimestamp={timestamps.end}
     />
   );
 }

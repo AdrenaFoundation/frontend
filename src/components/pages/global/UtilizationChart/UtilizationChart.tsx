@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
-import { getGMT } from '@/utils';
+import { getGMT, periodModeToSeconds } from '@/utils';
 
 export default function UtilizationChart() {
   const [infos, setInfos] = useState<{
@@ -17,9 +17,10 @@ export default function UtilizationChart() {
     custodiesColors: string[];
   } | null>(null);
 
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
 
   useEffect(() => {
     periodRef.current = period;
@@ -185,6 +186,13 @@ export default function UtilizationChart() {
         formattedData: formatted,
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
       });
+
+      if (periodRef.current) {
+        setTimestamps({
+          start: Date.now() / 1000 - periodModeToSeconds(periodRef.current),
+          end: Date.now() / 1000,
+        });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -218,6 +226,8 @@ export default function UtilizationChart() {
       isMaxUtilizationReferenceLine={Object.values(infos.formattedData[infos.formattedData.length - 1]).filter(v => typeof v === 'number').every(v => v < 98)}
       formatY="percentage"
       events={ADRENA_EVENTS}
+      startTimestamp={timestamps.start}
+      endTimestamp={timestamps.end}
     />
   );
 }
