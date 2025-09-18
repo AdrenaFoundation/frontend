@@ -6,11 +6,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
-import copyIcon from '@/../../public/images/copy.svg';
 import editIcon from '@/../../public/images/Icons/edit.svg';
 import shareIcon from '@/../../public/images/Icons/share-fill.svg';
 import snsBadgeIcon from '@/../../public/images/sns-badge.svg';
 import Button from '@/components/common/Button/Button';
+import CopyButton from '@/components/common/CopyButton/CopyButton';
 import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -175,7 +175,7 @@ export default function OwnerBloc({
             !updatingMetadata.favoriteAchievements?.includes(achievement.index),
         ) ||
         currentFavoriteAchievements.length !==
-        (updatingMetadata.favoriteAchievements?.length ?? 0);
+          (updatingMetadata.favoriteAchievements?.length ?? 0);
 
       if (isNewChanges) {
         updateFavoriteAchievements?.(
@@ -497,9 +497,9 @@ export default function OwnerBloc({
                   ACHIEVEMENTS.find(
                     (achievement) => achievement.titleUnlock === index,
                   ) &&
-                    ACHIEVEMENTS.find(
-                      (achievement) => achievement.titleUnlock === index,
-                    )?.title
+                  ACHIEVEMENTS.find(
+                    (achievement) => achievement.titleUnlock === index,
+                  )?.title
                     ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
                     : 'Unlocked by default'
                 }
@@ -653,32 +653,18 @@ export default function OwnerBloc({
             {walletPubkey ? (
               <Tippy
                 content={
-                  <p className="text-xs">
-                    <span className="text-xs opacity-50 mr-1">Wallet Address</span>{' '}
+                  <p className="!text-xs !font-boldy">
+                    <span className="text-xs opacity-50 mr-1">
+                      Wallet Address
+                    </span>{' '}
                     {getAbbrevWalletAddress(walletPubkey.toBase58())}
                   </p>
                 }
               >
-                <Image
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(
-                        walletPubkey.toBase58(),
-                      );
-
-                      addNotification({
-                        title: 'Wallet address copied to clipboard',
-                        message: '',
-                        type: 'info',
-                        duration: 'regular',
-                      });
-                    } catch (err) {
-                      console.error('Could not copy text: ', err);
-                    }
-                  }}
-                  src={copyIcon}
-                  className="w-3 h-3 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300"
-                  alt="copy icon"
+                <CopyButton
+                  textToCopy={walletPubkey.toBase58()}
+                  notificationTitle="Wallet address copied to clipboard"
+                  className="opacity-70"
                 />
               </Tippy>
             ) : null}
@@ -840,30 +826,30 @@ export default function OwnerBloc({
               <div className="h-[1em]">
                 {(trimmedUpdatedNickname &&
                   trimmedUpdatedNickname.length < 3) ||
-                  !trimmedUpdatedNickname ? (
+                !trimmedUpdatedNickname ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
                     Nickname must be at least 3 characters
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
+                typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
                   'undefined' &&
-                  trimmedUpdatedNickname.length > 3 ? (
+                trimmedUpdatedNickname.length > 3 ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
                     Checking nickname availability...
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
+                alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">
                     Nickname is already taken
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
+                alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">
                     Nickname is available
                   </div>
@@ -994,11 +980,11 @@ export default function OwnerBloc({
                                 ? 'border-yellow-400/80'
                                 : 'border-[#ffffff20] grayscale',
                               updatingMetadata.favoriteAchievements?.length ===
-                              3 &&
-                              !updatingMetadata.favoriteAchievements.includes(
-                                achievement.index,
-                              ) &&
-                              'opacity-20 hover:opacity-20 cursor-disabled',
+                                3 &&
+                                !updatingMetadata.favoriteAchievements.includes(
+                                  achievement.index,
+                                ) &&
+                                'opacity-20 hover:opacity-20 cursor-disabled',
                             )}
                             onClick={() => {
                               if (
@@ -1015,15 +1001,15 @@ export default function OwnerBloc({
                                 favoriteAchievements:
                                   u.favoriteAchievements !== null
                                     ? u.favoriteAchievements.includes(
-                                      achievement.index,
-                                    )
-                                      ? u.favoriteAchievements?.filter(
-                                        (a) => a !== achievement.index,
-                                      )
-                                      : [
-                                        ...u.favoriteAchievements,
                                         achievement.index,
-                                      ]
+                                      )
+                                      ? u.favoriteAchievements?.filter(
+                                          (a) => a !== achievement.index,
+                                        )
+                                      : [
+                                          ...u.favoriteAchievements,
+                                          achievement.index,
+                                        ]
                                     : null,
                               }));
                             }}
