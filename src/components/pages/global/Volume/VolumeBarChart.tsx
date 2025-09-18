@@ -6,6 +6,7 @@ import MixedBarLineChart from '@/components/ReCharts/MixedBarLineChart';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
+import { periodModeToSeconds } from '@/utils';
 
 interface VolumeChartProps {
   isSmallScreen: boolean;
@@ -14,9 +15,10 @@ interface VolumeChartProps {
 
 export default function VolumeBarChart({ isSmallScreen, yAxisBarScale }: VolumeChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<'1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
 
   useEffect(() => {
     periodRef.current = period;
@@ -173,6 +175,13 @@ export default function VolumeBarChart({ isSmallScreen, yAxisBarScale }: VolumeC
       });
 
       setChartData(formattedData);
+
+      if (periodRef.current) {
+        setTimestamps({
+          start: Date.now() / 1000 - periodModeToSeconds(periodRef.current),
+          end: Date.now() / 1000,
+        });
+      }
     } catch (e) {
       console.error('Error fetching volume data:', e);
     }
@@ -204,6 +213,8 @@ export default function VolumeBarChart({ isSmallScreen, yAxisBarScale }: VolumeC
       isSmallScreen={isSmallScreen}
       total={false}
       yAxisBarScale={yAxisBarScale}
+      startTimestamp={timestamps.start}
+      endTimestamp={timestamps.end}
     />
   );
 }

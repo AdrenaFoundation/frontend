@@ -5,13 +5,14 @@ import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
 import { ADRENA_EVENTS } from '@/constant';
 import { RechartsData } from '@/types';
-import { getCustodyByMint, getGMT } from '@/utils';
+import { getCustodyByMint, getGMT, periodModeToSeconds } from '@/utils';
 
 export default function CompositionChart() {
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -146,6 +147,13 @@ export default function CompositionChart() {
 
       setData(formatted);
       setCustodyInfo(custodyInfos);
+
+      if (periodRef.current) {
+        setTimestamps({
+          start: Date.now() / 1000 - periodModeToSeconds(periodRef.current),
+          end: Date.now() / 1000,
+        });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -174,6 +182,8 @@ export default function CompositionChart() {
       setPeriod={setPeriod}
       events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
       precisionTooltip={0}
+      startTimestamp={timestamps.start}
+      endTimestamp={timestamps.end}
     />
   );
 }

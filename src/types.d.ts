@@ -528,6 +528,7 @@ export type AdrenaEvent = {
   label: string;
   description: string;
   time: string;
+  timestamp: number;
   color: string;
   labelPosition?: LabelPosition;
   type: AdrenaEventType;

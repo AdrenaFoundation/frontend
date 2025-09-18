@@ -211,6 +211,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '9/17',
+    timestamp: 1726516800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Genesis phase: liquidity pool raises 10m to bootstrap trading.`,
@@ -219,6 +220,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '9/25',
+    timestamp: 1727208000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Trading goes live.`,
@@ -227,6 +229,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '10/15',
+    timestamp: 1728936000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and JitoSOL max position size to $500k.`,
@@ -235,6 +238,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '10/30',
+    timestamp: 1730232000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and JitoSOL max position size to $750k.`,
@@ -243,6 +247,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/2',
+    timestamp: 1730491200,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Update pool target ratios to [15% USDC, 7% BONK, 54% jitoSOL, 24% WBTC].`,
@@ -251,6 +256,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/2',
+    timestamp: 1730491200,
     color: '#ffffff40',
     labelPosition: 'insideTopLeft',
     description: 'BONK borrow rate increased from 0.008%/h to 0.016%/h',
@@ -259,6 +265,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/11',
+    timestamp: 1731268800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `"Pre-season: AWAKENING" trading competition starts.`,
@@ -267,6 +274,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/13',
+    timestamp: 1731441600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and jitoSOL max position size to $1m.`,
@@ -275,6 +283,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/20',
+    timestamp: 1732046400,
     color: '#ffffff40',
     labelPosition: 'insideTopLeft',
     description: 'BONK borrow rate increased from 0.016%/h to 0.032%/h',
@@ -283,6 +292,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/23',
+    timestamp: 1732305600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and jitoSOL max position size to $2m.`,
@@ -291,6 +301,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '12/8',
+    timestamp: 1733601600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and jitoSOL max position size to $4m.`,
@@ -299,6 +310,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '12/10',
+    timestamp: 1733774400,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase liquidity pool soft cap to $30m.`,
@@ -307,6 +319,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '12/23',
+    timestamp: 1734897600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `"Pre-season: AWAKENING" trading competition ends. 876 participants fought for 2.27M ADX and 25k JTO rewards.`,
@@ -315,6 +328,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '1/5',
+    timestamp: 1736020800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Adrena is now supported by Solana AgentKit from SendAI.`,
@@ -323,6 +337,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '2/1',
+    timestamp: 1738353600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Season 1: Expanse trading competition starts.`,
@@ -331,6 +346,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '3/6',
+    timestamp: 1741204800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Referral Fees are now live.`,
@@ -339,6 +355,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '3/19',
+    timestamp: 1742328000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `ALP becomes liquid.`,
@@ -347,6 +364,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '4/11',
+    timestamp: 1744315200,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Season 1: Expanse trading competition ends.`,
@@ -355,9 +373,37 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '4/26',
+    timestamp: 1745611200,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Season 2: Factions trading competition starts.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '7/5',
+    timestamp: 1751659200,
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Season 2: Factions trading competition ends.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '7/5',
+    timestamp: 1751659200,
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Summer Event: trading competition starts.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '9/5',
+    timestamp: 1757016000,
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Summer Event: trading competition ends.`,
     type: 'Global',
   },
 ];

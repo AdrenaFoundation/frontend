@@ -6,7 +6,7 @@ import { TokenInfo } from '@/config/IConfiguration';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
-import { formatSnapshotTimestamp, getCustodyByMint, getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getCustodyByMint, getGMT, periodModeToSeconds } from '@/utils';
 
 interface OpenInterestChartProps {
   isSmallScreen: boolean;
@@ -17,8 +17,9 @@ export default function OpenInterestChart({
 }: OpenInterestChartProps) {
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
 
   const [totalOpenInterest, setTotalOpenInterest] = useState<number>(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -170,6 +171,13 @@ export default function OpenInterestChart({
       setData(formatted);
 
       setCustodyInfo(custodyInfos);
+
+      if (periodRef.current) {
+        setTimestamps({
+          start: Date.now() / 1000 - periodModeToSeconds(periodRef.current),
+          end: Date.now() / 1000,
+        });
+      }
     } catch (e) {
       console.error('Error fetching open interest data:', e);
     }
@@ -214,6 +222,8 @@ export default function OpenInterestChart({
       isSmallScreen={isSmallScreen}
       events={ADRENA_EVENTS}
       precisionTooltip={0}
+      startTimestamp={timestamps.start}
+      endTimestamp={timestamps.end}
     />
   );
 }
