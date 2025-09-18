@@ -234,13 +234,14 @@ export default function BurgerMenu({
             ) : null}
           </AnimatePresence>
 
-
-          {<NotificationBell
-            setIsNotificationModalOpen={setIsNotificationModalOpen}
-            isNotificationModalOpen={isNotificationModalOpen}
-            adapters={adapters}
-            isMobile
-          />}
+          {
+            <NotificationBell
+              setIsNotificationModalOpen={setIsNotificationModalOpen}
+              isNotificationModalOpen={isNotificationModalOpen}
+              adapters={adapters}
+              isMobile
+            />
+          }
 
           <WalletAdapter
             className="w-full"

@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import { useState } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageRef } from '@/types';
