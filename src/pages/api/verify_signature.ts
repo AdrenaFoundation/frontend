@@ -31,19 +31,25 @@ export default async function handler(
     const accessToken = authHeader.replace('Bearer ', '');
 
     try {
-      const { error } = await supabaseAnonClient
+      const { data, error } = await supabaseAnonClient
         .from('whitelisted_wallets')
         .select('id')
         .eq('wallet_address', walletAddress)
-        .single()
+        .maybeSingle()
         .setHeader('Authorization', `Bearer ${accessToken}`);
 
       if (error) {
-        return res.status(500).json({ isAdmin: false });
+        console.error('Database error:', error);
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      if (!data) {
+        return res.status(200).json({ isAdmin: false });
       }
 
       return res.status(200).json({ isAdmin: true });
     } catch (err) {
+      console.error('Unexpected error:', err);
       return res
         .status(500)
         .json({ error: 'Internal server error', errMsg: err });

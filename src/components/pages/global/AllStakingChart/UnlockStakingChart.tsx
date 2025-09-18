@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
-import { formatNumberShort } from '@/utils';
+import { formatNumberShort, periodModeToSeconds } from '@/utils';
 
 const formatYAxis = (tickItem: number) => {
   return formatNumberShort(tickItem, 0);
@@ -42,10 +42,7 @@ export default function UnlockStakingChart({
         .sort((a, b) => a.endTime - b.endTime) // Sort by end time
         .reduce((acc, { endTime, tokenAmount }) => {
           // Check if it's within bounds
-          if (periodMode === '7D' && endTime > now + 7 * 24 * 60 * 60) return acc;
-          if (periodMode === '1M' && endTime > now + 30 * 24 * 60 * 60) return acc;
-          if (periodMode === '3M' && endTime > now + 90 * 24 * 60 * 60) return acc;
-          if (periodMode === '6M' && endTime > now + 180 * 24 * 60 * 60) return acc;
+          if (endTime > now + periodModeToSeconds(periodMode)) return acc;
 
           let remaining = Math.floor((endTime - now) / divider); // Calculate period remaining
 

@@ -14,6 +14,7 @@ import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { useDebounce } from '@/hooks/useDebounce';
 import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import { useFavorites } from '@/hooks/useFavoriteToken';
 import { useDispatch, useSelector } from '@/store/store';
 import { ChaosLabsPricesExtended, PositionExtended } from '@/types';
 import {
@@ -1052,6 +1053,8 @@ export default function LongShortTradingInputs({
     return window.adrena.client.getUsdcToken();
   }, [tokenB, side]);
 
+  const { favorites, toggleFavorite } = useFavorites(allowedTokenB);
+
   return (
     <>
       <div className={twMerge('flex flex-col', className)}>
@@ -1169,6 +1172,8 @@ export default function LongShortTradingInputs({
               tokenPriceBTrade={tokenPriceBTrade}
               walletAddress={wallet?.publicKey?.toBase58() ?? null}
               custodyLiquidity={availableLiquidity}
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>

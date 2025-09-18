@@ -1,5 +1,5 @@
 import Tippy from '@tippyjs/react';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import {
   Bar,
   BarChart,
@@ -36,6 +36,8 @@ export default function StakedBarRechart<T extends string>({
   gmt,
   total,
   events,
+  startTimestamp,
+  endTimestamp,
 }: {
   title: ReactNode;
   data: RechartsData[];
@@ -58,10 +60,16 @@ export default function StakedBarRechart<T extends string>({
   gmt?: number;
   total?: boolean;
   events?: AdrenaEvent[],
+  startTimestamp?: number;
+  endTimestamp?: number;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
   >([]);
+
+  const activeEvents = useMemo(() => {
+    return (events || []).filter(event => startTimestamp && endTimestamp && event.timestamp >= startTimestamp && event.timestamp <= endTimestamp);
+  }, [events, startTimestamp, endTimestamp]);
 
   const formatYAxis = (tickItem: number) => {
     if (displayYAxis === false) {
@@ -122,6 +130,8 @@ export default function StakedBarRechart<T extends string>({
                 total={total}
                 gmt={gmt}
                 events={events}
+                startTimestamp={startTimestamp}
+                endTimestamp={endTimestamp}
               />
             }
             cursor={false}
@@ -161,7 +171,7 @@ export default function StakedBarRechart<T extends string>({
             );
           })}
 
-          {events?.map(({
+          {activeEvents?.map(({
             label,
             time,
             color,

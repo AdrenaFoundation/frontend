@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "fmt": "prettier -w . --ignore-path .prettierignore",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint --fix"
   },
   "dependencies": {
     "@bonfida/spl-name-service": "^3.0.11",

@@ -403,6 +403,7 @@ export const DEFAULT_SETTINGS = {
   enableDialectNotifications: false,
   enableAdrenaNotifications: true,
   useSqrtScaleForVolumeAndFeeChart: true,
+  lastSelectedTradingToken: '',
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {
@@ -559,7 +560,7 @@ export class AdrenaTransactionError {
   constructor(
     public txHash: string | null,
     public readonly errorString: string,
-  ) {}
+  ) { }
 
   public setTxHash(txHash: string): void {
     this.txHash = txHash;
@@ -1210,25 +1211,22 @@ export function formatMilliseconds(milliseconds: number): string {
   }
 
   if (hours || formatted.length) {
-    const h = `${hours < 0 ? '-' : ''}${
-      Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
-    }`;
+    const h = `${hours < 0 ? '-' : ''}${Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${h}h`;
   }
 
   if (minutes || formatted.length) {
-    const m = `${minutes < 0 ? '-' : ''}${
-      Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
-    }`;
+    const m = `${minutes < 0 ? '-' : ''}${Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${m}m`;
   }
 
   if (seconds || formatted.length) {
-    const s = `${seconds < 0 ? '-' : ''}${
-      Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
-    }`;
+    const s = `${seconds < 0 ? '-' : ''}${Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${s}s`;
   }
@@ -1810,4 +1808,29 @@ export function isPartialClose(activePercent: number | null) {
   return (
     typeof activePercent === 'number' && activePercent > 0 && activePercent < 1
   );
+}
+
+export function periodModeToSeconds(periodMode: '1d' | '7d' | '1D' | '7D' | '1M' | '3M' | '6M' | '1Y' | 'All Time') {
+  switch (periodMode) {
+    case '1d':
+      return 1 * 24 * 60 * 60; // 1 day in seconds
+    case '1D':
+      return 1 * 24 * 60 * 60; // 1 day in seconds
+    case '7d':
+      return 7 * 24 * 60 * 60; // 7 days in seconds
+    case '7D':
+      return 7 * 24 * 60 * 60; // 7 days in seconds
+    case '1M':
+      return 30 * 24 * 60 * 60; // 30 days in seconds
+    case '3M':
+      return 90 * 24 * 60 * 60; // 90 days in seconds
+    case '6M':
+      return 180 * 24 * 60 * 60; // 180 days in seconds
+    case '1Y':
+      return 365 * 24 * 60 * 60; // 365 days in seconds
+    case 'All Time':
+      return Number.MAX_SAFE_INTEGER; // Effectively no limit
+    default:
+      throw new Error('Invalid period mode');
+  }
 }

@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
-
 import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import ErrorReport from '@/components/Admin/ErrorReport';
 import MaintenanceAlert from '@/components/Admin/MaintenanceAlert';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import useAdminStatus from '@/hooks/useAdminStatus';
 import { useDispatch, useSelector } from '@/store/store';
-import supabaseAnonClient from '@/supabaseAnonClient';
 
 export default function Admin() {
   const dispatch = useDispatch();
@@ -18,51 +16,7 @@ export default function Admin() {
 
   const { verifiedWalletAddresses } = useSelector((s) => s.supabaseAuth);
 
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setIsAdmin(false);
-
-    if (!walletAddress || !verifiedWalletAddresses.includes(walletAddress)) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const checkAdminStatus = async () => {
-      const {
-        data: { session },
-      } = await supabaseAnonClient.auth.getSession();
-      try {
-        const response = await fetch(
-          `/api/verify_signature?walletAddress=${walletAddress}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(session
-                ? { Authorization: `Bearer ${session.access_token}` }
-                : {}),
-            },
-          },
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setIsAdmin(data.isAdmin);
-        } else {
-          console.error('Failed to verify admin status');
-        }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [walletAddress, verifiedWalletAddresses]);
+  const { isAdmin, isLoading } = useAdminStatus(walletAddress ?? null);
 
   if (isLoading) {
     return (
@@ -73,9 +27,7 @@ export default function Admin() {
   }
 
   if (!walletAddress) {
-    return (
-      <WalletConnection />
-    );
+    return <WalletConnection />;
   }
 
   if (!verifiedWalletAddresses.includes(walletAddress)) {
