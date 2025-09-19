@@ -4,12 +4,10 @@ import { useCookies } from 'react-cookie';
 
 import IConfiguration from '@/config/IConfiguration';
 
-// Constants
 const LATENCY_CHECK_INTERVAL = 30_000; // 30 seconds
 const MIN_LATENCY_IMPROVEMENT = 100; // 100ms
 const STORAGE_KEY = 'adrena-autoRpc';
 
-// Pick the index of the RPC with the best latency
 function pickBestLatencyRpcIndex(rpcLatencies: (number | null)[]): {
   latency: number | null;
   index: number;
@@ -35,7 +33,6 @@ function pickBestLatencyRpcIndex(rpcLatencies: (number | null)[]): {
   );
 }
 
-// Measure RPC latency
 async function measureRpcLatency(
   connection: Connection | null,
 ): Promise<number | null> {
@@ -50,6 +47,10 @@ async function measureRpcLatency(
   }
 }
 
+/**
+ * Hook for managing RPC connections with automatic switching based on latency
+ * Supports manual favorite selection, custom RPC URLs, and localStorage persistence
+ */
 export default function useRpc(config: IConfiguration | null): {
   activeRpc: { name: string; connection: Connection } | null;
   rpcInfos: { name: string; latency: number | null }[];
@@ -63,7 +64,6 @@ export default function useRpc(config: IConfiguration | null): {
 } {
   const [cookies, setCookies] = useCookies(['favoriteRpc', 'customRpc']);
 
-  // State
   const [rpcConnections, setRpcConnections] = useState<
     (Connection | null)[] | null
   >(null);
@@ -81,7 +81,6 @@ export default function useRpc(config: IConfiguration | null): {
     latencySnapshot: number;
   } | null>(null);
 
-  // Initialize autoRpcMode from localStorage
   const [autoRpcMode, setAutoRpcMode] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
 
@@ -93,7 +92,6 @@ export default function useRpc(config: IConfiguration | null): {
     return stored === 'true';
   });
 
-  // Load settings from cookies
   useEffect(() => {
     if (cookies.customRpc && cookies.customRpc !== 'null') {
       setCustomRpcUrl(cookies.customRpc);
@@ -103,16 +101,13 @@ export default function useRpc(config: IConfiguration | null): {
     }
   }, [cookies.customRpc, cookies.favoriteRpc]);
 
-  // Initialize RPC connections
   useEffect(() => {
     if (!config) return;
 
-    // Set default favorite RPC
     if (!cookies.favoriteRpc || cookies.favoriteRpc === 'null') {
       setCookies('favoriteRpc', config.rpcOptions[0].name);
     }
 
-    // Create connections
     const connections = config.rpcOptions.map((rpc) => {
       try {
         return new Connection(rpc.url, 'processed');
@@ -124,7 +119,6 @@ export default function useRpc(config: IConfiguration | null): {
     setRpcConnections(connections);
   }, [config, cookies.favoriteRpc, setCookies]);
 
-  // Initialize custom RPC connection
   useEffect(() => {
     if (!customRpcUrl) {
       setCustomRpcConnection(null);
@@ -138,7 +132,6 @@ export default function useRpc(config: IConfiguration | null): {
     }
   }, [customRpcUrl]);
 
-  // Measure latencies
   const loadLatencies = useCallback(async () => {
     if (!rpcConnections) return;
 
@@ -147,7 +140,6 @@ export default function useRpc(config: IConfiguration | null): {
 
     const latencies = await Promise.all(allConnections.map(measureRpcLatency));
 
-    // Separate custom RPC latency
     if (customRpcConnection) {
       setCustomRpcLatency(latencies.pop()!);
     }
@@ -155,18 +147,15 @@ export default function useRpc(config: IConfiguration | null): {
     setRpcLatencies(latencies);
   }, [customRpcConnection, rpcConnections]);
 
-  // Set up latency monitoring
   useEffect(() => {
     loadLatencies();
     const interval = setInterval(loadLatencies, LATENCY_CHECK_INTERVAL);
     return () => clearInterval(interval);
   }, [loadLatencies]);
 
-  // RPC selection logic
   const pickRpc = useCallback(() => {
     if (!config || !rpcConnections || !rpcLatencies) return;
 
-    // Manual mode: use favorite RPC if available
     if (favoriteRpc && !autoRpcMode) {
       const rpcIndex = config.rpcOptions.findIndex(
         (rpc) => rpc.name === favoriteRpc,
@@ -186,16 +175,13 @@ export default function useRpc(config: IConfiguration | null): {
       }
     }
 
-    // Auto mode: find best RPC
     const bestRpc = pickBestLatencyRpcIndex(rpcLatencies);
 
-    // Don't switch if improvement is minimal
     if (activeRpc && bestRpc.latency !== null) {
       const improvement = activeRpc.latencySnapshot - bestRpc.latency;
       if (improvement <= MIN_LATENCY_IMPROVEMENT) return;
     }
 
-    // Check if custom RPC is best
     if (customRpcConnection && customRpcLatency !== null) {
       const isCustomBest =
         bestRpc.latency === null || customRpcLatency < bestRpc.latency;
@@ -203,7 +189,6 @@ export default function useRpc(config: IConfiguration | null): {
       if (isCustomBest) {
         if (activeRpc?.name === 'Custom RPC') return;
 
-        console.log(`Auto switch to Custom RPC (${customRpcLatency}ms)`);
         setActiveRpc({
           name: 'Custom RPC',
           connection: customRpcConnection,
@@ -213,7 +198,6 @@ export default function useRpc(config: IConfiguration | null): {
       }
     }
 
-    // Use best configured RPC
     if (bestRpc.latency === null) {
       return;
     }
@@ -224,7 +208,6 @@ export default function useRpc(config: IConfiguration | null): {
     const rpcName = config.rpcOptions[bestRpc.index].name;
     if (activeRpc?.name === rpcName) return;
 
-    console.log(`Auto switch to ${rpcName} (${bestRpc.latency}ms)`);
     setActiveRpc({
       name: rpcName,
       connection,
@@ -241,12 +224,13 @@ export default function useRpc(config: IConfiguration | null): {
     activeRpc,
   ]);
 
-  // Trigger RPC selection
   useEffect(() => {
     pickRpc();
   }, [pickRpc]);
 
-  // Auto-switching interval
+  /**
+   * Set up automatic RPC switching interval when auto mode is enabled
+   */
   useEffect(() => {
     if (!autoRpcMode) return;
 
