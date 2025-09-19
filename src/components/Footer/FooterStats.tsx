@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
@@ -19,6 +19,8 @@ import { useSelector } from '@/store/store';
 import { PageProps, RechartsData } from '@/types';
 import { getCustodyByMint, getTokenSymbol } from '@/utils';
 
+import '@/styles/Animation.css';
+import InfiniteScroll from '../common/InfiniteScroll/InfiniteScroll';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
@@ -317,61 +319,28 @@ export default function FooterStats({
       <div className="w-5 h-full bg-gradient-to-r from-secondary to-transparent absolute left-0 top-0 z-20" />
       <div className="w-5 h-full bg-gradient-to-l from-secondary to-transparent absolute right-0 top-0 z-20" />
 
-      <div className="group overflow-hidden w-full">
-        <motion.div
-          className="flex flex-row items-center gap-3 whitespace-nowrap"
-          initial={{ x: 0 }}
-          animate={{ x: ['0%', '-50%'] }}
-          transition={{
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: 20,
-            ease: 'linear',
-          }}
-          style={{ willChange: 'transform' }}
-        >
-          {stats.map((stat, i) => (
-            <div
-              key={stat.label + i}
-              className="flex flex-row items-center px-3"
-            >
-              <span className="text-xs font-interMedium opacity-50 mr-1">
-                {stat.label}
-              </span>{' '}
-              <FormatNumber
-                nb={stat.value as number}
-                className="text-xs"
-                format="currency"
-                prefix="$"
-                prefixClassName="text-xs"
-                isDecimalDimmed={false}
-                precision={activeToken === 'BONK' ? 6 : 2}
-                isAbbreviate
-              />
-            </div>
-          ))}
-          {stats.map((stat, i) => (
-            <div
-              key={stat.label + 'dup' + i}
-              className="flex flex-row items-center px-3"
-            >
-              <span className="text-xs font-interMedium opacity-50 mr-1">
-                {stat.label}
-              </span>{' '}
-              <FormatNumber
-                nb={stat.value as number}
-                className="text-xs"
-                format="currency"
-                prefix="$"
-                prefixClassName="text-xs"
-                isDecimalDimmed={false}
-                precision={activeToken === 'BONK' ? 6 : 2}
-                isAbbreviate
-              />
-            </div>
-          ))}
-        </motion.div>
-      </div>
+      <InfiniteScroll speed={20} gap="md">
+        {stats.map((stat, i) => (
+          <div
+            key={stat.label + i}
+            className="flex flex-row items-center flex-shrink-0"
+          >
+            <span className="text-xs font-interMedium opacity-50 mr-1">
+              {stat.label}
+            </span>
+            <FormatNumber
+              nb={stat.value as number}
+              className="text-xs"
+              format="currency"
+              prefix="$"
+              prefixClassName="text-xs"
+              isDecimalDimmed={false}
+              precision={activeToken === 'BONK' ? 6 : 2}
+              isAbbreviate
+            />
+          </div>
+        ))}
+      </InfiniteScroll>
 
       <AnimatePresence>
         {showDetails ? (
