@@ -244,7 +244,7 @@ export default function FooterStats({
 
   const stats = [
     {
-      label: `24h ${activeToken} Price`,
+      label: `${activeToken} Price`,
       value: tokenPrices[activeToken],
     },
     {
@@ -336,6 +336,9 @@ export default function FooterStats({
               isDecimalDimmed={false}
               precision={activeToken === 'BONK' ? 6 : 2}
               isAbbreviate
+              isAbbreviateIcon={
+                stat.label.includes('Price') ? false : undefined
+              }
             />
           </div>
         ))}
@@ -468,9 +471,11 @@ export default function FooterStats({
                         <FormatNumber
                           nb={custodyLiquidity * tokenPrice}
                           format="currency"
-                          precision={0}
+                          precision={2}
                           className="text-xs opacity-50 transition-opacity duration-300"
                           isDecimalDimmed={false}
+                          isAbbreviate
+                          isAbbreviateIcon
                         />
                       </motion.span>
                     ) : (
