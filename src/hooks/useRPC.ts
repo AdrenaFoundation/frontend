@@ -4,6 +4,11 @@ import { useCookies } from 'react-cookie';
 
 import IConfiguration from '@/config/IConfiguration';
 
+// Constants
+const LATENCY_CHECK_INTERVAL = 30_000; // 30 seconds
+const MIN_LATENCY_IMPROVEMENT = 100; // 100ms
+const STORAGE_KEY = 'adrena-autoRpc';
+
 // Pick the index of the RPC with the best latency
 function pickBestLatencyRpcIndex(rpcLatencies: (number | null)[]): {
   latency: number | null;
@@ -30,15 +35,24 @@ function pickBestLatencyRpcIndex(rpcLatencies: (number | null)[]): {
   );
 }
 
+// Measure RPC latency
+async function measureRpcLatency(
+  connection: Connection | null,
+): Promise<number | null> {
+  if (!connection) return null;
+
+  const start = Date.now();
+  try {
+    await connection.getVersion();
+    return Date.now() - start;
+  } catch {
+    return null;
+  }
+}
+
 export default function useRpc(config: IConfiguration | null): {
-  activeRpc: {
-    name: string;
-    connection: Connection;
-  } | null;
-  rpcInfos: {
-    name: string;
-    latency: number | null;
-  }[];
+  activeRpc: { name: string; connection: Connection } | null;
+  rpcInfos: { name: string; latency: number | null }[];
   customRpcLatency: number | null;
   autoRpcMode: boolean;
   customRpcUrl: string | null;
@@ -47,213 +61,175 @@ export default function useRpc(config: IConfiguration | null): {
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
 } {
-  const [cookies, setCookies] = useCookies([
-    'favoriteRpc',
-    'customRpc',
-    'autoRpc',
-  ]);
+  const [cookies, setCookies] = useCookies(['favoriteRpc', 'customRpc']);
 
+  // State
   const [rpcConnections, setRpcConnections] = useState<
     (Connection | null)[] | null
   >(null);
   const [rpcLatencies, setRpcLatencies] = useState<(number | null)[] | null>(
     null,
   );
-
   const [favoriteRpc, setFavoriteRpc] = useState<string | null>(null);
-
   const [customRpcUrl, setCustomRpcUrl] = useState<string | null>(null);
   const [customRpcConnection, setCustomRpcConnection] =
     useState<Connection | null>(null);
   const [customRpcLatency, setCustomRpcLatency] = useState<number | null>(null);
-
-  // true by default
-  const [autoRpcMode, setAutoRpcMode] = useState<boolean>(true);
-
   const [activeRpc, setActiveRpc] = useState<{
     name: string;
     connection: Connection;
     latencySnapshot: number;
   } | null>(null);
 
-  useEffect(() => {
-    setAutoRpcMode(cookies.autoRpc === 'true');
-  }, [cookies.autoRpc]);
+  // Initialize autoRpcMode from localStorage
+  const [autoRpcMode, setAutoRpcMode] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
 
-  // Load custom RPC from cookies
-  useEffect(() => {
-    if (cookies.customRpc === 'null') {
-      return setCustomRpcUrl(null);
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === null) {
+      localStorage.setItem(STORAGE_KEY, 'true');
+      return true;
     }
+    return stored === 'true';
+  });
 
-    setCustomRpcUrl(cookies.customRpc);
-  }, [cookies.customRpc]);
-
-  // Load favorite RPC from cookies
+  // Load settings from cookies
   useEffect(() => {
-    if (cookies.favoriteRpc === 'null') {
-      return setFavoriteRpc(null);
+    if (cookies.customRpc && cookies.customRpc !== 'null') {
+      setCustomRpcUrl(cookies.customRpc);
     }
-
-    setFavoriteRpc(cookies.favoriteRpc);
-  }, [cookies.favoriteRpc]);
-
-  // Initialize custom RPC connection
-  useEffect(() => {
-    if (customRpcUrl === null) return;
-
-    try {
-      setCustomRpcConnection(new Connection(customRpcUrl, 'processed'));
-    } catch {
-      // Doesn't work
-      setCustomRpcConnection(null);
+    if (cookies.favoriteRpc && cookies.favoriteRpc !== 'null') {
+      setFavoriteRpc(cookies.favoriteRpc);
     }
-  }, [customRpcUrl]);
+  }, [cookies.customRpc, cookies.favoriteRpc]);
 
-  // Initialize connection to RPCs
+  // Initialize RPC connections
   useEffect(() => {
     if (!config) return;
 
-    // If no favorite, set the first RPC of the list as favorite
+    // Set default favorite RPC
     if (!cookies.favoriteRpc || cookies.favoriteRpc === 'null') {
       setCookies('favoriteRpc', config.rpcOptions[0].name);
     }
 
-    setRpcConnections(
-      config.rpcOptions.map((rpc) => {
-        try {
-          return new Connection(rpc.url, 'processed');
-        } catch {
-          return null;
-        }
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config]);
+    // Create connections
+    const connections = config.rpcOptions.map((rpc) => {
+      try {
+        return new Connection(rpc.url, 'processed');
+      } catch {
+        return null;
+      }
+    });
 
-  // Measure latency of RPCs
+    setRpcConnections(connections);
+  }, [config, cookies.favoriteRpc, setCookies]);
+
+  // Initialize custom RPC connection
+  useEffect(() => {
+    if (!customRpcUrl) {
+      setCustomRpcConnection(null);
+      return;
+    }
+
+    try {
+      setCustomRpcConnection(new Connection(customRpcUrl, 'processed'));
+    } catch {
+      setCustomRpcConnection(null);
+    }
+  }, [customRpcUrl]);
+
+  // Measure latencies
   const loadLatencies = useCallback(async () => {
     if (!rpcConnections) return;
 
-    const rpcs = [...rpcConnections];
+    const allConnections = [...rpcConnections];
+    if (customRpcConnection) allConnections.push(customRpcConnection);
 
-    if (customRpcConnection) rpcs.push(customRpcConnection);
+    const latencies = await Promise.all(allConnections.map(measureRpcLatency));
 
-    const latencies = await Promise.all(
-      rpcs.map(async (connection) => {
-        const start = Date.now();
-
-        if (!connection) return null;
-
-        try {
-          if (!(await connection.getVersion())) return null;
-
-          return Date.now() - start;
-        } catch {
-          return null;
-        }
-      }),
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (customRpcConnection) setCustomRpcLatency(latencies.pop()!);
+    // Separate custom RPC latency
+    if (customRpcConnection) {
+      setCustomRpcLatency(latencies.pop()!);
+    }
 
     setRpcLatencies(latencies);
   }, [customRpcConnection, rpcConnections]);
 
+  // Set up latency monitoring
   useEffect(() => {
     loadLatencies();
-
-    const interval = setInterval(loadLatencies, 30000);
+    const interval = setInterval(loadLatencies, LATENCY_CHECK_INTERVAL);
     return () => clearInterval(interval);
   }, [loadLatencies]);
 
+  // RPC selection logic
   const pickRpc = useCallback(() => {
     if (!config || !rpcConnections || !rpcLatencies) return;
 
-    // If user have a favorite and it works, pick it, except if auto mode is enabled
+    // Manual mode: use favorite RPC if available
     if (favoriteRpc && !autoRpcMode) {
       const rpcIndex = config.rpcOptions.findIndex(
         (rpc) => rpc.name === favoriteRpc,
       );
-
-      // If the favorite RPC is available and has a latency, pick it
       const latency = rpcLatencies[rpcIndex];
+      const connection = rpcConnections[rpcIndex];
 
-      if (rpcIndex !== -1 && latency !== null) {
-        const connection = rpcConnections[rpcIndex];
+      if (rpcIndex !== -1 && latency !== null && connection) {
+        if (activeRpc?.name === config.rpcOptions[rpcIndex].name) return;
 
-        if (connection) {
-          // Already active
-          if (activeRpc?.name === config.rpcOptions[rpcIndex].name) return;
-
-          console.log(`Switch to ${config.rpcOptions[rpcIndex].name}`);
-
-          setActiveRpc({
-            name: config.rpcOptions[rpcIndex].name,
-            connection,
-            latencySnapshot: latency,
-          });
-          return;
-        }
+        setActiveRpc({
+          name: config.rpcOptions[rpcIndex].name,
+          connection,
+          latencySnapshot: latency,
+        });
+        return;
       }
     }
 
-    const bestRpcLatency = pickBestLatencyRpcIndex(rpcLatencies);
+    // Auto mode: find best RPC
+    const bestRpc = pickBestLatencyRpcIndex(rpcLatencies);
 
-    // Check the active RPC latency
-    // If the difference is less than 100ms, doesn't switch
-    if (
-      activeRpc &&
-      (bestRpcLatency.latency === null ||
-        activeRpc.latencySnapshot <= bestRpcLatency.latency ||
-        activeRpc.latencySnapshot - bestRpcLatency.latency <= 100)
-    ) {
+    // Don't switch if improvement is minimal
+    if (activeRpc && bestRpc.latency !== null) {
+      const improvement = activeRpc.latencySnapshot - bestRpc.latency;
+      if (improvement <= MIN_LATENCY_IMPROVEMENT) return;
+    }
+
+    // Check if custom RPC is best
+    if (customRpcConnection && customRpcLatency !== null) {
+      const isCustomBest =
+        bestRpc.latency === null || customRpcLatency < bestRpc.latency;
+
+      if (isCustomBest) {
+        if (activeRpc?.name === 'Custom RPC') return;
+
+        console.log(`Auto switch to Custom RPC (${customRpcLatency}ms)`);
+        setActiveRpc({
+          name: 'Custom RPC',
+          connection: customRpcConnection,
+          latencySnapshot: customRpcLatency,
+        });
+        return;
+      }
+    }
+
+    // Use best configured RPC
+    if (bestRpc.latency === null) {
       return;
     }
 
-    // Use custom rpc if it is best
-    if (
-      customRpcConnection !== null &&
-      customRpcLatency !== null &&
-      (bestRpcLatency.latency === null ||
-        customRpcLatency < bestRpcLatency.latency)
-    ) {
-      // Already active
-      if (activeRpc?.name === 'Custom RPC') return;
+    const connection = rpcConnections[bestRpc.index];
+    if (!connection) return;
 
-      console.log(`Switch to ${customRpcUrl} RPC`);
+    const rpcName = config.rpcOptions[bestRpc.index].name;
+    if (activeRpc?.name === rpcName) return;
 
-      setActiveRpc({
-        name: 'Custom RPC',
-        connection: customRpcConnection,
-        latencySnapshot: customRpcLatency,
-      });
-      return;
-    }
-
-    if (bestRpcLatency.latency === null) {
-      throw new Error('Cannot connect to any RPC');
-    }
-
-    const connection = rpcConnections[bestRpcLatency.index];
-
-    if (!connection) {
-      throw new Error('Cannot connect to any RPC');
-    }
-
-    // Already active
-    if (activeRpc?.name === config.rpcOptions[bestRpcLatency.index].name)
-      return;
-
-    console.log(`Switch to ${config.rpcOptions[bestRpcLatency.index].name}`);
-
+    console.log(`Auto switch to ${rpcName} (${bestRpc.latency}ms)`);
     setActiveRpc({
-      name: config.rpcOptions[bestRpcLatency.index].name,
+      name: rpcName,
       connection,
-      latencySnapshot: bestRpcLatency.latency,
+      latencySnapshot: bestRpc.latency,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     config,
     rpcConnections,
@@ -262,31 +238,27 @@ export default function useRpc(config: IConfiguration | null): {
     autoRpcMode,
     customRpcConnection,
     customRpcLatency,
+    activeRpc,
   ]);
 
-  // Pick the RPC to be used
+  // Trigger RPC selection
   useEffect(() => {
     pickRpc();
   }, [pickRpc]);
 
-  // Continuously reassess the best RPC to use
+  // Auto-switching interval
   useEffect(() => {
     if (!autoRpcMode) return;
 
-    const interval = setInterval(() => {
-      pickRpc();
-    }, 30_000);
-
-    return () => {
-      clearInterval(interval);
-    };
+    const interval = setInterval(pickRpc, LATENCY_CHECK_INTERVAL);
+    return () => clearInterval(interval);
   }, [autoRpcMode, pickRpc]);
 
   return {
     rpcInfos:
       config?.rpcOptions.map((rpc, index) => ({
         name: rpc.name,
-        latency: rpcLatencies ? rpcLatencies[index] : null,
+        latency: rpcLatencies?.[index] ?? null,
       })) ?? [],
 
     activeRpc: activeRpc
@@ -301,18 +273,21 @@ export default function useRpc(config: IConfiguration | null): {
     customRpcUrl,
     favoriteRpc,
 
-    setAutoRpcMode: (autoRpcMode: boolean) => {
-      setCookies('autoRpc', autoRpcMode);
+    setAutoRpcMode: (newAutoRpcMode: boolean) => {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, newAutoRpcMode.toString());
+      }
+      setAutoRpcMode(newAutoRpcMode);
     },
 
-    setCustomRpcUrl: (customRpcUrl: string | null) => {
+    setCustomRpcUrl: (newCustomRpcUrl: string | null) => {
       setCustomRpcConnection(null);
       setCustomRpcLatency(null);
-      setCookies('customRpc', customRpcUrl);
+      setCookies('customRpc', newCustomRpcUrl);
     },
 
-    setFavoriteRpc: (favoriteRpc: string) => {
-      setCookies('favoriteRpc', favoriteRpc);
+    setFavoriteRpc: (newFavoriteRpc: string) => {
+      setCookies('favoriteRpc', newFavoriteRpc);
     },
   };
 }
