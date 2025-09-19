@@ -19,7 +19,6 @@ import { useSelector } from '@/store/store';
 import { PageProps, RechartsData } from '@/types';
 import { getCustodyByMint, getTokenSymbol } from '@/utils';
 
-import '@/styles/Animation.css';
 import InfiniteScroll from '../common/InfiniteScroll/InfiniteScroll';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';

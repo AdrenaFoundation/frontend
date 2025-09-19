@@ -1,3 +1,5 @@
+import '@/styles/Animation.css';
+
 import React from 'react';
 
 interface InfiniteScrollProps {
