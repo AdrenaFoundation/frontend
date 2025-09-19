@@ -13,10 +13,10 @@ const formatYAxis = (tickItem: number) => {
 
 export default function UnlockStakingChart({
   allStakingStats,
-  stakingType,
+  stakingType = 'ADX',
 }: {
   allStakingStats: AllStakingStats | null;
-  stakingType: 'ADX' | 'ALP';
+  stakingType?: 'ADX';
 }) {
   const [timingMode, setTimingMode] = useState<'days' | 'weeks' | 'months'>('weeks');
   const [infoMode, setInfoMode] = useState<'count' | 'volume'>('volume');
@@ -38,7 +38,7 @@ export default function UnlockStakingChart({
     const divider = timingMode === 'days' ? 24 * 60 * 60 : timingMode === 'weeks' ? 7 * 24 * 60 * 60 : 30 * 24 * 60 * 60;
 
     const groupedData = Object.values(
-      allStakingStats.byRemainingTime[stakingType]
+      allStakingStats.byRemainingTime.ADX
         .sort((a, b) => a.endTime - b.endTime) // Sort by end time
         .reduce((acc, { endTime, tokenAmount }) => {
           // Check if it's within bounds
@@ -149,7 +149,7 @@ export default function UnlockStakingChart({
             />
           } cursor={false} />
 
-          <Bar dataKey={infoMode} fill={stakingType === "ALP" ? '#256281' : "#a82e2e"} />
+          <Bar dataKey={infoMode} fill={"#a82e2e"} />
         </BarChart>
       </ResponsiveContainer>
     </div>

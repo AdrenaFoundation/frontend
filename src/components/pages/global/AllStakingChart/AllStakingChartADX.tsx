@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
+import { useSelector } from '@/store/store';
 import { getAccountExplorer } from '@/utils';
 
 const colors = {
@@ -29,6 +30,7 @@ export const CustomizedContent: React.FC<{
   duration: string | null;
   stakedAmount: number;
   userStakingPubkey: PublicKey;
+  displayAs: 'amount' | 'usd';
 }> = ({
   depth,
   duration,
@@ -41,6 +43,7 @@ export const CustomizedContent: React.FC<{
   name,
   stakedAmount,
   userStakingPubkey,
+  displayAs,
 }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -52,6 +55,10 @@ export const CustomizedContent: React.FC<{
       num = (stakedAmount / 1_000_000).toFixed(2) + 'M';
     } else if (stakedAmount > 999) {
       num = (stakedAmount / 1_000).toFixed(2) + 'K';
+    }
+
+    if (displayAs === 'usd') {
+      num = '$' + num;
     }
 
     return (
@@ -112,9 +119,15 @@ export const CustomizedContent: React.FC<{
 
 export default function AllStakingChartADX({
   allStakingStats,
+  displayAs,
 }: {
   allStakingStats: AllStakingStats | null;
+  displayAs: 'amount' | 'usd';
 }) {
+  const adxPrice: number | null =
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
+    null;
+
   const [data, setData] = useState<{
     name: string;
     duration: string;
@@ -139,13 +152,13 @@ export default function AllStakingChartADX({
         name: `${duration}d ADX-${lockedPerDuration.total}-${i}`,
         duration: `${duration}d`,
         color: `transparent`,
-        children: Object.entries(lockedPerDuration).filter(([name]) => name !== 'total').sort((a, b) => b[1] - a[1]).map(([stakingPubkey, amount], j) => ({
+        children: Object.entries(lockedPerDuration).filter(([name]) => name !== 'total' && name !== 'totalUsd').sort((a, b) => b[1] - a[1]).map(([stakingPubkey, amount], j) => ({
           name: stakingPubkey + 'ADX' + duration + 'd' + amount + 'j' + j,
           userStakingPubkey: new PublicKey(stakingPubkey),
-          size: amount,
+          size: displayAs === 'usd' ? amount * (adxPrice ?? 0) : amount,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           color: `${(colors as any)[duration] ?? '#ff0000'}AF`,
-          stakedAmount: Math.floor(amount),
+          stakedAmount: Math.floor(displayAs === 'usd' ? amount * (adxPrice ?? 0) : amount),
         })),
       })),
       // Handle liquid ADX
@@ -157,14 +170,14 @@ export default function AllStakingChartADX({
           {
             name: 'Liquid ADX',
             userStakingPubkey: PublicKey.default,
-            size: allStakingStats.byDurationByAmount.ADX.liquid,
+            size: displayAs === 'usd' ? allStakingStats.byDurationByAmount.ADX.liquid * (adxPrice ?? 0) : allStakingStats.byDurationByAmount.ADX.liquid,
             color: `#FFBB8FAF`,
-            stakedAmount: Math.floor(allStakingStats.byDurationByAmount.ADX.liquid),
+            stakedAmount: Math.floor(displayAs === 'usd' ? allStakingStats.byDurationByAmount.ADX.liquid * (adxPrice ?? 0) : allStakingStats.byDurationByAmount.ADX.liquid),
           },
         ],
       },
     ]);
-  }, [allStakingStats]);;
+  }, [allStakingStats, adxPrice, displayAs]);
 
   if (!data || !data.length) {
     return (
@@ -184,7 +197,23 @@ export default function AllStakingChartADX({
           dataKey="size"
           isAnimationActive={false}
           // Note: Needs to provide keys for typescript to be happy, even though Treemap is filling up the keys
-          content={<CustomizedContent root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} userStakingPubkey={PublicKey.default} color={''} rank={0} name={''} duration={null} stakedAmount={0} />}>
+          content={<CustomizedContent
+            root={undefined}
+            depth={0}
+            x={0}
+            y={0}
+            width={0}
+            height={0}
+            index={0}
+            payload={undefined}
+            userStakingPubkey={PublicKey.default}
+            color={''}
+            rank={0}
+            name={''}
+            duration={null}
+            stakedAmount={0}
+            displayAs={displayAs}
+          />}>
         </Treemap>
       </ResponsiveContainer>
     </div >
