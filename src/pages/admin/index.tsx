@@ -1,6 +1,7 @@
 import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
 import ErrorReport from '@/components/Admin/ErrorReport';
 import MaintenanceAlert from '@/components/Admin/MaintenanceAlert';
+import PartnerCardsManager from '@/components/Admin/PartnerCardsManager';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
@@ -59,8 +60,9 @@ export default function Admin() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <MaintenanceAlert />
+      <PartnerCardsManager />
       <ErrorReport />
     </div>
   );
