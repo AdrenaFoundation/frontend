@@ -537,7 +537,12 @@ export class AdrenaClient {
         commitment: 'processed',
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
-          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 1,
+              bytes: bs58.encode(Buffer.from([2])),
+            },
+          }, // Version == 2 (V2)
           {
             memcmp: {
               offset: 8 + 8,
@@ -2351,7 +2356,9 @@ export class AdrenaClient {
     // Handle automatic profile creation or update when a referrer is set
     //
     if (referrerProfile) {
-      const userProfileAccount = await this.loadUserProfile({ user: owner });
+      const userProfileAccount = await this.loadUserProfile({
+        user: owner,
+      });
 
       // If user_profile doesn't exist, create it
       if (userProfileAccount === false) {
@@ -2735,7 +2742,9 @@ export class AdrenaClient {
     // Handle automatic profile creation or update when a referrer is set
     //
     if (referrerProfile) {
-      const userProfileAccount = await this.loadUserProfile({ user: owner });
+      const userProfileAccount = await this.loadUserProfile({
+        user: owner,
+      });
 
       // If user_profile doesn't exist, create it
       if (userProfileAccount === false) {
@@ -5676,7 +5685,9 @@ export class AdrenaClient {
           position.pubkey.toBase58() ===
           'ADdeuTcn6oN1ukxGyjrMVPC8NzH4oVDFS8Psns7gNWbJ'
         ) {
-          console.log('MAX PROFIT', { maxProfitUsd: maxProfitUsd.toString() });
+          console.log('MAX PROFIT', {
+            maxProfitUsd: maxProfitUsd.toString(),
+          });
         }
 
         return {
@@ -6073,7 +6084,12 @@ export class AdrenaClient {
         commitment: 'processed',
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
-          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 1,
+              bytes: bs58.encode(Buffer.from([2])),
+            },
+          }, // Version == 2 (V2)
           {
             memcmp: {
               offset: 8 + 336,
@@ -6108,14 +6124,24 @@ export class AdrenaClient {
         commitment: 'processed',
         filters: [
           { dataSize: 8 + 216 }, // Ensure correct size for V1
-          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([0])) } }, // Version == 0 (V1)
+          {
+            memcmp: {
+              offset: 8 + 1,
+              bytes: bs58.encode(Buffer.from([0])),
+            },
+          }, // Version == 0 (V1)
         ],
       }),
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
         commitment: 'processed',
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
-          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 1,
+              bytes: bs58.encode(Buffer.from([2])),
+            },
+          }, // Version == 2 (V2)
         ],
       }),
     ]);
@@ -6158,7 +6184,12 @@ export class AdrenaClient {
         dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
         filters: [
           { dataSize: 8 + 216 }, // Ensure correct size for V1
-          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([0])) } }, // Version == 0 (V1)
+          {
+            memcmp: {
+              offset: 8 + 1,
+              bytes: bs58.encode(Buffer.from([0])),
+            },
+          }, // Version == 0 (V1)
         ],
       }),
       this.readonlyConnection.getProgramAccounts(AdrenaClient.programId, {
@@ -6166,7 +6197,12 @@ export class AdrenaClient {
         dataSlice: { offset: 8, length: 80 }, // Take only the first 80 bytes (ignore anchor discriminator)
         filters: [
           { dataSize: 8 + 400 }, // Ensure correct size for V2
-          { memcmp: { offset: 8 + 1, bytes: bs58.encode(Buffer.from([2])) } }, // Version == 2 (V2)
+          {
+            memcmp: {
+              offset: 8 + 1,
+              bytes: bs58.encode(Buffer.from([2])),
+            },
+          }, // Version == 2 (V2)
         ],
       }),
     ]);
