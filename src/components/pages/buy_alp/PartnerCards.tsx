@@ -91,20 +91,12 @@ const PARTNERS: Partner[] = [
     link: 'https://www.exponent.finance/liquidity/alp-20Oct25',
   },
   {
-    description: 'Incentives for ALP-SOL providers',
-    icon: '/images/meteora.svg',
+    description: 'ADX incentives for ALP market',
+    icon: '/images/sandglass.svg',
     gradientColors:
-      'bg-[linear-gradient(110deg,#ff7800,#5601d1,#ff7800)] animate-text-shimmer bg-[length:250%_100%]',
+      'bg-[linear-gradient(110deg,#0075ff,#c9c8ff,#0075ff)] animate-text-shimmer bg-[length:250%_100%]',
     bgColor: 'bg-secondary/[0.99]',
-    link: 'https://www.meteora.ag/dlmm/39xxvte8BMaW7qBxeedFk9iauG42vxFsTA7yzM9X9cQN',
-  },
-  {
-    description: 'Incentives for ALP-USDC providers',
-    icon: '/images/meteora.svg',
-    gradientColors:
-      'bg-[linear-gradient(110deg,#5601d1,#ff7800,#5601d1)] animate-text-shimmer bg-[length:250%_100%]',
-    bgColor: 'bg-secondary/[0.99]',
-    link: 'https://www.meteora.ag/dlmm/4wM3eJMduZBFytW6VqV5DC2CaSovRrM2RJG8bJkroqLD',
+    link: 'https://sandglass.so/markets',
   },
 ];
 
