@@ -1,8 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
-
-import externalLinkLogo from '@/../public/images/external-link-logo.png';
 
 import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
@@ -62,22 +58,6 @@ export default function TermsAndConditionsModal({
           </span>
           <span className='text-txtfade'>. Please read them carefully before proceeding.</span>
         </p>
-
-        {/* <Link
-          href="https://docs.adrena.xyz/technical-documentation/token-terms-and-conditions"
-          target="_blank"
-          className="flex gap-1 items-center font-boldy text-sm mb-2 opacity-80 hover:opacity-100"
-        >
-          Token Terms and Conditions
-
-          <Image
-            src={externalLinkLogo}
-            alt="External link"
-            className="w-3 h-3"
-            width={20}
-            height={20}
-          />
-        </Link> and terms of service. */}
       </div>
 
       <div className="flex w-full flex-row gap-2 mt-2 border-t pt-4 border-grey max-w-full">
