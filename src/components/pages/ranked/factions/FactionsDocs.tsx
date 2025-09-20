@@ -217,7 +217,7 @@ export default function FactionsDocs() {
                         width={24}
                         height={24}
                     />
-                    <div className="font-archivoblack text-lg text-white">Earn Mutagens</div>
+                    <div className="font-black text-lg text-white">Earn Mutagens</div>
                 </div>
                 <div className="w-full h-[1px] bg-[#333]" />
                 <div className="text-[#bbb] leading-relaxed text-md">
@@ -426,7 +426,7 @@ export default function FactionsDocs() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 3.75V6a4.5 4.5 0 01-9 0V3.75m9 0h2.25A2.25 2.25 0 0120.25 6c0 3.728-2.94 6.75-6.75 6.75S6.75 9.728 6.75 6A2.25 2.25 0 019 3.75h7.5zm-9 0V6a4.5 4.5 0 009 0V3.75M12 15v4.5m0 0h3.75m-3.75 0H8.25" />
                             </svg>
                         </div>
-                        <div className="font-archivoblack text-lg text-white">Rewards</div>
+                        <div className="font-black text-lg text-white">Rewards</div>
                     </div>
 
                     <div className="w-full h-[1px] bg-[#333]" />
@@ -454,7 +454,7 @@ export default function FactionsDocs() {
                                 <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
                             </svg>
                         </div>
-                        <div className="font-archivoblack text-lg text-white">Officers</div>
+                        <div className="font-black text-lg text-white">Officers</div>
                     </div>
 
                     <div className="w-full h-[1px] bg-[#333]" />
@@ -494,7 +494,7 @@ export default function FactionsDocs() {
                                 <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
                             </svg>
                         </div>
-                        <div className="font-archivoblack text-lg text-white">Weekly Trading</div>
+                        <div className="font-black text-lg text-white">Weekly Trading</div>
                     </div>
 
                     <div className="w-full h-[1px] bg-[#333]" />
@@ -518,7 +518,7 @@ export default function FactionsDocs() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12V9.75A2.25 2.25 0 019 7.5h6a2.25 2.25 0 012.25 2.25V12" />
                             </svg>
                         </div>
-                        <div className="font-archivoblack text-lg text-white">Pillage</div>
+                        <div className="font-black text-lg text-white">Pillage</div>
                     </div>
 
                     <div className="w-full h-[1px] bg-[#333]" />

@@ -96,7 +96,7 @@ export default function Settings({
 
       <div className="w-full h-[1px] bg-bcolor my-3" />
 
-      <h4 className="font-interSemibold">Explorer</h4>
+      <h4 className="font-semibold">Explorer</h4>
       <div className="flex flex-col gap-2 mt-1">
         <p className="text-sm opacity-50">Select solana explorer</p>
         <div className="flex flex-col gap-1">
@@ -113,7 +113,7 @@ export default function Settings({
               className={twMerge(
                 'justify-start transition duration-300 rounded-lg px-2 py-4 border border-bcolor hover:bg-third bg-third hover:opacity-100 hover:grayscale-0',
                 exp !== settings.preferredSolanaExplorer &&
-                  'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
+                'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
               )}
               iconClassName="w-[20px] h-[20px]"
               variant="outline"
@@ -126,10 +126,10 @@ export default function Settings({
 
       <div className="w-full h-[1px] bg-bcolor my-3" />
 
-      <h4 className="font-interSemibold">Preferences</h4>
+      <h4 className="font-semibold">Preferences</h4>
       <div className="flex flex-col gap-1 mt-1">
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-boldy opacity-50 w-full">Disable chat</p>
+          <p className="text-sm font-medium opacity-50 w-full">Disable chat</p>
           <Switch
             checked={settings.disableChat}
             onChange={() => {
@@ -144,7 +144,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-boldy opacity-50 w-full">
+          <p className="text-sm font-medium opacity-50 w-full">
             Disable Friend Requests
           </p>
           <Switch
@@ -161,7 +161,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-boldy opacity-50 w-full">
+          <p className="text-sm font-medium opacity-50 w-full">
             Show fees in PnL
           </p>
           <Switch
@@ -178,7 +178,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-boldy opacity-50 w-full">
+          <p className="text-sm font-medium opacity-50 w-full">
             Display popup when position closes
           </p>
           <Switch
@@ -195,7 +195,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-boldy opacity-50 w-full">
+          <p className="text-sm font-medium opacity-50 w-full">
             Disable in-app notifications
           </p>
           <Switch
@@ -221,7 +221,7 @@ export default function Settings({
           </div>
         }>
           <div className="flex flex-row justify-between items-center">
-            <p className="text-sm font-boldy opacity-50 w-full">
+            <p className="text-sm font-medium opacity-50 w-full">
               Use Sqrt scale for volume & fee chart
             </p>
 

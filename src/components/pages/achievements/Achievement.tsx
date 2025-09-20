@@ -32,7 +32,7 @@ export default function Achievement({
     }[achievement.category]), [achievement.category]);
 
     const stat = achievement.nbUserProfiles ? <div className='flex gap-1 text-nowrap'>
-        <div className='text-xs text-txtfade font-archivo tracking-widest'>Unlocked by</div>
+        <div className='text-xs text-txtfade tracking-widest'>Unlocked by</div>
 
         <div className='flex gap-0.5'>
             <FormatNumber
@@ -41,10 +41,10 @@ export default function Achievement({
                 minimumFractionDigits={0}
                 precisionIfPriceDecimalsBelow={4}
                 isDecimalDimmed={false}
-                className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+                className='border-0 text-xs text-txtfade tracking-widest'
             />
 
-            <div className='text-xs text-txtfade font-archivo tracking-widest'>/</div>
+            <div className='text-xs text-txtfade tracking-widest'>/</div>
 
             <FormatNumber
                 nb={achievement.nbUserProfiles}
@@ -52,11 +52,11 @@ export default function Achievement({
                 minimumFractionDigits={0}
                 precisionIfPriceDecimalsBelow={4}
                 isDecimalDimmed={false}
-                className='border-0 text-xs text-txtfade font-archivo tracking-widest'
+                className='border-0 text-xs text-txtfade tracking-widest'
             />
         </div>
 
-        <div className='text-xs text-txtfade font-archivo tracking-widest'>users</div>
+        <div className='text-xs text-txtfade tracking-widest'>users</div>
 
         <FormatNumber
             nb={achievement.completionPercentage}
@@ -66,9 +66,9 @@ export default function Achievement({
             minimumFractionDigits={0}
             precisionIfPriceDecimalsBelow={4}
             isDecimalDimmed={false}
-            className='border-0 text-xs text-txtfade font-archivo tracking-widest'
-            prefixClassName='text-txtfade font-archivo tracking-widest'
-            suffixClassName='text-xs text-txtfade font-archivo tracking-widest relative right-1'
+            className='border-0 text-xs text-txtfade tracking-widest'
+            prefixClassName='text-txtfade tracking-widest'
+            suffixClassName='text-xs text-txtfade tracking-widest relative right-1'
         />
     </div> : null;
 
@@ -79,7 +79,7 @@ export default function Achievement({
             <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
                 <div className={twMerge('h-[21.44em] w-[16em] relative', unlocked ? '' : 'opacity-50')}>
                     {/* Title */}
-                    <h3 className="absolute z-10 font-archivoblack w-full top-[2.6em] left-[3em] text-black/80 text-[0.55em]">
+                    <h3 className="absolute z-10 font-black w-full top-[2.6em] left-[3em] text-black/80 text-[0.55em]">
                         {achievement.title}
                     </h3>
 
@@ -104,7 +104,7 @@ export default function Achievement({
                     {/* Achievement number + Title + Wallpaper + Profile Picture */}
                     <div className='absolute top-[12.25em] left-[1.5em] z-10 flex items-center justify-center gap-1'>
                         <Tippy content={<div className='text-xs'>Achievement {achievement.index + 1}/{ACHIEVEMENTS.length}</div>} className='z-20'>
-                            <div className='text-black/80 font-archivo text-xxs'>
+                            <div className='text-black/80 text-xxs'>
                                 ACH-{achievement.index + 1}
                             </div>
                         </Tippy>
@@ -175,7 +175,7 @@ export default function Achievement({
                                 textAlign: 'left'
                             }}
                         >
-                            <div className='text-sm text-black/90 font-archivo'>
+                            <div className='text-sm text-black/90'>
                                 {achievement.points}
                             </div>
                         </div>
@@ -185,13 +185,13 @@ export default function Achievement({
                     <div
                         className="absolute z-10 top-[13.3em] left-[1em] w-[14em] h-[6.8em] flex flex-col pl-4 pr-4 pt-2 pb-3"
                     >
-                        <div className='text-[0.65em] text-black/90 font-archivo'>
+                        <div className='text-[0.65em] text-black/90'>
                             {achievement.description}
                         </div>
 
                         <div className='w-full h-[1px] bg-bcolor/20 mt-1 mb-1 shrink-0' />
 
-                        <div className='text-[0.6em] text-black/70 font-archivo italic'>
+                        <div className='text-[0.6em] text-black/70 italic'>
                             {achievement.story}
                         </div>
                     </div>

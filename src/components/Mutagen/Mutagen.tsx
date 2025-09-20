@@ -74,7 +74,7 @@ const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
   return (
     <div className="flex flex-col mb-3 items-center">
       <p className='text-txtfade text-sm mt-2 text-center'>
-        <span className='font-boldy'>Mutagen</span> is an elusive resource earned through trading, quests, streaks and mutations. Accumulate it to increase your Airdrop share and your rank in the leaderboard.
+        <span className='font-medium'>Mutagen</span> is an elusive resource earned through trading, quests, streaks and mutations. Accumulate it to increase your Airdrop share and your rank in the leaderboard.
       </p>
 
       <div className='h-[1px] bg-bcolor w-full mt-4 mb-2' />
@@ -82,15 +82,15 @@ const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
       <div className="w-full mt-4 flex flex-col gap-4">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-white/80 tracking-wider font-boldy uppercase text-xs">All seasons</h4>
+            <h4 className="text-white/80 tracking-wider font-medium uppercase text-xs">All seasons</h4>
             <p className='gap-1 flex items-center'>
-              <span className="font-boldy text-white/80 text-xxs">
+              <span className="font-medium text-white/80 text-xxs">
                 Earned
               </span>
 
               <span className='font-mono text-xs text-white/80'>{formatNumber(userMutagens.totalTotalPoints, 2, 2)}</span>
 
-              <span className="font-boldy text-white/80 text-xxs">
+              <span className="font-medium text-white/80 text-xxs">
                 mutagen
               </span>
             </p>
@@ -114,7 +114,7 @@ const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
               <div key={index} className="flex items-center gap-1">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: stat.color }} />
 
-                <span className="text-[1.1em] font-boldy" style={{ color: stat.color }}>{stat.label}</span>
+                <span className="text-[1.1em] font-medium" style={{ color: stat.color }}>{stat.label}</span>
 
                 <span className="text-xs font-mono" style={{ color: stat.color }}>
                   ({calculatePercentage(stat.value)}%)
@@ -127,7 +127,7 @@ const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
 
       <div className='h-[1px] bg-bcolor w-full mt-4 mb-2' />
 
-      <div className='text-xs uppercase font-boldy tracking-wider text-white/80 mt-2'>Breakdown Per Season</div>
+      <div className='text-xs uppercase font-medium tracking-wider text-white/80 mt-2'>Breakdown Per Season</div>
 
       <div className="w-full mt-4 space-y-1 bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl">
         {userMutagens.seasons.map((season, index) => (
@@ -160,13 +160,13 @@ const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
         }[season.seasonName] ?? season.seasonName}</h4>
 
         <p className='gap-1 flex items-center'>
-          <span className="font-boldy text-white/80 text-xxs">
+          <span className="font-medium text-white/80 text-xxs">
             Earned
           </span>
 
           <span className='font-mono text-xxs text-white/80'>{formatNumber(season.totalPoints, 2, 2)}</span>
 
-          <span className="font-boldy text-white/80 text-xxs">
+          <span className="font-medium text-white/80 text-xxs">
             mutagen
           </span>
         </p>

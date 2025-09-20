@@ -111,7 +111,7 @@ export default function Select<T extends string>({
                     {img}
                     <span
                       className={twMerge(
-                        'text-lg font-boldy z-20 m-auto select-none',
+                        'text-lg font-medium z-20 m-auto select-none',
                         selectedTextClassName,
                       )}
                     >
@@ -126,7 +126,7 @@ export default function Select<T extends string>({
                   <div className="flex flex-row gap-2 items-center">
                     <span
                       className={twMerge(
-                        'text-lg font-boldy z-20 m-auto select-none',
+                        'text-lg font-medium z-20 m-auto select-none',
                         selectedTextClassName,
                       )}
                     >
@@ -185,7 +185,7 @@ export default function Select<T extends string>({
 
                     <span
                       className={twMerge(
-                        'font-boldy text-lg z-20',
+                        'font-medium text-lg z-20',
                         menuTextClassName,
                       )}
                     >

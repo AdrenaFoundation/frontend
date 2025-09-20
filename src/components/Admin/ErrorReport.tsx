@@ -103,7 +103,7 @@ export default function ErrorReport() {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 border rounded-xl mt-8">
-      <h1 className="text-xl font-interSemibold mb-3 capitalize">
+      <h1 className="text-xl font-semibold mb-3 capitalize">
         Error Report Lookup
       </h1>
 
@@ -139,7 +139,7 @@ export default function ErrorReport() {
         <div className="bg-[#08141E] border border-[#1A2938] rounded-xl p-4 mt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <h2 className="text-lg font-interSemibold mb-2 text-white">
+              <h2 className="text-lg font-semibold mb-2 text-white">
                 Error Details
               </h2>
 
@@ -210,7 +210,7 @@ export default function ErrorReport() {
             </div>
 
             <div>
-              <h2 className="text-lg font-interSemibold mb-2 text-white">
+              <h2 className="text-lg font-semibold mb-2 text-white">
                 User Info
               </h2>
 
@@ -257,7 +257,7 @@ export default function ErrorReport() {
           </div>
 
           <div className="mb-6">
-            <h2 className="text-lg font-interSemibold mb-2 text-white">
+            <h2 className="text-lg font-semibold mb-2 text-white">
               Error Message
             </h2>
             <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor whitespace-pre-wrap font-mono text-sm text-red-300">

@@ -59,7 +59,7 @@ export default function DateSelector({
         }}
         reversed={true}
         className="flex items-center"
-        selectedTextClassName="text-sm font-interMedium"
+        selectedTextClassName="text-sm font-medium"
         menuTextClassName="text-sm"
         menuClassName="px-3 py-1"
         menuOpenBorderClassName="bg-transparent"

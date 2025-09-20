@@ -117,7 +117,7 @@ export default function AddressLookupTable({ }: {
             <Image src={refreshIcon} alt="Refresh" className="w-4" />
         </div>
 
-        <div className="font-archivo tracking-widest">Existing Lookup Table</div>
+        <div className="tracking-widest">Existing Lookup Table</div>
 
         <div className="flex flex-col mt-4 items-center justify-center">
             {addressLookupTableDOM}

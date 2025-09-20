@@ -120,7 +120,7 @@ export default function RankingStats({
                 <div className="absolute bottom-0 bg-gradient-to-t from-main to-transparent w-full h-[6em]" />
                 <div
                   className={twMerge(
-                    'uppercase absolute bottom-6 left-1/2 transform -translate-x-1/2 text-3xl font-interBold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] z-10 mt-4 text-center',
+                    'uppercase absolute bottom-6 left-1/2 transform -translate-x-1/2 text-3xl font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] z-10 mt-4 text-center',
                     season.gradient,
                   )}
                 >

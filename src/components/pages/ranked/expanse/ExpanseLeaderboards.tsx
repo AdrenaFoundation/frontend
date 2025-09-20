@@ -133,7 +133,7 @@ export default function ExpanseLeaderboards() {
           {/* WEEKLY LEADERBOARD */}
 
           <div className="flex flex-col w-[25em] grow max-w-full">
-            <div className="w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4">
+            <div className="w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4">
               Grind weekly
             </div>
 
@@ -203,21 +203,21 @@ export default function ExpanseLeaderboards() {
                 <div className="opacity-30 text-xs absolute right-4 top-[-2.4em]">
                   {Date.now() <= weekInfo.startDate.getTime() ? (
                     <div className="flex text-xs gap-1">
-                      <span className="text-xs font-boldy">Starts in</span>
+                      <span className="text-xs font-medium">Starts in</span>
                       <RemainingTimeToDate
                         timestamp={weekInfo.startDate.getTime() / 1000}
                         stopAtZero={true}
                       />
                     </div>
                   ) : Date.now() > weekInfo.endDate.getTime() ? (
-                    <p className="text-xs font-boldy">Week has ended</p>
+                    <p className="text-xs font-medium">Week has ended</p>
                   ) : (
                     <div className="flex text-xs gap-1">
                       <RemainingTimeToDate
                         timestamp={weekInfo.endDate.getTime() / 1000}
                         stopAtZero={true}
                       />
-                      <span className="text-xs font-boldy">left</span>
+                      <span className="text-xs font-medium">left</span>
                     </div>
                   )}
                 </div>
@@ -261,7 +261,7 @@ export default function ExpanseLeaderboards() {
               <div className="flex pt-4 pb-2 w-full items-center justify-center relative">
                 <Select
                   selectedClassName="pr-1"
-                  selectedTextClassName="text-xl font-boldy tracking-wider uppercase"
+                  selectedTextClassName="text-xl font-medium tracking-wider uppercase"
                   menuTextClassName="uppercase text-sm"
                   menuItemClassName="h-8"
                   selected={week}
@@ -275,7 +275,7 @@ export default function ExpanseLeaderboards() {
                   }}
                 />
 
-                <div className="text-xl font-boldy tracking-wider uppercase">
+                <div className="text-xl font-medium tracking-wider uppercase">
                   Leaderboard
                 </div>
               </div>
@@ -310,7 +310,7 @@ export default function ExpanseLeaderboards() {
           {/* SEASON LEADERBOARD */}
 
           <div className="flex flex-col w-[25em] grow max-w-full">
-            <div className="w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4">
+            <div className="w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4">
               become the champion
             </div>
 
@@ -407,7 +407,7 @@ export default function ExpanseLeaderboards() {
               ) : null}
 
               <div className="flex pt-4 pb-2 w-full items-center justify-center relative">
-                <div className="text-xl font-boldy tracking-wider uppercase">
+                <div className="text-xl font-medium tracking-wider uppercase">
                   Season Leaderboard
                 </div>
               </div>

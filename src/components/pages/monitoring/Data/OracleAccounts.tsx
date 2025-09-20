@@ -35,7 +35,7 @@ export default function OracleAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={pythProgramId.toBase58()}
                   notificationTitle="Pyth Program address copied to clipboard"

@@ -30,7 +30,7 @@ export default function GovernanceAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={cortex.governanceProgram.toBase58()}
                   notificationTitle="Governance Program address copied to clipboard"
@@ -52,7 +52,7 @@ export default function GovernanceAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={cortex.governanceRealm.toBase58()}
                   notificationTitle="Governance Realm PDA address copied to clipboard"

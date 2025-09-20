@@ -43,7 +43,7 @@ export default function Factions({
     return (
         <div className="max-w-[1920px] w-full mx-auto px-4 relative flex flex-col pb-4">
             <div
-                className="uppercase self-center mb-8 sm:mb-0 font-boldy sm:absolute sm:-top-[6em] sm:right-2 text-sm underline opacity-80 hover:opacity-100 transition-opacity cursor-pointer p-1"
+                className="uppercase self-center mb-8 sm:mb-0 font-medium sm:absolute sm:-top-[6em] sm:right-2 text-sm underline opacity-80 hover:opacity-100 transition-opacity cursor-pointer p-1"
             >
                 <button
                     onClick={() => setActiveTab(activeTab === 'leaderboard' ? 'mechanics' : 'leaderboard')}
@@ -52,7 +52,7 @@ export default function Factions({
                     <div className='flex'>
                         <div
                             className={twMerge(
-                                'text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-sm font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
                             )}
                         >
@@ -60,7 +60,7 @@ export default function Factions({
                         </div>
                         <div
                             className={twMerge(
-                                'text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-sm font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
                             )}
                         >

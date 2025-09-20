@@ -55,7 +55,7 @@ export default function AdrenaAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={AdrenaClient.programId.toBase58()}
                   notificationTitle="Program address copied to clipboard"
@@ -77,7 +77,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={cortex.admin.toBase58()}
                   notificationTitle="Admin address copied to clipboard"
@@ -99,7 +99,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={AdrenaClient.cortexPda.toBase58()}
                   notificationTitle="Cortex PDA address copied to clipboard"
@@ -122,7 +122,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={mainPool.pubkey.toBase58()}
                   notificationTitle="Pool PDA address copied to clipboard"
@@ -199,7 +199,7 @@ export default function AdrenaAccounts({
             .flat(),
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={AdrenaClient.transferAuthorityAddress.toBase58()}
                   notificationTitle="Transfer Authority PDA address copied to clipboard"
@@ -222,7 +222,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={lmStakingPda.toBase58()}
                   notificationTitle="ADX Staking PDA address copied to clipboard"
@@ -244,7 +244,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={lmStakingRewardTokenVaultPda.toBase58()}
                   notificationTitle="ADX Staking USDC Rewards Vault address copied to clipboard"
@@ -263,7 +263,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={lmStakingLmRewardTokenVaultPda.toBase58()}
                   notificationTitle="ADX Staking ADX Rewards Vault address copied to clipboard"
@@ -282,7 +282,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={lpStakingPda.toBase58()}
                   notificationTitle="ALP Staking PDA address copied to clipboard"
@@ -304,7 +304,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={lpStakingRewardTokenVaultPda.toBase58()}
                   notificationTitle="ALP Staking USDC Rewards Vault address copied to clipboard"
@@ -323,7 +323,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={lpStakingLmRewardTokenVaultPda.toBase58()}
                   notificationTitle="ALP Staking ADX Rewards Vault address copied to clipboard"
@@ -342,7 +342,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={window.adrena.client
                     .getGenesisLockPda()
@@ -362,7 +362,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={AdrenaClient.vestRegistryPda.toBase58()}
                   notificationTitle="Vest Registry PDA address copied to clipboard"
@@ -380,7 +380,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-medium">
                 <CopyButton
                   textToCopy={window.adrena.client.lmTokenTreasury.toBase58()}
                   notificationTitle="ADX Token Treasury PDA address copied to clipboard"

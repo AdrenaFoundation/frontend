@@ -147,8 +147,8 @@ export default function TopTraders({
     <>
       <div className="bg-[#040D14] border rounded-lg p-3">
         <div className="flex gap-2">
-          <p className="font-boldy text-lg">Top {numberTraders} traders</p>
-          <p className="font-boldy text-txtfade text-lg">(closed trades)</p>
+          <p className="font-medium text-lg">Top {numberTraders} traders</p>
+          <p className="font-medium text-txtfade text-lg">(closed trades)</p>
         </div>
         <div className="px-4">
           <div className="mt-3">
@@ -301,9 +301,9 @@ export default function TopTraders({
                       <span>
                         {userProfilesMap[trader.user_pubkey]
                           ? getAbbrevNickname(
-                              userProfilesMap[trader.user_pubkey],
-                              9,
-                            )
+                            userProfilesMap[trader.user_pubkey],
+                            9,
+                          )
                           : getAbbrevWalletAddress(trader.user_pubkey, 4)}
                       </span>
                     </Tippy>
@@ -326,7 +326,7 @@ export default function TopTraders({
                       nb={trader.pnl_minus_fees}
                       format="currency"
                       className={twMerge(
-                        'text-xs font-boldy',
+                        'text-xs font-medium',
                         trader.pnl_minus_fees >= 0 ? 'text-green' : 'text-red',
                       )}
                       precision={trader.pnl_minus_fees >= 50 ? 0 : 2}

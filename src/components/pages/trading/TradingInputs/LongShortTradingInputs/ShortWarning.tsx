@@ -4,7 +4,7 @@ import Link from 'next/link';
 import infoIcon from '../../../../../../public/images/Icons/info.svg';
 
 export const ShortWarning = () => (
-    <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+    <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2 mt-2">
         <Image
             className="opacity-60 absolute left-3 top-auto bottom-auto"
             src={infoIcon}

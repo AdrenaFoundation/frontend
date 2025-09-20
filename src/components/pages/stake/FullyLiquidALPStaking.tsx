@@ -147,7 +147,7 @@ export default function FullyLiquidALPStaking({
         <div className="flex flex-col bg-main rounded-2xl border">
             <div className="p-5 pb-0">
                 <div className="flex flex-col h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
-                    <span className='text-lg font-boldy ml-auto mr-auto mt-2'>Attention: ALP is becoming fully liquid</span>
+                    <span className='text-lg font-medium ml-auto mr-auto mt-2'>Attention: ALP is becoming fully liquid</span>
 
                     <div className="h-[1px] bg-bcolor w-full my-2" />
 

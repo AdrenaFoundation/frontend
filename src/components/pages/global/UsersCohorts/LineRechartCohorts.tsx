@@ -53,9 +53,9 @@ function CustomRechartsToolTip({
           {payloadChunks.map((payload, i) => <table className='w-full table-auto h-10' key={`table-cohort-${i}`}>
             <thead>
               <tr>
-                <th className='text-xs font-boldy'>Name</th>
+                <th className='text-xs font-medium'>Name</th>
 
-                <th className='text-xs font-boldy'>
+                <th className='text-xs font-medium'>
                   {{
                     users: 'Users',
                     volumes: 'Volume',
@@ -63,7 +63,7 @@ function CustomRechartsToolTip({
                   }[type]}
                 </th>
 
-                {type === 'users' ? <th className='text-xs font-boldy'>
+                {type === 'users' ? <th className='text-xs font-medium'>
                   {{
                     users: 'Retention',
                     volumes: 'Change',

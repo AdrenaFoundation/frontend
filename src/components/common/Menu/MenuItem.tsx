@@ -29,7 +29,7 @@ export default function MenuItem({
   const item = (
     <li
       className={twMerge(
-        'font-boldy text-sm bg-third hover:bg-secondary duration-300 cursor-pointer w-full whitespace-nowrap',
+        'font-medium text-sm bg-third hover:bg-secondary duration-300 cursor-pointer w-full whitespace-nowrap',
         selected && 'bg-main',
         href ? 'p-0' : 'p-1 px-3',
         className,

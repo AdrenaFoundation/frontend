@@ -68,7 +68,7 @@ export default function DetailedMonitoring({
   //
   // I know the following is not the best naming convention, but it allow tweaking the styles easily
   //
-  const titleClassName = 'text-lg opacity-50 font-boldy';
+  const titleClassName = 'text-lg opacity-50 font-medium';
 
   const handleTabChange = (tab: (typeof tabs)[number]) => {
     setSelectedTab(tab);
@@ -105,7 +105,7 @@ export default function DetailedMonitoring({
 
       <Menu
         trigger={
-          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-lg cursor-pointer text-lg font-boldy select-none">
+          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-lg cursor-pointer text-lg font-medium select-none">
             {selectedTab}
 
             <Image
@@ -229,7 +229,7 @@ export default function DetailedMonitoring({
         </AnimatePresence>
 
         {selectedTab === 'All' ||
-        (selectedTab === 'Trading' && view === 'full') ? (
+          (selectedTab === 'Trading' && view === 'full') ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -293,7 +293,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-        (selectedTab === 'Staking' && view === 'full') ? (
+          (selectedTab === 'Staking' && view === 'full') ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -440,7 +440,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-        (selectedTab === 'Trading' && view === 'full') ? (
+          (selectedTab === 'Trading' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {custodies ? (
               <motion.div
@@ -469,7 +469,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-        (selectedTab === 'Pool' && view === 'full') ? (
+          (selectedTab === 'Pool' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {custodies ? (
               <motion.div
@@ -526,7 +526,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-        (selectedTab === 'Pool' && view === 'full') ? (
+          (selectedTab === 'Pool' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {custodies ? (
               <motion.div
@@ -555,7 +555,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-        (selectedTab === 'Pool' && view === 'full') ? (
+          (selectedTab === 'Pool' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {poolInfo ? (
               <motion.div
@@ -584,7 +584,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-        (selectedTab === 'Accounts' && view === 'full') ? (
+          (selectedTab === 'Accounts' && view === 'full') ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

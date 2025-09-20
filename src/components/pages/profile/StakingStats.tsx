@@ -372,7 +372,7 @@ export default function StakingStats({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-boldy'>
+              <div className='text-xs text-orange font-medium'>
                 {exportWarning}
               </div>
             )}
@@ -413,7 +413,7 @@ export default function StakingStats({
             height={24}
             className="w-4 h-4 opacity-50"
           />
-          <p className="text-lg font-interSemibold">Staked ADX</p>
+          <p className="text-lg font-semibold">Staked ADX</p>
         </div>
         <div className="flex flex-col lg:flex-row">
           <div className="p-3 border-r border-bcolor h-44 lg:h-auto lg:basis-1/3">

@@ -88,7 +88,7 @@ export default function CompetitionBanner({
                     <p className="text-lg tracking-[0.2rem] uppercase">{subTitle}</p>
                     <h1
                         className={twMerge(
-                            'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                            'text-[2.5em] sm:text-[3em] md:text-[4em] font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                             gradientColor,
                         )}
                     >
@@ -99,7 +99,7 @@ export default function CompetitionBanner({
                     <div className='flex'>
                         <h1
                             className={twMerge(
-                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
                             )}
                         >
@@ -107,7 +107,7 @@ export default function CompetitionBanner({
                         </h1>
                         <h1
                             className={twMerge(
-                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
                             )}
                         >
@@ -122,7 +122,7 @@ export default function CompetitionBanner({
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {days >= 0 ? days : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-medium tracking-widest">
                                 Days
                             </p>
                         </li>
@@ -131,7 +131,7 @@ export default function CompetitionBanner({
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {Number(hours) >= 0 ? hours : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-medium tracking-widest">
                                 Hours
                             </p>
                         </li>
@@ -140,7 +140,7 @@ export default function CompetitionBanner({
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {Number(minutes) >= 0 ? minutes : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-medium tracking-widest">
                                 Minutes
                             </p>
                         </li>
@@ -149,7 +149,7 @@ export default function CompetitionBanner({
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {Number(seconds) >= 0 ? seconds : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-medium tracking-widest">
                                 seconds
                             </p>
                         </li>
@@ -164,31 +164,31 @@ export default function CompetitionBanner({
                             ? <FormatNumber
                                 format='currency'
                                 nb={417564.28}
-                                className="text-5xl font-boldy"
+                                className="text-5xl font-medium"
                                 isDecimalDimmed={false}
                             />
                             : seasonName === 'expanse' ? <FormatNumber
                                 format='currency'
                                 nb={204396.55}
-                                className="text-5xl font-boldy"
+                                className="text-5xl font-medium"
                                 isDecimalDimmed={false}
                             /> : seasonName === 'awakening' ? <FormatNumber
                                 format='currency'
                                 nb={97166.49}
-                                className="text-5xl font-boldy"
+                                className="text-5xl font-medium"
                                 isDecimalDimmed={false}
                             /> : seasonName === 'interseason3' ?
                                 <FormatNumber
                                     format='currency'
                                     nb={totalPrize}
-                                    className="text-3xl sm:text-4xl md:text-5xl font-boldy"
+                                    className="text-3xl sm:text-4xl md:text-5xl font-medium"
                                     isDecimalDimmed={false}
                                 />
                                 : (!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
                                     <FormatNumber
                                         format='currency'
                                         nb={totalPrize}
-                                        className="text-5xl font-boldy"
+                                        className="text-5xl font-medium"
                                         isDecimalDimmed={false}
                                     />
                                 )}
@@ -209,8 +209,8 @@ export default function CompetitionBanner({
                                         precision={0}
                                         isAbbreviate={true}
                                         isAbbreviateIcon={false}
-                                        className="text-md font-boldy text-txtfade"
-                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        className="text-md font-medium text-txtfade"
+                                        suffixClassName='text-base font-medium text-txtfade'
                                         isDecimalDimmed={false}
                                     />
 
@@ -229,8 +229,8 @@ export default function CompetitionBanner({
                                         precision={0}
                                         isAbbreviate={true}
                                         isAbbreviateIcon={false}
-                                        className="text-md font-boldy text-txtfade"
-                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        className="text-md font-medium text-txtfade"
+                                        suffixClassName='text-base font-medium text-txtfade'
                                         isDecimalDimmed={false}
                                     />
                                 </div>
@@ -249,8 +249,8 @@ export default function CompetitionBanner({
                                         precision={0}
                                         isAbbreviate={true}
                                         isAbbreviateIcon={false}
-                                        className="text-md font-boldy text-txtfade"
-                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        className="text-md font-medium text-txtfade"
+                                        suffixClassName='text-base font-medium text-txtfade'
                                         isDecimalDimmed={false}
                                     />
                                 </div>
@@ -295,12 +295,12 @@ export default function CompetitionBanner({
                                     className="items-center text-base"
                                     tippyText=""
                                 />
-                                <span className="ml-2 text-base font-boldy tracking-widest">
+                                <span className="ml-2 text-base font-medium tracking-widest">
                                     left
                                 </span>
                             </>
                         ) : (
-                            <span className="font-boldy tracking-widest text-sm">
+                            <span className="font-medium tracking-widest text-sm">
                                 Begins{' '}
                                 {startDate.toLocaleDateString('en-US', {
                                     month: 'short',
@@ -310,7 +310,7 @@ export default function CompetitionBanner({
                             </span>
                         )
                     ) : (
-                        <span className="font-boldy tracking-widest text-sm">
+                        <span className="font-medium tracking-widest text-sm">
                             Competition has ended
                         </span>
                     )}

@@ -111,29 +111,29 @@ export default function LockedStakesDuration({
           <div className='flex gap-1'>
             <Image src={lockIcon} width={14} height={14} alt="Lock icon" />
 
-            <div className='text-sm flex gap-1 font-boldy text-txtfade cursor-pointer'>
+            <div className='text-sm flex gap-1 font-medium text-txtfade cursor-pointer'>
               {Number(lockDuration) / 3600 / 24} days lock
             </div>
 
             {lockedStakes.length > 1 ? <div className='text-sm flex gap-1 '>
-              <div className='hidden sm:block text-txtfade font-boldy'>|</div>
+              <div className='hidden sm:block text-txtfade font-medium'>|</div>
               <div className='flex'>
-                <div className='sm:hidden text-txtfade font-boldy'>{"("}</div>
-                <div className='text-txtfade font-boldy'>{lockedStakes.length}</div>
+                <div className='sm:hidden text-txtfade font-medium'>{"("}</div>
+                <div className='text-txtfade font-medium'>{lockedStakes.length}</div>
                 <div className='sm:hidden text-txtfade'>{")"}</div>
               </div>
-              <div className='hidden sm:block text-txtfade font-boldy'>stakes</div>
+              <div className='hidden sm:block text-txtfade font-medium'>stakes</div>
             </div> : null}
           </div>
 
           {firstUnlock !== null ? <div className='flex items-center justify-center ml-auto flex-col sm:flex-row sm:gap-2'>
-            <div className='text-xs font-boldy text-txtfade'>{lockedStakes.length > 1 ? 'First unlock in' : 'Unlocks in'}</div>
+            <div className='text-xs font-medium text-txtfade'>{lockedStakes.length > 1 ? 'First unlock in' : 'Unlocks in'}</div>
             <RemainingTimeToDate timestamp={firstUnlock} className='text-xs' />
           </div> : null}
         </div>
 
         <div className='flex flex-col pt-2 pb-2 items-center relative w-full'>
-          <div className='flex gap-x-2 items-center justify-center font-boldy'>
+          <div className='flex gap-x-2 items-center justify-center font-medium'>
             {lockedStakes.length > 1 ? 'Total:' : null}
             <FormatNumber
               nb={totalStaked}
@@ -143,11 +143,11 @@ export default function LockedStakesDuration({
               isDecimalDimmed={false}
             />
 
-            <div className='text-xl font-boldy'>{token}</div>
+            <div className='text-xl font-medium'>{token}</div>
           </div>
 
           {lockedStakes.length === 1 && lockedStakes[0].isGenesis ?
-            <div className='text-xxs bg-[#068862a0] font-boldy pt-[0.1em] pb-[0.1em] px-2 mt-1 rounded w-14 text-center'>genesis</div> : null}
+            <div className='text-xxs bg-[#068862a0] font-medium pt-[0.1em] pb-[0.1em] px-2 mt-1 rounded w-14 text-center'>genesis</div> : null}
 
           <div className='sm:absolute right-2 bottom-2 text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1' onClick={(e) => {
             e.stopPropagation();
@@ -176,7 +176,7 @@ export default function LockedStakesDuration({
               placement="auto"
             >
               <div className='flex items-center flex-col'>
-                <div className='text-xs text-txtfade font-boldy underline decoration-dotted'>USDC Reward Weight</div>
+                <div className='text-xs text-txtfade font-medium underline decoration-dotted'>USDC Reward Weight</div>
                 <div className='flex items-center justify-center gap-1'>
                   <FormatNumber
                     nb={totalWeight.amountWithRewardMultiplier}
@@ -212,7 +212,7 @@ export default function LockedStakesDuration({
               placement="auto"
             >
               <div className='flex items-center flex-col'>
-                <div className='text-xs text-txtfade font-boldy underline decoration-dotted'>ADX Reward Weight</div>
+                <div className='text-xs text-txtfade font-medium underline decoration-dotted'>ADX Reward Weight</div>
                 <div className='flex items-center justify-center gap-1'>
                   <FormatNumber
                     nb={totalWeight.amountWithLmRewardMultiplier}
@@ -233,7 +233,7 @@ export default function LockedStakesDuration({
             <Image src={votingIcon} width={20} height={6} alt="Voting icon" className='mr-1 h-8 w-8 opacity-10' />
 
             <div className='flex items-center flex-col'>
-              <div className='text-xs text-txtfade font-boldy'>Voting Power</div>
+              <div className='text-xs text-txtfade font-medium'>Voting Power</div>
               <div className='flex items-center justify-center gap-1'>
                 <FormatNumber
                   nb={totalWeight.votingPower}
@@ -280,7 +280,7 @@ export default function LockedStakesDuration({
             <div className='flex gap-1 opacity-40 hover:opacity-100 cursor-pointer transition-opacity justify-center items-center'>
               <div className='text-txtfade underline  text-xs'>{!detailOpen ? 'See' : 'Hide'} all stakes</div>
 
-              {lockedStakes.length > 1 ? <div className='text-xs flex gap-1 font-boldy text-txtfade'>
+              {lockedStakes.length > 1 ? <div className='text-xs flex gap-1 font-medium text-txtfade'>
                 ({lockedStakes.length})
               </div> : null}
             </div>

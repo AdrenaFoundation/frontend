@@ -56,7 +56,7 @@ export default function LiquidStakeSection({
                         />
 
                         <Button
-                            variant="primary"
+                            variant="red"
                             size="sm"
                             title={
                                 totalLiquidStaked && totalLiquidStaked > 0

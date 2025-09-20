@@ -46,8 +46,8 @@ export default function FilterSidebar({
     type: 'checkbox' | 'radio' | 'input';
     name: string;
     handleChange:
-      | React.Dispatch<React.SetStateAction<string>>
-      | React.Dispatch<React.SetStateAction<string[] | null>>;
+    | React.Dispatch<React.SetStateAction<string>>
+    | React.Dispatch<React.SetStateAction<string[] | null>>;
     activeOption: string[] | string | null;
     optionItems: { label: string; icon?: ImageRef | string }[];
     disabled?: boolean;
@@ -93,13 +93,13 @@ export default function FilterSidebar({
       className={twMerge(
         'p-4 bg-[#040D14] border rounded-lg',
         filterOptions.some((f) => f.disabled) &&
-          'opacity-25 cursor-not-allowed pointer-events-none',
+        'opacity-25 cursor-not-allowed pointer-events-none',
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
         <Image src={filterIcon} alt="filter icon" className="opacity-50" />
 
-        <p className="text-base font-boldy">Filter</p>
+        <p className="text-base font-medium">Filter</p>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -110,13 +110,13 @@ export default function FilterSidebar({
             value={search.value}
             onChange={(e) => search.handleChange(e.target.value)}
             placeholder={search.placeholder}
-            className="hidden md:flex bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy"
+            className="hidden md:flex bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-medium"
           />
         ))}
 
         {filterOptions.map((filterOption, i) => (
           <div key={`filter-${i}`}>
-            <p className="font-boldy opacity-50 mb-1">{filterOption.name}</p>
+            <p className="font-medium opacity-50 mb-1">{filterOption.name}</p>
             <div className="flex flex-row gap-3 flex-wrap">
               {filterOption.optionItems.map((opt) => {
                 if (filterOption.type === 'checkbox') {
@@ -167,13 +167,13 @@ export default function FilterSidebar({
       className={twMerge(
         'p-4 bg-[#040D14] border rounded-lg transition duration-300',
         sortOptions.disabled &&
-          'opacity-25 cursor-not-allowed pointer-events-none',
+        'opacity-25 cursor-not-allowed pointer-events-none',
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
         <Image src={sortIcon} alt="sort icon" className="opacity-50" />
 
-        <p className="text-base font-boldy">Sort</p>
+        <p className="text-base font-medium">Sort</p>
       </div>
       <div className="flex flex-row gap-3 flex-wrap">
         {sortOptions.optionItems.map((opt) => (
@@ -186,7 +186,7 @@ export default function FilterSidebar({
             onClick={() => sortOptions.handleChange(opt.label)}
           >
             {opt.icon && <Image src={opt.icon} alt="sort icon" />}
-            <p className="text-sm font-boldy">{opt.label}</p>
+            <p className="text-sm font-medium">{opt.label}</p>
 
             <motion.div
               key={opt.label}
@@ -291,7 +291,7 @@ export default function FilterSidebar({
             value={search.value}
             onChange={(e) => search.handleChange(e.target.value)}
             placeholder={search.placeholder}
-            className="bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy mb-3"
+            className="bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-medium mb-3"
           />
         ))}
 
@@ -405,7 +405,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 
       <label
         className={twMerge(
-          'flex flex-row gap-1 opacity-50 group-hover:opacity-100 font-boldy items-center ml-2 text-sm cursor-pointer transition-opacity duration-300',
+          'flex flex-row gap-1 opacity-50 group-hover:opacity-100 font-medium items-center ml-2 text-sm cursor-pointer transition-opacity duration-300',
           checked && 'opacity-100',
           labelClassName,
         )}
@@ -453,7 +453,7 @@ export const Radio: React.FC<RadioProps> = ({
       />
       <label
         className={twMerge(
-          'flex flex-row gap-1 font-boldy items-center ml-2 text-sm cursor-pointer',
+          'flex flex-row gap-1 font-medium items-center ml-2 text-sm cursor-pointer',
           ['profit', 'long'].includes(label) && 'text-green',
           ['loss', 'short'].includes(label) && 'text-red',
         )}

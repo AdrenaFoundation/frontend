@@ -95,7 +95,7 @@ export function PickTokenModal({
                                 height="40"
                             />
 
-                            <div className='font-archivo flex items-center justify-center text-sm'>
+                            <div className='flex items-center justify-center text-sm'>
                                 {recommendedToken.symbol}
                             </div>
                         </div>
@@ -137,11 +137,11 @@ export function PickTokenModal({
                         />
 
                         <div className='flex flex-col items-start'>
-                            <div className='font-archivo flex items-center justify-center text-sm'>
+                            <div className='flex items-center justify-center text-sm'>
                                 {token.symbol}
                             </div>
 
-                            <div className='font-archivo text-txtfade flex items-center justify-center text-xxs'>
+                            <div className='text-txtfade flex items-center justify-center text-xxs'>
                                 {token.name}
                             </div>
                         </div>
@@ -154,7 +154,7 @@ export function PickTokenModal({
                                     minimumFractionDigits={0}
                                     precisionIfPriceDecimalsBelow={4}
                                     isDecimalDimmed={false}
-                                    className='text-sm text-white font-archivo'
+                                    className='text-sm text-white'
                                 /> : null}
 
                             <div className='gap-1 flex text-xs items-center'>
@@ -167,7 +167,7 @@ export function PickTokenModal({
                                     precisionIfPriceDecimalsBelow={4}
                                     isDecimalDimmed={false}
                                     suffix={token.symbol}
-                                    suffixClassName='text-xs text-txtfade font-archivo'
+                                    suffixClassName='text-xs text-txtfade'
                                     className='text-xs text-txtfade'
                                 />
                             </div>

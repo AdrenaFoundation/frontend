@@ -52,16 +52,16 @@ function TokenList({
       {/* Column headers */}
       <div className="px-2 py-1.5 bg-third/20 border-b border-bcolor">
         <div className="grid grid-cols-10 gap-1.5 sm:gap-2 text-sm">
-          <div className="col-span-4 sm:col-span-3 font-boldy text-white/50">
+          <div className="col-span-4 sm:col-span-3 font-medium text-white/50">
             Ticker
           </div>
-          <div className="col-span-4 sm:col-span-3 font-boldy text-white/50">
+          <div className="col-span-4 sm:col-span-3 font-medium text-white/50">
             Price
           </div>
-          <div className="hidden sm:block col-span-2 font-boldy text-white/50">
+          <div className="hidden sm:block col-span-2 font-medium text-white/50">
             24h%
           </div>
-          <div className="col-span-2 font-boldy text-white/50">Avail. Liq.</div>
+          <div className="col-span-2 font-medium text-white/50">Avail. Liq.</div>
         </div>
       </div>
 
@@ -118,7 +118,7 @@ function TokenList({
                   width={20}
                   height={20}
                 />
-                <span className="text-base font-boldy text-white">
+                <span className="text-base font-medium text-white">
                   {item.symbol}
                 </span>
               </div>
@@ -198,13 +198,13 @@ export default function TokenSelector({
   const isOpen = asModal ? (controlledIsOpen ?? false) : internalIsOpen;
   const handleClose = asModal
     ? () => {
-        onClose?.();
-        setSearchTerm('');
-      }
+      onClose?.();
+      setSearchTerm('');
+    }
     : () => {
-        setInternalIsOpen(false);
-        setSearchTerm('');
-      };
+      setInternalIsOpen(false);
+      setSearchTerm('');
+    };
 
   const tokenData = useTokenSelectorData(tokenList, selectedAction, favorites);
 
@@ -267,7 +267,7 @@ export default function TokenSelector({
               className="flex flex-col overflow-hidden max-w-2xl w-full mx-4"
             >
               <div className="p-4 text-center text-white/50">
-                <span className="text-base font-boldy">Loading...</span>
+                <span className="text-base font-medium">Loading...</span>
               </div>
             </Modal>
           )}
@@ -278,7 +278,7 @@ export default function TokenSelector({
     return (
       <div className={twMerge('relative', className)}>
         <div className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 bg-main opacity-50">
-          <span className="text-base font-boldy text-white">Loading...</span>
+          <span className="text-base font-medium text-white">Loading...</span>
         </div>
       </div>
     );
@@ -336,7 +336,7 @@ export default function TokenSelector({
             width={20}
             height={20}
           />
-          <span className="text-lg font-boldy text-white">
+          <span className="text-lg font-medium text-white">
             {getTokenSymbol(selected.symbol)}
           </span>
           <Image

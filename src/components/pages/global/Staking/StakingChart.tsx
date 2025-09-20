@@ -100,7 +100,7 @@ export default function StakingChart() {
                         >
                           {formatPercentage(Number(item.value), 2)}
 
-                          <div className='font-boldy'>of circulating supply</div>
+                          <div className='font-medium'>of circulating supply</div>
                         </div>
 
                         <div
@@ -116,7 +116,7 @@ export default function StakingChart() {
                             isAbbreviateIcon={false}
                           />
 
-                          <span className='ml-1 font-boldy'>ADX</span>
+                          <span className='ml-1 font-medium'>ADX</span>
                         </div>
 
                         {tokenPriceADX ? <>

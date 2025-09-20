@@ -54,7 +54,7 @@ export default function TradingChartMini({ token }: { token: Token }) {
                         alt={token.symbol}
                         className="w-[20px] h-[20px]"
                     />
-                    <p className="text-lg font-boldy">
+                    <p className="text-lg font-medium">
                         {getTokenSymbol(token.symbol)} / USD
                     </p>
                 </div>

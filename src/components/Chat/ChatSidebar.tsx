@@ -183,9 +183,9 @@ function ChatSidebar({
             />
             <p
               className={twMerge(
-                'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
+                'opacity-50 group-hover:opacity-100 text-sm font-medium capitalize transition-opacity duration-300',
                 friendRequestWindowOpen && 'opacity-100',
-                pendingRequests.length > 0 && 'font-interBold opacity-100',
+                pendingRequests.length > 0 && 'font-bold opacity-100',
               )}
             >
               Friend Requests
@@ -285,11 +285,11 @@ function RoomButton({
         ) : null}
         <p
           className={twMerge(
-            'opacity-50 group-hover:opacity-100 text-sm font-boldy capitalize transition-opacity duration-300',
+            'opacity-50 group-hover:opacity-100 text-sm font-medium capitalize transition-opacity duration-300',
             currentChatroomId === room.id &&
-              !friendRequestWindowOpen &&
-              'opacity-100',
-            room.unread_count > 0 && 'font-interBold opacity-100',
+            !friendRequestWindowOpen &&
+            'opacity-100',
+            room.unread_count > 0 && 'font-bold opacity-100',
           )}
         >
           {room.type === 'community' ? (

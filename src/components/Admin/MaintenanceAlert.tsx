@@ -81,7 +81,7 @@ export default function MaintenanceAlert() {
 
   return (
     <div className="w-full max-w-4xl  mx-auto p-4 mt-8 border rounded-xl">
-      <h1 className="text-lg font-interSemibold mb-3 capitalize">
+      <h1 className="text-lg font-semibold mb-3 capitalize">
         Create New Maintenance Message
       </h1>
 
@@ -99,7 +99,7 @@ export default function MaintenanceAlert() {
             placeholder="Enter maintenance message"
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
-            className="text-sm p-3 rounded-xl text-ellipsis font-boldy outline-none w-full bg-inputcolor border border-white/10"
+            className="text-sm p-3 rounded-xl text-ellipsis font-medium outline-none w-full bg-inputcolor border border-white/10"
           />
           <Button
             title="Create"
@@ -109,7 +109,7 @@ export default function MaintenanceAlert() {
           />
         </div>
 
-        <p className="font-interSemibold mb-2 text-sm flex items-center gap-3">
+        <p className="font-semibold mb-2 text-sm flex items-center gap-3">
           Affected Pages
         </p>
         <div className="flex flex-row flex-wrap gap-4">
@@ -131,7 +131,7 @@ export default function MaintenanceAlert() {
                   // parent component handles the state change
                 }}
               />
-              <span className="ml-2 text-sm font-interMedium">{page}</span>
+              <span className="ml-2 text-sm font-medium">{page}</span>
             </div>
           ))}
         </div>
@@ -153,7 +153,7 @@ export default function MaintenanceAlert() {
       </div>
 
       <div>
-        <h3 className="text-base font-interSemibold mb-2 capitalize">
+        <h3 className="text-base font-semibold mb-2 capitalize">
           Existing Maintenance Messages
         </h3>
 
@@ -180,7 +180,7 @@ export default function MaintenanceAlert() {
                         type="text"
                         value={editMsg}
                         onChange={(e) => setEditMsg(e.target.value)}
-                        className="text-sm p-3 rounded-xl font-boldy outline-none flex-1 bg-inputcolor border border-white/10"
+                        className="text-sm p-3 rounded-xl font-medium outline-none flex-1 bg-inputcolor border border-white/10"
                         placeholder="Edit message"
                       />
                       <Button
@@ -198,7 +198,7 @@ export default function MaintenanceAlert() {
                     </div>
 
                     <div>
-                      <p className="font-interSemibold mb-2 text-sm flex items-center gap-3">
+                      <p className="font-semibold mb-2 text-sm flex items-center gap-3">
                         Affected Pages
                       </p>
                       <div className="flex flex-row flex-wrap gap-2">
@@ -216,9 +216,9 @@ export default function MaintenanceAlert() {
                           >
                             <Checkbox
                               checked={editPages.includes(page)}
-                              onChange={() => {}}
+                              onChange={() => { }}
                             />
-                            <span className="ml-1 text-xs font-interMedium capitalize">
+                            <span className="ml-1 text-xs font-medium capitalize">
                               {page}
                             </span>
                           </div>
@@ -249,7 +249,7 @@ export default function MaintenanceAlert() {
                   <div className="gap-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex flex-col gap-3 flex-1">
-                        <p className="text-base font-interMedium">
+                        <p className="text-base font-medium">
                           {message.message}
                         </p>
                         {message.pages.length > 0 ? (
@@ -257,7 +257,7 @@ export default function MaintenanceAlert() {
                             {message.pages.map((page) => (
                               <span
                                 key={page}
-                                className="font-interMedium text-xs px-2 py-1 border rounded-lg border-bcolor"
+                                className="font-medium text-xs px-2 py-1 border rounded-lg border-bcolor"
                               >
                                 {page}
                               </span>
@@ -269,7 +269,7 @@ export default function MaintenanceAlert() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEdit(message)}
-                          className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-xs font-interMedium transition duration-300"
+                          className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-xs font-medium transition duration-300"
                           disabled={loading}
                         >
                           Edit
@@ -277,7 +277,7 @@ export default function MaintenanceAlert() {
 
                         <button
                           onClick={() => handleDelete(message.id)}
-                          className="px-3 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded text-xs font-interMedium transition duration-300"
+                          className="px-3 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded text-xs font-medium transition duration-300"
                           disabled={loading}
                         >
                           Delete

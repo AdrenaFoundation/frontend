@@ -387,7 +387,7 @@ export default function ClaimHistorySection({
 
                         {/* Warning Message */}
                         {exportWarning && (
-                            <div className='text-xs text-orange font-boldy'>
+                            <div className='text-xs text-orange font-medium'>
                                 {exportWarning}
                             </div>
                         )}

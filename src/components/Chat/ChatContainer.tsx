@@ -94,7 +94,7 @@ function ChatContainer({
         );
         acc[profile.owner.toBase58()].profilePictureUrl =
           PROFILE_PICTURES[
-            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          profile.profilePicture as keyof typeof PROFILE_PICTURES
           ];
         acc[profile.owner.toBase58()].team =
           acc[profile.owner.toBase58()]?.team || 0;
@@ -316,7 +316,7 @@ function ChatTitle({
             />
           </div>
         ) : null}
-        <p className="text-base font-boldy capitalize">
+        <p className="text-base font-medium capitalize">
           <span className="opacity-50 text-base">
             # {!isChatOpen && !isLoading ? 'Chat:' : null}
           </span>
@@ -326,8 +326,8 @@ function ChatTitle({
 
       <div className="flex flex-row items-center gap-2">
         {totalNotifications !== null &&
-        totalNotifications > 0 &&
-        !isChatOpen ? (
+          totalNotifications > 0 &&
+          !isChatOpen ? (
           <div className="flex items-center justify-center bg-redbright min-w-2 h-2 rounded-full" />
         ) : null}
         <div

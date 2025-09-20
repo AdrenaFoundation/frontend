@@ -237,7 +237,7 @@ export default function StopLossTakeProfitInput({
         isLight && 'px-2 sm:px-4',
       )}
     >
-      <p className="font-boldy text-sm text-nowrap">{title}</p>
+      <p className="font-medium text-sm text-nowrap">{title}</p>
 
       {priceIsOk === true &&
         displayValue !== null &&

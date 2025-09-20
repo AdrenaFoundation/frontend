@@ -35,7 +35,7 @@ export default function DisplayInfo({
 
       <div
         className={twMerge(
-          'flex flex-col font-boldy opacity-75',
+          'flex flex-col font-medium opacity-75',
           !displayIcon ? 'text-center items-center justify-center' : '',
           bodyClassName,
         )}

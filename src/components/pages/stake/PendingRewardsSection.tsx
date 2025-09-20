@@ -92,7 +92,7 @@ export default function PendingRewardsSection({
 
                 <div className={twMerge('flex flex-col sm:flex-row gap-4 my-2 sm:my-0 w-full sm:w-auto flex-none')}>
                     <Button
-                        variant="primary"
+                        variant="red"
                         size="sm"
                         title={isClaimingAndBuyAdxRewards ? 'Claiming & buying ADX...' : 'Claim & Buy ADX'}
                         className={twMerge("px-5 w-full sm:w-auto")}
@@ -106,7 +106,7 @@ export default function PendingRewardsSection({
                     />
 
                     <Button
-                        variant="primary"
+                        variant="red"
                         size="sm"
                         title={isClaimingRewards ? 'Claiming...' : 'Claim'}
                         className={twMerge("px-5 w-full sm:w-auto")}

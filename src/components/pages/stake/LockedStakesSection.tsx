@@ -86,7 +86,7 @@ export default function LockedStakesSection({
                     </div>
 
                     <Button
-                        variant="primary"
+                        variant="red"
                         size="sm"
                         className='w-[8em]'
                         title="Add Stake"

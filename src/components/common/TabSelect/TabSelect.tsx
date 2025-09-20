@@ -39,23 +39,23 @@ export default function TabSelect<T extends string | number>({
   return (
     <div
       className={twMerge(
-        'relative flex flex-row justify-between w-full pb-1 mb-1',
+        'relative flex flex-row justify-between w-full',
         wrapperClassName,
       )}
     >
       {tabs.map(({ title: title, activeColor, disabled }, index) => (
         <div
           className={twMerge(
-            'p-1 w-full cursor-pointer z-10',
+            'p-1 w-full cursor-pointer z-10 border-t border-l border-r border-b bg-main rounded-t-lg overflow-hidden',
             className,
             activeTab !== null && index === activeTab
               ? activeColor
-                ? `opacity-100 border-b-[0.2em] ${activeColor}`
-                : 'opacity-100 border-b-[0.2em] border-highlight'
-              : 'opacity-50 border-b-[1px]',
+                ? `opacity-100 border-t border-l border-r`
+                : 'opacity-100 border-b-[0.2em] border-bcolor'
+              : 'opacity-50 bg-main rounded-t-lg',
             disabled && 'opacity-25 cursor-not-allowed',
             tabs[index].icon &&
-              'flex flex-row gap-1 items-center justify-center ',
+            'flex flex-row gap-1 items-center justify-center ',
           )}
           ref={refs[index]}
           key={title}
@@ -76,7 +76,7 @@ export default function TabSelect<T extends string | number>({
           )}
           <h5
             className={twMerge(
-              'text-center uppercase select-none',
+              'text-center select-none',
               titleClassName,
             )}
           >

@@ -16,7 +16,7 @@ export default function YesOrNoModal({
   noTitle,
   noClassName,
   yesVariant = 'primary',
-  noVariant = 'danger',
+  noVariant = 'red',
   className,
 }: {
   isOpen: boolean;

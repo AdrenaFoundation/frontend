@@ -145,7 +145,7 @@ export default function ViewProfileModal({
 
         <div className="flex flex-col gap-3 p-4">
           <div className="flex flex-col gap-3">
-            <h4 className="capitalize font-interSemibold">Active Positions</h4>
+            <h4 className="capitalize font-semibold">Active Positions</h4>
             <div className="flex flex-wrap justify-between gap-2">
               {positions !== null && positions.length ? (
                 <div className="flex flex-col w-full gap-2">

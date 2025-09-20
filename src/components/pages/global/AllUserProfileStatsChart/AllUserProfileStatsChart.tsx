@@ -237,7 +237,7 @@ const AllUserProfileStatsChart = ({
           }}
           reversed={true}
           className="p-2 flex items-center"
-          selectedTextClassName="text-sm font-boldy"
+          selectedTextClassName="text-sm font-medium"
           menuTextClassName="text-sm"
           menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
           menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"

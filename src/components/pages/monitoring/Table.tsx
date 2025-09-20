@@ -212,7 +212,7 @@ export default function Table({
           const key = header.key ?? header.title;
           return (
             <div key={key} className="flex flex-col">
-              <span className="text-xs sm:text-sm text-white/50 font-interMedium">
+              <span className="text-xs sm:text-sm text-white/50 font-medium">
                 {header.title}
               </span>
               <div className="mt-1">{item[key]}</div>
@@ -231,7 +231,7 @@ export default function Table({
         <button
           onClick={() => onViewModeChange('table')}
           className={twMerge(
-            'font-interMedium px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
+            'font-medium px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
             viewMode === 'table'
               ? 'bg-white text-black'
               : 'text-white/70 hover:text-white',
@@ -242,7 +242,7 @@ export default function Table({
         <button
           onClick={() => onViewModeChange('block')}
           className={twMerge(
-            'font-interMedium px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
+            'font-medium px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
             viewMode === 'block'
               ? 'bg-white text-black'
               : 'text-white/70 hover:text-white',
@@ -268,7 +268,7 @@ export default function Table({
           {/* View toggle header */}
           {onViewModeChange && (
             <div className="flex justify-between items-center p-2 px-3 bg-secondary border-b border-bcolor">
-              <div className="text-lg font-interMedium">{title}</div>
+              <div className="text-lg font-medium">{title}</div>
               <ViewToggle />
             </div>
           )}
@@ -322,7 +322,7 @@ export default function Table({
         {/* View toggle header for table view */}
         {onViewModeChange && (
           <div className="flex justify-between items-center p-2 px-3 bg-secondary border-b border-bcolor">
-            <div className="text-lg font-interMedium">{title}</div>
+            <div className="text-lg font-medium">{title}</div>
             <ViewToggle />
           </div>
         )}
@@ -380,7 +380,7 @@ export default function Table({
                             order={sortDirection}
                           />
                         ) : null}
-                        <span className="text-xs sm:text-sm font-interMedium opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                        <span className="text-xs sm:text-sm font-medium opacity-50 group-hover:opacity-100 transition-opacity duration-300">
                           {header.title}
                         </span>
                         {header.isSortable && header.align === 'left' ? (

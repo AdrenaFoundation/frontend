@@ -147,7 +147,7 @@ export const FeesSection = ({
 
                             {newPositionInfo.highSwapFees && (
                                 <Tippy content={highSwapFeeTippyContent}>
-                                    <div className='text-xs text-orange font-boldy underline-dashed'>
+                                    <div className='text-xs text-orange font-medium underline-dashed'>
                                         warning: high swap fees
                                     </div>
                                 </Tippy>

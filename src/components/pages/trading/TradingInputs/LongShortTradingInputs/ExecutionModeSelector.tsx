@@ -30,7 +30,7 @@ export const ExecutionModeSelector = ({
         {/* <div className='w-full h-10 flex mt-2 justify-between gap-1'>
             <div
                 className={twMerge(
-                    'w-1/2 h-full flex items-center bg-bcolor opacity-50 border rounded-lg justify-center text-sm cursor-pointer font-archivo transition duration-300',
+                    'w-1/2 h-full flex items-center bg-bcolor opacity-50 border rounded-lg justify-center text-sm cursor-pointer transition duration-300',
                     !isLimitOrder && 'opacity-100 border-white/20'
                 )}
                 onClick={() => onModeChange(false)}
@@ -40,7 +40,7 @@ export const ExecutionModeSelector = ({
 
             <div
                 className={twMerge(
-                    'w-1/2 h-full flex flex-col items-center bg-bcolor opacity-50 border rounded-lg justify-center text-sm cursor-pointer font-archivo',
+                    'w-1/2 h-full flex flex-col items-center bg-bcolor opacity-50 border rounded-lg justify-center text-sm cursor-pointer',
                     isLimitOrder && 'opacity-100 border-white/20'
                 )}
                 onClick={() => onModeChange(true)}

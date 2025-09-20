@@ -55,7 +55,7 @@ export default function ProfileCreation({
 
           <div className="flex flex-col items-center pb-4">
             <InputString
-              className="font-boldy text-xl relative p-3 border border-bcolor rounded-lg text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
+              className="font-medium text-xl relative p-3 border border-bcolor rounded-lg text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
               value={nickname ?? ''}
               onChange={setNickname}
               placeholder="The Best Trader"
@@ -65,19 +65,19 @@ export default function ProfileCreation({
 
             <div className='h-[2em]'>
               {(trimmedNickname && trimmedNickname.length < 3) || !trimmedNickname ?
-                <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Nickname must be at least 3 characters</div> :
+                <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-medium">Nickname must be at least 3 characters</div> :
                 null}
 
               {trimmedNickname && typeof alreadyTakenNicknames[trimmedNickname] === 'undefined' && trimmedNickname.length > 3 ?
-                <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Checking nickname availability...</div> :
+                <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-medium">Checking nickname availability...</div> :
                 null}
 
               {trimmedNickname && alreadyTakenNicknames[trimmedNickname] === true ?
-                <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">Nickname is already taken</div> :
+                <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-medium">Nickname is already taken</div> :
                 null}
 
               {trimmedNickname && alreadyTakenNicknames[trimmedNickname] === false ?
-                <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">Nickname is available</div> :
+                <div className="text-red-500 text-xs text-center mb-4 text-green font-medium">Nickname is available</div> :
                 null}
             </div>
 

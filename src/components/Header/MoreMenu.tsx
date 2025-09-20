@@ -87,7 +87,7 @@ export default function MoreMenu({
             key="more-menu"
             className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-lg p-4 w-[37.5rem]">
             <div className="flex-1">
-              <p className="text-sm mb-1 font-boldy opacity-50">Features</p>
+              <p className="text-sm mb-1 font-medium opacity-50">Features</p>
               <div className="flex flex-col gap-3 flex-1">
                 {PAGES.map((page) => {
                   return (
@@ -116,7 +116,7 @@ export default function MoreMenu({
                           </div>
                         ) : null}
                         <div>
-                          <p className="text-base font-boldy">{page.name}</p>
+                          <p className="text-base font-medium">{page.name}</p>
                           <p className="opacity-50 text-sm">{page?.subtitle}</p>
                         </div>
                       </div>
@@ -134,7 +134,7 @@ export default function MoreMenu({
 
             <div className="flex-1">
               <div>
-                <p className="text-sm mb-1 font-boldy opacity-50">
+                <p className="text-sm mb-1 font-medium opacity-50">
                   External Links
                 </p>
                 <div className="flex flex-col gap-3 flex-1">
@@ -155,7 +155,7 @@ export default function MoreMenu({
                             />
                           ) : null}
                           <div>
-                            <p className="text-base font-boldy">{page.name}</p>
+                            <p className="text-base font-medium">{page.name}</p>
                           </div>
                         </div>
 
@@ -171,7 +171,7 @@ export default function MoreMenu({
               </div>
 
               <div className="mt-3">
-                <p className="text-sm mb-1 font-boldy opacity-50">Socials</p>
+                <p className="text-sm mb-1 font-medium opacity-50">Socials</p>
 
                 <div className="flex flex-row gap-3 flex-1">
                   {SOCIAlS_LINKS.map((page) => {

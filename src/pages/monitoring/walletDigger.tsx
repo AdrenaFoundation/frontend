@@ -280,7 +280,7 @@ export default function WalletDigger({
             {snsDomain ? (
               <Tippy
                 content="Registered Domain through Solana Name Service (SNS)"
-                className="!text-xs !font-boldy"
+                className="!text-xs !font-medium"
                 placement="auto"
               >
                 <div className="absolute left-2 top-2 flex flex-row gap-1 items-center">
@@ -717,7 +717,7 @@ export default function WalletDigger({
 
               {allRefereesProfiles !== null &&
                 allRefereesProfiles.length === 0 ? (
-                <div className="w-full items-center justify-center flex font-archivo text-sm opacity-80 pt-8 pb-8">
+                <div className="w-full items-center justify-center flex text-sm opacity-80 pt-8 pb-8">
                   No referee yet.
                 </div>
               ) : null}

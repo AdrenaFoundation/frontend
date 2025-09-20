@@ -1101,7 +1101,7 @@ export default function LongShortTradingInputs({
               swapSlippage={swapSlippage}
               setSwapSlippage={setSwapSlippage}
               className="mt-2"
-              titleClassName="font-interMedium"
+              titleClassName="font-medium"
             />
           </>
         ) : null}

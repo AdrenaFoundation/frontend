@@ -978,7 +978,7 @@ export const ACHIEVEMENTS: AchievementInfo[] = [
     index: 17,
     title: 'It happened so fast...',
     description: 'Lose $10,000.',
-    story: 'Welcome to the danger zone. Check your wallet for survivors.',
+    story: 'Welcome to the red zone. Check your wallet for survivors.',
     image:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/achievements/18-happened-so-fast-KIt1ck2Sy7qgNqOBxs3T4vpNTORaFl.jpg',
     points: 15,

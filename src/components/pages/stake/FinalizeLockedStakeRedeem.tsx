@@ -121,7 +121,7 @@ export default function FinalizeLockedStakeRedeem({
       </div>
 
       <Button
-        variant="danger"
+        variant="red"
         className="w-full mt-8"
         size="lg"
         title="I agree to exit early and pay the fee"

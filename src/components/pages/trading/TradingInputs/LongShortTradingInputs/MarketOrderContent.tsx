@@ -67,7 +67,7 @@ export const MarketOrderContent = ({
 
   return (
     <div className="flex flex-col transition-opacity duration-500 mt-4">
-      <h5 className="flex items-center text-sm font-interMedium">Size</h5>
+      <h5 className="flex items-center text-sm font-medium">Size</h5>
 
       <div className="flex items-center h-[3.5rem] pr-3 bg-third mt-1 border rounded-lg z-40">
         {/* Token selector button */}
@@ -86,7 +86,7 @@ export const MarketOrderContent = ({
               width={20}
               height={20}
             />
-            <span className="text-lg font-boldy text-white">
+            <span className="text-lg font-medium text-white">
               {getTokenSymbol(tokenB.symbol)}
             </span>
             {/* Show chevron only on mobile */}
@@ -232,7 +232,7 @@ export const MarketOrderContent = ({
           // side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
         )}
         size="lg"
-        variant={side === 'short' ? 'danger' : 'success'}
+        variant={side === 'short' ? 'red' : 'green'}
         title={buttonTitle}
         disabled={errorMessage != null || insufficientAmount}
         onClick={onExecute}

@@ -158,7 +158,7 @@ function Chat({
         <Button
           size="sm"
           title="Send"
-          className={twMerge("absolute right-5 font-boldy bg-[#E2464A] text-white w-14 h-6 rounded-md",
+          className={twMerge("absolute right-5 font-medium bg-[#E2464A] text-white w-14 h-6 rounded-md",
             isSendingMessage && 'opacity-50 cursor-not-allowed pointer-events-none'
           )}
           onClick={handleSendMessage}

@@ -57,7 +57,7 @@ export default function NumberDisplay({
           >
             <div
               className={twMerge(
-                'text-xs sm:text-sm text-txtfade font-boldy border-b border-dashed border-white/20 cursor-help',
+                'text-xs sm:text-sm text-txtfade font-medium border-b border-dashed border-white/20 cursor-help',
                 titleClassName,
               )}
             >
@@ -75,7 +75,7 @@ export default function NumberDisplay({
       bodyClassName="gap-0"
       headerClassName={twMerge('text-center justify-center', headerClassName)}
       titleClassName={twMerge(
-        'text-xs sm:text-sm text-txtfade font-boldy',
+        'text-xs sm:text-sm text-txtfade font-medium',
         titleClassName,
       )}
       subTitle={subtitle}
@@ -94,7 +94,7 @@ export default function NumberDisplay({
         format={format}
         suffix={suffix}
         suffixClassName={twMerge(
-          'text-sm font-boldy text-txtfade',
+          'text-sm font-medium text-txtfade',
           bodySuffixClassName,
         )}
       />

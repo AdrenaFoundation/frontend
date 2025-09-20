@@ -522,7 +522,7 @@ export default function ClosePosition({
         <div className="flex gap-4 flex-col sm:flex-row">
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
-              <p className="text-sm font-boldy mb-2">
+              <p className="text-sm font-medium mb-2">
                 {activePercent && activePercent !== 1 ? 'Size to Partially Close' : 'Size to Close'}
               </p>
 
@@ -539,7 +539,7 @@ export default function ClosePosition({
                     min={0.01}
                   />
 
-                  <p className="font-boldy opacity-50 cursor-default">USD</p>
+                  <p className="font-medium opacity-50 cursor-default">USD</p>
                 </div>
 
                 <div className="flex flex-row gap-3 w-full">
@@ -586,7 +586,7 @@ export default function ClosePosition({
 
             <div className="my-3">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-boldy text-sm">Receive</p>
+                <p className="font-medium text-sm">Receive</p>
                 {isCalculating ? (
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-txtfade">
@@ -636,7 +636,7 @@ export default function ClosePosition({
                     <Image src={chevronDownIcon} alt="chevron down" />
                   </div>
 
-                  <div className="font-archivo">
+                  <div className="">
                     {redeemToken.symbol ?? '-'}
                   </div>
 
@@ -744,7 +744,7 @@ export default function ClosePosition({
 
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
-              <div className="text-white text-sm mb-1 font-boldy">
+              <div className="text-white text-sm mb-1 font-medium">
                 Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
               </div>
 
@@ -901,7 +901,7 @@ export default function ClosePosition({
 
             <div className="pt-4 pb-2">
               <div className="flex justify-between items-center">
-                <div className="text-white text-sm font-boldy">Fees</div>
+                <div className="text-white text-sm font-medium">Fees</div>
 
                 <button
                   className="text-txtfade text-xs underline pr-2"
@@ -1027,7 +1027,7 @@ export default function ClosePosition({
             size="lg"
             variant="primary"
             title={
-              <span className="text-main text-base font-boldy">
+              <span className="text-main text-base font-medium">
                 {(activePercent !== null && activePercent < 0.01) ? 'Cannot close less than 1%' : `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
               </span>
             }

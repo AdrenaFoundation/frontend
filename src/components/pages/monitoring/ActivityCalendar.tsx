@@ -219,7 +219,7 @@ export default function ActivityCalendar({
         )}
       >
         <div className="flex flex-col sm:flex-row mb-6 px-3 justify-between items-center">
-          <p className="font-interSemibold text-lg">Daily Trading activity</p>
+          <p className="font-semibold text-lg">Daily Trading activity</p>
           <div className="flex flex-row gap-3 animate-pulse">
             <div className="h-4 w-20 bg-third/20 rounded" />
           </div>
@@ -264,7 +264,7 @@ export default function ActivityCalendar({
             className="w-4 h-4 opacity-50"
           />
 
-          <p className="font-interSemibold text-lg sm:text-lg">
+          <p className="font-semibold text-lg sm:text-lg">
             Daily Trading activity
           </p>
         </div>
@@ -324,7 +324,7 @@ export default function ActivityCalendar({
                     return (
                       <div
                         key={i}
-                        className="absolute text-sm font-boldy opacity-50 z-10 whitespace-nowrap"
+                        className="absolute text-sm font-medium opacity-50 z-10 whitespace-nowrap"
                         style={{
                           left: `${position}rem`,
                           top: '-1.5rem',
@@ -349,7 +349,7 @@ export default function ActivityCalendar({
                       return (
                         <Tippy
                           content={
-                            <p className="text-xs font-boldy">
+                            <p className="text-xs font-medium">
                               {new Date(date).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 day: 'numeric',
@@ -388,7 +388,7 @@ export default function ActivityCalendar({
                                 width={10}
                                 height={10}
                               />
-                              <p className="text-xs font-boldy">
+                              <p className="text-xs font-medium">
                                 {new Date(date).toLocaleDateString('en-US', {
                                   year: 'numeric',
                                   day: 'numeric',

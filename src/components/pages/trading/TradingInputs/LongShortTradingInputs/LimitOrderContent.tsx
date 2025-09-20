@@ -98,7 +98,7 @@ export const LimitOrderContent = ({
     </div>
 
     <div className="flex items-center mt-3 gap-1">
-      <div className="text-xs font-boldy relative bottom-[0.2em] opacity-50">
+      <div className="text-xs font-medium relative bottom-[0.2em] opacity-50">
         Trigger price must be {side === 'long' ? 'below' : 'above'}
       </div>
 

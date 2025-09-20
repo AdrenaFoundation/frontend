@@ -20,7 +20,7 @@ export default function ChartToggleButton({
     isActive && 'opacity-100',
   );
 
-  const textClasses = twMerge('text-xs font-interMedium whitespace-nowrap');
+  const textClasses = twMerge('text-xs font-medium whitespace-nowrap');
 
   return (
     <div className={twMerge(baseClasses, className)} onClick={onClick}>

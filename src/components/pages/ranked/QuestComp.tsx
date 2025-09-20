@@ -24,7 +24,7 @@ export default function QuestComp({
             {quest.title ? (
                 <div className="flex flex-row items-center">
                     <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                        <p className="font-archivoblack text-lg">{quest.title}</p>
+                        <p className="font-black text-lg">{quest.title}</p>
                     </div>
                     <Image
                         src={wing}
@@ -35,7 +35,7 @@ export default function QuestComp({
             ) : null}
 
             {quest.description ? (
-                <p className="font-boldy opacity-50 mb-3">{quest.description}</p>
+                <p className="font-medium opacity-50 mb-3">{quest.description}</p>
             ) : null}
 
             <ul className="flex flex-col gap-3">
@@ -52,7 +52,7 @@ export default function QuestComp({
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
                                         <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                                            <p className="font-archivoblack text-lg">{task.title}</p>
+                                            <p className="font-black text-lg">{task.title}</p>
                                         </div>
                                         <Image
                                             src={wing}
@@ -62,7 +62,7 @@ export default function QuestComp({
                                     </div>
                                 ) : null}
                                 {task.description ? (
-                                    <p className="font-boldy opacity-50 mb-3">
+                                    <p className="font-medium opacity-50 mb-3">
                                         {task.description}
                                     </p>
                                 ) : null}{' '}
@@ -73,7 +73,7 @@ export default function QuestComp({
                                             checked={false}
                                             onChange={() => false}
                                         />
-                                        <p className="font-boldy opacity-50">{task.task}</p>
+                                        <p className="font-medium opacity-50">{task.task}</p>
                                     </div>
 
                                     <p className="font-mono opacity-50 text-right">
@@ -97,7 +97,7 @@ export default function QuestComp({
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
                                         <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
-                                            <p className="font-archivoblack text-lg">{task.title}</p>
+                                            <p className="font-black text-lg">{task.title}</p>
                                         </div>
                                         <Image
                                             src={wing}
@@ -108,7 +108,7 @@ export default function QuestComp({
                                 ) : null}
 
                                 {task.description ? (
-                                    <p className="font-boldy opacity-50 mb-3">
+                                    <p className="font-medium opacity-50 mb-3">
                                         {task.description}
                                     </p>
                                 ) : null}
@@ -132,7 +132,7 @@ export default function QuestComp({
                                                         />
                                                         <p
                                                             className={twMerge(
-                                                                'opacity-50 font-boldy',
+                                                                'opacity-50 font-medium',
                                                                 level.completed && 'opacity-100',
                                                             )}
                                                         >
@@ -184,12 +184,12 @@ export default function QuestComp({
                                 <Checkbox checked={task.completed} onChange={() => false} />
                                 <div>
                                     {task?.title ? (
-                                        <p className="font-boldy">{task.title}</p>
+                                        <p className="font-medium">{task.title}</p>
                                     ) : null}
 
                                     <p
                                         className={twMerge(
-                                            'opacity-50 font-boldy max-w-[350px]',
+                                            'opacity-50 font-medium max-w-[350px]',
                                             task.completed && 'opacity-100',
                                         )}
                                     >

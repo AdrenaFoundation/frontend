@@ -65,25 +65,25 @@ export default function TradeComp({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full sm:bg-main flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg',
+        'sm:flex w-full flex-col sm:flex-row lg:flex-col',
         isBigScreen ? 'mt-0 w-[30em]' : 'mt-4',
         className,
       )}
     >
-      <div className="w-full flex flex-col sm:p-3">
-        <TabSelect
-          selected={selectedAction}
-          tabs={[
-            { title: 'long', activeColor: 'border-b-green text-green' },
-            { title: 'short', activeColor: 'border-b-red text-red' },
-            { title: 'swap', activeColor: 'border-white' },
-          ]}
-          onClick={(title) => {
-            setSelectedAction(title);
-          }}
-          wrapperClassName="hidden sm:flex"
-        />
+      <TabSelect
+        selected={selectedAction}
+        tabs={[
+          { title: 'long', activeColor: 'border-b-green text-green' },
+          { title: 'short', activeColor: 'border-b-red text-red' },
+          { title: 'swap', activeColor: 'border-white' },
+        ]}
+        onClick={(title) => {
+          setSelectedAction(title);
+        }}
+        wrapperClassName="hidden sm:flex"
+      />
 
+      <div className="w-full flex flex-col items-center sm:pl-3 sm:pr-3 sm:pb-2 sm:bg-main sm:border-l sm:border-r sm:border-b sm:rounded-b-lg">
         {window.adrena.client.tokens.length && tokenA && tokenB && (
           <>
             {selectedAction === 'long' || selectedAction === 'short' ? (
@@ -138,7 +138,7 @@ export default function TradeComp({
                   <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
                     <span
                       className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        'font-medium uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
                         isJupSwap ? 'opacity-100' : '',
                       )}
                       onClick={() => {
@@ -152,7 +152,7 @@ export default function TradeComp({
 
                     <span
                       className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        'font-medium uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
                         !isJupSwap ? 'opacity-100' : '',
                       )}
                       onClick={() => {

@@ -73,9 +73,9 @@ export default function TradingInput({
           style={
             disabled
               ? {
-                  backgroundSize: '10px 10px',
-                  cursor: 'not-allowed',
-                }
+                backgroundSize: '10px 10px',
+                cursor: 'not-allowed',
+              }
               : {}
           }
         >
@@ -134,7 +134,7 @@ export default function TradingInput({
                   </div>
                 ) : null}
 
-                <div className="font-archivo text-base">
+                <div className="text-base">
                   {selectedToken.symbol ?? '-'}
                 </div>
 

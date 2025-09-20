@@ -151,11 +151,11 @@ export default function TopProtocolsByFees() {
         {data.map(({ name, fees, rank, logo }, i) => (
           <div key={name} className={`flex justify-between items-center border-b ${i === 0 ? 'border-t' : ''} border-bcolor p-1`}>
             <div className="flex items-center gap-2">
-              <div className={`text-sm font-boldy w-6 text-left ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{rank}</div>
+              <div className={`text-sm font-medium w-6 text-left ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{rank}</div>
               { /* eslint-disable-next-line @next/next/no-img-element */}
               <img src={logo} alt={`${name} logo`} className={`h-4 w-4 ${name === 'Adrena Protocol' ? 'grayscale' : 'grayscale'}`} />
 
-              <div className={`text-sm font-boldy ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{name}</div>
+              <div className={`text-sm font-medium ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{name}</div>
             </div>
 
             <div className={`text-sm`}>

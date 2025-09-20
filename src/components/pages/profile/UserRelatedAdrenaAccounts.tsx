@@ -22,7 +22,7 @@ function onchainAccountData({
 }) {
   return {
     rowTitle: (
-      <div className="flex items-center font-boldy">
+      <div className="flex items-center font-medium">
         {title} <TitleAnnotation text={program} />
       </div>
     ),

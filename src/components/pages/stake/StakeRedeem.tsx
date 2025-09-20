@@ -18,7 +18,7 @@ export default function StakeRedeem({
     <div className="p-5">
       <div>
         <div className="flex flex-row items-center justify-between">
-          <p className="text-sm font-interSemibold"> Amount</p>
+          <p className="text-sm font-semibold"> Amount</p>
           <p
             className="text-sm font-mono cursor-pointer"
             onClick={() => {

@@ -45,7 +45,7 @@ export default function LockedStake({
   return (
     <div key={lockedStake.id.toString()} className={twMerge('flex flex-col p-2 w-full', className)}>
       <div className={twMerge('flex w-full items-center gap-4 pb-4 sm:pl-2 sm:pr-2 flex-col sm:flex-row', !readonly ? 'sm:pb-2' : 'sm:pb-0')}>
-        <div className='font-boldy text-xs border w-full sm:rounded-xl sm:w-16 h-6 items-center justify-center bg-[#1e272e] flex text-txtfade'>Stake #{lockedStake.index}</div>
+        <div className='font-medium text-xs border w-full sm:rounded-xl sm:w-16 h-6 items-center justify-center bg-[#1e272e] flex text-txtfade'>Stake #{lockedStake.index}</div>
 
         <div className='ml-0 flex gap-0 items-center'>
           <div className='flex gap-1'>
@@ -59,11 +59,11 @@ export default function LockedStake({
           </div>
 
           {lockedStake.isGenesis ?
-            <div className='text-xxs bg-[#068862a0] font-boldy pt-[0.1em] pb-[0.1em] px-2 ml-4 rounded w-14 text-center'>genesis</div> : null}
+            <div className='text-xxs bg-[#068862a0] font-medium pt-[0.1em] pb-[0.1em] px-2 ml-4 rounded w-14 text-center'>genesis</div> : null}
         </div>
 
         <div className='flex gap-2 items-center sm:ml-auto'>
-          <div className='text-xs font-boldy text-txtfade'>Unlocks in</div>
+          <div className='text-xs font-medium text-txtfade'>Unlocks in</div>
           <RemainingTimeToDate timestamp={lockedStake.endTime.toNumber()} className='text-xs' />
         </div>
       </div>

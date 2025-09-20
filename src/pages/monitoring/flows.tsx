@@ -213,7 +213,7 @@ export default function Flow({
                 >
                   <Button
                     onClick={() => setShowTopTraders(true)}
-                    className="font-boldy rounded-lg ml-auto mr-auto"
+                    className="font-medium rounded-lg ml-auto mr-auto"
                     title="Show Top 100 Traders"
                     variant="outline"
                     size="lg"

@@ -38,7 +38,7 @@ export default function Button({
   leftIcon?: string | ImageRef;
   style?: CSSProperties;
   alt?: string;
-  variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger' | 'lightbg' | 'success';
+  variant?: 'primary' | 'blue' | 'secondary' | 'text' | 'outline' | 'red' | 'lightbg' | 'green';
   className?: string;
   iconClassName?: string;
   loaderClassName?: string;
@@ -60,23 +60,29 @@ export default function Button({
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
 
   const variantsBgDisabledOpacity = {
-    primary: `bg-highlight/25`,
-    success: `bg-gradient-to-r/25 from-emerald-500/25 via-green-500/25 to-teal-500/25`,
-    secondary: 'bg-secondary/25',
-    danger: 'from-red-600/25 via-rose-600/25 to-pink-600/25',
+    primary: `from-[#0284c7] via-[#1e40af] to-[#1a2a6a]`,
+    blue: `from-[#0284c7] via-[#1e40af] to-[#1a2a6a]`,
+    green: `from-emerald-500 via-green-500 to-teal-500`,
+    secondary: 'bg-secondary',
+    red: 'from-red-600 via-rose-600 to-pink-600',
     text: 'bg-transparent',
     outline: 'bg-transparent',
     lightbg: 'bg-[#1f2c3c]',
   };
 
   const variants = {
-    primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium`,
-    secondary:
-      'bg-secondary text-white opacity-90 hover:opacity-100 font-medium',
-    danger: `text-white bg-gradient-to-r from-red via-rose-600 to-pink-600
+    primary: `text-white bg-secondary
          shadow-md hover:shadow-lg hover:opacity-90 
          transition-all duration-300 ease-in-out`,
-    success: `text-white bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500
+    blue: `text-white bg-gradient-to-r from-[#0284c7] via-[#1e40af] to-[#1a2a6a]
+         shadow-md hover:shadow-lg hover:opacity-90 
+         transition-all duration-300 ease-in-out`,
+    secondary:
+      'bg-secondary text-white opacity-90 hover:opacity-100 font-medium',
+    red: `text-white bg-gradient-to-r from-red via-rose-600 to-pink-600
+         shadow-md hover:shadow-lg hover:opacity-90 
+         transition-all duration-300 ease-in-out`,
+    green: `text-white bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500
          shadow-md hover:shadow-lg hover:opacity-90 
          transition-all duration-300 ease-in-out`,
     text: 'opacity-50 text-white hover:opacity-100 font-medium',

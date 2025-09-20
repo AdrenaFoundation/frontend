@@ -312,7 +312,7 @@ export default function PositionHistoryTable({
             </div>
           </div>
           <div className="text-right">
-            <p className="text-right text-xs opacity-50 font-interMedium">
+            <p className="text-right text-xs opacity-50 font-medium">
               PnL
             </p>
             {item.pnl}
@@ -325,7 +325,7 @@ export default function PositionHistoryTable({
             if (['token', 'pnl', 'side'].includes(header.key)) return null;
             return (
               <div key={header.title}>
-                <div className="opacity-50 text-xs font-interMedium">
+                <div className="opacity-50 text-xs font-medium">
                   {header.title}
                 </div>
                 <div className="text-sm">{value}</div>
@@ -438,7 +438,7 @@ export default function PositionHistoryTable({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-boldy'>
+              <div className='text-xs text-orange font-medium'>
                 {exportWarning}
               </div>
             )}

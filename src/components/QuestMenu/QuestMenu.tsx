@@ -111,14 +111,14 @@ export default function QuestMenu({
                 }} />
 
                 <div className="p-3 z-10 -translate-x-3 rounded-lg">
-                    <p className="font-archivoblack uppercase bg-[#8DC52E]/70 px-1 mb-2 text-white w-fit">
+                    <p className="font-black uppercase bg-[#8DC52E]/70 px-1 mb-2 text-white w-fit">
                         Season 1: Expanse
                     </p>
 
-                    <p className="font-archivoblack text-lg uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
+                    <p className="font-black text-lg uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
                         COMPLETE QUESTS TO ASCEND
                     </p>
-                    <p className="font-archivoblack text-xxs animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#fff,40%,#888,60%,#fff)]">
+                    <p className="font-black text-xxs animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#fff,40%,#888,60%,#fff)]">
                         * Only positions opened and closed within the periods count
                     </p>
                 </div>
@@ -126,7 +126,7 @@ export default function QuestMenu({
 
             {!inSeason ?
                 <div className="absolute top-[calc(50%-1em)] z-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <p className="font-boldy tracking-wider text-center text-base opacity-40">
+                    <p className="font-medium tracking-wider text-center text-base opacity-40">
                         Starts in
                     </p>
 
@@ -285,7 +285,7 @@ export default function QuestMenu({
 
                         <p
                             className={twMerge(
-                                'absolute top-[5em] left-[8em] bg-red px-2 font-archivoblack uppercase',
+                                'absolute top-[5em] left-[8em] bg-red px-2 font-black uppercase',
                                 isMobile && 'top-[5em] left-[4em] text-[0.55em]',
                             )}
                         >

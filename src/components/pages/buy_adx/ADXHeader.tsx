@@ -59,7 +59,7 @@ export default function ADXHeader() {
             className="w-5 sm:w-7 h-5 sm:h-7"
           />
           <div className="flex flex-row items-center gap-4">
-            <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ADX</h1>
+            <h1 className="font-bold text-[1.5rem] sm:text-4xl">ADX</h1>
           </div>
         </div>
 
@@ -102,12 +102,12 @@ export default function ADXHeader() {
           format="percentage"
           suffix="APR"
           precision={0}
-          suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-          className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          suffixClassName="font-bold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          className="font-bold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#a82e2e_40%,#f96a6a_60%,#a82e2e)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
           isDecimalDimmed
         />
         {tokenPriceADX != null ? (
-          <span className="text-xl font-boldy">
+          <span className="text-xl font-medium">
             ${tokenPriceADX.toFixed(4)}
           </span>
         ) : null}

@@ -45,7 +45,7 @@ export default function RPCSettings({
         {window.adrena.cluster === 'devnet' ? (
           <h2 className="text-blue-500 pr-1">Devnet</h2>
         ) : null}
-        <h4 className="font-interSemibold">RPC endpoints</h4>
+        <h4 className="font-semibold">RPC endpoints</h4>
       </div>
 
       <div className="flex flex-row justify-between items-center">
@@ -58,7 +58,7 @@ export default function RPCSettings({
             }
             className="w-3 ml-0"
           />
-          <p className="text-sm font-boldy">Automatic switch</p>
+          <p className="text-sm font-medium">Automatic switch</p>
         </div>
 
         <Switch
@@ -114,7 +114,7 @@ export default function RPCSettings({
 
                 <p
                   className={twMerge(
-                    'text-sm font-interMedium opacity-50 transition-opacity duration-300 hover:opacity-100 ml-2',
+                    'text-sm font-medium opacity-50 transition-opacity duration-300 hover:opacity-100 ml-2',
                     rpc.name === favoriteRpc && 'opacity-100',
                   )}
                 >

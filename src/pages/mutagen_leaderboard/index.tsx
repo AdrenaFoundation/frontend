@@ -52,7 +52,7 @@ export default function Index() {
             <div className="z-10 text-center">
               <h1
                 className={twMerge(
-                  'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                  'text-[2.5em] sm:text-[3em] md:text-[4em] font-black animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                   'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
                 )}
               >
@@ -66,10 +66,10 @@ export default function Index() {
         </div>
 
         <div className="flex flex-col gap-2 items-center justify-center text-center mt-4 px-4 max-w-[60em] mx-auto">
-          <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90">
+          <span className="text-xs sm:text-sm lg:text-base font-medium text-white/90">
             The ALL-TIME leaderboard tracks total Mutagen earned since launch.
           </span>
-          <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90">
+          <span className="text-xs sm:text-sm lg:text-base font-medium text-white/90">
             Trade to climb the ranks and boost your airdrop share—every closed
             position counts!
           </span>

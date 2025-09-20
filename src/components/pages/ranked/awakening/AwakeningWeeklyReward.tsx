@@ -69,7 +69,7 @@ const AwardHeader = memo(({ title, type }: { title: string; type: 'reward' | 'ti
             width={40}
             height={40}
         />
-        <p className="text-base sm:text-lg text-center font-boldy mb-0.5">
+        <p className="text-base sm:text-lg text-center font-medium mb-0.5">
             {title}
         </p>
     </div>
@@ -83,14 +83,14 @@ const TicketCount = memo(({ connectedWalletTickets, totalTickets, trader, handle
                 <div className="mb-0 gap-1 items-center justify-center flex ml-4">
                     <FormatNumber
                         nb={connectedWalletTickets}
-                        className="text-lg text-center font-boldy"
+                        className="text-lg text-center font-medium"
                         isAbbreviate={true}
                         isAbbreviateIcon={false}
                     />
                     <span>/</span>
                     <FormatNumber
                         nb={totalTickets}
-                        className="text-lg text-center font-boldy"
+                        className="text-lg text-center font-medium"
                         isAbbreviate={true}
                         isAbbreviateIcon={false}
                         isDecimalDimmed={false}
@@ -105,13 +105,13 @@ const TicketCount = memo(({ connectedWalletTickets, totalTickets, trader, handle
         ) : (
             <div className="flex items-center justify-center opacity-75 w-full">
                 {isValidPublicKey(trader) ? (
-                    <p className={twMerge('text-base font-boldy opacity-50')}>
+                    <p className={twMerge('text-base font-medium opacity-50')}>
                         {getAbbrevWalletAddress(trader)}
                     </p>
                 ) : (
                     <p
                         className={twMerge(
-                            'text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer',
+                            'text-base font-medium whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer',
                         )}
                         onClick={() => handleProfileView(trader as string)}
                     >
@@ -156,13 +156,13 @@ const RewardCard = memo(({ award, handleProfileView }: { award: Award; handlePro
                     </div>
                     <div className="flex items-center justify-center opacity-75 w-full">
                         {isValidPublicKey(award.trader) ? (
-                            <p className={twMerge('text-base font-boldy opacity-50')}>
+                            <p className={twMerge('text-base font-medium opacity-50')}>
                                 {getAbbrevWalletAddress(award.trader)}
                             </p>
                         ) : (
                             <p
                                 className={twMerge(
-                                    'text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer',
+                                    'text-base font-medium whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer',
                                 )}
                                 onClick={() => handleProfileView(award.trader as string)}
                             >
@@ -183,8 +183,8 @@ const RewardCard = memo(({ award, handleProfileView }: { award: Award; handlePro
                 />
                 <FormatNumber
                     nb={award.reward}
-                    className="text-sm sm:text-2xl font-boldy"
-                    suffixClassName="text-sm sm:text-2xl font-boldy"
+                    className="text-sm sm:text-2xl font-medium"
+                    suffixClassName="text-sm sm:text-2xl font-medium"
                     suffix={` ${award.rewardToken}`}
                 />
             </div>

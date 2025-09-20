@@ -68,12 +68,12 @@ export default function Referee({
     }, [allUserProfiles, newReferrerNickname]);
 
     return <div className={twMerge('flex flex-col gap-6 w-full pb-8 items-center', userProfile === false || !connected ? 'blur-2xl pointer-events-none' : '')}>
-        <div className='font-boldy w-full items-center flex justify-center flex-col gap-4 text-white/80 mt-4'>
+        <div className='font-medium w-full items-center flex justify-center flex-col gap-4 text-white/80 mt-4'>
             {referrerProfile ? <div className="flex gap-2">
-                <div className="font-boldy">You are currently supporting</div>
+                <div className="font-medium">You are currently supporting</div>
 
                 <div
-                    className='flex gap-1 hover:opacity-90 font-boldy animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] cursor-pointer'
+                    className='flex gap-1 hover:opacity-90 font-medium animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] cursor-pointer'
                     onClick={() => setActiveProfile(referrerProfile)}
                 >
                     {referrerProfile.nickname.length ? referrerProfile.nickname : referrerProfile.owner.toBase58()}
@@ -92,7 +92,7 @@ export default function Referee({
 
             <div className='w-full h-[1px] bg-bcolor mt-2 mb-2' />
 
-            <div className="font-boldy">Support someone else</div>
+            <div className="font-medium">Support someone else</div>
 
             <div className="max-w-[25em] w-[90%] flex relative">
                 <InputString

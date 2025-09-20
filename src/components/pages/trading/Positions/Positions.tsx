@@ -53,7 +53,7 @@ export default function Positions({
           <Modal
             customTitle={
               <div className="ml-2 flex flex-row gap-2 items-center">
-                <h2 className="font-boldy">Close</h2>
+                <h2 className="font-medium">Close</h2>
                 <p
                   className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToClose.side === 'long'
                     ? 'text-green bg-green/20'
@@ -93,7 +93,7 @@ export default function Positions({
           <Modal
             customTitle={
               <div className="ml-2 flex flex-row gap-2 items-center">
-                <h2 className="font-boldy">Edit</h2>
+                <h2 className="font-medium">Edit</h2>
                 <p
                   className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToEdit.side === 'long'
                     ? 'text-green bg-green/20'
@@ -132,7 +132,7 @@ export default function Positions({
           <Modal
             customTitle={
               <div className="ml-2 flex flex-row gap-2 items-center">
-                <h2 className="font-boldy">TP/SL</h2>
+                <h2 className="font-medium">TP/SL</h2>
                 <p
                   className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToStopLossTakeProfit.side === 'long'
                     ? 'text-green bg-green/20'

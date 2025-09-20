@@ -58,20 +58,6 @@
 
 @layer base {
   @font-face {
-    font-family: 'Archivo Black';
-    font-weight: 400;
-    font-style: normal;
-    src: url('/fonts/ArchivoBlack-Regular.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Archivo Regular';
-    font-weight: 400;
-    font-style: normal;
-    src: url('/fonts/Archivo-Regular.ttf') format('truetype');
-  }
-
-  @font-face {
     font-family: 'Roboto Mono';
     font-weight: 400;
     font-style: normal;
@@ -106,27 +92,27 @@
 
   @font-face {
     font-family: regular;
-    src: url('/fonts/Inter_18pt-Light.ttf');
+    src: url('/fonts/Rubik-Light.ttf'); // url('/fonts/Inter_18pt-Light.ttf');
   }
 
   @font-face {
-    font-family: boldy;
-    src: url('/fonts/Inter_18pt-Regular.ttf');
+    font-family: medium;
+    src: url('/fonts/Rubik-Regular.ttf'); // url('/fonts/Inter_18pt-Medium.ttf');
   }
 
   @font-face {
-    font-family: interSemibold;
-    src: url('/fonts/Inter_18pt-SemiBold.ttf');
+    font-family: semibold;
+    src: url('/fonts/Rubik-Medium.ttf'); // url('/fonts/Inter_18pt-SemiBold.ttf');
   }
 
   @font-face {
-    font-family: interMedium;
-    src: url('/fonts/Inter_18pt-Medium.ttf');
+    font-family: bold;
+    src: url('/fonts/Rubik-SemiBold.ttf'); // url('/fonts/Inter_18pt-Regular.ttf');
   }
 
   @font-face {
-    font-family: interBold;
-    src: url('/fonts/Inter_18pt-Bold.ttf');
+    font-family: black;
+    src: url('/fonts/Rubik-Black.ttf'); // url('/fonts/Inter_18pt-SemiBold.ttf');
   }
 
   div {
@@ -142,30 +128,30 @@
 
   h1 {
     @apply text-4xl;
-    @apply font-interSemibold;
+    @apply font-semibold;
     text-transform: uppercase;
   }
 
   h2 {
     @apply text-2xl;
-    @apply font-interSemibold;
+    @apply font-semibold;
     text-transform: uppercase;
   }
 
   h3 {
     @apply text-xl;
-    @apply font-interSemibold;
+    @apply font-semibold;
     text-transform: uppercase;
   }
 
   h4 {
     @apply text-lg;
-    @apply font-boldy;
+    @apply font-medium;
   }
 
   h5 {
     @apply text-sm;
-    @apply font-boldy;
+    @apply font-medium;
   }
 
   button:focus,
