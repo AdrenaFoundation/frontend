@@ -41,6 +41,14 @@ export default function AllStaking({ view }: { isSmallScreen: boolean, view: str
             };
         }
 
+        if (displayStakedAdxAs === 'amount') {
+            return {
+                circulatingSupplyADX: circulatingSupplyADXNative,
+                totalStakedADX: allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid,
+                percentStakedADX: (allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid) * 100 / circulatingSupplyADXNative,
+            };
+        };
+
         const totalStakedADX = allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid;
 
         return {
