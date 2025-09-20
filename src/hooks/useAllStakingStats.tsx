@@ -5,9 +5,11 @@ import { nativeToUi } from '@/utils';
 
 export type AllStakingStats = {
     byDurationByAmount: {
-        [staking_type in ('ADX' | 'ALP')]: {
+        ADX: {
             liquid: number;
+            liquidUsd: number;
             totalLocked: number;
+            totalLockedUsd: number;
             locked: {
                 [lockedDurationInDays: string]: {
                     total: number;
@@ -18,10 +20,11 @@ export type AllStakingStats = {
     };
 
     byRemainingTime: {
-        [staking_type in ('ADX' | 'ALP')]: {
+        ADX: {
             stake: string;
             endTime: number;
             tokenAmount: number;
+            tokenAmountUsd: number;
         }[]
     },
 };
@@ -47,24 +50,24 @@ export function useAllStakingStats(): {
                     byDurationByAmount: {
                         ADX: {
                             liquid: 0,
+                            liquidUsd: 0,
                             totalLocked: 0,
-                            locked: {},
-                        },
-                        ALP: {
-                            liquid: 0,
-                            totalLocked: 0,
+                            totalLockedUsd: 0,
                             locked: {},
                         },
                     },
                     byRemainingTime: {
                         ADX: [],
-                        ALP: [],
                     },
                 };
 
                 allStaking.forEach((staking: UserStakingExtended) => {
                     const stakingType = staking.stakingType === 1 ? 'ADX' : 'ALP';
                     const stakingDecimals = stakingType === 'ADX' ? window.adrena.client.adxToken.decimals : window.adrena.client.alpToken.decimals;
+
+                    if (stakingType !== 'ADX') {
+                        return; // For now, only ADX staking is handled
+                    }
 
                     // Handle the remaining time stats
                     {
@@ -74,17 +77,18 @@ export function useAllStakingStats(): {
                                 return;
                             }
 
-                            allStakingStats.byRemainingTime[stakingType].push({
+                            allStakingStats.byRemainingTime.ADX.push({
                                 stake: staking.pubkey.toBase58(),
                                 endTime: lockedStake.endTime.toNumber(),
                                 tokenAmount: nativeToUi(lockedStake.amount, stakingDecimals),
+                                tokenAmountUsd: 0,
                             });
                         });
                     }
 
                     // Handle the duration and amount stats
                     {
-                        allStakingStats.byDurationByAmount[stakingType].liquid += nativeToUi(staking.liquidStake.amount, stakingDecimals);
+                        allStakingStats.byDurationByAmount.ADX.liquid += nativeToUi(staking.liquidStake.amount, stakingDecimals);
 
                         staking.lockedStakes.forEach((lockedStake) => {
                             // Ignore non-locked stakes
@@ -94,15 +98,15 @@ export function useAllStakingStats(): {
 
                             const lockedDurationInDays = lockedStake.lockDuration.toNumber() / 3600 / 24;
 
-                            allStakingStats.byDurationByAmount[stakingType].locked[lockedDurationInDays] = allStakingStats.byDurationByAmount[stakingType].locked[lockedDurationInDays] || {
+                            allStakingStats.byDurationByAmount.ADX.locked[lockedDurationInDays] = allStakingStats.byDurationByAmount.ADX.locked[lockedDurationInDays] || {
                                 total: 0,
                             };
-                            allStakingStats.byDurationByAmount[stakingType].locked[lockedDurationInDays][staking.pubkey.toBase58()] = allStakingStats.byDurationByAmount[stakingType].locked[lockedDurationInDays][staking.pubkey.toBase58()] || 0;
+                            allStakingStats.byDurationByAmount.ADX.locked[lockedDurationInDays][staking.pubkey.toBase58()] = allStakingStats.byDurationByAmount.ADX.locked[lockedDurationInDays][staking.pubkey.toBase58()] || 0;
                             const amount = nativeToUi(lockedStake.amount, stakingDecimals);
 
-                            allStakingStats.byDurationByAmount[stakingType].locked[lockedDurationInDays].total += amount;
-                            allStakingStats.byDurationByAmount[stakingType].totalLocked += amount;
-                            allStakingStats.byDurationByAmount[stakingType].locked[lockedDurationInDays][staking.pubkey.toBase58()] += amount;
+                            allStakingStats.byDurationByAmount.ADX.locked[lockedDurationInDays].total += amount;
+                            allStakingStats.byDurationByAmount.ADX.totalLocked += amount;
+                            allStakingStats.byDurationByAmount.ADX.locked[lockedDurationInDays][staking.pubkey.toBase58()] += amount;
                         });
                     }
                 });
