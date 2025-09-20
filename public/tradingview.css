@@ -1,17 +1,17 @@
 .theme-dark:root {
-  --tv-color-platform-background: #0d1118;
-  --tv-color-pane-background: #0d1118;
-  --tv-color-toolbar-button-background-hover: #0d1118;
-  --tv-color-toolbar-button-background-expanded: #0d1118;
-  --tv-color-toolbar-button-background-active: #0d1118;
-  --tv-color-toolbar-button-background-active-hover: #0d1118;
+  --tv-color-platform-background: #04121c;
+  --tv-color-pane-background: #04121c;
+  --tv-color-toolbar-button-background-hover: #04121c;
+  --tv-color-toolbar-button-background-expanded: #04121c;
+  --tv-color-toolbar-button-background-active: #04121c;
+  --tv-color-toolbar-button-background-active-hover: #04121c;
   --tv-color-toolbar-button-text: #ffffff80;
   --tv-color-toolbar-button-text-hover: #ffffff;
   --tv-color-toolbar-button-text-active: #ffffff;
   --tv-color-toolbar-button-text-active-hover: #ffffff;
   --tv-color-item-active-text: #07956b;
-  --tv-color-toolbar-toggle-button-background-active: #2b3a4d;
-  --tv-color-toolbar-toggle-button-background-active-hover: #2b3a4d;
+  --tv-color-toolbar-toggle-button-background-active: #04121c;
+  --tv-color-toolbar-toggle-button-background-active-hover: #04121c;
   --tv-color-toolbar-divider-background: rgb(251, 223, 244);
   --tv-color-toolbar-save-layout-loader: rgb(134, 137, 147);
 }
@@ -22,5 +22,5 @@ html.theme-dark .chart-controls-bar {
 }
 
 html.theme-dark .menuWrap-g78rwseC {
-  background-color: #061018 !important;
+  background-color: #04121c !important;
 }

@@ -1,7 +1,7 @@
 export const POSITION_BLOCK_STYLES = {
   base: {
     container:
-      'min-w-[250px] w-full flex flex-col p-4 rounded-lg border border-white/10 justify-start items-start gap-2.5',
+      'min-w-[250px] w-full flex flex-col p-4 rounded-lg border border-white/10 justify-start items-start gap-2.5 bg-secondary',
     header:
       'w-full flex pb-3 border-b border-white/10 justify-start items-center gap-2.5',
     content: 'w-full flex flex-wrap gap-4',

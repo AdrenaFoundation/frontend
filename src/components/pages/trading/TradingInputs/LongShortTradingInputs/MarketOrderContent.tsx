@@ -199,17 +199,17 @@ export const MarketOrderContent = ({
             nb={
               side === 'long'
                 ? custody &&
-                  tokenPriceB &&
-                  custodyLiquidity &&
-                  custodyLiquidity * tokenPriceB
+                tokenPriceB &&
+                custodyLiquidity &&
+                custodyLiquidity * tokenPriceB
                 : usdcPrice &&
-                  usdcCustody &&
-                  custody &&
-                  custodyLiquidity &&
-                  Math.min(
-                    custodyLiquidity * usdcPrice,
-                    availableLiquidityShort,
-                  )
+                usdcCustody &&
+                custody &&
+                custodyLiquidity &&
+                Math.min(
+                  custodyLiquidity * usdcPrice,
+                  availableLiquidityShort,
+                )
             }
             format="currency"
             precision={0}
@@ -229,9 +229,10 @@ export const MarketOrderContent = ({
       <Button
         className={twMerge(
           'w-full justify-center mt-2 mb-1 sm:mb-2',
-          side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+          // side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
         )}
         size="lg"
+        variant={side === 'short' ? 'danger' : 'success'}
         title={buttonTitle}
         disabled={errorMessage != null || insufficientAmount}
         onClick={onExecute}

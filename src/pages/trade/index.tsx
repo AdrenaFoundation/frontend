@@ -393,23 +393,23 @@ export default function Trade({
           positionsGroup.map((p) =>
             p.side === 'long'
               ? window.adrena.client.buildClosePositionLongIx({
-                  position: p,
-                  price: uiToNative(
-                    tokenPrices[getTokenSymbol(p.token.symbol)]!,
-                    PRICE_DECIMALS,
-                  )
-                    .mul(new BN(10_000 - slippageInBps))
-                    .div(new BN(10_000)),
-                })
+                position: p,
+                price: uiToNative(
+                  tokenPrices[getTokenSymbol(p.token.symbol)]!,
+                  PRICE_DECIMALS,
+                )
+                  .mul(new BN(10_000 - slippageInBps))
+                  .div(new BN(10_000)),
+              })
               : window.adrena.client.buildClosePositionShortIx({
-                  position: p,
-                  price: uiToNative(
-                    tokenPrices[p.token.symbol]!,
-                    PRICE_DECIMALS,
-                  )
-                    .mul(new BN(10_000))
-                    .div(new BN(10_000 - slippageInBps)),
-                }),
+                position: p,
+                price: uiToNative(
+                  tokenPrices[p.token.symbol]!,
+                  PRICE_DECIMALS,
+                )
+                  .mul(new BN(10_000))
+                  .div(new BN(10_000 - slippageInBps)),
+              }),
           ),
         );
 
@@ -437,17 +437,17 @@ export default function Trade({
   const totalStats =
     positions && positions.length > 0
       ? positions.reduce(
-          (acc, position) => {
-            const price = tokenPrices[getTokenSymbol(position.token.symbol)];
-            if (!price || position.pnl == null) {
-              return acc;
-            }
-            acc.totalPnL += position.pnl;
-            acc.totalCollateral += position.collateralUsd;
+        (acc, position) => {
+          const price = tokenPrices[getTokenSymbol(position.token.symbol)];
+          if (!price || position.pnl == null) {
             return acc;
-          },
-          { totalPnL: 0, totalCollateral: 0 },
-        )
+          }
+          acc.totalPnL += position.pnl;
+          acc.totalCollateral += position.collateralUsd;
+          return acc;
+        },
+        { totalPnL: 0, totalCollateral: 0 },
+      )
       : null;
 
   return (
@@ -455,7 +455,7 @@ export default function Trade({
       <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
       <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border sm:rounded-lg overflow-hidden bg-secondary">
+        <div className="flex flex-col w-full border sm:rounded-lg overflow-hidden bg-main">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -555,7 +555,7 @@ export default function Trade({
 
         {!!isBigScreen ? (
           <>
-            <div className="bg-secondary mt-4 border rounded-lg relative">
+            <div className="bg-main mt-4 border rounded-lg relative">
               <ViewTabs
                 view={view}
                 setView={setView}
@@ -766,10 +766,9 @@ export default function Trade({
           <AnimatePresence>
             {activePositionModal && (
               <Modal
-                title={`${
-                  activePositionModal.charAt(0).toUpperCase() +
+                title={`${activePositionModal.charAt(0).toUpperCase() +
                   activePositionModal.slice(1)
-                } Position`}
+                  } Position`}
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto"
               >

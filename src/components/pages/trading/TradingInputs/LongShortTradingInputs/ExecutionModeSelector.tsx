@@ -14,7 +14,7 @@ export const ExecutionModeSelector = ({
     <div className="flex flex-row items-center justify-between gap-3 p-3 px-4 bg-third border rounded-lg cursor-pointer select-none mt-4"
         onClick={() => onModeChange(!isLimitOrder)}
     >
-        <h5 className="flex items-center text-sm font-interBold">
+        <h5 className="flex items-center text-sm font-inter">
             Limit order
         </h5>
 

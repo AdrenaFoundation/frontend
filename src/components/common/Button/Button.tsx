@@ -38,7 +38,7 @@ export default function Button({
   leftIcon?: string | ImageRef;
   style?: CSSProperties;
   alt?: string;
-  variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger' | 'lightbg';
+  variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger' | 'lightbg' | 'success';
   className?: string;
   iconClassName?: string;
   loaderClassName?: string;
@@ -61,8 +61,9 @@ export default function Button({
 
   const variantsBgDisabledOpacity = {
     primary: `bg-highlight/25`,
+    success: `bg-gradient-to-r/25 from-emerald-500/25 via-green-500/25 to-teal-500/25`,
     secondary: 'bg-secondary/25',
-    danger: 'bg-red/25',
+    danger: 'from-red-600/25 via-rose-600/25 to-pink-600/25',
     text: 'bg-transparent',
     outline: 'bg-transparent',
     lightbg: 'bg-[#1f2c3c]',
@@ -72,7 +73,12 @@ export default function Button({
     primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium`,
     secondary:
       'bg-secondary text-white opacity-90 hover:opacity-100 font-medium',
-    danger: 'bg-red text-white hover:bg-red font-medium',
+    danger: `text-white bg-gradient-to-r from-red via-rose-600 to-pink-600
+         shadow-md hover:shadow-lg hover:opacity-90 
+         transition-all duration-300 ease-in-out`,
+    success: `text-white bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500
+         shadow-md hover:shadow-lg hover:opacity-90 
+         transition-all duration-300 ease-in-out`,
     text: 'opacity-50 text-white hover:opacity-100 font-medium',
     outline: 'border-2 text-white hover:bg-bcolor font-medium',
     lightbg: 'bg-[#1f2c3c] text-white hover:text-txt',
@@ -94,7 +100,7 @@ export default function Button({
         'flex flex-row items-center justify-center gap-3 font-mono h-[2.5em] overflow-hidden relative',
         sizes[size],
         variants[variant],
-        rounded ? 'rounded-full' : '',
+        rounded ? 'rounded-md' : '',
         disabled || onClickInProgress
           ? 'cursor-not-allowed pointer-events-none opacity-50'
           : null,
