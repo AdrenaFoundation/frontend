@@ -1,17 +1,72 @@
 import { PublicKey } from '@solana/web3.js';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import Image, { StaticImageData } from 'next/image';
+import React, { useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import firstImage from '@/../public/images/first-place.svg';
 import secondImage from '@/../public/images/second-place.svg';
 import thirdImage from '@/../public/images/third-place.svg';
 import Modal from '@/components/common/Modal/Modal';
+import FormatNumber from '@/components/Number/FormatNumber';
 import MutagenLeaderboardAnniversary from '@/components/pages/mutagen_leaderboard/MutagenLeaderboardAnniversary';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useMutagenLeaderboardData from '@/hooks/useMutagenLeaderboardData';
+import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
+
+function RafflePlace({
+  placeTitle,
+  imageRef,
+  reward,
+  adxPrice,
+}: {
+  placeTitle: string;
+  imageRef: string | StaticImageData;
+  reward: number;
+  adxPrice: number | null;
+}) {
+  const usdValue = useMemo(() => {
+    if (adxPrice) {
+      return reward * adxPrice;
+    }
+
+    return null;
+  }, [adxPrice, reward]);
+
+  return <div className='border bg-main/80 rounded-md p-4 flex flex-col items-center justify-center gap-2 z-10 grow'>
+    <Image
+      src={imageRef}
+      alt="raffle ranking logo"
+      className={'h-10 w-10'}
+      width={40}
+      height={40}
+    />
+
+    <div className='text-md'>
+      {placeTitle} Raffle Winner
+    </div>
+
+    <div className='flex gap-2 items-center'>
+      <FormatNumber
+        nb={reward}
+        className=""
+        suffixClassName='text-base font-boldy'
+        suffix=' ADX'
+      />
+
+      <div className='text-txtfade/50'>/</div>
+
+      <FormatNumber
+        nb={usdValue}
+        format='currency'
+        className=""
+        suffixClassName='text-base font-boldy'
+      />
+    </div>
+  </div>;
+}
 
 export default function Anniversary() {
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
@@ -24,34 +79,44 @@ export default function Anniversary() {
   const [activeProfile, setActiveProfile] =
     useState<UserProfileExtended | null>(null);
 
+  const adxPrice: number | null =
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
+    null;
+
   return (
-    <div className="w-full mx-auto px-4 relative flex flex-col pb-4">
-      <div className="flex flex-col gap-2 items-center justify-center text-center px-4 mx-auto max-w-[100em]">
-        <span className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full">
+    <div className="w-full mx-auto relative flex flex-col pb-4">
+      <div className="flex flex-col gap-2 items-center justify-center text-center mx-auto max-w-[100em] w-full">
+
+        <div className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full z-10 mb-4">
           For this Adrena First Year Anniversary Event, accumulate tickets and get a chance to win the raffle!
-        </span>
+        </div>
 
-        <Image
-          className='h-100 w-100 border-2 mt-8'
-          src={'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/raffle.jpg'}
-          alt="raffle"
-          width={400}
-          height={400}
-        />
-
-        <div className='border bg-main p-4 flex flex-col items-center justify-center gap-2'>
-          <Image
-            src={firstImage}
-            alt="first place logo"
-            className={'h-10 w-10'}
-            width={40}
-            height={40}
+        <div className="relative w-full flex-col items-center justify-center gap-6 border-2 border-white/10 p-8">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage:
+                "url('https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/raffle-2.jpg')",
+              opacity: 0.6,
+            }}
           />
 
-          <div className='text-md'>
-            Lottery Winner
+          <h1
+            className={twMerge(
+              'relative z-10 text-[1.5em] sm:text-[1.8em] md:text-[2em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+              'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
+            )}
+          >
+            THE BIG RAFFLE!
+          </h1>
+
+          <div className="relative z-10 w-full flex flex-col sm:flex-row gap-4 p-6">
+            <RafflePlace placeTitle="1st" imageRef={firstImage} reward={300000} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="2nd" imageRef={secondImage} reward={200000} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="3rd" imageRef={thirdImage} reward={100000} adxPrice={adxPrice} />
           </div>
         </div>
+
 
         {leaderboardData ? (
           <MutagenLeaderboardAnniversary

@@ -445,7 +445,7 @@ export const TRADING_COMPETITION_SEASONS = {
     subTitle: 'Interseason',
     startDate: new Date('2025-09-17T23:59:59.999Z'),
     endDate: new Date('2025-09-31T23:59:59.999Z'),
-    gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
+    gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
     primaryColor: '#247CFA',
     adxRewards: 2000000,
     jtoRewards: 0,
