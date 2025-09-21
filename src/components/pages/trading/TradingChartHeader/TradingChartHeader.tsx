@@ -131,7 +131,7 @@ export default function TradingChartHeader({
   );
 
   const favoritesBarClasses =
-    'min-w-0 flex-1 overflow-hidden lg:min-w-0 lg:overflow-hidden lg:w-auto lg:flex-1';
+    'min-w-0 flex-1 overflow-hidden sm:min-w-0 sm:overflow-hidden sm:w-auto sm:flex-1';
 
   return (
     <>
@@ -144,12 +144,12 @@ export default function TradingChartHeader({
       </Head>
       <div
         className={twMerge(
-          'flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 z-30 bg-main border-b p-3 lg:p-1',
+          'flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-2 z-30 bg-main border-b p-3 sm:p-1',
           className,
         )}
       >
         {/* Left side: Token Selector + Favorites */}
-        <div className="flex items-center justify-between w-full lg:w-auto lg:flex-1 gap-3 lg:gap-3 min-w-0">
+        <div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 gap-3 sm:gap-3 min-w-0">
           {/* Token Selector */}
           <div className="flex-shrink-0">
             <TokenSelector
@@ -195,12 +195,12 @@ export default function TradingChartHeader({
         </div>
 
         {/* Right side: Stats */}
-        <div className="flex-shrink-0 w-full md:w-auto md:justify-end lg:self-center">
+        <div className="flex-shrink-0 w-full sm:w-auto sm:justify-end sm:self-center">
           <TradingChartHeaderStats
             selected={selected}
             numberLong={numberLong}
             numberShort={numberShort}
-            className="p-1"
+            selectedAction={selectedAction}
           />
         </div>
       </div>
