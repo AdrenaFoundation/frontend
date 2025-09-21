@@ -438,7 +438,7 @@ export const TRADING_COMPETITION_SEASONS = {
     bannerClassName: 'h-[32em] pt-20',
   },
 
-  interseason4: {
+  anniversary: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/anniversary.jpg',
     title: '1st Anniversary',
     bannerTitle: 'Anniversary',

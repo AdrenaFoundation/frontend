@@ -65,7 +65,7 @@ export default function CompetitionBanner({
                             key={title}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            {seasonName === 'interseason3' || seasonName === 'interseason4' ? <div
+                            {seasonName === 'interseason3' || seasonName === 'anniversary' ? <div
                                 className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
                                 style={{
                                     backgroundImage: `url(${banner})`,
@@ -177,7 +177,7 @@ export default function CompetitionBanner({
                                 nb={97166.49}
                                 className="text-5xl font-boldy"
                                 isDecimalDimmed={false}
-                            /> : seasonName === 'interseason3' || seasonName === 'interseason4' ?
+                            /> : seasonName === 'interseason3' || seasonName === 'anniversary' ?
                                 <FormatNumber
                                     format='currency'
                                     nb={totalPrize}
@@ -258,7 +258,7 @@ export default function CompetitionBanner({
                     </div>
                 </div> : null}
 
-                {seasonName !== 'interseason4' ? <div
+                {seasonName !== 'anniversary' ? <div
                     className={twMerge(
                         'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
                         startDate && startDate.getTime() >= Date.now() ? 'mt-[2em]' : 'mt-[4em]',
