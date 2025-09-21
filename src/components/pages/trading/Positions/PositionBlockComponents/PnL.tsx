@@ -21,7 +21,7 @@ const PnlBlock = (position: PositionExtended | EnrichedPositionApi, showAfterFee
             isDecimalDimmed={false}
         />
         <FormatNumber
-            nb={((showAfterFees ? position.pnl : position.pnl - fees) / ('entryCollateralAmount' in position ? position.entryCollateralAmount : position.collateralUsd)) * 100}
+            nb={((showAfterFees ? position.pnl : position.pnl - fees) / ('closeCollateralAmount' in position ? position.closeCollateralAmount : position.collateralUsd)) * 100}
             format="percentage"
             prefix="("
             suffix=")"
