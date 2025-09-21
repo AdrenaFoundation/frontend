@@ -1,4 +1,5 @@
 /* ClaimHistoryAnimation.css */
+
 .claim-history-enter {
   max-height: 0;
   overflow: hidden;
@@ -6,15 +7,50 @@
 }
 
 .claim-history-enter-active {
-  max-height: 500px; /* Adjust based on content */
+  max-height: 500px;
 }
 
 .claim-history-exit {
-  max-height: 500px; /* Match the enter-active max-height */
+  max-height: 500px;
   overflow: hidden;
   transition: max-height 300ms ease-in-out;
 }
 
 .claim-history-exit-active {
   max-height: 0;
+}
+
+/* Infinite Scroll Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes marquee2 {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee2 {
+  animation: marquee2 25s linear infinite;
+}
+
+.paused {
+  animation-play-state: paused;
+}
+
+.group:hover .group-hover\:paused {
+  animation-play-state: paused;
 }

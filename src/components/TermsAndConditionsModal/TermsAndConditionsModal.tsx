@@ -1,12 +1,6 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import externalLinkLogo from '@/../public/images/external-link-logo.png';
-
 import Button from '../common/Button/Button';
-import Checkbox from '../common/Checkbox/Checkbox';
 import Modal from '../common/Modal/Modal';
 
 export default function TermsAndConditionsModal({
@@ -29,12 +23,6 @@ export default function TermsAndConditionsModal({
     agreeTrigger: () => void;
     declineTrigger: () => void;
   }) {
-  const [acceptedTermsAndConditions, setAcceptedTermsAndConditions] =
-    useState<boolean>(false);
-
-  const [acceptedTokenTermsAndConditions, setAcceptedTokenTermsAndConditions] =
-    useState<boolean>(false);
-
   if (!isOpen) {
     return null;
   }
@@ -49,79 +37,30 @@ export default function TermsAndConditionsModal({
       }}
       className={twMerge(
         className,
-        'flex',
-        'flex-col',
-        'items-center',
-        'p-4',
-        'w-[30em]',
-        'max-w-full',
-        'max-h-[40em]',
+        'flex flex-col items-center p-4 w-[25em] max-w-full max-h-[40em]',
       )}
     >
-      <div className='flex flex-col pb-4'>
-        <div className="flex mt-4 items-center justify-center w-full">
-          <Checkbox
-            checked={acceptedTermsAndConditions}
-            className="h-6 w-6 shrink-0 rounded border-white"
-            onChange={(checked: boolean): void => {
-              setAcceptedTermsAndConditions(checked);
-            }}
-          />
-
-          <div className="flex ml-2 grow text-base sm:text-lg">
-            <div>I accept the</div>
-
-            <Link
-              href="https://docs.adrena.xyz/technical-documentation/terms-and-conditions"
-              target="_blank"
-              className="ml-1 underline flex gap-1 items-center"
-            >
-              Terms of Service*
-
-              <Image
-                src={externalLinkLogo}
-                alt="External link"
-                className="w-3 h-3"
-                width={20}
-                height={20}
-              />
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex mt-4 items-center justify-center w-full">
-          <Checkbox
-            checked={acceptedTokenTermsAndConditions}
-            className="h-6 w-6 shrink-0 rounded border-white"
-            onChange={(checked: boolean): void => {
-              setAcceptedTokenTermsAndConditions(checked);
-            }}
-          />
-
-          <div className="flex ml-2 grow text-base sm:text-lg">
-            <div>I accept the</div>
-
-            <Link
-              href="https://docs.adrena.xyz/technical-documentation/token-terms-and-conditions"
-              target="_blank"
-              className="ml-1 underline flex gap-1 items-center"
-            >
-              Token Terms and Conditions*
-
-              <Image
-                src={externalLinkLogo}
-                alt="External link"
-                className="w-3 h-3"
-                width={20}
-                height={20}
-              />
-            </Link>
-          </div>
-        </div>
+      <div className='flex text-sm text-center'>
+        <p>
+          <span className='text-txtfade'>Using this platform means that you agree to both our </span>
+          <span
+            className='font-boldy cursor-pointer opacity-90 hover:opacity-100'
+            onClick={() => window.open("https://docs.adrena.xyz/technical-documentation/token-terms-and-conditions", "_blank")}
+          >
+            token terms and conditions
+          </span>
+          <span className='text-txtfade'> and </span>
+          <span
+            className='font-boldy cursor-pointer opacity-90 hover:opacity-100'
+            onClick={() => window.open("https://docs.adrena.xyz/technical-documentation/terms-and-conditions", "_blank")}
+          >
+            terms of service
+          </span>
+          <span className='text-txtfade'>. Please read them carefully before proceeding.</span>
+        </p>
       </div>
 
-      <p className='text-xxs opacity-50 text-center'>*Please check the boxes to agree to the terms and conditions before continuing.</p>
-      <div className="flex w-full flex-row gap-3 mt-6 border-t border-grey max-w-full flex-wrap">
+      <div className="flex w-full flex-row gap-2 mt-2 border-t pt-4 border-grey max-w-full">
         {readonly ? (
           <>
             <Button
@@ -139,27 +78,24 @@ export default function TermsAndConditionsModal({
         ) : (
           <>
             <Button
-              title="Agree"
+              title="Decline"
               size="lg"
-              className="w-full"
-              disabled={
-                !acceptedTermsAndConditions || !acceptedTokenTermsAndConditions
-              }
+              variant="lightbg"
+              className="w-1/2"
               onClick={() => {
-                if ('agreeTrigger' in args) {
-                  args.agreeTrigger();
+                if ('declineTrigger' in args) {
+                  args.declineTrigger();
                 }
               }}
             />
 
             <Button
-              title="Decline"
+              title="Accept"
               size="lg"
-              variant="outline"
-              className="w-full"
+              className="w-1/2"
               onClick={() => {
-                if ('declineTrigger' in args) {
-                  args.declineTrigger();
+                if ('agreeTrigger' in args) {
+                  args.agreeTrigger();
                 }
               }}
             />
