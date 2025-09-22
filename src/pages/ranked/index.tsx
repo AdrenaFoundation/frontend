@@ -75,6 +75,7 @@ export default function Ranked({
                 adxRewards={data.adxRewards}
                 jtoRewards={data.jtoRewards}
                 bonkRewards={data.bonkRewards}
+                usdcRewards={data.usdcRewards}
                 bannerClassName={data.bannerClassName}
                 jtoPrice={jtoPrice}
             />

@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import Image, { StaticImageData } from 'next/image';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import firstImage from '@/../public/images/first-place.svg';
@@ -20,29 +20,28 @@ function RafflePlace({
   placeTitle,
   imageRef,
   reward,
-  adxPrice,
 }: {
   placeTitle: string;
-  imageRef: string | StaticImageData;
+  imageRef: string | StaticImageData | null;
   reward: number;
   adxPrice: number | null;
 }) {
-  const usdValue = useMemo(() => {
-    if (adxPrice) {
-      return reward * adxPrice;
-    }
+  // const adxValue = useMemo(() => {
+  //   if (adxPrice) {
+  //     return Math.floor(reward / adxPrice);
+  //   }
 
-    return null;
-  }, [adxPrice, reward]);
+  //   return null;
+  // }, [adxPrice, reward]);
 
   return <div className='border bg-main/80 rounded-md p-4 flex flex-col items-center justify-center gap-2 z-10 grow'>
-    <Image
+    {imageRef ? <Image
       src={imageRef}
       alt="raffle ranking logo"
       className={'h-10 w-10'}
       width={40}
       height={40}
-    />
+    /> : null}
 
     <div className='text-md'>
       {placeTitle} Raffle Winner
@@ -51,15 +50,6 @@ function RafflePlace({
     <div className='flex gap-2 items-center'>
       <FormatNumber
         nb={reward}
-        className=""
-        suffixClassName='text-base font-boldy'
-        suffix=' ADX'
-      />
-
-      <div className='text-txtfade/50'>/</div>
-
-      <FormatNumber
-        nb={usdValue}
         format='currency'
         className=""
         suffixClassName='text-base font-boldy'
@@ -111,9 +101,19 @@ export default function Anniversary() {
           </h1>
 
           <div className="relative z-10 w-full flex flex-col sm:flex-row gap-4 p-6">
-            <RafflePlace placeTitle="1st" imageRef={firstImage} reward={300000} adxPrice={adxPrice} />
-            <RafflePlace placeTitle="2nd" imageRef={secondImage} reward={200000} adxPrice={adxPrice} />
-            <RafflePlace placeTitle="3rd" imageRef={thirdImage} reward={100000} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="1st" imageRef={firstImage} reward={10000} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="2nd" imageRef={secondImage} reward={5000} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="3rd" imageRef={thirdImage} reward={4000} adxPrice={adxPrice} />
+          </div>
+
+          <div className="relative z-10 w-full flex flex-col sm:flex-row gap-4 p-6">
+            <RafflePlace placeTitle="4th" imageRef={null} reward={3000} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="5th" imageRef={null} reward={2000} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="6th" imageRef={null} reward={1500} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="7th" imageRef={null} reward={1300} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="8th" imageRef={null} reward={1200} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="9th" imageRef={null} reward={1050} adxPrice={adxPrice} />
+            <RafflePlace placeTitle="10th" imageRef={null} reward={950} adxPrice={adxPrice} />
           </div>
         </div>
 
