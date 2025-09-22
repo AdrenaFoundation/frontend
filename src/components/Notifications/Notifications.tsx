@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from '@/store/store';
 import { AdrenaNotificationData, PageProps } from '@/types';
 
 import Button from '../common/Button/Button';
+import InfiniteScroll from '../common/InfiniteScroll/InfiniteScroll';
 import { AdrenaNotification } from './AdrenaNotification';
 import { DialectNotification } from './DialectNotification';
 
@@ -114,38 +115,20 @@ export const Notifications = ({
               </div>
 
               <div className="relative overflow-hidden w-full mt-1">
-                <div className="absolute left-0 top-0 w-12 h-full bg-gradient-to-r from-[#050505] to-transparent pointer-events-none z-20" />
-                <div className="absolute right-0 top-0 w-12 h-full bg-gradient-to-l from-[#050505] to-transparent pointer-events-none z-20" />
-                <motion.div
-                  className="flex flex-row items-center gap-4 whitespace-nowrap"
-                  initial={{ x: 0 }}
-                  animate={{ x: ['0%', '-50%'] }}
-                  transition={{
-                    repeat: Infinity,
-                    repeatType: 'loop',
-                    duration: 12,
-                    ease: 'linear',
-                  }}
-                  style={{ willChange: 'transform' }}
+                <InfiniteScroll
+                  speed={15}
+                  gap="lg"
+                  fadeColor="from-[#050505] to-transparent"
                 >
                   {['email', 'telegram', 'announcements'].map((point, i) => (
                     <span
                       key={point + i}
-                      className="text-sm font-boldy opacity-30 px-3"
+                      className="text-sm font-boldy opacity-30 px-3 flex-shrink-0"
                     >
                       {point}
                     </span>
                   ))}
-                  {/* Duplicate for loop */}
-                  {['email', 'telegram', 'announcements'].map((point, i) => (
-                    <span
-                      key={point + 'dup' + i}
-                      className="text-sm font-boldy opacity-30 px-3"
-                    >
-                      {point}
-                    </span>
-                  ))}
-                </motion.div>
+                </InfiniteScroll>
               </div>
             </div>
           </motion.div>

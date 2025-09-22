@@ -1,5 +1,6 @@
 import Tippy from '@tippyjs/react';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -10,13 +11,52 @@ import StakingChart from '@/components/pages/global/Staking/StakingChart';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
+import { useSelector } from '@/store/store';
 
 export default function AllStaking({ view }: { isSmallScreen: boolean, view: string }) {
+    const adxPrice: number | null =
+        useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
+        null;
+
+    const [displayStakedAdxAs, setDisplayStakedAdxAs] = useState<'usd' | 'amount'>('amount');
+
     const { allStakingStats } = useAllStakingStats();
+
     const totalSupplyADX = useADXTotalSupply();
-    const circulatingSupplyADX = useADXCirculatingSupply({
+
+    const circulatingSupplyADXNative = useADXCirculatingSupply({
         totalSupplyADX,
     });
+
+    const {
+        circulatingSupplyADX,
+        totalStakedADX,
+        percentStakedADX,
+    } = useMemo(() => {
+        if (!circulatingSupplyADXNative || !adxPrice || !allStakingStats) {
+            return {
+                circulatingSupplyADX: null,
+                totalSupplyADX: null,
+                percentStakedAdx: null,
+            };
+        }
+
+        if (displayStakedAdxAs === 'amount') {
+            return {
+                circulatingSupplyADX: circulatingSupplyADXNative,
+                totalStakedADX: allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid,
+                percentStakedADX: (allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid) * 100 / circulatingSupplyADXNative,
+            };
+        };
+
+        const totalStakedADX = allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid;
+
+        return {
+            circulatingSupplyADX: circulatingSupplyADXNative * adxPrice,
+            totalStakedADX: displayStakedAdxAs === 'usd' ? totalStakedADX * adxPrice : totalStakedADX,
+            percentStakedADX: (allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid) * 100 / circulatingSupplyADXNative,
+        };
+    }, [circulatingSupplyADXNative, adxPrice, allStakingStats, displayStakedAdxAs]);
 
     useEffect(() => {
         if (view !== 'allStaking') return;
@@ -40,7 +80,7 @@ export default function AllStaking({ view }: { isSmallScreen: boolean, view: str
             </StyledContainer>
 
             <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
-                <div className='flex flex-col items-center justify-center gap-1'>
+                <div className='flex flex-col items-center justify-center gap-1 cursor-pointer' onClick={() => setDisplayStakedAdxAs(displayStakedAdxAs === 'usd' ? 'amount' : 'usd')}>
                     <h2 className='flex'>STAKED ADX</h2>
 
                     {allStakingStats && circulatingSupplyADX ?
@@ -54,7 +94,8 @@ export default function AllStaking({ view }: { isSmallScreen: boolean, view: str
                         >
                             <div className='flex items-center gap-2'>
                                 <FormatNumber
-                                    nb={allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid}
+                                    nb={totalStakedADX}
+                                    prefix={displayStakedAdxAs === 'usd' ? '$' : ''}
                                     isAbbreviate={true}
                                     isAbbreviateIcon={false}
                                     className='text-txtfade text-base'
@@ -65,6 +106,7 @@ export default function AllStaking({ view }: { isSmallScreen: boolean, view: str
 
                                 <FormatNumber
                                     nb={circulatingSupplyADX}
+                                    prefix={displayStakedAdxAs === 'usd' ? '$' : ''}
                                     isAbbreviate={true}
                                     isAbbreviateIcon={false}
                                     className='text-txtfade text-base'
@@ -74,7 +116,7 @@ export default function AllStaking({ view }: { isSmallScreen: boolean, view: str
                                 <div className='flex'>
                                     <span className='text-txtfade text-base font-mono'>{"("}</span>
                                     <FormatNumber
-                                        nb={(allStakingStats.byDurationByAmount.ADX.totalLocked + allStakingStats.byDurationByAmount.ADX.liquid) * 100 / circulatingSupplyADX}
+                                        nb={percentStakedADX}
                                         className='text-txtfade text-base'
                                         isDecimalDimmed={false}
                                         format='percentage'
@@ -85,15 +127,39 @@ export default function AllStaking({ view }: { isSmallScreen: boolean, view: str
                         </Tippy> : null}
                 </div>
 
+                <div className='absolute top-2 right-4 text-sm flex gap-2'>
+                    <div className='text-txtfade'>Display as: </div>
+
+                    <div
+                        onClick={() => setDisplayStakedAdxAs('amount')}
+                        className={twMerge(
+                            displayStakedAdxAs === 'amount' ? 'underline' : '',
+                            'cursor-pointer'
+                        )}
+                    >
+                        Token Amount
+                    </div>
+
+                    <div
+                        onClick={() => setDisplayStakedAdxAs('usd')}
+                        className={twMerge(
+                            displayStakedAdxAs === 'usd' ? 'underline' : '',
+                            'cursor-pointer'
+                        )}
+                    >
+                        Usd
+                    </div>
+                </div>
+
                 <div className='flex w-full min-h-[15em] h-[20em] grow'>
-                    <AllStakingChartADX allStakingStats={allStakingStats} />
+                    <AllStakingChartADX allStakingStats={allStakingStats} displayAs={displayStakedAdxAs} />
                 </div>
 
                 <div className='flex flex-col items-center justify-center gap-1 w-full mt-4'>
                     <h2 className='flex'>ADX STAKING REMAINING TIME</h2>
 
                     <div className='w-full flex h-[20em]'>
-                        <UnlockStakingChart allStakingStats={allStakingStats} stakingType="ADX" />
+                        <UnlockStakingChart allStakingStats={allStakingStats} />
                     </div>
                 </div>
             </StyledContainer >

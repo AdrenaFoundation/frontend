@@ -5,13 +5,14 @@ import MixedAreaLineChart from '@/components/ReCharts/MixedAreaLineChart';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
-import { formatSnapshotTimestamp, getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getGMT, periodModeToSeconds } from '@/utils';
 
 export default function AumChart() {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
 
   useEffect(() => {
     periodRef.current = period;
@@ -122,6 +123,13 @@ export default function AumChart() {
       });
 
       setChartData(formattedData);
+
+      if (periodRef.current) {
+        setTimestamps({
+          start: Date.now() / 1000 - periodModeToSeconds(periodRef.current),
+          end: Date.now() / 1000,
+        });
+      }
     } catch (e) {
       console.error('Error fetching data:', e);
     }
@@ -157,6 +165,8 @@ export default function AumChart() {
       formatLeftY="currency"
       formatRightY="currency"
       events={ADRENA_EVENTS.filter((event) => event.type === 'Global')}
+      startTimestamp={timestamps.start}
+      endTimestamp={timestamps.end}
     />
   );
 }

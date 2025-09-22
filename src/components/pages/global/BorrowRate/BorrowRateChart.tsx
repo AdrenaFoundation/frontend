@@ -4,7 +4,7 @@ import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
-import { formatSnapshotTimestamp, getGMT } from '@/utils';
+import { formatSnapshotTimestamp, getGMT, periodModeToSeconds } from '@/utils';
 
 export default function BorrowRateChart() {
   const [infos, setInfos] = useState<{
@@ -18,9 +18,10 @@ export default function BorrowRateChart() {
     custodiesColors: string[];
   } | null>(null);
 
-  const [period, setPeriod] = useState<string | null>('6M');
+  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
 
   useEffect(() => {
     periodRef.current = period;
@@ -145,6 +146,13 @@ export default function BorrowRateChart() {
         formattedData: formatted,
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
       });
+
+      if (periodRef.current) {
+        setTimestamps({
+          start: Date.now() / 1000 - periodModeToSeconds(periodRef.current),
+          end: Date.now() / 1000,
+        });
+      }
     } catch (e) {
       console.error('Error fetching borrow rate data:', e);
     }
@@ -180,6 +188,8 @@ export default function BorrowRateChart() {
       precisionTooltip={6}
       scale="sqrt"
       events={ADRENA_EVENTS}
+      startTimestamp={timestamps.start}
+      endTimestamp={timestamps.end}
     />
   );
 }
