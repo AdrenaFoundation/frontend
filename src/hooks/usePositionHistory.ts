@@ -5,6 +5,7 @@ import { EnrichedPositionApi, EnrichedPositionApiV2 } from '@/types';
 
 // Sort options for positions
 export type PositionSortOption =
+  | 'exit_date'
   | 'entry_date'
   | 'pnl'
   | 'volume'
@@ -114,7 +115,7 @@ export default function usePositionsHistory({
   const exitDateRef = useRef<string | null>(endDate);
 
   // Sort refs
-  const sortByRef = useRef<PositionSortOption>('entry_date');
+  const sortByRef = useRef<PositionSortOption>('exit_date');
   const sortDirectionRef = useRef<SortDirection>('desc');
 
   const walletAddressRef = useRef<string | null>(walletAddress);
