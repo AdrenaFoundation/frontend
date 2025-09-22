@@ -771,11 +771,16 @@ export default function Trade({
                   activePositionModal.slice(1)
                 } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col overflow-y-auto"
+                className="flex flex-col overflow-y-auto w-full"
               >
-                {tokenB && <TradingChartMini token={tokenB} />}
+                {tokenB && (
+                  <TradingChartMini
+                    token={tokenB}
+                    selectedAction={selectedAction}
+                  />
+                )}
                 <div className="bg-bcolor w-full h-[1px] my-3" />
-                <div className="flex w-full px-4">
+                <div className="flex w-full">
                   <TradeComp
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
@@ -793,7 +798,7 @@ export default function Trade({
                     }}
                     setTokenB={setTokenB}
                     openedPosition={openedPosition}
-                    className="p-0 m-0"
+                    className="p-0 m-0 w-full px-4"
                     wallet={wallet}
                     connected={connected}
                     activeRpc={activeRpc}

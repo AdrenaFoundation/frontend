@@ -47,7 +47,7 @@ function PositionsHistory({
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     type: 'year',
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
   });
   const [exportWarning, setExportWarning] = useState<string>('');
 
@@ -73,7 +73,7 @@ function PositionsHistory({
       const positionIds = new Set<string>();
       const duplicates: string[] = [];
 
-      paginatedPositions.forEach(p => {
+      paginatedPositions.forEach((p) => {
         const id = String(p.positionId);
         if (positionIds.has(id)) {
           duplicates.push(id);
@@ -82,7 +82,9 @@ function PositionsHistory({
       });
 
       if (duplicates.length > 0) {
-        console.error(`Found duplicate position IDs in current page: ${duplicates.join(', ')}`);
+        console.error(
+          `Found duplicate position IDs in current page: ${duplicates.join(', ')}`,
+        );
       }
     }
   }, [paginatedPositions]);
@@ -109,109 +111,120 @@ function PositionsHistory({
     localStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [itemsPerPage]);
 
-  const downloadPositionHistory = useCallback(async (options: ExportOptions): Promise<boolean> => {
-    if (!walletAddress || isDownloading) {
-      return false;
-    }
-
-    setIsDownloading(true);
-    setExportWarning(''); // Clear any previous warnings
-
-    try {
-      // Server uses large default page size (500,000), so most if not all users get everything in one request
-      const exportParams: Parameters<typeof DataApiClient.exportPositions>[0] = {
-        userWallet: walletAddress,
-      };
-
-      if (options.type === 'year' && options.year) {
-        exportParams.year = options.year;
-      } else if (options.type === 'dateRange') {
-        if (options.entryDate) {
-          exportParams.entryDate = new Date(options.entryDate);
-        }
-        if (options.exitDate) {
-          const exitDate = new Date(options.exitDate);
-          exitDate.setUTCHours(23, 59, 59, 999);
-          exportParams.exitDate = exitDate;
-        }
-      }
-
-      const firstPageResult = await DataApiClient.exportPositions(exportParams);
-
-      if (!firstPageResult) {
-        setExportWarning('Failed to export positions. Please try again.');
+  const downloadPositionHistory = useCallback(
+    async (options: ExportOptions): Promise<boolean> => {
+      if (!walletAddress || isDownloading) {
         return false;
       }
 
-      const { csvData, metadata } = firstPageResult;
+      setIsDownloading(true);
+      setExportWarning(''); // Clear any previous warnings
 
-      if (!csvData || csvData.trim().length === 0 || metadata.totalPositions === 0) {
-        setExportWarning(`No positions available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.entryDate} to ${options.exitDate}`}`);
-        return false;
-      }
+      try {
+        // Server uses large default page size (500,000), so most if not all users get everything in one request
+        const exportParams: Parameters<
+          typeof DataApiClient.exportPositions
+        >[0] = {
+          userWallet: walletAddress,
+        };
 
-      let allCsvData = csvData;
+        if (options.type === 'year' && options.year) {
+          exportParams.year = options.year;
+        } else if (options.type === 'dateRange') {
+          if (options.entryDate) {
+            exportParams.entryDate = new Date(options.entryDate);
+          }
+          if (options.exitDate) {
+            const exitDate = new Date(options.exitDate);
+            exitDate.setUTCHours(23, 59, 59, 999);
+            exportParams.exitDate = exitDate;
+          }
+        }
 
-      // Handle rare case where data spans multiple pages (very large datasets +500k position events)
-      if (metadata.totalPages > 1) {
-        for (let page = 2; page <= metadata.totalPages; page++) {
-          const pageResult = await DataApiClient.exportPositions({
-            ...exportParams,
-            page,
-          });
+        const firstPageResult =
+          await DataApiClient.exportPositions(exportParams);
 
-          if (pageResult && pageResult.csvData) {
-            const lines = pageResult.csvData.split('\n');
-            const dataWithoutHeader = lines.slice(1).join('\n');
-            if (dataWithoutHeader.trim()) {
-              allCsvData += '\n' + dataWithoutHeader;
+        if (!firstPageResult) {
+          setExportWarning('Failed to export positions. Please try again.');
+          return false;
+        }
+
+        const { csvData, metadata } = firstPageResult;
+
+        if (
+          !csvData ||
+          csvData.trim().length === 0 ||
+          metadata.totalPositions === 0
+        ) {
+          setExportWarning(
+            `No positions available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.entryDate} to ${options.exitDate}`}`,
+          );
+          return false;
+        }
+
+        let allCsvData = csvData;
+
+        // Handle rare case where data spans multiple pages (very large datasets +500k position events)
+        if (metadata.totalPages > 1) {
+          for (let page = 2; page <= metadata.totalPages; page++) {
+            const pageResult = await DataApiClient.exportPositions({
+              ...exportParams,
+              page,
+            });
+
+            if (pageResult && pageResult.csvData) {
+              const lines = pageResult.csvData.split('\n');
+              const dataWithoutHeader = lines.slice(1).join('\n');
+              if (dataWithoutHeader.trim()) {
+                allCsvData += '\n' + dataWithoutHeader;
+              }
+            }
+
+            if (page < metadata.totalPages) {
+              await new Promise((resolve) => setTimeout(resolve, 100));
             }
           }
-
-          if (page < metadata.totalPages) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
         }
+
+        // Create filename based on options
+        let filename = `positions-${walletAddress.slice(0, 8)}`;
+        if (options.type === 'year' && options.year) {
+          filename += `-${options.year}`;
+        } else if (options.type === 'dateRange') {
+          if (options.entryDate) filename += `-from-${options.entryDate}`;
+          if (options.exitDate) filename += `-to-${options.exitDate}`;
+        }
+        filename += `-${new Date().toISOString().split('T')[0]}.csv`;
+
+        // Create and download the CSV file
+        const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
+
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        return true; // Success
+      } catch (error) {
+        console.error('Error downloading position history:', error);
+        setExportWarning('Failed to export positions. Please try again.');
+        return false;
+      } finally {
+        setIsDownloading(false);
       }
-
-      // Create filename based on options
-      let filename = `positions-${walletAddress.slice(0, 8)}`;
-      if (options.type === 'year' && options.year) {
-        filename += `-${options.year}`;
-      } else if (options.type === 'dateRange') {
-        if (options.entryDate) filename += `-from-${options.entryDate}`;
-        if (options.exitDate) filename += `-to-${options.exitDate}`;
-      }
-      filename += `-${new Date().toISOString().split('T')[0]}.csv`;
-
-      // Create and download the CSV file
-      const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
-
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      return true; // Success
-
-    } catch (error) {
-      console.error('Error downloading position history:', error);
-      setExportWarning('Failed to export positions. Please try again.');
-      return false;
-    } finally {
-      setIsDownloading(false);
-    }
-  }, [walletAddress, isDownloading]);
+    },
+    [walletAddress, isDownloading],
+  );
 
   const getNoDataMessage = () => {
-    if (!connected) return "Connect your wallet to view your trade history.";
-    if (!positionsData) return "No trade history available.";
-    if (totalItems === 0) return "No trade history available.";
+    if (!connected) return 'Connect your wallet to view your trade history.';
+    if (!positionsData) return 'No trade history available.';
+    if (totalItems === 0) return 'No trade history available.';
     if (currentPage > totalPages) return "This page doesn't exist.";
-    if (isLoadingPositionsHistory) return "Loading...";
-    return "No data available for this page.";
+    if (isLoadingPositionsHistory) return 'Loading...';
+    return 'No data available for this page.';
   };
 
   const handleExportSubmit = async () => {
@@ -232,7 +245,9 @@ function PositionsHistory({
     return years;
   };
 
-  const hasDateFields = Boolean(exportOptions.entryDate || exportOptions.exitDate);
+  const hasDateFields = Boolean(
+    exportOptions.entryDate || exportOptions.exitDate,
+  );
 
   const isExportValid = () => {
     if (!hasDateFields) {
@@ -245,28 +260,21 @@ function PositionsHistory({
   const exportButton = (
     <div
       className={twMerge(
-        "flex gap-1 items-center cursor-pointer transition-opacity",
-        showExportModal ? "opacity-100" : "opacity-50 hover:opacity-100"
+        'flex gap-1 items-center cursor-pointer transition-opacity',
+        showExportModal ? 'opacity-100' : 'opacity-50 hover:opacity-100',
       )}
       onClick={() => {
         setExportWarning(''); // Clear any previous warnings
         setShowExportModal(!showExportModal);
       }}
     >
-      <div className='text-sm tracking-wider'>
-        Export
-      </div>
-      <Image
-        src={downloadIcon}
-        width={14}
-        height={12}
-        alt="Download icon"
-      />
+      <div className="text-sm tracking-wider">Export</div>
+      <Image src={downloadIcon} width={14} height={12} alt="Download icon" />
     </div>
   );
 
   return (
-    <div className={twMerge("w-full h-full flex flex-col relative", className)}>
+    <div className={twMerge('w-full h-full flex flex-col relative', className)}>
       {showExportModal ? (
         <Modal
           title="Export Position History"
@@ -290,10 +298,12 @@ function PositionsHistory({
                         type: 'year',
                         year: parseInt(value),
                         entryDate: '',
-                        exitDate: ''
+                        exitDate: '',
                       });
                     }}
-                    options={getYearOptions().map(year => ({ title: String(year) }))}
+                    options={getYearOptions().map((year) => ({
+                      title: String(year),
+                    }))}
                     reversed={true}
                     className="h-8 flex items-center px-2"
                     selectedTextClassName="text-xs font-medium flex-1 text-left"
@@ -312,26 +322,38 @@ function PositionsHistory({
 
             {/* Date Range Option */}
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl font-medium text-white">Export by Date Range</h3>
+              <h3 className="text-xl font-medium text-white">
+                Export by Date Range
+              </h3>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                   <label className="text-xs text-white/60">From:</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
-                      selected={exportOptions.entryDate ? new Date(exportOptions.entryDate) : null}
+                      selected={
+                        exportOptions.entryDate
+                          ? new Date(exportOptions.entryDate)
+                          : null
+                      }
                       onChange={(date) => {
                         setExportWarning(''); // Clear warning when changing options
                         setExportOptions({
                           ...exportOptions,
                           type: 'dateRange',
-                          entryDate: date ? date.toISOString().split('T')[0] : ''
+                          entryDate: date
+                            ? date.toISOString().split('T')[0]
+                            : '',
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select start date"
                       dateFormat="yyyy-MM-dd"
                       minDate={new Date('2024-09-25')}
-                      maxDate={exportOptions.exitDate ? new Date(exportOptions.exitDate) : new Date()}
+                      maxDate={
+                        exportOptions.exitDate
+                          ? new Date(exportOptions.exitDate)
+                          : new Date()
+                      }
                       popperClassName="z-[200]"
                       popperPlacement="bottom-start"
                     />
@@ -342,19 +364,29 @@ function PositionsHistory({
                   <label className="text-xs text-white/60">To:</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
-                      selected={exportOptions.exitDate ? new Date(exportOptions.exitDate) : null}
+                      selected={
+                        exportOptions.exitDate
+                          ? new Date(exportOptions.exitDate)
+                          : null
+                      }
                       onChange={(date) => {
                         setExportWarning(''); // Clear warning when changing options
                         setExportOptions({
                           ...exportOptions,
                           type: 'dateRange',
-                          exitDate: date ? date.toISOString().split('T')[0] : ''
+                          exitDate: date
+                            ? date.toISOString().split('T')[0]
+                            : '',
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select end date"
                       dateFormat="yyyy-MM-dd"
-                      minDate={exportOptions.entryDate ? new Date(exportOptions.entryDate) : new Date('2024-09-25')}
+                      minDate={
+                        exportOptions.entryDate
+                          ? new Date(exportOptions.entryDate)
+                          : new Date('2024-09-25')
+                      }
                       maxDate={new Date()}
                       popperClassName="z-[200]"
                       popperPlacement="bottom-start"
@@ -366,7 +398,7 @@ function PositionsHistory({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-boldy'>
+              <div className="text-xs text-orange font-boldy">
                 {exportWarning}
               </div>
             )}
@@ -403,22 +435,24 @@ function PositionsHistory({
           <>
             {isLoadingPositionsHistory && paginatedPositions.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <Loader className='ml-auto mr-auto' />
+                <Loader className="ml-auto mr-auto" />
               </div>
             ) : (
               <>
                 {paginatedPositions.length > 0 ? (
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center">
-                      {exportButtonPosition === "top" && exportButton}
+                      {exportButtonPosition === 'top' && exportButton}
                     </div>
-                    {paginatedPositions.map((positionHistory: EnrichedPositionApi) => (
-                      <PositionHistoryBlock
-                        key={positionHistory.positionId}
-                        positionHistory={positionHistory}
-                        showShareButton={showShareButton}
-                      />
-                    ))}
+                    {paginatedPositions.map(
+                      (positionHistory: EnrichedPositionApi) => (
+                        <PositionHistoryBlock
+                          key={positionHistory.positionId}
+                          positionHistory={positionHistory}
+                          showShareButton={showShareButton}
+                        />
+                      ),
+                    )}
                   </div>
                 ) : (
                   <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
@@ -445,7 +479,6 @@ function PositionsHistory({
           itemsPerPage={itemsPerPage}
           totalItems={totalItems}
         />
-
         {totalItems > 5 && (
           <select
             value={itemsPerPage}

@@ -87,68 +87,62 @@ export default function TradingChartHeaderStats({
         className,
       )}
     >
-      <div className="flex sm:hidden items-center ml-2">
-        <FormatNumber
-          nb={selectedTokenPrice}
-          format="currency"
-          minimumFractionDigits={2}
-          precision={selected.displayPriceDecimalsPrecision}
-          className={twMerge('text-xl font-bold', tokenColor, priceClassName)}
-        />
-      </div>
-
-      <div className="flex sm:hidden items-center justify-center gap-2 text-xxs font-mono">
-        <div className="flex flex-col items-center justify-center">
-          <span className="text-txtfade text-xxs leading-none mb-0.5">
-            24h Change
-          </span>
-          <span
-            className={`font-mono leading-none text-xxs ${
-              dailyChange
-                ? dailyChange > 0
-                  ? 'text-green'
-                  : 'text-redbright'
-                : 'text-white'
-            }`}
-          >
-            {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
+      {/* Mobile: Compact single line layout */}
+      <div className="flex sm:hidden items-center justify-between w-full">
+        <div className="flex items-center gap-3">
+          <FormatNumber
+            nb={selectedTokenPrice}
+            format="currency"
+            minimumFractionDigits={2}
+            precision={selected.displayPriceDecimalsPrecision}
+            className={twMerge('text-lg font-bold', tokenColor, priceClassName)}
+          />
+          <span className="text-xs font-mono text-txtfade">
+            24h Ch.{' '}
+            <span
+              className={`${
+                dailyChange
+                  ? dailyChange > 0
+                    ? 'text-green'
+                    : 'text-redbright'
+                  : 'text-white'
+              } font-mono`}
+            >
+              {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
+            </span>
           </span>
         </div>
 
-        <div className="flex flex-col items-center justify-center">
-          <span className="text-txtfade text-xxs leading-none mb-0.5">
-            24h Vol
-          </span>
-          <span className="text-white text-xxs font-mono leading-none">
+        <div className="flex items-center gap-3 text-xs font-mono">
+          <span className="text-txtfade">
+            24h Vol.{' '}
             {dailyVolume ? (
               <FormatNumber
                 nb={dailyVolume}
                 format="currency"
                 isAbbreviate={true}
                 isDecimalDimmed={false}
-                className="font-mono text-xxs"
+                className="text-white font-mono"
               />
             ) : (
               '-'
             )}
           </span>
-        </div>
-
-        <div className="flex flex-col items-center justify-center">
-          <span className="text-txtfade text-xxs leading-none mb-0.5">
-            Borrow Rate
-          </span>
-          <span className="text-white text-xxs font-mono leading-none">
-            {borrowingRate !== null
-              ? `${(borrowingRate * 100).toFixed(4)}%/h`
-              : '-'}
+          <span className="text-txtfade">
+            Bor. R.{' '}
+            <span className="text-white font-mono">
+              {borrowingRate !== null
+                ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                : '-'}
+            </span>
           </span>
         </div>
       </div>
 
+      {/* Desktop layout - unchanged */}
       <div className="hidden sm:flex w-auto justify-start gap-3 lg:gap-6 items-center">
         {numberLong && numberShort ? (
-          <div className="flex-row gap-2 mr-0 xl:mr-4 hidden md:flex">
+          <div className="flex-row gap-2 mr-0 xl:mr-2 hidden md:flex">
             <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
               <Link
                 href="/monitoring?view=livePositions"
@@ -174,7 +168,7 @@ export default function TradingChartHeaderStats({
           minimumFractionDigits={2}
           precision={selected.displayPriceDecimalsPrecision}
           className={twMerge(
-            'text-lg font-bold -mr-2',
+            'text-lg font-bold -mr-1',
             tokenColor,
             priceClassName,
           )}
@@ -187,16 +181,16 @@ export default function TradingChartHeaderStats({
 
           <div
             className={twMerge(
-              'flex items-center sm:gap-1 rounded-full flex-wrap',
+              'flex items-center sm:gap-2 rounded-full flex-wrap',
               statsClassName,
             )}
           >
-            <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-              Ch.
+            <span className="font-mono text-sm sm:text-xs text-txtfade text-right">
+              24h Ch.
             </span>
             <span
               className={twMerge(
-                'font-mono text-xs sm:text-xxs',
+                'font-mono text-sm sm:text-xs',
                 dailyChange
                   ? dailyChange > 0
                     ? 'text-green'
@@ -214,16 +208,16 @@ export default function TradingChartHeaderStats({
               statsClassName,
             )}
           >
-            <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+            <span className="font-mono text-sm sm:text-xxs text-txtfade text-right">
               Vol.
             </span>
-            <span className="font-mono text-xs sm:text-xxs">
+            <span className="font-mono text-sm sm:text-xs">
               <FormatNumber
                 nb={dailyVolume}
                 format="currency"
                 isAbbreviate={true}
                 isDecimalDimmed={false}
-                className="font-mono text-xxs"
+                className="font-mono text-sm sm:text-xs"
               />
             </span>
           </div>
@@ -234,10 +228,10 @@ export default function TradingChartHeaderStats({
               statsClassName,
             )}
           >
-            <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-              Bor.
+            <span className="font-mono text-sm sm:text-xs text-txtfade text-right">
+              Bor. R.
             </span>
-            <span className="font-mono text-xs sm:text-xxs text-white">
+            <span className="font-mono text-sm sm:text-xs text-white mr-1">
               {borrowingRate !== null
                 ? `${(borrowingRate * 100).toFixed(4)}%/h`
                 : '-'}
