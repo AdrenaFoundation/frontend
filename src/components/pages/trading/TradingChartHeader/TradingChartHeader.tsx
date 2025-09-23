@@ -1,4 +1,3 @@
-import Tippy from '@tippyjs/react';
 import Head from 'next/head';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -170,28 +169,6 @@ export default function TradingChartHeader({
               onChange={onChange}
             />
           </div>
-
-          {/* Long/Short positions */}
-          {numberLong && numberShort ? (
-            <div className="flex md:hidden gap-0.5 flex-shrink-0">
-              <Tippy
-                content="Long positions"
-                className="flex flex-col items-center"
-              >
-                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
-                  {numberLong}
-                </span>
-              </Tippy>
-              <Tippy
-                content="Short positions"
-                className="flex flex-col items-center"
-              >
-                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
-                  {numberShort}
-                </span>
-              </Tippy>
-            </div>
-          ) : null}
         </div>
 
         {/* Right side: Stats */}

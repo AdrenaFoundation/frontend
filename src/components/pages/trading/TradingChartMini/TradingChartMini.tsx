@@ -9,9 +9,13 @@ import TradingChartHeaderStats from '../TradingChartHeader/TradingChartHeaderSta
 export default function TradingChartMini({
   token,
   selectedAction,
+  numberLong,
+  numberShort,
 }: {
   token: Token;
   selectedAction: 'long' | 'short' | 'swap';
+  numberLong?: number;
+  numberShort?: number;
 }) {
   useEffect(() => {
     const cleanUpWidget = () => {
@@ -52,7 +56,7 @@ export default function TradingChartMini({
 
   return (
     <div>
-      <div className="p-4">
+      <div className="p-2">
         <div className="flex flex-row gap-2 items-center mb-2">
           <Image
             src={getTokenImage(token)}
@@ -67,9 +71,9 @@ export default function TradingChartMini({
         <TradingChartHeaderStats
           selected={token}
           selectedAction={selectedAction}
-          className="flex-col justify-start items-start p-0"
+          numberLong={numberLong}
+          numberShort={numberShort}
           priceClassName="text-2xl"
-          statsClassName="gap-1"
         />
       </div>
       <div className="relative">

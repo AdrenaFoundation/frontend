@@ -434,6 +434,14 @@ export default function Trade({
     ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint))
     : null;
 
+  // Calculate position counts for the selected token
+  const numberLong = allActivePositions?.filter(
+    (p) => p.side === 'long',
+  ).length;
+  const numberShort = allActivePositions?.filter(
+    (p) => p.side === 'short',
+  ).length;
+
   const totalStats =
     positions && positions.length > 0
       ? positions.reduce(
@@ -777,6 +785,8 @@ export default function Trade({
                   <TradingChartMini
                     token={tokenB}
                     selectedAction={selectedAction}
+                    numberLong={numberLong}
+                    numberShort={numberShort}
                   />
                 )}
                 <div className="bg-bcolor w-full h-[1px] my-3" />

@@ -2,12 +2,14 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import chevronDownIcon from '@/../public/images/chevron-down.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useCustodyVolume from '@/hooks/useCustodyVolume';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
+import Image from 'next/image';
 
 export default function TradingChartHeaderStats({
   className,
@@ -38,6 +40,7 @@ export default function TradingChartHeaderStats({
   const [tokenColor, setTokenColor] = useState<
     'text-white' | 'text-green' | 'text-redbright'
   >('text-white');
+  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
 
   const borrowingRate = useMemo(() => {
     if (!window.adrena?.client) return null;
@@ -98,56 +101,102 @@ export default function TradingChartHeaderStats({
         className,
       )}
     >
-      {/* Mobile: Compact single line layout */}
-      <div className="flex sm:hidden items-center justify-between w-full">
-        <div className="flex items-center gap-3">
-          <FormatNumber
-            nb={selectedTokenPrice}
-            format="currency"
-            minimumFractionDigits={2}
-            precision={selected.displayPriceDecimalsPrecision}
-            className={twMerge('text-lg font-bold', tokenColor, priceClassName)}
-          />
-          <span className="text-xs font-mono text-txtfade">
-            24h Ch.{' '}
-            <span
-              className={`${
-                dailyChange
-                  ? dailyChange > 0
-                    ? 'text-green'
-                    : 'text-redbright'
-                  : 'text-white'
-              } font-mono`}
-            >
-              {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
+      {/* Mobile: Expandable stats layout */}
+      <div className="flex sm:hidden flex-col w-full">
+        {/* Main line with price and expand button */}
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <FormatNumber
+              nb={selectedTokenPrice}
+              format="currency"
+              minimumFractionDigits={2}
+              precision={selected.displayPriceDecimalsPrecision}
+              className={twMerge(
+                'text-2xl font-bold',
+                tokenColor,
+                priceClassName,
+              )}
+            />
+            <span className="text-xs font-mono text-txtfade">
+              {' '}
+              <span
+                className={`${
+                  dailyChange
+                    ? dailyChange > 0
+                      ? 'text-green'
+                      : 'text-redbright'
+                    : 'text-white'
+                } font-mono`}
+              >
+                {dailyChange
+                  ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
+                  : '-'}
+              </span>
             </span>
-          </span>
+          </div>
+
+          {/* Expand button */}
+          <button
+            onClick={() => setIsStatsExpanded(!isStatsExpanded)}
+            className="p-1 bg-third rounded transition-colors mb-2"
+          >
+            <Image
+              src={chevronDownIcon}
+              alt="Toggle stats"
+              width={16}
+              height={16}
+              className={twMerge(
+                'transition-transform duration-200',
+                isStatsExpanded ? 'rotate-180' : '',
+              )}
+            />
+          </button>
         </div>
 
-        <div className="flex items-center gap-3 text-xs font-mono">
-          <span className="text-txtfade">
-            24h Vol.{' '}
-            {platformDailyVolume !== null && platformDailyVolume > 0 ? (
-              <FormatNumber
-                nb={platformDailyVolume}
-                format="currency"
-                isAbbreviate={true}
-                isDecimalDimmed={false}
-                className="text-white font-mono"
-              />
+        {/* Expandable stats row */}
+        {isStatsExpanded && (
+          <div className="flex items-center justify-between w-full mt-1 mb-1 text-xs font-mono">
+            {/* Left side: Position counts */}
+            {numberLong && numberShort ? (
+              <div className="flex gap-0.5">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                  Long: {numberLong}
+                </span>
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                  Short: {numberShort}
+                </span>
+              </div>
             ) : (
-              '-'
+              <div></div>
             )}
-          </span>
-          <span className="text-txtfade">
-            Bor. R.{' '}
-            <span className="text-white font-mono">
-              {borrowingRate !== null
-                ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                : '-'}
-            </span>
-          </span>
-        </div>
+
+            {/* Right side: Volume and Borrow Rate */}
+            <div className="flex items-center gap-4">
+              <span className="text-txtfade">
+                24h Vol.{' '}
+                {platformDailyVolume !== null && platformDailyVolume > 0 ? (
+                  <FormatNumber
+                    nb={platformDailyVolume}
+                    format="currency"
+                    isAbbreviate={true}
+                    isDecimalDimmed={false}
+                    className="text-white font-mono ml-1"
+                  />
+                ) : (
+                  '-'
+                )}
+              </span>
+              <span className="text-txtfade">
+                Bor. R.{' '}
+                <span className="text-white font-mono ml-1">
+                  {borrowingRate !== null
+                    ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                    : '-'}
+                </span>
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Desktop layout */}
@@ -196,7 +245,7 @@ export default function TradingChartHeaderStats({
               statsClassName,
             )}
           >
-            <span className="font-mono text-sm sm:text-xs text-txtfade text-right">
+            <span className="font-mono text-sm sm:text-xs text-txtfade">
               24h Ch.
             </span>
             <span
