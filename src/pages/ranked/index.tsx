@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import CompetitionBanner from '@/components/pages/ranked/CompetitionBanner';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
@@ -80,7 +81,7 @@ export default function Ranked({
                 jtoPrice={jtoPrice}
             />
 
-            <div className="sm:px-8 mx-auto w-full mt-10">
+            <div className={twMerge(activeSeason !== 'anniversary' ? "sm:px-8 mx-auto w-full mt-10" : "mx-auto w-full")}>
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
                 {activeSeason === 'factions' ? (

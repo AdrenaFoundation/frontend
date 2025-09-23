@@ -128,7 +128,7 @@ export default function MutagenLeaderboardAnniversary({
         if (!userRow) return null;
 
         return renderCardContainer(
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center pt-2">
                 {renderProfilePicture('lg')}
 
                 <div className="flex flex-col items-center">
@@ -476,7 +476,7 @@ export default function MutagenLeaderboardAnniversary({
     ]);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 100;
+    const itemsPerPage = 15;
     const scrollToUserRowRef = useRef(false);
 
     // When page changes, scroll to user row if needed

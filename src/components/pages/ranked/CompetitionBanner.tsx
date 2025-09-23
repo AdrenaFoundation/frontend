@@ -55,7 +55,7 @@ export default function CompetitionBanner({
     }, [adxRewards, tokenPrices.ADX, tokenPrices.BONK, jtoRewards, jtoPrice, bonkRewards, usdcRewards]);
 
     return (
-        <div className="relative">
+        <div className="relative z-20">
             <div className={twMerge("relative flex flex-col items-center w-full border-b", bannerClassName)}>
                 <div className="mt-[4em]">
                     <AnimatePresence>
