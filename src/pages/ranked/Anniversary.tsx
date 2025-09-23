@@ -117,7 +117,7 @@ export default function Anniversary() {
           To celebrate our first year, we are hosting a special raffle party! Accumulate raffle tickets by trading and get a chance to win big prizes!
         </div>
 
-        <div className="relative w-full max-w-[40em] h-[15em] border-2 border-white/100 overflow-hidden">
+        <div className="relative w-full sm:max-w-[40em] h-[15em] border-t-2 border-b-2 sm:border-2 sm:border-white/100 overflow-hidden">
           {/* Fallback image */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
