@@ -202,7 +202,7 @@ export default function TradingChartHeaderStats({
       {/* Desktop layout */}
       <div className="hidden sm:flex w-auto justify-start gap-3 lg:gap-6 items-center">
         {numberLong && numberShort ? (
-          <div className="flex-row gap-2 mr-0 xl:mr-2 hidden md:flex">
+          <div className="flex-row gap-2 mr-0 xl:mr-2 hidden lg:flex">
             <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
               <Link
                 href="/monitoring?view=livePositions"
