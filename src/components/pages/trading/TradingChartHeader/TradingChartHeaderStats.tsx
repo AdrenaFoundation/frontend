@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
+import useCustodyVolume from '@/hooks/useCustodyVolume';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -30,6 +31,7 @@ export default function TradingChartHeaderStats({
   );
   const borrowRates = useSelector((s) => s.borrowRates);
   const stats = useDailyStats();
+  const { volumeStats } = useCustodyVolume();
   const [previousTokenPrice, setPreviousTokenPrice] = useState<number | null>(
     null,
   );
@@ -59,26 +61,35 @@ export default function TradingChartHeaderStats({
     }
   }, [selectedAction, selected.mint, borrowRates]);
 
-  if (selectedTokenPrice !== null) {
-    if (previousTokenPrice !== null) {
-      const newTokenColor =
-        selectedTokenPrice > previousTokenPrice
-          ? 'text-green'
-          : selectedTokenPrice < previousTokenPrice
-            ? 'text-redbright'
-            : tokenColor;
-      if (newTokenColor !== tokenColor) {
-        setTokenColor(newTokenColor);
+  const platformDailyVolume = useMemo(() => {
+    if (!window.adrena?.client) return null;
+
+    try {
+      const custody = window.adrena.client.getCustodyByMint(selected.mint);
+      if (!custody) return null;
+
+      const custodyKey = custody.pubkey.toBase58();
+      return volumeStats[custodyKey]?.dailyVolume ?? null;
+    } catch (error) {
+      console.warn('Error getting platform daily volume:', error);
+      return null;
+    }
+  }, [selected.mint, volumeStats]);
+
+  useEffect(() => {
+    if (selectedTokenPrice !== null && previousTokenPrice !== null) {
+      if (selectedTokenPrice > previousTokenPrice) {
+        setTokenColor('text-green');
+      } else if (selectedTokenPrice < previousTokenPrice) {
+        setTokenColor('text-redbright');
       }
     }
-
-    if (selectedTokenPrice !== previousTokenPrice) {
+    if (selectedTokenPrice !== null) {
       setPreviousTokenPrice(selectedTokenPrice);
     }
-  }
+  }, [selectedTokenPrice, previousTokenPrice]);
 
   const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
-  const dailyVolume = stats?.[selected.symbol]?.dailyVolume ?? null;
 
   return (
     <div
@@ -116,9 +127,9 @@ export default function TradingChartHeaderStats({
         <div className="flex items-center gap-3 text-xs font-mono">
           <span className="text-txtfade">
             24h Vol.{' '}
-            {dailyVolume ? (
+            {platformDailyVolume !== null && platformDailyVolume > 0 ? (
               <FormatNumber
-                nb={dailyVolume}
+                nb={platformDailyVolume}
                 format="currency"
                 isAbbreviate={true}
                 isDecimalDimmed={false}
@@ -139,7 +150,7 @@ export default function TradingChartHeaderStats({
         </div>
       </div>
 
-      {/* Desktop layout - unchanged */}
+      {/* Desktop layout */}
       <div className="hidden sm:flex w-auto justify-start gap-3 lg:gap-6 items-center">
         {numberLong && numberShort ? (
           <div className="flex-row gap-2 mr-0 xl:mr-2 hidden md:flex">
@@ -213,7 +224,7 @@ export default function TradingChartHeaderStats({
             </span>
             <span className="font-mono text-sm sm:text-xs">
               <FormatNumber
-                nb={dailyVolume}
+                nb={platformDailyVolume}
                 format="currency"
                 isAbbreviate={true}
                 isDecimalDimmed={false}
