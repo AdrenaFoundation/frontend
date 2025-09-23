@@ -492,7 +492,7 @@ export const TRADING_COMPETITION_SEASONS = {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/anniversary.jpg',
     title: '1st Anniversary',
     bannerTitle: 'Anniversary',
-    subTitle: 'Interseason',
+    subTitle: 'ADRENA',
     startDate: new Date('2025-09-17T23:59:59.999Z'),
     endDate: new Date('2025-09-31T23:59:59.999Z'),
     gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
