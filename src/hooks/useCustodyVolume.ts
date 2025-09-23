@@ -1,5 +1,6 @@
-import DataApiClient from '@/DataApiClient';
 import { useCallback, useEffect, useState } from 'react';
+
+import DataApiClient from '@/DataApiClient';
 
 type CustodyVolumeStats = {
   [custodyAddress: string]: {

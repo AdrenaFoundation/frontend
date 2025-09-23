@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -9,7 +10,6 @@ import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
-import Image from 'next/image';
 
 export default function TradingChartHeaderStats({
   className,

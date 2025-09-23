@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/chevron-down.svg';
-import starFilledIcon from '@/../public/images/Icons/star-filled.svg';
 import starIcon from '@/../public/images/Icons/star.svg';
+import starFilledIcon from '@/../public/images/Icons/star-filled.svg';
 import Modal from '@/components/common/Modal/Modal';
 import {
   TokenDataItem,
