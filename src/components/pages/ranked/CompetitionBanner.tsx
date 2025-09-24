@@ -91,7 +91,7 @@ export default function CompetitionBanner({
                     <p className="text-lg tracking-[0.2rem] uppercase">{subTitle}</p>
                     <h1
                         className={twMerge(
-                            'text-[2.2em] sm:text-[3em] md:text-[4em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                            'text-[2.2em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                             gradientColor,
                         )}
                     >
