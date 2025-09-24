@@ -75,10 +75,15 @@ export default function WalletDigger({
     walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
   });
 
-  const { traderInfo, expanseRanking, factionRanking, awakeningRanking, isTraderInfoLoading } =
-    useTraderInfo({
-      walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
-    });
+  const {
+    traderInfo,
+    expanseRanking,
+    factionRanking,
+    awakeningRanking,
+    isTraderInfoLoading,
+  } = useTraderInfo({
+    walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
+  });
 
   //
   // Staking
@@ -614,7 +619,6 @@ export default function WalletDigger({
                   <PositionsHistory
                     walletAddress={targetWalletPubkey?.toBase58() ?? null}
                     connected={true}
-                    exportButtonPosition="bottom"
                   />
                 </div>
               </>
