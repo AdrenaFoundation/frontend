@@ -60,7 +60,7 @@ export default function ExpanseChampionshipLeaderboard({
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
-                                    'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
+                                    'text-xs font-semibold hover:underline transition duration-300 cursor-pointer',
                                 )}
                                 onClick={() => {
                                     onClickUserProfile(d.wallet);
@@ -86,15 +86,15 @@ export default function ExpanseChampionshipLeaderboard({
                             </p>
                         ) : null}
 
-                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-md" /> : null}
 
                         {!filler && d.title !== null ? (
-                            <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
+                            <div className="text-[0.68em] font-semibold text-nowrap text-txtfade">
                                 {USER_PROFILE_TITLES[d.title]}
                             </div>
                         ) : null}
 
-                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-md" /> : null}
                     </div>
                 </div>,
             ];
@@ -108,14 +108,14 @@ export default function ExpanseChampionshipLeaderboard({
                         {!filler ? <>
                             <FormatNumber
                                 nb={d.volume}
-                                className="text-xs font-boldy text-[#fa6723]"
+                                className="text-xs font-semibold text-[#fa6723]"
                                 precision={2}
                                 isDecimalDimmed={false}
                                 format='currency'
                                 isAbbreviate={true}
                                 isAbbreviateIcon={false}
                             />
-                        </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                        </> : <div className="w-10 h-2 bg-gray-800 rounded-md" />}
                     </div>
                 );
             }
@@ -128,9 +128,9 @@ export default function ExpanseChampionshipLeaderboard({
                     {!filler ? <div>
                         <FormatNumber
                             nb={d.championshipPoints}
-                            className="text-xs font-boldy text-[#fa6723]"
+                            className="text-xs font-semibold text-[#fa6723]"
                             precision={d.championshipPoints && d.championshipPoints >= 50 ? 0 : 2}
-                            suffixClassName='text-xs font-boldy text-[#fa6723]'
+                            suffixClassName='text-xs font-semibold text-[#fa6723]'
                             suffix='Points'
                             isDecimalDimmed={false}
                         />
@@ -140,7 +140,7 @@ export default function ExpanseChampionshipLeaderboard({
                                     format='currency'
                                     prefix='+'
                                     nb={d.rewardsAdx * (tokenPrices['ADX'] ?? 0) + d.rewardsJto * (tokenPrices['JTO'] ?? 0)}
-                                    className="text-xs font-boldy text-green"
+                                    className="text-xs font-semibold text-green"
                                     isDecimalDimmed={false}
                                 />
                             </div>
@@ -149,7 +149,7 @@ export default function ExpanseChampionshipLeaderboard({
                         {(d.rewardsAdx === 0 && d.rewardsJto === 0 && isMobile) ? (
                             <span className="h-[2.64em]">--</span>
                         ) : null}
-                    </div> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                    </div> : <div className="w-10 h-2 bg-gray-800 rounded-md" />}
                 </div>
             );
 
@@ -158,7 +158,7 @@ export default function ExpanseChampionshipLeaderboard({
                     <Tippy
                         key="rewards"
                         content={
-                            <div className="text-xs font-boldy min-w-[15em]">
+                            <div className="text-xs font-semibold min-w-[15em]">
                                 <div className='flex gap-1 p-2 bg-third rounded items-center justify-center'>
                                     <Image
                                         src={adxLogo}
@@ -168,11 +168,11 @@ export default function ExpanseChampionshipLeaderboard({
 
                                     <FormatNumber
                                         nb={d.rewardsAdx}
-                                        className="text-md font-boldy"
+                                        className="text-md font-semibold"
                                         isDecimalDimmed={false}
                                     />
 
-                                    <span className="flex font-boldy text-sm">
+                                    <span className="flex font-semibold text-sm">
                                         ADX
                                     </span>
                                 </div>
@@ -186,11 +186,11 @@ export default function ExpanseChampionshipLeaderboard({
 
                                     <FormatNumber
                                         nb={d.rewardsJto}
-                                        className="text-md font-boldy"
+                                        className="text-md font-semibold"
                                         isDecimalDimmed={false}
                                     />
 
-                                    <span className="flex font-boldy text-sm">
+                                    <span className="flex font-semibold text-sm">
                                         JTO
                                     </span>
                                 </div>
@@ -206,7 +206,7 @@ export default function ExpanseChampionshipLeaderboard({
                                         format='currency'
                                         prefix='+'
                                         nb={d.rewardsAdx * (tokenPrices['ADX'] ?? 0) + d.rewardsJto * (tokenPrices['JTO'] ?? 0)}
-                                        className="text-xs font-boldy text-green"
+                                        className="text-xs font-semibold text-green"
                                         isDecimalDimmed={false}
                                     />
                                 </div>

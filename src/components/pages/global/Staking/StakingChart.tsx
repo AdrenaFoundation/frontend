@@ -87,7 +87,7 @@ export default function StakingChart() {
             content={({
               payload,
             }: TooltipProps<ValueType, NameType>) => (
-              <div className="bg-third p-3 border border-white rounded-lg justify-center">
+              <div className="bg-third p-3 border border-white rounded-md justify-center">
                 <div className='flex w-full justify-center items-center'>
                   {payload && payload.map((item) => (
                     <div
@@ -100,7 +100,7 @@ export default function StakingChart() {
                         >
                           {formatPercentage(Number(item.value), 2)}
 
-                          <div className='font-boldy'>of circulating supply</div>
+                          <div className='font-semibold'>of circulating supply</div>
                         </div>
 
                         <div
@@ -116,7 +116,7 @@ export default function StakingChart() {
                             isAbbreviateIcon={false}
                           />
 
-                          <span className='ml-1 font-boldy'>ADX</span>
+                          <span className='ml-1 font-semibold'>ADX</span>
                         </div>
 
                         {tokenPriceADX ? <>

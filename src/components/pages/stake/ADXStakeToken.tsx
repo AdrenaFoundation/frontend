@@ -36,11 +36,11 @@ export default function ADXStakeToken({
   }));
 
   return (
-    <div className="flex flex-col rounded-lg w-full sm:min-w-[25em] h-fit">
+    <div className="flex flex-col rounded-md w-full sm:min-w-[25em] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">
         <div className="mt-4">
           <div className="flex flex-row items-center justify-between mb-1">
-            <h5 className="font-interSemibold"> Amount</h5>
+            <h5 className="font-semibold"> Amount</h5>
 
             <div
               className="text-sm flex items-center justify-end h-6 cursor-pointer"
@@ -64,12 +64,12 @@ export default function ADXStakeToken({
             </div>
           </div>
 
-          <div className="relative flex flex-row w-full border border-white/10 rounded-xl overflow-hidden">
+          <div className="relative flex flex-row w-full border border-white/10 rounded-md overflow-hidden">
             <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r border-r-white/10">
               <p className="opacity-50 font-mono text-sm">ADX</p>
             </div>
             <input
-              className="w-full bg-inputcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-inputcolor rounded-md rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value
@@ -91,7 +91,7 @@ export default function ADXStakeToken({
               height={18}
               alt="lock icon"
             />
-            <h5 className="text-sm font-interSemibold">Lock duration (days)</h5>
+            <h5 className="text-sm font-semibold">Lock duration (days)</h5>
           </div>
 
           <SelectOptions

@@ -27,7 +27,7 @@ export default function StatsDisplay({
   return (
     <div
       className={twMerge(
-        'bg-[#050D14] border rounded-lg flex-1 shadow-xl',
+        'bg-[#050D14] border rounded-md flex-1 shadow-xl',
         className,
       )}
     >

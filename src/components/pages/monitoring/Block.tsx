@@ -16,13 +16,13 @@ export default function Block({
   rowTitleClassName?: string;
   data: (
     | {
-        rowTitle: ReactNode;
-        values: ReactNode[];
-      }
+      rowTitle: ReactNode;
+      values: ReactNode[];
+    }
     | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-      }
+      rowTitle: ReactNode;
+      value: ReactNode;
+    }
   )[];
 }) {
   return (
@@ -36,7 +36,7 @@ export default function Block({
         <div className={'bg-transparent rounded-md border p-3'} key={i}>
           <div
             className={twMerge(
-              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
+              'text-lg font-semibold overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
               columnTitlesClassName,
             )}
           >

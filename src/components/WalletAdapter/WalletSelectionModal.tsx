@@ -114,18 +114,18 @@ const WalletBlock = ({
         }}
       >
         <div className='flex relative flex-col items-center justify-center'>
-          <div className="text-lg font-boldy flex items-center justify-center pt-1 pl-3 pr-3">{name}</div>
+          <div className="text-lg font-semibold flex items-center justify-center pt-1 pl-3 pr-3">{name}</div>
 
           {recommended ?
             <div className={twMerge(
-              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
+              'flex text-[0.6em] font-semibold rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
             )}>
               Recommended
             </div> : null}
 
           {beta ?
             <div className={twMerge(
-              'flex text-[0.55em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
+              'flex text-[0.55em] font-semibold rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
             )}>
               Beta
             </div> : null}

@@ -432,7 +432,7 @@ export function addNotification({
         error: '!bg-red !border-white/20',
         info: '!bg-inputcolor !border-white/10',
       }[type],
-      title: '!font-archivo !text-base',
+      title: '!!text-base',
       description: '!text-white/70',
       actionButton: 'action-button',
       cancelButton: 'cancel-button',

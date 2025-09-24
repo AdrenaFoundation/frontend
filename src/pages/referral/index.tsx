@@ -74,7 +74,7 @@ export default function Referral({ userProfile, connected }: PageProps) {
               <div className="flex gap-2">
                 <h4
                   className={twMerge(
-                    'font-archivo text-white/80 tracking-widest uppercase text-md cursor-pointer hover:opacity-100',
+                    'text-white/80 tracking-widest uppercase text-md cursor-pointer hover:opacity-100',
                     view === 'asReferrer'
                       ? 'underline opacity-100'
                       : 'opacity-50',
@@ -86,7 +86,7 @@ export default function Referral({ userProfile, connected }: PageProps) {
                 <h4>/</h4>
                 <h4
                   className={twMerge(
-                    'font-archivo text-white/80 tracking-widest uppercase text-md cursor-pointer hover:opacity-100',
+                    'text-white/80 tracking-widest uppercase text-md cursor-pointer hover:opacity-100',
                     view === 'asReferee'
                       ? 'underline opacity-100'
                       : 'opacity-50',
@@ -99,7 +99,7 @@ export default function Referral({ userProfile, connected }: PageProps) {
 
               <h1
                 className={twMerge(
-                  'text-[1em] sm:text-[1.5em] md:text-[2em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                  'text-[1em] sm:text-[1.5em] md:text-[2em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                   'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
                 )}
               >
@@ -108,7 +108,7 @@ export default function Referral({ userProfile, connected }: PageProps) {
                   : 'SHOW YOUR SUPPORT'}
               </h1>
 
-              <h4 className="font-archivo text-white/80 tracking-widest uppercase text-md">
+              <h4 className="text-white/80 tracking-widest uppercase text-md">
                 {view === 'asReferrer'
                   ? 'And receive 10% of the trading fee'
                   : 'And grant 10% of your trading fees'}

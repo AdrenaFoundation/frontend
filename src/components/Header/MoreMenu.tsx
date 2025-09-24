@@ -63,7 +63,7 @@ export default function MoreMenu({
     <div className="relative" ref={ref} onMouseLeave={handleMouseLeave}>
       <h5
         className={twMerge(
-          'whitespace-nowrap font-medium opacity-50 hover:opacity-100 cursor-pointer p-0.5 -m-0.5',
+          'whitespace-nowrap opacity-50 hover:opacity-100 cursor-pointer p-0.5 -m-0.5',
           PAGES.some((page) => pathname === page.link) || isOpen
             ? 'grayscale-0 opacity-100'
             : 'grayscale',
@@ -85,15 +85,15 @@ export default function MoreMenu({
             transition={{ duration: 0.2 }}
             id="more-menu"
             key="more-menu"
-            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-lg p-4 w-[37.5rem]">
+            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-md p-4 w-[37.5rem]">
             <div className="flex-1">
-              <p className="text-sm mb-1 font-boldy opacity-50">Features</p>
+              <p className="text-sm mb-1 font-semibold opacity-50">Features</p>
               <div className="flex flex-col gap-3 flex-1">
                 {PAGES.map((page) => {
                   return (
                     <Link
                       className={twMerge(
-                        'flex flex-row items-center justify-between group border border-bcolor bg-transparent hover:bg-bcolor/20 p-2 pr-4 rounded-xl transition duration-300',
+                        'flex flex-row items-center justify-between group border border-bcolor bg-transparent hover:bg-bcolor/20 p-2 pr-4 rounded-md transition duration-300',
                         pathname === page.link
                           ? 'bg-bcolor/20 border-white/10'
                           : '',
@@ -116,7 +116,7 @@ export default function MoreMenu({
                           </div>
                         ) : null}
                         <div>
-                          <p className="text-base font-boldy">{page.name}</p>
+                          <p className="text-base font-semibold">{page.name}</p>
                           <p className="opacity-50 text-sm">{page?.subtitle}</p>
                         </div>
                       </div>
@@ -134,14 +134,14 @@ export default function MoreMenu({
 
             <div className="flex-1">
               <div>
-                <p className="text-sm mb-1 font-boldy opacity-50">
+                <p className="text-sm mb-1 font-semibold opacity-50">
                   External Links
                 </p>
                 <div className="flex flex-col gap-3 flex-1">
                   {EXTERNAL_LINKS.map((page) => {
                     return (
                       <Link
-                        className="flex flex-row items-center justify-between border border-bcolor p-2 bg-transparent hover:bg-bcolor/20 px-4 rounded-xl transition duration-300"
+                        className="flex flex-row items-center justify-between border border-bcolor p-2 bg-transparent hover:bg-bcolor/20 px-4 rounded-md transition duration-300"
                         href={page.link}
                         key={page.name}
                         target={page.external ? '_blank' : '_self'}
@@ -155,7 +155,7 @@ export default function MoreMenu({
                             />
                           ) : null}
                           <div>
-                            <p className="text-base font-boldy">{page.name}</p>
+                            <p className="text-base font-semibold">{page.name}</p>
                           </div>
                         </div>
 
@@ -171,13 +171,13 @@ export default function MoreMenu({
               </div>
 
               <div className="mt-3">
-                <p className="text-sm mb-1 font-boldy opacity-50">Socials</p>
+                <p className="text-sm mb-1 font-semibold opacity-50">Socials</p>
 
                 <div className="flex flex-row gap-3 flex-1">
                   {SOCIAlS_LINKS.map((page) => {
                     return (
                       <Link
-                        className="flex flex-row items-center justify-center border border-bcolor w-[2.5rem] h-[2.5rem] p-2 bg-transparent hover:bg-bcolor/20 rounded-xl transition duration-300"
+                        className="flex flex-row items-center justify-center border border-bcolor w-[2.5rem] h-[2.5rem] p-2 bg-transparent hover:bg-bcolor/20 rounded-md transition duration-300"
                         href={page.link}
                         key={page.name}
                         target="_blank"

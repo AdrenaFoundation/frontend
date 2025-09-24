@@ -73,7 +73,7 @@ export const PositionName = ({ position, readOnly, isHistory, setTokenB }: Posit
                             }`}
                     >
                         <div
-                            className={`text-center text-xs font-medium font-mono ${position.side === 'long' ? 'text-greenSide' : 'text-redSide'
+                            className={`text-center text-xs font-mono ${position.side === 'long' ? 'text-greenSide' : 'text-redSide'
                                 }`}
                         >
                             {position.side.charAt(0).toUpperCase() + position.side.slice(1)}

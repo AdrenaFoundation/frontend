@@ -164,7 +164,7 @@ export default function StakeOverview({
       : (Number(totalLockedStake) || 0) + (Number(totalLiquidStaked) || 0)) ?? 0;
 
   return (
-    <div className="flex flex-col bg-main rounded-2xl border">
+    <div className="flex flex-col bg-main rounded-md border">
       {/* Token info header */}
       <TokenInfoHeader
         token={token}

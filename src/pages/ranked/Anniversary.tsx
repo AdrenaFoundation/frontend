@@ -49,7 +49,7 @@ function RafflePlace({
         }}
       />
 
-      <div className={twMerge('text-sm font-boldy')}>
+      <div className={twMerge('text-sm font-semibold')}>
         {placeTitle} Raffle Winner
       </div>
 
@@ -77,7 +77,7 @@ function RaffleAdditionalPrize({
     <div className='text-center'>{tippyText}</div>
   }>
     <div className='border bg-main p-2 flex justify-between z-10 grow cursor-help hover:border-white/10 rounded-md md:w-[12em] gap-2 whitespace-nowrap'>
-      <div className={twMerge('text-sm font-boldy')}>
+      <div className={twMerge('text-sm font-semibold')}>
         {title}
       </div>
 
@@ -113,7 +113,7 @@ export default function Anniversary() {
 
       <div className="flex flex-col gap-2 items-center justify-center text-center mx-auto max-w-[100em] w-full">
 
-        <div className="text-xs sm:text-sm lg:text-base font-boldy text-white/90 w-full z-10 mb-4 mt-8">
+        <div className="text-xs sm:text-sm lg:text-base font-semibold text-white/90 w-full z-10 mb-4 mt-8">
           To celebrate our first year, we are hosting a special raffle party! Accumulate raffle tickets by trading and get a chance to win big prizes!
         </div>
 
@@ -140,7 +140,7 @@ export default function Anniversary() {
         <div className="relative w-full flex-col items-center justify-center gap-6 p-8">
           <h1
             className={twMerge(
-              'relative z-10 text-[1.5em] sm:text-[1.8em] md:text-[2em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+              'relative z-10 text-[1.5em] sm:text-[1.8em] md:text-[2em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
               'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
             )}
           >
@@ -191,7 +191,7 @@ export default function Anniversary() {
 
         <h1
           className={twMerge(
-            'relative z-10 text-[1.5em] sm:text-[1.8em] md:text-[2em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+            'relative z-10 text-[1.5em] sm:text-[1.8em] md:text-[2em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
             'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
           )}
         >

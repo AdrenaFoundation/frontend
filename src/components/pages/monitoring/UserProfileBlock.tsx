@@ -23,7 +23,7 @@ export default function UserProfileBlock({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden p-3 ${className}`}
+      className={`w-full flex flex-col border rounded-md bg-[#050D14] overflow-hidden p-3 ${className}`}
     >
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-row gap-6 justify-between items-center">
         <div
@@ -31,7 +31,7 @@ export default function UserProfileBlock({
           onClick={() =>
             setActiveProfile(
               superchargedProfile.profile ||
-                getNonUserProfile(superchargedProfile.wallet.toBase58()),
+              getNonUserProfile(superchargedProfile.wallet.toBase58()),
             )
           }
         >

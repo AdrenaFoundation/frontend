@@ -21,7 +21,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
     <Tippy
       className="relative tippy-no-padding border-2"
       content={<div className='p-2 flex flex-col items-center gap-2'>
-        <div className='font-archivo'>
+        <div className='font-regular'>
           Welcome to Adrena!
         </div>
 
@@ -34,7 +34,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
         </div>
       </div>}
     >
-      <div className="relative w-full border border-[#2c2e4f] rounded-lg overflow-hidden my-2">
+      <div className="relative w-full border border-[#2c2e4f] rounded-md overflow-hidden my-2">
         <div>
           <div className="absolute h-full w-full bg-gradient-to-b from-[#201AA2] to-[#121228] " />
           <Image
@@ -52,7 +52,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
                 alt="solana-id-logo"
                 className="w-[100px]"
               />
-              <div className="font-archivoblack text-[#F4BD1C] uppercase text-sm relative top-[0.05em]">
+              <div className="font-bold text-[#F4BD1C] uppercase text-sm relative top-[0.05em]">
                 {SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].title}
               </div>
             </div>
@@ -74,7 +74,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
           <div className="flex flex-row gap-1 items-center mt-2">
             <Image src={mutagenIcon} alt="mutagen" className="w-3 mr-1" />
 
-            <p className="font-boldy">
+            <p className="font-semibold">
               Get{' '}
               <span className="text-[#E47DBB]">
                 +{SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].mutagen}{' '}

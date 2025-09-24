@@ -35,7 +35,7 @@ export default function StakingRewardsWaitingToBeClaimed({
   }, 0);
 
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>
           ADX Staking Rewards (available, pending claims)

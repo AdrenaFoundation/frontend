@@ -92,7 +92,7 @@ export default function PendingRewardsSection({
 
                 <div className={twMerge('flex flex-col sm:flex-row gap-4 my-2 sm:my-0 w-full sm:w-auto flex-none')}>
                     <Button
-                        variant="primary"
+                        variant="danger"
                         size="sm"
                         title={isClaimingAndBuyAdxRewards ? 'Claiming & buying ADX...' : 'Claim & Buy ADX'}
                         className={twMerge("px-5 w-full sm:w-auto")}
@@ -106,7 +106,7 @@ export default function PendingRewardsSection({
                     />
 
                     <Button
-                        variant="primary"
+                        variant="danger"
                         size="sm"
                         title={isClaimingRewards ? 'Claiming...' : 'Claim'}
                         className={twMerge("px-5 w-full sm:w-auto")}
@@ -122,10 +122,10 @@ export default function PendingRewardsSection({
 
             </div>
 
-            <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">
+            <div className="flex flex-col border bg-secondary rounded-md shadow-lg overflow-hidden">
                 {/* Pending rewards block */}
                 <div className="flex-grow"></div>
-                <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg">
+                <div className="flex flex-col border p-3 bg-secondary rounded-md shadow-lg">
                     <div className="flex flex-col gap-3 sm:gap-1 flex-grow">
                         <div className="flex flex-col sm:flex-row justify-between">
                             <span className="text-txtfade">
@@ -229,7 +229,7 @@ export default function PendingRewardsSection({
                     <span className="text-txtfade flex items-center">
                         <Tippy
                             content={
-                                <p className="font-medium">
+                                <p className="font-regular">
                                     Each round duration is ~6h (+/- some jitter due to Sablier
                                     on chain decentralized execution).
                                     <br />

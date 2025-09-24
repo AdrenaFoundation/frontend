@@ -130,7 +130,7 @@ export default function WalletAdapter({
           trigger={
             <div
               className={
-                'flex flex-row items-center border border-[#414E5E] rounded-full sm:rounded-lg'
+                'flex flex-row items-center border border-[#414E5E] rounded-full sm:rounded-md'
               }
             >
               <Button
@@ -313,7 +313,7 @@ export default function WalletAdapter({
         <Button
           className={twMerge(
             className,
-            'gap-1 p-1 h-auto px-3 pr-4 text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-lg',
+            'gap-1 p-1 h-auto px-3 pr-4 text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-md',
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
           )}
           title={!isIconOnly ? 'Connect wallet' : null}

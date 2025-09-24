@@ -17,7 +17,7 @@ const PnlBlock = (position: PositionExtended | EnrichedPositionApi, showAfterFee
             nb={showAfterFees ? position.pnl : position.pnl - fees}
             format="currency"
             minimumFractionDigits={2}
-            className={`mr-0.5 font-bold text-sm text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'green' : 'redbright'}`}
+            className={`mr-0.5 font-monobold text-sm text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'green' : 'redbright'}`}
             isDecimalDimmed={false}
         />
         <FormatNumber

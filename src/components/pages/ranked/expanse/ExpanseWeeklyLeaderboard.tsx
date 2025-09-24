@@ -89,7 +89,7 @@ export default function ExpanseWeeklyLeaderboard({
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
-                                    'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
+                                    'text-xs font-semibold hover:underline transition duration-300 cursor-pointer',
                                 )}
                                 onClick={() => {
                                     onClickUserProfile(d.wallet);
@@ -105,7 +105,7 @@ export default function ExpanseWeeklyLeaderboard({
                             <p
                                 key={`trader-${i}`}
                                 className={twMerge(
-                                    'text-xs text-txtfade font-boldy hover:underline transition duration-300 cursor-pointer',
+                                    'text-xs text-txtfade font-semibold hover:underline transition duration-300 cursor-pointer',
                                 )}
                                 onClick={() => {
                                     onClickUserProfile(d.wallet);
@@ -115,15 +115,15 @@ export default function ExpanseWeeklyLeaderboard({
                             </p>
                         ) : null}
 
-                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-md" /> : null}
 
                         {!filler && d.title !== null ? (
-                            <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
+                            <div className="text-[0.68em] font-semibold text-nowrap text-txtfade">
                                 {USER_PROFILE_TITLES[d.title]}
                             </div>
                         ) : null}
 
-                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-md" /> : null}
                     </div>
                 </div>,
 
@@ -131,7 +131,7 @@ export default function ExpanseWeeklyLeaderboard({
                     disabled={filler}
                     key="mutagens"
                     content={
-                        <div className="text-xs font-boldy min-w-[15em]">
+                        <div className="text-xs font-semibold min-w-[15em]">
                             <div className='grid grid-cols-2'>
                                 <div>Trading</div>
 
@@ -139,7 +139,7 @@ export default function ExpanseWeeklyLeaderboard({
                                     <FormatNumber
                                         prefix='+'
                                         nb={d.tradingPoints}
-                                        className="text-xs font-boldy"
+                                        className="text-xs font-semibold"
                                         precision={d.tradingPoints && d.tradingPoints >= 50 ? 0 : 2}
                                         isDecimalDimmed={false}
                                     />
@@ -155,7 +155,7 @@ export default function ExpanseWeeklyLeaderboard({
                                     <FormatNumber
                                         prefix='+'
                                         nb={d.streaksPoints}
-                                        className="text-xs font-boldy"
+                                        className="text-xs font-semibold"
                                         precision={d.streaksPoints && d.streaksPoints >= 50 ? 0 : 2}
                                         isDecimalDimmed={false}
                                     />
@@ -171,7 +171,7 @@ export default function ExpanseWeeklyLeaderboard({
                                     <FormatNumber
                                         prefix='+'
                                         nb={d.questsPoints}
-                                        className="text-xs font-boldy"
+                                        className="text-xs font-semibold"
                                         precision={d.questsPoints && d.questsPoints >= 50 ? 0 : 2}
                                         isDecimalDimmed={false}
                                     />
@@ -187,7 +187,7 @@ export default function ExpanseWeeklyLeaderboard({
                                     <FormatNumber
                                         prefix='+'
                                         nb={d.mutationPoints}
-                                        className="text-xs font-boldy"
+                                        className="text-xs font-semibold"
                                         precision={d.mutationPoints && d.mutationPoints >= 50 ? 0 : 2}
                                         isDecimalDimmed={false}
                                     />
@@ -202,7 +202,7 @@ export default function ExpanseWeeklyLeaderboard({
                                 <div className='flex gap-1 justify-end'>
                                     <FormatNumber
                                         nb={d.totalPoints}
-                                        className="text-xs font-boldy"
+                                        className="text-xs font-semibold"
                                         precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
                                         isDecimalDimmed={false}
                                     />
@@ -219,10 +219,10 @@ export default function ExpanseWeeklyLeaderboard({
                     >
                         {!filler ? <FormatNumber
                             nb={d.totalPoints}
-                            className="text-xs font-boldy text-[#e47dbb]"
+                            className="text-xs font-semibold text-[#e47dbb]"
                             precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
                             isDecimalDimmed={false}
-                        /> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                        /> : <div className="w-10 h-2 bg-gray-800 rounded-md" />}
                     </div>
                 </Tippy>,
             ];
@@ -235,7 +235,7 @@ export default function ExpanseWeeklyLeaderboard({
                     {!filler && d.volume ? (
                         <FormatNumber
                             nb={d.volume}
-                            className="text-xs font-boldy"
+                            className="text-xs font-semibold"
                             format='currency'
                             prefix='$'
                             isDecimalDimmed={false}
@@ -244,7 +244,7 @@ export default function ExpanseWeeklyLeaderboard({
                         />
                     ) : null}
 
-                    {filler ? <div className="w-10 h-2 bg-gray-800 rounded-xl" /> : null}
+                    {filler ? <div className="w-10 h-2 bg-gray-800 rounded-md" /> : null}
                 </div>);
             }
 
@@ -257,13 +257,13 @@ export default function ExpanseWeeklyLeaderboard({
                         <div className="flex">
                             <FormatNumber
                                 nb={d.championshipPoints}
-                                className="text-[#fa6723] text-xs font-boldy"
+                                className="text-[#fa6723] text-xs font-semibold"
                                 prefix="+"
                                 suffixClassName="text-[#fa6723]"
                                 isDecimalDimmed={false}
                             />
 
-                            <span className="flex text-[#fa6723] font-boldy text-xs ml-1">
+                            <span className="flex text-[#fa6723] font-semibold text-xs ml-1">
                                 Points
                             </span>
                         </div>
