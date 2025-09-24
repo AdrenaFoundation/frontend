@@ -111,7 +111,7 @@ export default function SharePositionModal({
   return (
     <div className="max-w-[600px] p-5">
       <div
-        className="relative p-5 h-[230px] sm:h-[300px] border border-bcolor overflow-hidden rounded-md bg bg-secondary"
+        className="relative p-5 h-[230px] sm:h-[300px] border border-bcolor overflow-hidden rounded-lg bg bg-secondary"
         ref={cardRef}
       >
         <Image src={adrenaLogo} alt="Adrena Logo" height={8} className="mb-3" />
@@ -122,7 +122,7 @@ export default function SharePositionModal({
               alt="Adrena Logo"
               height={20}
             />
-            <h2 className="font-bold">
+            <h2 className="font-archivoblack">
               {getTokenSymbol(position.token.symbol)}
             </h2>
           </div>
@@ -135,7 +135,7 @@ export default function SharePositionModal({
           >
             <p
               className={twMerge(
-                'text-sm font-bold capitalize',
+                'text-sm font-archivoblack capitalize',
                 position.side === 'long' ? 'text-[#49d7ad]' : 'text-red',
               )}
             >
@@ -148,7 +148,7 @@ export default function SharePositionModal({
           nb={isPnlUsd ? pnlUsd : pnlPercentage}
           format={isPnlUsd ? 'currency' : 'percentage'}
           className={twMerge(
-            'text-[60px] sm:text-[70px] font-bold relative z-10',
+            'text-[60px] sm:text-[70px] font-archivoblack relative z-10',
             pnlPercentage && pnlPercentage < 99 && 'sm:text-[85px]',
             pnlPercentage && pnlPercentage < 0
               ? 'bg-gradient-to-r from-[#F2485F]  to-red inline-block text-transparent bg-clip-text'
@@ -161,7 +161,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Entry Price
             </span>
-            <span className="font-bold text-sm sm:text-lg">
+            <span className="font-archivoblack text-sm sm:text-lg">
               {formatPriceInfo(
                 position.price,
                 position.token.displayPriceDecimalsPrecision,
@@ -172,7 +172,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               {position?.exitPrice ? 'Exit Price' : 'Mark Price'}
             </span>
-            <span className="font-bold text-sm sm:text-lg">
+            <span className="font-archivoblack text-sm sm:text-lg">
               {position?.exitPrice
                 ? formatPriceInfo(
                   position.exitPrice,
@@ -187,7 +187,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Opened on
             </span>
-            <span className="font-bold text-sm sm:text-lg">{openedOn}</span>
+            <span className="font-archivoblack text-sm sm:text-lg">{openedOn}</span>
           </li>
         </ul>
 
@@ -234,14 +234,14 @@ export default function SharePositionModal({
         {OPTIONS.map((opt) => (
           <div
             className={twMerge(
-              'border rounded-md h-[50px] flex-1 cursor-pointer p-2 transition duration-300',
+              'border rounded-lg h-[50px] flex-1 cursor-pointer p-2 transition duration-300',
               opt.id === option ? 'border-white' : 'border-bcolor',
             )}
             onClick={() => setOption(opt.id)}
             key={`color-${opt.id}`}
           >
             <div
-              className="flex items-center justify-center w-full h-full rounded-md overflow-hidden"
+              className="flex items-center justify-center w-full h-full rounded-lg overflow-hidden"
               style={{
                 background: `linear-gradient(90deg, ${opt.gradient[0]} 0%, ${opt.gradient[1]} 60%)`,
               }}
@@ -264,7 +264,7 @@ export default function SharePositionModal({
           className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
           onClick={() => setIsPnlUsd(!isPnlUsd)}
         >
-          <p className="font-semibold text-base">Display PnL in USD</p>
+          <p className="font-boldy text-base">Display PnL in USD</p>
           <label className="flex items-center ml-1 cursor-pointer">
             <Switch
               className="mr-0.5"
@@ -281,7 +281,7 @@ export default function SharePositionModal({
           className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
           onClick={() => setIsPnlWFees(!isPnlWFees)}
         >
-          <p className="font-semibold text-base">Display PnL with fees</p>
+          <p className="font-boldy text-base">Display PnL with fees</p>
           <label className="flex items-center ml-1 cursor-pointer">
             <Switch
               className="mr-0.5"
