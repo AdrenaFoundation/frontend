@@ -400,16 +400,6 @@ export default function AllPositions({
                         />
                       </div>
                       {paginatedPositions.length ? (
-                        // <div className="flex flex-col w-full gap-5">
-                        //   {paginatedPositions.map((position) => (
-                        //     <PositionBlockV2
-                        //       key={position.pubkey.toBase58()}
-                        //       position={position}
-                        //       readOnly={true}
-                        //       setTokenB={() => {}}
-                        //     />
-                        //   ))}
-                        // </div>
                         <AllPositionTable
                           currentPage={currentPage}
                           totalPages={
@@ -419,6 +409,9 @@ export default function AllPositions({
                           }
                           setCurrentPage={setCurrentPage}
                           paginatedPositions={paginatedPositions}
+                          handleSort={toggleSortOrder}
+                          sortBy={sortOrder[0]}
+                          sortDirection={sortConfigs[sortOrder[0]]}
                         />
                       ) : (
                         <div className="text-center w-full py-4 opacity-50">
@@ -426,18 +419,6 @@ export default function AllPositions({
                         </div>
                       )}
                     </div>
-
-                    {/* <Pagination
-                      currentPage={currentPage}
-                      totalPages={
-                        sortedPositions
-                          ? Math.ceil(sortedPositions.length / itemsPerPage)
-                          : 0
-                      }
-                      onPageChange={setCurrentPage}
-                      itemsPerPage={itemsPerPage}
-                      totalItems={sortedPositions.length}
-                    /> */}
                   </>
                 ) : null}
               </div>

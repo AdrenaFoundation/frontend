@@ -13,7 +13,7 @@ export const TokenCell = ({
   isLiquidated,
 }: {
   token: Token;
-  isLiquidated: boolean;
+  isLiquidated?: boolean;
 }) => {
   const img = getTokenImage(token);
   const symbol = getTokenSymbol(token.symbol);
@@ -39,7 +39,7 @@ export const CurrencyCell = ({
   value,
   isCurrency = true,
 }: {
-  value: number;
+  value: number | null;
   isCurrency?: boolean;
 }) => {
   return (
@@ -47,9 +47,9 @@ export const CurrencyCell = ({
       <FormatNumber
         nb={value}
         format={isCurrency ? 'currency' : undefined}
-        prefix={value > 10_000 && isCurrency ? '$' : undefined}
+        prefix={value && value > 10_000 && isCurrency ? '$' : undefined}
         isDecimalDimmed={false}
-        isAbbreviate={value > 10_000}
+        isAbbreviate={value ? value > 10_000 : false}
         className="relative"
       />
     </div>
@@ -60,12 +60,10 @@ export const PnlCell = ({
   pnl,
   maxPnl,
   minPnl,
-  isIndicator,
 }: {
   pnl: number;
   maxPnl: number;
   minPnl: number;
-  isIndicator: boolean;
 }) => {
   const positive = pnl >= 0;
   const sign = positive ? '+' : '-';
@@ -75,7 +73,7 @@ export const PnlCell = ({
   const heightPct = normalize(abs, 10, 100, 0, scaleMax);
 
   return (
-    <div className={twMerge(!isIndicator ? 'p-0' : 'px-2')}>
+    <div className="p-0">
       <FormatNumber
         nb={abs}
         prefix={sign}
@@ -92,15 +90,13 @@ export const PnlCell = ({
         )}
       />
 
-      {isIndicator ? (
-        <div
-          className={twMerge(
-            'absolute bottom-0 left-0 w-full pointer-events-none z-0',
-            positive ? 'bg-green/10' : 'bg-red/10',
-          )}
-          style={{ height: `${heightPct}%` }}
-        />
-      ) : null}
+      <div
+        className={twMerge(
+          'absolute bottom-0 left-0 w-full pointer-events-none z-0',
+          positive ? 'bg-green/10' : 'bg-red/10',
+        )}
+        style={{ height: `${heightPct}%` }}
+      />
     </div>
   );
 };
@@ -116,14 +112,23 @@ export const SideCell = ({ side }: { side: string }) => (
   </div>
 );
 
-export const LeverageCell = ({ leverage }: { leverage: number }) => (
-  <FormatNumber
-    nb={leverage}
-    suffix="x"
-    precision={0}
-    isDecimalDimmed={false}
-  />
-);
+export const LeverageCell = ({
+  leverage,
+  precision = 0,
+}: {
+  leverage: number;
+  precision?: number;
+}) => {
+  return (
+    <FormatNumber
+      nb={leverage}
+      suffix="x"
+      precision={precision}
+      minimumFractionDigits={0}
+      isDecimalDimmed={false}
+    />
+  );
+};
 
 export const DateCell = ({ date }: { date: Date }) => {
   return (

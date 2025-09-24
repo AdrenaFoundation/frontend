@@ -24,7 +24,9 @@ import { FormattedEventsType } from './EventBlocks';
 type ChartDataPoint = {
   time: string;
   timestamp: number;
-  price: number;
+  price: number | null;
+  priceBeforeEntryPrice: number | null;
+  priceAfterExitPrice: number | null;
   pnl: number;
   isOpen: boolean;
   isClose: boolean;
@@ -85,11 +87,7 @@ export default function PositionHistoryChart({
               price: item.close,
             }),
           );
-          console.log('Price data timestamps:', {
-            first: formattedData[0],
-            last: formattedData[formattedData.length - 1],
-            count: formattedData.length,
-          });
+
           setRealPriceData(formattedData);
         }
       } catch (error) {
@@ -143,6 +141,19 @@ export default function PositionHistoryChart({
       })
       .filter(Boolean);
 
+    // Get entry and exit timestamps for price segmentation
+    const entryTimestamp = new Date(positionHistory.entryDate).getTime();
+    const exitTimestamp = positionHistory.exitDate
+      ? new Date(positionHistory.exitDate).getTime()
+      : null;
+
+    // Round timestamps to nearest hour for consistent comparison
+    const roundedEntryTimestamp =
+      Math.floor(entryTimestamp / (60 * 60 * 1000)) * (60 * 60 * 1000);
+    const roundedExitTimestamp = exitTimestamp
+      ? Math.floor(exitTimestamp / (60 * 60 * 1000)) * (60 * 60 * 1000)
+      : null;
+
     const data: ChartDataPoint[] = realPriceData.map((pricePoint) => {
       const timestamp = pricePoint.timestamp;
       const time = new Date(timestamp);
@@ -150,6 +161,7 @@ export default function PositionHistoryChart({
 
       const pnl = positionHistory.pnl;
 
+      // Initially set all points to before entry (we'll adjust after finding events)
       return {
         time: isLessThan24Hours
           ? time.toLocaleTimeString('en-US', {
@@ -162,7 +174,9 @@ export default function PositionHistoryChart({
               day: '2-digit',
             }),
         timestamp,
-        price,
+        price: null,
+        priceBeforeEntryPrice: price,
+        priceAfterExitPrice: null,
         pnl,
         isOpen: false,
         isClose: false,
@@ -186,20 +200,10 @@ export default function PositionHistoryChart({
           closestIndex = i;
         }
       }
-      console.log('Checking closest point:', {
-        closestIndex,
-        closestDistance,
-        eventData,
-        currentEventType: data[closestIndex].eventType,
-        dataPointTimestamp: data[closestIndex].timestamp,
-        dataPointTime: new Date(data[closestIndex].timestamp),
-      });
 
       // Only assign if within 24 hours (increased tolerance for better matching)
       if (closestDistance < 86400000) {
         // 24 hours in milliseconds
-        console.log('Distance check passed, assigning event');
-
         // Check if this data point already has an event
         const hasEvent = data[closestIndex].eventType;
 
@@ -232,7 +236,16 @@ export default function PositionHistoryChart({
 
           // Override price with actual execution prices for position events
           if (eventData.eventType === 'Open Position') {
-            data[closestIndex].price = positionHistory.entryPrice;
+            // For open position, set the main price if it's in the active range
+            if (data[closestIndex].price !== null) {
+              data[closestIndex].price = positionHistory.entryPrice;
+            } else if (data[closestIndex].priceBeforeEntryPrice !== null) {
+              data[closestIndex].priceBeforeEntryPrice =
+                positionHistory.entryPrice;
+            } else if (data[closestIndex].priceAfterExitPrice !== null) {
+              data[closestIndex].priceAfterExitPrice =
+                positionHistory.entryPrice;
+            }
             // Recalculate PnL with the corrected price
             data[closestIndex].pnl = 0; // PnL is 0 at entry
           } else if (
@@ -241,7 +254,16 @@ export default function PositionHistoryChart({
             eventData.eventType?.includes('Partial Close')
           ) {
             if (positionHistory.exitPrice) {
-              data[closestIndex].price = positionHistory.exitPrice;
+              // For close position, set the main price if it's in the active range
+              if (data[closestIndex].price !== null) {
+                data[closestIndex].price = positionHistory.exitPrice;
+              } else if (data[closestIndex].priceBeforeEntryPrice !== null) {
+                data[closestIndex].priceBeforeEntryPrice =
+                  positionHistory.exitPrice;
+              } else if (data[closestIndex].priceAfterExitPrice !== null) {
+                data[closestIndex].priceAfterExitPrice =
+                  positionHistory.exitPrice;
+              }
               // Recalculate PnL with the corrected price
               const pnl =
                 positionHistory.side === 'long'
@@ -252,21 +274,6 @@ export default function PositionHistoryChart({
               data[closestIndex].pnl = pnl;
             }
           }
-
-          console.log('Event assigned:', {
-            index: closestIndex,
-            eventType: data[closestIndex].eventType,
-            replacedEvent: hasEvent,
-            isHighPriority,
-            correctedPrice: data[closestIndex].price,
-          });
-        } else {
-          console.log('Event not assigned due to priority:', {
-            newEvent: eventData.eventType,
-            existingEvent: data[closestIndex].eventType,
-            newPriority: isHighPriority,
-            existingPriority: currentIsHighPriority,
-          });
         }
 
         if (eventData.eventType === 'Open Position') {
@@ -279,13 +286,90 @@ export default function PositionHistoryChart({
         } else if (eventData.eventType === 'Liquidated') {
           data[closestIndex].isLiquidated = true;
         }
-      } else {
-        console.log('Event too far from any data point:', {
-          closestDistance,
-          eventData,
-        });
       }
     });
+
+    // After events are processed, set the correct price segments using hybrid approach
+    const openEventIndex = data.findIndex((point) => point.isOpen);
+    const closeEventIndex = data.findIndex(
+      (point) => point.isClose || point.isLiquidated,
+    );
+
+    // Set price segments using hybrid approach
+    data.forEach((point, index) => {
+      const originalPrice = realPriceData[index]?.price || 0;
+
+      // First, set the timestamp-based segments for before/after areas
+      if (point.timestamp < roundedEntryTimestamp) {
+        point.priceBeforeEntryPrice = originalPrice;
+      } else {
+        point.priceBeforeEntryPrice = null;
+      }
+
+      if (roundedExitTimestamp && point.timestamp > roundedExitTimestamp) {
+        point.priceAfterExitPrice = originalPrice;
+      } else {
+        point.priceAfterExitPrice = null;
+      }
+
+      // Then, set the event-based main price line (overrides timestamp-based logic)
+      if (openEventIndex >= 0 && closeEventIndex >= 0) {
+        // Position has both open and close events
+        if (index >= openEventIndex && index <= closeEventIndex) {
+          // Between open and close events (inclusive) - main trading period
+          point.price = originalPrice;
+        } else {
+          point.price = null;
+        }
+      } else if (openEventIndex >= 0) {
+        // Position has open event but no close event (still open)
+        if (index >= openEventIndex) {
+          // After open event (inclusive) - main trading period
+          point.price = originalPrice;
+        } else {
+          point.price = null;
+        }
+      } else {
+        // No events found, fallback to null
+        point.price = null;
+      }
+    });
+
+    // Create connections ONLY for before/after segments, never extend main price
+    const entryTransitionIndex = data.findIndex(
+      (point) => point.timestamp >= roundedEntryTimestamp,
+    );
+    const exitTransitionIndex = roundedExitTimestamp
+      ? data.findIndex((point) => point.timestamp > roundedExitTimestamp)
+      : -1;
+
+    // Connect priceBeforeEntryPrice segment only (no main price extension)
+    if (entryTransitionIndex > 0) {
+      const entryPoint = data[entryTransitionIndex];
+      const beforeEntryPoint = data[entryTransitionIndex - 1];
+
+      if (
+        beforeEntryPoint.priceBeforeEntryPrice !== null &&
+        entryPoint.price !== null
+      ) {
+        // Only connect the before segment to main, but don't extend main backward
+        entryPoint.priceBeforeEntryPrice = entryPoint.price;
+      }
+    }
+
+    // Connect priceAfterExitPrice segment only (no main price extension)
+    if (exitTransitionIndex > 0 && exitTransitionIndex < data.length) {
+      const afterExitPoint = data[exitTransitionIndex];
+      const exitPoint = data[exitTransitionIndex - 1];
+
+      if (
+        exitPoint.price !== null &&
+        afterExitPoint.priceAfterExitPrice !== null
+      ) {
+        // Only connect main to after segment, but don't extend main forward
+        exitPoint.priceAfterExitPrice = exitPoint.price;
+      }
+    }
 
     return data;
   }, [positionHistory, realPriceData, isLoading, events]);
@@ -346,28 +430,20 @@ export default function PositionHistoryChart({
 
   return (
     <div className="relative overflow-hidden w-full h-[20rem] bg-[#0f1924] border border-inputcolor rounded-xl p-4 flex flex-col">
-      {/* <Image
-        src={monster}
-        alt="Monster"
-        className="absolute z-0 opacity-5 right-0 -top-24 object-right w-[20rem]"
-        style={{
-          filter: 'grayscale(1) brightness(2) hue-rotate(180deg)',
-        }}
-      /> */}
       <div className="flex flex-col gap-2 mb-4 flex-shrink-0">
         <TokenDetails positionHistory={positionHistory} />
         <div className="flex flex-row items-center gap-2">
           <FormatNumber
             nb={Math.abs(positionHistory.pnl)}
             format="currency"
-            prefix={positionHistory.pnl > 0 ? '+ ' : '- '}
+            prefix={positionHistory.pnl > 0 ? '+' : '-'}
             className={twMerge(
               'text-4xl font-interBold',
               positionHistory.pnl >= 0 ? 'text-[#35C488]' : 'text-redbright',
             )}
             isDecimalDimmed={false}
           />
-          <div className="opacity-50">
+          <div className="opacity-80">
             <FormatNumber
               nb={
                 ((true
@@ -458,16 +534,40 @@ export default function PositionHistoryChart({
               </>
             )}
 
-            {/* Price Line */}
-
+            {/* Main Price Line - Between Entry and Exit */}
             <Area
               type="monotone"
               dataKey="price"
               stroke={currentPnl >= 0 ? '#07956B' : '#C9243A'}
               strokeWidth={2}
               fill={currentPnl >= 0 ? '#07956B' : '#C9243A'}
-              fillOpacity={0.1}
+              fillOpacity={0.15}
+              connectNulls={false}
               dot={<CustomDot />}
+            />
+
+            {/* Price Before Entry - Lower Opacity */}
+            <Area
+              type="monotone"
+              dataKey="priceBeforeEntryPrice"
+              stroke={currentPnl >= 0 ? '#07956B' : '#C9243A'}
+              strokeWidth={1}
+              fill={currentPnl >= 0 ? '#07956B' : '#C9243A'}
+              fillOpacity={0.03}
+              strokeOpacity={0.4}
+              connectNulls={false}
+            />
+
+            {/* Price After Exit - Lower Opacity */}
+            <Area
+              type="monotone"
+              dataKey="priceAfterExitPrice"
+              stroke={currentPnl >= 0 ? '#07956B' : '#C9243A'}
+              strokeWidth={1}
+              fill={currentPnl >= 0 ? '#07956B' : '#C9243A'}
+              fillOpacity={0.03}
+              strokeOpacity={0.4}
+              connectNulls={false}
             />
 
             {/* Break Even Line */}
@@ -478,30 +578,50 @@ export default function PositionHistoryChart({
               strokeWidth={1}
               strokeOpacity={0.5}
             />
+
             {/* White connection line between open and close/liquidated - moved after Line to be on top */}
-            {openPoint && (closePoint || liquidatedPoint) && (
-              <ReferenceLine
-                segment={[
-                  {
-                    x: isLessThan24Hours ? openPoint.time : openPointIndex,
-                    y: openPoint.price,
-                  },
-                  {
-                    x: isLessThan24Hours
-                      ? (liquidatedPoint || closePoint)!.time
-                      : liquidatedPointIndex >= 0
-                        ? liquidatedPointIndex
-                        : closePointIndex,
-                    y: (liquidatedPoint || closePoint)!.price,
-                  },
-                ]}
-                stroke="white"
-                strokeDasharray="5 5"
-                strokeWidth={1}
-                strokeOpacity={0.8}
-              />
-            )}
-            <Tooltip content={<CustomRechartsToolTip />} />
+            {openPoint &&
+              (closePoint || liquidatedPoint) &&
+              (() => {
+                const openPrice =
+                  openPoint.price ||
+                  openPoint.priceBeforeEntryPrice ||
+                  openPoint.priceAfterExitPrice;
+                const endPoint = liquidatedPoint || closePoint;
+                const endPrice =
+                  endPoint!.price ||
+                  endPoint!.priceBeforeEntryPrice ||
+                  endPoint!.priceAfterExitPrice;
+
+                if (openPrice && endPrice) {
+                  return (
+                    <ReferenceLine
+                      segment={[
+                        {
+                          x: isLessThan24Hours
+                            ? openPoint.time
+                            : openPointIndex,
+                          y: openPrice,
+                        },
+                        {
+                          x: isLessThan24Hours
+                            ? endPoint!.time
+                            : liquidatedPointIndex >= 0
+                              ? liquidatedPointIndex
+                              : closePointIndex,
+                          y: endPrice,
+                        },
+                      ]}
+                      stroke="white"
+                      strokeDasharray="5 5"
+                      strokeWidth={1}
+                      strokeOpacity={0.8}
+                    />
+                  );
+                }
+                return null;
+              })()}
+            <Tooltip content={<CustomRechartsToolTip isValueOnly />} />
           </AreaChart>
         </ResponsiveContainer>
       </div>

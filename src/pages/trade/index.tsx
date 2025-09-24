@@ -562,7 +562,6 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey?.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition="top"
                     key={`history-${wallet?.publicKey?.toBase58() || 'none'}`}
                   />
                 </div>
@@ -612,7 +611,6 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={wallet?.publicKey?.toBase58() ?? null}
                     connected={connected}
-                    exportButtonPosition="top"
                     key={`history-${wallet?.publicKey?.toBase58() || 'none'}`}
                   />
                 </div>
