@@ -102,7 +102,7 @@ export default function CompetitionBanner({
                     <div className='flex'>
                         <h1
                             className={twMerge(
-                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
                             )}
                         >
@@ -110,7 +110,7 @@ export default function CompetitionBanner({
                         </h1>
                         <h1
                             className={twMerge(
-                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
                             )}
                         >
