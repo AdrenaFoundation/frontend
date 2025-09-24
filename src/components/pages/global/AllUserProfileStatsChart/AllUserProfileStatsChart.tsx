@@ -160,7 +160,7 @@ const AllUserProfileStatsChart = ({
 
   return (
     <div className="flex flex-col w-0 flex-1 h-full items-center p-4">
-      <div className="w-full h-[20%] rounded-lg flex flex-col items-center justify-center mb-3 sm:mb-0">
+      <div className="w-full h-[20%] rounded-md flex flex-col items-center justify-center mb-3 sm:mb-0">
         <h2>Traders by volume</h2>
         <p className="opacity-50">Click on a trader to view user profile</p>
       </div>

@@ -80,13 +80,13 @@ export default function MaintenanceAlert() {
   };
 
   return (
-    <div className="w-full max-w-4xl  mx-auto p-4 mt-8 border rounded-xl">
+    <div className="w-full max-w-4xl  mx-auto p-4 mt-8 border rounded-md">
       <h1 className="text-lg font-interSemibold mb-3 capitalize">
         Create New Maintenance Message
       </h1>
 
       {error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-md p-3 mb-4">
           <p className="text-red-400 text-sm">{error}</p>
         </div>
       ) : null}
@@ -99,7 +99,7 @@ export default function MaintenanceAlert() {
             placeholder="Enter maintenance message"
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
-            className="text-sm p-3 rounded-xl text-ellipsis font-boldy outline-none w-full bg-inputcolor border border-white/10"
+            className="text-sm p-3 rounded-md text-ellipsis font-boldy outline-none w-full bg-inputcolor border border-white/10"
           />
           <Button
             title="Create"
@@ -115,7 +115,7 @@ export default function MaintenanceAlert() {
         <div className="flex flex-row flex-wrap gap-4">
           {PAGES.map((page) => (
             <div
-              className="flex flex-row gap-1 items-center border rounded-lg p-1 px-2 pr-4 hover:bg-third transition duration-300 cursor-pointer select-none"
+              className="flex flex-row gap-1 items-center border rounded-md p-1 px-2 pr-4 hover:bg-third transition duration-300 cursor-pointer select-none"
               key={page}
               onClick={() => {
                 setCheckedPages((prev) =>
@@ -170,7 +170,7 @@ export default function MaintenanceAlert() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className="border rounded-lg p-3 bg-third border-inputcolor"
+                className="border rounded-md p-3 bg-third border-inputcolor"
               >
                 {editingId === message.id ? (
                   /* Edit Mode */
@@ -180,7 +180,7 @@ export default function MaintenanceAlert() {
                         type="text"
                         value={editMsg}
                         onChange={(e) => setEditMsg(e.target.value)}
-                        className="text-sm p-3 rounded-xl font-boldy outline-none flex-1 bg-inputcolor border border-white/10"
+                        className="text-sm p-3 rounded-md font-boldy outline-none flex-1 bg-inputcolor border border-white/10"
                         placeholder="Edit message"
                       />
                       <Button
@@ -204,7 +204,7 @@ export default function MaintenanceAlert() {
                       <div className="flex flex-row flex-wrap gap-2">
                         {PAGES.map((page) => (
                           <div
-                            className="flex flex-row gap-1 items-center border rounded-lg p-1 px-2 pr-3 hover:bg-third transition duration-300 cursor-pointer select-none"
+                            className="flex flex-row gap-1 items-center border rounded-md p-1 px-2 pr-3 hover:bg-third transition duration-300 cursor-pointer select-none"
                             key={page}
                             onClick={() => {
                               setEditPages((prev) =>
@@ -216,7 +216,7 @@ export default function MaintenanceAlert() {
                           >
                             <Checkbox
                               checked={editPages.includes(page)}
-                              onChange={() => {}}
+                              onChange={() => { }}
                             />
                             <span className="ml-1 text-xs font-interMedium capitalize">
                               {page}
@@ -257,7 +257,7 @@ export default function MaintenanceAlert() {
                             {message.pages.map((page) => (
                               <span
                                 key={page}
-                                className="font-interMedium text-xs px-2 py-1 border rounded-lg border-bcolor"
+                                className="font-interMedium text-xs px-2 py-1 border rounded-md border-bcolor"
                               >
                                 {page}
                               </span>

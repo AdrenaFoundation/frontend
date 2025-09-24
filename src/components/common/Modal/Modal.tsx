@@ -104,7 +104,7 @@ export default function Modal({
 
         <motion.div
           className={twMerge(
-            'min-w-20 min-h-20 z-[102] bg-secondary rounded-lg border overflow-hidden flex flex-col items-center relative',
+            'min-w-20 min-h-20 z-[102] bg-secondary rounded-md border overflow-hidden flex flex-col items-center relative',
             !isMobile ? '-mt-[8%] mx-4' : 'mt-auto rounded-b-none w-full',
             wrapperClassName,
           )}

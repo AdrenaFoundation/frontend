@@ -46,7 +46,7 @@ const CompetitionStats = memo(
   }) => (
     <div className="flex gap-4 flex-col flex-wrap sm:flex-nowrap">
       <div className="flex gap-4 flex-row flex-wrap sm:flex-nowrap">
-        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
           <h4 className="font-boldy text-base p-2 flex gap-2">
             Traders <LiveIcon className="absolute right-2" />
           </h4>
@@ -62,7 +62,7 @@ const CompetitionStats = memo(
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
           <h4 className="font-boldy text-base p-2 flex gap-2">
             Volume <LiveIcon className="absolute right-2" />
           </h4>
@@ -80,7 +80,7 @@ const CompetitionStats = memo(
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
+        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
           <h4 className="font-boldy text-base p-2">Total Rewards</h4>
 
           <div className="h-[1px] bg-bcolor w-full" />
@@ -105,7 +105,7 @@ const CompetitionStats = memo(
         </div>
       </div>
 
-      <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow h-[7.5em]">
+      <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow h-[7.5em]">
         <div className="flex flex-col w-full items-center h-auto grow-0">
           <div className="flex items-center p-2">
             <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
@@ -235,7 +235,7 @@ const WeekSelector = memo(
           <div
             key={i}
             className={twMerge(
-              'rounded-lg p-1 whitespace-nowrap px-2 transition border border-transparent duration-300 cursor-pointer select-none',
+              'rounded-md p-1 whitespace-nowrap px-2 transition border border-transparent duration-300 cursor-pointer select-none',
               i === currentWeek ? 'bg-[#364250] border-white/25' : 'bg-third',
               i > maxWeek && 'cursor-not-allowed opacity-25',
             )}
@@ -346,7 +346,7 @@ const ProfileBanner = memo(
     if (!currentUserData) return null;
 
     return (
-      <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
+      <div className="flex bg-yellow-900 bg-opacity-40 rounded-md border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
         <div className="flex items-center">
           <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
             {userName}
@@ -356,8 +356,8 @@ const ProfileBanner = memo(
 
           <span className="text-base font-boldy mr-2">
             {currentUserData.rank &&
-            currentUserData.rank < 4 &&
-            currentUserData.division !== 'No Division' ? (
+              currentUserData.rank < 4 &&
+              currentUserData.division !== 'No Division' ? (
               <Image
                 src={
                   currentUserData.rank === 1

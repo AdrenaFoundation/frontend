@@ -320,7 +320,7 @@ export default function StopLossTakeProfitInput({
         <div className="w-full">
           <div
             className={twMerge(
-              'flex items-center border rounded-lg pt-2 pb-2 bg-inputcolor border-white/10 grow text-sm w-full relative transition-opacity duration-300',
+              'flex items-center border rounded-md pt-2 pb-2 bg-inputcolor border-white/10 grow text-sm w-full relative transition-opacity duration-300',
               isLight ? isLoading && 'opacity-20' : 'bg-third',
             )}
           >
@@ -353,7 +353,7 @@ export default function StopLossTakeProfitInput({
                   variant="secondary"
                   rounded={false}
                   className={twMerge(
-                    'flex-grow px-2 text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
+                    'flex-grow px-2 text-xs bg-third border border-bcolor hover:border-white/10 rounded-md flex-1 font-mono',
                     sign === '-' ? 'text-redbright' : 'text-green',
                     isLight && 'bg-inputcolor',
                   )}

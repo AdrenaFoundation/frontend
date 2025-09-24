@@ -171,7 +171,7 @@ export const FeesSection = ({
                         </AutoScalableDiv>
                     ) : (
                         <div className="flex h-full justify-center items-center">
-                            <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+                            <div className="w-40 h-4 bg-gray-800 rounded-md" />
                         </div>
                     )}
                 </StyledSubSubContainer>

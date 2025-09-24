@@ -44,7 +44,7 @@ function CustomRechartsToolTip({
     const payloadChunks = chunkArray(payload, 15);
 
     return (
-      <div className="bg-third p-3 border border-white rounded-lg min-w-[10em] grow">
+      <div className="bg-third p-3 border border-white rounded-md min-w-[10em] grow">
         {label && <p className="text-lg mb-2 font-mono">{labelCustomization ? labelCustomization(label) : label}</p>}
 
         <div className='flex h-auto gap-4'>

@@ -102,7 +102,7 @@ export default function Referee({
                     }}
                     placeholder="Nickname"
                     value={newReferrerNickname}
-                    className={twMerge("mt-4 pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-lg placeholder:text-txtfade text-center w-full")}
+                    className={twMerge("mt-4 pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-md placeholder:text-txtfade text-center w-full")}
                     inputFontSize="0.8em"
                     onEnterKeyPressed={() => {
                         if (newReferrerProfile === false || newReferrerProfile === null) {

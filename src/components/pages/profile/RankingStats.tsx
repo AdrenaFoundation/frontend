@@ -101,11 +101,11 @@ export default function RankingStats({
           <LoaderWrapper
             key={index}
             height="9.375rem"
-            loaderClassName="rounded-xl"
+            loaderClassName="rounded-md"
             isLoading={isLoading}
           >
             <div
-              className="border border-inputcolor rounded-xl flex-1 overflow-hidden"
+              className="border border-inputcolor rounded-md flex-1 overflow-hidden"
               key={index}
             >
               <div className="relative  border-inputcolor">
@@ -143,7 +143,7 @@ export default function RankingStats({
                 </div>
               </div>
               <div className="flex flex-row items-center gap-2 p-2">
-                <div className="flex flex-row items-center bg-third justify-between border rounded-lg p-2 flex-1">
+                <div className="flex flex-row items-center bg-third justify-between border rounded-md p-2 flex-1">
                   <p className="opacity-50 text-sm">Rank</p>{' '}
                   <p className="font-mono ml-1 text-sm">
                     {season.userRank}{' '}
@@ -152,7 +152,7 @@ export default function RankingStats({
                     </span>
                   </p>
                 </div>
-                <div className="flex flex-row items-center bg-third justify-between border rounded-lg p-2 flex-1">
+                <div className="flex flex-row items-center bg-third justify-between border rounded-md p-2 flex-1">
                   <p className="opacity-50 text-sm">PnL</p>{' '}
                   <FormatNumber
                     nb={season.userPnL || 0}

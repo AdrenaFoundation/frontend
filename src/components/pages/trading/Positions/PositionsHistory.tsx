@@ -281,7 +281,7 @@ function PositionsHistory({
               <h3 className="text-xl font-medium text-white">Export by Year</h3>
               <div className="flex items-center gap-3">
                 <label className="text-xs text-white/60">Year:</label>
-                <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                   <Select
                     selected={String(exportOptions.year || getCurrentYear())}
                     onSelect={(value: string) => {
@@ -421,7 +421,7 @@ function PositionsHistory({
                     ))}
                   </div>
                 ) : (
-                  <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
+                  <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
                     <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
                       {getNoDataMessage()}
                     </div>

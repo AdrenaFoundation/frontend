@@ -89,7 +89,7 @@ export default function PriorityFeeSetting({
       </div>
 
       <div className="mt-2">
-        <div className="w-full flex flex-col border items-center justify-center p-2 bg-third rounded-lg">
+        <div className="w-full flex flex-col border items-center justify-center p-2 bg-third rounded-md">
           <div className="flex w-full">
             <div className="w-1/2 items-center flex text-xs font-interSemibold">
               TX Size
@@ -157,12 +157,12 @@ export default function PriorityFeeSetting({
           Max Priority Fee per TX (SOL)
         </div>
 
-        <div className="mt-1 relative rounded-lg shadow-sm">
+        <div className="mt-1 relative rounded-md shadow-sm">
           <input
             type="number"
             name="maxPriorityFee"
             id="maxPriorityFee"
-            className="font-mono block w-full p-3 pr-12 sm:text-sm border border-white/20 rounded-lg bg-inputcolor"
+            className="font-mono block w-full p-3 pr-12 sm:text-sm border border-white/20 rounded-md bg-inputcolor"
             placeholder={DEFAULT_MAX_PRIORITY_FEE.toString()}
             step="0.000000001"
             min="0.000000001"
@@ -212,7 +212,7 @@ export default function PriorityFeeSetting({
       }
       className="border-r border-[#414E5E]"
       openMenuClassName={twMerge(
-        'rounded-lg w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
+        'rounded-md w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
       )}
       disableOnClickInside={true}
       isDim={true}

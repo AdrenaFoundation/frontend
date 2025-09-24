@@ -693,7 +693,7 @@ export default function EditPositionCollateral({
                 </div>
 
                 <div className="flex">
-                  <div className="flex flex-col border rounded-lg w-full bg-third relative">
+                  <div className="flex flex-col border rounded-md w-full bg-third relative">
                     <TradingInput
                       key={`deposit-${depositToken.symbol}`}
                       className="text-sm"
@@ -798,7 +798,7 @@ export default function EditPositionCollateral({
                   </div>
                 ) : null}
 
-                <div className="flex flex-col border rounded-lg bg-third">
+                <div className="flex flex-col border rounded-md bg-third">
                   <TradingInput
                     className="text-sm"
                     inputClassName="border-0 bg-third"
@@ -830,7 +830,7 @@ export default function EditPositionCollateral({
                           title={`${percent}%`}
                           variant="secondary"
                           rounded={false}
-                          className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
+                          className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-md flex-1 font-mono"
                           onClick={() =>
                             setInput(calculateCollateralPercentage(percent))
                           }
@@ -854,7 +854,7 @@ export default function EditPositionCollateral({
                   Withdraw in
                 </div>
 
-                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer rounded-lg' onClick={() => setIsPickTokenModalOpen(true)}>
+                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer rounded-md' onClick={() => setIsPickTokenModalOpen(true)}>
                   <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
                     <Image src={chevronDownIcon} alt="chevron down" />
                   </div>
@@ -952,7 +952,7 @@ export default function EditPositionCollateral({
         {/* Position Info */}
         <div className="flex flex-col w-full sm:w-1/2 items-center">
           <div className='flex w-full'>
-            <div className="flex flex-col p-3 py-2.5 border bg-[#040D14] rounded-lg w-full">
+            <div className="flex flex-col p-3 py-2.5 border bg-[#040D14] rounded-md w-full">
               <div className="w-full flex justify-between mt-">
                 <div className="flex items-center">
                   <Image
@@ -1032,7 +1032,7 @@ export default function EditPositionCollateral({
           </div>
 
           <div className="mt-2 w-full">
-            <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
+            <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md">
               <div className={rowStyle}>
                 <div className="text-sm text-txtfade">Size</div>
 

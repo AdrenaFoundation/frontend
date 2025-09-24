@@ -122,10 +122,10 @@ export default function PendingRewardsSection({
 
             </div>
 
-            <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">
+            <div className="flex flex-col border bg-secondary rounded-md shadow-lg overflow-hidden">
                 {/* Pending rewards block */}
                 <div className="flex-grow"></div>
-                <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg">
+                <div className="flex flex-col border p-3 bg-secondary rounded-md shadow-lg">
                     <div className="flex flex-col gap-3 sm:gap-1 flex-grow">
                         <div className="flex flex-col sm:flex-row justify-between">
                             <span className="text-txtfade">

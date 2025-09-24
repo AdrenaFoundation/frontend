@@ -41,9 +41,9 @@ export default function ALPStakingRecap({
 
     return (
         <div className='pl-4 pr-4 w-full'>
-            <div className="flex flex-col bg-main rounded-2xl border">
+            <div className="flex flex-col bg-main rounded-md border">
                 <div className="p-5 pb-0">
-                    <div className="flex flex-col h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
+                    <div className="flex flex-col h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-md shadow-lg">
                         <p className="opacity-75 text-base p-3 flex flex-col gap-2 text-center">
                             <span className='text-base'>Starting March 19th, 2025, at 12:00 UTC, ALP is now fully liquid. But before that date, you were there and had some ALP staked!</span>
                         </p>

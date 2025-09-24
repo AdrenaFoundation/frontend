@@ -133,7 +133,7 @@ export default function Monitoring(pageProps: PageProps) {
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className="m-1 sm:mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
+      <div className="m-1 sm:mx-auto mt-2 flex flex-col bg-main border rounded-md z-10 p-1 px-3 select-none">
         <div className="flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[45em] ml-auto mr-auto">
           {MonitoringHeaderLink('lite')}
 

@@ -173,14 +173,14 @@ export default function UpgradeLockedStake({
             </div>
           </div>
 
-          <div className="relative flex flex-row w-full border border-white/10 rounded-xl overflow-hidden">
+          <div className="relative flex flex-row w-full border border-white/10 rounded-md overflow-hidden">
             <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r-white/10">
               <p className="opacity-50 font-mono text-sm">
                 {lockedStake.tokenSymbol}
               </p>
             </div>
             <input
-              className="w-full bg-inputcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-inputcolor rounded-md rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value

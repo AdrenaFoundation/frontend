@@ -105,7 +105,7 @@ export default function MigrateUserProfileV1Tov2Modal({
             <div className='self-center font-archivo text-txtfade'>Nickname</div>
 
             <InputString
-                className="font-boldy text-xl relative p-3 border border-bcolor rounded-lg text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
+                className="font-boldy text-xl relative p-3 border border-bcolor rounded-md text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
                 value={updatedNickname ?? ''}
                 onChange={setUpdatedNickname}
                 placeholder="The Best Trader"

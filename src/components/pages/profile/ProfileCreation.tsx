@@ -39,7 +39,7 @@ export default function ProfileCreation({
 
   return (
     <>
-      <div className="flex flex-col w-full z-20 p-7 self-center rounded-lg items-center">
+      <div className="flex flex-col w-full z-20 p-7 self-center rounded-md items-center">
         <h2>Trader profile</h2>
 
         <div className="flex flex-col mt-4">
@@ -55,7 +55,7 @@ export default function ProfileCreation({
 
           <div className="flex flex-col items-center pb-4">
             <InputString
-              className="font-boldy text-xl relative p-3 border border-bcolor rounded-lg text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
+              className="font-boldy text-xl relative p-3 border border-bcolor rounded-md text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
               value={nickname ?? ''}
               onChange={setNickname}
               placeholder="The Best Trader"

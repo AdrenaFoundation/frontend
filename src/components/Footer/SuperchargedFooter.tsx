@@ -158,15 +158,15 @@ export default function SuperchargedFooter({
                   animate={{ opacity: 1, y: '-2.5rem' }}
                   exit={{ opacity: 0, y: '-2rem' }}
                   transition={{ duration: 0.3 }}
-                  className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col gap-3 bg-secondary border border-inputcolor rounded-lg p-3 z-50"
+                  className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col gap-3 bg-secondary border border-inputcolor rounded-md p-3 z-50"
                 >
                   <Link
                     href="https://2570697779-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FSrdLcmUOicAVBsHQeHAa%2Fuploads%2FJwTdoGS6JrPpPxYMJJAh%2FAdrena_Dec_2024_OffsideLabs.pdf?alt=media&token=f9f9753d-cc91-457a-a674-1fd0d3b5460a"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-row items-center gap-3 border border-bcolor hover:bg-third p-2 pr-4 rounded-lg transition-colors duration-300 cursor-pointer"
+                    className="flex flex-row items-center gap-3 border border-bcolor hover:bg-third p-2 pr-4 rounded-md transition-colors duration-300 cursor-pointer"
                   >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-inputcolor">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-md border border-inputcolor">
                       <Image
                         src={documentIcon}
                         alt="Document Icon"
@@ -190,9 +190,9 @@ export default function SuperchargedFooter({
                     href="https://2570697779-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FSrdLcmUOicAVBsHQeHAa%2Fuploads%2FflVY9AoiV2b2dzv0wbZ3%2Fadrena_audit_ottersec.pdf?alt=media&token=25f7c2c0-052f-4fce-a44c-759d9bdd39b5"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-row items-center gap-3 border border-bcolor  hover:bg-third p-2 rounded-lg transition-colors duration-300 cursor-pointer"
+                    className="flex flex-row items-center gap-3 border border-bcolor  hover:bg-third p-2 rounded-md transition-colors duration-300 cursor-pointer"
                   >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-inputcolor">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-md border border-inputcolor">
                       <Image
                         src={documentIcon}
                         alt="Document Icon"

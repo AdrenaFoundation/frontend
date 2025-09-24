@@ -202,7 +202,7 @@ export default function Table({
   const defaultBlockComponent = (item: TableRowType, index: number) => (
     <div
       key={`block-${index}`}
-      className={twMerge("p-4 bg-main border border-inputcolor rounded-lg hover:bg-third transition-colors",
+      className={twMerge("p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors",
         onRowClick ? 'cursor-pointer' : '',
       )}
       onClick={() => { if (onRowClick) onRowClick(item.id as string | number); }}
@@ -261,7 +261,7 @@ export default function Table({
       <>
         <div
           className={twMerge(
-            'relative rounded-xl border border-inputcolor bg-secondary overflow-hidden',
+            'relative rounded-md border border-inputcolor bg-secondary overflow-hidden',
             className,
           )}
         >
@@ -315,7 +315,7 @@ export default function Table({
     <>
       <div
         className={twMerge(
-          'relative rounded-xl border border-inputcolor bg-secondary overflow-hidden',
+          'relative rounded-md border border-inputcolor bg-secondary overflow-hidden',
           className,
         )}
       >

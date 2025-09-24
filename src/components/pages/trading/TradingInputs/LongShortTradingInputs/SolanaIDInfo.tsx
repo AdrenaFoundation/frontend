@@ -34,7 +34,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
         </div>
       </div>}
     >
-      <div className="relative w-full border border-[#2c2e4f] rounded-lg overflow-hidden my-2">
+      <div className="relative w-full border border-[#2c2e4f] rounded-md overflow-hidden my-2">
         <div>
           <div className="absolute h-full w-full bg-gradient-to-b from-[#201AA2] to-[#121228] " />
           <Image

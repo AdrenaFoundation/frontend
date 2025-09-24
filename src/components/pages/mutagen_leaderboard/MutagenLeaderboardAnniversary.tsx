@@ -110,7 +110,7 @@ export default function MutagenLeaderboardAnniversary({
         return (
             <div
                 className={twMerge(`
-                    relative flex flex-col gap-2 px-4 rounded-2xl
+                    relative flex flex-col gap-2 px-4 rounded-md
                     max-w-3xl mx-auto mb-6 ${marginTop} ml-2 mr-2 md:ml-auto md:mr-auto
                     bg-secondary
                     border

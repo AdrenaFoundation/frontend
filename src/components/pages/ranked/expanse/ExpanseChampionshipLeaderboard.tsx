@@ -86,7 +86,7 @@ export default function ExpanseChampionshipLeaderboard({
                             </p>
                         ) : null}
 
-                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-md" /> : null}
 
                         {!filler && d.title !== null ? (
                             <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
@@ -94,7 +94,7 @@ export default function ExpanseChampionshipLeaderboard({
                             </div>
                         ) : null}
 
-                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-md" /> : null}
                     </div>
                 </div>,
             ];
@@ -115,7 +115,7 @@ export default function ExpanseChampionshipLeaderboard({
                                 isAbbreviate={true}
                                 isAbbreviateIcon={false}
                             />
-                        </> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                        </> : <div className="w-10 h-2 bg-gray-800 rounded-md" />}
                     </div>
                 );
             }
@@ -149,7 +149,7 @@ export default function ExpanseChampionshipLeaderboard({
                         {(d.rewardsAdx === 0 && d.rewardsJto === 0 && isMobile) ? (
                             <span className="h-[2.64em]">--</span>
                         ) : null}
-                    </div> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                    </div> : <div className="w-10 h-2 bg-gray-800 rounded-md" />}
                 </div>
             );
 

@@ -47,7 +47,7 @@ export default function Factions({
             >
                 <button
                     onClick={() => setActiveTab(activeTab === 'leaderboard' ? 'mechanics' : 'leaderboard')}
-                    className="bg-[#0B131D] border border-white/20 px-5 py-2 rounded-lg hover:border-white/40 hover:shadow-xl transition-all duration-300"
+                    className="bg-[#0B131D] border border-white/20 px-5 py-2 rounded-md hover:border-white/40 hover:shadow-xl transition-all duration-300"
                 >
                     <div className='flex'>
                         <div

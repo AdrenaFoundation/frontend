@@ -48,7 +48,7 @@ export default function TPSLModeSelector({
   };
 
   return (
-    <div className={"relative flex flex-col gap-3 w-full border bg-third rounded-lg mt-4"}>
+    <div className={"relative flex flex-col gap-3 w-full border bg-third rounded-md mt-4"}>
       {(!isTPSL || !isConnected) ? <div
         className="flex flex-row justify-between gap-3 py-3 px-4 cursor-pointer select-none"
         onClick={() => {

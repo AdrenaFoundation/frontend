@@ -77,7 +77,7 @@ export default function FooterStatus() {
             animate={{ opacity: 1, y: '-2.5rem' }}
             exit={{ opacity: 0, y: '-2rem' }}
             transition={{ duration: 0.3 }}
-            className="absolute translate-y-[-35px] left-0 bottom-0 min-w-[200px] flex flex-col gap-3 bg-secondary border border-inputcolor rounded-lg p-3 z-50"
+            className="absolute translate-y-[-35px] left-0 bottom-0 min-w-[200px] flex flex-col gap-3 bg-secondary border border-inputcolor rounded-md p-3 z-50"
           >
             <ul className="flex flex-col gap-3">
               <li className="flex flex-row items-center gap-2">

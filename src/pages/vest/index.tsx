@@ -177,7 +177,7 @@ export default function UserVest({
   if (!userVest) {
     return (
       <div className="flex flex-col max-w-[65em] gap-4 p-4 w-full h-full self-center">
-        <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
+        <div className="flex h-full bg-main w-full border items-center justify-center rounded-md z-10">
           <WalletConnection connected={connected} />
         </div>
       </div>
@@ -191,7 +191,7 @@ export default function UserVest({
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-100 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className="flex flex-col max-w-[60em] pl-4 pr-4 pb-4 w-full self-center bg-main z-10 rounded-xl mt-4 mb-[100px] sm:mb-4 relative ">
+      <div className="flex flex-col max-w-[60em] pl-4 pr-4 pb-4 w-full self-center bg-main z-10 rounded-md mt-4 mb-[100px] sm:mb-4 relative ">
 
         <OnchainAccountInfo address={userVest.pubkey} shorten={true} className='self-center mt-4 sm:mt-0 sm:absolute sm:top-4 sm:left-4 opacity-50 text-sm z-10' />
 
@@ -211,7 +211,7 @@ export default function UserVest({
               <div className='flex w-full flex-col items-center justify-center'>
                 <div className='text-txtfade pt-8 uppercase font-thin'>completed in</div>
 
-                <ul className="flex flex-row gap-3 md:gap-9 px-6 md:px-9 p-3 z-10 h-[6em] items-center w-full justify-center bg-third rounded-lg mt-4">
+                <ul className="flex flex-row gap-3 md:gap-9 px-6 md:px-9 p-3 z-10 h-[6em] items-center w-full justify-center bg-third rounded-md mt-4">
                   <li className="flex flex-col items-center justify-center">
                     <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">{days}</p>
                     <p className="text-center text-sm font-boldy tracking-widest">Days</p>
@@ -334,7 +334,7 @@ export default function UserVest({
 
                   <div className='w-full relative'>
                     <InputString
-                      className="pt-2 pb-2 rounded-xl text-center pr-[2.8em] pl-4 sm:pl-[2.8em]"
+                      className="pt-2 pb-2 rounded-md text-center pr-[2.8em] pl-4 sm:pl-[2.8em]"
                       value={updatedDelegate ?? ''}
                       onChange={setUpdatedDelegate}
                       placeholder="Delegate Address"

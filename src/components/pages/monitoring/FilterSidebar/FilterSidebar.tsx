@@ -46,8 +46,8 @@ export default function FilterSidebar({
     type: 'checkbox' | 'radio' | 'input';
     name: string;
     handleChange:
-      | React.Dispatch<React.SetStateAction<string>>
-      | React.Dispatch<React.SetStateAction<string[] | null>>;
+    | React.Dispatch<React.SetStateAction<string>>
+    | React.Dispatch<React.SetStateAction<string[] | null>>;
     activeOption: string[] | string | null;
     optionItems: { label: string; icon?: ImageRef | string }[];
     disabled?: boolean;
@@ -68,7 +68,7 @@ export default function FilterSidebar({
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   const SwitchOptions = switchOptions ? (
-    <div className="p-4 bg-[#040D14] border rounded-lg flex flex-col gap-3 ">
+    <div className="p-4 bg-[#040D14] border rounded-md flex flex-col gap-3 ">
       {switchOptions.map((opt) => (
         <label
           className="flex items-center justify-between ml-1 cursor-pointer"
@@ -91,9 +91,9 @@ export default function FilterSidebar({
   const FilterOptions = filterOptions ? (
     <div
       className={twMerge(
-        'p-4 bg-[#040D14] border rounded-lg',
+        'p-4 bg-[#040D14] border rounded-md',
         filterOptions.some((f) => f.disabled) &&
-          'opacity-25 cursor-not-allowed pointer-events-none',
+        'opacity-25 cursor-not-allowed pointer-events-none',
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
@@ -110,7 +110,7 @@ export default function FilterSidebar({
             value={search.value}
             onChange={(e) => search.handleChange(e.target.value)}
             placeholder={search.placeholder}
-            className="hidden md:flex bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy"
+            className="hidden md:flex bg-gray-800 text-white border border-gray-700 rounded-md p-2 px-3 w-full text-sm font-boldy"
           />
         ))}
 
@@ -165,9 +165,9 @@ export default function FilterSidebar({
   const SortOptions = sortOptions ? (
     <div
       className={twMerge(
-        'p-4 bg-[#040D14] border rounded-lg transition duration-300',
+        'p-4 bg-[#040D14] border rounded-md transition duration-300',
         sortOptions.disabled &&
-          'opacity-25 cursor-not-allowed pointer-events-none',
+        'opacity-25 cursor-not-allowed pointer-events-none',
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
@@ -291,11 +291,11 @@ export default function FilterSidebar({
             value={search.value}
             onChange={(e) => search.handleChange(e.target.value)}
             placeholder={search.placeholder}
-            className="bg-gray-800 text-white border border-gray-700 rounded-lg p-2 px-3 w-full text-sm font-boldy mb-3"
+            className="bg-gray-800 text-white border border-gray-700 rounded-md p-2 px-3 w-full text-sm font-boldy mb-3"
           />
         ))}
 
-        <div className="flex flex-row border rounded-lg">
+        <div className="flex flex-row border rounded-md">
           <div
             className="w-full p-4"
             onClick={() => setIsFilterModalOpen(true)}
@@ -367,7 +367,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 }) => {
   return (
     <div
-      className="group flex items-center cursor-pointer bg-transparent hover:bg-third transition duration-300 border rounded-lg p-1 px-2 pr-4"
+      className="group flex items-center cursor-pointer bg-transparent hover:bg-third transition duration-300 border rounded-md p-1 px-2 pr-4"
       onClick={() => {
         if (checked) {
           onClick((prev) => {
@@ -437,7 +437,7 @@ export const Radio: React.FC<RadioProps> = ({
   return (
     <div
       className={twMerge(
-        'flex items-center cursor-pointer bg-transparent hover:bg-third transition duration-300 border rounded-lg p-1 px-4 pl-2',
+        'flex items-center cursor-pointer bg-transparent hover:bg-third transition duration-300 border rounded-md p-1 px-4 pl-2',
         className,
       )}
       onClick={() => onClick(label)}

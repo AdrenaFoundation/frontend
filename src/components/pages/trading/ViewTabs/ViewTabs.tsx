@@ -94,7 +94,7 @@ export default function ViewTabs({
 
             {totalStats ? (
                 <div className='flex flex-row gap-3 items-center px-3'>
-                    <div className="flex flex-row gap-1 border p-1 md:px-4 rounded-lg w-full">
+                    <div className="flex flex-row gap-1 border p-1 md:px-4 rounded-md w-full">
                         <p className="text-xs opacity-50 text-nowrap">Total pnl: </p>
                         <FormatNumber
                             nb={totalStats.totalPnL}
@@ -110,7 +110,7 @@ export default function ViewTabs({
                         />
                     </div>
 
-                    <div className="items-center flex flex-row gap-1 border p-1 md:px-4 rounded-lg w-full">
+                    <div className="items-center flex flex-row gap-1 border p-1 md:px-4 rounded-md w-full">
                         <p className="opacity-50 text-nowrap text-xs">Total collateral: </p>
                         <FormatNumber nb={
                             totalStats.totalCollateral

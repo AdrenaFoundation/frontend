@@ -98,7 +98,7 @@ export default function LockedStakesDuration({
   return (
     <div
       className={twMerge(
-        'flex flex-col w-full border-2 border-bcolor rounded-xl overflow-hidden bg-secondary',
+        'flex flex-col w-full border-2 border-bcolor rounded-md overflow-hidden bg-secondary',
         className,
       )}
     >

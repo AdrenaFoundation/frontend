@@ -36,7 +36,7 @@ export default function ALPStakeToken({
   }));
 
   return (
-    <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
+    <div className="flex flex-col sm:flex-row lg:flex-col rounded-md sm:min-w-[400px] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">
         <div className="mt-4">
           <div className="flex flex-row justify-between mb-1">
@@ -69,7 +69,7 @@ export default function ALPStakeToken({
               <p className="opacity-50 font-mono text-sm">ALP</p>
             </div>
             <input
-              className="w-full bg-inputcolor border border-bcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-inputcolor border border-bcolor rounded-md rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value

@@ -69,7 +69,7 @@ export const MarketOrderContent = ({
     <div className="flex flex-col transition-opacity duration-500 mt-4">
       <h5 className="flex items-center text-sm font-interMedium">Size</h5>
 
-      <div className="flex items-center h-[3.5rem] pr-3 bg-third mt-1 border rounded-lg z-40">
+      <div className="flex items-center h-[3.5rem] pr-3 bg-third mt-1 border rounded-md z-40">
         {/* Token selector button */}
         <div className="flex items-center pl-3">
           <button
@@ -170,7 +170,7 @@ export const MarketOrderContent = ({
           </div>
         ) : (
           <div className="flex ml-auto">
-            <div className="w-[150px] h-[40px] bg-bcolor rounded-xl" />
+            <div className="w-[150px] h-[40px] bg-bcolor rounded-md" />
           </div>
         )}
       </div>

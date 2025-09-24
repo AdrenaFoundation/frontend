@@ -124,7 +124,7 @@ export default function BurgerMenu({
           <div className="flex flex-row items-center gap-2">
             <Link href="/buy_alp">
               {alpPrice && aprs ? (
-                <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+                <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
                   <Image
                     src={alpLogo}
                     alt="ALP Logo"
@@ -158,13 +158,13 @@ export default function BurgerMenu({
                   </div>
                 </div>
               ) : (
-                <div className="w-[4.75125rem] sm:w-[7em] h-[2.4625rem] animate-pulse bg-gray-800 rounded-xl" />
+                <div className="w-[4.75125rem] sm:w-[7em] h-[2.4625rem] animate-pulse bg-gray-800 rounded-md" />
               )}
             </Link>
 
             <Link href="/buy_adx">
               {adxPrice && aprs ? (
-                <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+                <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
                   <Image
                     src={adxLogo}
                     alt="ALP Logo"
@@ -198,7 +198,7 @@ export default function BurgerMenu({
                   </div>
                 </div>
               ) : (
-                <div className="w-[4.75125rem] sm:w-[7em] h-[2.4625rem] animate-pulse bg-gray-800 rounded-xl" />
+                <div className="w-[4.75125rem] sm:w-[7em] h-[2.4625rem] animate-pulse bg-gray-800 rounded-md" />
               )}
             </Link>
           </div>

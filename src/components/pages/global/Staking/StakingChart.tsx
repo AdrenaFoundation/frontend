@@ -87,7 +87,7 @@ export default function StakingChart() {
             content={({
               payload,
             }: TooltipProps<ValueType, NameType>) => (
-              <div className="bg-third p-3 border border-white rounded-lg justify-center">
+              <div className="bg-third p-3 border border-white rounded-md justify-center">
                 <div className='flex w-full justify-center items-center'>
                   {payload && payload.map((item) => (
                     <div

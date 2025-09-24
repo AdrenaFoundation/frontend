@@ -5,9 +5,9 @@ import wing from '@/../../public/images/wing.svg';
 
 export default function Streak() {
     return (
-        <div className="flex flex-col gap-3 bg-[#07131D] border p-5 rounded-lg mt-4">
+        <div className="flex flex-col gap-3 bg-[#07131D] border p-5 rounded-md mt-4">
             <div className="flex flex-row items-center">
-                <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
+                <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-md w-full border-r-0 rounded-r-none h-[42px]">
                     <p className="font-archivoblack text-lg">Streak</p>
                 </div>
                 <Image

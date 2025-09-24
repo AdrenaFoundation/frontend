@@ -245,8 +245,8 @@ const SizeSection = ({
 
 const LoadingPlaceholder = () => (
     <div className="flex w-full justify-evenly items-center">
-        <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+        <div className="w-20 h-4 bg-gray-800 rounded-md" />
         <div className="h-full w-[1px] bg-gray-800" />
-        <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+        <div className="w-20 h-4 bg-gray-800 rounded-md" />
     </div>
 );

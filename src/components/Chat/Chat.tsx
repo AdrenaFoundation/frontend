@@ -153,7 +153,7 @@ function Chat({
               handleSendMessage();
             }
           }}
-          className="text-sm w-full p-2 bg-bcolor border border-white/10 rounded-lg"
+          className="text-sm w-full p-2 bg-bcolor border border-white/10 rounded-md"
         />
         <Button
           size="sm"

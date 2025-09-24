@@ -214,7 +214,7 @@ export default function ActivityCalendar({
     return (
       <div
         className={twMerge(
-          'bg-[#040D14] border rounded-lg p-3',
+          'bg-[#040D14] border rounded-md p-3',
           wrapperClassName,
         )}
       >
@@ -253,7 +253,7 @@ export default function ActivityCalendar({
   }
 
   return (
-    <div className="m-3 border rounded-xl overflow-hidden bg-[#040D14] mt-6 mb-3">
+    <div className="m-3 border rounded-md overflow-hidden bg-[#040D14] mt-6 mb-3">
       <div className="flex flex-col sm:flex-row gap-3 mb-6 p-3 sm:p-0 justify-between items-center bg-third border-b">
         <div className="flex flex-row items-center gap-2 p-2 sm:px-3">
           <Image
@@ -270,7 +270,7 @@ export default function ActivityCalendar({
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-0 w-full sm:w-auto">
-          <div className="flex flex-row gap-3 p-3 border sm:border-y-0 sm:border-r-0 rounded-lg sm:rounded-none sm:border-l border-inputcolor w-full sm:w-auto">
+          <div className="flex flex-row gap-3 p-3 border sm:border-y-0 sm:border-r-0 rounded-md sm:rounded-none sm:border-l border-inputcolor w-full sm:w-auto">
             <SelectOptions
               selected={bubbleBy}
               options={['pnl', 'volume', 'position count']}
@@ -279,7 +279,7 @@ export default function ActivityCalendar({
             />
           </div>
 
-          <div className="flex flex-row items-center gap-2 px-3 p-2 border sm:border-y-0 sm:border-r-0 rounded-lg sm:rounded-none border-l border-inputcolor flex-none">
+          <div className="flex flex-row items-center gap-2 px-3 p-2 border sm:border-y-0 sm:border-r-0 rounded-md sm:rounded-none border-l border-inputcolor flex-none">
             <DateSelector
               startDate={startDate}
               endDate={endDate}
@@ -291,7 +291,7 @@ export default function ActivityCalendar({
           </div>
         </div>
       </div>
-      <div className={twMerge('bg-[#040D14] rounded-lg p-3', wrapperClassName)}>
+      <div className={twMerge('bg-[#040D14] rounded-md p-3', wrapperClassName)}>
         <LoaderWrapper
           isLoading={isFullyLoading}
           height="10.75rem"

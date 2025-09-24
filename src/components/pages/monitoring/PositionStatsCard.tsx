@@ -36,7 +36,7 @@ export default function PositionStatsCard({
     return (
       <div
         className={twMerge(
-          'p-4 border rounded-lg bg-[#050D14] flex-1 h-full flex items-center justify-center',
+          'p-4 border rounded-md bg-[#050D14] flex-1 h-full flex items-center justify-center',
           className,
         )}
       >
@@ -48,7 +48,7 @@ export default function PositionStatsCard({
   return (
     <div
       className={twMerge(
-        'p-4 border rounded-lg bg-[#050D14] flex-1',
+        'p-4 border rounded-md bg-[#050D14] flex-1',
         className,
       )}
     >

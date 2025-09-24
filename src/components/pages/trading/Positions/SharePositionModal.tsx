@@ -111,7 +111,7 @@ export default function SharePositionModal({
   return (
     <div className="max-w-[600px] p-5">
       <div
-        className="relative p-5 h-[230px] sm:h-[300px] border border-bcolor overflow-hidden rounded-lg bg bg-secondary"
+        className="relative p-5 h-[230px] sm:h-[300px] border border-bcolor overflow-hidden rounded-md bg bg-secondary"
         ref={cardRef}
       >
         <Image src={adrenaLogo} alt="Adrena Logo" height={8} className="mb-3" />
@@ -234,14 +234,14 @@ export default function SharePositionModal({
         {OPTIONS.map((opt) => (
           <div
             className={twMerge(
-              'border rounded-lg h-[50px] flex-1 cursor-pointer p-2 transition duration-300',
+              'border rounded-md h-[50px] flex-1 cursor-pointer p-2 transition duration-300',
               opt.id === option ? 'border-white' : 'border-bcolor',
             )}
             onClick={() => setOption(opt.id)}
             key={`color-${opt.id}`}
           >
             <div
-              className="flex items-center justify-center w-full h-full rounded-lg overflow-hidden"
+              className="flex items-center justify-center w-full h-full rounded-md overflow-hidden"
               style={{
                 background: `linear-gradient(90deg, ${opt.gradient[0]} 0%, ${opt.gradient[1]} 60%)`,
               }}

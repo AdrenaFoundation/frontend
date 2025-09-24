@@ -115,7 +115,7 @@ export default function ExpanseWeeklyLeaderboard({
                             </p>
                         ) : null}
 
-                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 h-2 bg-gray-800 rounded-md" /> : null}
 
                         {!filler && d.title !== null ? (
                             <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
@@ -123,7 +123,7 @@ export default function ExpanseWeeklyLeaderboard({
                             </div>
                         ) : null}
 
-                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-xl" /> : null}
+                        {filler ? <div className="w-20 mt-1 h-2 bg-gray-800 rounded-md" /> : null}
                     </div>
                 </div>,
 
@@ -222,7 +222,7 @@ export default function ExpanseWeeklyLeaderboard({
                             className="text-xs font-boldy text-[#e47dbb]"
                             precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
                             isDecimalDimmed={false}
-                        /> : <div className="w-10 h-2 bg-gray-800 rounded-xl" />}
+                        /> : <div className="w-10 h-2 bg-gray-800 rounded-md" />}
                     </div>
                 </Tippy>,
             ];
@@ -244,7 +244,7 @@ export default function ExpanseWeeklyLeaderboard({
                         />
                     ) : null}
 
-                    {filler ? <div className="w-10 h-2 bg-gray-800 rounded-xl" /> : null}
+                    {filler ? <div className="w-10 h-2 bg-gray-800 rounded-md" /> : null}
                 </div>);
             }
 

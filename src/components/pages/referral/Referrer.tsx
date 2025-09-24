@@ -126,7 +126,7 @@ export default function Referrer({
           MY REFERRAL LINK
         </div>
 
-        <div className="flex rounded-lg bg-third">
+        <div className="flex rounded-md bg-third">
           <div className=" pl-4 pr-4 pt-2 pb-2 text-sm md:min-w-[30em] cursor-pointer hover:opacity-100 opacity-90">
             {link}
           </div>

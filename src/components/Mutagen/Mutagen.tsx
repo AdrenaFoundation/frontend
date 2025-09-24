@@ -45,7 +45,7 @@ const contentIfNoMutagens = (
 
     <div className="w-full mt-4 space-y-3">
       {mutagenSources.map((source, index) => (
-        <div key={index} className="bg-[#0f1114] p-4 rounded-lg border border-[#1f2124] hover:border-[#2f3134] transition-colors">
+        <div key={index} className="bg-[#0f1114] p-4 rounded-md border border-[#1f2124] hover:border-[#2f3134] transition-colors">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold">{source.title}</h3>
           </div>
@@ -129,7 +129,7 @@ const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
 
       <div className='text-xs uppercase font-boldy tracking-wider text-white/80 mt-2'>Breakdown Per Season</div>
 
-      <div className="w-full mt-4 space-y-1 bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl">
+      <div className="w-full mt-4 space-y-1 bg-[#111922] border border-[#1F252F] rounded-md shadow-xl">
         {userMutagens.seasons.map((season, index) => (
           <SeasonSection key={index} season={season} />
         ))}
@@ -147,7 +147,7 @@ const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
   ];
 
   return (
-    <div className="p-4 rounded-lg tracking-widest">
+    <div className="p-4 rounded-md tracking-widest">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-white/80 font-bold uppercase text-xxs">{{
           'void': 'Inbetween seasons',
@@ -266,7 +266,7 @@ export default function Mutagen({
           </div>
         }
         openMenuClassName={twMerge(
-          'rounded-lg w-[400px] bg-secondary p-3 shadow-lg transition duration-300 right-0',
+          'rounded-md w-[400px] bg-secondary p-3 shadow-lg transition duration-300 right-0',
         )}
         disableOnClickInside={false}
         isDim={false}

@@ -59,7 +59,7 @@ export default function AddressLookupTable({ }: {
                         })}
                         placeholder={`Address ${account.addresses.length + i + 1}`}
                         value={address}
-                        className={twMerge("pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-lg w-[90%] text-txtfade placeholder:text-txtfade")}
+                        className={twMerge("pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-md w-[90%] text-txtfade placeholder:text-txtfade")}
                         inputFontSize="0.8em"
                     />;
                 })}

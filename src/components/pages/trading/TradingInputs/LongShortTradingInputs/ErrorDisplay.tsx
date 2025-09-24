@@ -15,7 +15,7 @@ export const ErrorDisplay = ({ errorMessage, className }: ErrorDisplayProps) => 
     return (
         <AnimatePresence>
             <motion.div
-                className={twMerge("flex w-full relative overflow-hidden mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-30 rounded-xl", className)}
+                className={twMerge("flex w-full relative overflow-hidden mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-30 rounded-md", className)}
                 initial={{ opacity: 0, scaleY: 0 }}
                 animate={{ opacity: 1, scaleY: 1 }}
                 exit={{ opacity: 0, scaleY: 0 }}

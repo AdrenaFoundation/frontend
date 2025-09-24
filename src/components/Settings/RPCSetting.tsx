@@ -152,7 +152,7 @@ export default function RPCSettings({
               <div className="flex flex-row gap-2 items-center w-full mt-2">
                 <div
                   className={twMerge(
-                    'relative w-full  border border-white/20 rounded-lg bg-inputcolor overflow-hidden transition duration-300',
+                    'relative w-full  border border-white/20 rounded-md bg-inputcolor overflow-hidden transition duration-300',
                   )}
                 >
                   <input
@@ -162,7 +162,7 @@ export default function RPCSettings({
                       setEditCustomRpcUrl(e.target.value);
                     }}
                     className={twMerge(
-                      'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm font-mono rounded-lg bg-inputcolor transition duration-300',
+                      'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm font-mono rounded-md bg-inputcolor transition duration-300',
                     )}
                     placeholder="Custom RPC URL"
                   />

@@ -19,7 +19,7 @@ import { getAbbrevWalletAddress } from '@/utils';
 
 import Rank from './Rank';
 
-const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
+const numberDisplayClasses = 'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
 
 export default function FactionsWeeklyLeaderboard({
     team,

@@ -85,7 +85,7 @@ export default function MoreMenu({
             transition={{ duration: 0.2 }}
             id="more-menu"
             key="more-menu"
-            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-lg p-4 w-[37.5rem]">
+            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-md p-4 w-[37.5rem]">
             <div className="flex-1">
               <p className="text-sm mb-1 font-boldy opacity-50">Features</p>
               <div className="flex flex-col gap-3 flex-1">
@@ -93,7 +93,7 @@ export default function MoreMenu({
                   return (
                     <Link
                       className={twMerge(
-                        'flex flex-row items-center justify-between group border border-bcolor bg-transparent hover:bg-bcolor/20 p-2 pr-4 rounded-xl transition duration-300',
+                        'flex flex-row items-center justify-between group border border-bcolor bg-transparent hover:bg-bcolor/20 p-2 pr-4 rounded-md transition duration-300',
                         pathname === page.link
                           ? 'bg-bcolor/20 border-white/10'
                           : '',
@@ -141,7 +141,7 @@ export default function MoreMenu({
                   {EXTERNAL_LINKS.map((page) => {
                     return (
                       <Link
-                        className="flex flex-row items-center justify-between border border-bcolor p-2 bg-transparent hover:bg-bcolor/20 px-4 rounded-xl transition duration-300"
+                        className="flex flex-row items-center justify-between border border-bcolor p-2 bg-transparent hover:bg-bcolor/20 px-4 rounded-md transition duration-300"
                         href={page.link}
                         key={page.name}
                         target={page.external ? '_blank' : '_self'}
@@ -177,7 +177,7 @@ export default function MoreMenu({
                   {SOCIAlS_LINKS.map((page) => {
                     return (
                       <Link
-                        className="flex flex-row items-center justify-center border border-bcolor w-[2.5rem] h-[2.5rem] p-2 bg-transparent hover:bg-bcolor/20 rounded-xl transition duration-300"
+                        className="flex flex-row items-center justify-center border border-bcolor w-[2.5rem] h-[2.5rem] p-2 bg-transparent hover:bg-bcolor/20 rounded-md transition duration-300"
                         href={page.link}
                         key={page.name}
                         target="_blank"

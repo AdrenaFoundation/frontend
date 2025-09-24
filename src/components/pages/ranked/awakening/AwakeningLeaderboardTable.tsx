@@ -48,7 +48,7 @@ export default function AwakeningLeaderboardTable({
                     </div>
                 </Tippy>
 
-                {myDivision ? <div className='font-boldy text-xs bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center'>Your division</div> : null}
+                {myDivision ? <div className='font-boldy text-xs bg-yellow-900 bg-opacity-40 rounded-md border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center'>Your division</div> : null}
             </div>
 
             <div className="mt-3">

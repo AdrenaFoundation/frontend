@@ -90,7 +90,7 @@ export const NotificationItem = ({
     return (
         <div
             className={twMerge(
-                'relative p-4 border rounded-lg cursor-pointer transition-all duration-200',
+                'relative p-4 border rounded-md cursor-pointer transition-all duration-200',
                 'hover:bg-white/5 group',
                 colors.bg,
                 colors.border,

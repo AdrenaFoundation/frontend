@@ -50,7 +50,7 @@ export default function ALPSwapSell({
 
     return (
       collateralTokenCustodyLiquidity[
-        collateralTokenCustody.pubkey.toBase58()
+      collateralTokenCustody.pubkey.toBase58()
       ] * tokenPrice
     );
   }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity]);
@@ -287,7 +287,7 @@ export default function ALPSwapSell({
 
       <div
         className={twMerge(
-          'flex flex-col border bg-[#040D14] rounded-lg gap-0',
+          'flex flex-col border bg-[#040D14] rounded-md gap-0',
           className,
         )}
       >
@@ -317,7 +317,7 @@ export default function ALPSwapSell({
               </div>
             </div>
           ) : (
-            <div className="w-[9em] h-6 bg-gray-800 rounded-xl" />
+            <div className="w-[9em] h-6 bg-gray-800 rounded-md" />
           )}
         </div>
       </div>

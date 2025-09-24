@@ -65,7 +65,7 @@ export default function TradeComp({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full sm:bg-main flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg',
+        'sm:flex w-full sm:bg-main flex-col sm:flex-row lg:flex-col sm:border sm:rounded-md',
         isBigScreen ? 'mt-0 w-[30em]' : 'mt-4',
         className,
       )}

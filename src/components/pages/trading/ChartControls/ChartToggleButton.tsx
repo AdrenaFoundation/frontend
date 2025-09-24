@@ -16,7 +16,7 @@ export default function ChartToggleButton({
   className,
 }: ChartToggleButtonProps) {
   const baseClasses = twMerge(
-    'flex flex-row items-center gap-2 border p-1 px-2 cursor-pointer border-bcolor rounded-lg opacity-50 hover:opacity-100 transition-opacity duration-300 w-full sm:w-fit',
+    'flex flex-row items-center gap-2 border p-1 px-2 cursor-pointer border-bcolor rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 w-full sm:w-fit',
     isActive && 'opacity-100',
   );
 

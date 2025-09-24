@@ -29,7 +29,7 @@ export function PositionsBlocks({
 }) {
   if (positions === null && !connected) {
     return (
-      <div className="flex overflow-hidden bg-main/90 w-full border rounded-lg mt-4 h-[15em] items-center justify-center">
+      <div className="flex overflow-hidden bg-main/90 w-full border rounded-md mt-4 h-[15em] items-center justify-center">
         <WalletConnection connected={connected} />
       </div>
     );
@@ -40,7 +40,7 @@ export function PositionsBlocks({
       {positions === null && connected ? (
         <>
           {window.location.pathname === '/trade' ? (
-            <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
+            <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
               <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
                 Loading ...
               </div>
@@ -56,7 +56,7 @@ export function PositionsBlocks({
       {positions !== null && !positions.length ? (
         <>
           {window.location.pathname === '/trade' ? (
-            <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
+            <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
               <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
                 No opened position
               </div>

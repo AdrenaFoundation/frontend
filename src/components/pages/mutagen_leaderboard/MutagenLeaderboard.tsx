@@ -396,7 +396,7 @@ export default function MutagenLeaderboard({
       {userRow ? (
         <div
           className="
-                        relative flex flex-col gap-2 px-4 rounded-2xl
+                        relative flex flex-col gap-2 px-4 rounded-md
                         max-w-3xl mx-auto mb-6 mt-6 ml-2 mr-2 md:ml-auto md:mr-auto
                         bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
                         border border-mutagen/40

@@ -80,7 +80,7 @@ export default function SearchUserProfiles({
               <div className="p-4 pb-0 border-bcolor">
                 <div className="relative">
                   <InputString
-                    className="w-full pl-8 pr-4 py-2 bg-inputcolor border border-white/20 rounded-lg !text-sm font-mono"
+                    className="w-full pl-8 pr-4 py-2 bg-inputcolor border border-white/20 rounded-md !text-sm font-mono"
                     placeholder="Search by username or wallet address..."
                     value={searchQuery}
                     onChange={(value) => setSearchQuery(value || '')}
@@ -140,10 +140,10 @@ export default function SearchUserProfiles({
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
                             className={twMerge(
-                              'flex items-center gap-3 p-2 px-4 rounded-lg border border-bcolor hover:border-white/10 cursor-pointer transition-all duration-200',
+                              'flex items-center gap-3 p-2 px-4 rounded-md border border-bcolor hover:border-white/10 cursor-pointer transition-all duration-200',
                               'hover:bg-third/50 group',
                               loadingProfile === user.owner.toBase58() &&
-                                'opacity-50 pointer-events-none',
+                              'opacity-50 pointer-events-none',
                             )}
                             onClick={() =>
                               setSelectedProfile(user as UserProfileExtended)
@@ -153,7 +153,7 @@ export default function SearchUserProfiles({
                               <Image
                                 src={
                                   PROFILE_PICTURES[
-                                    user.profilePicture as keyof typeof PROFILE_PICTURES
+                                  user.profilePicture as keyof typeof PROFILE_PICTURES
                                   ] || PROFILE_PICTURES[0]
                                 }
                                 alt="Profile"

@@ -111,9 +111,9 @@ export default function Settings({
               }}
               leftIcon={EXPLORERS[exp].img}
               className={twMerge(
-                'justify-start transition duration-300 rounded-lg px-2 py-4 border border-bcolor hover:bg-third bg-third hover:opacity-100 hover:grayscale-0',
+                'justify-start transition duration-300 rounded-md px-2 py-4 border border-bcolor hover:bg-third bg-third hover:opacity-100 hover:grayscale-0',
                 exp !== settings.preferredSolanaExplorer &&
-                  'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
+                'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
               )}
               iconClassName="w-[20px] h-[20px]"
               variant="outline"
@@ -266,7 +266,7 @@ export default function Settings({
         </div>
       }
       openMenuClassName={twMerge(
-        'rounded-lg w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300',
+        'rounded-md w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300',
         isGenesis ? 'sm:right-0 right-[-175px]' : 'right-0',
       )}
       disableOnClickInside={true}

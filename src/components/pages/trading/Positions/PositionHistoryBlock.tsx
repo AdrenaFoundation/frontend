@@ -491,11 +491,11 @@ const PositionHistoryBlock = ({
               className="overflow-hidden flex w-full"
             >
               {events.length > 0 ? (
-                <div className="flex flex-col gap-3 w-full mt-4 p-3 bg-main rounded-xl border border-bcolor max-h-[20rem] overflow-y-auto">
+                <div className="flex flex-col gap-3 w-full mt-4 p-3 bg-main rounded-md border border-bcolor max-h-[20rem] overflow-y-auto">
                   {events.map((transaction: PositionTransaction) => (
                     <div
                       key={transaction.transactionId}
-                      className="w-fit rounded-xl border border-bcolor bg-secondary"
+                      className="w-fit rounded-md border border-bcolor bg-secondary"
                     >
                       <div className="flex flex-col lg:flex-row gap-6 items-center justify-between px-3 py-2.5">
                         <div className='flex flex-row gap-6'>

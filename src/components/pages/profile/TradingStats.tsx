@@ -139,7 +139,7 @@ export default function TradingStats({
             stat.nb ? (
               <li
                 key={stat.title}
-                className={twMerge("flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-lg",
+                className={twMerge("flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-md",
                   stat?.onClick && "cursor-pointer"
                 )}
                 onClick={stat?.onClick}

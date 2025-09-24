@@ -48,7 +48,7 @@ export default function ADXVoteAnimation() {
   }, [totalParticipants]);
 
   return (
-    <div className="relative flex flex-col items-center border border-bcolor rounded-2xl w-full lg:w-[400px] h-[500px] bg-[#0c1016]">
+    <div className="relative flex flex-col items-center border border-bcolor rounded-md w-full lg:w-[400px] h-[500px] bg-[#0c1016]">
       <h4 className="mt-4 font-mono text-sm">
         00:{30 - totalParticipants}s left
       </h4>
@@ -59,7 +59,7 @@ export default function ADXVoteAnimation() {
           </h2>
 
           <div
-            className="h-[200px] w-full bg-red bg-opacity-25 mt-auto p-2 rounded-xl transition-all duration-300"
+            className="h-[200px] w-full bg-red bg-opacity-25 mt-auto p-2 rounded-md transition-all duration-300"
             style={{
               height:
                 noCounter !== 0
@@ -67,7 +67,7 @@ export default function ADXVoteAnimation() {
                   : 10,
             }}
           >
-            <div className="h-full w-full bg-red rounded-lg" />
+            <div className="h-full w-full bg-red rounded-md" />
           </div>
         </div>
         <div className="w-full mt-auto">
@@ -75,7 +75,7 @@ export default function ADXVoteAnimation() {
             Yes <span>({yesCounter})</span>
           </h2>
           <div
-            className="h-[200px] w-full bg-green bg-opacity-25 mt-auto p-2 rounded-xl transition-all duration-300"
+            className="h-[200px] w-full bg-green bg-opacity-25 mt-auto p-2 rounded-md transition-all duration-300"
             style={{
               height:
                 yesCounter !== 0
@@ -83,7 +83,7 @@ export default function ADXVoteAnimation() {
                   : 10,
             }}
           >
-            <div className="h-full w-full bg-green rounded-lg" />
+            <div className="h-full w-full bg-green rounded-md" />
           </div>
         </div>
       </div>

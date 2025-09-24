@@ -100,7 +100,7 @@ export default function StakeTimerAnimation({
       </div>
       <div
         className={twMerge(
-          'relative flex flex-row items-center border border-bcolor bg-third justify-between  w-full p-2 md:p-4 rounded-lg transition duration-300',
+          'relative flex flex-row items-center border border-bcolor bg-third justify-between  w-full p-2 md:p-4 rounded-md transition duration-300',
         )}
       >
         <div className="flex flex-row items-center gap-3">

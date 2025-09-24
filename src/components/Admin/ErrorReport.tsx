@@ -102,7 +102,7 @@ export default function ErrorReport() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 border rounded-xl mt-8">
+    <div className="w-full max-w-4xl mx-auto p-4 border rounded-md mt-8">
       <h1 className="text-xl font-interSemibold mb-3 capitalize">
         Error Report Lookup
       </h1>
@@ -113,7 +113,7 @@ export default function ErrorReport() {
           placeholder="Enter error code"
           value={errorCode}
           onChange={(e) => setErrorCode(e.target.value)}
-          className="text-sm p-3 rounded-xl text-ellipsis font-mono outline-none w-full bg-inputcolor border border-white/10"
+          className="text-sm p-3 rounded-md text-ellipsis font-mono outline-none w-full bg-inputcolor border border-white/10"
         />
         <Button
           title="Search"
@@ -130,13 +130,13 @@ export default function ErrorReport() {
       )}
 
       {error && !loading && (
-        <div className="text-sm border border-red text-redbright rounded-lg p-4 mb-4">
+        <div className="text-sm border border-red text-redbright rounded-md p-4 mb-4">
           {error}
         </div>
       )}
 
       {reportData && !loading && (
-        <div className="bg-[#08141E] border border-[#1A2938] rounded-xl p-4 mt-8">
+        <div className="bg-[#08141E] border border-[#1A2938] rounded-md p-4 mt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <h2 className="text-lg font-interSemibold mb-2 text-white">
@@ -260,7 +260,7 @@ export default function ErrorReport() {
             <h2 className="text-lg font-interSemibold mb-2 text-white">
               Error Message
             </h2>
-            <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor whitespace-pre-wrap font-mono text-sm text-red-300">
+            <div className="bg-[#040D14] p-4 rounded-md border border-bcolor whitespace-pre-wrap font-mono text-sm text-red-300">
               {reportData.error_message}
             </div>
           </div>
@@ -269,7 +269,7 @@ export default function ErrorReport() {
             <h2 className="text-lg font-semibold mb-2 text-white">
               Console Logs
             </h2>
-            <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor overflow-auto max-h-[18.75rem] overscroll-contain">
+            <div className="bg-[#040D14] p-4 rounded-md border border-bcolor overflow-auto max-h-[18.75rem] overscroll-contain">
               {formatConsoleLogs(reportData.console_log as unknown as string)}
             </div>
           </div>
@@ -279,7 +279,7 @@ export default function ErrorReport() {
               <h2 className="text-lg font-semibold mb-2 text-white">
                 Recent API Requests
               </h2>
-              <div className="bg-[#040D14] p-4 rounded-xl border border-bcolor overflow-auto max-h-[18.75rem overscroll-contain">
+              <div className="bg-[#040D14] p-4 rounded-md border border-bcolor overflow-auto max-h-[18.75rem overscroll-contain">
                 <pre className="text-xs font-mono">
                   {JSON.stringify(reportData.recent_post_data, null, 2)}
                 </pre>

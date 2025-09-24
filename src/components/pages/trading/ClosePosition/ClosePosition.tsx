@@ -527,7 +527,7 @@ export default function ClosePosition({
               </p>
 
               <div className="flex flex-col gap-2">
-                <div className="flex flex-row items-center justify-between border bg-third rounded-lg p-3">
+                <div className="flex flex-row items-center justify-between border bg-third rounded-md p-3">
                   <InputNumber
                     value={customAmount ?? (activePercent === 1 ? calculatePercentage(1) ?? undefined : undefined)}
                     placeholder={
@@ -551,7 +551,7 @@ export default function ClosePosition({
                         variant="secondary"
                         rounded={false}
                         className={twMerge(
-                          'flex-grow text-xs bg-third border border-bcolor text-opacity-50 hover:text-opacity-100 hover:border-white/10 rounded-lg flex-1 font-mono',
+                          'flex-grow text-xs bg-third border border-bcolor text-opacity-50 hover:text-opacity-100 hover:border-white/10 rounded-md flex-1 font-mono',
                           percent / 100 === activePercent &&
                           'border-white/10 text-opacity-100',
                         )}
@@ -596,7 +596,7 @@ export default function ClosePosition({
                   </div>
                 ) : null}
               </div>
-              <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-4 py-2.5">
+              <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-md p-4 py-2.5">
                 <div className="flex flex-col">
                   <FormatNumber
                     nb={
@@ -748,7 +748,7 @@ export default function ClosePosition({
                 Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
               </div>
 
-              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
+              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md my-3">
                 <div className="w-full flex justify-between">
                   <div className="flex gap-2 items-center">
                     <Image
@@ -808,7 +808,7 @@ export default function ClosePosition({
                 </div>
               </div>
 
-              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-4">
+              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md mt-4">
                 <ValueDisplay
                   label="Size"
                   value={position.sizeUsd}
@@ -912,7 +912,7 @@ export default function ClosePosition({
               </div>
 
               {showFees && (
-                <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-2">
+                <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md mt-2">
                   <div className={rowStyle}>
                     <div className="flex items-center text-sm text-txtfade">
                       Exit Fees

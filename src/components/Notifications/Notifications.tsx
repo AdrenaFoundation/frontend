@@ -85,9 +85,9 @@ export const Notifications = ({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             key={'dialect-notification'}
-            className="w-full rounded-2xl border border-white/10 bg-main mb-3 p-1"
+            className="w-full rounded-md border border-white/10 bg-main mb-3 p-1"
           >
-            <div className="w-full rounded-xl border border-[#414E5E]/75 bg-[#050505] p-3">
+            <div className="w-full rounded-md border border-[#414E5E]/75 bg-[#050505] p-3">
               <div>
                 <div className="flex flex-row items-center justify-between">
                   <Image
@@ -139,7 +139,7 @@ export const Notifications = ({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             key={'enable-adrena-notifications'}
-            className="flex flex-row  items-center justify-between w-full rounded-xl border border-white/10 bg-main mb-3 p-3"
+            className="flex flex-row  items-center justify-between w-full rounded-md border border-white/10 bg-main mb-3 p-3"
           >
             <p className="text-sm font-boldy">Enable in-app notifications</p>
             <Button

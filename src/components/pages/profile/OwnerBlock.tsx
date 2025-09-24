@@ -175,7 +175,7 @@ export default function OwnerBloc({
             !updatingMetadata.favoriteAchievements?.includes(achievement.index),
         ) ||
         currentFavoriteAchievements.length !==
-          (updatingMetadata.favoriteAchievements?.length ?? 0);
+        (updatingMetadata.favoriteAchievements?.length ?? 0);
 
       if (isNewChanges) {
         updateFavoriteAchievements?.(
@@ -497,9 +497,9 @@ export default function OwnerBloc({
                   ACHIEVEMENTS.find(
                     (achievement) => achievement.titleUnlock === index,
                   ) &&
-                  ACHIEVEMENTS.find(
-                    (achievement) => achievement.titleUnlock === index,
-                  )?.title
+                    ACHIEVEMENTS.find(
+                      (achievement) => achievement.titleUnlock === index,
+                    )?.title
                     ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
                     : 'Unlocked by default'
                 }
@@ -815,7 +815,7 @@ export default function OwnerBloc({
               </div>
 
               <InputString
-                className="font-boldy text-xl relative p-3 border rounded-lg text-center"
+                className="font-boldy text-xl relative p-3 border rounded-md text-center"
                 value={updatedNickname ?? ''}
                 onChange={setUpdatedNickname}
                 placeholder="The Great Trader"
@@ -826,30 +826,30 @@ export default function OwnerBloc({
               <div className="h-[1em]">
                 {(trimmedUpdatedNickname &&
                   trimmedUpdatedNickname.length < 3) ||
-                !trimmedUpdatedNickname ? (
+                  !trimmedUpdatedNickname ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
                     Nickname must be at least 3 characters
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
+                  typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
                   'undefined' &&
-                trimmedUpdatedNickname.length > 3 ? (
+                  trimmedUpdatedNickname.length > 3 ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
                     Checking nickname availability...
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
+                  alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">
                     Nickname is already taken
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
+                  alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">
                     Nickname is available
                   </div>
@@ -973,18 +973,18 @@ export default function OwnerBloc({
                         {currentAchievements.map((achievement) => (
                           <div
                             className={twMerge(
-                              'relative flex flex-row gap-3 items-center border-4 p-3 rounded-lg cursor-pointer transition duration-200 overflow-hidden',
+                              'relative flex flex-row gap-3 items-center border-4 p-3 rounded-md cursor-pointer transition duration-200 overflow-hidden',
                               updatingMetadata.favoriteAchievements?.includes(
                                 achievement.index,
                               )
                                 ? 'border-yellow-400/80'
                                 : 'border-[#ffffff20] grayscale',
                               updatingMetadata.favoriteAchievements?.length ===
-                                3 &&
-                                !updatingMetadata.favoriteAchievements.includes(
-                                  achievement.index,
-                                ) &&
-                                'opacity-20 hover:opacity-20 cursor-disabled',
+                              3 &&
+                              !updatingMetadata.favoriteAchievements.includes(
+                                achievement.index,
+                              ) &&
+                              'opacity-20 hover:opacity-20 cursor-disabled',
                             )}
                             onClick={() => {
                               if (
@@ -1001,15 +1001,15 @@ export default function OwnerBloc({
                                 favoriteAchievements:
                                   u.favoriteAchievements !== null
                                     ? u.favoriteAchievements.includes(
-                                        achievement.index,
-                                      )
+                                      achievement.index,
+                                    )
                                       ? u.favoriteAchievements?.filter(
-                                          (a) => a !== achievement.index,
-                                        )
+                                        (a) => a !== achievement.index,
+                                      )
                                       : [
-                                          ...u.favoriteAchievements,
-                                          achievement.index,
-                                        ]
+                                        ...u.favoriteAchievements,
+                                        achievement.index,
+                                      ]
                                     : null,
                               }));
                             }}
@@ -1020,7 +1020,7 @@ export default function OwnerBloc({
                               achievement={
                                 achievement as AchievementInfoExtended
                               }
-                              className="absolute -top-9 scale-[1.5] w-full rounded-lg opacity-20"
+                              className="absolute -top-9 scale-[1.5] w-full rounded-md opacity-20"
                               key={`achievement-${achievement.index}`}
                             />
                             <div className="relative z-20">

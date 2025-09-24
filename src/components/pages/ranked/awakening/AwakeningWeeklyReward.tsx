@@ -127,7 +127,7 @@ TicketCount.displayName = 'TicketCount';
 const RewardCard = memo(({ award, handleProfileView }: { award: Award; handleProfileView: (address: string) => void }) => (
     <div
         className={twMerge(
-            'flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl grow relative',
+            'flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl grow relative',
         )}
     >
         {award.type === 'ticket' && <TicketBackground />}
@@ -173,7 +173,7 @@ const RewardCard = memo(({ award, handleProfileView }: { award: Award; handlePro
                 </>
             )}
 
-            <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
+            <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-md p-2 px-3 sm:px-8">
                 <Image
                     src={award.rewardImage}
                     alt="adx logo"

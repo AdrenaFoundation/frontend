@@ -145,7 +145,7 @@ export default function TableLegacy({
           className={twMerge(
             'flex w-full border border-transparent text-base pl-1 relative',
             rowHovering
-              ? 'hover:bg-secondary hover:border-bcolor rounded-lg transition duration-300'
+              ? 'hover:bg-secondary hover:border-bcolor rounded-md transition duration-300'
               : '',
             rowClassName,
             specificRowClassName,

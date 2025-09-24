@@ -120,7 +120,7 @@ export default function CompetitionBanner({
                 </div>}
 
                 {startDate && startDate.getTime() >= Date.now() ? (
-                    <ul className="flex flex-row gap-3 md:gap-9 mt-2 px-6 md:px-9 p-3 bg-black/40 rounded-lg z-10">
+                    <ul className="flex flex-row gap-3 md:gap-9 mt-2 px-6 md:px-9 p-3 bg-black/40 rounded-md z-10">
                         <li className="flex flex-col items-center justify-center">
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {days >= 0 ? days : '–'}
@@ -162,7 +162,7 @@ export default function CompetitionBanner({
                 {(adxRewards + jtoRewards + bonkRewards + usdcRewards) > 0 ? <div className='flex flex-col mt-8 z-10 items-center'>
                     <div className='text-xs font-thin text-txtfade'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
 
-                    <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-lg flex-col')}>
+                    <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-md flex-col')}>
                         {seasonName === 'factions'
                             ? <FormatNumber
                                 format='currency'
@@ -196,7 +196,7 @@ export default function CompetitionBanner({
                                     />
                                 )}
 
-                        <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
+                        <div className='flex gap-1 rounded-md pt-2 pb-2 pl-4 pr-4'>
                             {seasonName === 'anniversary' ?
                                 <div className="text-xs text-txtfade uppercase">Distributed in ADX</div>
                                 : null}

@@ -287,7 +287,7 @@ export default function StakingStats({
               <h3 className="text-xl font-medium text-white">Export by Year</h3>
               <div className="flex items-center gap-3">
                 <label className="text-xs text-white/60">Year:</label>
-                <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                   <Select
                     selected={String(exportOptions.year || getCurrentYear())}
                     onSelect={(value: string) => {
@@ -401,7 +401,7 @@ export default function StakingStats({
 
       <div
         className={twMerge(
-          'm-3 rounded-lg border border-bcolor overflow-hidden bg-[#040D14]',
+          'm-3 rounded-md border border-bcolor overflow-hidden bg-[#040D14]',
           className,
         )}
       >
@@ -495,7 +495,7 @@ export default function StakingStats({
           </div>
           <div className="flex flex-col gap-4 p-3 sm:basis-2/3">
             <div className="flex flex-row items-center gap-2">
-              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1 gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-md p-2 flex-1 gap-2">
                 <p className="opacity-50 text-sm">Liquid Staked</p>{' '}
                 <FormatNumber
                   nb={liquidStakedADX}
@@ -508,7 +508,7 @@ export default function StakingStats({
                   }
                 />
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1 gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-md p-2 flex-1 gap-2">
                 <p className="opacity-50 text-sm">Locked Staked ADX</p>{' '}
                 <FormatNumber
                   nb={lockedStakedADX}

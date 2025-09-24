@@ -56,10 +56,10 @@ export const InputSection = ({
       </div>
 
       <div className="flex">
-        <div className="flex flex-col border rounded-lg w-full bg-inputcolor border-white/10 relative">
+        <div className="flex flex-col border rounded-md w-full bg-inputcolor border-white/10 relative">
           <TradingInput
             className="text-sm rounded-full"
-            inputClassName="border-0 tr-rounded-lg bg-inputcolor"
+            inputClassName="border-0 tr-rounded-md bg-inputcolor"
             value={inputA}
             subText={
               priceA ? (

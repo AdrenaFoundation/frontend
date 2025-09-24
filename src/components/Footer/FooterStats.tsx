@@ -126,8 +126,8 @@ export default function FooterStats({
     try {
       const response = await fetch(
         `${CHAOS_API_ENDPOINT}/trading-view/data?feed=${token}USD&type=1H&from=${
-          // past 24 hours
-          Math.floor(Date.now() / 1000) - 24 * 60 * 60
+        // past 24 hours
+        Math.floor(Date.now() / 1000) - 24 * 60 * 60
         }&till=${Date.now()}`,
       );
 
@@ -351,11 +351,11 @@ export default function FooterStats({
             animate={{ opacity: 1, y: '-2.5rem' }}
             exit={{ opacity: 0, y: '-2rem' }}
             transition={{ duration: 0.3 }}
-            className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col bg-secondary border border-inputcolor rounded-lg z-50 p-2"
+            className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col bg-secondary border border-inputcolor rounded-md z-50 p-2"
           >
             <div
               className={twMerge(
-                'relative flex flex-row items-center justify-between gap-3 p-3 transition-opacity duration-300 border border-inputcolor rounded-lg',
+                'relative flex flex-row items-center justify-between gap-3 p-3 transition-opacity duration-300 border border-inputcolor rounded-md',
                 isTokenDataLoading
                   ? 'opacity-30 pointer-events-none cursor-not-allowed'
                   : '',
@@ -378,8 +378,8 @@ export default function FooterStats({
                       />
                     </div>
                   }
-                  openMenuClassName="top-3 rounded-lg"
-                  bgClassName="rounded-lg fixed"
+                  openMenuClassName="top-3 rounded-md"
+                  bgClassName="rounded-md fixed"
                   isDim
                 >
                   <MenuItems>
@@ -458,9 +458,9 @@ export default function FooterStats({
                   </p>
                   <AnimatePresence mode="wait">
                     {custodyLiquidity !== null &&
-                    tokenPrice &&
-                    custody &&
-                    !isTokenDataLoading ? (
+                      tokenPrice &&
+                      custody &&
+                      !isTokenDataLoading ? (
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -485,7 +485,7 @@ export default function FooterStats({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-lg"
+                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
                       />
                     )}
                   </AnimatePresence>
@@ -514,7 +514,7 @@ export default function FooterStats({
               </ResponsiveContainer>
             </div>
 
-            <div className="flex flex-col border border-inputcolor rounded-lg overflow-hidden mt-3">
+            <div className="flex flex-col border border-inputcolor rounded-md overflow-hidden mt-3">
               <div
                 className="flex flex-row items-center justify-between gap-3 p-3 border-inputcolor hover:bg-third transition duration-300"
                 onClick={() => {

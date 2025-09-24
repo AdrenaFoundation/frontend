@@ -310,7 +310,7 @@ export default function WalletDigger({
               value={targetWallet ?? ''}
               onChange={setTargetWallet}
               placeholder="i.e 9zXR1TckFZRt6aVnJZfJ4JrG6WQFr4YZ3ouAgz9AcfST"
-              className="text-center w-[40em] max-w-full bg-inputcolor border rounded-xl p-2"
+              className="text-center w-[40em] max-w-full bg-inputcolor border rounded-md p-2"
               inputFontSize="0.7em"
             />
 
@@ -342,7 +342,7 @@ export default function WalletDigger({
         {targetWalletPubkey ? (
           <StyledContainer className="p-2 w-full" bodyClassName="gap-1">
             <UserRelatedAdrenaAccounts
-              className="h-auto flex mt-auto rounded-lg"
+              className="h-auto flex mt-auto rounded-md"
               userProfile={userProfile ?? false}
               userVest={userVest ? userVest : null}
               positions={positions}
@@ -417,10 +417,10 @@ export default function WalletDigger({
 
               {isLoadingClaimHistoryAdx && isLoadingClaimHistoryAlp ? (
                 <>
-                  <div className="flex-col w-full rounded-lg p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
+                  <div className="flex-col w-full rounded-md p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
                     <Loader />
                   </div>
-                  <div className="flex-col w-full rounded-lg p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
+                  <div className="flex-col w-full rounded-md p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
                     <Loader />
                   </div>
                 </>

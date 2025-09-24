@@ -102,7 +102,7 @@ export default function DateSelector({
             transition={{ duration: 0.3 }}
             className="flex items-center gap-2"
           >
-            <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+            <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
               <DatePicker
                 selected={new Date(startDate)}
                 onChange={(date: Date | null) => {
@@ -116,7 +116,7 @@ export default function DateSelector({
               />
             </div>
             <span className="text-xs text-gray-500">to</span>
-            <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+            <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
               <DatePicker
                 selected={new Date(endDate)}
                 onChange={(date: Date | null) => {

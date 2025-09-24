@@ -17,13 +17,13 @@ export default function QuestComp({
     return (
         <div
             className={twMerge(
-                'flex flex-col gap-3 bg-[#07131D] border p-5 rounded-lg',
+                'flex flex-col gap-3 bg-[#07131D] border p-5 rounded-md',
                 className,
             )}
         >
             {quest.title ? (
                 <div className="flex flex-row items-center">
-                    <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
+                    <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-md w-full border-r-0 rounded-r-none h-[42px]">
                         <p className="font-archivoblack text-lg">{quest.title}</p>
                     </div>
                     <Image
@@ -51,7 +51,7 @@ export default function QuestComp({
                             >
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
-                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
+                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-md w-full border-r-0 rounded-r-none h-[42px]">
                                             <p className="font-archivoblack text-lg">{task.title}</p>
                                         </div>
                                         <Image
@@ -96,7 +96,7 @@ export default function QuestComp({
                             >
                                 {task.title ? (
                                     <div className="flex flex-row items-center">
-                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-lg w-full border-r-0 rounded-r-none h-[42px]">
+                                        <div className="bg-[#0D1923] border border-white/5 p-2 px-4 rounded-md w-full border-r-0 rounded-r-none h-[42px]">
                                             <p className="font-archivoblack text-lg">{task.title}</p>
                                         </div>
                                         <Image

@@ -110,7 +110,7 @@ export default function QuestMenu({
                     setIsOpen(!isOpen);
                 }} />
 
-                <div className="p-3 z-10 -translate-x-3 rounded-lg">
+                <div className="p-3 z-10 -translate-x-3 rounded-md">
                     <p className="font-archivoblack uppercase bg-[#8DC52E]/70 px-1 mb-2 text-white w-fit">
                         Season 1: Expanse
                     </p>
@@ -298,7 +298,7 @@ export default function QuestMenu({
                     <motion.div
                         key="open-state"
                         ref={ref}
-                        className="fixed flex flex-col items-center rounded-lg overflow-hidden border shadow-2xl z-30"
+                        className="fixed flex flex-col items-center rounded-md overflow-hidden border shadow-2xl z-30"
                         initial={{
                             left: 0,
                             bottom: 0,

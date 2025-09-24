@@ -13,7 +13,7 @@ export default function ADXDetails({ className }: { className?: string }) {
       <ADXHeader />
 
       <div>
-        <div className="flex flex-col gap-3 p-4 border rounded-xl">
+        <div className="flex flex-col gap-3 p-4 border rounded-md">
           <div className="flex flex-col justify-between">
             <div>
               <p className="text-sm opacity-75">

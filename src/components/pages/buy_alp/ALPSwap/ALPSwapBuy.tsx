@@ -348,7 +348,7 @@ export default function ALPSwapBuy({
 
           <div
             className={twMerge(
-              'flex flex-col border bg-[#040D14] rounded-lg gap-0',
+              'flex flex-col border bg-[#040D14] rounded-md gap-0',
               className,
             )}
           >
@@ -386,7 +386,7 @@ export default function ALPSwapBuy({
                   </div>
                 </div>
               ) : (
-                <div className="w-[9em] h-6 bg-gray-800 rounded-xl" />
+                <div className="w-[9em] h-6 bg-gray-800 rounded-md" />
               )}
             </div>
           </div>
