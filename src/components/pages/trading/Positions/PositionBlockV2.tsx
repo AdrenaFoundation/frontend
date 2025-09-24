@@ -30,7 +30,7 @@ interface PositionBlockProps {
   triggerEditPositionCollateral?: (p: PositionExtended) => void;
   readOnly?: boolean;
   setTokenB: (token: Token) => void;
-  setShareClosePosition: (p: PositionExtended) => void;
+  setShareClosePosition?: (p: PositionExtended) => void;
 }
 
 export default function PositionBlockV2({
@@ -305,7 +305,7 @@ export default function PositionBlockV2({
 
             <div
               className="flex flex-row items-center gap-3 p-2.5 px-3 lg:border-r border-r-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300 flex-none"
-              onClick={() => setShareClosePosition(position)}
+              onClick={() => setShareClosePosition?.(position)}
             >
               <Image
                 src={shareIcon}
