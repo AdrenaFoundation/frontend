@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
@@ -52,7 +53,6 @@ export default function TradingChartHeaderStats({
   const [tokenColor, setTokenColor] = useState<
     'text-white' | 'text-green' | 'text-redbright'
   >('text-white');
-  // Use the passed state or create local state as fallback
   const [localIsStatsExpanded, setLocalIsStatsExpanded] = useState(false);
   const statsExpanded =
     isStatsExpanded !== undefined ? isStatsExpanded : localIsStatsExpanded;
@@ -110,7 +110,6 @@ export default function TradingChartHeaderStats({
 
   const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
 
-  // If showing only expanded stats, render only that section
   if (showExpandedStatsOnly) {
     return (
       <div className="sm:hidden">
@@ -146,14 +145,23 @@ export default function TradingChartHeaderStats({
                   '-'
                 )}
               </span>
-              <span className="text-txtfade">
-                Bor. R.{' '}
-                <span className="text-white font-mono ml-1">
-                  {borrowingRate !== null
-                    ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                    : '-'}
+              <Tippy
+                content={
+                  <div className="text-sm">
+                    Hourly borrow rate in % of position size
+                  </div>
+                }
+                placement="bottom"
+              >
+                <span className="text-txtfade cursor-help">
+                  B.Rate{' '}
+                  <span className="text-white font-mono ml-1">
+                    {borrowingRate !== null
+                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                      : '-'}
+                  </span>
                 </span>
-              </span>
+              </Tippy>
             </div>
           </div>
         )}
@@ -161,7 +169,6 @@ export default function TradingChartHeaderStats({
     );
   }
 
-  // If showing only main line, render price + % + expand button
   if (showMainLineOnly) {
     return (
       <div className="flex items-center gap-3 sm:hidden">
@@ -213,7 +220,7 @@ export default function TradingChartHeaderStats({
         className,
       )}
     >
-      {/* Mobile: Expandable stats layout - hide when compact */}
+      {/* Mobile: Expandable stats layout */}
       <div
         className={twMerge(
           'flex flex-col w-full',
@@ -302,14 +309,23 @@ export default function TradingChartHeaderStats({
                   '-'
                 )}
               </span>
-              <span className="text-txtfade">
-                Bor. R.{' '}
-                <span className="text-white font-mono ml-1">
-                  {borrowingRate !== null
-                    ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                    : '-'}
+              <Tippy
+                content={
+                  <div className="text-sm">
+                    Hourly borrow rate in % of position size
+                  </div>
+                }
+                placement="bottom"
+              >
+                <span className="text-txtfade cursor-help">
+                  B.Rate{' '}
+                  <span className="text-white font-mono ml-1">
+                    {borrowingRate !== null
+                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                      : '-'}
+                  </span>
                 </span>
-              </span>
+              </Tippy>
             </div>
           </div>
         )}
@@ -409,14 +425,23 @@ export default function TradingChartHeaderStats({
                     '-'
                   )}
                 </span>
-                <span className="text-txtfade">
-                  Bor. R.{' '}
-                  <span className="text-white font-mono ml-1">
-                    {borrowingRate !== null
-                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                      : '-'}
+                <Tippy
+                  content={
+                    <div className="text-sm">
+                      Hourly borrow rate in % of position size
+                    </div>
+                  }
+                  placement="bottom"
+                >
+                  <span className="text-txtfade cursor-help">
+                    B.Rate{' '}
+                    <span className="text-white font-mono ml-1">
+                      {borrowingRate !== null
+                        ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                        : '-'}
+                    </span>
                   </span>
-                </span>
+                </Tippy>
               </div>
             </div>
           )}
@@ -517,9 +542,18 @@ export default function TradingChartHeaderStats({
               statsClassName,
             )}
           >
-            <span className="font-mono text-sm sm:text-xs text-txtfade text-right">
-              Bor. R.
-            </span>
+            <Tippy
+              content={
+                <div className="text-sm">
+                  Hourly borrow rate in % of position size
+                </div>
+              }
+              placement="bottom"
+            >
+              <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
+                B.Rate
+              </span>
+            </Tippy>
             <span className="font-mono text-sm sm:text-xs text-white mr-1">
               {borrowingRate !== null
                 ? `${(borrowingRate * 100).toFixed(4)}%/h`
