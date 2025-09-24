@@ -104,7 +104,7 @@ export default function ViewTabs({
                                 totalStats.totalPnL < 0 ? 'text-redbright text-xs' : 'text-green text-xs',
                             )}
                             className={
-                                twMerge(totalStats.totalPnL < 0 ? 'text-redbright text-xs' : 'text-green text-xs')
+                                twMerge('font-monobold', totalStats.totalPnL < 0 ? 'text-redbright text-xs' : 'text-green text-xs')
                             }
                             isDecimalDimmed={false}
                         />
