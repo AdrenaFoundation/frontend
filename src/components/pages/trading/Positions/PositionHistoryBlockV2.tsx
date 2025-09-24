@@ -121,7 +121,7 @@ export default function PositionHistoryBlockV2({
             showDivider={false}
           />
         ) : (
-          <div className="flex flex-row flex-wrap md:grid md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[auto_2fr_1fr_1fr_auto] gap-3 p-2 border-b">
+          <div className="flex flex-row flex-wrap md:grid md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[auto_2fr_1fr_1fr_auto] gap-1 p-1 border-b">
             <PositionDetail
               data={[
                 {
