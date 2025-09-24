@@ -74,6 +74,7 @@ export default function CompetitionBanner({
                                     backgroundOrigin: 'border-box',
                                     backgroundPosition: 'center 20%'
                                 }}
+                            // eslint-disable-next-line @next/next/no-img-element
                             /> : <img
                                 src={banner}
                                 alt="competition banner"

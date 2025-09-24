@@ -47,6 +47,7 @@ export default function SeasonNavigator({
                             backgroundOrigin: 'border-box',
                             backgroundPosition: 'center 20%'
                         }}
+                    // eslint-disable-next-line @next/next/no-img-element
                     /> : <img
                         src={TRADING_COMPETITION_SEASONS[season].img}
                         alt="competition banner"
