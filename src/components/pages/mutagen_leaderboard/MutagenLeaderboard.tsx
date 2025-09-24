@@ -112,7 +112,7 @@ export default function MutagenLeaderboard({
               <p
                 key={`trader-${i}`}
                 className={twMerge(
-                  'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
+                  'text-xs font-semibold hover:underline transition duration-300 cursor-pointer',
                 )}
                 onClick={() => {
                   onClickUserProfile(d.userWallet);
@@ -126,7 +126,7 @@ export default function MutagenLeaderboard({
               <p
                 key={`trader-${i}`}
                 className={twMerge(
-                  'text-xs font-boldy hover:underline transition duration-300 cursor-pointer text-txtfade',
+                  'text-xs font-semibold hover:underline transition duration-300 cursor-pointer text-txtfade',
                 )}
                 onClick={() => {
                   onClickUserProfile(d.userWallet);
@@ -137,7 +137,7 @@ export default function MutagenLeaderboard({
             )}
 
             {d.title !== null ? (
-              <div className="text-[0.68em] font-boldy text-txtfade truncate max-w-[6rem]">
+              <div className="text-[0.68em] font-semibold text-txtfade truncate max-w-[6rem]">
                 {USER_PROFILE_TITLES[d.title]}
               </div>
             ) : null}
@@ -154,7 +154,7 @@ export default function MutagenLeaderboard({
             <FormatNumber
               prefix="$"
               nb={d.totalVolume}
-              className="text-xs font-boldy"
+              className="text-xs font-semibold"
               precision={2}
               isDecimalDimmed={false}
               format="currency"
@@ -173,7 +173,7 @@ export default function MutagenLeaderboard({
           >
             <FormatNumber
               nb={d.pointsTrading}
-              className="text-xs font-boldy text-[#e47dbb]"
+              className="text-xs font-semibold text-[#e47dbb]"
               precision={d.pointsTrading && d.pointsTrading >= 50 ? 0 : 2}
               isDecimalDimmed={false}
             />
@@ -189,7 +189,7 @@ export default function MutagenLeaderboard({
           >
             <FormatNumber
               nb={d.pointsMutations}
-              className="text-xs font-boldy text-[#e47dbb]"
+              className="text-xs font-semibold text-[#e47dbb]"
               precision={d.pointsMutations && d.pointsMutations >= 50 ? 0 : 2}
               isDecimalDimmed={false}
             />
@@ -205,7 +205,7 @@ export default function MutagenLeaderboard({
           >
             <FormatNumber
               nb={d.pointsQuests}
-              className="text-xs font-boldy text-[#e47dbb]"
+              className="text-xs font-semibold text-[#e47dbb]"
               precision={d.pointsQuests && d.pointsQuests >= 50 ? 0 : 2}
               isDecimalDimmed={false}
             />
@@ -221,7 +221,7 @@ export default function MutagenLeaderboard({
           >
             <FormatNumber
               nb={d.pointsStreaks}
-              className="text-xs font-boldy text-[#e47dbb]"
+              className="text-xs font-semibold text-[#e47dbb]"
               precision={d.pointsStreaks && d.pointsStreaks >= 50 ? 0 : 2}
               isDecimalDimmed={false}
             />
@@ -236,7 +236,7 @@ export default function MutagenLeaderboard({
         >
           <FormatNumber
             nb={d.totalPoints}
-            className="text-xs font-boldy text-[#e47dbb]"
+            className="text-xs font-semibold text-[#e47dbb]"
             precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
             isDecimalDimmed={false}
           />
@@ -396,7 +396,7 @@ export default function MutagenLeaderboard({
       {userRow ? (
         <div
           className="
-                        relative flex flex-col gap-2 px-4 rounded-2xl
+                        relative flex flex-col gap-2 px-4 rounded-md
                         max-w-3xl mx-auto mb-6 mt-6 ml-2 mr-2 md:ml-auto md:mr-auto
                         bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
                         border border-mutagen/40
@@ -434,33 +434,33 @@ export default function MutagenLeaderboard({
             )}
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-3">
-                <span className="font-boldy text-white text-xl truncate flex-1 min-w-0">
+                <span className="font-semibold text-white text-xl truncate flex-1 min-w-0">
                   {userRow.nickname}
                 </span>
                 {userRow.title !== null && (
-                  <span className="text-xs font-boldy text-txtfade md:hidden lg:flex hidden flex-shrink-0 whitespace-normal leading-tight">
+                  <span className="text-xs font-semibold text-txtfade md:hidden lg:flex hidden flex-shrink-0 whitespace-normal leading-tight">
                     &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
                   </span>
                 )}
-                <span className="font-boldy text-txtfade text-xl flex-shrink-0">
+                <span className="font-semibold text-txtfade text-xl flex-shrink-0">
                   |
                 </span>
-                <span className="font-boldy text-white text-xl sm:flex hidden flex-shrink-0">
+                <span className="font-semibold text-white text-xl sm:flex hidden flex-shrink-0">
                   Rank:
                 </span>
-                <span className="text-sm font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow flex-shrink-0">
+                <span className="text-sm font-semibold text-white bg-mutagen/40 px-3 py-1 rounded-full shadow flex-shrink-0">
                   #{userRow.rank}
                 </span>
-                <span className="font-boldy text-txtfade text-xl flex-shrink-0">
+                <span className="font-semibold text-txtfade text-xl flex-shrink-0">
                   |
                 </span>
-                <span className="font-boldy text-white text-xl sm:flex hidden flex-shrink-0">
+                <span className="font-semibold text-white text-xl sm:flex hidden flex-shrink-0">
                   Mutagen:
                 </span>
-                <span className="text-xl font-boldy text-mutagen sm:flex hidden flex-shrink-0">
+                <span className="text-xl font-semibold text-mutagen sm:flex hidden flex-shrink-0">
                   {formatNumber(userRow.totalPoints, 2, 0)}
                 </span>
-                <span className="text-xl font-boldy text-mutagen sm:hidden flex items-center flex-shrink-0">
+                <span className="text-xl font-semibold text-mutagen sm:hidden flex items-center flex-shrink-0">
                   <img
                     src="https://app.adrena.xyz/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fneedle.fd8822dd.png&w=64&q=75"
                     alt="Mutagen"

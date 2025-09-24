@@ -9,14 +9,14 @@ export default function BuyADX({ connected, adapters, activeRpc }: PageProps) {
     <>
       <div className="flex flex-col gap-4 mt-4 w-full max-w-[1300px] m-auto">
         <div className="flex flex-col lg:flex-row justify-between gap-4 ml-4 mr-4">
-          <ADXDetails className="relative z-10 bg-secondary p-3 sm:p-5 rounded-xl border basis-4/6 sm:h-fit" />
+          <ADXDetails className="relative z-10 bg-secondary p-3 sm:p-5 rounded-md border basis-4/6 sm:h-fit" />
 
           <div className="basis-2/6 flex flex-col gap-4 max-w-[30rem] mx-auto">
             <ADXSwap
               connected={connected}
               adapters={adapters}
               activeRpc={activeRpc}
-              className="relative z-10 bg-secondary p-3 sm:p-2 rounded-xl border h-fit"
+              className="relative z-10 bg-secondary p-3 sm:p-2 rounded-md border h-fit"
             />
           </div>
         </div>

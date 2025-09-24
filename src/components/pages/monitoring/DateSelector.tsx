@@ -59,7 +59,7 @@ export default function DateSelector({
         }}
         reversed={true}
         className="flex items-center"
-        selectedTextClassName="text-sm font-interMedium"
+        selectedTextClassName="text-sm font-regular"
         menuTextClassName="text-sm"
         menuClassName="px-3 py-1"
         menuOpenBorderClassName="bg-transparent"
@@ -102,7 +102,7 @@ export default function DateSelector({
             transition={{ duration: 0.3 }}
             className="flex items-center gap-2"
           >
-            <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+            <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
               <DatePicker
                 selected={new Date(startDate)}
                 onChange={(date: Date | null) => {
@@ -110,13 +110,13 @@ export default function DateSelector({
                     setStartDate(date.toISOString());
                   }
                 }}
-                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                 minDate={new Date('2023-09-25')}
                 maxDate={new Date()}
               />
             </div>
             <span className="text-xs text-gray-500">to</span>
-            <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+            <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
               <DatePicker
                 selected={new Date(endDate)}
                 onChange={(date: Date | null) => {
@@ -124,7 +124,7 @@ export default function DateSelector({
                     setEndDate(date.toISOString());
                   }
                 }}
-                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                 minDate={new Date('2023-09-25')}
                 maxDate={new Date()}
               />

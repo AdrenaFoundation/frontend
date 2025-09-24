@@ -41,7 +41,7 @@ export const PositionInfoSection = ({
             <h5 className="hidden sm:flex items-center">Position info</h5>
             <Tippy
                 content={
-                    <p className="font-medium text-txtfade">
+                    <p className="text-txtfade">
                         The values shown are estimates based on current prices. Actual results may vary at execution, especially if a token swap is involved. This means your initial leverage and liquidation price might differ slightly.
                     </p>
                 }
@@ -245,8 +245,8 @@ const SizeSection = ({
 
 const LoadingPlaceholder = () => (
     <div className="flex w-full justify-evenly items-center">
-        <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+        <div className="w-20 h-4 bg-gray-800 rounded-md" />
         <div className="h-full w-[1px] bg-gray-800" />
-        <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+        <div className="w-20 h-4 bg-gray-800 rounded-md" />
     </div>
 );

@@ -24,7 +24,7 @@ export default function SelectOptions<T>({
   return (
     <div
       className={twMerge(
-        'flex gap-4 w-full items-center justify-evenly border py-1 px-2 rounded-lg',
+        'flex gap-4 w-full items-center justify-evenly border py-1 px-2 rounded-md',
         className,
       )}
     >
@@ -36,13 +36,13 @@ export default function SelectOptions<T>({
       {options.map((option, index) => (
         <div
           className={twMerge(
-            'text-sm font-boldy cursor-pointer opacity-50 hover:opacity-100 transition duration-300',
+            'text-sm font-semibold cursor-pointer opacity-50 hover:opacity-100 transition duration-300',
             selected === (isObject(option) ? option.title : (option as T)) &&
-              'opacity-100',
+            'opacity-100',
             isObject(option) && option.activeColor,
             isObject(option) &&
-              option.disabled &&
-              'opacity-30 cursor-not-allowed hover:opacity-30',
+            option.disabled &&
+            'opacity-30 cursor-not-allowed hover:opacity-30',
             textClassName,
           )}
           onClick={() => {

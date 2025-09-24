@@ -290,7 +290,7 @@ const LoaderState = () => (
       {Array.from({ length: 20 }).map((_, i) => (
         <div
           key={i}
-          className="w-full h-[3.918125rem] bg-third rounded-lg animate-loader"
+          className="w-full h-[3.918125rem] bg-third rounded-md animate-loader"
           style={{
             // strong fade from top to bottom
             opacity: 1 - i * 0.05,

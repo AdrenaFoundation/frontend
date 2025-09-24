@@ -114,7 +114,7 @@ export default function Profile({
   if (userProfile === null) {
     return (
       <div className="flex flex-col max-w-[65em] gap-4 p-4 w-full h-full self-center">
-        <div className="flex h-full bg-main w-full border items-center justify-center rounded-xl z-10">
+        <div className="flex h-full bg-main w-full border items-center justify-center rounded-md z-10">
           <WalletConnection connected={connected} />
         </div>
       </div>
@@ -135,7 +135,7 @@ export default function Profile({
       <div className="flex flex-col pl-4 pr-4 pb-4 w-full min-h-full self-center pt-3">
         <div
           className={twMerge(
-            'z-20 w-full flex flex-col rounded-xl backdrop-blur-md border-2 border-white/10 shadow-lg',
+            'z-20 w-full flex flex-col rounded-md backdrop-blur-md border-2 border-white/10 shadow-lg',
             userProfile === false ? 'overflow-hidden' : 'min-h-full',
           )}
         >

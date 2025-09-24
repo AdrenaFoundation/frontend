@@ -35,12 +35,12 @@ export default function QuestComp({
                 <div className="flex flex-col">
                     {quest.name && (
                         <div className='flex gap-1'>
-                            <div className={twMerge("text-[0.8em] font-boldy")}>
+                            <div className={twMerge("text-[0.8em] font-semibold")}>
                                 {quest.name}
                             </div>
 
                             <div className="flex items-center gap-2 flex-shrink-0">
-                                <span className="font-boldy text-xs text-[#e47dbb]">
+                                <span className="font-semibold text-xs text-[#e47dbb]">
                                     +{quest.completion_points} mutagen
                                 </span>
                             </div>
@@ -71,7 +71,7 @@ export default function QuestComp({
                                 className={twMerge("flex text-xs text-white/100 gap-2")}
                             >
                                 <>
-                                    <div className={twMerge('flex text-xs font-boldy')}>
+                                    <div className={twMerge('flex text-xs font-semibold')}>
                                         {formatMetric(targetType as string, currentValue as number, targetValue as number)}
                                     </div>
 

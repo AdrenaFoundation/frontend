@@ -16,9 +16,9 @@ export default function StreakComp({
 
                 <div>
                     <div className='flex gap-1'>
-                        <div className="text-[0.8em] font-boldy">Trade Daily</div>
+                        <div className="text-[0.8em] font-semibold">Trade Daily</div>
 
-                        <div className='font-boldy text-xs text-[#e47dbb]'>
+                        <div className='font-semibold text-xs text-[#e47dbb]'>
                             +0.7 mutagen
                         </div>
                     </div>
@@ -30,13 +30,13 @@ export default function StreakComp({
 
                 <div className='flex'>
                     {streak.status === 0 ? (
-                        <div className='text-xs font-boldy'>Initialize your streak before reset</div>
+                        <div className='text-xs font-semibold'>Initialize your streak before reset</div>
                     ) : streak.status === 1 ? (
-                        <div className='text-xs font-boldy text-green'>Streak initialized</div>
+                        <div className='text-xs font-semibold text-green'>Streak initialized</div>
                     ) : streak.status === 2 ? (
-                        <div className='text-xs font-boldy text-green'>Current streak: {streak.currentDaysStreak} days</div>
+                        <div className='text-xs font-semibold text-green'>Current streak: {streak.currentDaysStreak} days</div>
                     ) : (
-                        <div className='text-xs font-boldy text-redbright'>Careful, your will lose your {streak.currentDaysStreak} days streak</div>
+                        <div className='text-xs font-semibold text-redbright'>Careful, your will lose your {streak.currentDaysStreak} days streak</div>
                     )}
                 </div>
             </div>
@@ -44,9 +44,9 @@ export default function StreakComp({
             <div className='flex w-full justify-between items-center'>
                 <div>
                     <div className='flex gap-1'>
-                        <div className="text-[0.8em] font-boldy">Trade Weekly</div>
+                        <div className="text-[0.8em] font-semibold">Trade Weekly</div>
 
-                        <div className='font-boldy text-xs text-[#e47dbb]'>
+                        <div className='font-semibold text-xs text-[#e47dbb]'>
                             +1 mutagen
                         </div>
                     </div>
@@ -71,9 +71,9 @@ export default function StreakComp({
             <div className='flex w-full justify-between items-center'>
                 <div>
                     <div className='flex gap-1'>
-                        <div className="text-[0.8em] font-boldy">Trade Monthly</div>
+                        <div className="text-[0.8em] font-semibold">Trade Monthly</div>
 
-                        <div className='font-boldy text-xs text-[#e47dbb]'>
+                        <div className='font-semibold text-xs text-[#e47dbb]'>
                             +2 mutagen
                         </div>
                     </div>

@@ -18,7 +18,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
     );
 
     return (
-        <div className="w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2">
+        <div className="w-full flex flex-col border rounded-md bg-secondary overflow-hidden mb-2">
             <div className="grid grid-cols-2 sm:flex sm:flex-row gap-5 justify-between sm:items-center p-3 sm:p-2 mx-2">
                 <div className="flex flex-1 flex-col">
                     <div className="flex w-full font-mono text-xxs ">

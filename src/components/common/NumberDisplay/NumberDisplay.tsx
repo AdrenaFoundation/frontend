@@ -52,12 +52,12 @@ export default function NumberDisplay({
       title={
         tippyInfo ? (
           <Tippy
-            content={<p className="font-medium">{tippyInfo}</p>}
+            content={<p className="font-regular">{tippyInfo}</p>}
             placement="auto"
           >
             <div
               className={twMerge(
-                'text-xs sm:text-sm text-txtfade font-boldy border-b border-dashed border-white/20 cursor-help',
+                'text-xs sm:text-sm text-txtfade font-semibold border-b border-dashed border-white/20 cursor-help',
                 titleClassName,
               )}
             >
@@ -75,7 +75,7 @@ export default function NumberDisplay({
       bodyClassName="gap-0"
       headerClassName={twMerge('text-center justify-center', headerClassName)}
       titleClassName={twMerge(
-        'text-xs sm:text-sm text-txtfade font-boldy',
+        'text-xs sm:text-sm text-txtfade font-semibold',
         titleClassName,
       )}
       subTitle={subtitle}
@@ -94,7 +94,7 @@ export default function NumberDisplay({
         format={format}
         suffix={suffix}
         suffixClassName={twMerge(
-          'text-sm font-boldy text-txtfade',
+          'text-sm font-semibold text-txtfade',
           bodySuffixClassName,
         )}
       />

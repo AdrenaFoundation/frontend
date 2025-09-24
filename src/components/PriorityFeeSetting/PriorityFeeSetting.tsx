@@ -39,7 +39,7 @@ export default function PriorityFeeSetting({
 
   const content = (
     <div className="flex flex-col">
-      <h4 className="font-interSemibold">Priority Fees</h4>
+      <h4 className="font-semibold">Priority Fees</h4>
 
       <p className="opacity-50 text-sm mt-0">
         Speed up your transactions with Dynamic Priority Fees following the
@@ -76,7 +76,7 @@ export default function PriorityFeeSetting({
 
       <div
         className={twMerge(
-          'flex gap-1 items-center mt-6 font-interSemibold text-xs',
+          'flex gap-1 items-center mt-6 font-semibold text-xs',
         )}
       >
         <InfoAnnotation
@@ -89,12 +89,12 @@ export default function PriorityFeeSetting({
       </div>
 
       <div className="mt-2">
-        <div className="w-full flex flex-col border items-center justify-center p-2 bg-third rounded-lg">
+        <div className="w-full flex flex-col border items-center justify-center p-2 bg-third rounded-md">
           <div className="flex w-full">
-            <div className="w-1/2 items-center flex text-xs font-interSemibold">
+            <div className="w-1/2 items-center flex text-xs font-semibold">
               TX Size
             </div>
-            <div className="w-1/2 items-center flex text-xs font-interSemibold">
+            <div className="w-1/2 items-center flex text-xs font-semibold">
               Extra Fee
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function PriorityFeeSetting({
       <div className="mt-6">
         <div
           className={twMerge(
-            'flex items-center gap-1 mb-1 text-xs font-interSemibold',
+            'flex items-center gap-1 mb-1 text-xs font-semibold',
           )}
         >
           <InfoAnnotation
@@ -157,12 +157,12 @@ export default function PriorityFeeSetting({
           Max Priority Fee per TX (SOL)
         </div>
 
-        <div className="mt-1 relative rounded-lg shadow-sm">
+        <div className="mt-1 relative rounded-md shadow-sm">
           <input
             type="number"
             name="maxPriorityFee"
             id="maxPriorityFee"
-            className="font-mono block w-full p-3 pr-12 sm:text-sm border border-white/20 rounded-lg bg-inputcolor"
+            className="font-mono block w-full p-3 pr-12 sm:text-sm border border-white/20 rounded-md bg-inputcolor"
             placeholder={DEFAULT_MAX_PRIORITY_FEE.toString()}
             step="0.000000001"
             min="0.000000001"
@@ -179,7 +179,7 @@ export default function PriorityFeeSetting({
             <label htmlFor="currency" className="sr-only">
               Currency
             </label>
-            <span className="opacity-50 sm:text-sm mr-3 font-boldy">SOL</span>
+            <span className="opacity-50 sm:text-sm mr-3 font-semibold">SOL</span>
           </div>
         </div>
       </div>
@@ -212,7 +212,7 @@ export default function PriorityFeeSetting({
       }
       className="border-r border-[#414E5E]"
       openMenuClassName={twMerge(
-        'rounded-lg w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
+        'rounded-md w-[18.75rem] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300 right-0',
       )}
       disableOnClickInside={true}
       isDim={true}

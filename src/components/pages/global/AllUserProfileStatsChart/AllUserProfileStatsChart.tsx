@@ -160,7 +160,7 @@ const AllUserProfileStatsChart = ({
 
   return (
     <div className="flex flex-col w-0 flex-1 h-full items-center p-4">
-      <div className="w-full h-[20%] rounded-lg flex flex-col items-center justify-center mb-3 sm:mb-0">
+      <div className="w-full h-[20%] rounded-md flex flex-col items-center justify-center mb-3 sm:mb-0">
         <h2>Traders by volume</h2>
         <p className="opacity-50">Click on a trader to view user profile</p>
       </div>
@@ -237,7 +237,7 @@ const AllUserProfileStatsChart = ({
           }}
           reversed={true}
           className="p-2 flex items-center"
-          selectedTextClassName="text-sm font-boldy"
+          selectedTextClassName="text-sm font-semibold"
           menuTextClassName="text-sm"
           menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
           menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
@@ -305,7 +305,7 @@ const AllUserProfileStatsChart = ({
         {['pnl', 'volume'].map((metric, i) => (
           <p
             className={twMerge(
-              'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300 font-regular text-sm',
+              'opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-300 text-sm',
               activeMetric === metric && 'opacity-100 underline',
             )}
             onClick={() => setActiveMetric(metric)}
