@@ -129,7 +129,7 @@ export default function Settings({
       <h4 className="font-semibold">Preferences</h4>
       <div className="flex flex-col gap-1 mt-1">
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-semibold opacity-50 w-full">Disable chat</p>
+          <p className="text-sm opacity-50 w-full">Disable chat</p>
           <Switch
             checked={settings.disableChat}
             onChange={() => {
@@ -144,7 +144,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-semibold opacity-50 w-full">
+          <p className="text-sm opacity-50 w-full">
             Disable Friend Requests
           </p>
           <Switch
@@ -161,7 +161,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-semibold opacity-50 w-full">
+          <p className="text-sm opacity-50 w-full">
             Show fees in PnL
           </p>
           <Switch
@@ -178,7 +178,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-semibold opacity-50 w-full">
+          <p className="text-sm opacity-50 w-full">
             Display popup when position closes
           </p>
           <Switch
@@ -195,7 +195,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm font-semibold opacity-50 w-full">
+          <p className="text-sm opacity-50 w-full">
             Disable in-app notifications
           </p>
           <Switch
@@ -221,7 +221,7 @@ export default function Settings({
           </div>
         }>
           <div className="flex flex-row justify-between items-center">
-            <p className="text-sm font-semibold opacity-50 w-full">
+            <p className="text-sm opacity-50 w-full">
               Use Sqrt scale for volume & fee chart
             </p>
 

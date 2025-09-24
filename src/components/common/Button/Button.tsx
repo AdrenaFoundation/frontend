@@ -78,15 +78,15 @@ export default function Button({
          shadow-md hover:shadow-lg hover:opacity-90 
          transition-all duration-300 ease-in-out`,
     secondary:
-      'bg-secondary text-white opacity-90 hover:opacity-100',
+      'bg-secondary text-white opacity-90 hover:opacity-100 font-regular',
     danger: `text-white bg-gradient-to-r from-red via-rose-600 to-pink-600
          shadow-md hover:shadow-lg hover:opacity-90 
          transition-all duration-300 ease-in-out`,
     success: `text-white bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500
          shadow-md hover:shadow-lg hover:opacity-90 
          transition-all duration-300 ease-in-out`,
-    text: 'opacity-50 text-white hover:opacity-100',
-    outline: 'border-2 text-white hover:bg-bcolor',
+    text: 'opacity-50 text-white hover:opacity-100 font-regular',
+    outline: 'border-2 text-white hover:bg-bcolor font-regular',
     lightbg: 'bg-[#1f2c3c] text-white hover:text-txt',
   };
 

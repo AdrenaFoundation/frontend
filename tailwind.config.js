@@ -62,18 +62,6 @@ module.exports = {
       'text-shimmer': 'text-shimmer 4s ease-out infinite alternate',
     },
     font: {
-      // mono: ['Roboto Mono', 'monospace'],
-      // regular: ['regular', 'sans-serif'],
-      // boldy: ['boldy', 'sans-serif'],
-      // interSemibold: ['interSemibold', 'sans-serif'],
-      // interBold: ['interBold', 'sans-serif'],
-      // interMedium: ['interMedium', 'sans-serif'],
-      // special: ['special', 'sans-serif'],
-      // archivo: ['Archivo Regular', 'sans-serif'],
-      // archivoblack: ['Archivo Black', 'sans-serif'],
-      // cursive: ['cursive', 'sans-serif'],
-
-      archivo: ['Archivo Regular', 'sans-serif'],
       mono: ['Roboto Mono', 'monospace'],
       thin: ['thin', 'sans-serif'],
       regular: ['regular', 'sans-serif'],
@@ -84,7 +72,6 @@ module.exports = {
       cursive: ['cursive', 'sans-serif'],
     },
     fontFamily: {
-      archivo: ['archivo'],
       special: ['special'],
       thin: ['thin'],
       regular: ['regular'],
