@@ -1765,4 +1765,25 @@ export default class DataApiClient {
       return null;
     }
   }
+
+  public static async getVelocityIndicators() {
+    try {
+      const response = await fetch(`${DataApiClient.DATAPI_URL}/velocity`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error('Error fetching velocity indicators:', error);
+      return null;
+    }
+  }
 }
