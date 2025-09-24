@@ -19,7 +19,7 @@ export const PositionDetail = ({
   className,
   itemClassName,
   titleClassName,
-  showDivider = true,
+  showDivider = false,
   readOnly = false,
 }: {
   data: PositionDetailType[];
@@ -44,10 +44,7 @@ export const PositionDetail = ({
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div
-      className={twMerge(
-        'flex flex-row border rounded-lg items-center bg-[#121A24] md:border border-[#1C2733] px-2 py-0.5 gap-1',
-        className,
-      )}
+      className={twMerge('flex flex-row items-center px-2 py-2', className)}
       ref={ref}
     >
       {data.map((d, i) => (
@@ -57,12 +54,11 @@ export const PositionDetail = ({
               className={twMerge('h-6 border-r border-inputcolor', d.className)}
             />
           ) : null}
-
           <div
             key={i}
             className={twMerge(
-              'flex flex-col items-center flex-1',
-              data.length === 1 && '!px-0',
+              'flex flex-col',
+              data.length - 1 === i && '!px-0',
               d?.className,
               itemClassName,
             )}
@@ -80,7 +76,7 @@ export const PositionDetail = ({
                 className={twMerge(
                   'flex items-center',
                   d?.onEditClick &&
-                    'cursor-pointer hover:bg-[#1A2531] px-1 rounded-md transition-colors duration-300',
+                    'cursor-pointer hover:bg-[#1A2531] rounded-md transition-colors duration-300',
                 )}
                 onClick={d?.onEditClick}
               >
@@ -104,7 +100,7 @@ export const PositionDetail = ({
                 className={twMerge(
                   'flex items-center',
                   d?.onEditClick &&
-                    'cursor-pointer hover:bg-[#1A2531] px-1 rounded-md transition-colors duration-300',
+                    'cursor-pointer hover:bg-[#1A2531] rounded-md transition-colors duration-300',
                 )}
                 onClick={d?.onEditClick}
               >
