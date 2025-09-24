@@ -172,15 +172,15 @@ export default function Anniversary() {
                 <RaffleAdditionalPrize title="Top Liquidation" reward={2000} tippyText="Trader with the largest single liquidation in USD value." />
                 <RaffleAdditionalPrize title="Top Borrow Fees" reward={2000} tippyText="Trader who paid the most borrow fees in USD." />
                 <RaffleAdditionalPrize title="Top Exit Fees" reward={2000} tippyText="Trader who paid the most exit fees in USD." />
-                <RaffleAdditionalPrize title="Most Trades" reward={500} tippyText="Trader who opened and closed the most positions." />
+                <RaffleAdditionalPrize title="Most Trades" reward={500} tippyText="Trader who closed the most positions." />
                 <RaffleAdditionalPrize title="Most Consecutive Wins" reward={500} tippyText="Trader with the longest winning streak." />
                 <RaffleAdditionalPrize title="Most Consecutive Losses" reward={500} tippyText="Trader with the longest losing streak." />
                 <RaffleAdditionalPrize title="Most Consecutive Liquidations" reward={500} tippyText="Trader with the longest streak of liquidated trades." />
                 <RaffleAdditionalPrize title="First Blood" reward={200} tippyText="First trader to open and close a position in the competition." />
                 <RaffleAdditionalPrize title="Last Straw" reward={200} tippyText="Last trader to close a position before the competition ends." />
-                <RaffleAdditionalPrize title="Best Shitposter Tweet" reward={500} tippyText="Funniest or most viral shitpost about Adrena. Winner chosen by the team." />
+                <RaffleAdditionalPrize title="Best Shitpost Tweet" reward={500} tippyText="Funniest or most viral shitpost about Adrena. Winner chosen by the team." />
                 <RaffleAdditionalPrize title="Best Anniversary Tweet" reward={500} tippyText="Best tweet celebrating Adrena’s anniversary. Winner chosen by the team." />
-                <RaffleAdditionalPrize title="Best Feature Idea" reward={500} tippyText="Most valuable idea for improving Adrena. Winner chosen by the team." />
+                <RaffleAdditionalPrize title="Best Feature Idea" reward={500} tippyText="Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team." />
                 <RaffleAdditionalPrize title="Best Artwork" reward={500} tippyText="Coolest community artwork related to Adrena. Winner chosen by the team." />
               </div>
             </div>
