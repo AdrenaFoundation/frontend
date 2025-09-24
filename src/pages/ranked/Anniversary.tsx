@@ -183,7 +183,7 @@ export default function Anniversary() {
                   <RaffleAdditionalPrize title="Most Consecutive Wins" reward={500} tippyText="Trader with the longest winning streak." />
                   <RaffleAdditionalPrize title="Most Consecutive Losses" reward={500} tippyText="Trader with the longest losing streak." />
                   <RaffleAdditionalPrize title="Most Consecutive Liquidations" reward={500} tippyText="Trader with the longest streak of liquidated trades." />
-                  <RaffleAdditionalPrize title="First Blood" reward={200} tippyText="First trader to open and close a position in the competition." />
+                  <RaffleAdditionalPrize title="First Blood" reward={200} tippyText="First trader to open and close a position with a +20% PnL in the competition." />
                   <RaffleAdditionalPrize title="Last Straw" reward={200} tippyText="Last trader to close a position before the competition ends." />
                 </div>
               </div>
