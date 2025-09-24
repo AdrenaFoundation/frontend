@@ -74,8 +74,8 @@ export default function TradeComp({
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-b-green text-green' },
-            { title: 'short', activeColor: 'border-b-red text-red' },
+            { title: 'long', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]' },
+            { title: 'short', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]' },
             { title: 'swap', activeColor: 'border-white' },
           ]}
           onClick={(title) => {

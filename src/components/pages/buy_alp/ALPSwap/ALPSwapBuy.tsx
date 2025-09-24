@@ -152,7 +152,7 @@ export default function ALPSwapBuy({
 
         setCollateralInputUsd(
           (tokenPrices[usdcToken.symbol] ?? 1) *
-            nativeToUi(amountUsd, usdcToken.decimals),
+          nativeToUi(amountUsd, usdcToken.decimals),
         );
 
         amountAndFee = await window.adrena.client.getAddLiquidityAmountAndFee({
@@ -404,6 +404,7 @@ export default function ALPSwapBuy({
         <Button
           title="Mint ALP"
           size="lg"
+          variant="info"
           disabled={
             errorMessage !== null ||
             isMainDataLoading ||

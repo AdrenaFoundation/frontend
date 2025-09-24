@@ -43,7 +43,7 @@ export default function LiquidStakeSection({
 
                     <div className="flex gap-2 mt-4 sm:mt-0 flex-col sm:flex-row w-full sm:w-auto">
                         <Button
-                            variant="outline"
+                            variant="primary"
                             size="sm"
                             title="Unstake"
                             className={twMerge(
@@ -56,7 +56,7 @@ export default function LiquidStakeSection({
                         />
 
                         <Button
-                            variant="primary"
+                            variant="danger"
                             size="sm"
                             title={
                                 totalLiquidStaked && totalLiquidStaked > 0

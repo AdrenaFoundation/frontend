@@ -50,7 +50,7 @@ export default function ALPStakingRecap({
 
                         <div
                             className={twMerge(
-                                'flex w-full rounded-bl-lg rounded-br-lg p-3 items-center justify-center flex-none border-t bg-[#130AAA] relative overflow-hidden',
+                                'flex w-full rounded-bl-lg rounded-br-lg p-3 items-center justify-center flex-none border-t bg-gradient-to-r from-[#0284c7] via-[#1e40af] to-[#1a2a6a] relative overflow-hidden',
                             )}
                         >
                             <div className="flex flex-row items-center gap-6">
