@@ -1,21 +1,27 @@
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import Button from '@/components/common/Button/Button';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PROFILE_PICTURES } from '@/constant';
-import useUserProfile from '@/hooks/useUserProfile';
+import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import {
   formatTimeDifference,
-  getAbbrevWalletAddress,
   getFullTimeDifference,
   getTokenImage,
   getTokenSymbol,
 } from '@/utils';
+
+import {
+  PositionDetail,
+  PositionDetailType,
+} from './PositionBlockComponents/PositionDetail';
 
 interface PositionBlockProps {
   position: PositionExtended;
@@ -24,6 +30,7 @@ interface PositionBlockProps {
   triggerEditPositionCollateral?: (p: PositionExtended) => void;
   readOnly?: boolean;
   setTokenB: (token: Token) => void;
+  setShareClosePosition: (p: PositionExtended) => void;
 }
 
 export default function PositionBlockV2({
@@ -33,215 +40,272 @@ export default function PositionBlockV2({
   triggerEditPositionCollateral,
   readOnly = false,
   setTokenB,
+  setShareClosePosition,
 }: PositionBlockProps) {
-  const { userProfile } = useUserProfile(position.owner.toBase58());
+  const isMobile = useBetterMediaQuery('(min-width: 1150px)');
+  const [closableIn, setClosableIn] = useState<number | null>(null);
+  const [isPnlWithFees, setIsPnlWithFees] = useState(true);
+  const [isNative, setIsNative] = useState(false);
 
-  const borrowRate = useSelector(
-    (s) =>
-      s.borrowRates[
-        position.side === 'long'
-          ? position.custody.toBase58()
-          : position.collateralCustody.toBase58()
-      ],
+  const tradeTokenPrice = useSelector((s) =>
+    selectStreamingTokenPriceFallback(s, getTokenSymbol(position.token.symbol)),
   );
 
+  useEffect(() => {
+    const openedTime = position.nativeObject.openTime.toNumber() * 1000;
+    const openedDuration = Date.now() - openedTime;
+    const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
+
+    // If the position has been opened for more than 10 seconds, it can be closed
+    if (diff <= 0) {
+      setClosableIn(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const openedDuration = Date.now() - openedTime;
+      const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
+
+      if (diff <= 0) {
+        setClosableIn(0);
+        return clearInterval(interval);
+      }
+
+      setClosableIn(diff);
+    }, 100);
+
+    setClosableIn(diff);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [position.nativeObject.openTime.toNumber()]);
+
+  const allData = [
+    {
+      title: 'Net Value',
+      value: position.collateralUsd + (position.pnl ?? 0),
+      format: 'currency',
+      className: 'md:hidden',
+    },
+    {
+      title: 'Cur. Lev',
+      value: position.currentLeverage,
+      format: 'number',
+      suffix: 'x',
+      precision: 1,
+      isDecimalDimmed: false,
+    },
+    {
+      title: 'Collateral',
+      value: position.collateralUsd,
+      format: 'currency',
+      onEditClick: () => triggerEditPositionCollateral?.(position),
+    },
+    {
+      title: 'Size',
+      value: position.sizeUsd,
+      format: 'currency',
+    },
+    {
+      title: 'Entry',
+      value: position.price,
+      format: 'currency',
+    },
+    {
+      title: 'Liquidation',
+      value: position.liquidationPrice,
+      format: 'currency',
+      color: 'text-orange',
+      isDecimalDimmed: false,
+      onEditClick: () => triggerEditPositionCollateral?.(position),
+    },
+    {
+      title: 'Stop Loss',
+      value:
+        typeof position.stopLossLimitPrice !== 'undefined'
+          ? position.stopLossLimitPrice
+          : null,
+      format: 'currency',
+      color: 'text-blue',
+      isDecimalDimmed: false,
+      onEditClick: () => triggerStopLossTakeProfit?.(position),
+    },
+    {
+      title: 'Take Profit',
+      value:
+        typeof position.takeProfitLimitPrice !== 'undefined'
+          ? position.takeProfitLimitPrice
+          : null,
+      format: 'currency',
+      color: 'text-blue',
+      isDecimalDimmed: false,
+      onEditClick: () => triggerStopLossTakeProfit?.(position),
+    },
+  ].filter((d) => d !== null) as PositionDetailType[];
+
   return (
-    <div className="bg-[#0B131D] border border-bcolor rounded-xl">
-      <div className="flex flex-row items-center justify-between p-2 border-b">
+    <div className="border bg-[#0B131D] border-inputcolor rounded-xl overflow-hidden">
+      <div className="flex flex-row items-center justify-between p-2 px-3 border-b">
         <TokenDetails position={position} setTokenB={setTokenB} />
-        <PnLDetails position={position} showAfterFees={true} />
-        <NetValue position={position} />
+        <PnLDetails position={position} showAfterFees={isPnlWithFees} />
+        <NetValue position={position} showAfterFees={isPnlWithFees} />
       </div>
 
-      <div
-        className={twMerge(
-          'flex flex-row items-center flex-wrap xl:flex-nowrap xl:gap-3 xl:p-2',
-          !readOnly && 'border-b',
-        )}
-      >
-        <PositionDetail
-          data={[
-            {
-              title: 'Duration',
-              value: formatTimeDifference(
-                getFullTimeDifference(position.openDate, new Date(Date.now())),
-              ),
-              format: 'time',
-            },
-          ]}
-          className="xl:w-auto xl:flex-none"
-        />
-
-        <PositionDetail
-          data={[
-            {
-              title: 'Cur. Lev',
-              value: position.currentLeverage ?? 0, // fix
-              format: 'number',
-              suffix: 'x',
-              precision: 1,
-            },
-            {
-              title: 'Collateral',
-              value: position.collateralUsd,
-              format: 'currency',
-            },
-            {
-              title: 'Size',
-              value: position.sizeUsd,
-              format: 'currency',
-            },
-          ]}
-        />
-        <PositionDetail
-          data={[
-            {
-              title: 'Entry',
-              value: position.price,
-              format: 'currency',
-            },
-            {
-              title: 'Market',
-              value: 200, // fix
-              format: 'currency',
-            },
-          ]}
-        />
-
-        <PositionDetail
-          data={[
-            {
-              title: 'Liquidation',
-              value: position.liquidationPrice ?? 0,
-              format: 'currency',
-              color: 'text-orange',
-            },
-            {
-              title: 'Break Even',
-              value: position.breakEvenPrice ?? 0,
-              format: 'currency',
-              color: 'text-[#965DFF]',
-            },
-          ]}
-        />
-
-        {!readOnly ? (
+      {isMobile ? (
+        <div
+          className={twMerge(
+            'grid grid-cols-[2fr_auto_auto_1fr] xl:grid-cols-[2fr_1fr_1fr_1fr] 2xl:grid-cols-[auto_2fr_1fr_1fr_1fr] p-3 gap-3',
+            !readOnly && 'border-b',
+          )}
+        >
           <PositionDetail
             data={[
               {
-                title: 'Borrow Rate',
-                value: borrowRate,
-                format: 'percentage',
-                suffix: '/hr',
-                precision: 6,
+                title: 'Duration',
+                value: formatTimeDifference(
+                  getFullTimeDifference(
+                    position.openDate,
+                    new Date(Date.now()),
+                  ),
+                ),
+                format: 'time',
               },
             ]}
-            className="xl:w-auto xl:flex-none"
+            className="hidden 2xl:flex"
+            readOnly={readOnly}
           />
-        ) : null}
 
+          <PositionDetail
+            data={[
+              {
+                title: 'Cur. Lev',
+                value: position.currentLeverage ?? 0, // fix
+                format: 'number',
+                suffix: 'x',
+                precision: 1,
+                isDecimalDimmed: false,
+              },
+              {
+                title: 'Collateral',
+                value: position.collateralUsd,
+                format: 'currency',
+                onEditClick: () => triggerEditPositionCollateral?.(position),
+              },
+              {
+                title: 'Size',
+                value: position.sizeUsd,
+                format: 'currency',
+              },
+            ]}
+            readOnly={readOnly}
+          />
+
+          <PositionDetail
+            data={[
+              {
+                title: 'Entry',
+                value: position.price,
+                format: 'currency',
+              },
+              {
+                title: 'Market',
+                value: tradeTokenPrice,
+                format: 'currency',
+                className: 'hidden xl:flex',
+              },
+            ]}
+            readOnly={readOnly}
+          />
+
+          <PositionDetail
+            data={[
+              {
+                title: 'Liquidation',
+                value: position.liquidationPrice ?? 0,
+                format: 'currency',
+                color: 'text-orange',
+                isDecimalDimmed: false,
+                onEditClick: () => triggerEditPositionCollateral?.(position),
+              },
+              {
+                title: 'Break Even',
+                value: position.breakEvenPrice ?? 0,
+                format: 'currency',
+                color: 'text-[#965DFF]',
+                className: 'hidden xl:flex',
+                isDecimalDimmed: false,
+              },
+            ]}
+            readOnly={readOnly}
+          />
+
+          <PositionDetail
+            data={[
+              {
+                title: 'Stop Loss',
+                value: position.stopLossLimitPrice ?? null,
+                format: 'currency',
+                color: 'text-blue',
+                onEditClick: () => triggerStopLossTakeProfit?.(position),
+                isDecimalDimmed: false,
+              },
+              {
+                title: 'Take Profit',
+                value: position.takeProfitLimitPrice ?? null,
+                format: 'currency',
+                color: 'text-blue',
+                onEditClick: () => triggerStopLossTakeProfit?.(position),
+                isDecimalDimmed: false,
+              },
+            ]}
+            readOnly={readOnly}
+          />
+        </div>
+      ) : (
         <PositionDetail
-          data={[
-            {
-              title: 'Stop Loss',
-              value:
-                typeof position.stopLossLimitPrice !== 'undefined'
-                  ? position.stopLossLimitPrice
-                  : null,
-              format: 'currency',
-              color: 'text-blue',
-            },
-            {
-              title: 'Take Profit',
-              value:
-                typeof position.takeProfitLimitPrice !== 'undefined'
-                  ? position.takeProfitLimitPrice
-                  : null,
-              format: 'currency',
-              color: 'text-blue',
-            },
-          ]}
+          data={allData}
+          className="bg-transparent items-start flex-col !border-0 !border-b rounded-none p-3 gap-2"
+          itemClassName="border-0 flex-row justify-between items-center w-full p-0"
+          titleClassName="text-sm"
+          showDivider={false}
+          readOnly={readOnly}
         />
-      </div>
+      )}
       {!readOnly ? (
-        <div className="flex flex-row items-center justify-between">
-          <div
-            className={
-              'flex flex-row items-center gap-2 p-1.5 px-2 border-r border-r-bcolor'
-            }
-          >
-            {readOnly ? (
-              <div className="flex flex-row items-center gap-2 pr-2">
-                <Image
-                  src={
-                    PROFILE_PICTURES[
-                      userProfile ? userProfile.profilePicture : 0
-                    ]
-                  }
-                  alt="profile pic"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 rounded-full border border-inputcolor"
-                />
-                <p className="text-sm font-mono underline-dashed">
-                  {userProfile
-                    ? userProfile.nickname
-                    : getAbbrevWalletAddress(position.owner.toBase58())}
-                </p>
-              </div>
-            ) : (
-              <>
-                <Button
-                  title="Edit"
-                  size="sm"
-                  className="flex-1 h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
-                  onClick={() => triggerEditPositionCollateral?.(position)}
-                />
-                <Button
-                  title="SL/TP"
-                  size="sm"
-                  className="flex-1 h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
-                  onClick={() => triggerStopLossTakeProfit?.(position)}
-                />
-                <Button
-                  title="Close"
-                  size="sm"
-                  className="flex-1 h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
-                  onClick={() => triggerClosePosition?.(position)}
-                />
-              </>
-            )}
-          </div>
-
-          <div className="flex flex-row items-center">
-            <div className="flex flex-row items-center gap-3 p-2 px-3 border-l border-l-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300">
+        <div className="flex flex-col lg:flex-row items-center justify-between">
+          <div className="flex flex-row items-center w-full lg:w-auto">
+            <div
+              className="flex flex-row items-center gap-3 p-2 px-3 border-r border-r-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300 w-full lg:w-auto"
+              onClick={() => {
+                setIsPnlWithFees(!isPnlWithFees);
+              }}
+            >
               <Switch
-                checked={true}
+                checked={isPnlWithFees}
                 size="small"
                 onChange={() => {
-                  // handle toggle in parent div
+                  setIsPnlWithFees(!isPnlWithFees);
                 }}
               />
               <p className="text-sm font-interMedium opacity-50">PnL w/ fees</p>
             </div>
 
             <div
-              className="flex flex-row items-center gap-3 p-2 px-3 border-l border-l-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-              // onClick={() => setIsNative(!isNative)}
+              className="flex flex-row items-center gap-3 p-2 px-3 border-r border-r-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300 w-full lg:w-auto"
+              onClick={() => setIsNative(!isNative)}
             >
               <Switch
-                checked={false}
+                checked={isNative}
                 size="small"
                 onChange={() => {
-                  // handle toggle in parent div
+                  setIsNative(!isNative);
                 }}
               />
               <p className="text-sm font-interMedium opacity-50">Native</p>
             </div>
 
             <div
-              className="flex flex-row items-center gap-3 p-2.5 px-3 border-l border-l-bcolor cursor-pointer opacity-50 hover:bg-[#131D2C] transition-colors duration-300"
-              // onClick={onDownloadClick}
+              className="flex flex-row items-center gap-3 p-2.5 px-3 lg:border-r border-r-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300 flex-none"
+              onClick={() => setShareClosePosition(position)}
             >
               <Image
                 src={shareIcon}
@@ -251,6 +315,39 @@ export default function PositionBlockV2({
                 className="w-3 h-3"
               />
             </div>
+          </div>
+
+          <div
+            className={
+              'flex flex-row items-center gap-2 p-1.5 px-2 border-t lg:border-t-0 w-full lg:w-auto lg:border-l border-l-bcolor'
+            }
+          >
+            <Button
+              title="Edit"
+              size="sm"
+              className="flex-1 lg:h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
+              onClick={() => triggerEditPositionCollateral?.(position)}
+            />
+            <Button
+              title="SL/TP"
+              size="sm"
+              className="flex-1 lg:h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
+              onClick={() => triggerStopLossTakeProfit?.(position)}
+            />
+            <Button
+              title={
+                closableIn === 0 || closableIn === null
+                  ? 'Close'
+                  : `Close (${Math.ceil((closableIn || 0) / 1000)}s)`
+              }
+              size="sm"
+              className={twMerge(
+                'flex-1 lg:h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
+                (closableIn !== 0 || closableIn !== null) && 'flex-none',
+              )}
+              disabled={closableIn !== 0 && closableIn !== null}
+              onClick={() => triggerClosePosition?.(position)}
+            />
           </div>
         </div>
       ) : null}
@@ -275,7 +372,7 @@ const TokenDetails = ({
         alt="token"
         height={30}
         width={30}
-        className="w-9 h-9 border border-bcolor rounded-full"
+        className="w-9 h-9 border border-inputcolor rounded-full"
       />
       <div>
         <div className="flex flex-row items-center gap-2 mb-0.5">
@@ -312,6 +409,39 @@ const TokenDetails = ({
   );
 };
 
+const NetValue = ({
+  position,
+  showAfterFees,
+}: {
+  position: PositionBlockProps['position'];
+  showAfterFees: boolean;
+}) => {
+  if (!position.pnl) return null;
+
+  const fees = -(position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
+
+  return (
+    <div className="hidden md:flex flex-col justify-end items-end">
+      <p className="text-xs opacity-50 text-right md:text-center font-interMedium mb-1">
+        Net Value
+      </p>
+
+      <div className="hidden md:flex underline-dashed">
+        <FormatNumber
+          nb={
+            position.collateralUsd +
+            (showAfterFees ? position.pnl : position.pnl - fees)
+          }
+          format="currency"
+          className={twMerge('text-base font-mono items-end justify-end')}
+          isDecimalDimmed={false}
+          minimumFractionDigits={2}
+        />
+      </div>
+    </div>
+  );
+};
+
 const PnLDetails = ({
   position,
   showAfterFees,
@@ -324,110 +454,47 @@ const PnLDetails = ({
   const fees = -(position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
 
   return (
-    <div className="flex flex-col">
-      <p className="text-xs opacity-50 text-center font-interMedium">PnL</p>
-      <div className="flex flex-row items-center gap-2">
-        <FormatNumber
-          nb={position.pnl}
-          format="currency"
-          className={twMerge(
-            'text-base font-mono',
-            position.pnl >= 0 ? 'text-[#35C488]' : 'text-redbright',
-          )}
-          isDecimalDimmed={false}
-        />
-        <div className="opacity-50">
+    <div className="flex flex-col justify-end items-end md:justify-center md:items-center">
+      <p className="hidden md:flex text-xs opacity-50 text-center font-interMedium mb-1">
+        PnL
+      </p>
+
+      <div
+        className={twMerge(
+          'rounded-md px-1.5 pr-2 py-1 flex flex-col md:flex-row items-end md:items-center md:gap-1',
+          position.pnl >= 0 ? 'bg-green/10' : 'bg-red/10',
+        )}
+      >
+        <div className="flex flex-row items-center gap-1">
           <FormatNumber
-            nb={
-              ((showAfterFees ? position.pnl : position.pnl - fees) /
-                position.collateralUsd) *
-              100
-            }
-            format="percentage"
-            prefix="("
-            suffix=")"
-            prefixClassName="text-sm"
-            suffixClassName={`ml-0 text-sm ${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
-            precision={2}
-            minimumFractionDigits={2}
+            nb={showAfterFees ? position.pnl : position.pnl - fees}
+            format="currency"
+            className={twMerge(
+              'text-base font-mono font-medium',
+              position.pnl >= 0 ? 'text-[#35C488]' : 'text-redbright',
+            )}
             isDecimalDimmed={false}
-            className={`text-sm ${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
+            minimumFractionDigits={2}
           />
         </div>
-      </div>
-    </div>
-  );
-};
 
-const NetValue = ({
-  position,
-}: {
-  position: PositionBlockProps['position'];
-}) => {
-  if (!position.pnl) return null;
-
-  return (
-    <div className="flex flex-col items-end">
-      <p className="text-xs opacity-50 text-right font-interMedium">
-        Net Value
-      </p>
-      <div className="underline-dashed">
         <FormatNumber
-          nb={position.collateralUsd + position.pnl}
-          format="currency"
-          className={twMerge('text-base font-mono items-end justify-end')}
+          nb={
+            ((showAfterFees ? position.pnl : position.pnl - fees) /
+              position.collateralUsd) *
+            100
+          }
+          format="percentage"
+          prefix="( "
+          suffix=" )"
+          prefixClassName="text-xs"
+          suffixClassName={`ml-0 text-xs ${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
+          precision={2}
+          minimumFractionDigits={2}
           isDecimalDimmed={false}
+          className={`text-xs ${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
         />
       </div>
-    </div>
-  );
-};
-
-const PositionDetail = ({
-  data,
-  className,
-}: {
-  data: {
-    title: string;
-    value: string | number | null;
-    format?: 'number' | 'currency' | 'percentage' | 'time';
-    color?: string;
-    precision?: number;
-    suffix?: string;
-  }[];
-  className?: string;
-}) => {
-  return (
-    <div
-      className={twMerge(
-        'flex flex-col xl:flex-row gap-2 xl:gap-0 items-center xl:bg-secondary border-b xl:border border-bcolor xl:rounded-xl w-full p-3 py-2',
-        className,
-      )}
-    >
-      {data.map((d, i) => (
-        <div
-          key={i}
-          className={twMerge(
-            'flex flex-row xl:flex-col justify-between xl:justify-normal flex-1 xl:border-r border-inputcolor xl:last:border-r-0 xl:px-6 xl:first:pl-0 last:pr-0 w-full xl:w-auto',
-            data.length === 1 && '!px-0',
-          )}
-        >
-          <p className="text-sm xl:text-xs opacity-50 whitespace-nowrap font-interMedium">
-            {d.title}
-          </p>
-          {typeof d.value !== 'string' ? (
-            <FormatNumber
-              nb={d.value}
-              format={d.format}
-              precision={d.precision}
-              suffix={d.suffix}
-              className={twMerge('text-sm flex', d.value && d.color)}
-            />
-          ) : (
-            <p className="text-sm font-mono">{d.value}</p>
-          )}
-        </div>
-      ))}
     </div>
   );
 };

@@ -14,6 +14,7 @@ export function PositionsBlocks({
   triggerStopLossTakeProfit,
   triggerClosePosition,
   triggerEditPositionCollateral,
+  setShareClosePosition,
   setTokenB,
 }: {
   bodyClassName?: string;
@@ -26,6 +27,7 @@ export function PositionsBlocks({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   wrapped?: boolean;
   setTokenB: (token: Token) => void;
+  setShareClosePosition: (p: PositionExtended) => void;
 }) {
   if (positions === null && !connected) {
     return (
@@ -88,6 +90,7 @@ export function PositionsBlocks({
               triggerStopLossTakeProfit={triggerStopLossTakeProfit}
               triggerClosePosition={triggerClosePosition}
               triggerEditPositionCollateral={triggerEditPositionCollateral}
+              setShareClosePosition={setShareClosePosition}
               setTokenB={setTokenB}
             />
           ))}

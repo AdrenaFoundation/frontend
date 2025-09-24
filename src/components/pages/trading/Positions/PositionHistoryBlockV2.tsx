@@ -7,6 +7,7 @@ import arrowIcon from '@/../public/images/Icons/arrow-down.svg';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { EnrichedPositionApi } from '@/types';
 import {
   formatTimeDifference,
@@ -16,6 +17,7 @@ import {
 } from '@/utils';
 
 import EventBlocks, { FormattedEventsType } from './EventBlocks';
+import { PositionDetail } from './PositionBlockComponents/PositionDetail';
 import PositionHistoryChart from './PositionHistoryChart';
 
 export default function PositionHistoryBlockV2({
@@ -32,10 +34,11 @@ export default function PositionHistoryBlockV2({
   const [events, setEvents] = useState<FormattedEventsType[][]>([]);
   // Convert pubkey to string for useUserProfile
   const [isExpanded, setIsExpanded] = useState(showExpanded);
+  const isMobile = useBetterMediaQuery('(max-width: 768px)');
 
   return (
     <AnimatePresence>
-      <motion.div className="bg-[#0B131D] border border-inputcolor rounded-xl">
+      <motion.div className="border border-inputcolor rounded-xl">
         <div className="flex flex-row items-center justify-between p-2 border-b">
           {!showChart ? (
             <>
@@ -54,81 +57,145 @@ export default function PositionHistoryBlockV2({
           )}
         </div>
 
-        <div className="flex flex-row items-center flex-wrap xl:flex-nowrap gap-3 p-2 border-b">
+        {isMobile ? (
           <PositionDetail
-            data={[
-              {
-                title: 'Duration',
-                value: formatTimeDifference(
-                  getFullTimeDifference(
-                    positionHistory.entryDate,
-                    positionHistory.exitDate || new Date(),
+            data={
+              // all data
+              [
+                {
+                  title: 'Duration',
+                  value: formatTimeDifference(
+                    getFullTimeDifference(
+                      positionHistory.entryDate,
+                      positionHistory.exitDate || new Date(),
+                    ),
                   ),
-                ),
-                format: 'time',
-              },
-            ]}
-            className="w-fit flex-none"
+                  format: 'time',
+                },
+                {
+                  title: 'Leverage',
+                  value: positionHistory.entryLeverage ?? 0,
+                  format: 'number',
+                },
+                {
+                  title: 'Collateral',
+                  value: positionHistory.collateralAmount,
+                  format: 'currency',
+                },
+                {
+                  title: 'Size',
+                  value: positionHistory.entrySize,
+                  format: 'currency',
+                },
+                {
+                  title: 'Entry',
+                  value: positionHistory.entryPrice,
+                  format: 'currency',
+                },
+                {
+                  title: 'Exit',
+                  value: positionHistory.exitPrice,
+                  format: 'currency',
+                },
+                {
+                  title: 'Fees',
+                  value: positionHistory.fees ?? 0,
+                  format: 'currency',
+                },
+                {
+                  title: 'Borrow Fees',
+                  value: positionHistory.borrowFees ?? 0,
+                  format: 'currency',
+                },
+                {
+                  title: 'Mutagen',
+                  value: positionHistory.totalPoints ?? 0,
+                  format: 'number',
+                  color: 'text-mutagen',
+                },
+              ]
+            }
+            className="bg-transparent items-start flex-col !border-0 !border-b rounded-none p-3 gap-2"
+            itemClassName="border-0 flex-row justify-between items-center w-full p-0"
+            titleClassName="text-sm"
+            showDivider={false}
           />
-          <PositionDetail
-            data={[
-              {
-                title: 'Leverage',
-                value: positionHistory.entryLeverage ?? 0,
-                format: 'number',
-              },
-              {
-                title: 'Collateral',
-                value: positionHistory.collateralAmount,
-                format: 'currency',
-              },
-              {
-                title: 'Size',
-                value: positionHistory.entrySize,
-                format: 'currency',
-              },
-            ]}
-          />
-          <PositionDetail
-            data={[
-              {
-                title: 'Entry',
-                value: positionHistory.entryPrice,
-                format: 'currency',
-              },
-              {
-                title: 'Exit',
-                value: positionHistory.exitPrice,
-                format: 'currency',
-              },
-            ]}
-          />
-          <PositionDetail
-            data={[
-              {
-                title: 'Fees',
-                value: positionHistory.fees ?? 0,
-                format: 'currency',
-              },
-              {
-                title: 'Borrow Fees',
-                value: positionHistory.borrowFees ?? 0,
-                format: 'currency',
-              },
-            ]}
-          />{' '}
-          <PositionDetail
-            data={[
-              {
-                title: 'Mutagen',
-                value: positionHistory.totalPoints ?? 0,
-                format: 'number',
-                color: 'text-mutagen',
-              },
-            ]}
-            className="w-fit"
-          />
-        </div>
+        ) : (
+          <div className="flex flex-row flex-wrap md:grid md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[auto_2fr_1fr_1fr_auto] gap-3 p-2 border-b">
+            <PositionDetail
+              data={[
+                {
+                  title: 'Duration',
+                  value: formatTimeDifference(
+                    getFullTimeDifference(
+                      positionHistory.entryDate,
+                      positionHistory.exitDate || new Date(),
+                    ),
+                  ),
+                  format: 'time',
+                },
+              ]}
+            />
+            <PositionDetail
+              data={[
+                {
+                  title: 'Leverage',
+                  value: positionHistory.entryLeverage ?? 0,
+                  format: 'number',
+                },
+                {
+                  title: 'Collateral',
+                  value: positionHistory.collateralAmount,
+                  format: 'currency',
+                },
+                {
+                  title: 'Size',
+                  value: positionHistory.entrySize,
+                  format: 'currency',
+                },
+              ]}
+            />
+            <PositionDetail
+              data={[
+                {
+                  title: 'Entry',
+                  value: positionHistory.entryPrice,
+                  format: 'currency',
+                },
+                {
+                  title: 'Exit',
+                  value: positionHistory.exitPrice,
+                  format: 'currency',
+                },
+              ]}
+            />
+            <PositionDetail
+              data={[
+                {
+                  title: 'Fees',
+                  value: positionHistory.fees ?? 0,
+                  format: 'currency',
+                },
+                {
+                  title: 'Borrow Fees',
+                  value: positionHistory.borrowFees ?? 0,
+                  format: 'currency',
+                },
+              ]}
+            />{' '}
+            <PositionDetail
+              data={[
+                {
+                  title: 'Mutagen',
+                  value: positionHistory.totalPoints ?? 0,
+                  format: 'number',
+                  color: 'text-mutagen',
+                },
+              ]}
+              className="w-fit"
+            />
+          </div>
+        )}
         <AnimatePresence>
           {isExpanded ? (
             <EventBlocks
@@ -139,9 +206,9 @@ export default function PositionHistoryBlockV2({
           ) : null}
         </AnimatePresence>
         <div className="flex flex-row items-center justify-between">
-          <div className={'p-1.5 px-2 border-r border-r-bcolor'}>
+          <div className={'p-1.5 px-2 sm:border-r border-r-bcolor'}>
             <div
-              className="flex flex-row items-center gap-1 bg-[#142030] border border-inputcolor p-1 px-2 rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+              className="hidden sm:flex flex-row items-center gap-1 bg-[#142030] border border-inputcolor p-1 px-2 rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
               onClick={() => setIsExpanded(!isExpanded)}
             >
               <p className="text-sm font-interMedium">Events</p>
@@ -332,47 +399,47 @@ const NetValue = ({
   );
 };
 
-const PositionDetail = ({
-  data,
-  className,
-}: {
-  data: {
-    title: string;
-    value: string | number;
-    format?: 'number' | 'currency' | 'percentage' | 'time';
-    color?: string;
-  }[];
-  className?: string;
-}) => {
-  return (
-    <div
-      className={twMerge(
-        'flex flex-row items-center bg-secondary border border-bcolor rounded-xl w-full p-3 py-2',
-        className,
-      )}
-    >
-      {data.map((d, i) => (
-        <div
-          key={i}
-          className={twMerge(
-            'flex-1 border-r border-r-inputcolor last:border-r-0 px-6 first:pl-0',
-            data.length === 1 && 'px-0',
-          )}
-        >
-          <p className="text-xs opacity-50 whitespace-nowrap font-interMedium">
-            {d.title}
-          </p>
-          {typeof d.value === 'number' ? (
-            <FormatNumber
-              nb={d.value}
-              format={d.format}
-              className={twMerge('text-sm flex', d.color)}
-            />
-          ) : (
-            <p className="text-sm font-mono">{d.value}</p>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
+// const PositionDetail = ({
+//   data,
+//   className,
+// }: {
+//   data: {
+//     title: string;
+//     value: string | number;
+//     format?: 'number' | 'currency' | 'percentage' | 'time';
+//     color?: string;
+//   }[];
+//   className?: string;
+// }) => {
+//   return (
+//     <div
+//       className={twMerge(
+//         'flex flex-row items-center bg-secondary border border-bcolor rounded-xl w-full p-3 py-2',
+//         className,
+//       )}
+//     >
+//       {data.map((d, i) => (
+//         <div
+//           key={i}
+//           className={twMerge(
+//             'flex-1 border-r border-r-inputcolor last:border-r-0 px-6 first:pl-0',
+//             data.length === 1 && 'px-0',
+//           )}
+//         >
+//           <p className="text-xs opacity-50 whitespace-nowrap font-interMedium">
+//             {d.title}
+//           </p>
+//           {typeof d.value === 'number' ? (
+//             <FormatNumber
+//               nb={d.value}
+//               format={d.format}
+//               className={twMerge('text-sm flex', d.color)}
+//             />
+//           ) : (
+//             <p className="text-sm font-mono">{d.value}</p>
+//           )}
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };

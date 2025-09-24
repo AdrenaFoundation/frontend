@@ -38,6 +38,7 @@ export default function Table({
   viewMode = 'table',
   onViewModeChange,
   blockViewComponent,
+  blockWrapperClassname,
   // Sort-related props
   sortBy,
   sortDirection,
@@ -60,6 +61,7 @@ export default function Table({
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
   blockViewComponent?: (item: TableRowType, index: number) => React.ReactNode;
+  blockWrapperClassname?: string;
   // Sort-related props
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
@@ -67,8 +69,7 @@ export default function Table({
   // Pagination-related return values
   currentPage?: number;
   totalPages?: number;
-  setCurrentPage?: (page: number) => void;
-  loadPageData?: (page: number) => Promise<void>;
+  loadPageData?: (page: number) => Promise<void> | void;
   isLoading?: boolean;
 }) {
   // All hooks must be at the very top before any other logic
@@ -100,9 +101,7 @@ export default function Table({
   // Memoized calculations for sticky columns and table layout
   const { cumulativeLeft, cumulativeRight, minTableWidthPx } = useMemo(() => {
     // Parse width to rem when possible (number or '<num>rem'). Returns null otherwise
-    const parseWidthPx = (
-      width?: TableHeaderType['width'],
-    ): number | null => {
+    const parseWidthPx = (width?: TableHeaderType['width']): number | null => {
       if (typeof width === 'number') return width;
       if (typeof width === 'string') {
         const trimmed = width.trim();
@@ -202,10 +201,13 @@ export default function Table({
   const defaultBlockComponent = (item: TableRowType, index: number) => (
     <div
       key={`block-${index}`}
-      className={twMerge("p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors",
+      className={twMerge(
+        'p-4 bg-main border border-inputcolor rounded-lg hover:bg-third transition-colors',
         onRowClick ? 'cursor-pointer' : '',
       )}
-      onClick={() => { if (onRowClick) onRowClick(item.id as string | number); }}
+      onClick={() => {
+        if (onRowClick) onRowClick(item.id as string | number);
+      }}
     >
       <div className="grid grid-cols-2 gap-2">
         {headers.map((header) => {
@@ -281,7 +283,12 @@ export default function Table({
               height: typeof height === 'number' ? `${height}px` : height,
             }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div
+              className={twMerge(
+                'grid grid-cols-1 gap-3',
+                blockWrapperClassname,
+              )}
+            >
               {data.map((item, index) => BlockComponent(item, index))}
             </div>
           </div>

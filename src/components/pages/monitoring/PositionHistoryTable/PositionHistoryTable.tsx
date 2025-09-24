@@ -3,7 +3,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { AnimatePresence } from 'framer-motion';
 import { useCallback, useState } from 'react';
 import DatePicker from 'react-datepicker';
-import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -15,7 +14,7 @@ import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, EnrichedPositionApiV2 } from '@/types';
 
 import PositionHistoryBlockV2 from '../../trading/Positions/PositionHistoryBlockV2';
-import TableV2, { TableHeaderType, TableRowType } from '../Table';
+import Table, { TableHeaderType } from '../Table';
 import {
   BottomBar,
   CurrencyCell,
@@ -44,6 +43,7 @@ export default function PositionHistoryTable({
   totalPages,
   loadPageData,
   walletAddress,
+  breakpoint = '1280px',
 }: {
   positionsData: EnrichedPositionApiV2 | null;
   isLoadingPositionsHistory: boolean;
@@ -54,8 +54,9 @@ export default function PositionHistoryTable({
   totalPages: number;
   loadPageData: (page: number) => Promise<void>;
   walletAddress: string | null;
+  breakpoint?: string;
 }) {
-  const isMobile = useBetterMediaQuery('(max-width: 1280px)');
+  const isMobile = useBetterMediaQuery(`(max-width: ${breakpoint})`);
 
   const [activePosition, setActivePosition] =
     useState<EnrichedPositionApi | null>(null);
@@ -64,7 +65,6 @@ export default function PositionHistoryTable({
 
   const [isNative, setIsNative] = useState<boolean>(false);
   const [isPnlWithFees, setIsPnlWithFees] = useState<boolean>(showPnlWithFees);
-  const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
 
   // Export modal state
   const [isDownloading, setIsDownloading] = useState(false);
@@ -277,7 +277,6 @@ export default function PositionHistoryTable({
         pnl={isPnlWithFees ? p.pnl : p.pnl - p.fees}
         maxPnl={maxPnl}
         minPnl={minPnl}
-        isIndicator={viewMode === 'table'}
       />
     ),
     volume: <CurrencyCell value={p.volume} />,
@@ -297,59 +296,6 @@ export default function PositionHistoryTable({
     id: p.positionId,
   }));
 
-  const PositionBlockComponent = (item: TableRowType, index: number) => {
-    const position = positionsData.positions[index];
-
-    return (
-      <div
-        key={`position-block-${index}`}
-        className="bg-main border border-inputcolor rounded-md hover:bg-third transition-colors cursor-pointer relative"
-        onClick={() => {
-          setActivePosition(position);
-        }}
-      >
-        {item.status === 'liquidate' && (
-          <div className="absolute left-0 top-0 h-full w-[0.0625rem] bg-orange" />
-        )}
-
-        <div className="flex justify-between items-center mb-3 border-b border-inputcolor p-2 px-4">
-          <div className="flex items-center gap-2">
-            {item.token}
-            <div
-              className={twMerge(
-                'text-xs p-0.5 px-2 rounded-md',
-                position.side === 'long' ? 'bg-green/10' : 'bg-red/10',
-              )}
-            >
-              {item.side}
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-right text-xs opacity-50 font-regular">
-              PnL
-            </p>
-            {item.pnl}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 text-sm pb-2 px-4">
-          {headers.map((header) => {
-            const value = item[header.key];
-            if (['token', 'pnl', 'side'].includes(header.key)) return null;
-            return (
-              <div key={header.title}>
-                <div className="opacity-50 text-xs font-regular">
-                  {header.title}
-                </div>
-                <div className="text-sm">{value}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
       {showExportModal ? (
@@ -360,7 +306,7 @@ export default function PositionHistoryTable({
             setShowExportModal(false);
           }}
         >
-          <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
+          <div className="flex flex-col gap-6 p-6 min-w-[25rem] sm:min-w-[31.25rem]">
             {/* Year Option */}
             <div className="flex flex-col gap-3">
               <h3 className="text-xl text-white">Export by Year</h3>
@@ -501,7 +447,7 @@ export default function PositionHistoryTable({
       ) : null}
 
       <div className="border-t p-3">
-        <TableV2
+        <Table
           title="Position History"
           headers={headers}
           data={formattedData}
@@ -513,9 +459,6 @@ export default function PositionHistoryTable({
           totalPages={totalPages}
           height="20rem"
           isSticky={!!isMobile}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          blockViewComponent={PositionBlockComponent}
           onRowClick={(id) => {
             const position =
               positionsData.positions.find((p) => p.positionId === id) ?? null;
@@ -541,7 +484,7 @@ export default function PositionHistoryTable({
           <Modal
             close={() => setActivePosition(null)}
             className="p-5 w-full"
-            wrapperClassName="w-full max-w-[75rem] mt-0"
+            wrapperClassName="w-full md:max-w-[75rem] md:mt-0"
           >
             <PositionHistoryBlockV2
               positionHistory={activePosition}
