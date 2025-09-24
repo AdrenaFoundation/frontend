@@ -160,7 +160,7 @@ export default function CompetitionBanner({
                 ) : null}
 
                 {(adxRewards + jtoRewards + bonkRewards + usdcRewards) > 0 ? <div className='flex flex-col mt-8 z-10 items-center'>
-                    <div className='text-xs font-thin text-txtfade'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
+                    <div className='text-xs font-thin text-txtfade tracking-wider'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
 
                     <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-md flex-col')}>
                         {seasonName === 'factions'
@@ -198,7 +198,7 @@ export default function CompetitionBanner({
 
                         <div className='flex gap-1 rounded-md pt-2 pb-2 pl-4 pr-4'>
                             {seasonName === 'anniversary1' ?
-                                <div className="text-xs text-txtfade uppercase">Distributed in ADX</div>
+                                <div className="text-xs text-txtfade uppercase tracking-wider">Distributed in ADX</div>
                                 : null}
 
                             {adxRewards > 0 ?
