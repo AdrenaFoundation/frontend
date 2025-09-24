@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { useEffect } from 'react';
 
 import { Token } from '@/types';
