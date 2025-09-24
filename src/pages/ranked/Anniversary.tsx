@@ -49,7 +49,7 @@ function RafflePlace({
         }}
       />
 
-      <div className={twMerge('text-sm font-semibold')}>
+      <div className={twMerge('text-sm font-semibold text-white/90')}>
         {placeTitle} Raffle Winner
       </div>
 
@@ -77,7 +77,7 @@ function RaffleAdditionalPrize({
     <div className='text-center'>{tippyText}</div>
   }>
     <div className='border bg-main p-2 flex justify-between z-10 grow cursor-help hover:border-white/10 rounded-md md:w-[12em] gap-2 whitespace-nowrap'>
-      <div className={twMerge('text-sm font-semibold')}>
+      <div className={twMerge('text-sm font-semibold text-white/90')}>
         {title}
       </div>
 
@@ -137,7 +137,7 @@ export default function Anniversary() {
           />
         </div>
 
-        <div className="relative w-full flex-col items-center justify-center gap-6 p-8">
+        <div className="relative w-full flex-col items-center justify-center gap-4 p-8">
           <h1
             className={twMerge(
               'relative z-10 text-[1.5em] sm:text-[1.8em] md:text-[2em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
@@ -147,43 +147,56 @@ export default function Anniversary() {
             PRIZES
           </h1>
 
-          <div className='flex flex-row gap-5 mt-4 justify-center flex-wrap w-full'>
-            <div className='w-full lg:w-1/2 lg:max-w-[30em] flex flex-row flex-wrap p-4 border bg-main/40'>
-              <h2 className='text-sm ml-auto mr-auto mb-4'>Raffle Category</h2>
+          <div className='flex flex-row gap-2 mt-4 justify-center flex-wrap w-full'>
+            <div className='w-full lg:w-1/2 lg:max-w-[30em] flex flex-col p-4 border bg-main/40'>
+              <h2 className='text-sm ml-auto mr-auto mb-4 tracking-wider font-bold'>Raffle Category</h2>
 
-              <div className="relative z-10 w-full flex flex-row gap-2">
-                <RafflePlace placeTitle="1st" imageRef={firstImage} reward={10000} />
-                <RafflePlace placeTitle="2nd" imageRef={secondImage} reward={8000} />
-                <RafflePlace placeTitle="3rd" imageRef={thirdImage} reward={6000} />
-              </div>
+              <div className='w-full flex flex-row flex-wrap grow'>
+                <div className="relative z-10 w-full flex flex-row gap-2 grow">
+                  <RafflePlace placeTitle="1st" imageRef={firstImage} reward={10000} />
+                  <RafflePlace placeTitle="2nd" imageRef={secondImage} reward={8000} />
+                  <RafflePlace placeTitle="3rd" imageRef={thirdImage} reward={6000} />
+                </div>
 
-              <div className="relative z-10 w-full flex flex-row gap-2 flex-wrap mt-4">
-                <RafflePlace placeTitle="4th" imageRef={null} reward={4000} />
-                <RafflePlace placeTitle="5th" imageRef={null} reward={3000} />
-                <RafflePlace placeTitle="6th" imageRef={null} reward={2000} />
-                <RafflePlace placeTitle="7th" imageRef={null} reward={1500} />
-                <RafflePlace placeTitle="8th" imageRef={null} reward={1300} />
-                <RafflePlace placeTitle="9th" imageRef={null} reward={1000} />
-                <RafflePlace placeTitle="10th" imageRef={null} reward={800} />
+                <div className="relative z-10 w-full flex flex-row gap-2 flex-wrap mt-2">
+                  <RafflePlace placeTitle="4th" imageRef={null} reward={4000} />
+                  <RafflePlace placeTitle="5th" imageRef={null} reward={3000} />
+                  <RafflePlace placeTitle="6th" imageRef={null} reward={2000} />
+                  <RafflePlace placeTitle="7th" imageRef={null} reward={1500} />
+                  <RafflePlace placeTitle="8th" imageRef={null} reward={1300} />
+                  <RafflePlace placeTitle="9th" imageRef={null} reward={1000} />
+                  <RafflePlace placeTitle="10th" imageRef={null} reward={800} />
+                </div>
               </div>
             </div>
 
-            <div className='w-full lg:w-1/2 lg:max-w-[30em] flex flex-row flex-wrap'>
-              <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
-                <RaffleAdditionalPrize title="Best PnL %" reward={2000} tippyText="Trader with the highest single profitable trade by percentage." />
-                <RaffleAdditionalPrize title="Top Liquidation" reward={2000} tippyText="Trader with the largest single liquidation in USD value." />
-                <RaffleAdditionalPrize title="Top Borrow Fees" reward={2000} tippyText="Trader who paid the most borrow fees in USD." />
-                <RaffleAdditionalPrize title="Top Exit Fees" reward={2000} tippyText="Trader who paid the most exit fees in USD." />
-                <RaffleAdditionalPrize title="Most Trades" reward={500} tippyText="Trader who closed the most positions." />
-                <RaffleAdditionalPrize title="Most Consecutive Wins" reward={500} tippyText="Trader with the longest winning streak." />
-                <RaffleAdditionalPrize title="Most Consecutive Losses" reward={500} tippyText="Trader with the longest losing streak." />
-                <RaffleAdditionalPrize title="Most Consecutive Liquidations" reward={500} tippyText="Trader with the longest streak of liquidated trades." />
-                <RaffleAdditionalPrize title="First Blood" reward={200} tippyText="First trader to open and close a position in the competition." />
-                <RaffleAdditionalPrize title="Last Straw" reward={200} tippyText="Last trader to close a position before the competition ends." />
-                <RaffleAdditionalPrize title="Best Shitpost Tweet" reward={500} tippyText="Funniest or most viral shitpost about Adrena. Winner chosen by the team." />
-                <RaffleAdditionalPrize title="Best Anniversary Tweet" reward={500} tippyText="Best tweet celebrating Adrena’s anniversary. Winner chosen by the team." />
-                <RaffleAdditionalPrize title="Best Feature Idea" reward={500} tippyText="Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team." />
-                <RaffleAdditionalPrize title="Best Artwork" reward={500} tippyText="Coolest community artwork related to Adrena. Winner chosen by the team." />
+            <div className='w-full lg:w-1/2 lg:max-w-[30em] flex flex-row flex-wrap gap-2'>
+              <div className='w-full flex flex-row flex-wrap p-4 border bg-main/40'>
+                <h2 className='text-sm ml-auto mr-auto mb-4 tracking-wider font-bold'>Trading Category</h2>
+
+                <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
+                  <RaffleAdditionalPrize title="Best PnL %" reward={2000} tippyText="Trader with the highest single profitable trade by percentage." />
+                  <RaffleAdditionalPrize title="Top Liquidation" reward={2000} tippyText="Trader with the largest single liquidation in USD value." />
+                  <RaffleAdditionalPrize title="Top Borrow Fees" reward={2000} tippyText="Trader who paid the most borrow fees in USD." />
+                  <RaffleAdditionalPrize title="Top Exit Fees" reward={2000} tippyText="Trader who paid the most exit fees in USD." />
+                  <RaffleAdditionalPrize title="Most Trades" reward={500} tippyText="Trader who closed the most positions." />
+                  <RaffleAdditionalPrize title="Most Consecutive Wins" reward={500} tippyText="Trader with the longest winning streak." />
+                  <RaffleAdditionalPrize title="Most Consecutive Losses" reward={500} tippyText="Trader with the longest losing streak." />
+                  <RaffleAdditionalPrize title="Most Consecutive Liquidations" reward={500} tippyText="Trader with the longest streak of liquidated trades." />
+                  <RaffleAdditionalPrize title="First Blood" reward={200} tippyText="First trader to open and close a position in the competition." />
+                  <RaffleAdditionalPrize title="Last Straw" reward={200} tippyText="Last trader to close a position before the competition ends." />
+                </div>
+              </div>
+
+              <div className='w-full flex flex-row flex-wrap p-4 border bg-main/40'>
+                <h2 className='text-sm ml-auto mr-auto mb-4 tracking-wider font-bold'>Creative Category</h2>
+
+                <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
+                  <RaffleAdditionalPrize title="Best Shitpost Tweet" reward={500} tippyText="Funniest or most viral shitpost about Adrena. Winner chosen by the team." />
+                  <RaffleAdditionalPrize title="Best Anniversary Tweet" reward={500} tippyText="Best tweet celebrating Adrena’s anniversary. Winner chosen by the team." />
+                  <RaffleAdditionalPrize title="Best Feature Idea" reward={500} tippyText="Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team." />
+                  <RaffleAdditionalPrize title="Best Artwork" reward={500} tippyText="Coolest community artwork related to Adrena. Winner chosen by the team." />
+                </div>
               </div>
             </div>
           </div>
@@ -221,20 +234,22 @@ export default function Anniversary() {
         )}
       </div>
 
-      {activeProfile && (
-        <Modal
-          className="h-[80vh] w-full overflow-y-auto"
-          wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
-          title=""
-          close={() => setActiveProfile(null)}
-          isWrapped={false}
-        >
-          <ViewProfileModal
-            profile={activeProfile}
+      {
+        activeProfile && (
+          <Modal
+            className="h-[80vh] w-full overflow-y-auto"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
+            title=""
             close={() => setActiveProfile(null)}
-          />
-        </Modal>
-      )}
-    </div>
+            isWrapped={false}
+          >
+            <ViewProfileModal
+              profile={activeProfile}
+              close={() => setActiveProfile(null)}
+            />
+          </Modal>
+        )
+      }
+    </div >
   );
 }
