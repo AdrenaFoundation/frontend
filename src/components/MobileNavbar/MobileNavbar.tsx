@@ -41,7 +41,7 @@ export default function MobileNavbar({
             )}
             key={page.name}
           >
-            <h5 className="whitespace-nowrap font-medium">
+            <h5 className="whitespace-nowrap font-regular">
               {page.name === 'Provide Liquidity' ? 'Buy ALP' : page.name}
             </h5>
           </Link>

@@ -58,7 +58,7 @@ export default function TPSLModeSelector({
           setStopLossInput(null);
         }}
       >
-        <h5 className='font-interBold'>{(!isTPSL || !isConnected) ? 'Take Profit / Stop Loss' : ''}</h5>
+        <h5>{(!isTPSL || !isConnected) ? 'Take Profit / Stop Loss' : ''}</h5>
         <label className={twMerge("flex items-center ml-1 cursor-pointer", !isConnected ? "opacity-50" : "")}>
           <Switch
             className={twMerge("mr-0.5", isTPSL ? "bg-green" : "bg-inputcolor")}

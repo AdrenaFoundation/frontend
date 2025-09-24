@@ -316,7 +316,7 @@ function ChatTitle({
             />
           </div>
         ) : null}
-        <p className="text-base font-boldy capitalize">
+        <p className="text-base font-semibold capitalize">
           <span className="opacity-50 text-base">
             # {!isChatOpen && !isLoading ? 'Chat:' : null}
           </span>

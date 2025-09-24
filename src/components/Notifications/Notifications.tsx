@@ -109,7 +109,7 @@ export const Notifications = ({
                     }}
                   />
                 </div>
-                <p className="text-sm font-boldy opacity-75">
+                <p className="text-sm font-semibold opacity-75">
                   Supercharge your Adrena notifications
                 </p>
               </div>
@@ -123,7 +123,7 @@ export const Notifications = ({
                   {['email', 'telegram', 'announcements'].map((point, i) => (
                     <span
                       key={point + i}
-                      className="text-sm font-boldy opacity-30 px-3 flex-shrink-0"
+                      className="text-sm font-semibold opacity-30 px-3 flex-shrink-0"
                     >
                       {point}
                     </span>
@@ -141,7 +141,7 @@ export const Notifications = ({
             key={'enable-adrena-notifications'}
             className="flex flex-row  items-center justify-between w-full rounded-md border border-white/10 bg-main mb-3 p-3"
           >
-            <p className="text-sm font-boldy">Enable in-app notifications</p>
+            <p className="text-sm font-semibold">Enable in-app notifications</p>
             <Button
               title="Enable"
               size="sm"

@@ -27,7 +27,7 @@ export default function MintAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-semibold">
                 <CopyButton
                   textToCopy={window.adrena.client.lmTokenMint.toBase58()}
                   notificationTitle="ADX Mint address copied to clipboard"
@@ -49,7 +49,7 @@ export default function MintAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-semibold">
                 <CopyButton
                   textToCopy={window.adrena.client.lpTokenMint.toBase58()}
                   notificationTitle="ALP Mint address copied to clipboard"
@@ -75,7 +75,7 @@ export default function MintAccounts({
               const rows = [
                 {
                   rowTitle: (
-                    <div className="flex items-center font-boldy">
+                    <div className="flex items-center font-semibold">
                       <CopyButton
                         textToCopy={custody.mint.toBase58()}
                         notificationTitle={`${custody.tokenInfo.symbol} Mint address copied to clipboard`}
@@ -100,7 +100,7 @@ export default function MintAccounts({
               ) {
                 rows.push({
                   rowTitle: (
-                    <div className="flex items-center font-boldy">
+                    <div className="flex items-center font-semibold">
                       <CopyButton
                         textToCopy={custody.tradeMint.toBase58()}
                         notificationTitle={`${custody.tradeTokenInfo.symbol} Mint address copied to clipboard`}

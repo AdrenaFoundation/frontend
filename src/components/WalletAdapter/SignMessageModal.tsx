@@ -104,7 +104,7 @@ Nonce: ${nonce}`;
           title="Verify Wallet Address"
         >
           <div className="flex flex-col gap-2 pb-3">
-            <p className="text-sm font-boldy">
+            <p className="text-sm font-semibold">
               Please verify your wallet address by signing a message to prove
               ownership.
             </p>

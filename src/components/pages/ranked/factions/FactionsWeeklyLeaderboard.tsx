@@ -120,7 +120,7 @@ export default function FactionsWeeklyLeaderboard({
                                 <p
                                     key={`trader-${i}`}
                                     className={twMerge(
-                                        'text-xs font-boldy hover:underline transition duration-300 cursor-pointer',
+                                        'text-xs font-semibold hover:underline transition duration-300 cursor-pointer',
                                         title ? team === 'A' ? 'text-[#FA6724]' : 'text-[#5AA6FA]' : '',
                                     )}
                                     onClick={() => {
@@ -137,7 +137,7 @@ export default function FactionsWeeklyLeaderboard({
                                 <p
                                     key={`trader-${i}`}
                                     className={twMerge(
-                                        'text-xs text-txtfade font-boldy hover:underline transition duration-300 cursor-pointer',
+                                        'text-xs text-txtfade font-semibold hover:underline transition duration-300 cursor-pointer',
                                     )}
                                     onClick={() => {
                                         onClickUserProfile(new PublicKey(d.userWallet));
@@ -149,7 +149,7 @@ export default function FactionsWeeklyLeaderboard({
 
 
                             {d.title !== null ? (
-                                <div className="text-[0.68em] font-boldy text-nowrap text-txtfade">
+                                <div className="text-[0.68em] font-semibold text-nowrap text-txtfade">
                                     {USER_PROFILE_TITLES[d.title]}
                                 </div>
                             ) : null}
@@ -175,7 +175,7 @@ export default function FactionsWeeklyLeaderboard({
                     >
                         <FormatNumber
                             nb={d.totalPoints}
-                            className="text-xs font-boldy text-[#e47dbb]"
+                            className="text-xs font-semibold text-[#e47dbb]"
                             precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
                             isDecimalDimmed={false}
                         />
@@ -188,7 +188,7 @@ export default function FactionsWeeklyLeaderboard({
                         {d.volume ? (
                             <FormatNumber
                                 nb={d.volume}
-                                className="text-xs font-boldy"
+                                className="text-xs font-semibold"
                                 format='currency'
                                 prefix='$'
                                 isDecimalDimmed={false}
@@ -201,7 +201,7 @@ export default function FactionsWeeklyLeaderboard({
                     <Tippy
                         key={`rewards-${i}`}
                         content={
-                            <div className="text-xs font-boldy min-w-[15em]">
+                            <div className="text-xs font-semibold min-w-[15em]">
                                 <div className='flex gap-1 justify-center p-2 bg-third rounded mb-1'>
                                     <div className="flex items-center gap-1">
                                         <Image
@@ -215,7 +215,7 @@ export default function FactionsWeeklyLeaderboard({
                                     <div className='flex items-center gap-1'>
                                         <FormatNumber
                                             nb={d.rewards?.ADX || 0}
-                                            className="text-xs font-boldy"
+                                            className="text-xs font-semibold"
                                             precision={0}
                                             isDecimalDimmed={false}
                                         />
@@ -235,7 +235,7 @@ export default function FactionsWeeklyLeaderboard({
                                     <div className='flex items-center gap-1'>
                                         <FormatNumber
                                             nb={d.rewards?.BONK || 0}
-                                            className="text-xs font-boldy"
+                                            className="text-xs font-semibold"
                                             precision={0}
                                             isDecimalDimmed={false}
                                         />
@@ -255,7 +255,7 @@ export default function FactionsWeeklyLeaderboard({
                                     <div className='flex items-center gap-1'>
                                         <FormatNumber
                                             nb={d.rewards?.JTO || 0}
-                                            className="text-xs font-boldy"
+                                            className="text-xs font-semibold"
                                             precision={0}
                                             isDecimalDimmed={false}
                                         />
@@ -270,7 +270,7 @@ export default function FactionsWeeklyLeaderboard({
                             {d.volume ? (
                                 <FormatNumber
                                     nb={d.volume}
-                                    className="sm:hidden text-xs font-boldy"
+                                    className="sm:hidden text-xs font-semibold"
                                     format='currency'
                                     prefix='$'
                                     isDecimalDimmed={false}
@@ -282,7 +282,7 @@ export default function FactionsWeeklyLeaderboard({
 
                             <FormatNumber
                                 nb={totalRewardUsd}
-                                className="text-xs font-boldy text-[#24af54]"
+                                className="text-xs font-semibold text-[#24af54]"
                                 format='currency'
                                 prefix='$'
                                 isDecimalDimmed={false}
@@ -308,7 +308,7 @@ export default function FactionsWeeklyLeaderboard({
             className={twMerge('w-full max-w-[35em] flex flex-col items-center')}
         >
             <div className='flex flex-col items-center justify-center mb-8'>
-                <div className='font-archivo tracking-[0.3em] uppercase'>{team === 'A' ? userProfile && userProfile.team === TEAMS_MAPPING.BONK ? 'YOUR TEAM!' : 'BONK TEAM' : userProfile && userProfile.team === TEAMS_MAPPING.JITO ? 'YOUR TEAM!' : 'JITO TEAM'}</div>
+                <div className='tracking-[0.3em] uppercase'>{team === 'A' ? userProfile && userProfile.team === TEAMS_MAPPING.BONK ? 'YOUR TEAM!' : 'BONK TEAM' : userProfile && userProfile.team === TEAMS_MAPPING.JITO ? 'YOUR TEAM!' : 'JITO TEAM'}</div>
 
                 {wallet && userProfile === false ? <div className='mt-3 text-sm'>
                     Create a profile to join the competition!

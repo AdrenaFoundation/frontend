@@ -133,7 +133,7 @@ export default function SuperchargedFooter({
           >
             <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
 
-            <p className="text-xs font-interMedium">Audited by</p>
+            <p className="text-xs font-regular">Audited by</p>
 
             <Image
               src={ottersecLogo}
@@ -177,7 +177,7 @@ export default function SuperchargedFooter({
                     </div>
 
                     <div>
-                      <p className="text-base font-interMedium">
+                      <p className="text-base font-regular">
                         Offside Labs Audit.pdf
                       </p>
                       <p className="text-xs font-mono opacity-50">
@@ -203,7 +203,7 @@ export default function SuperchargedFooter({
                     </div>
 
                     <div>
-                      <p className="text-base font-interMedium">
+                      <p className="text-base font-regular">
                         Ottersec Audit.pdf
                       </p>
                       <p className="text-xs font-mono opacity-50">July 2024</p>
@@ -230,7 +230,7 @@ export default function SuperchargedFooter({
               height={12}
               width={12}
             />
-            <p className="text-xs font-interMedium capitalize">
+            <p className="text-xs capitalize">
               {priorityFeeOption}
               <span className="font-mono ml-1 text-xs">
                 @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
@@ -252,7 +252,7 @@ export default function SuperchargedFooter({
               height={12}
               width={12}
             />
-            <p className="text-xs font-interMedium"> {activeRpc.name} </p>
+            <p className="text-xs font-regular"> {activeRpc.name} </p>
             <div
               className={twMerge(
                 'w-1.5 h-1.5 bg-green rounded-full ml-1',
@@ -306,7 +306,7 @@ export default function SuperchargedFooter({
                 width={12}
               />
 
-              <p className="text-sm font-interMedium capitalize">
+              <p className="text-sm capitalize">
                 <span className="opacity-50">#</span> {title}
               </p>
 

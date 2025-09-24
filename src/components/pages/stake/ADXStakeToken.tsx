@@ -40,7 +40,7 @@ export default function ADXStakeToken({
       <div className="flex flex-col gap-5 justify-between w-full px-5">
         <div className="mt-4">
           <div className="flex flex-row items-center justify-between mb-1">
-            <h5 className="font-interSemibold"> Amount</h5>
+            <h5 className="font-semibold"> Amount</h5>
 
             <div
               className="text-sm flex items-center justify-end h-6 cursor-pointer"
@@ -91,7 +91,7 @@ export default function ADXStakeToken({
               height={18}
               alt="lock icon"
             />
-            <h5 className="text-sm font-interSemibold">Lock duration (days)</h5>
+            <h5 className="text-sm font-semibold">Lock duration (days)</h5>
           </div>
 
           <SelectOptions

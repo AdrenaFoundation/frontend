@@ -196,7 +196,7 @@ export default function Referrer({
           )}
 
           {allUserProfiles !== null && allUserProfiles.length === 0 ? (
-            <div className="w-full items-center justify-center flex font-archivo text-sm opacity-80 pt-8 pb-8">
+            <div className="w-full items-center justify-center flex text-sm opacity-80 pt-8 pb-8">
               No referee yet. Share your referral link!
             </div>
           ) : null}

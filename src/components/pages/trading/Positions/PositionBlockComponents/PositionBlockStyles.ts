@@ -8,12 +8,12 @@ export const POSITION_BLOCK_STYLES = {
   },
   text: {
     header: 'text-grayLabel text-xxs font-normal font-mono',
-    white: 'text-whiteLabel text-xs font-medium font-mono',
-    gray: 'text-grayLabel text-xs font-medium font-mono',
-    orange: 'text-orange text-xs font-medium font-mono',
-    purple: 'text-purpleColor text-xs font-medium font-mono',
-    blue: 'text-blue text-xs font-medium font-mono',
-    red: 'text-redbright text-xs font-medium font-mono',
+    white: 'text-whiteLabel text-xs font-mono',
+    gray: 'text-grayLabel text-xs font-mono',
+    orange: 'text-orange text-xs font-mono',
+    purple: 'text-purpleColor text-xs font-mono',
+    blue: 'text-blue text-xs font-mono',
+    red: 'text-redbright text-xs font-mono',
   },
   column: {
     base: 'flex flex-col',

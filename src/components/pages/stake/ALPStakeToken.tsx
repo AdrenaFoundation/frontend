@@ -91,7 +91,7 @@ export default function ALPStakeToken({
               height={18}
               alt="lock icon"
             />
-            <h5 className="text-sm font-medium ">Lock duration (days)</h5>
+            <h5 className="text-sm ">Lock duration (days)</h5>
           </div>
 
           <TabSelect

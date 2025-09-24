@@ -294,7 +294,7 @@ export default function FooterStats({
               animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
               exit={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
               transition={{ duration: 0.3 }}
-              className="text-sm font-interMedium"
+              className="text-sm font-regular"
             >
               Open monitoring page
             </motion.p>
@@ -324,7 +324,7 @@ export default function FooterStats({
             key={stat.label + i}
             className="flex flex-row items-center flex-shrink-0"
           >
-            <span className="text-xs font-interMedium opacity-50 mr-1">
+            <span className="text-xs opacity-50 mr-1">
               {stat.label}
             </span>
             <FormatNumber
@@ -365,7 +365,7 @@ export default function FooterStats({
                 <Menu
                   trigger={
                     <div className="flex flex-row items-center gap-1 mb-1 opacity-50 hover:opacity-100 transition-opacity duration-300">
-                      <p className="text-xs font-interMedium">
+                      <p className="text-xs font-regular">
                         24h {activeToken} Price
                       </p>
 
@@ -453,7 +453,7 @@ export default function FooterStats({
                     className="inline-flex ml-0 opacity-30"
                     text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
                   />
-                  <p className="text-xs opacity-30 font-boldy">
+                  <p className="text-xs opacity-30 font-semibold">
                     Avail. long liq.
                   </p>
                   <AnimatePresence mode="wait">
@@ -522,7 +522,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs font-interMedium opacity-50">
+                  <p className="text-xs opacity-50">
                     {' '}
                     24h Volume
                   </p>
@@ -553,7 +553,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs font-interMedium opacity-50">AUM</p>
+                  <p className="text-xs opacity-50">AUM</p>
                   <FormatNumber
                     nb={aumUsd}
                     className="text-base"
@@ -581,7 +581,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs font-interMedium opacity-50">
+                  <p className="text-xs opacity-50">
                     Open Interest
                   </p>
                   <FormatNumber

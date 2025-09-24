@@ -214,40 +214,40 @@ export default function UserVest({
                 <ul className="flex flex-row gap-3 md:gap-9 px-6 md:px-9 p-3 z-10 h-[6em] items-center w-full justify-center bg-third rounded-md mt-4">
                   <li className="flex flex-col items-center justify-center">
                     <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">{days}</p>
-                    <p className="text-center text-sm font-boldy tracking-widest">Days</p>
+                    <p className="text-center text-sm font-semibold tracking-widest">Days</p>
                   </li>
 
                   <li className="h-[50%] w-[1px] bg-[#ffffff10] rounded-full" />
 
                   <li className="flex flex-col items-center justify-center">
                     <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">{hours}</p>
-                    <p className="text-center text-sm font-boldy tracking-widest">Hours</p>
+                    <p className="text-center text-sm font-semibold tracking-widest">Hours</p>
                   </li>
 
                   <li className="h-[50%] w-[1px] bg-[#ffffff10] rounded-full" />
 
                   <li className="flex flex-col items-center justify-center">
                     <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">{minutes}</p>
-                    <p className="text-center text-sm font-boldy tracking-widest">Minutes</p>
+                    <p className="text-center text-sm font-semibold tracking-widest">Minutes</p>
                   </li>
 
                   <li className="h-[50%] w-[1px] bg-[#ffffff10] rounded-full" />
 
                   <li className="flex flex-col items-center justify-center">
                     <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">{seconds}</p>
-                    <p className="text-center text-sm font-boldy tracking-widest">seconds</p>
+                    <p className="text-center text-sm font-semibold tracking-widest">seconds</p>
                   </li>
                 </ul>
               </div>
 
               <div className='flex flex-col items-center justify-center gap-2 mt-8 pb-8'>
                 <div className='flex gap-2'>
-                  <div className='text-sm font-boldy text-txtfade'>{new Date(userVest.unlockStartTimestamp.toNumber() * 1000).toLocaleDateString()}</div>
-                  <div className='text-sm font-boldy text-txtfade'>-</div>
-                  <div className='text-sm font-boldy text-txtfade'>{new Date(userVest.unlockEndTimestamp.toNumber() * 1000).toLocaleDateString()}</div>
+                  <div className='text-sm font-semibold text-txtfade'>{new Date(userVest.unlockStartTimestamp.toNumber() * 1000).toLocaleDateString()}</div>
+                  <div className='text-sm font-semibold text-txtfade'>-</div>
+                  <div className='text-sm font-semibold text-txtfade'>{new Date(userVest.unlockEndTimestamp.toNumber() * 1000).toLocaleDateString()}</div>
                 </div>
 
-                <div className='text-txtfade text-xs font-boldy opacity-60'>vest period</div>
+                <div className='text-txtfade text-xs font-semibold opacity-60'>vest period</div>
               </div>
 
               {isDelegate ?
@@ -255,7 +255,7 @@ export default function UserVest({
                   <div className="h-[1px] w-full bg-bcolor mb-6" />
 
                   <div className='flex gap-4 pb-8 flex-col items-center justify-center'>
-                    <div className='text-sm text-txtfade font-boldy'>As delegate of this vest you can</div>
+                    <div className='text-sm text-txtfade font-semibold'>As delegate of this vest you can</div>
 
                     <div className='flex gap-4 flex-col sm:flex-row'>
                       <Button
@@ -329,7 +329,7 @@ export default function UserVest({
 
                 <div className="flex flex-col gap-2 w-full p-5 max-w-[40em] items-center justify-center self-center">
                   <div className='mb-4 gap-2 flex flex-col bg-[#223664] border p-4'>
-                    <div className='text-sm font-boldy text-center'>A delegate wallet lets you assign another wallet to claim your vested ADX tokens on your behalf. This is useful if you want to use a different wallet than the original one to manage your claims. However, a delegate wallet cannot change the delegation to another wallet. It can only claim tokens either to the original wallet or to itself.</div>
+                    <div className='text-sm font-semibold text-center'>A delegate wallet lets you assign another wallet to claim your vested ADX tokens on your behalf. This is useful if you want to use a different wallet than the original one to manage your claims. However, a delegate wallet cannot change the delegation to another wallet. It can only claim tokens either to the original wallet or to itself.</div>
                   </div>
 
                   <div className='w-full relative'>
@@ -347,7 +347,7 @@ export default function UserVest({
                   </div>
 
                   <div className='min-h-[1.5em] flex items-center justify-center'>
-                    {delegateError ? <div className='text-orange text-sm'>{delegateError}</div> : proofedUpdatedDelegate ? <div className='text-sm flex gap-1 font-boldy text-txtfade'>
+                    {delegateError ? <div className='text-orange text-sm'>{delegateError}</div> : proofedUpdatedDelegate ? <div className='text-sm flex gap-1 font-semibold text-txtfade'>
                       check <OnchainAccountInfo address={proofedUpdatedDelegate} shorten={true} />
                     </div> : null}
                   </div>

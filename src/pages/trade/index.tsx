@@ -727,7 +727,7 @@ export default function Trade({
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
               <Button
-                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
+                className="bg-transparent font-semibold border-[#10e1a3] text-[#10e1a3]"
                 title="Long"
                 variant="outline"
                 size="lg"
@@ -739,7 +739,7 @@ export default function Trade({
             </li>
             <li>
               <Button
-                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
+                className="bg-transparent font-semibold border-[#f24f4f] text-[#f24f4f]"
                 title="Short"
                 variant="outline"
                 size="lg"
@@ -751,7 +751,7 @@ export default function Trade({
             </li>
             <li>
               <Button
-                className="bg-transparent font-boldy border-white text-white"
+                className="bg-transparent font-semibold border-white text-white"
                 title="Swap"
                 variant="outline"
                 size="lg"

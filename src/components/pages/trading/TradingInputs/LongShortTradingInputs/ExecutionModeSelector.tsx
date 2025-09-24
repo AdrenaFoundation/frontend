@@ -14,7 +14,7 @@ export const ExecutionModeSelector = ({
     <div className="flex flex-row items-center justify-between gap-3 p-3 px-4 bg-third border rounded-md cursor-pointer select-none mt-4"
         onClick={() => onModeChange(!isLimitOrder)}
     >
-        <h5 className="flex items-center text-sm font-interBold">
+        <h5 className="flex items-center text-sm">
             Limit order
         </h5>
 
@@ -30,7 +30,7 @@ export const ExecutionModeSelector = ({
         {/* <div className='w-full h-10 flex mt-2 justify-between gap-1'>
             <div
                 className={twMerge(
-                    'w-1/2 h-full flex items-center bg-bcolor opacity-50 border rounded-md justify-center text-sm cursor-pointer font-archivo transition duration-300',
+                    'w-1/2 h-full flex items-center bg-bcolor opacity-50 border rounded-md justify-center text-sm cursor-pointer transition duration-300',
                     !isLimitOrder && 'opacity-100 border-white/20'
                 )}
                 onClick={() => onModeChange(false)}
@@ -40,7 +40,7 @@ export const ExecutionModeSelector = ({
 
             <div
                 className={twMerge(
-                    'w-1/2 h-full flex flex-col items-center bg-bcolor opacity-50 border rounded-md justify-center text-sm cursor-pointer font-archivo',
+                    'w-1/2 h-full flex flex-col items-center bg-bcolor opacity-50 border rounded-md justify-center text-sm cursor-pointer font-regular',
                     isLimitOrder && 'opacity-100 border-white/20'
                 )}
                 onClick={() => onModeChange(true)}

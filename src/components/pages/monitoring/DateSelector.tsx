@@ -59,7 +59,7 @@ export default function DateSelector({
         }}
         reversed={true}
         className="flex items-center"
-        selectedTextClassName="text-sm font-interMedium"
+        selectedTextClassName="text-sm font-regular"
         menuTextClassName="text-sm"
         menuClassName="px-3 py-1"
         menuOpenBorderClassName="bg-transparent"
@@ -110,7 +110,7 @@ export default function DateSelector({
                     setStartDate(date.toISOString());
                   }
                 }}
-                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                 minDate={new Date('2023-09-25')}
                 maxDate={new Date()}
               />
@@ -124,7 +124,7 @@ export default function DateSelector({
                     setEndDate(date.toISOString());
                   }
                 }}
-                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                 minDate={new Date('2023-09-25')}
                 maxDate={new Date()}
               />

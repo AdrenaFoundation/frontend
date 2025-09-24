@@ -151,7 +151,7 @@ export default function StakeLanding({
               d === 0 ? 'liquid' : `${d}d`,
             )}
             columnTitlesClassName="text-lg sm:text-sm text-white sm:opacity-50"
-            rowTitleClassName="text-base sm:text-sm text-white opacity-50 uppercase font-boldy"
+            rowTitleClassName="text-base sm:text-sm text-white opacity-50 uppercase font-semibold"
             columnWrapperClassName="ml-1"
             data={[
               {

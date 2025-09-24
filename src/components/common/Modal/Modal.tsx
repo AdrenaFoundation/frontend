@@ -134,7 +134,7 @@ export default function Modal({
                     height={40}
                   />
                   {title && (
-                    <div className="ml-4 text-xl font-archivo">{title}</div>
+                    <div className="ml-4 text-xl font-regular">{title}</div>
                   )}
 
                   {customTitle}

@@ -229,7 +229,7 @@ export default function PendingRewardsSection({
                     <span className="text-txtfade flex items-center">
                         <Tippy
                             content={
-                                <p className="font-medium">
+                                <p className="font-regular">
                                     Each round duration is ~6h (+/- some jitter due to Sablier
                                     on chain decentralized execution).
                                     <br />

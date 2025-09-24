@@ -60,7 +60,7 @@ export default function PoolRatios({
                       height="24"
                     />
 
-                    <p className="text-lg font-boldy">{token.symbol}</p>
+                    <p className="text-lg font-semibold">{token.symbol}</p>
                   </div>
                   <div
                     className={twMerge(
@@ -105,11 +105,11 @@ export default function PoolRatios({
                         )}
                       >
                         {currentRatio < minRatio ? (
-                          <div className="mr-1 font-boldy">{'<<<'}</div>
+                          <div className="mr-1 font-semibold">{'<<<'}</div>
                         ) : null}
                         Current Ratio: {currentRatio}%
                         {currentRatio > maxRatio ? (
-                          <div className="ml-1 font-boldy">{'>>>'}</div>
+                          <div className="ml-1 font-semibold">{'>>>'}</div>
                         ) : null}
                       </div>
 

@@ -149,7 +149,7 @@ export default function Header({
                   height={12}
                 />
               )}
-              <h5 className="whitespace-nowrap font-medium">{page.name}</h5>
+              <h5 className="whitespace-nowrap font-regular">{page.name}</h5>
 
               {page.name === 'Ranked' && (
                 <Image

@@ -68,7 +68,7 @@ export default function DetailedMonitoring({
   //
   // I know the following is not the best naming convention, but it allow tweaking the styles easily
   //
-  const titleClassName = 'text-lg opacity-50 font-boldy';
+  const titleClassName = 'text-lg opacity-50 font-semibold';
 
   const handleTabChange = (tab: (typeof tabs)[number]) => {
     setSelectedTab(tab);
@@ -105,7 +105,7 @@ export default function DetailedMonitoring({
 
       <Menu
         trigger={
-          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-md cursor-pointer text-lg font-boldy select-none">
+          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-md cursor-pointer text-lg font-semibold select-none">
             {selectedTab}
 
             <Image

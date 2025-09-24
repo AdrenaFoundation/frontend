@@ -41,12 +41,12 @@ export function PositionsBlocks({
         <>
           {window.location.pathname === '/trade' ? (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
-              <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
+              <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
                 Loading ...
               </div>
             </div>
           ) : (
-            <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-boldy grow">
+            <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-semibold grow">
               Loading ...
             </div>
           )}
@@ -57,7 +57,7 @@ export function PositionsBlocks({
         <>
           {window.location.pathname === '/trade' ? (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
-              <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
+              <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
                 No opened position
               </div>
             </div>

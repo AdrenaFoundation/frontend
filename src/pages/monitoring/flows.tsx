@@ -88,7 +88,7 @@ export default function Flow({
                 }}
                 reversed={true}
                 className="h-8 w-28 flex items-center px-2"
-                selectedTextClassName="text-xs font-medium flex-1 text-left"
+                selectedTextClassName="text-xs flex-1 text-left"
                 menuTextClassName="text-xs"
                 menuClassName="w-28"
                 options={[
@@ -119,7 +119,7 @@ export default function Flow({
                           setStartDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
@@ -133,7 +133,7 @@ export default function Flow({
                           setEndDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
@@ -213,7 +213,7 @@ export default function Flow({
                 >
                   <Button
                     onClick={() => setShowTopTraders(true)}
-                    className="font-boldy rounded-md ml-auto mr-auto"
+                    className="font-semibold rounded-md ml-auto mr-auto"
                     title="Show Top 100 Traders"
                     variant="outline"
                     size="lg"

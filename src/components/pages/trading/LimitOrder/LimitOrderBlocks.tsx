@@ -39,7 +39,7 @@ export function LimitOrderBlocks({
     if (!limitOrders || limitOrders.length === 0) {
         return (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center w-full">
-                <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
+                <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
                     No limit orders
                 </div>
             </div>

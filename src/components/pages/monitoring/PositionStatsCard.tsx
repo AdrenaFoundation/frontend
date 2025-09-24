@@ -72,7 +72,7 @@ export default function PositionStatsCard({
         {stats.map((stat) => (
           <div key={stat.side} className="flex flex-col gap-3">
             <h4
-              className={`text-sm font-medium ${stat.side === 'long' ? 'text-green' : 'text-redbright'}`}
+              className={`text-sm ${stat.side === 'long' ? 'text-green' : 'text-redbright'}`}
             >
               {stat.side.toUpperCase()}
             </h4>
@@ -84,7 +84,7 @@ export default function PositionStatsCard({
                   nb={stat.countPositions}
                   precision={0}
                   minimumFractionDigits={0}
-                  className="font-medium"
+                  className="font-regular"
                 />
               </div>
 
@@ -96,7 +96,7 @@ export default function PositionStatsCard({
                   minimumFractionDigits={0}
                   format="currency"
                   className={twMerge(
-                    'font-medium',
+                    'font-regular',
                     stat.totalPnl < 0 ? 'text-redbright' : 'text-green',
                   )}
                   isDecimalDimmed={false}
@@ -111,7 +111,7 @@ export default function PositionStatsCard({
                     precision={0}
                     minimumFractionDigits={0}
                     format="currency"
-                    className="font-medium"
+                    className="font-regular"
                   />
                   <span className="text-txtfade ml-1">
                     (avg.{' '}
@@ -135,7 +135,7 @@ export default function PositionStatsCard({
                     minimumFractionDigits={0}
                     format="currency"
                     className={twMerge(
-                      'font-medium mr-1',
+                      'mr-1',
                       stat.minPnl < 0 ? 'text-redbright' : 'text-green',
                     )}
                   />
@@ -146,7 +146,7 @@ export default function PositionStatsCard({
                     minimumFractionDigits={0}
                     format="currency"
                     className={twMerge(
-                      'font-medium ml-1',
+                      'ml-1',
                       stat.maxPnl < 0 ? 'text-redbright' : 'text-green',
                     )}
                   />
@@ -161,7 +161,7 @@ export default function PositionStatsCard({
                     precision={0}
                     minimumFractionDigits={0}
                     format="currency"
-                    className="font-medium text-txtfade"
+                    className="text-txtfade"
                   />{' '}
                   /{' '}
                   <FormatNumber
@@ -169,7 +169,7 @@ export default function PositionStatsCard({
                     precision={0}
                     minimumFractionDigits={0}
                     format="currency"
-                    className="font-medium"
+                    className="font-regular"
                   />
                 </div>
               </div>

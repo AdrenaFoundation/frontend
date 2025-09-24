@@ -127,7 +127,7 @@ export default function TableLegacy({
           <div
             key={`columns-${title}-${i}`}
             className={twMerge(
-              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
+              'text-lg font-semibold overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
               columnTitlesClassName,
             )}
             style={{

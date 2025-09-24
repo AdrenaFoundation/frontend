@@ -137,8 +137,8 @@ export default function FavoritesBar({
               />
               <p
                 className={twMerge(
-                  'text-base font-boldy min-w-0 truncate',
-                  isSelected && 'font-interBold',
+                  'text-base font-semibold min-w-0 truncate',
+                  isSelected && 'font-bold',
                 )}
               >
                 {symbol}

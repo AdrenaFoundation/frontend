@@ -298,7 +298,7 @@ export default function ALPSwapSell({
               className="w-4 h-4"
               alt="token logo"
             />
-            <p className="text-base font-boldy">{collateralToken?.symbol}</p>
+            <p className="text-base font-semibold">{collateralToken?.symbol}</p>
           </div>
 
           {fee !== null ? (

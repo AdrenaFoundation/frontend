@@ -143,7 +143,7 @@ export default function UpgradeLockedStake({
       <div className="flex flex-col gap-5 justify-between w-full pl-6 pr-6">
         <div className="mt-4">
           <div className="flex flex-row items-center justify-between mb-1">
-            <h5 className="font-interSemibold"> Additional Amount</h5>
+            <h5 className="font-semibold"> Additional Amount</h5>
 
             <div className="text-sm flex items-center justify-end h-6">
               <div
@@ -202,7 +202,7 @@ export default function UpgradeLockedStake({
               height={18}
               alt="lock icon"
             />
-            <h5 className="text-sm font-interSemibold">New Lock Duration (days)</h5>
+            <h5 className="text-sm font-semibold">New Lock Duration (days)</h5>
           </div>
 
           <SelectOptions

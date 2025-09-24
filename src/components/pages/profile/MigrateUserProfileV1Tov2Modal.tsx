@@ -94,7 +94,7 @@ export default function MigrateUserProfileV1Tov2Modal({
             }}
             className="flex flex-col overflow-y-auto w-full"
         >
-            <div className="font-boldy text-white/80 pl-4 pr-4 sm:max-w-[30em] self-center text-center pt-6 pb-6 relative">
+            <div className="font-semibold text-white/80 pl-4 pr-4 sm:max-w-[30em] self-center text-center pt-6 pb-6 relative">
                 Profiles V2 are live! <br /> Pick a unique nickname and migrate your existing profile.
 
                 <div className="absolute w-full h-full left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')] -z-10" />
@@ -102,10 +102,10 @@ export default function MigrateUserProfileV1Tov2Modal({
 
             <div className="h-[1px] w-full bg-bcolor mb-4" />
 
-            <div className='self-center font-archivo text-txtfade'>Nickname</div>
+            <div className='self-center text-txtfade'>Nickname</div>
 
             <InputString
-                className="font-boldy text-xl relative p-3 border border-bcolor rounded-md text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
+                className="font-semibold text-xl relative p-3 border border-bcolor rounded-md text-center mt-2 mb-4 max-w-[25em] ml-auto mr-auto"
                 value={updatedNickname ?? ''}
                 onChange={setUpdatedNickname}
                 placeholder="The Best Trader"
@@ -115,19 +115,19 @@ export default function MigrateUserProfileV1Tov2Modal({
 
             <div className='h-[2em]'>
                 {(trimmedUpdatedNickname && trimmedUpdatedNickname.length < 3) || !trimmedUpdatedNickname ?
-                    <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Must be at least 3 characters long</div> :
+                    <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">Must be at least 3 characters long</div> :
                     null}
 
                 {trimmedUpdatedNickname && typeof alreadyTakenNicknames[trimmedUpdatedNickname] === 'undefined' && trimmedUpdatedNickname.length > 3 ?
-                    <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">Checking nickname availability...</div> :
+                    <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">Checking nickname availability...</div> :
                     null}
 
                 {trimmedUpdatedNickname && alreadyTakenNicknames[trimmedUpdatedNickname] === true ?
-                    <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">Nickname already taken</div> :
+                    <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-semibold">Nickname already taken</div> :
                     null}
 
                 {trimmedUpdatedNickname && alreadyTakenNicknames[trimmedUpdatedNickname] === false ?
-                    <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">Nickname available</div> :
+                    <div className="text-red-500 text-xs text-center mb-4 text-green font-semibold">Nickname available</div> :
                     null}
             </div>
 
@@ -150,7 +150,7 @@ export default function MigrateUserProfileV1Tov2Modal({
             <div className="p-3 w-full flex flex-col items-center">
                 {isFaqVisible ? <div className='flex flex-col sm:max-w-[30em] text-center gap-4 pb-4'>
                     <div className='flex flex-col gap-1'>
-                        <div className="text-sm font-boldy">Why do I need to migrate?</div>
+                        <div className="text-sm font-semibold">Why do I need to migrate?</div>
 
                         <div className="text-sm text-txtfade">
                             Profile V2 is the first step toward new features on the profile. Among other things, Nicknames are now unique, hence you having to migrate.
@@ -159,7 +159,7 @@ export default function MigrateUserProfileV1Tov2Modal({
                     </div>
 
                     <div className='flex flex-col gap-1'>
-                        <div className="text-sm font-boldy">What if I don&apos;t migrate?</div>
+                        <div className="text-sm font-semibold">What if I don&apos;t migrate?</div>
 
                         <div className="text-sm text-txtfade">
                             Most on-chain actions require Profile V2.
@@ -168,7 +168,7 @@ export default function MigrateUserProfileV1Tov2Modal({
                     </div>
 
                     <div className='flex flex-col gap-1'>
-                        <div className="text-sm font-boldy">What does migration cost?</div>
+                        <div className="text-sm font-semibold">What does migration cost?</div>
 
                         <div className="text-sm text-txtfade">Only the transaction fee, nothing more!</div>
                     </div>

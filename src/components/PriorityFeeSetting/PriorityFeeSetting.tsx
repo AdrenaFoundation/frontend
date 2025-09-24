@@ -39,7 +39,7 @@ export default function PriorityFeeSetting({
 
   const content = (
     <div className="flex flex-col">
-      <h4 className="font-interSemibold">Priority Fees</h4>
+      <h4 className="font-semibold">Priority Fees</h4>
 
       <p className="opacity-50 text-sm mt-0">
         Speed up your transactions with Dynamic Priority Fees following the
@@ -76,7 +76,7 @@ export default function PriorityFeeSetting({
 
       <div
         className={twMerge(
-          'flex gap-1 items-center mt-6 font-interSemibold text-xs',
+          'flex gap-1 items-center mt-6 font-semibold text-xs',
         )}
       >
         <InfoAnnotation
@@ -91,10 +91,10 @@ export default function PriorityFeeSetting({
       <div className="mt-2">
         <div className="w-full flex flex-col border items-center justify-center p-2 bg-third rounded-md">
           <div className="flex w-full">
-            <div className="w-1/2 items-center flex text-xs font-interSemibold">
+            <div className="w-1/2 items-center flex text-xs font-semibold">
               TX Size
             </div>
-            <div className="w-1/2 items-center flex text-xs font-interSemibold">
+            <div className="w-1/2 items-center flex text-xs font-semibold">
               Extra Fee
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function PriorityFeeSetting({
       <div className="mt-6">
         <div
           className={twMerge(
-            'flex items-center gap-1 mb-1 text-xs font-interSemibold',
+            'flex items-center gap-1 mb-1 text-xs font-semibold',
           )}
         >
           <InfoAnnotation
@@ -179,7 +179,7 @@ export default function PriorityFeeSetting({
             <label htmlFor="currency" className="sr-only">
               Currency
             </label>
-            <span className="opacity-50 sm:text-sm mr-3 font-boldy">SOL</span>
+            <span className="opacity-50 sm:text-sm mr-3 font-semibold">SOL</span>
           </div>
         </div>
       </div>

@@ -859,7 +859,7 @@ export default function EditPositionCollateral({
                     <Image src={chevronDownIcon} alt="chevron down" />
                   </div>
 
-                  <div className='font-archivo text-base'>{redeemToken.symbol ?? '-'}</div>
+                  <div className='text-base'>{redeemToken.symbol ?? '-'}</div>
 
                   <Image
                     className='h-4 w-4'

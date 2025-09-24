@@ -80,7 +80,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                                     {getTokenSymbol(token.symbol)}
                                 </div>
                                 <div className={`px-2 py-1 rounded-md justify-center items-center gap-2 flex ${order.side === 'long' ? 'bg-greenSide/10' : 'bg-redSide/10'}`}>
-                                    <div className={`text-center text-xs font-medium font-mono ${order.side === 'long' ? 'text-greenSide' : 'text-redSide'}`}>
+                                    <div className={`text-center text-xs font-mono ${order.side === 'long' ? 'text-greenSide' : 'text-redSide'}`}>
                                         {order.side.charAt(0).toUpperCase() + order.side.slice(1)}
                                     </div>
                                 </div>

@@ -291,7 +291,7 @@ export default function BurgerMenu({
 
                       <Link
                         href={page.link}
-                        className="block font-medium"
+                        className="block font-regular"
                         onClick={() => setIsOpen(!open)}
                       >
                         {page.name}

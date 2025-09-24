@@ -43,7 +43,7 @@ export const LimitOrderContent = ({
     <h5 className="mt-4 flex">Open Position after reaching</h5>
 
     <div className="flex items-center border-l border-t border-r border-b-0 rounded-tl-lg rounded-tr-lg bg-inputcolor border border-white/20 pt-2 mt-2 grow text-sm w-full relative gap-[0.1em]">
-      <div className="pl-4 mt-[0.1em] text-[1.4em]">
+      <div className="pl-4 mt-[0.2em] text-[1.4em]">
         {limitOrderTriggerPrice !== null ? '$' : null}
       </div>
 
@@ -98,7 +98,7 @@ export const LimitOrderContent = ({
     </div>
 
     <div className="flex items-center mt-3 gap-1">
-      <div className="text-xs font-boldy relative bottom-[0.2em] opacity-50">
+      <div className="text-xs relative bottom-[0.2em] opacity-50">
         Trigger price must be {side === 'long' ? 'below' : 'above'}
       </div>
 

@@ -66,7 +66,7 @@ export const BottomBar = ({
               nb={stat.value}
               format={stat.format}
               isDecimalDimmed={false}
-              className="text-xs font-interSemibold"
+              className="text-xs font-semibold"
               isAbbreviate={!!isMobile}
             />
           </div>

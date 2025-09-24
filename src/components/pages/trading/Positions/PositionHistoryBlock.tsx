@@ -518,7 +518,7 @@ const PositionHistoryBlock = ({
                             <p
                               className={twMerge(
                                 getEventTypeColor(transaction.method),
-                                'text-sm font-interSemibold',
+                                'text-sm font-semibold',
                               )}
                             >
                               {getEventTypeLabel(transaction.method)}
@@ -600,7 +600,7 @@ const PositionHistoryBlock = ({
 
                                 return (
                                   <div key={key}>
-                                    <p className="font-interMedium text-xs opacity-50">
+                                    <p className="text-xs opacity-50">
                                       {formatKey(key)}
                                     </p>
                                     <p className="text-sm opacity-75">

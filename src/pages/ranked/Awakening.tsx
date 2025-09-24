@@ -47,7 +47,7 @@ const CompetitionStats = memo(
     <div className="flex gap-4 flex-col flex-wrap sm:flex-nowrap">
       <div className="flex gap-4 flex-row flex-wrap sm:flex-nowrap">
         <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-          <h4 className="font-boldy text-base p-2 flex gap-2">
+          <h4 className="font-semibold text-base p-2 flex gap-2">
             Traders <LiveIcon className="absolute right-2" />
           </h4>
 
@@ -57,13 +57,13 @@ const CompetitionStats = memo(
             <FormatNumber
               nb={tradersCount}
               format="number"
-              className={'text-3xl font-boldy'}
+              className={'text-3xl font-semibold'}
             />
           </div>
         </div>
 
         <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-          <h4 className="font-boldy text-base p-2 flex gap-2">
+          <h4 className="font-semibold text-base p-2 flex gap-2">
             Volume <LiveIcon className="absolute right-2" />
           </h4>
 
@@ -75,13 +75,13 @@ const CompetitionStats = memo(
               format="currency"
               isDecimalDimmed={false}
               isAbbreviate={true}
-              className={'text-3xl font-boldy'}
+              className={'text-3xl font-semibold'}
             />
           </div>
         </div>
 
         <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
-          <h4 className="font-boldy text-base p-2">Total Rewards</h4>
+          <h4 className="font-semibold text-base p-2">Total Rewards</h4>
 
           <div className="h-[1px] bg-bcolor w-full" />
 
@@ -93,13 +93,13 @@ const CompetitionStats = memo(
                 width={18}
                 height={18}
               />
-              <div className="text-lg font-boldy w-[6.2em]">2.27M ADX</div>
+              <div className="text-lg font-semibold w-[6.2em]">2.27M ADX</div>
             </div>
 
             <div className="flex gap-2 items-center justify-center w-full">
               <Image src={jtoImage} alt="adx logo" width={22} height={22} />
 
-              <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
+              <div className="text-lg font-semibold w-[6.2em]">25,000 JTO</div>
             </div>
           </div>
         </div>
@@ -109,18 +109,18 @@ const CompetitionStats = memo(
         <div className="flex flex-col w-full items-center h-auto grow-0">
           <div className="flex items-center p-2">
             <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
-            <div className="font-boldy text-base ml-1">Airdrop</div>
-            <span className="text-sm text-txtfade font-boldy ml-1">(6,000</span>
+            <div className="font-semibold text-base ml-1">Airdrop</div>
+            <span className="text-sm text-txtfade font-semibold ml-1">(6,000</span>
             <Image src={jtoImage} alt="JTOlogo" width={24} height={24} />
-            <span className="text-sm text-txtfade font-boldy">)</span>
+            <span className="text-sm text-txtfade font-semibold">)</span>
             {eligibleJitosolAirdropWallets.includes(
               wallet?.walletAddress ?? '',
             ) ? (
-              <span className="ml-2 font-boldy text-green">You qualify!</span>
+              <span className="ml-2 font-semibold text-green">You qualify!</span>
             ) : (
               <Tippy
                 content={
-                  <p className="font-medium">
+                  <p className="font-regular">
                     To qualify your wallet must have been one of the recipient
                     of the JTO airdrop, and you must have made at least one $10k
                     size trade. The first 600 participants will qualify, if less
@@ -142,14 +142,14 @@ const CompetitionStats = memo(
         <div className="flex flex-col gap-2 items-center justify-center h-full pb-2">
           <div className="flex items-center gap-2">
             <span className="text-sm text-txtfade">Recipients</span>
-            <span className="text-sm font-boldy">
+            <span className="text-sm font-semibold">
               {eligibleJitosolAirdropWallets.length} / 600
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="text-sm text-txtfade">Reward per recipient</span>
-            <span className="text-sm font-boldy">
+            <span className="text-sm font-semibold">
               {Math.round(6000 / eligibleJitosolAirdropWallets.length)} JTO
             </span>
           </div>
@@ -164,7 +164,7 @@ const CompetitionLeaderboard = memo(
   ({ hasProfile }: { hasProfile: boolean }) => (
     <div className="flex flex-col sm:flex-row mb-5 gap-4">
       <div className="flex flex-row gap-3 items-center">
-        <h1 className="font-boldy capitalize">Leaderboards</h1>
+        <h1 className="font-semibold capitalize">Leaderboards</h1>
       </div>
 
       {!hasProfile && (
@@ -223,10 +223,10 @@ const WeekSelector = memo(
               timestamp={new Date(weekDates.end).getTime() / 1000}
               stopAtZero={true}
             />
-            <span className="text-xs font-boldy">left</span>
+            <span className="text-xs font-semibold">left</span>
           </div>
         ) : (
-          <p className="text-xs font-boldy">Week has ended</p>
+          <p className="text-xs font-semibold">Week has ended</p>
         )}
       </div>
 
@@ -264,7 +264,7 @@ export const CompetitionHeader = memo(
     description: string[];
   }) => (
     <>
-      <h1 className="font-boldy text-3xl capitalize">
+      <h1 className="font-semibold text-3xl capitalize">
         Adrena Trading Competition
       </h1>
       <p className="text-base text-txtfade mb-2">
@@ -348,13 +348,13 @@ const ProfileBanner = memo(
     return (
       <div className="flex bg-yellow-900 bg-opacity-40 rounded-md border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
         <div className="flex items-center">
-          <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+          <div className="hidden sm:flex text-[1em] md:text-[1em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
             {userName}
           </div>
 
           <span className="hidden sm:flex text-sm text-txtfade mx-4"> | </span>
 
-          <span className="text-base font-boldy mr-2">
+          <span className="text-base font-semibold mr-2">
             {currentUserData.rank &&
               currentUserData.rank < 4 &&
               currentUserData.division !== 'No Division' ? (
@@ -375,7 +375,7 @@ const ProfileBanner = memo(
               />
             ) : (
               <div
-                className="text-base font-boldy text-center"
+                className="text-base font-semibold text-center"
                 key={`rank-${currentUserData.rank}`}
               >
                 # {currentUserData.rank}
@@ -384,21 +384,21 @@ const ProfileBanner = memo(
           </span>
 
           <span
-            className={`text-base flex items-center justify-center font-archivoblack ${DIVISIONS[currentUserData.division]?.color ?? 'default-text-color'}`}
+            className={`text-base flex items-center justify-center font-bold ${DIVISIONS[currentUserData.division]?.color ?? 'default-text-color'}`}
           >
             {currentUserData.division}
           </span>
         </div>
 
         <div className="flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center">
-          <span className="text-sm text-txtfade font-boldy">PnL:</span>
+          <span className="text-sm text-txtfade font-semibold">PnL:</span>
 
           <FormatNumber
             nb={currentUserData.pnl ?? 0}
             format="currency"
             isDecimalDimmed={false}
             className={twMerge(
-              'text-base font-boldy',
+              'text-base font-semibold',
               (currentUserData.pnl ?? 0) >= 0 ? 'text-green' : 'text-red',
             )}
             precision={currentUserData.pnl && currentUserData.pnl >= 50 ? 0 : 2}
@@ -417,7 +417,7 @@ const ProfileBanner = memo(
             isAbbreviate={true}
             isDecimalDimmed={false}
             isAbbreviateIcon={false}
-            className="text-base font-boldy"
+            className="text-base font-semibold"
           />
         </div>
 
@@ -430,7 +430,7 @@ const ProfileBanner = memo(
                 nb={currentUserData.adxRewards ?? 0}
                 format="number"
                 isDecimalDimmed={false}
-                className="text-base font-boldy"
+                className="text-base font-semibold"
               />
 
               <Image
@@ -447,7 +447,7 @@ const ProfileBanner = memo(
                 nb={currentUserData.jtoRewards ?? 0}
                 format="number"
                 isDecimalDimmed={false}
-                className="text-base font-boldy"
+                className="text-base font-semibold"
               />
               <Image
                 src={jtoImage}
@@ -577,7 +577,7 @@ export default function Awakening() {
 
         <div className="px-4 sm:px-8">
           <div className="flex flex-col lg:flex-row gap-3 w-full mb-3">
-            <h1 className="font-boldy flex-none capitalize">Weekly Rewards</h1>
+            <h1 className="font-semibold flex-none capitalize">Weekly Rewards</h1>
 
             <WeekSelector
               currentWeek={week}

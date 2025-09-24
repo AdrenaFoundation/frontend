@@ -273,7 +273,7 @@ export default function StopLossTakeProfit({
             </div>
             <div
               className={twMerge(
-                'font-bold text-sm',
+                'text-sm',
                 positionNetPnl > 0
                   ? 'text-green'
                   : positionNetPnl < 0
@@ -288,7 +288,7 @@ export default function StopLossTakeProfit({
                 format="currency"
                 precision={2}
                 className={twMerge(
-                  'font-bold text-sm',
+                  'text-sm',
                   positionNetPnl > 0
                     ? 'text-green'
                     : positionNetPnl < 0
@@ -324,7 +324,7 @@ export default function StopLossTakeProfit({
 
       <div className="w-full mt-0 gap-4 flex flex-col sm:flex-row p-4 border-t">
         <Button
-          className="font-boldy w-full"
+          className="font-semibold w-full"
           size="lg"
           title="Cancel"
           variant="outline"
@@ -332,7 +332,7 @@ export default function StopLossTakeProfit({
         />
 
         <Button
-          className="font-boldy w-full"
+          className="font-semibold w-full"
           size="lg"
           title="Confirm"
           disabled={stopLossError || takeProfitError}

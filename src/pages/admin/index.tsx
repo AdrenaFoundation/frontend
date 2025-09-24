@@ -34,7 +34,7 @@ export default function Admin() {
     return (
       <div className="flex flex-col items-center justify-center mx-auto max-w-4xl h-full">
         <div className="flex flex-col gap-3 border bg-third rounded-md p-3">
-          <p className="text-sm font-interSemibold">
+          <p className="text-sm font-semibold">
             Sign in with a verified wallet to access the admin panel.
           </p>
 

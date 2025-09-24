@@ -134,7 +134,7 @@ export default function TradingInput({
                   </div>
                 ) : null}
 
-                <div className="font-archivo text-base">
+                <div className="text-base">
                   {selectedToken.symbol ?? '-'}
                 </div>
 

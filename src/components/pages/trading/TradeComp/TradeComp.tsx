@@ -138,7 +138,7 @@ export default function TradeComp({
                   <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
                     <span
                       className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        'font-semibold uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
                         isJupSwap ? 'opacity-100' : '',
                       )}
                       onClick={() => {
@@ -152,7 +152,7 @@ export default function TradeComp({
 
                     <span
                       className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        'font-semibold uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
                         !isJupSwap ? 'opacity-100' : '',
                       )}
                       onClick={() => {

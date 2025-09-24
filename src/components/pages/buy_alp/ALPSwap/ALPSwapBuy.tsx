@@ -361,7 +361,7 @@ export default function ALPSwapBuy({
                   className="w-4 h-4"
                   alt="token logo"
                 />
-                <p className="text-base font-boldy">
+                <p className="text-base font-semibold">
                   {useSwaplessRoute
                     ? collateralToken.symbol
                     : usdcToken?.symbol}

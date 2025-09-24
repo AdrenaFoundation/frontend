@@ -87,7 +87,7 @@ export default function TradingStats({
       title: 'Positions',
       nb: traderInfo?.totalNumberPositions ?? 0,
       suffix: `/${livePositionsNb}`,
-      suffixClassName: 'text-sm font-boldy opacity-50',
+      suffixClassName: 'text-sm font-semibold opacity-50',
       icon: <LiveIcon />,
       precision: 0,
       format: 'number',
@@ -146,7 +146,7 @@ export default function TradingStats({
               >
                 <div>
                   <div className='flex flex-row items-center gap-1'>
-                    <p className="text-sm font-boldy opacity-50">
+                    <p className="text-sm font-semibold opacity-50">
                       {stat.title}
                     </p>{' '}
                     {stat.title == 'Total PnL' ? (

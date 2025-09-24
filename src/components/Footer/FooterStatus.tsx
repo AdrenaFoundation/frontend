@@ -63,7 +63,7 @@ export default function FooterStatus() {
       <LiveIcon isLive={isOperational} isLoading={isLoading} />
       <p
         className={twMerge(
-          'text-xs font-interMedium transition-opacity duration-300',
+          'text-xs transition-opacity duration-300',
           isLoading && 'opacity-30',
         )}
       >
@@ -82,15 +82,15 @@ export default function FooterStatus() {
             <ul className="flex flex-col gap-3">
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={tokenPricesWebSocket} />
-                <p className="font-boldy text-sm opacity-75">Token prices</p>
+                <p className="font-semibold text-sm opacity-75">Token prices</p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={notificationsWebSocket} />
-                <p className="font-boldy text-sm opacity-75">Notifications</p>
+                <p className="font-semibold text-sm opacity-75">Notifications</p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={chatWebSocket} />
-                <p className="font-boldy text-sm opacity-75">Chat</p>
+                <p className="font-semibold text-sm opacity-75">Chat</p>
               </li>
             </ul>
           </motion.div>

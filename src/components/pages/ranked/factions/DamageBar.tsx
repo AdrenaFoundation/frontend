@@ -84,7 +84,7 @@ export default function DamageBar({
                 width: `${isBalanced ? "50%" : Math.max(Math.min(bonkPercentage, 90), 10) + "%"}`,
             }}>
                 <div className={twMerge(
-                    "absolute text-sm font-boldy z-20",
+                    "absolute text-sm font-semibold z-20",
                     (dominantTeam === 'BONK' || isBalanced) ? "text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]" : ""
                 )}>
                     {isBalanced ? "50.00%" : bonkPercentage.toFixed(2) + "%"}
@@ -107,7 +107,7 @@ export default function DamageBar({
                 width: `${isBalanced ? "50%" : Math.ceil(Math.max(Math.min(jitoPercentage, 90), 10)) + "%"}`,
             }}>
                 <div className={twMerge(
-                    "absolute text-sm font-boldy z-20",
+                    "absolute text-sm font-semibold z-20",
                     (dominantTeam === 'JITO' || isBalanced) ? "text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]" : ""
                 )}>
                     {isBalanced ? "50.00%" : jitoPercentage.toFixed(2) + "%"}
@@ -130,7 +130,7 @@ export default function DamageBar({
         <div className="flex flex-col items-center gap-1">
             <div
                 className={twMerge(
-                    "text-md font-boldy tracking-[0.1rem] uppercase",
+                    "text-md font-semibold tracking-[0.1rem] uppercase",
                 )}
                 style={{ color: isBalanced ? whiteColor : dominanceColor }}
             >
@@ -138,7 +138,7 @@ export default function DamageBar({
             </div>
 
             {isBalanced ?
-                <div className='text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase'>
+                <div className='text-xxs tracking-widest text-txtfade w-1/2 text-center uppercase'>
                     TEAM WITH MOST DAMAGE GET MOST OF THE REWARDS, <Tippy content={<div>
                         <p>Each team gets 50% of the rewards. On top of that, there&apos;s a mechanism where the team dealing more damage can <strong>pillage up to 30%</strong> of the opposing team&apos;s rewards.</p>
 
@@ -150,15 +150,15 @@ export default function DamageBar({
                         </div>
                     </div>
                     }>
-                        <span className='underline-dashed text-xxs font-archivo tracking-widest text-txtfade'>UP TO 65%</span>
+                        <span className='underline-dashed text-xxs tracking-widest text-txtfade'>UP TO 65%</span>
                     </Tippy> OF TOTAL REWARDS.
                 </div>
                 :
-                <div className='text-xxs text-txtfade font-archivo tracking-widest uppercase'>
+                <div className='text-xxs text-txtfade tracking-widest uppercase'>
                     {dominantTeam} TEAM TO PILLAGE <Tippy content={<div>
                         Due to {dominantTeam} team dealing {dominanceGap.toLocaleString(undefined, { maximumFractionDigits: 0 })} more damage and their officer unlocking up to {dominantTeam === 'BONK' ? pillageBonkPercentage : pillageJitoPercentage}% maximum pillage threshold, they can pillage {pillagePercentage.toFixed(0)}% of the {dominatedTeam} team&apos;s rewards.
                     </div>}>
-                        <span className="text-xxs text-txtfade font-archivo tracking-widest uppercase underline-dashed">
+                        <span className="text-xxs text-txtfade tracking-widest uppercase underline-dashed">
                             {pillagePercentage.toFixed(0)}%
                         </span>
                     </Tippy> OF {dominatedTeam} TEAM REWARDS
