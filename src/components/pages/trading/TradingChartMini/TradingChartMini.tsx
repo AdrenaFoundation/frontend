@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 
 import { Token } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { getTokenSymbol } from '@/utils';
 
 import TradingChartHeaderStats from '../TradingChartHeader/TradingChartHeaderStats';
 
@@ -57,23 +57,14 @@ export default function TradingChartMini({
   return (
     <div>
       <div className="p-2">
-        <div className="flex flex-row gap-2 items-center mb-2">
-          <Image
-            src={getTokenImage(token)}
-            alt={token.symbol}
-            className="w-[20px] h-[20px]"
-          />
-          <p className="text-lg font-boldy">
-            {getTokenSymbol(token.symbol)} / USD
-          </p>
-        </div>
-
         <TradingChartHeaderStats
           selected={token}
           selectedAction={selectedAction}
           numberLong={numberLong}
           numberShort={numberShort}
-          priceClassName="text-2xl"
+          compact={true}
+          showIcon={true}
+          className="mb-2"
         />
       </div>
       <div className="relative">

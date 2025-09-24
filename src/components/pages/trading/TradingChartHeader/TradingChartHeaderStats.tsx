@@ -9,7 +9,7 @@ import useCustodyVolume from '@/hooks/useCustodyVolume';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { getTokenSymbol } from '@/utils';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
 export default function TradingChartHeaderStats({
   className,
@@ -19,6 +19,8 @@ export default function TradingChartHeaderStats({
   numberLong,
   numberShort,
   selectedAction,
+  compact = false,
+  showIcon = false,
 }: {
   className?: string;
   selected: Token;
@@ -27,6 +29,8 @@ export default function TradingChartHeaderStats({
   numberLong?: number;
   numberShort?: number;
   selectedAction: 'long' | 'short' | 'swap';
+  compact?: boolean;
+  showIcon?: boolean;
 }) {
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
@@ -101,8 +105,13 @@ export default function TradingChartHeaderStats({
         className,
       )}
     >
-      {/* Mobile: Expandable stats layout */}
-      <div className="flex sm:hidden flex-col w-full">
+      {/* Mobile: Expandable stats layout - hide when compact */}
+      <div
+        className={twMerge(
+          'flex flex-col w-full',
+          compact ? 'hidden' : 'flex sm:hidden',
+        )}
+      >
         {/* Main line with price and expand button */}
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
@@ -199,8 +208,119 @@ export default function TradingChartHeaderStats({
         )}
       </div>
 
-      {/* Desktop layout */}
-      <div className="hidden sm:flex w-auto justify-start gap-3 lg:gap-6 items-center">
+      {/* Compact single-line layout - show only when compact */}
+      {compact && (
+        <div className="flex flex-col w-full">
+          {/* Main line */}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2 leading-none">
+              {showIcon && (
+                <Image
+                  src={getTokenImage(selected)}
+                  alt={selected.symbol}
+                  className="w-[20px] h-[20px]"
+                />
+              )}
+              <span className="text-lg font-boldy mr-2 mt-0.5">
+                {getTokenSymbol(selected.symbol)} / USD
+              </span>
+              <FormatNumber
+                nb={selectedTokenPrice}
+                format="currency"
+                minimumFractionDigits={2}
+                precision={selected.displayPriceDecimalsPrecision}
+                className={twMerge(
+                  'text-2xl font-bold',
+                  tokenColor,
+                  priceClassName,
+                )}
+              />
+              <span className="text-xs font-mono text-txtfade ml-0.5">
+                <span
+                  className={`${
+                    dailyChange
+                      ? dailyChange > 0
+                        ? 'text-green'
+                        : 'text-redbright'
+                      : 'text-white'
+                  } font-mono`}
+                >
+                  {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
+                </span>
+              </span>
+            </div>
+
+            <button
+              onClick={() => setIsStatsExpanded(!isStatsExpanded)}
+              className="p-1 bg-third rounded transition-colors"
+            >
+              <Image
+                src={chevronDownIcon}
+                alt="Toggle stats"
+                width={16}
+                height={16}
+                className={twMerge(
+                  'transition-transform duration-200',
+                  isStatsExpanded ? 'rotate-180' : '',
+                )}
+              />
+            </button>
+          </div>
+
+          {/* Expandable stats row for compact mode */}
+          {isStatsExpanded && (
+            <div className="flex items-center justify-between w-full mt-2 text-xs font-mono">
+              {/* Left side: Position counts */}
+              {numberLong && numberShort ? (
+                <div className="flex gap-0.5">
+                  <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                    Long: {numberLong}
+                  </span>
+                  <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                    Short: {numberShort}
+                  </span>
+                </div>
+              ) : (
+                <div></div>
+              )}
+
+              {/* Right side: Volume and Borrow Rate */}
+              <div className="flex items-center gap-4">
+                <span className="text-txtfade">
+                  24h Vol.{' '}
+                  {platformDailyVolume !== null && platformDailyVolume > 0 ? (
+                    <FormatNumber
+                      nb={platformDailyVolume}
+                      format="currency"
+                      isAbbreviate={true}
+                      isDecimalDimmed={false}
+                      className="text-white font-mono ml-1"
+                    />
+                  ) : (
+                    '-'
+                  )}
+                </span>
+                <span className="text-txtfade">
+                  Bor. R.{' '}
+                  <span className="text-white font-mono ml-1">
+                    {borrowingRate !== null
+                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                      : '-'}
+                  </span>
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Desktop layout - hide when compact */}
+      <div
+        className={twMerge(
+          'w-auto justify-start gap-3 lg:gap-6 items-center',
+          compact ? 'hidden' : 'hidden sm:flex',
+        )}
+      >
         {numberLong && numberShort ? (
           <div className="flex-row gap-2 mr-0 xl:mr-2 hidden lg:flex">
             <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
