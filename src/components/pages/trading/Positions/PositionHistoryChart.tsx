@@ -38,9 +38,11 @@ type ChartDataPoint = {
 export default function PositionHistoryChart({
   positionHistory,
   events,
+  showAfterFees,
 }: {
   positionHistory: EnrichedPositionApi;
   events: FormattedEventsType[][];
+  showAfterFees: boolean;
 }) {
   const [realPriceData, setRealPriceData] = useState<
     Array<{ timestamp: number; price: number }>
@@ -434,19 +436,26 @@ export default function PositionHistoryChart({
         <TokenDetails positionHistory={positionHistory} />
         <div className="flex flex-row items-center gap-2">
           <FormatNumber
-            nb={Math.abs(positionHistory.pnl)}
+            nb={
+              showAfterFees
+                ? positionHistory.pnl
+                : positionHistory.pnl - positionHistory.fees
+            }
             format="currency"
-            prefix={positionHistory.pnl > 0 ? '+' : '-'}
             className={twMerge(
-              'text-4xl font-interBold',
-              positionHistory.pnl >= 0 ? 'text-[#35C488]' : 'text-redbright',
+              'text-4xl font-mono font-bold',
+              (showAfterFees
+                ? positionHistory.pnl
+                : positionHistory.pnl - positionHistory.fees) >= 0
+                ? 'text-[#35C488]'
+                : 'text-redbright',
             )}
             isDecimalDimmed={false}
           />
           <div className="opacity-80">
             <FormatNumber
               nb={
-                ((true
+                ((showAfterFees
                   ? positionHistory.pnl
                   : positionHistory.pnl - positionHistory.fees) /
                   positionHistory.collateralAmount) *
@@ -456,11 +465,11 @@ export default function PositionHistoryChart({
               prefix="("
               suffix=")"
               prefixClassName="text-lg"
-              suffixClassName={`ml-0 text-lg ${(true ? positionHistory.pnl : positionHistory.pnl - positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
+              suffixClassName={`ml-0 text-lg ${(showAfterFees ? positionHistory.pnl : positionHistory.pnl - positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
               precision={2}
               minimumFractionDigits={2}
               isDecimalDimmed={false}
-              className={`text-lg ${(true ? positionHistory.pnl : positionHistory.pnl - positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
+              className={`text-lg ${(showAfterFees ? positionHistory.pnl : positionHistory.pnl - positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
             />
           </div>
         </div>
