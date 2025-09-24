@@ -40,6 +40,7 @@ export default function TradingChartHeader({
   ).length;
 
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
 
   useEffect(() => {
     try {
@@ -143,12 +144,53 @@ export default function TradingChartHeader({
       </Head>
       <div
         className={twMerge(
-          'flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-2 z-30 bg-main border-b px-3 py-1',
+          'flex flex-col sm:flex-row sm:items-center sm:justify-between sm:gap-2 z-30 bg-main border-b px-3 py-1',
           className,
         )}
       >
-        {/* Left side: Token Selector + Favorites */}
-        <div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 gap-3 sm:gap-3 min-w-0">
+        {/* Mobile: Wrapping layout */}
+        <div className="flex sm:hidden flex-row items-center justify-between flex-wrap gap-2">
+          {/* Left side: Token Selector + Favorites */}
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Token Selector */}
+            <div className="flex-shrink-0">
+              <TokenSelector
+                tokenList={tokenList}
+                selected={selected}
+                onChange={onChange}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                selectedAction={selectedAction}
+              />
+            </div>
+
+            {/* Favorites Bar*/}
+            <div className="min-w-0 overflow-hidden">
+              <FavoritesBar
+                favoriteTokens={favoriteTokens}
+                selected={selected}
+                onChange={onChange}
+              />
+            </div>
+          </div>
+
+          {/* Right side: 24h% + Price + Expand Button */}
+          <div className="flex items-center gap-3 ml-auto">
+            <TradingChartHeaderStats
+              selected={selected}
+              numberLong={numberLong}
+              numberShort={numberShort}
+              selectedAction={selectedAction}
+              compact={true}
+              showMainLineOnly={true}
+              isStatsExpanded={isStatsExpanded}
+              setIsStatsExpanded={setIsStatsExpanded}
+            />
+          </div>
+        </div>
+
+        {/* Desktop: Original layout */}
+        <div className="hidden sm:flex items-center justify-between w-full sm:w-auto sm:flex-1 gap-3 sm:gap-3 min-w-0">
           {/* Token Selector */}
           <div className="flex-shrink-0">
             <TokenSelector
@@ -171,8 +213,8 @@ export default function TradingChartHeader({
           </div>
         </div>
 
-        {/* Right side: Stats */}
-        <div className="flex-shrink-0 w-full sm:w-auto sm:justify-end sm:self-center">
+        {/* Desktop Stats */}
+        <div className="hidden sm:block flex-shrink-0 sm:self-center">
           <TradingChartHeaderStats
             selected={selected}
             numberLong={numberLong}
@@ -180,6 +222,16 @@ export default function TradingChartHeader({
             selectedAction={selectedAction}
           />
         </div>
+
+        {/* Mobile: Expandable stats section */}
+        <TradingChartHeaderStats
+          selected={selected}
+          numberLong={numberLong}
+          numberShort={numberShort}
+          selectedAction={selectedAction}
+          showExpandedStatsOnly={true}
+          isStatsExpanded={isStatsExpanded}
+        />
       </div>
     </>
   );

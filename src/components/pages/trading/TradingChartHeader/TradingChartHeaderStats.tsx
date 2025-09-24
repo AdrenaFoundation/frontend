@@ -21,6 +21,10 @@ export default function TradingChartHeaderStats({
   selectedAction,
   compact = false,
   showIcon = false,
+  showMainLineOnly = false,
+  showExpandedStatsOnly = false,
+  isStatsExpanded,
+  setIsStatsExpanded,
 }: {
   className?: string;
   selected: Token;
@@ -31,6 +35,10 @@ export default function TradingChartHeaderStats({
   selectedAction: 'long' | 'short' | 'swap';
   compact?: boolean;
   showIcon?: boolean;
+  showMainLineOnly?: boolean;
+  showExpandedStatsOnly?: boolean;
+  isStatsExpanded?: boolean;
+  setIsStatsExpanded?: (expanded: boolean) => void;
 }) {
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
@@ -44,7 +52,11 @@ export default function TradingChartHeaderStats({
   const [tokenColor, setTokenColor] = useState<
     'text-white' | 'text-green' | 'text-redbright'
   >('text-white');
-  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+  // Use the passed state or create local state as fallback
+  const [localIsStatsExpanded, setLocalIsStatsExpanded] = useState(false);
+  const statsExpanded =
+    isStatsExpanded !== undefined ? isStatsExpanded : localIsStatsExpanded;
+  const setStatsExpanded = setIsStatsExpanded || setLocalIsStatsExpanded;
 
   const borrowingRate = useMemo(() => {
     if (!window.adrena?.client) return null;
@@ -98,6 +110,102 @@ export default function TradingChartHeaderStats({
 
   const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
 
+  // If showing only expanded stats, render only that section
+  if (showExpandedStatsOnly) {
+    return (
+      <div className="sm:hidden">
+        {statsExpanded && (
+          <div className="flex items-center justify-between w-full mt-2 text-xs font-mono">
+            {/* Left side: Position counts */}
+            {numberLong && numberShort ? (
+              <div className="flex gap-0.5">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                  Long: {numberLong}
+                </span>
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                  Short: {numberShort}
+                </span>
+              </div>
+            ) : (
+              <div></div>
+            )}
+
+            {/* Right side: Volume and Borrow Rate */}
+            <div className="flex items-center gap-4">
+              <span className="text-txtfade">
+                24h Vol.{' '}
+                {platformDailyVolume !== null && platformDailyVolume > 0 ? (
+                  <FormatNumber
+                    nb={platformDailyVolume}
+                    format="currency"
+                    isAbbreviate={true}
+                    isDecimalDimmed={false}
+                    className="text-white font-mono ml-1"
+                  />
+                ) : (
+                  '-'
+                )}
+              </span>
+              <span className="text-txtfade">
+                Bor. R.{' '}
+                <span className="text-white font-mono ml-1">
+                  {borrowingRate !== null
+                    ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                    : '-'}
+                </span>
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // If showing only main line, render price + % + expand button
+  if (showMainLineOnly) {
+    return (
+      <div className="flex items-center gap-3 sm:hidden">
+        <span className="text-xs font-mono text-txtfade">
+          <span
+            className={`${
+              dailyChange
+                ? dailyChange > 0
+                  ? 'text-green'
+                  : 'text-redbright'
+                : 'text-white'
+            } font-mono`}
+          >
+            {dailyChange
+              ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
+              : '-'}
+          </span>
+        </span>
+        <FormatNumber
+          nb={selectedTokenPrice}
+          format="currency"
+          minimumFractionDigits={2}
+          precision={selected.displayPriceDecimalsPrecision}
+          className={twMerge('text-2xl font-bold', tokenColor, priceClassName)}
+        />
+        <button
+          onClick={() => setStatsExpanded(!statsExpanded)}
+          className="p-1 bg-third rounded transition-colors"
+        >
+          <Image
+            src={chevronDownIcon}
+            alt="Toggle stats"
+            width={16}
+            height={16}
+            className={twMerge(
+              'transition-transform duration-200',
+              statsExpanded ? 'rotate-180' : '',
+            )}
+          />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       className={twMerge(
@@ -115,19 +223,7 @@ export default function TradingChartHeaderStats({
         {/* Main line with price and expand button */}
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
-            <FormatNumber
-              nb={selectedTokenPrice}
-              format="currency"
-              minimumFractionDigits={2}
-              precision={selected.displayPriceDecimalsPrecision}
-              className={twMerge(
-                'text-2xl font-bold',
-                tokenColor,
-                priceClassName,
-              )}
-            />
-            <span className="text-xs font-mono text-txtfade">
-              {' '}
+            <span className="text-xs font-mono text-txtfade ml-2">
               <span
                 className={`${
                   dailyChange
@@ -142,12 +238,23 @@ export default function TradingChartHeaderStats({
                   : '-'}
               </span>
             </span>
+            <FormatNumber
+              nb={selectedTokenPrice}
+              format="currency"
+              minimumFractionDigits={2}
+              precision={selected.displayPriceDecimalsPrecision}
+              className={twMerge(
+                'text-2xl font-bold mr-2',
+                tokenColor,
+                priceClassName,
+              )}
+            />
           </div>
 
           {/* Expand button */}
           <button
-            onClick={() => setIsStatsExpanded(!isStatsExpanded)}
-            className="p-1 bg-third rounded transition-colors mb-2"
+            onClick={() => setStatsExpanded(!statsExpanded)}
+            className="p-1 bg-third rounded transition-colors"
           >
             <Image
               src={chevronDownIcon}
@@ -156,14 +263,14 @@ export default function TradingChartHeaderStats({
               height={16}
               className={twMerge(
                 'transition-transform duration-200',
-                isStatsExpanded ? 'rotate-180' : '',
+                statsExpanded ? 'rotate-180' : '',
               )}
             />
           </button>
         </div>
 
         {/* Expandable stats row */}
-        {isStatsExpanded && (
+        {statsExpanded && (
           <div className="flex items-center justify-between w-full mt-1 mb-1 text-xs font-mono">
             {/* Left side: Position counts */}
             {numberLong && numberShort ? (
@@ -213,7 +320,7 @@ export default function TradingChartHeaderStats({
         <div className="flex flex-col w-full">
           {/* Main line */}
           <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2 leading-none">
+            <div className="flex items-center gap-2">
               {showIcon && (
                 <Image
                   src={getTokenImage(selected)}
@@ -221,21 +328,13 @@ export default function TradingChartHeaderStats({
                   className="w-[20px] h-[20px]"
                 />
               )}
-              <span className="text-lg font-boldy mr-2 mt-0.5">
+              <span className="text-lg font-boldy">
                 {getTokenSymbol(selected.symbol)} / USD
               </span>
-              <FormatNumber
-                nb={selectedTokenPrice}
-                format="currency"
-                minimumFractionDigits={2}
-                precision={selected.displayPriceDecimalsPrecision}
-                className={twMerge(
-                  'text-2xl font-bold',
-                  tokenColor,
-                  priceClassName,
-                )}
-              />
-              <span className="text-xs font-mono text-txtfade ml-0.5">
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-txtfade">
                 <span
                   className={`${
                     dailyChange
@@ -248,27 +347,37 @@ export default function TradingChartHeaderStats({
                   {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
                 </span>
               </span>
-            </div>
-
-            <button
-              onClick={() => setIsStatsExpanded(!isStatsExpanded)}
-              className="p-1 bg-third rounded transition-colors"
-            >
-              <Image
-                src={chevronDownIcon}
-                alt="Toggle stats"
-                width={16}
-                height={16}
+              <FormatNumber
+                nb={selectedTokenPrice}
+                format="currency"
+                minimumFractionDigits={2}
+                precision={selected.displayPriceDecimalsPrecision}
                 className={twMerge(
-                  'transition-transform duration-200',
-                  isStatsExpanded ? 'rotate-180' : '',
+                  'text-2xl font-bold',
+                  tokenColor,
+                  priceClassName,
                 )}
               />
-            </button>
+              <button
+                onClick={() => setStatsExpanded(!statsExpanded)}
+                className="p-1 bg-third rounded transition-colors"
+              >
+                <Image
+                  src={chevronDownIcon}
+                  alt="Toggle stats"
+                  width={16}
+                  height={16}
+                  className={twMerge(
+                    'transition-transform duration-200',
+                    statsExpanded ? 'rotate-180' : '',
+                  )}
+                />
+              </button>
+            </div>
           </div>
 
           {/* Expandable stats row for compact mode */}
-          {isStatsExpanded && (
+          {statsExpanded && (
             <div className="flex items-center justify-between w-full mt-2 text-xs font-mono">
               {/* Left side: Position counts */}
               {numberLong && numberShort ? (
