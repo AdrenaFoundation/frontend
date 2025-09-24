@@ -53,13 +53,13 @@ export default function BasicMonitoring({
           lm: lm_apr_rolling_seven_day,
         });
       })
-      .catch(() => {});
+      .catch(() => { });
 
     DataApiClient.getAllTimeTradersCount()
       .then((count) => {
         setAllTimeTraders(count);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     const interval = setInterval(() => {
       DataApiClient.getRolling7DGlobalApr()
@@ -69,13 +69,13 @@ export default function BasicMonitoring({
             lm: lm_apr_rolling_seven_day,
           });
         })
-        .catch(() => {});
+        .catch(() => { });
 
       DataApiClient.getAllTimeTradersCount()
         .then((count) => {
           setAllTimeTraders(count);
         })
-        .catch(() => {});
+        .catch(() => { });
     }, 60000);
 
     return () => clearInterval(interval);
@@ -93,13 +93,15 @@ export default function BasicMonitoring({
               precision={0}
               className="border-0 min-w-[12em] text-center"
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
-              headerClassName="pb-2 text-center"
+              headerClassName="pb-1 text-center"
               titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
                 <div className="flex justify-center">
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].tradingVolumeChange}
                     weeklyChange={velocityData['7d'].tradingVolumeChange}
+                    dailyTippyContent="Change over the last 24 hours"
+                    weeklyTippyContent="Change over the last 7 days"
                     className="mt-1"
                     format="currency"
                   />
@@ -114,13 +116,15 @@ export default function BasicMonitoring({
               precision={0}
               className="border-0 min-w-[12em] text-center"
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
-              headerClassName="pb-2 text-center"
+              headerClassName="pb-1 text-center"
               titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
                 <div className="flex justify-center">
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].liquidationVolumeChange}
                     weeklyChange={velocityData['7d'].liquidationVolumeChange}
+                    dailyTippyContent="Change over the last 24 hours"
+                    weeklyTippyContent="Change over the last 7 days"
                     className="mt-1"
                     format="currency"
                   />
@@ -135,13 +139,15 @@ export default function BasicMonitoring({
               precision={0}
               className="border-0 min-w-[12em] text-center"
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
-              headerClassName="pb-2 text-center"
+              headerClassName="pb-1 text-center"
               titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
                 <div className="flex justify-center">
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].totalFeesChange}
                     weeklyChange={velocityData['7d'].totalFeesChange}
+                    dailyTippyContent="Change over the last 24 hours"
+                    weeklyTippyContent="Change over the last 7 days"
                     className="mt-1"
                     format="currency"
                   />
@@ -157,7 +163,7 @@ export default function BasicMonitoring({
               isDecimalDimmed={false}
               className="border-0 min-w-[10em] text-center"
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
-              headerClassName="pb-2 text-center"
+              headerClassName="pb-1 text-center"
               titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
               tippyInfo="Average yield for ALP in the last 7 days"
               footer={
@@ -165,6 +171,8 @@ export default function BasicMonitoring({
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].alpAprChange}
                     weeklyChange={velocityData['7d'].alpAprChange}
+                    dailyTippyContent="Difference from yesterday's APR"
+                    weeklyTippyContent="Difference from last week's APR"
                     className="mt-1"
                     format="percentage"
                   />
@@ -180,7 +188,7 @@ export default function BasicMonitoring({
               isDecimalDimmed={false}
               className="border-0 min-w-[10em] text-center"
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
-              headerClassName="pb-2 text-center"
+              headerClassName="pb-1 text-center"
               titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
               tippyInfo="Average yield for 540d staked ADX in the last 7 days"
               footer={
@@ -188,6 +196,8 @@ export default function BasicMonitoring({
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].adxAprChange}
                     weeklyChange={velocityData['7d'].adxAprChange}
+                    dailyTippyContent="Difference from yesterday's APR"
+                    weeklyTippyContent="Difference from last week's APR"
                     className="mt-1"
                     format="percentage"
                   />
@@ -202,13 +212,15 @@ export default function BasicMonitoring({
               precision={0}
               className="border-0 min-w-[8em] text-center"
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
-              headerClassName="pb-2 text-center"
+              headerClassName="pb-1 text-center"
               titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
               footer={
                 <div className="flex justify-center">
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].newTraders}
                     weeklyChange={velocityData['7d'].newTraders}
+                    dailyTippyContent="New traders in the last 24 hours"
+                    weeklyTippyContent="New traders in the last 7 days"
                     className="mt-1"
                     format="number"
                   />
