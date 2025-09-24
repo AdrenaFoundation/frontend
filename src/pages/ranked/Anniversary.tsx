@@ -148,7 +148,9 @@ export default function Anniversary() {
           </h1>
 
           <div className='flex flex-row gap-5 mt-4 justify-center flex-wrap w-full'>
-            <div className='w-full lg:w-1/2 lg:max-w-[30em] flex flex-row flex-wrap'>
+            <div className='w-full lg:w-1/2 lg:max-w-[30em] flex flex-row flex-wrap p-4 border bg-main/40'>
+              <h2 className='text-sm ml-auto mr-auto mb-4'>Raffle Category</h2>
+
               <div className="relative z-10 w-full flex flex-row gap-2">
                 <RafflePlace placeTitle="1st" imageRef={firstImage} reward={10000} />
                 <RafflePlace placeTitle="2nd" imageRef={secondImage} reward={8000} />
