@@ -94,7 +94,7 @@ export default function Anniversary() {
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const leaderboardData = useMutagenLeaderboardData({
     allUserProfilesMetadata,
-    seasonName: 'interseason3', // 'anniversary',
+    seasonName: 'anniversary1',
     rankFilter: 'points_trading',
   });
 
@@ -108,7 +108,7 @@ export default function Anniversary() {
       <img
         src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/hb-3.jpg"
         alt="anniversary bg"
-        className="absolute inset-0 w-full h-full object-cover opacity-10 -top-[3em]"
+        className="absolute inset-0 w-full h-[calc(100%+3em)] object-cover opacity-10 -top-[3em]"
       />
 
       <div className="flex flex-col gap-2 items-center justify-center text-center mx-auto max-w-[100em] w-full">
@@ -211,7 +211,7 @@ export default function Anniversary() {
           RAFFLE TICKETS
         </h1>
 
-        {leaderboardData ? (
+        {leaderboardData && leaderboardData.length > 0 ? (
           <MutagenLeaderboardAnniversary
             data={leaderboardData}
             className='max-w-[50em]'
@@ -228,8 +228,8 @@ export default function Anniversary() {
             }}
           />
         ) : (
-          <div className="flex w-full items-center justify-center mb-8 mt-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          <div className="flex w-full items-center justify-center mb-16 mt-8">
+            <div className='text-sm text-txtfade/60'>Waiting for the season to start</div>
           </div>
         )}
       </div>

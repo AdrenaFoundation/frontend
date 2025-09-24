@@ -21,7 +21,7 @@ export default function Ranked({
     // Ignore following for inter-season
     //
     const [activeSeason, setActiveSeason] =
-        useState<keyof typeof TRADING_COMPETITION_SEASONS>('anniversary');
+        useState<keyof typeof TRADING_COMPETITION_SEASONS>('anniversary1');
     const [jtoPrice, setJTOPrice] = useState<number | null>(null);
 
     const data = useMemo(
@@ -81,7 +81,7 @@ export default function Ranked({
                 jtoPrice={jtoPrice}
             />
 
-            <div className={twMerge(activeSeason !== 'anniversary' ? "sm:px-8 mx-auto w-full mt-10" : "mx-auto w-full")}>
+            <div className={twMerge(activeSeason !== 'anniversary1' ? "sm:px-8 mx-auto w-full mt-10" : "mx-auto w-full")}>
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
                 {activeSeason === 'factions' ? (
@@ -94,7 +94,7 @@ export default function Ranked({
                 {activeSeason === 'interseason3' ? (
                     <Interseason3 jtoPrice={jtoPrice} />
                 ) : null}
-                {activeSeason === 'anniversary' ? (
+                {activeSeason === 'anniversary1' ? (
                     <Anniversary />
                 ) : null}
             </div>

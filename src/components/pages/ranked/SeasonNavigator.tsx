@@ -34,13 +34,13 @@ export default function SeasonNavigator({
                     <p className={twMerge(
                         "relative z-20 font-bold tracking-widest uppercase text-nowrap xl:text-sm 2xl:text-xl",
                         season === 'interseason3' ? 'lg:text-sm ' : '',
-                        season === 'anniversary' ? 'lg:text-sm ' : '',
+                        season === 'anniversary1' ? 'lg:text-sm ' : '',
                     )}>
                         {TRADING_COMPETITION_SEASONS[season].bannerTitle}
                     </p>
 
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {season === 'interseason3' || season === 'anniversary' ? <div
+                    {season === 'interseason3' || season === 'anniversary1' ? <div
                         className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
                         style={{
                             backgroundImage: `url(${TRADING_COMPETITION_SEASONS[season].img})`,

@@ -67,7 +67,7 @@ export default function CompetitionBanner({
                             key={title}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            {seasonName === 'interseason3' || seasonName === 'anniversary' ? <div
+                            {seasonName === 'interseason3' || seasonName === 'anniversary1' ? <div
                                 className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
                                 style={{
                                     backgroundImage: `url(${banner})`,
@@ -180,7 +180,7 @@ export default function CompetitionBanner({
                                 nb={97166.49}
                                 className="text-5xl font-semibold"
                                 isDecimalDimmed={false}
-                            /> : seasonName === 'interseason3' || seasonName === 'anniversary' ?
+                            /> : seasonName === 'interseason3' || seasonName === 'anniversary1' ?
                                 <FormatNumber
                                     format='currency'
                                     nb={totalPrize}
@@ -197,7 +197,7 @@ export default function CompetitionBanner({
                                 )}
 
                         <div className='flex gap-1 rounded-md pt-2 pb-2 pl-4 pr-4'>
-                            {seasonName === 'anniversary' ?
+                            {seasonName === 'anniversary1' ?
                                 <div className="text-xs text-txtfade uppercase">Distributed in ADX</div>
                                 : null}
 
@@ -265,7 +265,7 @@ export default function CompetitionBanner({
                     </div>
                 </div> : null}
 
-                {seasonName !== 'anniversary' ? <div
+                {seasonName !== 'anniversary1' ? <div
                     className={twMerge(
                         'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
                         startDate && startDate.getTime() >= Date.now() ? 'mt-[2em]' : 'mt-[4em]',
