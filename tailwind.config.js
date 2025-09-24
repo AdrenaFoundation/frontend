@@ -63,6 +63,7 @@ module.exports = {
     },
     font: {
       mono: ['Roboto Mono', 'monospace'],
+      monobold: ['Roboto Mono Bold', 'monospace'],
       thin: ['thin', 'sans-serif'],
       regular: ['regular', 'sans-serif'],
       semibold: ['semibold', 'sans-serif'],
@@ -81,6 +82,7 @@ module.exports = {
       archivoblack: ['Archivo Black'],
       black: ['black'],
       mono: 'Roboto Mono',
+      monobold: 'Roboto Mono Bold',
       cursive: 'cursive',
     },
   },

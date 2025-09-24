@@ -72,6 +72,13 @@
   }
 
   @font-face {
+    font-family: 'Roboto Mono Bold';
+    font-weight: 700;
+    font-style: normal;
+    src: url('/fonts/Roboto-mono/RobotoMono-Bold.ttf') format('truetype');
+  }
+
+  @font-face {
     font-family: special;
     src: url('/fonts/Oswald-Bold.ttf');
   }
