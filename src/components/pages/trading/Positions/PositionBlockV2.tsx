@@ -153,7 +153,7 @@ export default function PositionBlockV2({
       {isMobile ? (
         <div
           className={twMerge(
-            'grid grid-cols-[2fr_auto_auto_1fr] xl:grid-cols-[2fr_1fr_1fr_1fr] 2xl:grid-cols-[auto_2fr_1fr_1fr_1fr] p-3 gap-3',
+            'grid grid-cols-[2fr_auto_auto_1fr] xl:grid-cols-[2fr_1fr_1fr_1fr] 2xl:grid-cols-[auto_2fr_1fr_1fr_1fr] p-1 gap-1',
             !readOnly && 'border-b',
           )}
         >
@@ -286,7 +286,7 @@ export default function PositionBlockV2({
                   setIsPnlWithFees(!isPnlWithFees);
                 }}
               />
-              <p className="text-sm font-interMedium opacity-50">PnL w/ fees</p>
+              <p className="text-sm font-boldy opacity-50">PnL w/ fees</p>
             </div>
 
             <div
@@ -300,7 +300,7 @@ export default function PositionBlockV2({
                   setIsNative(!isNative);
                 }}
               />
-              <p className="text-sm font-interMedium opacity-50">Native</p>
+              <p className="text-sm font-boldy opacity-50">Native</p>
             </div>
 
             <div
@@ -325,13 +325,13 @@ export default function PositionBlockV2({
             <Button
               title="Edit"
               size="sm"
-              className="flex-1 lg:h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
+              className="flex-1 lg:h-auto px-2 py-0.5 font-normal rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
               onClick={() => triggerEditPositionCollateral?.(position)}
             />
             <Button
               title="SL/TP"
               size="sm"
-              className="flex-1 lg:h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
+              className="flex-1 lg:h-auto px-2 py-0.5 font-normal rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300"
               onClick={() => triggerStopLossTakeProfit?.(position)}
             />
             <Button
@@ -342,7 +342,7 @@ export default function PositionBlockV2({
               }
               size="sm"
               className={twMerge(
-                'flex-1 lg:h-auto px-2 py-0.5 rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
+                'flex-1 lg:h-auto px-2 py-0.5 font-normal rounded-lg bg-[#142030] border border-inputcolor text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
                 (closableIn !== 0 || closableIn !== null) && 'flex-none',
               )}
               disabled={closableIn !== 0 && closableIn !== null}
@@ -433,7 +433,7 @@ const NetValue = ({
             (showAfterFees ? position.pnl : position.pnl - fees)
           }
           format="currency"
-          className={twMerge('text-base font-mono items-end justify-end')}
+          className={twMerge('text-sm font-mono items-end justify-end')}
           isDecimalDimmed={false}
           minimumFractionDigits={2}
         />
@@ -470,7 +470,7 @@ const PnLDetails = ({
             nb={showAfterFees ? position.pnl : position.pnl - fees}
             format="currency"
             className={twMerge(
-              'text-base font-mono font-medium',
+              'text-sm font-mono font-medium',
               position.pnl >= 0 ? 'text-[#35C488]' : 'text-redbright',
             )}
             isDecimalDimmed={false}

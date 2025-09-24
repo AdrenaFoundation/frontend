@@ -45,7 +45,7 @@ export const PositionDetail = ({
   return (
     <div
       className={twMerge(
-        'flex flex-row border rounded-xl items-center bg-[#121A24] md:border border-[#1C2733] p-3 py-2 gap-3',
+        'flex flex-row border rounded-lg items-center bg-[#121A24] md:border border-[#1C2733] px-2 py-0.5 gap-1',
         className,
       )}
       ref={ref}
