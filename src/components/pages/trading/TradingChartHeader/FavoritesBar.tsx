@@ -30,7 +30,7 @@ function ArrowButton({
     >
       <div
         className={twMerge(
-          'w-8 h-full flex items-center justify-center',
+          'w-8 h-full flex items-center justify-center relative',
           isLeft
             ? 'bg-gradient-to-r from-main to-transparent'
             : 'bg-gradient-to-l from-main to-transparent',
