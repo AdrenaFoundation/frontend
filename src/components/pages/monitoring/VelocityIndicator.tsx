@@ -20,25 +20,26 @@ const VelocityIndicator = React.memo(function VelocityIndicator({
     if (change === null) {
       return (
         <div className="flex items-center gap-1">
-          <span className="text-sm opacity-30">{period}</span>
-          <span className="text-sm opacity-25">-</span>
+          <span className="text-xs opacity-30">{period}</span>
+          <span className="text-xs opacity-25">-</span>
         </div>
       );
     }
 
     const isPositive = change >= 0;
     const sign = isPositive ? '+' : '';
+    const prefix = format === 'currency' ? `${sign}$` : sign;
 
     return (
       <div className="flex items-center gap-1">
-        <span className="text-base opacity-30">{period}</span>
+        <span className="text-sm opacity-30">{period}</span>
         <FormatNumber
           nb={change}
           format={format}
           precision={format === 'currency' ? 1 : format === 'number' ? 0 : 1}
-          prefix={sign}
+          prefix={prefix}
           className={twMerge(
-            'text-base',
+            'text-sm',
             isPositive ? 'text-green' : 'text-red',
           )}
           isDecimalDimmed={false}
