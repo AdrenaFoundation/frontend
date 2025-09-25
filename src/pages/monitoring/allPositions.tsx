@@ -322,7 +322,7 @@ export default function AllPositions({
                   disabled: viewPage === 'Chart view',
                 }}
               />
-              <div className="flex flex-col gap-3 w-full p-4">
+              <div className="flex flex-col gap-3 w-full p-4 min-w-0">
                 {viewPage === 'Chart view' ? (
                   <div className="flex w-full min-h-[34em] h-[34em] grow">
                     <AllPositionsChart allPositions={sortedPositions} />

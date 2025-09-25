@@ -34,7 +34,7 @@ function PositionsHistory({
 
   return (
     <div className={twMerge('w-full h-full flex flex-col relative', className)}>
-      <div className="flex flex-col justify-center min-h-[18rem]">
+      <div className="flex flex-col justify-center min-h-[18rem] flex-none">
         {!positionsData ? (
           <p className="text-sm text-center opacity-50">
             No trade history available.

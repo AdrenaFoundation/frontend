@@ -111,6 +111,7 @@ export default function PositionBlockV2({
       value: position.price,
       format: 'currency',
       isDecimalDimmed: position.token.symbol !== 'BONK',
+      precision: position.token.symbol === 'BONK' ? 8 : 2,
     },
     {
       title: 'Market',
@@ -118,6 +119,7 @@ export default function PositionBlockV2({
       format: 'currency',
       className: 'hidden xl:flex',
       isDecimalDimmed: position.token.symbol !== 'BONK',
+      precision: position.token.symbol === 'BONK' ? 8 : 2,
     },
     {
       title: 'Liquidation',
@@ -200,7 +202,6 @@ export default function PositionBlockV2({
             data={allData}
             className="bg-transparent items-start flex-col !border-0 rounded-none gap-2 w-full p-0"
             itemClassName="border-0 flex-row justify-between items-center w-full p-0"
-            titleClassName="text-sm"
             readOnly={readOnly}
           />
         )}
@@ -208,13 +209,19 @@ export default function PositionBlockV2({
           <Button
             title="Edit"
             size="sm"
-            className="flex-1 lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300"
+            className={twMerge(
+              'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300',
+              !isMobile && 'flex-1',
+            )}
             onClick={() => triggerEditPositionCollateral?.(position)}
           />
           <Button
             title="SL/TP"
             size="sm"
-            className="flex-1 lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300"
+            className={twMerge(
+              'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300',
+              !isMobile && 'flex-1',
+            )}
             onClick={() => triggerStopLossTakeProfit?.(position)}
           />
           <Button
@@ -224,7 +231,10 @@ export default function PositionBlockV2({
                 : `Close (${Math.ceil((closableIn || 0) / 1000)}s)`
             }
             size="sm"
-            className="flex-1 lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+            className={twMerge(
+              'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
+              !isMobile && 'flex-1',
+            )}
             disabled={closableIn !== 0 && closableIn !== null}
             onClick={() => triggerClosePosition?.(position)}
           />
@@ -325,7 +335,7 @@ const NetValue = ({
               (showAfterFees ? position.pnl : position.pnl - fees)
             }
             format="currency"
-            className={twMerge('text-sm font-mono items-end justify-end')}
+            className={twMerge('text-xs font-mono items-end justify-end')}
             isDecimalDimmed={false}
             minimumFractionDigits={2}
           />
@@ -382,7 +392,7 @@ const PnLDetails = ({
             nb={showAfterFees ? position.pnl : position.pnl - fees}
             format="currency"
             className={twMerge(
-              'text-sm font-mono font-medium',
+              'text-xs font-mono font-medium',
               (showAfterFees ? position.pnl : position.pnl - fees) >= 0
                 ? 'text-[#35C488]'
                 : 'text-redbright',
