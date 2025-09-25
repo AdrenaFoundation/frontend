@@ -63,7 +63,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
     );
 
     return (
-        <div ref={containerRef} className="min-w-[250px] w-full flex flex-col p-4 rounded-lg border border-white/10 justify-start items-start gap-2.5">
+        <div ref={containerRef} className="min-w-[250px] w-full flex flex-col p-4 rounded-md border border-white/10 justify-start items-start gap-2.5">
             <div className="w-full pb-[0.7em] border-b border-white/10 justify-start items-center gap-2.5 inline-flex">
                 <div className="grow shrink basis-0 h-9 justify-between items-center flex">
                     <div className="justify-start items-center gap-2.5 flex">
@@ -79,8 +79,8 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                                 <div className="text-center text-whiteLabel text-lg font-black font-mono tracking-wider">
                                     {getTokenSymbol(token.symbol)}
                                 </div>
-                                <div className={`px-2 py-1 rounded-lg justify-center items-center gap-2 flex ${order.side === 'long' ? 'bg-greenSide/10' : 'bg-redSide/10'}`}>
-                                    <div className={`text-center text-xs font-medium font-mono ${order.side === 'long' ? 'text-greenSide' : 'text-redSide'}`}>
+                                <div className={`px-2 py-1 rounded-md justify-center items-center gap-2 flex ${order.side === 'long' ? 'bg-greenSide/10' : 'bg-redSide/10'}`}>
+                                    <div className={`text-center text-xs font-mono ${order.side === 'long' ? 'text-greenSide' : 'text-redSide'}`}>
                                         {order.side.charAt(0).toUpperCase() + order.side.slice(1)}
                                     </div>
                                 </div>

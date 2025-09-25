@@ -56,7 +56,7 @@ export default function StakeApr({
   const periods = token === 'ADX' ? [0, 90, 180, 360, 540] as const : [90, 180, 360, 540] as const;
 
   return (
-    <div className={twMerge("flex flex-col bg-main rounded-2xl border h-18", className)}>
+    <div className={twMerge("flex flex-col bg-main rounded-md border h-18", className)}>
       <div className={twMerge("flex flex-wrap p-2")}>
         {token === 'ALP' ? <NumberDisplayBoilerplate
           title="LIQUID APR"

@@ -287,7 +287,7 @@ export default function SwapTradingInputs({
 
       <TradingInput
         className="text-sm rounded-full"
-        inputClassName="tr-rounded-lg bg-inputcolor"
+        inputClassName="tr-rounded-md bg-inputcolor"
         value={inputA}
         subText={
           priceA ? (
@@ -366,7 +366,7 @@ export default function SwapTradingInputs({
       <TradingInput
         disabled={true}
         className="mt-3 text-sm rounded-full"
-        inputClassName="tr-rounded-lg bg-third"
+        inputClassName="tr-rounded-md bg-third"
         value={inputB}
         subText={
           priceB ? (

@@ -80,13 +80,13 @@ export default function MaintenanceAlert() {
   };
 
   return (
-    <div className="w-full max-w-4xl  mx-auto p-4 mt-8 border rounded-xl">
-      <h1 className="text-lg font-interSemibold mb-3 capitalize">
+    <div className="w-full max-w-4xl  mx-auto p-4 mt-8 border rounded-md">
+      <h1 className="text-lg font-semibold mb-3 capitalize">
         Create New Maintenance Message
       </h1>
 
       {error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-md p-3 mb-4">
           <p className="text-red-400 text-sm">{error}</p>
         </div>
       ) : null}
@@ -99,7 +99,7 @@ export default function MaintenanceAlert() {
             placeholder="Enter maintenance message"
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
-            className="text-sm p-3 rounded-xl text-ellipsis font-boldy outline-none w-full bg-inputcolor border border-white/10"
+            className="text-sm p-3 rounded-md text-ellipsis font-semibold outline-none w-full bg-inputcolor border border-white/10"
           />
           <Button
             title="Create"
@@ -109,13 +109,13 @@ export default function MaintenanceAlert() {
           />
         </div>
 
-        <p className="font-interSemibold mb-2 text-sm flex items-center gap-3">
+        <p className="font-semibold mb-2 text-sm flex items-center gap-3">
           Affected Pages
         </p>
         <div className="flex flex-row flex-wrap gap-4">
           {PAGES.map((page) => (
             <div
-              className="flex flex-row gap-1 items-center border rounded-lg p-1 px-2 pr-4 hover:bg-third transition duration-300 cursor-pointer select-none"
+              className="flex flex-row gap-1 items-center border rounded-md p-1 px-2 pr-4 hover:bg-third transition duration-300 cursor-pointer select-none"
               key={page}
               onClick={() => {
                 setCheckedPages((prev) =>
@@ -131,7 +131,7 @@ export default function MaintenanceAlert() {
                   // parent component handles the state change
                 }}
               />
-              <span className="ml-2 text-sm font-interMedium">{page}</span>
+              <span className="ml-2 text-sm font-regular">{page}</span>
             </div>
           ))}
         </div>
@@ -153,7 +153,7 @@ export default function MaintenanceAlert() {
       </div>
 
       <div>
-        <h3 className="text-base font-interSemibold mb-2 capitalize">
+        <h3 className="text-base font-semibold mb-2 capitalize">
           Existing Maintenance Messages
         </h3>
 
@@ -170,7 +170,7 @@ export default function MaintenanceAlert() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className="border rounded-lg p-3 bg-third border-inputcolor"
+                className="border rounded-md p-3 bg-third border-inputcolor"
               >
                 {editingId === message.id ? (
                   /* Edit Mode */
@@ -180,7 +180,7 @@ export default function MaintenanceAlert() {
                         type="text"
                         value={editMsg}
                         onChange={(e) => setEditMsg(e.target.value)}
-                        className="text-sm p-3 rounded-xl font-boldy outline-none flex-1 bg-inputcolor border border-white/10"
+                        className="text-sm p-3 rounded-md font-semibold outline-none flex-1 bg-inputcolor border border-white/10"
                         placeholder="Edit message"
                       />
                       <Button
@@ -198,13 +198,13 @@ export default function MaintenanceAlert() {
                     </div>
 
                     <div>
-                      <p className="font-interSemibold mb-2 text-sm flex items-center gap-3">
+                      <p className="font-semibold mb-2 text-sm flex items-center gap-3">
                         Affected Pages
                       </p>
                       <div className="flex flex-row flex-wrap gap-2">
                         {PAGES.map((page) => (
                           <div
-                            className="flex flex-row gap-1 items-center border rounded-lg p-1 px-2 pr-3 hover:bg-third transition duration-300 cursor-pointer select-none"
+                            className="flex flex-row gap-1 items-center border rounded-md p-1 px-2 pr-3 hover:bg-third transition duration-300 cursor-pointer select-none"
                             key={page}
                             onClick={() => {
                               setEditPages((prev) =>
@@ -216,9 +216,9 @@ export default function MaintenanceAlert() {
                           >
                             <Checkbox
                               checked={editPages.includes(page)}
-                              onChange={() => {}}
+                              onChange={() => { }}
                             />
-                            <span className="ml-1 text-xs font-interMedium capitalize">
+                            <span className="ml-1 text-xs capitalize">
                               {page}
                             </span>
                           </div>
@@ -249,7 +249,7 @@ export default function MaintenanceAlert() {
                   <div className="gap-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex flex-col gap-3 flex-1">
-                        <p className="text-base font-interMedium">
+                        <p className="text-base font-regular">
                           {message.message}
                         </p>
                         {message.pages.length > 0 ? (
@@ -257,7 +257,7 @@ export default function MaintenanceAlert() {
                             {message.pages.map((page) => (
                               <span
                                 key={page}
-                                className="font-interMedium text-xs px-2 py-1 border rounded-lg border-bcolor"
+                                className="text-xs px-2 py-1 border rounded-md border-bcolor"
                               >
                                 {page}
                               </span>
@@ -269,7 +269,7 @@ export default function MaintenanceAlert() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEdit(message)}
-                          className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-xs font-interMedium transition duration-300"
+                          className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-xs transition duration-300"
                           disabled={loading}
                         >
                           Edit
@@ -277,7 +277,7 @@ export default function MaintenanceAlert() {
 
                         <button
                           onClick={() => handleDelete(message.id)}
-                          className="px-3 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded text-xs font-interMedium transition duration-300"
+                          className="px-3 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded text-xs transition duration-300"
                           disabled={loading}
                         >
                           Delete

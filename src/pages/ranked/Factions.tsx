@@ -43,16 +43,16 @@ export default function Factions({
     return (
         <div className="max-w-[1920px] w-full mx-auto px-4 relative flex flex-col pb-4">
             <div
-                className="uppercase self-center mb-8 sm:mb-0 font-boldy sm:absolute sm:-top-[6em] sm:right-2 text-sm underline opacity-80 hover:opacity-100 transition-opacity cursor-pointer p-1"
+                className="uppercase self-center mb-8 sm:mb-0 font-semibold sm:absolute sm:-top-[6em] sm:right-2 text-sm underline opacity-80 hover:opacity-100 transition-opacity cursor-pointer p-1"
             >
                 <button
                     onClick={() => setActiveTab(activeTab === 'leaderboard' ? 'mechanics' : 'leaderboard')}
-                    className="bg-[#0B131D] border border-white/20 px-5 py-2 rounded-lg hover:border-white/40 hover:shadow-xl transition-all duration-300"
+                    className="bg-[#0B131D] border border-white/20 px-5 py-2 rounded-md hover:border-white/40 hover:shadow-xl transition-all duration-300"
                 >
                     <div className='flex'>
                         <div
                             className={twMerge(
-                                'text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-sm font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
                             )}
                         >
@@ -60,7 +60,7 @@ export default function Factions({
                         </div>
                         <div
                             className={twMerge(
-                                'text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-sm font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
                             )}
                         >

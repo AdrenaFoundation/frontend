@@ -218,7 +218,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                     }}
                                 />
 
-                                <div className='text-sm font-boldy'>Coingecko</div>
+                                <div className='text-sm font-semibold'>Coingecko</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -232,7 +232,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                     }}
                                 />
 
-                                <div className='text-sm font-boldy'>DEX screener</div>
+                                <div className='text-sm font-semibold'>DEX screener</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -246,7 +246,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                     }}
                                 />
 
-                                <div className='text-sm font-boldy'>Raydium</div>
+                                <div className='text-sm font-semibold'>Raydium</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -260,7 +260,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                     }}
                                 />
 
-                                <div className='text-sm font-boldy'>Jupiter</div>
+                                <div className='text-sm font-semibold'>Jupiter</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -275,7 +275,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                     }}
                                 />
 
-                                <div className='text-sm font-boldy'>Rugcheck</div>
+                                <div className='text-sm font-semibold'>Rugcheck</div>
                             </div>
                         </div>
 

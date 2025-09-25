@@ -18,11 +18,11 @@ export default function Filter({
     className?: string;
 }) {
     return (
-        <ul className={twMerge("flex flex-row gap-2 items-center border border-bcolor rounded-lg p-2 bg-secondary flex-1", className)}>
+        <ul className={twMerge("flex flex-row gap-2 items-center border border-bcolor rounded-md p-2 bg-secondary flex-1", className)}>
             {options.map((option) => (
                 <li
                     className={twMerge(
-                        'text-sm font-mono w-full text-center border border-bcolor rounded-lg p-1 px-4 text-txtfade bg-transparent hover:bg-third hover:text-white cursor-pointer transition duration-300 select-none capitalize',
+                        'text-sm font-mono w-full text-center border border-bcolor rounded-md p-1 px-4 text-txtfade bg-transparent hover:bg-third hover:text-white cursor-pointer transition duration-300 select-none capitalize',
                         option.name === activeFilter
                             ? 'text-white bg-third border-white'
                             : '',

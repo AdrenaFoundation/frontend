@@ -90,7 +90,7 @@ export default function Rank({
                 onMouseLeave={() => setHover(false)}
             >
                 <div className={twMerge(
-                    'flex flex-col w-full left-0 items-center justify-center font-archivo tracking-[0.3em] uppercase',
+                    'flex flex-col w-full left-0 items-center justify-center tracking-[0.3em] uppercase',
                     'text-[0.7em]',
                     hover ? 'text-white' : 'text-txtfade',
                 )}>
@@ -145,7 +145,7 @@ export default function Rank({
                         <>
                             <div
                                 className={twMerge(
-                                    'font-archivo tracking-widest text-xs cursor-pointer hover:underline',
+                                    'tracking-widest text-xs cursor-pointer hover:underline',
                                     hover ? 'text-white' : 'text-txtfade',
                                 )}
                                 onClick={async () => {
@@ -161,7 +161,7 @@ export default function Rank({
                                 {user.nickname && user.nickname.length ? user.nickname : getAbbrevWalletAddress(user.wallet.toBase58())}
                             </div>
                         </> : <div
-                            className={twMerge('font-archivo tracking-widest text-xs')}>
+                            className={twMerge('tracking-widest text-xs')}>
                             Not assigned
                         </div>
                     }
@@ -238,14 +238,14 @@ export default function Rank({
                 <div className={twMerge(
                     "text-xs ml-auto mr-auto transition-all duration-300",
                     user.percentagePillage > 0 ? 'text-txtfade/50' : 'text-transparent',
-                    unlockStep === 3 ? 'text-[#FA6724FA] font-archivo tracking-widest' : '',
+                    unlockStep === 3 ? 'text-[#FA6724FA] tracking-widest' : '',
                 )}>
                     max pillage +{user.percentagePillage}%
                 </div>
 
                 <div className={twMerge(
                     "text-xs ml-auto mr-auto transition-all duration-300",
-                    unlockStep === 3 ? 'text-[#FA6724FA] font-archivo tracking-widest' : 'text-transparent',
+                    unlockStep === 3 ? 'text-[#FA6724FA] tracking-widest' : 'text-transparent',
                 )}>
                     {expectedBonusPillage}% mutagen revshare
                 </div>

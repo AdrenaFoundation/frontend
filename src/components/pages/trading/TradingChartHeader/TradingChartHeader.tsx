@@ -178,7 +178,7 @@ export default function TradingChartHeader({
                 content="Long positions"
                 className="flex flex-col items-center"
               >
-                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-md px-2 py-1.5">
                   {numberLong}
                 </span>
               </Tippy>
@@ -186,7 +186,7 @@ export default function TradingChartHeader({
                 content="Short positions"
                 className="flex flex-col items-center"
               >
-                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-md px-2 py-1.5">
                   {numberShort}
                 </span>
               </Tippy>

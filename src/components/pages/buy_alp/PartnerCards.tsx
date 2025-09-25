@@ -21,11 +21,11 @@ const PartnerCard: React.FC<Partner> = ({
     href={link}
     target="_blank"
     rel="noopener noreferrer"
-    className={twMerge('relative p-[1px] rounded-xl block', gradientColors)}
+    className={twMerge('relative p-[1px] rounded-md block', gradientColors)}
   >
     <div
       className={twMerge(
-        'flex flex-row items-center justify-between pt-3 pb-3 pl-5 pr-5 rounded-xl relative z-10 hover:opacity-90 transition-opacity duration-300 min-h-[2.75rem] max-h-[2.75rem]',
+        'flex flex-row items-center justify-between pt-3 pb-3 pl-5 pr-5 rounded-md relative z-10 hover:opacity-90 transition-opacity duration-300 min-h-[2.75rem] max-h-[2.75rem]',
         bgColor,
       )}
     >

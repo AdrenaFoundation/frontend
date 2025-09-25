@@ -45,7 +45,7 @@ export default function RPCSettings({
         {window.adrena.cluster === 'devnet' ? (
           <h2 className="text-blue-500 pr-1">Devnet</h2>
         ) : null}
-        <h4 className="font-interSemibold">RPC endpoints</h4>
+        <h4 className="font-semibold">RPC endpoints</h4>
       </div>
 
       <div className="flex flex-row justify-between items-center">
@@ -58,7 +58,7 @@ export default function RPCSettings({
             }
             className="w-3 ml-0"
           />
-          <p className="text-sm font-boldy">Automatic switch</p>
+          <p className="text-sm font-semibold">Automatic switch</p>
         </div>
 
         <Switch
@@ -114,7 +114,7 @@ export default function RPCSettings({
 
                 <p
                   className={twMerge(
-                    'text-sm font-interMedium opacity-50 transition-opacity duration-300 hover:opacity-100 ml-2',
+                    'text-sm opacity-50 transition-opacity duration-300 hover:opacity-100 ml-2',
                     rpc.name === favoriteRpc && 'opacity-100',
                   )}
                 >
@@ -152,7 +152,7 @@ export default function RPCSettings({
               <div className="flex flex-row gap-2 items-center w-full mt-2">
                 <div
                   className={twMerge(
-                    'relative w-full  border border-white/20 rounded-lg bg-inputcolor overflow-hidden transition duration-300',
+                    'relative w-full  border border-white/20 rounded-md bg-inputcolor overflow-hidden transition duration-300',
                   )}
                 >
                   <input
@@ -162,7 +162,7 @@ export default function RPCSettings({
                       setEditCustomRpcUrl(e.target.value);
                     }}
                     className={twMerge(
-                      'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm font-mono rounded-lg bg-inputcolor transition duration-300',
+                      'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm font-mono rounded-md bg-inputcolor transition duration-300',
                     )}
                     placeholder="Custom RPC URL"
                   />

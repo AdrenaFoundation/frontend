@@ -44,14 +44,14 @@ export default function TermsAndConditionsModal({
         <p>
           <span className='text-txtfade'>Using this platform means that you agree to both our </span>
           <span
-            className='font-boldy cursor-pointer opacity-90 hover:opacity-100'
+            className='font-semibold cursor-pointer opacity-90 hover:opacity-100'
             onClick={() => window.open("https://docs.adrena.xyz/technical-documentation/token-terms-and-conditions", "_blank")}
           >
             token terms and conditions
           </span>
           <span className='text-txtfade'> and </span>
           <span
-            className='font-boldy cursor-pointer opacity-90 hover:opacity-100'
+            className='font-semibold cursor-pointer opacity-90 hover:opacity-100'
             onClick={() => window.open("https://docs.adrena.xyz/technical-documentation/terms-and-conditions", "_blank")}
           >
             terms of service
