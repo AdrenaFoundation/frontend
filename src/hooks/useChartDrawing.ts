@@ -4,7 +4,6 @@ import { ChartPreferences } from '@/components/pages/trading/TradingChart/types'
 import {
   blueColor,
   greenColor,
-  normalize,
   orangeColor,
   purpleColor,
   redColor,
@@ -243,6 +242,79 @@ function drawHorizontalLine({
   } catch (e) {
     console.error('[CHART] ERROR CREATING LINE', e);
     throw new Error(`Error drawing line: ${e}`);
+  }
+}
+
+function drawHorizontalLineFromTradeStart({
+  chart,
+  price,
+  text,
+  color,
+  startTime,
+  title,
+  showPrice = true,
+  linestyle = 0,
+  linewidth = 1,
+  horzLabelsAlign = 'right',
+  lock = true,
+}: {
+  chart: IChartWidgetApi | null;
+  price: number;
+  text: string;
+  showPrice?: boolean;
+  color: string;
+  startTime: Date;
+  title?: string;
+  linestyle?: number;
+  linewidth?: number;
+  horzLabelsAlign?: 'left' | 'middle ' | 'right';
+  lock?: boolean;
+}): EntityId | null {
+  if (chart === null) {
+    throw new Error('Chart is not ready');
+  }
+
+  try {
+    // Create a trend line that starts from trade open time and extends far into the future
+    const startTimestamp = startTime.getTime() / 1000;
+    const farFutureTimestamp = startTimestamp + 365 * 24 * 60 * 60; // 1 year in the future
+
+    return chart.createMultipointShape(
+      [
+        {
+          time: startTimestamp,
+          price,
+        },
+        {
+          time: farFutureTimestamp,
+          price,
+        },
+      ],
+      {
+        zOrder: 'top',
+        shape: 'trend_line',
+        lock,
+        disableSelection: true,
+        overrides: {
+          linestyle,
+          linewidth,
+          title,
+          showPrice: showPrice === false ? false : true,
+          bold: true,
+          linecolor: color,
+          horzLabelsAlign,
+          vertLabelsAlign: 'bottom',
+          showLabel: true,
+          fontsize: 10,
+          textcolor: color,
+          showInObjectsTree: true,
+        },
+        text,
+      },
+    );
+  } catch (e) {
+    console.error('[CHART] ERROR CREATING TIME-BASED LINE', e);
+    throw new Error(`Error drawing time-based line: ${e}`);
   }
 }
 
@@ -585,6 +657,41 @@ function handleLimitOrderLine({
 
   return positionChartLines;
 }
+
+const getLiquidationVisualProperties = (
+  positionSizeUsd: number,
+  minSizeUsd: number,
+  maxSizeUsd: number,
+) => {
+  const normalizedSize =
+    (positionSizeUsd - minSizeUsd) / (maxSizeUsd - minSizeUsd);
+
+  if (normalizedSize < 0.05) {
+    // Small liquidations: Light orange, thin
+    return {
+      color: 'rgba(255,225,183,0.3)',
+      linewidth: 1,
+      linestyle: 1,
+      opacity: 0.2,
+    };
+  } else if (normalizedSize < 0.66) {
+    // Medium liquidations: Medium orange, medium thickness
+    return {
+      color: 'rgba(255,190,98,0.4)',
+      linewidth: 1,
+      linestyle: 0,
+      opacity: 0.5,
+    };
+  } else {
+    // Large liquidations: Dark orange, thick
+    return {
+      color: 'rgba(255,148,0,0.5)',
+      linewidth: 2,
+      linestyle: 0,
+      opacity: 0.7,
+    };
+  }
+};
 
 export function useChartDrawing({
   tokenSymbol,
@@ -1138,49 +1245,67 @@ export function useChartDrawing({
         return;
       }
 
+      const maxSizeUsd = Math.max(
+        ...allActivePositions.map((p) => p.sizeUsd ?? 0),
+      );
+      const minSizeUsd = Math.min(
+        ...allActivePositions.map((p) => p.sizeUsd ?? 0),
+      );
+
       // Draw liquidation lines for all active positions
       for (const position of allActivePositions) {
         if (
           chartPreferences.showAllActivePositionsLiquidationLines &&
           position.liquidationPrice
         ) {
-          // add all liquidation lines
-          const maxSize = Math.max(
-            ...allActivePositions.map((p) => p.size ?? 0),
+          // Check if line already exists for this position
+          const existingLine = drawnActivePositionLines.find(
+            (line) =>
+              line.position === position.pubkey.toBase58() &&
+              line.type === 'liquidation' &&
+              line.value === position.liquidationPrice,
           );
 
-          const minSize = Math.min(
-            ...allActivePositions.map((p) => p.size ?? 0),
+          if (existingLine) {
+            // Line already exists, skip creating a new one
+            continue;
+          }
+
+          // Get visual properties based on position size USD (post-leverage)
+          const visualProps = getLiquidationVisualProperties(
+            position.sizeUsd ?? 0,
+            minSizeUsd,
+            maxSizeUsd,
           );
 
-          const linewidth = normalize(position.size, 1, 5, minSize, maxSize);
+          // Create time-based liquidation line starting from trade open
+          const positionOpenTime = new Date(
+            Number(position.nativeObject.openTime) * 1000,
+          );
 
-          // const orangeFaded = 'rgba(248, 128, 1, 0.3)';
-          const orange = 'rgba(248, 128, 1, 0.7)';
-          // const yellow = 'rgba(248, 128, 1, 1)';
-
-          // const leverage = position.sizeUsd / position.collateralUsd;
-
-          // const color = (() => {
-          //   if (leverage < 25) return orangeFaded;
-          //   if (leverage < 50) return orange;
-          //   return yellow;
-          // })();
-
-          drawnActivePositionLines = handlePositionLiquidationLine({
+          const id = drawHorizontalLineFromTradeStart({
             chart,
-            position,
-            toggleSizeUsdInChart,
-            showPrice: false,
-            text: null,
+            text: '',
             title: 'all-active-positions-liquidation-line',
-            color: orange,
+            price: position.liquidationPrice,
+            showPrice: false,
+            startTime: positionOpenTime,
+            color: visualProps.color, // Make sure we're using the calculated color
             horzLabelsAlign: 'left',
-            linestyle: 0,
-            linewidth,
-            positionChartLines: drawnActivePositionLines,
-            symbol,
+            linestyle: visualProps.linestyle, // Make sure we're using the calculated linestyle
+            linewidth: visualProps.linewidth, // Make sure we're using the calculated linewidth
+            lock: true,
           });
+
+          if (id) {
+            drawnActivePositionLines.push({
+              id,
+              type: 'liquidation',
+              symbol,
+              position: position.pubkey.toBase58(),
+              value: position.liquidationPrice,
+            });
+          }
         }
       }
 
